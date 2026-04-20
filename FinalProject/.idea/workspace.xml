@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68a1fc71-43f5-4605-8e50-aa4cdeb011e8" name="Changes" comment="" />
+    <list default="true" id="68a1fc71-43f5-4605-8e50-aa4cdeb011e8" name="Changes" comment="2026.04.20 PL&#10;- first commit">
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/controller" afterDir="true" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/controller/MainController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,6 +18,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -63,8 +68,27 @@
       </set>
     </attachedChunks>
   </component>
-  <component name="SvnConfiguration">
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
     <configuration>C:\Users\PC-24\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\Final\workspace\FinalProject" />
+          <option name="myCopyRoot" value="D:\Final\workspace\FinalProject" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\Final\workspace\FinalProject" />
+          <option name="myCopyRoot" value="D:\Final\workspace\FinalProject" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -73,11 +97,24 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1776652114382</updated>
-      <workItem from="1776652115446" duration="15000" />
+      <workItem from="1776652115446" duration="349000" />
     </task>
+    <task id="LOCAL-00001" summary="2026.04.20 PL&#10;- first commit">
+      <option name="closed" value="true" />
+      <created>1776652254623</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1776652254623</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="2026.04.20 PL&#10;- first commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="2026.04.20 PL&#10;- first commit" />
   </component>
 </project>
