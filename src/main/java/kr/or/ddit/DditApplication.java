@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class StevenZipsApplication {
+public class DditApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(StevenZipsApplication.class, args);
+        SpringApplication.run(DditApplication.class, args);
     }
 
 }
