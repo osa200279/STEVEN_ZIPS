@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -176,10 +178,21 @@
 		</div>
 		<!-- 오른쪽 버튼 -->
 		<div class="flex items-center gap-4 flex-none">
-			<a href="/login.do" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">로그인</a>
-			<button class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">
-				회원가입
-			</button>
+			<%-- 비로그인 상태 --%>
+			<sec:authorize access="isAnonymous()">
+					<a href="/login.do" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">로그인</a>
+					<button class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">
+						회원가입
+					</button>
+			</sec:authorize>
+			<%-- 로그인 성공시 --%>
+			<sec:authorize access="isAuthenticated()">
+				<button type="button">
+					<span style="font-size:1.2em; color:blue; font-weight:bold;">
+						<sec:authentication property="principal.member.userNm"/></span> 님
+				</button>
+				<a href="/logout">로그아웃</a>
+			</sec:authorize>
 		</div>
 	</nav>
 </header>
