@@ -196,7 +196,7 @@
 				</button>
 				<%-- 로그아웃을 위한 히든 폼 --%>
 				<form id="logoutForm" action="/logout" method="post" style="display: none;">
-					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					<sec:csrfInput/>
 				</form>
 			</sec:authorize>
 		</div>

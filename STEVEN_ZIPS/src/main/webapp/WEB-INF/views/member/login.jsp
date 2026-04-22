@@ -9,13 +9,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Login form</title>
+    <meta charset="utf-8"/>
+    <script src="/js/common/conn.js"></script>
+    <title>Login Form</title>
 </head>
 <body>
-    <form action="/login" method="post">
+    <form action="/login" method="post" id="loginForm">
         <input type="text" name="username" placeholder="ID"/><br>
         <input type="text" name="password" placeholder="PW"/><br>
-        <input type="submit" value="인증"/>
+        <button type="button" id="loginBtn">로그인</button>
         <sec:csrfInput/>
     </form>
 </body>
