@@ -176,7 +176,7 @@
 		</div>
 		<!-- 오른쪽 버튼 -->
 		<div class="flex items-center gap-4 flex-none">
-			<button class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">로그인</button>
+			<a href="/login.do" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">로그인</a>
 			<button class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">
 				회원가입
 			</button>
