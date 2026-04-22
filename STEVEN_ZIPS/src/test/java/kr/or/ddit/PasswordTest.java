@@ -30,7 +30,7 @@ public class PasswordTest {
         TextEncryptor encryptor = Encryptors.text(password, salt);
 
         // 원본 주민번호
-        String rawRrn = "990909-1401234";
+        String rawRrn = "010101-4401111";
 
         // 암호화 수행
         String encryptedRrn = encryptor.encrypt(rawRrn);
