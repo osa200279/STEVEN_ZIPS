@@ -64,7 +64,7 @@ public class SecurityConfig {
     }
 
     // 스프링 진영의 세션 기반으로 동작할 모든 요청에 대해서 처리할 필터 체인
-    @Order(value = 1)
+    @Order(value = 2)
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/**")
@@ -94,7 +94,6 @@ public class SecurityConfig {
                 .failureHandler(new CustomLoginFailureHandler())    // 로그인 실패시 후속처리 담당 핸들러
         );
 
-        http.csrf(csrf -> csrf.disable());
         http.logout(
                 logout -> logout
                         .logoutUrl("/logout")   // 로그아웃을 수행할 컨트롤러 주소
@@ -102,6 +101,9 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/logout.do")    // 로그인 작업이 끝난후 보낼 페이지
                         .deleteCookies("JSESSIONID")    // JSESSIONID 쿠키도 제거
         );
+
+        // JSP구역은 csrf정책 유지
+        http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
 
         return http.build();
     }

@@ -191,7 +191,7 @@
 					<span style="font-size:1.2em; color:blue; font-weight:bold;">
 						<sec:authentication property="principal.member.userNm"/></span> 님
 				</button>
-				<a href="/logout">로그아웃</a>
+				<a href="/logout" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">로그아웃</a>
 			</sec:authorize>
 		</div>
 	</nav>
