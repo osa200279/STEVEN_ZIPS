@@ -149,6 +149,26 @@
         </dependency>
         <!--Java JWT 의존 라이브러리 end -->
 
+        <!-- jsp 사용을 위한 설정 추가 -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+        </dependency>
+        <!-- jsp 사용을 위한 설정 추가 end  -->
+
         <!-- JAVA 범용 유틸리티 라이브러리 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -178,7 +198,6 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-vector-store-chroma</artifactId>
         </dependency>-->
-
 
     </dependencies>
 
