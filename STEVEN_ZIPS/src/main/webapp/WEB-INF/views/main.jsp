@@ -7,6 +7,7 @@
 <head>
 	<meta charset="utf-8"/>
 	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+	<script src="/js/common/conn.js"></script>
 	<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Manrope:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
 		  rel="stylesheet"/>
@@ -185,13 +186,18 @@
 						회원가입
 					</button>
 			</sec:authorize>
-			<%-- 로그인 성공시 --%>
+			<%-- 로그인 상태 --%>
 			<sec:authorize access="isAuthenticated()">
-				<button type="button">
-					<span style="font-size:1.2em; color:blue; font-weight:bold;">
-						<sec:authentication property="principal.member.userNm"/></span> 님
+				<span style="font-size:1.2em; color:blue; font-weight:bold;">
+					<sec:authentication property="principal.member.userNm"/></span>님
+				<button type="button" id="logoutBtn" style="cursor: pointer;"
+						class="text-slate-600 hover:text-primary transition-colors">
+					로그아웃
 				</button>
-				<a href="/logout" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">로그아웃</a>
+				<%-- 로그아웃을 위한 히든 폼 --%>
+				<form id="logoutForm" action="/logout" method="post" style="display: none;">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+				</form>
 			</sec:authorize>
 		</div>
 	</nav>
@@ -328,5 +334,4 @@
 	</div>
 </footer>
 </body>
-
 </html>

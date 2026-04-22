@@ -32,6 +32,7 @@ public class SecurityConfig {
             "/login",
             "/error",
             "/login.do",
+            "/logout.do",
             "/.well-known/**"
     };
 
