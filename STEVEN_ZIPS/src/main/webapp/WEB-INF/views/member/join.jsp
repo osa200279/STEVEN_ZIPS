@@ -84,7 +84,7 @@
             color: #AAA;
         }
         .photo-btn {
-            background: #EAE2C8;
+            background: #ffaa76;
             border: none;
             padding: 10px 18px;
             border-radius: 5px;
@@ -92,6 +92,14 @@
             color: #7A745C;
             font-weight: bold;
             font-size: 14px;
+        }
+
+        .tel-area {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 0px;
+            padding-bottom: 8px;
         }
 
         /* 하단 버튼 영역 */
@@ -134,7 +142,7 @@
     회원가입 후 일부 공용 서비스 이용이 가능합니다. 입주민 전용 기능은 입주민 인증 완료 후 사용할 수 있습니다.
 </div>
 
-<form action="member/register" method="post" enctype="multipart/form-data">
+<form action="member/register" id="joinForm" method="post" enctype="multipart/form-data">
 
     <div class="profile-section">
         <div class="form-label">프로필 사진</div>
@@ -166,22 +174,36 @@
 
     <div class="form-group">
         <div class="form-label">이름 <span>*</span></div>
-        <input type="text" name="userName" class="input-control" placeholder="이름을 입력하세요">
+        <input type="text" name="userNm" class="input-control" placeholder="이름을 입력하세요">
     </div>
 
     <div class="form-group">
         <div class="form-label">주민등록번호 <span>*</span></div>
-        <input type="text" name="userSsn" class="input-control" placeholder="이름을 입력하세요">
+        <input type="text" name="userRrno" class="input-control" placeholder="주민등록 번호를 입력하세요">
     </div>
 
     <div class="form-group">
         <div class="form-label">연락처 <span>*</span></div>
-        <input type="text" name="userPhone" class="input-control" placeholder="예: 010-1234-5678">
+        <div class="tel-area">
+            <select id="tel1" class="input-control" >
+                <option value="010" selected>010</option>
+                <option value="011">011</option>
+                <option value="016">016</option>
+                <option value="017">017</option>
+                <option value="018">018</option>
+                <option value="019">019</option>
+            </select>
+            -
+            <input type="text" class="input-control" id="tel2" />
+            -
+            <input type="text" class="input-control" id="tel3" />
+        </div>
+        <input type="text" name="userTelno" class="input-control" hidden="hidden">
     </div>
 
     <div class="form-group">
         <div class="form-label">이메일 <span>*</span></div>
-        <input type="email" name="userEmail" class="input-control" placeholder="이메일을 입력하세요">
+        <input type="email" name="userEml" class="input-control" placeholder="이메일을 입력하세요">
     </div>
 
     <div class="btn-area">
@@ -190,21 +212,61 @@
     </div>
 </form>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+<script type="module">
 
     const memRegBtn = document.querySelector("#memRegBtn");
-
     // 회원등록 버튼 클릭 이벤트
     memRegBtn.addEventListener("click", (e) => {
         e.preventDefault();
+        const form = document.querySelector("#joinForm");
 
+        let tel1 = document.querySelector('#tel1').value;
+        let tel2 = document.querySelector('#tel2').value;
+        let tel3 = document.querySelector('#tel3').value;
+        let userTelno = te1 + tel2 + tel3;
 
+        // 인풋 별 정규식 및 안내문구 설정
+        const validationRules = {
+            userId : {
+                label : "아이디",
+                regex : /^[a-zA-Z09]{4,20}$/,
+                invalidMsg : "아이디는 영문, 숫자 조합 4~20자로 입력해주세요."
+            },
+            userPw : {
+                label : "비밀번호",
+                regex : /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9가-힣\s])[^가-힣\s]{8,16}$/,  // ( ?= )전방 탐색, 공백, 한글 검사
+                invalidMsg : "비밀번호는 영문, 숫자, 특수문자 조합 8~20자로 입력해주세요."
+            },
+            userNm : {
+                label : "이름",
+                regex : /^[가-힣]{2,10}$/,
+                invalidMsg : "이름은 한글로 작성해주세요"
+            },
+            userRrno : {
+                label : "주민등록번호",
+                regex : /^[0-9]{6}-[0-9]{7}$/,  // 형식 000000-0000000
+                invalidMsg : "주민등록번호 형식이 올바르지 않습니다."
+            },
+            userTelno : {
+                label : "전화번호",
+                regex : ,
+                invalidMsg : "전화번호는 10~11자리 숫자입니다"
+            },
+            userEml : {
+                label : "이메일",
+                regex : ,
+                invalidMsg : "아이디는 영문, 숫자 조합 4~20자로 입력해주세요."
+            }
+        };
 
         // 유효성 체크
 
+
+
+
     });
-});
+
+
 
 
 </script>
