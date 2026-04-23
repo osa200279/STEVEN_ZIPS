@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.member.mapper.IMemberMapper">
+
+    <resultMap type="kr.or.ddit.domain.member.vo.MemberVO" id="memberMap">
+        <id property="userNo" column="user_no"/>
+        <result property="userId" column="user_id" />
+        <result property="userPw" column="user_pw" />
+        <result property="userNm" column="user_nm" />
+        <result property="userRrno" column="user_rrno" />
+        <result property="userTelno" column="user_telno" />
+        <result property="userEml" column="user_eml" />
+        <result property="regDt" column="reg_dt" />
+        <result property="mdfcnDt" column="mdfcn_dt" />
+        <result property="userYn" column="user_yn" />
+        <result property="smsRcvYn" column="sms_rcv_yn" />
+        <result property="smsNtcRcvYn" column="sms_ntc_rcv_yn" />
+        <result property="smsCtrtRcvYn" column="sms_ctrt_rcv_yn" />
+        <result property="emlRcvYn" column="eml_rcv_yn" />
+        <result property="emlNtcRcvYn" column="eml_ntc_rcv_yn" />
+        <result property="emlCtrtRcvYn" column="eml_ctrt_rcv_yn" />
+        <result property="profFileId" column="prof_file_id" />
+        <collection property="authList" resultMap="authMap" />
+    </resultMap>
+
+    <resultMap type="kr.or.ddit.domain.member.vo.AuthVO" id="authMap">
+        <result property="userNo" column="user_no" />
+        <result property="auth" column="user_role_cd" />
+    </resultMap>
+
+    <select id="readByUserInfo" parameterType="string" resultMap="memberMap">
+        select m.USER_NO,
+               USER_ID,
+               USER_PW,
+               USER_NM,
+               USER_RRNO,
+               USER_TELNO,
+               USER_EML,
+               REG_DT,
+               MDFCN_DT,
+               USER_YN,
+               SMS_RCV_YN,
+               SMS_NTC_RCV_YN,
+               SMS_CTRT_RCV_YN,
+               EML_RCV_YN,
+               EML_NTC_RCV_YN,
+               EML_CTRT_RCV_YN,
+               PROF_FILE_ID,
+               a.user_role_cd
+        from member m
+                 left outer join auth a on(m.user_no = a.user_no)
+        where user_id = #{userId}
+    </select>
+
+</mapper>
