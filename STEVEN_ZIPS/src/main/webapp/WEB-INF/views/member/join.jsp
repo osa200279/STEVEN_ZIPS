@@ -134,7 +134,7 @@
     회원가입 후 일부 공용 서비스 이용이 가능합니다. 입주민 전용 기능은 입주민 인증 완료 후 사용할 수 있습니다.
 </div>
 
-<form action="joinProcess.do" method="post" enctype="multipart/form-data">
+<form action="member/register" method="post" enctype="multipart/form-data">
 
     <div class="profile-section">
         <div class="form-label">프로필 사진</div>
@@ -185,29 +185,28 @@
     </div>
 
     <div class="btn-area">
-        <button type="submit" class="btn-submit">회원가입</button>
+        <button type="submit" class="btn-submit" id="memRegBtn">회원가입</button>
         <button type="button" class="btn-cancel" onclick="window.close()">취소</button>
     </div>
 </form>
 
 <script>
-    // 파일 선택 시 이름 표시 및 미리보기 (선택 사항)
-    function updateFileName(input) {
-        const fileNameDisplay = document.getElementById('fileName');
-        if (input.files && input.files[0]) {
-            fileNameDisplay.innerText = input.files[0].name;
+document.addEventListener("DOMContentLoaded", () => {
 
-            // 이미지 미리보기 처리 (생략 가능)
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.getElementById('preview');
-                preview.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; border-radius:10px; object-fit:cover;">`;
-            }
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            fileNameDisplay.innerText = "선택된 파일 없음";
-        }
-    }
+    const memRegBtn = document.querySelector("#memRegBtn");
+
+    // 회원등록 버튼 클릭 이벤트
+    memRegBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+
+
+
+        // 유효성 체크
+
+    });
+});
+
+
 </script>
 </body>
 </html>

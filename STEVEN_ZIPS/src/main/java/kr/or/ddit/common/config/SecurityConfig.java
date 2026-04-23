@@ -33,7 +33,7 @@ public class SecurityConfig {
             "/error",
             "/login.do",
             "/logout.do",
-            "/member/register.do",
+            "/member/join.do",
             "/.well-known/**"
     };
 
@@ -44,6 +44,7 @@ public class SecurityConfig {
             "/api/react/notice/list"
     };
 
+    // 테스트용 URL 모음
     private static final String[] TEST_URL = {
             "/ztest/**"
     };
