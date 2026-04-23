@@ -33,6 +33,7 @@ public class SecurityConfig {
             "/error",
             "/login.do",
             "/logout.do",
+            "/member/register.do",
             "/.well-known/**"
     };
 
