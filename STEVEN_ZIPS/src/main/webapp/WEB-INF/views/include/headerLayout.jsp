@@ -108,7 +108,7 @@
       </svg>
     </button>
   </nav>
-  <script src="${pageContext.request.contextPath}/resources/js/common/conn.js"></script>
+  <script src="${pageContext.request.contextPath}/js/common/conn.js"></script>
 </header>
 
 <div class="all-menu-overlay" id="allMenuOverlay" role="dialog" aria-modal="true">

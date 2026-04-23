@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b3c0aa25-2624-4f48-ac6a-e182acf8aa68" name="Changes" comment="2026.04.22 이용로&#10;메인페이지 추가">
+      <change afterPath="$PROJECT_DIR$/.idea" afterDir="true" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources" afterDir="true" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500" afterDir="true" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2" afterDir="true" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_" afterDir="true" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema" afterDir="true" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema/SYS.rUIBAA.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema/SYSTEM.L2avkg.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema/TEAM1_202511F.uqFqNQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema/TEAM1_202511F.uqFqNQ.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/webContexts.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ddit.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/cotroller/ConnController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/cotroller/ConnController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/headerLayout.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/headerLayout.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/main.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/main.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets" beforeDir="true" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/css" beforeDir="true" afterPath="$PROJECT_DIR$/src/main/resources/static/css" afterDir="true" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/css/footerStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/footerStyle.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/css/headerStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/headerStyle.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/js" beforeDir="true" afterPath="$PROJECT_DIR$/src/main/resources/static/js" afterDir="true" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/js/common" beforeDir="true" afterPath="$PROJECT_DIR$/src/main/resources/static/js/common" afterDir="true" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/js/common/conn.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/common/conn.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/js/member" beforeDir="true" afterPath="$PROJECT_DIR$/src/main/resources/static/js/member" afterDir="true" />
+      <change beforePath="$PROJECT_DIR$/target/classes/kr/or/ddit/domain/member/cotroller/ConnController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/kr/or/ddit/domain/member/cotroller/ConnController.class" afterDir="false" />
+    </list>
+    <list id="343fa0da-9507-4a67-b325-573df1309072" name="ignore_list" comment="ignore_list" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CommittedChangesCache">
+    <option name="refreshEnabled" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Jsp File" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3CdxRORKX8YHk28KsWEWSJSxgWg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;JUnit.PasswordTest.generatePassword.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.PasswordTest.generatedRRNO.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.ddit [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.ddit [test].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.StevenZipsApplication.executor&quot;: &quot;Run&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Final/workspace/STEVEN_ZIPS/src/main/java/kr/or/ddit/common/security&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Facets&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;oracle&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\java\kr\or\ddit\common\security" />
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\resources\mybatis\mapper\member" />
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\WEB-INF\views" />
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\java\kr\or\ddit" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\resources\static" />
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\resources\css" />
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\WEB-INF\views\include" />
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\WEB-INF\views\member" />
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\resources" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="kr.or.ddit" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="kr.or.ddit.controller" />
+      <recent name="kr.or.ddit" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.StevenZipsApplication">
+    <configuration name="PasswordTest.generatePassword" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="ddit" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="kr.or.ddit.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="kr.or.ddit" />
+      <option name="MAIN_CLASS_NAME" value="kr.or.ddit.PasswordTest" />
+      <option name="METHOD_NAME" value="generatePassword" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PasswordTest.generatedRRNO" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="ddit" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="kr.or.ddit.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="kr.or.ddit" />
+      <option name="MAIN_CLASS_NAME" value="kr.or.ddit.PasswordTest" />
+      <option name="METHOD_NAME" value="generatedRRNO" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="STEVEN_ZIPS" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="STEVEN_ZIPS" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration name="StevenZipsApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="ddit" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="kr.or.ddit.StevenZipsApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.PasswordTest.generatePassword" />
+        <item itemvalue="JUnit.PasswordTest.generatedRRNO" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\PC-24\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\Final\workspace\STEVEN_ZIPS" />
+          <option name="myCopyRoot" value="D:\Final\workspace\STEVEN_ZIPS" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="D:\Final\workspace\STEVEN_ZIPS" />
+          <option name="myCopyRoot" value="D:\Final\workspace\STEVEN_ZIPS" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b3c0aa25-2624-4f48-ac6a-e182acf8aa68" name="Changes" comment="" />
+      <changelist id="343fa0da-9507-4a67-b325-573df1309072" name="ignore_list" comment="" />
+      <created>1776729239403</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1776729239403</updated>
+      <workItem from="1776729241156" duration="13300000" />
+      <workItem from="1776816137285" duration="1130000" />
+      <workItem from="1776817496075" duration="11960000" />
+      <workItem from="1776833589988" duration="20427000" />
+      <workItem from="1776857162677" duration="38000" />
+      <workItem from="1776902072489" duration="2689000" />
+      <workItem from="1776904791171" duration="2222000" />
+      <workItem from="1776907251249" duration="6777000" />
+    </task>
+    <task id="LOCAL-00001" summary="2026.04.21&#10;First Commit">
+      <option name="closed" value="true" />
+      <created>1776729975785</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1776729975785</updated>
+    </task>
+    <task id="LOCAL-00002" summary="2026.04.21&#10;초기 설정 파일 커밋">
+      <option name="closed" value="true" />
+      <created>1776730232246</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1776730232246</updated>
+    </task>
+    <task id="LOCAL-00003" summary="2026.04.21&#10;초기 설정 누락부분 커밋">
+      <option name="closed" value="true" />
+      <created>1776732254624</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1776732254624</updated>
+    </task>
+    <task id="LOCAL-00004" summary="2026.04.21 이용로&#10;시큐리티 핸들러 설정">
+      <option name="closed" value="true" />
+      <created>1776742353712</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1776742353712</updated>
+    </task>
+    <task id="LOCAL-00005" summary="2026.04.21 이용로&#10;시큐리티 설정 수정">
+      <option name="closed" value="true" />
+      <created>1776771041259</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1776771041259</updated>
+    </task>
+    <task id="LOCAL-00006" summary="2026.04.22 이용로&#10;디렉토리 구조 변경 및 메인페이지 및 홈 컨트롤러">
+      <option name="closed" value="true" />
+      <created>1776827019755</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1776827019755</updated>
+    </task>
+    <task id="LOCAL-00007" summary="2026.04.22 이용로&#10;시큐리티 + 로그인 기능 구현완료">
+      <option name="closed" value="true" />
+      <created>1776853916537</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1776853916537</updated>
+    </task>
+    <task id="LOCAL-00008" summary="2026.04.22 이용로&#10;시큐리티 불필요 로그 제거">
+      <option name="closed" value="true" />
+      <created>1776854259853</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1776854259853</updated>
+    </task>
+    <task id="LOCAL-00009" summary="2026.04.22 이용로&#10;로그인 성공시 메인 뷰페이지 변화">
+      <option name="closed" value="true" />
+      <created>1776855156722</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1776855156722</updated>
+    </task>
+    <task id="LOCAL-00010" summary="2026.04.22 이용로&#10;로그인 성공시 메인 뷰페이지 변화2">
+      <option name="closed" value="true" />
+      <created>1776856635152</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1776856635152</updated>
+    </task>
+    <task id="LOCAL-00011" summary="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리 생성">
+      <option name="closed" value="true" />
+      <created>1776909004599</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1776909004599</updated>
+    </task>
+    <task id="LOCAL-00012" summary="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리명 수정">
+      <option name="closed" value="true" />
+      <created>1776912043009</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1776912043009</updated>
+    </task>
+    <task id="LOCAL-00013" summary="2026.04.22 이용로&#10;메인페이지 추가">
+      <option name="closed" value="true" />
+      <created>1776912387228</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1776912387228</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="2026.04.21&#10;First Commit" />
+    <MESSAGE value="2026.04.21&#10;초기 설정 파일 커밋" />
+    <MESSAGE value="2026.04.21&#10;초기 설정 누락부분 커밋" />
+    <MESSAGE value="2026.04.21 이용로&#10;시큐리티 핸들러 설정" />
+    <MESSAGE value="2026.04.21 이용로&#10;시큐리티 설정 수정" />
+    <MESSAGE value="2026.04.22 이용로&#10;디렉토리 구조 변경 및 메인페이지 및 홈 컨트롤러" />
+    <MESSAGE value="2026.04.22 이용로&#10;시큐리티 + 로그인 기능 구현완료" />
+    <MESSAGE value="2026.04.22 이용로&#10;시큐리티 불필요 로그 제거" />
+    <MESSAGE value="2026.04.22 이용로&#10;로그인 성공시 메인 뷰페이지 변화" />
+    <MESSAGE value="2026.04.22 이용로&#10;로그인 성공시 메인 뷰페이지 변화2" />
+    <MESSAGE value="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리 생성" />
+    <MESSAGE value="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리명 수정" />
+    <MESSAGE value="2026.04.22 이용로&#10;메인페이지 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="2026.04.22 이용로&#10;메인페이지 추가" />
+  </component>
+</project>

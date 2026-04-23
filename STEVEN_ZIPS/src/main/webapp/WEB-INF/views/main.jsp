@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/headerStyle.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/footerStyle.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
