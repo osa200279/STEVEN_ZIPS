@@ -4,39 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b3c0aa25-2624-4f48-ac6a-e182acf8aa68" name="Changes" comment="2026.04.22 이용로&#10;메인페이지 추가">
-      <change afterPath="$PROJECT_DIR$/.idea" afterDir="true" />
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources" afterDir="true" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500" afterDir="true" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2" afterDir="true" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_" afterDir="true" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema" afterDir="true" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema/SYS.rUIBAA.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema/SYSTEM.L2avkg.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema/TEAM1_202511F.uqFqNQ.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/1c9f5401-608a-4749-ac28-c2f2e7fef500/storage_v2/_src_/schema/TEAM1_202511F.uqFqNQ.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/webContexts.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ddit.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/cotroller/ConnController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/cotroller/ConnController.java" afterDir="false" />
+    <list default="true" id="b3c0aa25-2624-4f48-ac6a-e182acf8aa68" name="Changes" comment="2026.04.22 이용로&#10;메인페이지 변경 및 로그인&amp;로그아웃 연결">
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/ztest" afterDir="true" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/ztest/ZTestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/config/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/headerLayout.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/headerLayout.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/main.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/main.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets" beforeDir="true" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/css" beforeDir="true" afterPath="$PROJECT_DIR$/src/main/resources/static/css" afterDir="true" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/css/footerStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/footerStyle.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/css/headerStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/headerStyle.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/js" beforeDir="true" afterPath="$PROJECT_DIR$/src/main/resources/static/js" afterDir="true" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/js/common" beforeDir="true" afterPath="$PROJECT_DIR$/src/main/resources/static/js/common" afterDir="true" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/js/common/conn.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/common/conn.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/assets/js/member" beforeDir="true" afterPath="$PROJECT_DIR$/src/main/resources/static/js/member" afterDir="true" />
-      <change beforePath="$PROJECT_DIR$/target/classes/kr/or/ddit/domain/member/cotroller/ConnController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/kr/or/ddit/domain/member/cotroller/ConnController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/register.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/register.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/kr/or/ddit/common/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/kr/or/ddit/common/config/SecurityConfig.class" afterDir="false" />
     </list>
     <list id="343fa0da-9507-4a67-b325-573df1309072" name="ignore_list" comment="ignore_list" />
     <option name="SHOW_DIALOG" value="false" />
@@ -77,39 +53,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;JUnit.PasswordTest.generatePassword.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.PasswordTest.generatedRRNO.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.ddit [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.ddit [test].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Spring Boot.StevenZipsApplication.executor&quot;: &quot;Run&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Final/workspace/STEVEN_ZIPS/src/main/java/kr/or/ddit/common/security&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Facets&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "JUnit.PasswordTest.generatePassword.executor": "Run",
+    "JUnit.PasswordTest.generatedRRNO.executor": "Run",
+    "Maven.ddit [clean].executor": "Run",
+    "Maven.ddit [test].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.StevenZipsApplication.executor": "Run",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Final/workspace/STEVEN_ZIPS/src/main/webapp/WEB-INF/views/ztestview",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Facets",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;oracle&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "oracle"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\WEB-INF\views\ztestview" />
       <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\java\kr\or\ddit\common\security" />
       <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\resources\mybatis\mapper\member" />
       <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\WEB-INF\views" />
@@ -234,7 +211,7 @@
       <workItem from="1776857162677" duration="38000" />
       <workItem from="1776902072489" duration="2689000" />
       <workItem from="1776904791171" duration="2222000" />
-      <workItem from="1776907251249" duration="6777000" />
+      <workItem from="1776907251249" duration="14266000" />
     </task>
     <task id="LOCAL-00001" summary="2026.04.21&#10;First Commit">
       <option name="closed" value="true" />
@@ -340,7 +317,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776912387228</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="2026.04.22 이용로&#10;메인페이지 변경 및 로그인&amp;로그아웃 연결">
+      <option name="closed" value="true" />
+      <created>1776914090556</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1776914090556</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -360,6 +345,7 @@
     <MESSAGE value="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리 생성" />
     <MESSAGE value="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리명 수정" />
     <MESSAGE value="2026.04.22 이용로&#10;메인페이지 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="2026.04.22 이용로&#10;메인페이지 추가" />
+    <MESSAGE value="2026.04.22 이용로&#10;메인페이지 변경 및 로그인&amp;로그아웃 연결" />
+    <option name="LAST_COMMIT_MESSAGE" value="2026.04.22 이용로&#10;메인페이지 변경 및 로그인&amp;로그아웃 연결" />
   </component>
 </project>

@@ -176,7 +176,7 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.6</version>
         </dependency>
-        <!-- -->
+        <!-- JAVA 범용 유틸리티 라이브러리 -->
 
         <!-- Commons IO 라이브러리 :: 파일 복사, 삭제, 읽기, 쓰기 -->
         <dependency>
@@ -193,6 +193,7 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Commons IO 라이브러리 :: 파일 복사, 삭제, 읽기, 쓰기 end -->
 
         <!-- CHROMA VECTOR DB -->
         <!--<dependency>
@@ -262,5 +263,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

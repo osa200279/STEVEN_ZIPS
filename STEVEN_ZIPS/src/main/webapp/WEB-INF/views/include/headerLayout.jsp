@@ -18,8 +18,8 @@
     <div class="header-actions">
       <sec:authorize access="isAuthenticated()">
         <span style="font-size:1.2em; color:blue; font-weight:bold;">
-          <sec:authentication property="principal.member.userNm"/>님
-        </span>
+          <sec:authentication property="principal.member.userNm"/>
+        </span>님
         <a href="/member/mypage.do" class="btn-filled">마이페이지</a>
         <button type="button" id="logoutBtn" class="btn-outline">로그아웃</button>
            <%-- 로그아웃을 위한 히든 폼 --%>
@@ -30,7 +30,8 @@
 
       <sec:authorize access="isAnonymous()">
         <a href="/login.do" class="btn-outline">로그인</a>
-        <a href="/member/register.do" class="btn-filled">회원가입</a>
+        <%--<a href="/member/register.do" class="btn-filled">회원가입</a>--%>
+        <button type="button" class="btn-filled" id="memRegBtn">회원가입</button>
       </sec:authorize>
     </div>
   </div>
@@ -192,6 +193,7 @@
 </div>
 
 <script>
+
 (function () {
   var allBtn   = document.getElementById('allMenuBtn');
   var overlay  = document.getElementById('allMenuOverlay');

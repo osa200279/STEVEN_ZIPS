@@ -44,6 +44,10 @@ public class SecurityConfig {
             "/api/react/notice/list"
     };
 
+    private static final String[] TEST_URL = {
+            "/ztest/**"
+    };
+
     // 권한 계층 구조 설정 (ex. 최상위 ADMIN은 하위의 모든 권한을 포함(통과)한다)
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -77,6 +81,7 @@ public class SecurityConfig {
                          하지만 FORWARD나 ASYNC는 이미 서버 안에서 일어나는 일이라 굳이 두 번 일 시키지 않으려고 쓰는 설정.
                          */
                         .requestMatchers(PASS_URL).permitAll()
+                        .requestMatchers(TEST_URL).permitAll()  // ⚠️⚠️테스트용 임시 허용 배포시 삭제할 것
                         .anyRequest().authenticated()   // 위의 것들(PASS_URL)을 제외한 모든 리퀘스트는 인증을 거쳐야한다는 설정
                 );
         // 권한이 없는 사용자가 접근했을때, 커스텀 규칙으로 처리
