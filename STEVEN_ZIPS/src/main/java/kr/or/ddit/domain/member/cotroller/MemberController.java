@@ -21,10 +21,4 @@ public class MemberController {
     public String registerPage(){
         return  "member/register";
     }
-
-
-
-
-
-
 }

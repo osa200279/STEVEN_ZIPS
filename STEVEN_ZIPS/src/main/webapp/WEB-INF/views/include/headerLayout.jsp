@@ -40,7 +40,7 @@
     <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/manage') ? 'active' : ''}">
       <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
       <div class="slim-drop">
-        <a href="${pageContext.request.contextPath}/manage/intro">관리사무소 소개</a>
+        <a href="/introduce">관리사무소 소개</a>
         <a href="${pageContext.request.contextPath}/manage/operation">운영정보공개</a>
         <a href="${pageContext.request.contextPath}/manage/facility">시설관리이력</a>
         <a href="${pageContext.request.contextPath}/manage/favorite">즐겨찾기</a>

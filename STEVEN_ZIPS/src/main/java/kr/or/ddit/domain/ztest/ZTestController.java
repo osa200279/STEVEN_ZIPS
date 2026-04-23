@@ -13,4 +13,8 @@ public class ZTestController {
         return  "ztestview/mainn";
     }
 
+    @GetMapping("/introduce")
+    public String introduce(){
+        return "member/resident/manage_intro";
+    }
 }
