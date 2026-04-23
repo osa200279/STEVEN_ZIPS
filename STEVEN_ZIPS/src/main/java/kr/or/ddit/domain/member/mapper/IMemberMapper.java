@@ -6,4 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface IMemberMapper {
 
     MemberVO readByUserInfo(String username);
+
 }
