@@ -4,10 +4,16 @@ import kr.or.ddit.domain.apiApartment.mapper.IAptApiMapper;
 import kr.or.ddit.domain.apiApartment.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,9 +25,14 @@ public class AptApiServiceImpl implements IAptApiService {
 
     @Autowired
     private IAptApiMapper aptMapper;
+
     private String serviceKey = "279564b17283c0863ff904cbfee96deb15c26cd426ec71fe7c5966a865f64f2f";
+    private String kakaoKey = "e91015a224888fbe9e2afc3320c22a1b";
+    RestTemplate rt = new RestTemplate();
+
 
     @Override
+    @Transactional
     public void collectMapoApt() {
         log.info("collectMapoApt() 실행됨2...!");
 
@@ -133,21 +144,48 @@ public class AptApiServiceImpl implements IAptApiService {
 
 
 
-
+        List<AptInfraEntity> infraEntityList = new ArrayList<>();
         List<AptComplexEntity> entityList = new ArrayList<>();
 
         for (AptListItem listItem : AptItemList) {
 
             AptBass bassItem = bassMap.get(listItem.getKaptCode());
             AptDetail detailItem = detailMap.get(listItem.getKaptCode());
+            String welfareFacility = detailMap.get(listItem.getKaptCode()).getWelfareFacility();
+            String convenientFacility = detailMap.get(listItem.getKaptCode()).getConvenientFacility();
+            String educationFacility = detailMap.get(listItem.getKaptCode()).getEducationFacility();
+
+            toInfraEntity(welfareFacility, "WELFARE", listItem.getKaptCode(), infraEntityList);
+            toInfraEntity(convenientFacility, "CONVENIENCE", listItem.getKaptCode(), infraEntityList);
+            toInfraEntity(educationFacility, "EDUCATION", listItem.getKaptCode(), infraEntityList);
+
 
             entityList.add(toEntity(listItem, bassItem,detailItem));
         }
 
         log.info("총 엔티티 개수: {}", entityList.size());
+        log.info("총 인프라 개수: {}", infraEntityList.size());
 
         entityList.stream().limit(5)
                 .forEach(e -> log.info("샘플: {}", e));
+
+
+        int batchSize = 100;
+
+        for (int i = 0; i < entityList.size(); i += batchSize) {
+            List<AptComplexEntity> subList =
+                    entityList.subList(i, Math.min(i + batchSize, entityList.size()));
+
+            aptMapper.insertAptBatch(entityList);
+        }
+
+        for (int i = 0; i < infraEntityList.size(); i += batchSize) {
+            List<AptInfraEntity> subList =
+                    infraEntityList.subList(i, Math.min(i + batchSize, infraEntityList.size()));
+
+            aptMapper.insertInfraBatch(infraEntityList);
+        }
+
 
     }
 
@@ -155,7 +193,7 @@ public class AptApiServiceImpl implements IAptApiService {
 
         AptComplexEntity apt = new AptComplexEntity();
 
-        // 기본 정보
+        // 아파트리스트 api 에서 가져온 정보
         apt.setAptCmplexNo(listItem.getKaptCode());
         apt.setAptCmplexNm(listItem.getKaptName());
         apt.setBjdCd(listItem.getBjdCode());
@@ -163,6 +201,7 @@ public class AptApiServiceImpl implements IAptApiService {
         apt.setSigunguNm(listItem.getAs2());
         apt.setEmdNm(listItem.getAs3());
 
+        // 기본정보 api 에서 가져온 정보
         if (bassItem != null) {
             apt.setHeatTy(bassItem.getCodeHeatNm());
             apt.setBldYr(bassItem.getKaptUsedate());
@@ -178,12 +217,124 @@ public class AptApiServiceImpl implements IAptApiService {
             apt.setDorojuso(bassItem.getDoroJuso());
         }
 
+        // 상세정보 api 에서 가져온 정보
         if (detailItem != null && "Y".equals(detailItem.getUseYn())){
             if (detailItem.getKaptdPcnt() != null
                     && !detailItem.getKaptdPcnt().trim().isEmpty()) {
                 apt.setPkgCnt(Integer.parseInt(detailItem.getKaptdPcnt())+Integer.parseInt(detailItem.getKaptdPcntu()));
             }
         }
+
+        if (bassItem != null && bassItem.getDoroJuso() != null) {
+            Map<String, String> coord = getLatLng(bassItem.getDoroJuso());
+
+            if (coord != null) {
+                apt.setLatVal(Double.parseDouble(coord.get("lat")));
+                apt.setLonVal(Double.parseDouble(coord.get("lng")));
+            }
+        }
+
         return apt;
     }
+
+    private List<AptInfraEntity> toInfraEntity(
+
+            String value,
+            String categoryCd,
+            String kaptCode,
+            List<AptInfraEntity> infraEntityList) {
+
+        if (value == null || value.trim().isEmpty()) return infraEntityList;
+
+        // 괄호 없는 경우
+        if (!value.contains("(")) {
+            String[] simpleItems = value.split(",");
+            for (String name : simpleItems) {
+
+                AptInfraEntity infra = new AptInfraEntity();
+                infra.setCategoryCd(categoryCd);
+                infra.setInfraNm(name.trim());
+                infra.setAptCmplexNo(kaptCode);
+
+                infraEntityList.add(infra);
+            }
+            return infraEntityList;
+        }
+
+        // 괄호 있는 경우
+        String[] items = value.split("\\) ");
+
+        for (String item : items) {
+
+            item = item.trim();
+
+            if (!item.endsWith(")")) {
+                item = item + ")";
+            }
+
+            int start = item.indexOf("(");
+            int end = item.indexOf(")");
+
+            if (start == -1 || end == -1) continue;
+
+            String inner = item.substring(start + 1, end);
+
+            String[] names = inner.split(",");
+
+            for (String name : names) {
+
+                AptInfraEntity infra = new AptInfraEntity();
+                infra.setCategoryCd(categoryCd);
+                infra.setInfraNm(name.trim());
+                infra.setAptCmplexNo(kaptCode);
+
+                infraEntityList.add(infra);
+            }
+        }
+
+        return infraEntityList;
+    }
+
+    // 카카오 경도위도 API
+    private Map<String, String> getLatLng(String address) {
+
+        String encodedAddr = null;
+
+        try {
+            encodedAddr = URLEncoder.encode(address, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        String url = "https://dapi.kakao.com/v2/local/search/address.json?query=" + encodedAddr;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "KakaoAK " + kakaoKey);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Map> response = rt.exchange(
+                url,
+                HttpMethod.GET,
+                entity,
+                Map.class
+        );
+
+        List<Map<String, Object>> documents =
+                (List<Map<String, Object>>) response.getBody().get("documents");
+
+        if (documents == null || documents.isEmpty()) return null;
+
+        Map<String, Object> first = documents.get(0);
+
+        String lat = (String) first.get("y"); // 위도
+        String lng = (String) first.get("x"); // 경도
+
+        Map<String, String> result = new HashMap<>();
+        result.put("lat", lat);
+        result.put("lng", lng);
+
+        return result;
+    }
+
 }

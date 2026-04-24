@@ -11,8 +11,8 @@ public class AptComplexEntity {
     private String sidoNm;
     private String sigunguNm;
     private String emdNm;
-    private int latVal;
-    private int lonVal;
+    private double latVal;
+    private double lonVal;
     private int unitCnt;
     private String bldYr;  //준공년도
     private String cnscoNm; // 시공사
