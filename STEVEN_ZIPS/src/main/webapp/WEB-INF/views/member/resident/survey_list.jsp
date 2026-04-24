@@ -62,8 +62,44 @@
         <h1 class="page-title">설문조사 - 목록</h1>
         <p class="page-desc">카테고리와 키워드 검색, 목록 조회, 진행상태를 포함한 설문조사 목록 화면입니다.</p>
 
-<section class="panel"><div class="search-row"><select class="fake-select"><option>전체 설문</option><option>시설</option><option>커뮤니티</option><option>서비스</option></select><input class="fake-input" value="서비스" /><button class="btn-sub">검색</button></div><table class="data-table"><thead><tr><th>설문 제목</th><th>기간</th><th>상태</th><th>참여자</th></tr></thead><tbody><tr><td><a href="${pageContext.request.contextPath}/vote/survey/detail">공용시설 만족도 조사</a></td><td>2026-04-18 ~ 2026-04-30</td><td><span class="badge ok">진행중</span></td><td>92명</td></tr><tr><td>주차 서비스 개선 설문</td><td>2026-04-01 ~ 2026-04-10</td><td><span class="badge info">종료</span></td><td>174명</td></tr></tbody></table></section>
-
+        <section class="panel">
+          <div class="search-row">
+            <select class="fake-select">
+              <option>전체 설문</option>
+              <option>시설</option>
+              <option>커뮤니티</option>
+              <option>서비스</option>
+            </select>
+            <input class="fake-input" value="서비스" />
+            <button class="btn-sub">검색</button>
+          </div>
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th>설문 제목</th>
+              <th>기간</th>
+              <th>상태</th>
+              <th>참여자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>
+                <a href="${pageContext.request.contextPath}/resident/survey/detail">공용시설 만족도 조사</a>
+              </td>
+              <td>2026-04-18 ~ 2026-04-30</td>
+              <td><span class="badge ok">진행중</span></td>
+              <td>92명</td>
+            </tr>
+            <tr>
+              <td>주차 서비스 개선 설문</td>
+              <td>2026-04-01 ~ 2026-04-10</td>
+              <td><span class="badge info">종료</span></td>
+              <td>174명</td>
+            </tr>
+            </tbody>
+          </table>
+        </section>
       </div>
     </main>
   </div>

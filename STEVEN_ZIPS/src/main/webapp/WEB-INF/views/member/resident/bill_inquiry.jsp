@@ -62,9 +62,133 @@
         <h1 class="page-title">관리비조회</h1>
         <p class="page-desc">이번 달 납부 관리비, 항목별 금액, 납부/미납 내역, 에너지 사용 추이를 한 화면에 구성한 관리비 조회 화면입니다.</p>
 
-        <section class="stats-grid"><div class="stat-card"><div class="stat-label">이번 달 청구금액</div><div class="stat-value">152,400원</div><div class="stat-sub">납부기한 2026-04-30</div></div><div class="stat-card"><div class="stat-label">전월 대비</div><div class="stat-value">-8,200원</div><div class="stat-sub">난방비 감소</div></div><div class="stat-card"><div class="stat-label">미납 여부</div><div class="stat-value">없음</div><div class="stat-sub">최근 6개월 기준</div></div><div class="stat-card"><div class="stat-label">에너지 절감률</div><div class="stat-value">11%</div><div class="stat-sub">동일 평형 평균 대비</div></div></section>
-        <section class="grid-2"><div class="panel"><div class="section-hd"><h3>상세 항목별 금액</h3><span>2026년 4월</span></div><table class="data-table mini-table"><thead><tr><th>항목</th><th>금액</th><th>비고</th></tr></thead><tbody><tr><td>일반관리비</td><td>42,000원</td><td>공동 관리 운영비</td></tr><tr><td>청소비</td><td>18,500원</td><td>공용부 청소</td></tr><tr><td>승강기 유지비</td><td>11,200원</td><td>정기 점검 포함</td></tr><tr><td>전기료</td><td>29,300원</td><td>공용 전기 배분</td></tr><tr><td>수도료</td><td>16,400원</td><td>세대 사용분</td></tr><tr><td>장기수선충당금</td><td>35,000원</td><td>공동 적립</td></tr></tbody></table></div><div class="panel"><div class="section-hd"><h3>에너지 사용 추이</h3><span>지난달 비교</span></div><div class="chart-box"><div class="chart-line"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="0,72 18,68 36,64 54,58 72,52 100,48" fill="none" stroke="#2c694f" stroke-width="2.4"/><polyline points="0,78 18,74 36,76 54,68 72,65 100,61" fill="none" stroke="#7ea98d" stroke-width="2.1" stroke-dasharray="5 4"/></svg></div></div><ul class="bullet-list" style="margin-top:14px;"><li>전기 사용량: 312kWh → 287kWh</li><li>수도 사용량: 21㎥ → 19㎥</li><li>난방 사용량: 계절 영향으로 감소</li></ul></div></section>
-        <section class="panel"><div class="section-hd"><h3>납부 및 미납 내역</h3><span>최근 5개월</span></div><table class="data-table"><thead><tr><th>청구월</th><th>청구금액</th><th>납부일</th><th>상태</th></tr></thead><tbody><tr><td>2026-04</td><td>152,400원</td><td>-</td><td><span class="badge wait">납부대기</span></td></tr><tr><td>2026-03</td><td>160,600원</td><td>2026-03-28</td><td><span class="badge ok">납부완료</span></td></tr><tr><td>2026-02</td><td>171,200원</td><td>2026-02-27</td><td><span class="badge ok">납부완료</span></td></tr><tr><td>2026-01</td><td>168,900원</td><td>2026-01-29</td><td><span class="badge ok">납부완료</span></td></tr></tbody></table></section>
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">이번 달 청구금액</div>
+            <div class="stat-value">152,400원</div>
+            <div class="stat-sub">납부기한 2026-04-30</div>
+          </div><div class="stat-card">
+          <div class="stat-label">전월 대비</div>
+          <div class="stat-value">-8,200원</div>
+          <div class="stat-sub">난방비 감소</div>
+        </div>
+          <div class="stat-card">
+          <div class="stat-label">미납 여부</div>
+            <div class="stat-value">없음</div>
+            <div class="stat-sub">최근 6개월 기준</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">에너지 절감률</div>
+            <div class="stat-value">11%</div>
+            <div class="stat-sub">동일 평형 평균 대비</div>
+          </div>
+        </section>
+        <section class="grid-2">
+          <div class="panel">
+            <div class="section-hd">
+              <h3>상세 항목별 금액</h3>
+              <span>2026년 4월</span>
+            </div>
+            <table class="data-table mini-table">
+              <thead>
+              <tr>
+                <th>항목</th>
+                <th>금액</th>
+                <th>비고</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>일반관리비</td>
+                <td>42,000원</td>
+                <td>공동 관리 운영비</td>
+              </tr>
+              <tr>
+                <td>청소비</td>
+                <td>18,500원</td>
+                <td>공용부 청소</td>
+              </tr>
+              <tr>
+                <td>승강기 유지비</td>
+                <td>11,200원</td>
+                <td>정기 점검 포함</td>
+              </tr>
+              <tr>
+                <td>전기료</td>
+                <td>29,300원</td>
+                <td>공용 전기 배분</td>
+              </tr>
+              <tr>
+                <td>수도료</td>
+                <td>16,400원</td>
+                <td>세대 사용분</td>
+              </tr>
+              <tr>
+                <td>장기수선충당금</td>
+                <td>35,000원</td>
+                <td>공동 적립</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="section-hd">
+              <h3>에너지 사용 추이</h3>
+              <span>지난달 비교</span>
+            </div>
+            <div class="chart-box">
+              <div class="chart-line">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="0,72 18,68 36,64 54,58 72,52 100,48" fill="none" stroke="#2c694f" stroke-width="2.4"/><polyline points="0,78 18,74 36,76 54,68 72,65 100,61" fill="none" stroke="#7ea98d" stroke-width="2.1" stroke-dasharray="5 4"/></svg>
+              </div>
+            </div>
+            <ul class="bullet-list" style="margin-top:14px;">
+              <li>전기 사용량: 312kWh → 287kWh</li>
+              <li>수도 사용량: 21㎥ → 19㎥</li>
+              <li>난방 사용량: 계절 영향으로 감소</li>
+            </ul>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-hd"><h3>납부 및 미납 내역</h3>
+            <span>최근 5개월</span>
+          </div>
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th>청구월</th>
+              <th>청구금액</th>
+              <th>납부일</th>
+              <th>상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>2026-04</td>
+              <td>152,400원</td>
+              <td>-</td>
+              <td><span class="badge wait">납부대기</span></td>
+            </tr>
+            <tr>
+              <td>2026-03</td>
+              <td>160,600원</td>
+              <td>2026-03-28</td>
+              <td><span class="badge ok">납부완료</span></td>
+            </tr><tr><td>2026-02</td>
+              <td>171,200원</td>
+              <td>2026-02-27</td>
+              <td><span class="badge ok">납부완료</span></td>
+            </tr>
+            <tr>
+              <td>2026-01</td>
+              <td>168,900원</td>
+              <td>2026-01-29</td>
+              <td>
+                <span class="badge ok">납부완료</span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </section>
 
       </div>
     </main>

@@ -62,7 +62,54 @@
         <h1 class="page-title">자유게시판 - 상세보기</h1>
         <p class="page-desc">게시글 상세 내용, 댓글 입력, 댓글 목록, 댓글 등록 버튼을 포함한 상세보기 화면입니다.</p>
 
-<section class="panel"><div class="section-hd"><h3>주차장 꿀팁 공유합니다</h3><span>상세</span></div><div class="page-desc">출근 시간대 지하 2층 동선이 조금 더 한산해서 참고하시면 좋습니다. 최근 이용 경험을 공유합니다.</div><div class="label-grid"><div class="th">작성자</div><div>홍길동</div><div class="th">작성일</div><div>2026-04-23</div><div class="th">조회수</div><div>31</div><div class="th">첨부파일</div><div>parking_map.png</div></div></section><section class="panel"><div class="section-hd"><h3>댓글</h3><span>의견</span></div><textarea class="fake-textarea">댓글을 입력하세요.</textarea><div class="btn-row"><button class="btn-main">댓글 등록</button></div><table class="data-table" style="margin-top:16px;"><thead><tr><th>작성자</th><th>내용</th><th>등록일</th></tr></thead><tbody><tr><td>이하늘</td><td>좋은 정보 감사합니다.</td><td>2026-04-23 15:22</td></tr><tr><td>최민정</td><td>저도 같은 시간대가 편하더라고요.</td><td>2026-04-23 16:10</td></tr></tbody></table></section>
+        <section class="panel">
+          <div class="section-hd">
+            <h3>주차장 꿀팁 공유합니다</h3>
+            <span>상세</span>
+          </div>
+          <div class="page-desc">출근 시간대 지하 2층 동선이 조금 더 한산해서 참고하시면 좋습니다. 최근 이용 경험을 공유합니다.</div>
+          <div class="label-grid">
+            <div class="th">작성자</div>
+            <div>홍길동</div>
+            <div class="th">작성일</div>
+            <div>2026-04-23</div>
+            <div class="th">조회수</div>
+            <div>31</div>
+            <div class="th">첨부파일</div>
+            <div>parking_map.png</div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-hd">
+            <h3>댓글</h3>
+            <span>의견</span>
+          </div>
+          <textarea class="fake-textarea">댓글을 입력하세요.</textarea>
+          <div class="btn-row">
+            <button class="btn-main">댓글 등록</button>
+          </div>
+          <table class="data-table" style="margin-top:16px;">
+            <thead>
+            <tr>
+              <th>작성자</th>
+              <th>내용</th>
+              <th>등록일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>이하늘</td>
+              <td>좋은 정보 감사합니다.</td>
+              <td>2026-04-23 15:22</td>
+            </tr>
+            <tr>
+              <td>최민정</td>
+              <td>저도 같은 시간대가 편하더라고요.</td>
+              <td>2026-04-23 16:10</td>
+            </tr>
+            </tbody>
+          </table>
+        </section>
 
       </div>
     </main>

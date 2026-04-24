@@ -62,7 +62,50 @@
         <h1 class="page-title">공지사항</h1>
         <p class="page-desc">공지사항 키워드 검색, 긴급공지 카드형 UI, 공지 리스트를 포함한 화면입니다.</p>
 
-<section class="search-row"><input class="fake-input" value="정기점검" /><button class="btn-sub">검색</button></section><section class="notice-card"><strong style="display:block; font-size:16px; color:#6d4b00; margin-bottom:8px;">긴급 공지</strong><div style="font-size:14px; font-weight:700; color:#4b3600;">4월 27일 오전 10시 전기설비 정기점검 안내</div><div style="font-size:12px; color:#816b2e; margin-top:6px;">일시적 정전 구간이 발생할 수 있으니 사전에 확인 부탁드립니다.</div></section><section class="panel"><div class="section-hd"><h3>공지사항 목록</h3><span>최근 등록순</span></div><table class="data-table"><thead><tr><th>번호</th><th>제목</th><th>작성일</th><th>조회수</th></tr></thead><tbody><tr><td>15</td><td>어린이날 행사 안내</td><td>2026-04-22</td><td>124</td></tr><tr><td>14</td><td>분리수거장 환경개선 공사 일정</td><td>2026-04-20</td><td>88</td></tr><tr><td>13</td><td>주차장 CCTV 점검 완료 안내</td><td>2026-04-19</td><td>73</td></tr></tbody></table></section>
+        <section class="search-row">
+          <input class="fake-input" value="정기점검" />
+          <button class="btn-sub">검색</button>
+        </section>
+        <section class="notice-card">
+          <strong style="display:block; font-size:16px; color:#6d4b00; margin-bottom:8px;">긴급 공지</strong>
+          <div style="font-size:14px; font-weight:700; color:#4b3600;">4월 27일 오전 10시 전기설비 정기점검 안내</div>
+          <div style="font-size:12px; color:#816b2e; margin-top:6px;">일시적 정전 구간이 발생할 수 있으니 사전에 확인 부탁드립니다.</div>
+        </section>
+        <section class="panel">
+          <div class="section-hd">
+            <h3>공지사항 목록</h3>
+            <span>최근 등록순</span>
+          </div><table class="data-table">
+          <thead>
+          <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성일</th>
+            <th>조회수</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td>15</td>
+            <td>어린이날 행사 안내</td>
+            <td>2026-04-22</td>
+            <td>124</td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td>분리수거장 환경개선 공사 일정</td>
+            <td>2026-04-20</td>
+            <td>88</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td>주차장 CCTV 점검 완료 안내</td>
+            <td>2026-04-19</td>
+            <td>73</td>
+          </tr>
+          </tbody>
+        </table>
+        </section>
 
       </div>
     </main>

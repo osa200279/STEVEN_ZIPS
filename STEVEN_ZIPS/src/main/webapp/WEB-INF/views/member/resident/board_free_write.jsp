@@ -62,8 +62,30 @@
         <h1 class="page-title">자유게시판 - 글쓰기</h1>
         <p class="page-desc">자유게시판 글 작성 폼에서 제목, 내용, 파일첨부를 입력하는 화면입니다.</p>
 
-<section class="panel"><div class="section-hd"><h3>게시글 작성</h3><span>글쓰기</span></div><div class="form-grid"><div class="th">제목</div><div class="td"><input class="fake-input" value="게시글 제목을 입력하세요." /></div><div class="th">내용</div><div class="td"><textarea class="fake-textarea">내용을 입력하세요.</textarea></div><div class="th">파일첨부</div><div class="td"><input class="fake-input" value="attach_file.png" /></div></div><div class="btn-row"><button class="btn-main">작성하기</button><a class="btn-ghost" href="${pageContext.request.contextPath}/board/free/list">목록</a></div></section>
-
+        <section class="panel">
+          <div class="section-hd">
+            <h3>게시글 작성</h3>
+            <span>글쓰기</span>
+          </div>
+          <div class="form-grid">
+            <div class="th">제목</div>
+            <div class="td">
+              <input class="fake-input" value="게시글 제목을 입력하세요." />
+            </div>
+            <div class="th">내용</div>
+            <div class="td">
+              <textarea class="fake-textarea">내용을 입력하세요.</textarea>
+            </div>
+            <div class="th">파일첨부</div>
+            <div class="td">
+              <input type="file" class="fake-input" value="attach_file.png" />
+            </div>
+          </div>
+          <div class="btn-row">
+          <button class="btn-main">작성하기</button>
+            <a class="btn-ghost" href="${pageContext.request.contextPath}/board/free/list">목록</a>
+          </div>
+        </section>
       </div>
     </main>
   </div>

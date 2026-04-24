@@ -62,7 +62,54 @@
         <h1 class="page-title">자유게시판 - 목록</h1>
         <p class="page-desc">게시글 검색 및 필터 선택, 목록 조회, 페이징 구조를 담은 자유게시판 목록 화면입니다.</p>
 
-<section class="panel"><div class="search-row"><select class="fake-select"><option>전체</option><option>인기글</option><option>최근글</option></select><input class="fake-input" value="주차" /><button class="btn-sub">검색</button><a href="${pageContext.request.contextPath}/board/free/write" class="btn-main">글쓰기</a></div><table class="data-table"><thead><tr><th>번호</th><th>제목</th><th>작성자</th><th>작성일</th><th>조회수</th></tr></thead><tbody><tr><td>42</td><td><a href="${pageContext.request.contextPath}/board/free/detail">주차장 꿀팁 공유합니다</a></td><td>홍길동</td><td>2026-04-23</td><td>31</td></tr><tr><td>41</td><td>오늘 독서실 자리 여유 있나요?</td><td>이하늘</td><td>2026-04-22</td><td>19</td></tr><tr><td>40</td><td>분리수거 요일 다시 정리 부탁드려요</td><td>최민정</td><td>2026-04-22</td><td>27</td></tr></tbody></table><div class="btn-row"><button class="btn-ghost">이전</button><button class="btn-sub">1</button><button class="btn-ghost">2</button><button class="btn-ghost">3</button><button class="btn-ghost">다음</button></div></section>
+        <section class="panel"><div class="search-row"><select class="fake-select"><option>전체</option><option>인기글</option><option>최근글</option></select><input class="fake-input" value="" />
+          <button class="btn-sub">검색</button>
+          <a href="${pageContext.request.contextPath}/board/free/write" class="btn-main">글쓰기</a>
+        </div>
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>작성자</th>
+              <th>작성일</th>
+              <th>조회수</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>42</td>
+              <td>
+                <a href="${pageContext.request.contextPath}/resident/board/free/detail">주차장 꿀팁 공유합니다</a>
+              </td>
+              <td>홍길동</td>
+              <td>2026-04-23</td>
+              <td>31</td>
+            </tr>
+            <tr>
+              <td>41</td>
+              <td>오늘 독서실 자리 여유 있나요?</td>
+              <td>이하늘</td>
+              <td>2026-04-22</td>
+              <td>19</td>
+            </tr>
+            <tr>
+              <td>40</td>
+              <td>분리수거 요일 다시 정리 부탁드려요</td>
+              <td>최민정</td>
+              <td>2026-04-22</td>
+              <td>27</td>
+            </tr>
+            </tbody>
+          </table>
+          <div class="btn-row">
+            <button class="btn-ghost">이전</button>
+            <button class="btn-sub">1</button>
+            <button class="btn-ghost">2</button>
+            <button class="btn-ghost">3</button>
+            <button class="btn-ghost">다음</button>
+          </div>
+        </section>
 
       </div>
     </main>

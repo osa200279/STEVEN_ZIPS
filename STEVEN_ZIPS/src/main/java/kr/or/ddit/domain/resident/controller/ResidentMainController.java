@@ -74,7 +74,32 @@ public class ResidentMainController {
 
     @GetMapping("/service/facility")
     public String serviceFacility() {
-        return "member/resident/facility_reservation";
+        return "member/resident/service_facility";
+    }
+
+    @GetMapping("/service/facility/reservations")
+    public String serviceFacilityReservation() {
+        return "member/resident/facility_reservation_list";
+    }
+
+    @GetMapping("/service/facility/detail")
+    public String serviceFacilityDetail() {
+        return "member/resident/facility_reservation_detail";
+    }
+
+    @GetMapping("/service/facility/meeting-room")
+    public String serviceMeetingroom() {
+        return "member/resident/facility_meeting_room";
+    }
+
+    @GetMapping("/service/facility/reading-room")
+    public String serviceReadingroom() {
+        return "member/resident/facility_reading_room";
+    }
+
+    @GetMapping("/service/facility/tennis")
+    public String serviceTennis() {
+        return "member/resident/facility_tennis";
     }
 
     /* =========================
@@ -103,14 +128,44 @@ public class ResidentMainController {
     /* =========================
      * 전자투표 및 설문
      * ========================= */
-    @GetMapping("/vote/resident")
+    @GetMapping("/vote")
     public String voteResident() {
         return "member/resident/vote_resident";
     }
 
-    @GetMapping("/vote/survey")
-    public String voteSurvey() {
-        return "member/resident/vote_survey";
+    @GetMapping("/vote/list")
+    public String voteList() {
+        return "member/resident/vote_resident_list";
+    }
+
+    @GetMapping("/vote/detail")
+    public String voteDetail() {
+        return "member/resident/vote_resident_detail";
+    }
+
+    @GetMapping("/vote/result")
+    public String voteResult() {
+        return "member/resident/vote_resident_result";
+    }
+
+    @GetMapping("/survey")
+    public String survey() {
+        return "member/resident/survey";
+    }
+
+    @GetMapping("/survey/detail")
+    public String surveyDetail() {
+        return "member/resident/survey_detail";
+    }
+
+    @GetMapping("/survey/result")
+    public String surveyResult() {
+        return "member/resident/survey_result";
+    }
+
+    @GetMapping("/survey/list")
+    public String surveyList() {
+        return "member/resident/survey_list";
     }
 
     /* =========================
@@ -124,6 +179,21 @@ public class ResidentMainController {
     @GetMapping("/board/free")
     public String boardFree() {
         return "member/resident/board_free";
+    }
+
+    @GetMapping("/board/free/list")
+    public String boardFreeList() {
+        return "member/resident/board_free_list";
+    }
+
+    @GetMapping("/board/free/write")
+    public String boardFreeWrite() {
+        return "member/resident/board_free_write";
+    }
+
+    @GetMapping("/board/free/detail")
+    public String boardFreeDetail() {
+        return "member/resident/board_free_detail";
     }
 
     @GetMapping("/board/chat")

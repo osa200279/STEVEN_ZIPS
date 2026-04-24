@@ -62,8 +62,41 @@
         <h1 class="page-title">챗봇민원접수</h1>
         <p class="page-desc">AI 챗봇 상담 서비스 진입, 새 민원 신청, 상담 결과 페이지 이동을 담은 챗봇 민원접수 화면입니다.</p>
 
-<section class="hero-card"><h2>AI 챗봇 상담 서비스</h2><p>간단한 문의는 챗봇으로 빠르게 확인하고, 필요한 경우 실제 민원으로 전환해 접수할 수 있도록 구성한 화면입니다.</p><div class="chip-row"><span class="chip">24시간 상담</span><span class="chip">민원 전환</span><span class="chip">상담 이력</span></div></section>
-<section class="grid-2 equal"><div class="card"><div class="section-hd"><h3>챗봇 상담 시작</h3><span>안내</span></div><ul class="bullet-list"><li>관리비, 주차, 시설예약, 민원처리 절차 등 자주 묻는 질문을 바로 확인합니다.</li><li>상담 중 필요 시 실제 민원 신청으로 연결할 수 있습니다.</li></ul><div class="btn-row"><button class="btn-main">챗봇 상담 시작</button></div></div><div class="card"><div class="section-hd"><h3>새 민원 신청하기</h3><span>바로가기</span></div><p class="page-desc" style="margin:0 0 14px;">챗봇 상담 후 접수가 필요하면 민원신청 화면으로 이동합니다.</p><div class="btn-row"><a class="btn-sub" href="${pageContext.request.contextPath}/complaint/apply">민원신청 이동</a><button class="btn-ghost">상담 결과 보기</button></div></div></section>
+        <section class="hero-card">
+          <h2>AI 챗봇 상담 서비스</h2>
+          <p>간단한 문의는 챗봇으로 빠르게 확인하고, 필요한 경우 실제 민원으로 전환해 접수할 수 있도록 구성한 화면입니다.</p>
+          <div class="chip-row">
+            <span class="chip">24시간 상담</span>
+            <span class="chip">민원 전환</span>
+            <span class="chip">상담 이력</span>
+          </div>
+        </section>
+        <section class="grid-2 equal">
+          <div class="card">
+            <div class="section-hd">
+              <h3>챗봇 상담 시작</h3>
+              <span>안내</span>
+            </div>
+            <ul class="bullet-list">
+              <li>관리비, 주차, 시설예약, 민원처리 절차 등 자주 묻는 질문을 바로 확인합니다.</li>
+              <li>상담 중 필요 시 실제 민원 신청으로 연결할 수 있습니다.</li>
+            </ul>
+            <div class="btn-row">
+              <button class="btn-main">챗봇 상담 시작</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-hd">
+              <h3>새 민원 신청하기</h3>
+              <span>바로가기</span>
+            </div>
+            <p class="page-desc" style="margin:0 0 14px;">챗봇 상담 후 접수가 필요하면 민원신청 화면으로 이동합니다.</p>
+            <div class="btn-row">
+              <a class="btn-sub" href="${pageContext.request.contextPath}/complaint/apply">민원신청 이동</a>
+              <button class="btn-ghost">상담 결과 보기</button>
+            </div>
+          </div>
+        </section>
 
       </div>
     </main>

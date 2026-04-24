@@ -363,7 +363,7 @@ img { display: block; width: 100%; }
   <div class="quick-menus">
 
   <!-- 공지사항 -->
-  <a href="${pageContext.request.contextPath}/manage/intro" class="quick-menu-item">
+  <a href="${pageContext.request.contextPath}/resident/manage/intro" class="quick-menu-item">
     <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 11v2a2 2 0 002 2h3l5 3V6l-5 3H5a2 2 0 00-2 2z"/>
       <path d="M16 8a4 4 0 010 8"/>
@@ -372,7 +372,7 @@ img { display: block; width: 100%; }
   </a>
 
   <!-- 관리비조회 -->
-  <a href="${pageContext.request.contextPath}/fee/guide" class="quick-menu-item">
+  <a href="${pageContext.request.contextPath}/resident/bill/guide" class="quick-menu-item">
     <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
       <polyline points="14 2 14 8 20 8"/>
@@ -383,7 +383,7 @@ img { display: block; width: 100%; }
   </a>
 
   <!-- 입주민 게시판 -->
-  <a href="${pageContext.request.contextPath}/manage/facility" class="quick-menu-item">
+  <a href="${pageContext.request.contextPath}/resident/manage/facility" class="quick-menu-item">
     <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
     </svg>
@@ -391,7 +391,7 @@ img { display: block; width: 100%; }
   </a>
 
   <!-- 시설예약 -->
-  <a href="${pageContext.request.contextPath}/stats/custom" class="quick-menu-item">
+  <a href="${pageContext.request.contextPath}/resident/stats/custom" class="quick-menu-item">
     <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="4" width="18" height="18" rx="2"/>
       <line x1="16" y1="2" x2="16" y2="6"/>
@@ -412,7 +412,7 @@ img { display: block; width: 100%; }
         <span class="section-badge">입주민 소식</span>
         <h2 class="section-title" style="margin-top:6px">Latest <em>News</em></h2>
       </div>
-      <a href="${pageContext.request.contextPath}/board/notice" class="more-btn">
+      <a href="${pageContext.request.contextPath}/resident/board/notice" class="more-btn">
         more view
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -447,7 +447,7 @@ img { display: block; width: 100%; }
       <h2>지금 바로 상담 신청하세요</h2>
       <p>대덕아파트 전문 상담사가 친절하게 안내해 드립니다.<br>평일 09:00 – 18:00 운영</p>
     </div>
-    <a href="${pageContext.request.contextPath}/complaint/apply" class="banner-btn">
+    <a href="${pageContext.request.contextPath}/resident/complaint/apply" class="banner-btn">
       상담 신청하기
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>

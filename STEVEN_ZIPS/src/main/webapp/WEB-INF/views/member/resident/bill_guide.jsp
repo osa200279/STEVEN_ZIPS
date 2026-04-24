@@ -62,9 +62,95 @@
         <h1 class="page-title">납부안내</h1>
         <p class="page-desc">납부 현황 카드, 상세 납부 내역, 연체 내역, 기타 청구 내역과 즉시 납부하기 버튼을 포함한 납부안내 화면입니다.</p>
 
-<section class="stats-grid"><div class="stat-card"><div class="stat-label">당월 납부대상</div><div class="stat-value">152,400원</div><div class="stat-sub">2026년 4월분</div></div><div class="stat-card"><div class="stat-label">납부 기한</div><div class="stat-value">04/30</div><div class="stat-sub">자동이체 신청 가능</div></div><div class="stat-card"><div class="stat-label">연체금</div><div class="stat-value">0원</div><div class="stat-sub">미발생</div></div><div class="stat-card"><div class="stat-label">영수증 조회</div><div class="stat-value">가능</div><div class="stat-sub">납부이력 확인</div></div></section>
-<section class="grid-2"><div class="panel"><div class="section-hd"><h3>상세 납부 내역</h3><span>기본 청구</span></div><table class="data-table mini-table"><thead><tr><th>항목</th><th>금액</th></tr></thead><tbody><tr><td>공동관리비</td><td>71,700원</td></tr><tr><td>세대사용료</td><td>45,700원</td></tr><tr><td>장기수선충당금</td><td>35,000원</td></tr></tbody></table></div><div class="panel"><div class="section-hd"><h3>기타 청구 / 연체</h3><span>추가 항목</span></div><table class="data-table mini-table"><thead><tr><th>구분</th><th>금액</th><th>상태</th></tr></thead><tbody><tr><td>연체료</td><td>0원</td><td><span class="badge ok">없음</span></td></tr><tr><td>주차 추가등록</td><td>10,000원</td><td><span class="badge info">청구예정</span></td></tr><tr><td>공용시설 이용료</td><td>8,000원</td><td><span class="badge ok">정산완료</span></td></tr></tbody></table></div></section>
-<div class="btn-row"><a href="javascript:void(0);" class="btn-main">즉시 납부하기</a><a href="javascript:void(0);" class="btn-sub">상세 명세서 PDF 다운로드</a><a href="${pageContext.request.contextPath}/fee/receipt" class="btn-ghost">관리비 영수증 조회</a></div>
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">당월 납부대상</div>
+            <div class="stat-value">152,400원</div>
+            <div class="stat-sub">2026년 4월분</div>
+          </div>
+          <div class="stat-card">
+          <div class="stat-label">납부 기한</div>
+          <div class="stat-value">04/30</div>
+          <div class="stat-sub">자동이체 신청 가능</div>
+        </div>
+          <div class="stat-card">
+            <div class="stat-label">연체금</div>
+            <div class="stat-value">0원</div>
+            <div class="stat-sub">미발생</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">영수증 조회</div>
+            <div class="stat-value">가능</div>
+            <div class="stat-sub">납부이력 확인</div>
+          </div>
+        </section>
+        <section class="grid-2">
+          <div class="panel">
+            <div class="section-hd">
+              <h3>상세 납부 내역</h3>
+              <span>기본 청구</span>
+            </div>
+            <table class="data-table mini-table">
+              <thead>
+              <tr>
+                <th>항목</th>
+                <th>금액</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>공동관리비</td>
+                <td>71,700원</td>
+              </tr>
+              <tr>
+                <td>세대사용료</td>
+                <td>45,700원</td>
+              </tr>
+              <tr>
+                <td>장기수선충당금</td>
+                <td>35,000원</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="section-hd">
+              <h3>기타 청구 / 연체</h3>
+              <span>추가 항목</span>
+            </div>
+            <table class="data-table mini-table">
+              <thead>
+              <tr>
+                <th>구분</th>
+                <th>금액</th>
+                <th>상태</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>연체료</td>
+                <td>0원</td>
+                <td><span class="badge ok">없음</span></td>
+              </tr>
+              <tr>
+                <td>주차 추가등록</td>
+                <td>10,000원</td>
+                <td><span class="badge info">청구예정</span></td>
+              </tr>
+              <tr>
+                <td>공용시설 이용료</td>
+                <td>8,000원</td>
+                <td><span class="badge ok">정산완료</span></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <div class="btn-row">
+          <a href="javascript:void(0);" class="btn-main">즉시 납부하기</a>
+          <a href="javascript:void(0);" class="btn-sub">상세 명세서 PDF 다운로드</a>
+          <a href="${pageContext.request.contextPath}/fee/receipt" class="btn-ghost">관리비 영수증 조회</a>
+        </div>
 
       </div>
     </main>

@@ -62,7 +62,7 @@
         <h1 class="page-title">입주민 투표 - 투표 결과</h1>
         <p class="page-desc">투표 결과와 득표수를 시각적으로 보여주고 목록 복귀 버튼을 제공하는 투표 결과 화면입니다.</p>
 
-<section class="grid-2 equal"><div class="card"><div class="section-hd"><h3>투표 결과</h3><span>득표수</span></div><table class="data-table mini-table"><thead><tr><th>선택지</th><th>득표수</th><th>비율</th></tr></thead><tbody><tr><td>찬성</td><td>148표</td><td>68%</td></tr><tr><td>반대</td><td>58표</td><td>27%</td></tr><tr><td>기권</td><td>11표</td><td>5%</td></tr></tbody></table></div><div class="card"><div class="section-hd"><h3>결과 요약</h3><span>안내</span></div><div class="stat-card"><div class="stat-label">최종 결과</div><div class="stat-value">찬성 우세</div><div class="stat-sub">총 참여 217명</div></div></div></section><div class="btn-row"><a class="btn-ghost" href="${pageContext.request.contextPath}/vote/resident/list">목록으로 돌아가기</a></div>
+<section class="grid-2 equal"><div class="card"><div class="section-hd"><h3>투표 결과</h3><span>득표수</span></div><table class="data-table mini-table"><thead><tr><th>선택지</th><th>득표수</th><th>비율</th></tr></thead><tbody><tr><td>찬성</td><td>148표</td><td>68%</td></tr><tr><td>반대</td><td>58표</td><td>27%</td></tr><tr><td>기권</td><td>11표</td><td>5%</td></tr></tbody></table></div><div class="card"><div class="section-hd"><h3>결과 요약</h3><span>안내</span></div><div class="stat-card"><div class="stat-label">최종 결과</div><div class="stat-value">찬성 우세</div><div class="stat-sub">총 참여 217명</div></div></div></section><div class="btn-row"><a class="btn-ghost" href="${pageContext.request.contextPath}/resident/vote/list">목록으로 돌아가기</a></div>
 
       </div>
     </main>

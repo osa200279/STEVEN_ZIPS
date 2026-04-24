@@ -62,7 +62,45 @@
         <h1 class="page-title">실시간문의</h1>
         <p class="page-desc">카테고리 선택, 1:1 문의 목록, 관리자와 실시간 채팅 기능을 포함한 실시간문의 화면입니다.</p>
 
-<section class="chat-layout"><div class="chat-list"><div class="section-hd"><h3>문의 목록</h3><span>1:1 채팅</span></div><div class="search-row"><select class="fake-select"><option>전체</option><option>시설</option><option>주차</option><option>기타</option></select></div><div class="chat-room-item active"><strong>지하주차장 조명 문의</strong><div style="font-size:12px;color:var(--text-light);margin-top:4px;">관리자 답변 대기</div></div><div class="chat-room-item"><strong>소음 관련 문의</strong><div style="font-size:12px;color:var(--text-light);margin-top:4px;">답변 완료</div></div><div class="chat-room-item"><strong>방문차량 출입 문의</strong><div style="font-size:12px;color:var(--text-light);margin-top:4px;">진행 중</div></div></div><div class="chat-box"><div class="section-hd"><h3>관리자와 1:1 채팅</h3><span>실시간 문의</span></div><div class="message-stream"><div class="message other">안녕하세요. 문의 주신 주차장 조명 건 확인 중입니다.</div><div class="message me">B구역 쪽이 특히 어두워서 확인 부탁드립니다.</div><div class="message other">금일 오후 시설팀 점검 후 결과를 안내드리겠습니다.</div></div><div class="search-row" style="margin-top:18px;"><input class="fake-input" style="flex:1;max-width:none;" value="문의 내용을 입력하세요." /><button class="btn-main">전송</button></div></div></section>
+        <section class="chat-layout">
+          <div class="chat-list">
+            <div class="section-hd">
+              <h3>문의 목록</h3>
+              <span>1:1 채팅</span>
+            </div>
+            <div class="search-row">
+              <select class="fake-select">
+                <option>전체</option>
+                <option>시설</option>
+                <option>주차</option>
+                <option>기타</option>
+              </select>
+            </div>
+            <div class="chat-room-item active"><strong>지하주차장 조명 문의</strong>
+              <div style="font-size:12px;color:var(--text-light);margin-top:4px;">관리자 답변 대기</div>
+            </div>
+            <div class="chat-room-item"><strong>소음 관련 문의</strong>
+              <div style="font-size:12px;color:var(--text-light);margin-top:4px;">답변 완료</div>
+            </div>
+            <div class="chat-room-item"><strong>방문차량 출입 문의</strong>
+              <div style="font-size:12px;color:var(--text-light);margin-top:4px;">진행 중</div>
+            </div>
+          </div>
+          <div class="chat-box">
+            <div class="section-hd">
+              <h3>관리자와 1:1 채팅</h3>
+              <span>실시간 문의</span>
+            </div><div class="message-stream">
+            <div class="message other">안녕하세요. 문의 주신 주차장 조명 건 확인 중입니다.</div>
+            <div class="message me">B구역 쪽이 특히 어두워서 확인 부탁드립니다.</div>
+            <div class="message other">금일 오후 시설팀 점검 후 결과를 안내드리겠습니다.</div>
+          </div>
+            <div class="search-row" style="margin-top:18px;">
+              <input class="fake-input" style="flex:1;max-width:none;" value="문의 내용을 입력하세요." />
+              <button class="btn-main">전송</button>
+            </div>
+          </div>
+        </section>
 
       </div>
     </main>

@@ -62,7 +62,44 @@
         <h1 class="page-title">그룹채팅방</h1>
         <p class="page-desc">채팅방 목록 검색, 실시간 1:N 대화, 텍스트 및 이미지 전송 영역을 포함한 그룹채팅방 화면입니다.</p>
 
-<section class="chat-layout"><div class="chat-list"><div class="section-hd"><h3>채팅방 목록</h3><span>검색 가능</span></div><div class="search-row"><input class="fake-input" value="독서실" /></div><div class="chat-room-item active"><strong>독서실 이용자 모임</strong><div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 24명</div></div><div class="chat-room-item"><strong>주차 정보 공유방</strong><div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 31명</div></div><div class="chat-room-item"><strong>러닝 동호회</strong><div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 18명</div></div></div><div class="chat-box"><div class="section-hd"><h3>독서실 이용자 모임</h3><span>실시간 1:N</span></div><div class="message-stream"><div class="message other">오늘 저녁 독서실 자리 여유 있나요?</div><div class="message me">A열은 조금 남아 있는 것 같아요.</div><div class="message other">감사합니다! 바로 예약해볼게요.</div></div><div class="search-row" style="margin-top:18px;"><input class="fake-input" style="flex:1;max-width:none;" value="메시지를 입력하세요." /><button class="btn-sub">이미지 전송</button><button class="btn-main">전송</button></div></div></section>
+        <section class="chat-layout">
+          <div class="chat-list">
+            <div class="section-hd">
+              <h3>채팅방 목록</h3>
+              <span>검색 가능</span>
+            </div>
+            <div class="search-row">
+              <input class="fake-input" value="독서실" />
+            </div>
+            <div class="chat-room-item active">
+              <strong>독서실 이용자 모임</strong>
+              <div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 24명</div>
+            </div>
+            <div class="chat-room-item">
+            <strong>주차 정보 공유방</strong>
+              <div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 31명</div>
+            </div>
+            <div class="chat-room-item"><strong>러닝 동호회</strong>
+              <div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 18명</div>
+            </div>
+          </div>
+          <div class="chat-box">
+            <div class="section-hd">
+              <h3>독서실 이용자 모임</h3>
+              <span>실시간 1:N</span>
+            </div>
+            <div class="message-stream">
+              <div class="message other">오늘 저녁 독서실 자리 여유 있나요?</div>
+              <div class="message me">A열은 조금 남아 있는 것 같아요.</div>
+              <div class="message other">감사합니다! 바로 예약해볼게요.</div>
+            </div>
+            <div class="search-row" style="margin-top:18px;">
+              <input class="fake-input" style="flex:1;max-width:none;" value="메시지를 입력하세요." />
+              <button class="btn-sub">이미지 전송</button>
+              <button class="btn-main">전송</button>
+            </div>
+          </div>
+        </section>
 
       </div>
     </main>

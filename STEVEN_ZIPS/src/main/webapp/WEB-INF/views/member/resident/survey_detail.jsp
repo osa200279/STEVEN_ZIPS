@@ -62,7 +62,25 @@
         <h1 class="page-title">설문조사 - 상세</h1>
         <p class="page-desc">설문 질문과 선택지, 설문 제출 및 목록 버튼을 포함한 설문조사 상세 화면입니다.</p>
 
-<section class="panel"><div class="section-hd"><h3>공용시설 만족도 조사</h3><span>설문 참여</span></div><div class="card"><strong>Q1. 최근 이용한 공용시설의 전반적인 만족도는 어떠셨나요?</strong><div class="inline-fields" style="flex-direction:column; align-items:flex-start; margin-top:12px;"><label><input type="radio" checked> 매우 만족</label><label><input type="radio"> 만족</label><label><input type="radio"> 보통</label><label><input type="radio"> 불만족</label></div></div><div class="card"><strong>Q2. 추가로 개선이 필요한 항목이 있다면 선택해 주세요.</strong><div class="inline-fields" style="flex-direction:column; align-items:flex-start; margin-top:12px;"><label><input type="checkbox" checked> 예약 편의성</label><label><input type="checkbox"> 시설 청결</label><label><input type="checkbox"> 운영 시간</label></div></div><div class="btn-row"><button class="btn-main">설문 제출</button><a class="btn-ghost" href="${pageContext.request.contextPath}/vote/survey/list">목록으로</a></div></section>
+      <section class="panel"><div class="section-hd"><h3>공용시설 만족도 조사</h3><span>설문 참여</span></div>
+        <div class="card"><strong>Q1. 최근 이용한 공용시설의 전반적인 만족도는 어떠셨나요?</strong>
+          <div class="inline-fields" style="flex-direction:column; align-items:flex-start; margin-top:12px;">
+            <label><input type="radio" checked> 매우 만족</label>
+            <label><input type="radio"> 만족</label>
+            <label><input type="radio"> 보통</label>
+            <label><input type="radio"> 불만족</label>
+          </div>
+        </div>
+        <div class="card"><strong>Q2. 추가로 개선이 필요한 항목이 있다면 선택해 주세요.</strong>
+          <div class="inline-fields" style="flex-direction:column; align-items:flex-start; margin-top:12px;"><label><input type="checkbox" checked> 예약 편의성</label>
+            <label><input type="checkbox"> 시설 청결</label>
+            <label><input type="checkbox"> 운영 시간</label>
+          </div>
+        </div>
+        <div class="btn-row"><button class="btn-main">설문 제출</button>
+        <a class="btn-ghost" href="${pageContext.request.contextPath}/resident/survey/list">목록으로</a>
+        </div>
+      </section>
 
       </div>
     </main>

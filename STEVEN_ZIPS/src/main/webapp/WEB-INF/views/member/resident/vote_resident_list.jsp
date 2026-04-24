@@ -62,7 +62,7 @@
         <h1 class="page-title">입주민 투표 - 투표목록</h1>
         <p class="page-desc">카테고리/키워드 검색과 투표 목록 조회를 중심으로 구성한 투표 목록 화면입니다.</p>
 
-<section class="panel"><div class="search-row"><select class="fake-select"><option>전체 카테고리</option><option>시설</option><option>운영</option><option>주차</option></select><input class="fake-input" value="주차" /><button class="btn-sub">검색</button></div><table class="data-table"><thead><tr><th>제목</th><th>기간</th><th>상태</th><th>참여</th></tr></thead><tbody><tr><td><a href="${pageContext.request.contextPath}/vote/resident/detail">주차장 확장 공사 찬반 투표</a></td><td>2026-04-20 ~ 2026-04-30</td><td><span class="badge ok">진행중</span></td><td>128명</td></tr><tr><td>어린이 놀이터 개선안 투표</td><td>2026-04-10 ~ 2026-04-18</td><td><span class="badge info">종료</span></td><td>214명</td></tr></tbody></table></section>
+<section class="panel"><div class="search-row"><select class="fake-select"><option>전체 카테고리</option><option>시설</option><option>운영</option><option>주차</option></select><input class="fake-input" value="주차" /><button class="btn-sub">검색</button></div><table class="data-table"><thead><tr><th>제목</th><th>기간</th><th>상태</th><th>참여</th></tr></thead><tbody><tr><td><a href="${pageContext.request.contextPath}/resident/vote/detail">주차장 확장 공사 찬반 투표</a></td><td>2026-04-20 ~ 2026-04-30</td><td><span class="badge ok">진행중</span></td><td>128명</td></tr><tr><td>어린이 놀이터 개선안 투표</td><td>2026-04-10 ~ 2026-04-18</td><td><span class="badge info">종료</span></td><td>214명</td></tr></tbody></table></section>
 
       </div>
     </main>

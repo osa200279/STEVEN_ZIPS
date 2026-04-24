@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>설문조사 – 대덕아파트</title>
+  <title>공용시설예약 상세 – 대덕아파트</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
@@ -55,14 +55,14 @@
         <div class="breadcrumb">
           <a href="${pageContext.request.contextPath}/">HOME</a>
           <span>›</span>
-          <a href="javascript:void(0);">전자투표 및 설문</a>
+          <a href="javascript:void(0);">생활지원서비스</a>
           <span>›</span>
-          <span class="cur">설문조사</span>
+          <span class="cur">공용시설예약 상세</span>
         </div>
-        <h1 class="page-title">설문조사</h1>
-        <p class="page-desc">메뉴 진입용 화면입니다. 설문 목록, 상세, 결과 화면으로 이동할 수 있도록 구성했습니다.</p>
+        <h1 class="page-title">공용시설예약 상세</h1>
+        <p class="page-desc">예약 상세 내역과 목록 이동 / 예약취소 버튼을 제공하는 예약 상세 화면입니다.</p>
 
-<section class="menu-grid"><div class="menu-card"><h4>설문조사 목록</h4><p>카테고리와 키워드로 설문을 찾고 진행 상태를 확인합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/vote/survey/list">목록 화면</a></div></div><div class="menu-card"><h4>설문조사 상세</h4><p>질문과 선택지를 확인하고 설문을 제출합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/vote/survey/detail">상세 화면</a></div></div><div class="menu-card"><h4>설문조사 결과</h4><p>응답 통계와 요약을 확인합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/vote/survey/result">결과 화면</a></div></div></section>
+<section class="panel"><div class="section-hd"><h3>예약 상세 내역</h3><span>상세보기</span></div><div class="label-grid"><div class="th">예약번호</div><div>RSV-20260428-0012</div><div class="th">시설명</div><div>독서실 A-05</div><div class="th">예약일</div><div>2026-04-28</div><div class="th">시간대</div><div>09:00 ~ 12:00</div><div class="th">예약자</div><div>홍길동</div><div class="th">상태</div><div><span class="badge ok">예약완료</span></div><div class="th">비고</div><div>정상 예약</div></div><div class="btn-row"><a href="${pageContext.request.contextPath}/resident/service/facility/reservations" class="btn-ghost">목록</a><button class="btn-danger">예약취소</button></div></section>
 
       </div>
     </main>

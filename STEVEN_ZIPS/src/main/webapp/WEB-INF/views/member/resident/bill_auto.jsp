@@ -62,8 +62,74 @@
         <h1 class="page-title">자동이체신청</h1>
         <p class="page-desc">은행, 계좌번호, 예금주명, 자동이체 일자를 입력하여 자동이체를 신청하는 화면입니다.</p>
 
-<section class="panel"><div class="section-hd"><h3>자동이체 신청 정보</h3><span>입력 폼</span></div><div class="form-grid"><div class="th">은행명</div><div class="td"><select class="fake-select"><option>은행 선택</option><option>국민은행</option><option>신한은행</option><option>하나은행</option></select></div><div class="th">계좌번호</div><div class="td"><input class="fake-input" value="123-456-789012" /></div><div class="th">예금주명</div><div class="td"><input class="fake-input" value="홍길동" /></div><div class="th">자동이체일</div><div class="td"><div class="inline-fields"><label><input type="radio" checked> 매월 25일</label><label><input type="radio"> 말일</label></div></div><div class="th">신청자 정보</div><div class="td">101동 1203호 / 홍길동 / 010-1234-5678</div><div class="th">동의 여부</div><div class="td"><label><input type="checkbox" checked> 자동이체 약관 및 개인정보 수집에 동의합니다.</label></div></div><div class="btn-row"><button class="btn-main">자동이체 신청 완료</button><button class="btn-sub">입력 초기화</button></div></section>
-<section class="panel"><div class="section-hd"><h3>신청 진행 현황</h3><span>예시</span></div><table class="data-table"><thead><tr><th>신청일</th><th>은행</th><th>계좌정보</th><th>처리상태</th></tr></thead><tbody><tr><td>2026-04-20</td><td>국민은행</td><td>123-456-******</td><td><span class="badge ok">완료</span></td></tr></tbody></table></section>
+        <section class="panel">
+          <div class="section-hd">
+            <h3>자동이체 신청 정보</h3>
+            <span>입력 폼</span>
+          </div>
+          <div class="form-grid">
+            <div class="th">은행명</div>
+            <div class="td">
+              <select class="fake-select">
+                <option>은행 선택</option>
+                <option>국민은행</option>
+                <option>신한은행</option>
+                <option>하나은행</option>
+              </select>
+            </div>
+            <div class="th">계좌번호</div>
+            <div class="td">
+              <input class="fake-input" value="123-456-789012" />
+            </div>
+            <div class="th">예금주명</div>
+            <div class="td">
+              <input class="fake-input" value="홍길동"/>
+            </div>
+            <div class="th">자동이체일</div>
+            <div class="td">
+              <div class="inline-fields">
+                <label><input type="radio" checked> 매월 25일</label>
+                <label><input type="radio"> 말일</label>
+              </div>
+            </div>
+            <div class="th">신청자 정보</div>
+            <div class="td">101동 1203호 / 홍길동 / 010-1234-5678</div>
+            <div class="th">동의 여부</div>
+            <div class="td">
+              <label><input type="checkbox" checked> 자동이체 약관 및 개인정보 수집에 동의합니다.</label>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-main">자동이체 신청 완료</button>
+            <button class="btn-sub">입력 초기화</button>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-hd">
+            <h3>신청 진행 현황</h3>
+            <span>예시</span>
+          </div>
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th>신청일</th>
+              <th>은행</th>
+              <th>계좌정보</th>
+              <th>처리상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>2026-04-20</td>
+              <td>국민은행</td>
+              <td>123-456-******</td>
+              <td>
+                <span class="badge ok">완료</span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </section>
 
       </div>
     </main>

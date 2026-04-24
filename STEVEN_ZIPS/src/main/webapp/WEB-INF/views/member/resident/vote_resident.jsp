@@ -62,7 +62,7 @@
         <h1 class="page-title">입주민 투표</h1>
         <p class="page-desc">메뉴 진입용 화면입니다. 투표 목록, 상세, 결과 화면으로 이동할 수 있도록 정리했습니다.</p>
 
-<section class="menu-grid"><div class="menu-card"><h4>투표 목록</h4><p>카테고리와 키워드 검색 후 진행 중인 투표를 조회합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/vote/resident/list">투표 목록</a></div></div><div class="menu-card"><h4>투표 상세</h4><p>투표 제목과 선택지를 확인하고 투표를 진행합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/vote/resident/detail">투표 상세</a></div></div><div class="menu-card"><h4>투표 결과</h4><p>득표수와 결과를 확인합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/vote/resident/result">투표 결과</a></div></div></section>
+<section class="menu-grid"><div class="menu-card"><h4>투표 목록</h4><p>카테고리와 키워드 검색 후 진행 중인 투표를 조회합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/resident/vote/list">투표 목록</a></div></div><div class="menu-card"><h4>투표 상세</h4><p>투표 제목과 선택지를 확인하고 투표를 진행합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/resident/vote/detail">투표 상세</a></div></div><div class="menu-card"><h4>투표 결과</h4><p>득표수와 결과를 확인합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/resident/vote/result">투표 결과</a></div></div></section>
 
       </div>
     </main>

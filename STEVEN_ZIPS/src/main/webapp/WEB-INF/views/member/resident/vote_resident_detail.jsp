@@ -62,7 +62,7 @@
         <h1 class="page-title">입주민 투표 - 투표 상세</h1>
         <p class="page-desc">투표 제목, 라디오 선택지, 투표하기/뒤로가기 버튼을 배치한 투표 상세 화면입니다.</p>
 
-<section class="panel"><div class="section-hd"><h3>주차장 확장 공사 찬반 투표</h3><span>상세</span></div><p class="page-desc">지하 2층 일부 구역 재배치를 통한 주차면 추가 확보 안건입니다. 아래 선택지 중 하나를 선택해 주세요.</p><div class="card" style="margin-bottom:0;"><div class="inline-fields" style="flex-direction:column; align-items:flex-start;"><label><input type="radio" name="vote" checked> 찬성합니다.</label><label><input type="radio" name="vote"> 반대합니다.</label><label><input type="radio" name="vote"> 기권합니다.</label></div></div><div class="btn-row"><button class="btn-main">투표하기</button><a class="btn-ghost" href="${pageContext.request.contextPath}/vote/resident/list">뒤로가기</a></div></section>
+<section class="panel"><div class="section-hd"><h3>주차장 확장 공사 찬반 투표</h3><span>상세</span></div><p class="page-desc">지하 2층 일부 구역 재배치를 통한 주차면 추가 확보 안건입니다. 아래 선택지 중 하나를 선택해 주세요.</p><div class="card" style="margin-bottom:0;"><div class="inline-fields" style="flex-direction:column; align-items:flex-start;"><label><input type="radio" name="vote" checked> 찬성합니다.</label><label><input type="radio" name="vote"> 반대합니다.</label><label><input type="radio" name="vote"> 기권합니다.</label></div></div><div class="btn-row"><button class="btn-main">투표하기</button><a class="btn-ghost" href="${pageContext.request.contextPath}/resident/vote/list">뒤로가기</a></div></section>
 
       </div>
     </main>

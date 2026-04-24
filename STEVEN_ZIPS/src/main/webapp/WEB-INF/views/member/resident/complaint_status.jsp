@@ -62,9 +62,63 @@
         <h1 class="page-title">민원처리현황</h1>
         <p class="page-desc">접수 민원 처리 현황을 단계별로 보여주는 민원처리현황 화면입니다.</p>
 
-<section class="panel"><div class="section-hd"><h3>민원 처리 단계</h3><span>진행 프로세스</span></div><div class="process-grid"><div class="process-step active"><strong>1. 접수</strong><div class="stat-sub">민원 등록 완료</div></div><div class="process-step active"><strong>2. 담당 배정</strong><div class="stat-sub">시설팀 검토중</div></div><div class="process-step"><strong>3. 처리 진행</strong><div class="stat-sub">예정</div></div><div class="process-step"><strong>4. 완료</strong><div class="stat-sub">처리 후 안내</div></div></div></section>
-<section class="panel"><div class="section-hd"><h3>내 민원 목록</h3><span>최근 접수</span></div><table class="data-table"><thead><tr><th>접수번호</th><th>제목</th><th>카테고리</th><th>상태</th><th>등록일</th></tr></thead><tbody><tr><td>CM-240423-01</td><td>지하주차장 조명 점검 요청</td><td>시설</td><td><span class="badge wait">담당자 배정</span></td><td>2026-04-23</td></tr><tr><td>CM-240421-08</td><td>분리수거장 청소 요청</td><td>청소</td><td><span class="badge ok">처리완료</span></td><td>2026-04-21</td></tr></tbody></table></section>
-
+        <section class="panel">
+          <div class="section-hd">
+            <h3>민원 처리 단계</h3>
+            <span>진행 프로세스</span>
+          </div>
+          <div class="process-grid">
+            <div class="process-step active"><strong>1. 접수</strong>
+              <div class="stat-sub">민원 등록 완료</div>
+            </div>
+            <div class="process-step active"><strong>2. 담당 배정</strong>
+              <div class="stat-sub">시설팀 검토중</div>
+            </div>
+            <div class="process-step"><strong>3. 처리 진행</strong>
+              <div class="stat-sub">예정</div>
+            </div>
+            <div class="process-step"><strong>4. 완료</strong>
+              <div class="stat-sub">처리 후 안내</div>
+            </div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-hd">
+            <h3>내 민원 목록</h3>
+            <span>최근 접수</span>
+          </div>
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th>접수번호</th>
+              <th>제목</th>
+              <th>카테고리</th>
+              <th>상태</th>
+              <th>등록일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>CM-240423-01</td>
+              <td>지하주차장 조명 점검 요청</td>
+              <td>시설</td>
+              <td>
+                <span class="badge wait">담당자 배정</span>
+              </td>
+              <td>2026-04-23</td>
+            </tr>
+            <tr>
+              <td>CM-240421-08</td>
+              <td>분리수거장 청소 요청</td>
+              <td>청소</td>
+              <td>
+                <span class="badge ok">처리완료</span>
+              </td>
+              <td>2026-04-21</td>
+            </tr>
+            </tbody>
+          </table>
+        </section>
       </div>
     </main>
   </div>

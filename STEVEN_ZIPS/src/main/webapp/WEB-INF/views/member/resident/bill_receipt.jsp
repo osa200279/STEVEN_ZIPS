@@ -62,9 +62,100 @@
         <h1 class="page-title">납부영수증</h1>
         <p class="page-desc">신청인 기본 정보, 영수증 상세 내역, 총 납부금액 및 PDF 다운로드/재발급 요청/삭제 버튼까지 구성한 영수증 화면입니다.</p>
 
-<section class="grid-2"><div class="panel"><div class="section-hd"><h3>납부 신청인 정보</h3><span>기본 카드</span></div><div class="label-grid"><div class="th">성명</div><div>홍길동</div><div class="th">세대</div><div>101동 1203호</div><div class="th">납부월</div><div>2026년 4월</div><div class="th">납부일</div><div>2026-04-28</div></div></div><div class="panel"><div class="section-hd"><h3>납부 처리 현황</h3><span>총액 안내</span></div><div class="stats-grid" style="grid-template-columns:1fr; margin-bottom:0;"><div class="stat-card"><div class="stat-label">총 납부금액</div><div class="stat-value">152,400원</div><div class="stat-sub">카드결제 승인 완료</div></div></div></div></section>
-<section class="panel"><div class="section-hd"><h3>청구 항목 및 영수증 내역</h3><span>상세 확인</span></div><table class="data-table"><thead><tr><th>항목</th><th>금액</th><th>비고</th></tr></thead><tbody><tr><td>일반관리비</td><td>42,000원</td><td>기본 관리</td></tr><tr><td>청소비</td><td>18,500원</td><td>공용부 청소</td></tr><tr><td>전기료</td><td>29,300원</td><td>공용 + 세대 배분</td></tr><tr><td>수도료</td><td>16,400원</td><td>사용량 반영</td></tr><tr><td>장기수선충당금</td><td>35,000원</td><td>적립</td></tr><tr><td>합계</td><td><strong>152,400원</strong></td><td>-</td></tr></tbody></table><div class="btn-row"><a href="javascript:void(0);" class="btn-main">영수증 PDF 다운로드</a><a href="javascript:void(0);" class="btn-sub">영수증 재발급 요청</a><a href="javascript:void(0);" class="btn-danger">조회 기록 삭제</a></div></section>
-<section class="card"><div class="section-hd"><h3>발급 안내</h3><span>참고</span></div><ul class="bullet-list"><li>납부 완료 후 영수증은 즉시 조회할 수 있습니다.</li><li>재발급 요청 시 동일한 납부내역 기준으로 PDF가 생성됩니다.</li><li>문의가 필요한 경우 관리사무소 또는 1:1 문의 메뉴를 이용해 주세요.</li></ul></section>
+        <section class="grid-2">
+          <div class="panel">
+            <div class="section-hd">
+              <h3>납부 신청인 정보</h3>
+              <span>기본 카드</span>
+            </div>
+            <div class="label-grid">
+              <div class="th">성명</div>
+              <div>홍길동</div>
+              <div class="th">세대</div>
+              <div>101동 1203호</div>
+              <div class="th">납부월</div>
+              <div>2026년 4월</div>
+              <div class="th">납부일</div>
+              <div>2026-04-28</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="section-hd">
+              <h3>납부 처리 현황</h3>
+              <span>총액 안내</span>
+            </div>
+            <div class="stats-grid" style="grid-template-columns:1fr; margin-bottom:0;">
+              <div class="stat-card">
+                <div class="stat-label">총 납부금액</div>
+                <div class="stat-value">152,400원</div>
+                <div class="stat-sub">카드결제 승인 완료</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-hd">
+            <h3>청구 항목 및 영수증 내역</h3>
+            <span>상세 확인</span>
+          </div>
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th>항목</th>
+              <th>금액</th>
+              <th>비고</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>일반관리비</td>
+              <td>42,000원</td>
+              <td>기본 관리</td>
+            </tr>
+            <tr>
+              <td>청소비</td>
+              <td>18,500원</td>
+              <td>공용부 청소</td>
+            </tr>
+            <tr>
+              <td>전기료</td>
+              <td>29,300원</td>
+              <td>공용 + 세대 배분</td>
+            </tr>
+            <tr>
+              <td>수도료</td>
+              <td>16,400원</td>
+              <td>사용량 반영</td>
+            </tr>
+            <tr>
+              <td>장기수선충당금</td>
+              <td>35,000원</td>
+              <td>적립</td>
+            </tr>
+            <tr>
+              <td>합계</td>
+              <td><strong>152,400원</strong></td>
+              <td>-</td>
+            </tr>
+            </tbody>
+          </table>
+          <div class="btn-row">
+            <a href="javascript:void(0);" class="btn-main">영수증 PDF 다운로드</a>
+            <a href="javascript:void(0);" class="btn-sub">영수증 재발급 요청</a>
+            <a href="javascript:void(0);" class="btn-danger">조회 기록 삭제</a>
+          </div>
+        </section>
+        <section class="card">
+          <div class="section-hd">
+            <h3>발급 안내</h3>
+            <span>참고</span>
+          </div>
+          <ul class="bullet-list">
+            <li>납부 완료 후 영수증은 즉시 조회할 수 있습니다.</li>
+            <li>재발급 요청 시 동일한 납부내역 기준으로 PDF가 생성됩니다.</li>
+            <li>문의가 필요한 경우 관리사무소 또는 1:1 문의 메뉴를 이용해 주세요.</li>
+          </ul>
+        </section>
 
       </div>
     </main>

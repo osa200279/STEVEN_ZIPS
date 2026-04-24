@@ -62,7 +62,77 @@
         <h1 class="page-title">민원신청</h1>
         <p class="page-desc">민원 카테고리 선택, 제목/내용/증빙파일 입력, 최근 접수 내역 확인과 1:1 채팅 이동 버튼을 포함한 민원신청 화면입니다.</p>
 
-<section class="grid-2"><div class="panel"><div class="section-hd"><h3>민원 접수 작성</h3><span>신청 폼</span></div><div class="form-grid"><div class="th">카테고리</div><div class="td"><select class="fake-select"><option>시설</option><option>소음</option><option>주차</option><option>청소</option><option>기타</option></select></div><div class="th">제목</div><div class="td"><input class="fake-input" value="지하주차장 조명 점검 요청" /></div><div class="th">발생장소</div><div class="td"><input class="fake-input" value="지하 1층 B구역" /></div><div class="th">증빙파일</div><div class="td"><input class="fake-input" value="parking_issue.jpg" /></div><div class="th">설명</div><div class="td"><textarea class="fake-textarea">일부 구간 조명이 어두워 야간 이동 시 불편합니다.</textarea></div></div><div class="btn-row"><button class="btn-main">민원 접수</button><a href="${pageContext.request.contextPath}/complaint/live" class="btn-sub">1:1 채팅으로 이동</a></div></div><div class="panel"><div class="section-hd"><h3>최근 접수 내역</h3><span>최근 3건</span></div><table class="data-table"><thead><tr><th>접수일</th><th>제목</th><th>상태</th></tr></thead><tbody><tr><td>2026-04-23</td><td>주차선 보수 요청</td><td><span class="badge ok">처리완료</span></td></tr><tr><td>2026-04-21</td><td>분리수거장 청소 요청</td><td><span class="badge wait">접수</span></td></tr><tr><td>2026-04-20</td><td>엘리베이터 소음 문의</td><td><span class="badge info">답변완료</span></td></tr></tbody></table></div></section>
+        <section class="grid-2">
+          <div class="panel">
+            <div class="section-hd">
+              <h3>민원 접수 작성</h3>
+              <span>신청 폼</span>
+            </div>
+            <div class="form-grid">
+              <div class="th">카테고리</div>
+              <div class="td">
+                <select class="fake-select">
+                  <option>시설</option>
+                  <option>소음</option>
+                  <option>주차</option>
+                  <option>청소</option>
+                  <option>기타</option>
+                </select>
+              </div>
+              <div class="th">제목</div>
+              <div class="td">
+                <input class="fake-input" value="지하주차장 조명 점검 요청" />
+              </div>
+              <div class="th">발생장소</div>
+              <div class="td">
+                <input class="fake-input" value="지하 1층 B구역" />
+              </div>
+              <div class="th">증빙파일</div>
+              <div class="td">
+                <input class="fake-input" value="parking_issue.jpg" />
+              </div><div class="th">설명</div>
+              <div class="td">
+                <textarea class="fake-textarea">일부 구간 조명이 어두워 야간 이동 시 불편합니다.</textarea>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn-main">민원 접수</button>
+              <a href="${pageContext.request.contextPath}/complaint/live" class="btn-sub">1:1 채팅으로 이동</a>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="section-hd">
+              <h3>최근 접수 내역</h3>
+              <span>최근 3건</span>
+            </div>
+            <table class="data-table">
+              <thead>
+              <tr>
+                <th>접수일</th>
+                <th>제목</th>
+                <th>상태</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>2026-04-23</td>
+                <td>주차선 보수 요청</td>
+                <td><span class="badge ok">처리완료</span></td>
+              </tr>
+              <tr>
+                <td>2026-04-21</td>
+                <td>분리수거장 청소 요청</td>
+                <td><span class="badge wait">접수</span></td>
+              </tr>
+              <tr>
+                <td>2026-04-20</td>
+                <td>엘리베이터 소음 문의</td>
+                <td><span class="badge info">답변완료</span></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
       </div>
     </main>
