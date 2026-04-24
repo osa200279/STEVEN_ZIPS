@@ -1,6 +1,6 @@
-package kr.or.ddit.domain.apiApartment.controller;
+package kr.or.ddit.domain.apt.apiApartment.controller;
 
-import kr.or.ddit.domain.apiApartment.service.IAptApiService;
+import kr.or.ddit.domain.apt.apiApartment.service.IAptApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

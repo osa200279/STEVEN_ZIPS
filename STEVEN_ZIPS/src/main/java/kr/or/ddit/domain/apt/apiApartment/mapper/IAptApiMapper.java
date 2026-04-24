@@ -1,8 +1,8 @@
-package kr.or.ddit.domain.apiApartment.mapper;
+package kr.or.ddit.domain.apt.apiApartment.mapper;
 
 
-import kr.or.ddit.domain.apiApartment.vo.AptComplexEntity;
-import kr.or.ddit.domain.apiApartment.vo.AptInfraEntity;
+import kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity;
+import kr.or.ddit.domain.apt.apiApartment.vo.AptInfraEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
