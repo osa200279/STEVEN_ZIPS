@@ -7,4 +7,7 @@ public interface IMemberMapper {
 
     MemberVO readByUserInfo(String username);
 
+    int joinMember(MemberVO member);
+
+    void addAuth(String userNo);
 }

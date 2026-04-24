@@ -198,7 +198,7 @@
             -
             <input type="text" class="input-control" id="tel3" />
         </div>
-        <input type="text" name="userTelno" class="input-control" hidden="hidden">
+        <input type="text" name="userTelno" hidden="hidden">
     </div>
 
     <div class="form-group">
@@ -207,7 +207,7 @@
     </div>
 
     <div class="btn-area">
-        <button type="submit" class="btn-submit" id="memRegBtn">회원가입</button>
+        <button type="submit" class="btn-submit" id="memRegBtn">회원등록</button>
         <button type="button" class="btn-cancel" onclick="window.close()">취소</button>
     </div>
 </form>
@@ -220,10 +220,12 @@
         e.preventDefault();
         const form = document.querySelector("#joinForm");
 
-        let tel1 = document.querySelector('#tel1').value;
+        let tel1box = document.querySelector('#tel1');
+        let tel1 = tel1box.options[tel1box.selectedIndex].value;
         let tel2 = document.querySelector('#tel2').value;
         let tel3 = document.querySelector('#tel3').value;
-        let userTelno = te1 + tel2 + tel3;
+        let userTelno = document.querySelector('#userTelno');
+        userTelno.value = tel1 + tel2 + tel3;
 
         // 인풋 별 정규식 및 안내문구 설정
         const validationRules = {
@@ -249,25 +251,48 @@
             },
             userTelno : {
                 label : "전화번호",
-                regex : ,
-                invalidMsg : "전화번호는 10~11자리 숫자입니다"
+                regex : /^[0-9]{10,11}$/,
+                invalidMsg : "전화번호는 10~11자리 숫자입니다."
             },
             userEml : {
                 label : "이메일",
-                regex : ,
-                invalidMsg : "아이디는 영문, 숫자 조합 4~20자로 입력해주세요."
+                regex : /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                invalidMsg : "올바른 이메일 형식이 아닙니다."
             }
         };
 
         // 유효성 체크
+        for (const [inputName, rule] of Object.entries(validationRules)) {
+            const input = form.element[inputName];
+            if(!input) continue;
 
+            const value = input.value.trim();
 
+            // 미입력 체크
+            if(!value){
+                alert(`${rule.label}을(를) 입력해주세요.`);
+                input.focus();
+                return false;
+            }
 
+            // 정규식 체크 :: 일치 true, 불일치 false
+            if(rule.regex && !rule.regex.test(value)){
+                alert(rule.invalidMsg);
+                input.focus();
+                return false;
+            }
 
+            // 비밀번호 확인 일치여부
+            if(form.userPw.value !== form.userPwConfirm.value ) {
+                alert("비밀번호가 일치하지 않습니다.");
+                form.userPwConfirm.focus();
+                return false;
+            }
+
+            alert("회원가입이 완료되었습니다!");
+            form.submit();
+        }
     });
-
-
-
 
 </script>
 </body>

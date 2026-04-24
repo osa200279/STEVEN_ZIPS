@@ -37,7 +37,6 @@
         </div>
     </div>
 
-<<<<<<< .mine
     <nav class="header-nav">
         <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/manage') ? 'active' : ''}">
             <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
@@ -49,7 +48,7 @@
                 <a href="${pageContext.request.contextPath}/manage/favorite">즐겨찾기</a>
             </div>
         </div>
-||||||| .r509376
+
   <nav class="header-nav">
     <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/manage') ? 'active' : ''}">
       <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
@@ -60,7 +59,7 @@
         <a href="${pageContext.request.contextPath}/manage/favorite">즐겨찾기</a>
       </div>
     </div>
-=======
+
   <nav class="header-nav">
     <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/manage') ? 'active' : ''}">
       <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
@@ -71,7 +70,6 @@
         <a href="${pageContext.request.contextPath}/manage/favorite">즐겨찾기</a>
       </div>
     </div>
->>>>>>> .r509377
 
         <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/fee') ? 'active' : ''}">
             <span>아파트관리비<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
