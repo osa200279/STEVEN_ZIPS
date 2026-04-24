@@ -18,8 +18,10 @@ public class ZTestController {
         return "member/resident/manage_intro";
     }
 
+
     @GetMapping("/aptapi")
     public String aptapi(){
         return "ztestview/aptapi";
     }
+
 }
