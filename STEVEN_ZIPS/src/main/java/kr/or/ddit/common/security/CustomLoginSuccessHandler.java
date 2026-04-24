@@ -26,6 +26,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
+
 		log.info("## CustomLoginSuccessHandler.onAuthenticationSuccess() 실행...!");
 		User user = (User) authentication.getPrincipal();
 		
@@ -55,6 +56,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 	}
 
 	private void clearAuthenticationAttribute(HttpServletRequest request) {
+
 		// session 정보가 존재한다면 현재 session을 반환하고 존재하지 않으면 null을 반환합니다.
 		HttpSession session = request.getSession(false);
 		if(session == null) {
