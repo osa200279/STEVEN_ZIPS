@@ -52,4 +52,8 @@
         where user_id = #{userId}
     </select>
 
+    <insert id="memberJoin" parameterType="">
+
+    </insert>
+
 </mapper>
