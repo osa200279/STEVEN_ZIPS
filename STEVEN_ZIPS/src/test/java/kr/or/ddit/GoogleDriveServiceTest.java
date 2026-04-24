@@ -28,7 +28,7 @@ class GoogleDriveServiceTest {
         );
 
         // 2. 서비스 호출
-        String resultLink = googleDriveService.uploadFile(mockFile);
+        String resultLink = googleDriveService.uploadFile(mockFile, "test/junit");
 
         // 3. 검증
         System.out.println("업로드된 결과 링크: " + resultLink);
