@@ -21,7 +21,7 @@ public class MemberController {
         return "member/join";
     }
 
-    // 2026.04.24
+    // 2026.04.24 임시 회원가입
     @PostMapping("/join")
     public String joinMember(MemberVO member){
 
