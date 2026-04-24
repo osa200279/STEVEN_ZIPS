@@ -220,7 +220,7 @@
 
     const memRegBtn = document.querySelector("#memRegBtn");
     // 회원등록 버튼 클릭 이벤트
-    memRegBtn.addEventListener("click", (e) => {
+    memRegBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         const form = document.querySelector("#joinForm");
 
@@ -277,14 +277,14 @@
                 alert(`\${rule.label}을(를) 입력해주세요.`);
                 console.log(rule.label);
                 input.focus();
-                return false;
+                return;
             }
 
             // 정규식 체크 :: 일치 true, 불일치 false
             if(rule.regex && !rule.regex.test(value)){
                 alert(rule.invalidMsg);
                 input.focus();
-                return false;
+                return;
             }
 
         }
@@ -293,11 +293,18 @@
         if(form.userPw.value !== form.userPwConfirm.value ) {
             alert("비밀번호가 일치하지 않습니다.");
             form.userPwConfirm.focus();
-            return false;
+            return;
         }
 
-        alert("회원가입 성공!");
-        form.submit();
+        try{
+            const formData = new FormData(form);
+
+        }catch (err){
+            console.error("통신 에러 발생 : ", err);
+            alert("서버와 통신 중 문제가 발생했습니다.")
+        }
+
+
     });
 
 </script>
