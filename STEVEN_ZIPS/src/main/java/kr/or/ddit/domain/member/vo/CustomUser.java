@@ -31,4 +31,6 @@ public class CustomUser extends User {
         return member;
     }
 
+    public void setMember(MemberVO updated) {
+    }
 }

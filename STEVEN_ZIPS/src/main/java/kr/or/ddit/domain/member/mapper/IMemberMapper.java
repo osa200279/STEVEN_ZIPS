@@ -2,6 +2,8 @@ package kr.or.ddit.domain.member.mapper;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.Map;
+
 @Mapper
 public interface IMemberMapper {
 
@@ -9,6 +11,15 @@ public interface IMemberMapper {
     MemberVO readByUserInfo(String username);
 
     int joinMember(MemberVO member);
+    int updateMember(MemberVO member);
 
     void addAuth(String userNo);
+
+    void updatePassword(String userNo, String encodedPw);
+
+    void deleteMember(String userNo);
+
+    MemberVO getMemberByUserNo(String userNo);
+
+    void updateAlarm(Map<String, Object> param);
 }

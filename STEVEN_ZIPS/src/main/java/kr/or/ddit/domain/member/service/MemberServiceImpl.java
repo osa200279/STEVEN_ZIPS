@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Slf4j
 @Service
 public class MemberServiceImpl implements IMemberService {
@@ -54,4 +56,58 @@ public class MemberServiceImpl implements IMemberService {
         return res;
     }
 
-}
+
+    @Override
+    public ServiceResult updateMember(MemberVO member) {
+        try {
+            // 🔥 로그 먼저 찍어
+            log.info("🔥 userNo = [{}]", member.getUserNo());
+            log.info("🔥 userNm = [{}]", member.getUserNm());
+            log.info("🔥 userTelno = [{}]", member.getUserTelno());
+            log.info("🔥 userEml = [{}]", member.getUserEml());
+
+            // 🔥 주민번호 암호화
+            if(member.getUserRrno() != null && !member.getUserRrno().isEmpty()) {
+                member.setUserRrno(aes.encrypt(member.getUserRrno()));
+            }
+
+            int status = mapper.updateMember(member);
+
+            // 🔥 결과 로그
+            log.info("🔥 update 결과 = {}", status);
+
+            return status > 0 ? ServiceResult.OK : ServiceResult.FAILED;
+
+        } catch (Exception e) {
+            log.error("회원정보 수정 실패", e);
+            return ServiceResult.FAILED;
+        }
+    }
+
+    @Override
+    public void deleteMember(String userNo) {
+        mapper.deleteMember(userNo);
+    }
+
+    @Override
+    public void updatePassword(String userNo, String newPw) {
+
+        // 1. 비밀번호 암호화
+        String encodedPw = pe.encode(newPw);
+
+        // 2. DB 업데이트
+        mapper.updatePassword(userNo, encodedPw);
+    }
+
+    @Override
+    public MemberVO getMemberByUserNo(String userNo) {
+        return mapper.getMemberByUserNo(userNo);
+    }
+
+    @Override
+    public void updateAlarm(Map<String, Object> param) {
+        mapper.updateAlarm(param);
+    }
+    }
+
+

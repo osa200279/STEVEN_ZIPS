@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@Controller
+// @Controller // IAptApiService 구현체가 없어 서버 기동이 막혀 임시 비활성화
 @RequestMapping("/api")
 @Slf4j
 public class AptApiController {
