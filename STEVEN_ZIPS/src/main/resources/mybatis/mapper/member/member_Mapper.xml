@@ -52,13 +52,13 @@
         where user_id = #{userId}
     </select>
 
-    <insert id="memberJoin" parameterType="kr.or.ddit.domain.member.vo.MemberVO">
+    <insert id="joinMember" parameterType="kr.or.ddit.domain.member.vo.MemberVO">
         <selectKey keyProperty="userNo" resultType="string" order="BEFORE">
             select to_char(seq_member.nextval) from dual
         </selectKey>
         insert into member(
             user_no, user_id, user_pw, user_nm, user_rrno, user_telno, user_eml,
-            ret_dt, mdfcn_dt,
+            reg_dt, mdfcn_dt,
             user_yn,
             sms_rcv_yn, sms_ntc_rcv_yn, sms_ctrt_rcv_yn,
             eml_rcv_yn, eml_ntc_rcv_yn, eml_ctrt_rcv_yn,

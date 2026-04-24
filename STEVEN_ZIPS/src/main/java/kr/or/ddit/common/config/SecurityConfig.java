@@ -34,6 +34,7 @@ public class SecurityConfig {
             "/login.do",
             "/logout.do",
             "/member/join.do",
+            "/member/join",
             "/.well-known/**"
     };
 

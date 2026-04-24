@@ -142,7 +142,7 @@
     회원가입 후 일부 공용 서비스 이용이 가능합니다. 입주민 전용 기능은 입주민 인증 완료 후 사용할 수 있습니다.
 </div>
 
-<form action="member/register" id="joinForm" method="post" enctype="multipart/form-data">
+<form action="/member/join" id="joinForm" method="post" enctype="multipart/form-data">
 
     <div class="profile-section">
         <div class="form-label">프로필 사진</div>
@@ -208,6 +208,8 @@
         <input type="email" name="userEml" class="input-control" placeholder="이메일을 입력하세요">
     </div>
 
+    <%-- 토큰 추가 --%>
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <div class="btn-area">
         <button type="submit" class="btn-submit" id="memRegBtn">회원등록</button>
         <button type="button" class="btn-cancel" onclick="window.close()">취소</button>

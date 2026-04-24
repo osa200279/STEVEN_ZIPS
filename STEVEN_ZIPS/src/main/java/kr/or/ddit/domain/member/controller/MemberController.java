@@ -24,6 +24,7 @@ public class MemberController {
     // 2026.04.24 임시 회원가입
     @PostMapping("/join")
     public String joinMember(MemberVO member){
+        log.info("joinMember() 실행");
 
         ServiceResult result = service.joinMember(member);
         if(result.equals(ServiceResult.OK)){
