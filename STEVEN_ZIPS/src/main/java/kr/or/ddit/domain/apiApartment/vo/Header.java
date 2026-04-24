@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.ApiApartment.vo;
+package kr.or.ddit.domain.apiApartment.vo;
 
 import lombok.Data;
 

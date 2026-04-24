@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.ApiApartment.vo;
+package kr.or.ddit.domain.apiApartment.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

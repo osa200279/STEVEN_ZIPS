@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.ApiApartment.mapper;
+package kr.or.ddit.domain.apiApartment.mapper;
 
 
 import org.apache.ibatis.annotations.Mapper;

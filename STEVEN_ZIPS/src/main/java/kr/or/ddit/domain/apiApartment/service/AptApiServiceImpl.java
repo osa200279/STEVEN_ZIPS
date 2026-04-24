@@ -1,7 +1,7 @@
-package kr.or.ddit.domain.ApiApartment.service;
+package kr.or.ddit.domain.apiApartment.service;
 
-import kr.or.ddit.domain.ApiApartment.mapper.IAptApiMapper;
-import kr.or.ddit.domain.ApiApartment.vo.*;
+import kr.or.ddit.domain.apiApartment.mapper.IAptApiMapper;
+import kr.or.ddit.domain.apiApartment.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

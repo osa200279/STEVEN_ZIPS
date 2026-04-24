@@ -1,9 +1,8 @@
-package kr.or.ddit.domain.ApiApartment.controller;
+package kr.or.ddit.domain.apiApartment.controller;
 
-import kr.or.ddit.domain.ApiApartment.service.IAptApiService;
+import kr.or.ddit.domain.apiApartment.service.IAptApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
