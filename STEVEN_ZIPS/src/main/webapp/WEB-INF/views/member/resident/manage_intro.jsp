@@ -415,7 +415,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:10px;height:10px;color:#bbb">
             <path d="M9 18l6-6-6-6"/>
           </svg>
-          <a href="/ztest/introduce">관리사무소</a>
+          <a href="resident/manage/intro">관리사무소</a>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:10px;height:10px;color:#bbb">
             <path d="M9 18l6-6-6-6"/>
           </svg>

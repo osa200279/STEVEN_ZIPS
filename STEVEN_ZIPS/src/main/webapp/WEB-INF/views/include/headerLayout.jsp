@@ -37,97 +37,75 @@
         </div>
     </div>
 
-    <nav class="header-nav">
-        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/manage') ? 'active' : ''}">
-            <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
-                    d="M6 9l6 6 6-6"/></svg></span>
-            <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/manage/intro">관리사무소 소개</a>
-                <a href="${pageContext.request.contextPath}/manage/operation">운영정보공개</a>
-                <a href="${pageContext.request.contextPath}/manage/facility">시설관리이력</a>
-                <a href="${pageContext.request.contextPath}/manage/favorite">즐겨찾기</a>
-            </div>
-        </div>
-
   <nav class="header-nav">
-    <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/manage') ? 'active' : ''}">
+    <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/manage') ? 'active' : ''}">
       <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
       <div class="slim-drop">
-        <a href="${pageContext.request.contextPath}/manage/intro">관리사무소 소개</a>
-        <a href="${pageContext.request.contextPath}/manage/operation">운영정보공개</a>
-        <a href="${pageContext.request.contextPath}/manage/facility">시설관리이력</a>
-        <a href="${pageContext.request.contextPath}/manage/favorite">즐겨찾기</a>
+        <a href="${pageContext.request.contextPath}/resident/manage/intro">관리사무소 소개</a>
+        <a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>
+        <a href="${pageContext.request.contextPath}/resident/manage/facility">시설관리이력</a>
+        <a href="${pageContext.request.contextPath}/resident/manage/favorite">즐겨찾기</a>
       </div>
     </div>
 
-  <nav class="header-nav">
-    <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/manage') ? 'active' : ''}">
-      <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
-      <div class="slim-drop">
-        <a href="/introduce">관리사무소 소개</a>
-        <a href="${pageContext.request.contextPath}/manage/operation">운영정보공개</a>
-        <a href="${pageContext.request.contextPath}/manage/facility">시설관리이력</a>
-        <a href="${pageContext.request.contextPath}/manage/favorite">즐겨찾기</a>
-      </div>
-    </div>
-
-        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/fee') ? 'active' : ''}">
+        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/bill') ? 'active' : ''}">
             <span>아파트관리비<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/fee/inquiry">관리비조회</a>
-                <a href="${pageContext.request.contextPath}/fee/guide">납부안내</a>
-                <a href="${pageContext.request.contextPath}/fee/auto">자동이체신청</a>
-                <a href="${pageContext.request.contextPath}/fee/receipt">납부영수증</a>
+                <a href="${pageContext.request.contextPath}/resident/bill/inquiry">관리비조회</a>
+                <a href="${pageContext.request.contextPath}/resident/bill/guide">납부안내</a>
+                <a href="${pageContext.request.contextPath}/resident/bill/auto">자동이체신청</a>
+                <a href="${pageContext.request.contextPath}/resident/bill/receipt">납부영수증</a>
             </div>
         </div>
 
-        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/service') ? 'active' : ''}">
+        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/service') ? 'active' : ''}">
             <span>생활지원서비스<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/service/moving">전입/전출신고</a>
-                <a href="${pageContext.request.contextPath}/service/car">차량등록</a>
-                <a href="${pageContext.request.contextPath}/service/visitor">방문차량등록</a>
-                <a href="${pageContext.request.contextPath}/service/facility">공용시설예약</a>
+                <a href="${pageContext.request.contextPath}/resident/service/moving">전입/전출신고</a>
+                <a href="${pageContext.request.contextPath}/resident/service/car">차량등록</a>
+                <a href="${pageContext.request.contextPath}/resident/service/visitor">방문차량등록</a>
+                <a href="${pageContext.request.contextPath}/resident/service/facility">공용시설예약</a>
             </div>
         </div>
 
-        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/complaint') ? 'active' : ''}">
+        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/complaint') ? 'active' : ''}">
             <span>민원접수<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/complaint/apply">민원신청</a>
-                <a href="${pageContext.request.contextPath}/complaint/live">실시간문의</a>
-                <a href="${pageContext.request.contextPath}/complaint/chatbot">챗봇민원접수</a>
-                <a href="${pageContext.request.contextPath}/complaint/status">민원접수현황</a>
+                <a href="${pageContext.request.contextPath}/resident/complaint/apply">민원신청</a>
+                <a href="${pageContext.request.contextPath}/resident/complaint/live">실시간문의</a>
+                <a href="${pageContext.request.contextPath}/resident/complaint/chatbot">챗봇민원접수</a>
+                <a href="${pageContext.request.contextPath}/resident/complaint/status">민원접수현황</a>
             </div>
         </div>
 
-        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/vote') ? 'active' : ''}">
+        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/vote') ? 'active' : ''}">
             <span>전자투표및설문<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/vote/resident">입주민 투표</a>
-                <a href="${pageContext.request.contextPath}/vote/survey">설문조사</a>
+                <a href="${pageContext.request.contextPath}/resident/vote/resident">입주민 투표</a>
+                <a href="${pageContext.request.contextPath}/resident/vote/survey">설문조사</a>
             </div>
         </div>
 
-        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/board') ? 'active' : ''}">
+        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/board') ? 'active' : ''}">
             <span>입주민게시판<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/board/notice">공지사항</a>
-                <a href="${pageContext.request.contextPath}/board/free">자유게시판</a>
-                <a href="${pageContext.request.contextPath}/board/chat">그룹채팅방</a>
+                <a href="${pageContext.request.contextPath}/resident/board/notice">공지사항</a>
+                <a href="${pageContext.request.contextPath}/resident/board/free">자유게시판</a>
+                <a href="${pageContext.request.contextPath}/resident/board/chat">그룹채팅방</a>
             </div>
         </div>
 
-        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/stats') ? 'active' : ''}">
+        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/stats') ? 'active' : ''}">
             <span>우리아파트통계<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/stats/custom">우리집맞춤통계</a>
+                <a href="${pageContext.request.contextPath}/resident/stats/custom">우리집맞춤통계</a>
+                <a href="${pageContext.request.contextPath}/resident/stats/apartment">아파트통계</a>
             </div>
         </div>
 
@@ -158,64 +136,65 @@
             <div class="all-menu-section">
                 <div class="all-menu-section-title">관리사무소</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/manage/intro">관리사무소 소개</a></li>
-                    <li><a href="${pageContext.request.contextPath}/manage/operation">운영정보공개</a></li>
-                    <li><a href="${pageContext.request.contextPath}/manage/facility">시설관리이력</a></li>
-                    <li><a href="${pageContext.request.contextPath}/manage/favorite">즐겨찾기</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/manage/intro">관리사무소 소개</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/manage/facility">시설관리이력</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/manage/favorite">즐겨찾기</a></li>
                 </ul>
             </div>
 
             <div class="all-menu-section">
                 <div class="all-menu-section-title">아파트관리비</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/fee/inquiry">관리비조회</a></li>
-                    <li><a href="${pageContext.request.contextPath}/fee/guide">납부안내</a></li>
-                    <li><a href="${pageContext.request.contextPath}/fee/auto">자동이체신청</a></li>
-                    <li><a href="${pageContext.request.contextPath}/fee/receipt">납부영수증</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/bill/inquiry">관리비조회</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/bill/guide">납부안내</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/bill/auto">자동이체신청</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/bill/receipt">납부영수증</a></li>
                 </ul>
             </div>
 
             <div class="all-menu-section">
                 <div class="all-menu-section-title">생활지원서비스</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/service/moving">전입/전출신고</a></li>
-                    <li><a href="${pageContext.request.contextPath}/service/car">차량등록</a></li>
-                    <li><a href="${pageContext.request.contextPath}/service/visitor">방문차량등록</a></li>
-                    <li><a href="${pageContext.request.contextPath}/service/facility">공용시설예약</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/service/moving">전입/전출신고</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/service/car">차량등록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/service/visitor">방문차량등록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/service/facility">공용시설예약</a></li>
                 </ul>
             </div>
 
             <div class="all-menu-section">
                 <div class="all-menu-section-title">민원접수</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/complaint/apply">민원신청</a></li>
-                    <li><a href="${pageContext.request.contextPath}/complaint/live">실시간문의</a></li>
-                    <li><a href="${pageContext.request.contextPath}/complaint/chatbot">챗봇민원접수</a></li>
-                    <li><a href="${pageContext.request.contextPath}/complaint/status">민원접수현황</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/complaint/apply">민원신청</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/complaint/live">실시간문의</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/complaint/chatbot">챗봇민원접수</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/complaint/status">민원접수현황</a></li>
                 </ul>
             </div>
 
             <div class="all-menu-section">
                 <div class="all-menu-section-title">전자투표및설문</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/vote/resident">입주민 투표</a></li>
-                    <li><a href="${pageContext.request.contextPath}/vote/survey">설문조사</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/vote/resident">입주민 투표</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/vote/survey">설문조사</a></li>
                 </ul>
             </div>
 
             <div class="all-menu-section">
                 <div class="all-menu-section-title">입주민게시판</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/board/notice">공지사항</a></li>
-                    <li><a href="${pageContext.request.contextPath}/board/free">자유게시판</a></li>
-                    <li><a href="${pageContext.request.contextPath}/board/chat">그룹채팅방</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/board/notice">공지사항</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/board/free">자유게시판</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/board/chat">그룹채팅방</a></li>
                 </ul>
             </div>
 
             <div class="all-menu-section">
                 <div class="all-menu-section-title">우리아파트통계</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/stats/custom">우리집맞춤통계</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/stats/custom">우리집맞춤통계</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/stats/apartment">아파트통계</a></li>
                 </ul>
             </div>
         </div>

@@ -13,11 +13,12 @@ public class ZTestController {
         return  "ztestview/mainn";
     }
 
+    /*
     @GetMapping("/introduce")
     public String introduce(){
         return "member/resident/manage_intro";
     }
-
+*/
 
     @GetMapping("/aptapi")
     public String aptapi(){
