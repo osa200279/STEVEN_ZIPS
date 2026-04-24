@@ -52,7 +52,7 @@
         where user_id = #{userId}
     </select>
 
-    <insert id="memberJoin" parameterType="MemberVO">
+    <insert id="memberJoin" parameterType="kr.or.ddit.domain.member.vo.MemberVO">
         <selectKey keyProperty="userNo" resultType="string" order="BEFORE">
             select to_char(seq_member.nextval) from dual
         </selectKey>
