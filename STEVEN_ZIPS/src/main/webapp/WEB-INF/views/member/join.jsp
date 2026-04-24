@@ -165,6 +165,7 @@
     <div class="form-group">
         <div class="form-label">비밀번호 <span>*</span></div>
         <input type="password" name="userPw" class="input-control" placeholder="비밀번호를 입력하세요">
+        <div class="input-hint">비밀번호는 영문, 숫자, 특수문자 조합 8~20자로 입력해주세요</div>
     </div>
 
     <div class="form-group">
@@ -180,6 +181,7 @@
     <div class="form-group">
         <div class="form-label">주민등록번호 <span>*</span></div>
         <input type="text" name="userRrno" class="input-control" placeholder="주민등록 번호를 입력하세요">
+        <div class="input-hint">예시 000000-0000000</div>
     </div>
 
     <div class="form-group">
@@ -198,7 +200,7 @@
             -
             <input type="text" class="input-control" id="tel3" />
         </div>
-        <input type="text" name="userTelno" hidden="hidden">
+        <input type="text" name="userTelno" id="userTelno" hidden="hidden">
     </div>
 
     <div class="form-group">
@@ -231,12 +233,12 @@
         const validationRules = {
             userId : {
                 label : "아이디",
-                regex : /^[a-zA-Z09]{4,20}$/,
+                regex : /^[a-zA-Z0-9]{4,20}$/,
                 invalidMsg : "아이디는 영문, 숫자 조합 4~20자로 입력해주세요."
             },
             userPw : {
                 label : "비밀번호",
-                regex : /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9가-힣\s])[^가-힣\s]{8,16}$/,  // ( ?= )전방 탐색, 공백, 한글 검사
+                regex : /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9가-힣\s])[^가-힣\s]{8,20}$/,  // ( ?= )전방 탐색, 공백, 한글 검사
                 invalidMsg : "비밀번호는 영문, 숫자, 특수문자 조합 8~20자로 입력해주세요."
             },
             userNm : {
@@ -263,14 +265,15 @@
 
         // 유효성 체크
         for (const [inputName, rule] of Object.entries(validationRules)) {
-            const input = form.element[inputName];
+            const input = form.elements[inputName];
             if(!input) continue;
 
             const value = input.value.trim();
 
             // 미입력 체크
             if(!value){
-                alert(`${rule.label}을(를) 입력해주세요.`);
+                alert(`\${rule.label}을(를) 입력해주세요.`);
+                console.log(rule.label);
                 input.focus();
                 return false;
             }
@@ -282,16 +285,17 @@
                 return false;
             }
 
-            // 비밀번호 확인 일치여부
-            if(form.userPw.value !== form.userPwConfirm.value ) {
-                alert("비밀번호가 일치하지 않습니다.");
-                form.userPwConfirm.focus();
-                return false;
-            }
-
-            alert("회원가입이 완료되었습니다!");
-            form.submit();
         }
+
+        // 비밀번호 확인 일치여부
+        if(form.userPw.value !== form.userPwConfirm.value ) {
+            alert("비밀번호가 일치하지 않습니다.");
+            form.userPwConfirm.focus();
+            return false;
+        }
+
+        alert("회원가입 성공!");
+        form.submit();
     });
 
 </script>
