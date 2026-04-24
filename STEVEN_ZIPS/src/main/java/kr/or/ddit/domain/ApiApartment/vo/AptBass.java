@@ -1,11 +1,11 @@
-package kr.or.ddit.domain.apartment.vo;
+package kr.or.ddit.domain.ApiApartment.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class AptBassDto {
+public class AptBass {
 
     private String kaptCode;
     private String kaptName;
@@ -13,7 +13,7 @@ public class AptBassDto {
     private String codeSaleNm;
     private String codeHeatNm;
 
-    private double kaptTarea; // 실수
+    private double kaptTarea;
 
     private String kaptDongCnt;
     private int kaptdaCnt;
@@ -27,7 +27,7 @@ public class AptBassDto {
     private String codeMgrNm;
     private String codeHallNm;
 
-    private String kaptUsedate; // 날짜지만 문자열로 받는게 안전
+    private String kaptUsedate;
 
     private String kaptFax;
 
@@ -40,7 +40,7 @@ public class AptBassDto {
     private int kaptMparea135;
     private int kaptMparea136;
 
-    private String privArea; // 얘도 문자열로 오는 경우 있음
+    private String privArea;
 
     private String bjdCode;
 

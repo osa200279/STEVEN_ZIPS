@@ -1,6 +1,7 @@
-package kr.or.ddit.domain.apartment.controller;
+package kr.or.ddit.domain.ApiApartment.controller;
 
-import kr.or.ddit.domain.apartment.service.IAptService;
+import kr.or.ddit.domain.ApiApartment.service.IAptApiService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,15 +9,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/apt")
-public class AptController {
+@RequestMapping("/api")
+@Slf4j
+public class AptApiController {
 
     @Autowired
-    private IAptService aptService;
+    private IAptApiService aptService;
 
-    @PostMapping("/collect")
+    @PostMapping("/apt/collect")
     @ResponseBody
     public String collectMapoApt() {
+        log.info("collectMapoApt() 실행됨...!");
 
         aptService.collectMapoApt();
 

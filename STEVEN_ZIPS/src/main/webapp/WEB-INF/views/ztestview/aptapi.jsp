@@ -9,15 +9,15 @@
 <html>
 <head>
     <title>아파트목록조회</title>
-  <input type="button" value="마포구apt동기화" id="aptBtn" onclick="collect()">
 </head>
 <body>
+<input type="button" value="마포구apt동기화" id="aptBtn" onclick="collect()">
 
 
 </body>
-<script !src="">
+<script>
     async function collect() {
-        const res = await fetch('/apt/collect', {
+        const res = await fetch('/api/apt/collect', {
             method: 'POST'
         });
 

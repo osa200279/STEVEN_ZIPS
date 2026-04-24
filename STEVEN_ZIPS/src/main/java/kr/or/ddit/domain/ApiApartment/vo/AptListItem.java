@@ -1,9 +1,9 @@
-package kr.or.ddit.domain.apartment.vo;
+package kr.or.ddit.domain.ApiApartment.vo;
 
 import lombok.Data;
 
 @Data
-public class AptListItemDto {
+public class AptListItem {
     private String kaptCode;
     private String kaptName;
     private String bjdCode;
