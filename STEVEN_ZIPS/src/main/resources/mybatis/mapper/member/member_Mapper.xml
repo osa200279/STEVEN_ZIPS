@@ -52,8 +52,32 @@
         where user_id = #{userId}
     </select>
 
-<!--    <insert id="memberJoin" parameterType="">-->
+    <insert id="memberJoin" parameterType="MemberVO">
+        <selectKey keyProperty="userNo" resultType="string" order="BEFORE">
+            select to_char(seq_member.nextval) from dual
+        </selectKey>
+        insert into member(
+            user_no, user_id, user_pw, user_nm, user_rrno, user_telno, user_eml,
+            ret_dt, mdfcn_dt,
+            user_yn,
+            sms_rcv_yn, sms_ntc_rcv_yn, sms_ctrt_rcv_yn,
+            eml_rcv_yn, eml_ntc_rcv_yn, eml_ctrt_rcv_yn,
+            prof_file_id
+        )values(
+            #{userNo}, #{userId}, #{userPw}, #{userNm}, #{userRrno}, #{userTelno}, #{userEml},
+            sysdate, default,
+            'Y',
+            #{smsRcvYn}, #{smsNtcRcvYn}, #{smsCtrtRcvYn},
+            #{emlRcvYn}, #{emlNtcRcvYn}, #{emlCtrtRcvYn},
+            #{profFileId}
+        )
+    </insert>
 
-<!--    </insert>-->
+    <insert id="addAuth" parameterType="string">
+        insert into auth(user_no, user_role_cd)
+        values (
+            #{userNo}, 'ROLE_MEMBER'
+       )
+    </insert>
 
 </mapper>
