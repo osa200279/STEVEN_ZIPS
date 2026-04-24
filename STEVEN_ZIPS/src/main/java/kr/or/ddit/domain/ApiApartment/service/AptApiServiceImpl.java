@@ -16,16 +16,21 @@ import java.util.List;
 @Service
 @Slf4j
 public class AptApiServiceImpl implements IAptApiService {
+
     @Autowired
     private IAptApiMapper aptMapper;
     private String serviceKey = "279564b17283c0863ff904cbfee96deb15c26cd426ec71fe7c5966a865f64f2f";
 
     @Override
     public void collectMapoApt() {
-        log.info("collectMapoApt() 실행됨...!");
+        log.info("collectMapoApt() 실행됨2...!");
+
         List<String> lawdCdList = aptMapper.selectMapoLawdCdList();
+
         RestTemplate restTemplate = new RestTemplate();
+
         List<AptListItem> resultList = new ArrayList<>();
+
         for (String bjdCode : lawdCdList) {
             int pageNo = 1;
             while (true) {
@@ -40,6 +45,7 @@ public class AptApiServiceImpl implements IAptApiService {
                 }
 
                 resultList.addAll(items);
+
                 pageNo++;
             }
         }

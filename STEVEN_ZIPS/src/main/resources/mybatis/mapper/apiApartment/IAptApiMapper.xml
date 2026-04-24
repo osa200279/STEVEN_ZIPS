@@ -8,7 +8,4 @@
         WHERE SIGUNGU_NM = '마포구'
     </select>
 
-
-
-
 </mapper>
