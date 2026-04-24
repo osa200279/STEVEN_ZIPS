@@ -14,12 +14,12 @@ public class AptComplexEntity {
     private int latVal;
     private int lonVal;
     private int unitCnt;
-    private int bldYr;
-    private String cnscoNm;
+    private String bldYr;  //준공년도
+    private String cnscoNm; // 시공사
 
     private String imgFileNo;
     private String rprsntImgFileNo;
-    private String heatTyCd;
+    private String heatTy;
     private int pkgCnt;
     private int maxFloor;
     private int freePkgCnt;

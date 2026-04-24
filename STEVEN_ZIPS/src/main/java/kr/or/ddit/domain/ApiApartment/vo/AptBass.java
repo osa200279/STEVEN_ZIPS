@@ -7,48 +7,33 @@ import lombok.Data;
 @Data
 public class AptBass {
 
-    private String kaptCode;
-    private String kaptName;
-    private String kaptAddr;
-    private String codeSaleNm;
-    private String codeHeatNm;
+    private String kaptCode;    // 아파트코드
+    private String kaptName;    // 아파트이름
+    private String kaptAddr;    // 아파트 주소
+    private String codeHeatNm;  // 난방형식
 
-    private double kaptTarea;
+    private double kaptTarea;   // 연면적?
 
-    private String kaptDongCnt;
-    private int kaptdaCnt;
+    private String kaptDongCnt; // 동 숫자
+    private int hoCnt;          // 호 수
 
-    private String kaptBcompany;
-    private String kaptAcompany;
-    private String kaptTel;
-    private String kaptUrl;
-    private String codeAptNm;
-    private String doroJuso;
-    private String codeMgrNm;
-    private String codeHallNm;
+    private String kaptBcompany;// 시공사
+    private String kaptAcompany;// 시행사
+    private String kaptTel;     // 관리사무소연락처
+    private String kaptUrl;     // 홈페이지 주소
+    private String codeAptNm;   // 단지분류
+    private String doroJuso;    // 도로주소
 
-    private String kaptUsedate;
+    private String kaptUsedate; // 사용일
 
-    private String kaptFax;
 
-    private int hoCnt;
+    private double kaptMarea;   // 관리비 부과면적
 
-    private double kaptMarea;
+    private int kaptMparea60;   // 전용면적별 세대현황
+    private int kaptMparea85;   // 전용면적별 세대현황
+    private int kaptMparea135;  // 전용면적별 세대현황
+    private int kaptMparea136;  // 전용면적별 세대현황
 
-    private int kaptMparea60;
-    private int kaptMparea85;
-    private int kaptMparea135;
-    private int kaptMparea136;
-
-    private String privArea;
-
-    private String bjdCode;
-
-    private int kaptTopFloor;
-    private int ktownFlrNo;
-    private int kaptBaseFloor;
-
-    private int kaptdEcntp;
-
-    private String zipcode;
+    private int kaptTopFloor;   // 최고층
+    private int kaptBaseFloor;  // 지하층
 }

@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class AptDetail {
 
-    private int kaptdEcnt;
+    private int kaptdEcnt;  // 승강기
 
-    private String kaptdPcnt;
-    private String kaptdPcntu;
+    private String kaptdPcnt;   //지상주차장
+    private String kaptdPcntu;  //지하주차장
 
     private String kaptdCccnt;  // cctv갯수
 
@@ -21,9 +21,6 @@ public class AptDetail {
     private String kaptdWtimesub;   // 걸리는시간
     private String convenientFacility;  // 편의시설?
     private String educationFacility;   // 교육시설
-
-    private int groundElChargerCnt;
-    private int undergroundElChargerCnt;
 
     private String useYn;
 }
