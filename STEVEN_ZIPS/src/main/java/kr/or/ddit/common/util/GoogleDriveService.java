@@ -29,7 +29,7 @@ public class GoogleDriveService {
     @Value("${google.drive.folder-id}")
     private String folderId;
 
-    // 수정: path(경로) 인자를 추가로 받음
+    // 업로드 파일 메서드
     public String uploadFile(MultipartFile file, String path) throws IOException {
         try {
             InputStream in = new ClassPathResource("client_secrets.json").getInputStream();
@@ -54,8 +54,6 @@ public class GoogleDriveService {
                     credential)
                     .setApplicationName("StevenZips")
                     .build();
-
-            // --- [여기서부터 핵심 수정 구간] ---
 
             // 1. mkdirs 로직 실행 (하위 폴더 생성 및 최종 폴더 ID 추출)
             String targetFolderId = getOrCreateFolders(service, folderId, path);

@@ -171,11 +171,8 @@
 <div class="header">
     <span class="badge">일반사용자</span>
     <h2>회원가입</h2>
-    <p class="desc">기본 서비스 이용을 위한 일반 사용자 회원가입 화면입니다.<br>이후 입주 신고를 통해 입주민 권한으로 변경할 수 있습니다.</p>
-</div>
-
-<div class="info-box">
-    회원가입 후 일부 공용 서비스 이용이 가능합니다. 입주민 전용 기능은 입주민 인증 완료 후 사용할 수 있습니다.
+    <p class="desc">기본 서비스 이용을 위한 일반 사용자 회원가입 화면입니다.<br>
+        이후 입주 신고를 통해 입주민 권한으로 변경할 수 있습니다.</p>
 </div>
 
 <form action="/member/join" id="joinForm" method="post" enctype="multipart/form-data">
@@ -190,7 +187,7 @@
                 <button type="button" class="photo-btn" onclick="document.getElementById('img').click();">
                     사진 선택
                 </button>
-                <input type="file" id="img" name="profFileId" style="display:none;">
+                <input type="file" id="img" name="profFile" style="display:none;">
                 <div id="fileName" class="input-hint">선택된 파일 없음</div>
             </div>
         </div>
@@ -335,6 +332,13 @@ document.addEventListener('DOMContentLoaded', function () {
             form.userPwConfirm.focus();
             return;
         }
+
+        // 주민등록번호 '-' 제거
+        let userRrno = form.elements[userRrno]
+        userRrno.value = userRrno.value.replace(/-/g,"");
+
+
+        form.submit();
 
 
         // 비동기 통신 회원가입
