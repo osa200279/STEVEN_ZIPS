@@ -821,7 +821,7 @@
             </p>
 
             <section class="hero-card">
-                <h2>하위 관리자 계정 승인 및 상태 관리</h2>
+                <h2>단지 관리자 계정 승인 및 상태 관리</h2>
                 <p>신청 계정을 검토한 뒤 승인 또는 반려하고, 등록된 관리자 계정의 사용 상태를 관리합니다.</p>
                 <div class="chip-row">
                     <span class="chip">승인 대기 3건</span>
