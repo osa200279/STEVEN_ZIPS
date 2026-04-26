@@ -14,7 +14,7 @@ public interface IAptApiMapper {
 
     List<String> selectMapoLawdCdList();
 
-    void insertInfraBatch(List<AptInfraEntity> list);
+    void insertAptOne(AptComplexEntity apt);
 
-    void insertAptBatch(List<AptComplexEntity> list);
+    void insertInfraOne(AptInfraEntity infra);
 }

@@ -8,64 +8,57 @@
         WHERE SIGUNGU_NM = '마포구'
     </select>
 
-    <insert id="insertAptBatch">
-        INSERT INTO APT_COMPLEX(
-        APT_CMPLEX_NO,
-        APT_CMPLEX_NM,
-        BJD_CD,
-        SIDO_NM,
-        SIGUNGU_NM,
-        EMD_NM,
-        LAT_VAL,
-        LON_VAL,
-        UNIT_CNT,
-        BLD_YR,
-        CNSCO_NM,
-        HEAT_TY,
-        PKG_CNT,
-        MAX_FLOOR,
-        DONG_CNT,
-        DOROJUSO
-        )
-        VALUES
-        <foreach collection="list" item="item" separator=",">
-            (
-            #{item.aptCmplexNo},
-            #{item.aptCmplexNm},
-            #{item.bjdCd},
-            #{item.sidoNm},
-            #{item.sigunguNm},
-            #{item.emdNm},
-            #{item.latVal},
-            #{item.lonVal},
-            #{item.unitCnt},
-            #{item.bldYr},
-            #{item.cnscoNm},
-            #{item.heatTy},
-            #{item.pkgCnt},
-            #{item.maxFloor},
-            #{item.dongCnt},
-            #{item.dorojuso}
-            )
-        </foreach>
+    <insert id="insertAptOne">
+        INSERT INTO APT_COMPLEX (
+            APT_CMPLEX_NO,
+            APT_CMPLEX_NM,
+            BJD_CD,
+            SIDO_NM,
+            SIGUNGU_NM,
+            EMD_NM,
+            LAT_VAL,
+            LON_VAL,
+            UNIT_CNT,
+            BLD_YR,
+            CNSCO_NM,
+            HEAT_TY,
+            PKG_CNT,
+            MAX_FLOOR,
+            DONG_CNT,
+            DOROJUSO
+        ) VALUES (
+                     #{aptCmplexNo},
+                     #{aptCmplexNm},
+                     #{bjdCd},
+                     #{sidoNm},
+                     #{sigunguNm},
+                     #{emdNm},
+                     #{latVal},
+                     #{lonVal},
+                     #{unitCnt},
+                     #{bldYr},
+                     #{cnscoNm},
+                     #{heatTy},
+                     #{pkgCnt},
+                     #{maxFloor},
+                     #{dongCnt},
+                     #{dorojuso}
+                 )
     </insert>
 
-    <insert id="insertInfraBatch">
+
+    <insert id="insertInfraOne">
         INSERT INTO APT_INFRA (
-        INFRA_NO,
-        INFRA_NM,
-        CATEGORY_CD,
-        APT_CMPLEX_NO
-        )
-        VALUES
-        <foreach collection="list" item="item" separator=",">
-            (
-            SEQ_APT_INFRA.NEXTVAL,
-            #{item.infraNm},
-            #{item.categoryCd},
-            #{item.aptCmplexNo}
-            )
-        </foreach>
+            INFRA_NO,
+            INFRA_NM,
+            CATEGORY_CD,
+            APT_CMPLEX_NO
+        ) VALUES (
+             SEQ_APT_INFRA.NEXTVAL,
+             #{infraNm},
+             #{categoryCd},
+             #{aptCmplexNo}
+         )
     </insert>
 
 </mapper>
