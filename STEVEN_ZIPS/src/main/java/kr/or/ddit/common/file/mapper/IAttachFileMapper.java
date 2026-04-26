@@ -1,6 +1,6 @@
 package kr.or.ddit.common.file.mapper;
 
-import kr.or.ddit.common.vo.AttachFileVO;
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

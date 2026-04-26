@@ -4,7 +4,7 @@ import kr.or.ddit.common.ServiceResult;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.util.AESUtil;
-import kr.or.ddit.common.vo.AttachFileVO;
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;

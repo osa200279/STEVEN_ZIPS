@@ -1,4 +1,4 @@
-package kr.or.ddit.common.vo;
+package kr.or.ddit.common.file.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

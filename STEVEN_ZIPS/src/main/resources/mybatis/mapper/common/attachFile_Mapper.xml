@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.common.file.mapper.IAttachFileMapper">
 
-    <insert id="insertAttachFile" parameterType="kr.or.ddit.common.vo.AttachFileVO">
+    <insert id="insertAttachFile" parameterType="kr.or.ddit.common.file.vo.AttachFileVO">
         insert into attach_file (
             FILE_GROUP_ID, FILE_NO, FILE_OG_NAME, FILE_SAVE_UUID,
             FILE_PATH, FILE_EXT, FILE_SIZE, MIME_TYPE, REG_DT, MDF_DT,
