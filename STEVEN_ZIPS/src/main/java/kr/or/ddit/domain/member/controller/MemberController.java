@@ -5,8 +5,14 @@ import kr.or.ddit.domain.member.service.IMemberService;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -21,17 +27,31 @@ public class MemberController {
         return "member/join";
     }
 
-    // 2026.04.24 임시 회원가입
-    @PostMapping("/join")
-    public String joinMember(MemberVO member){
+    // 비동기 회원가입 처리
+    @ResponseBody
+    @PostMapping(value = "/join")
+    public ResponseEntity<Map<String, String>> joinMember(
+            MemberVO member, @RequestParam(value="profFile", required = false) MultipartFile profFile){
+
         log.info("joinMember() 실행");
+        log.info("입력된 회원 정보 : {}", member);
 
-        ServiceResult result = service.joinMember(member);
-        if(result.equals(ServiceResult.OK)){
-            return "redirect:/login.do";
-        }else{
-            return "member/join";
+        Map<String, String> resp = new HashMap<>();
+
+        try {
+            ServiceResult result = service.joinMember(member, profFile);
+
+            if(ServiceResult.OK.equals(result)){
+                resp.put("message", "회원가입 완료!");
+                return new ResponseEntity<>(resp, HttpStatus.OK);
+            }else {
+                resp.put("message", "가입 실패!");
+                return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
+            }
+        }catch (Exception e){
+            resp.put("message", "서버에러");
+            return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
+
 }

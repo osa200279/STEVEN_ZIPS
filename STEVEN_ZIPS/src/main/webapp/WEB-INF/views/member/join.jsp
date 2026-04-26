@@ -186,7 +186,7 @@
                   미리보기
             </div>
             <div>
-                <button type="button" class="photo-btn" onclick="document.getElementById('img').click();">
+                <button type="button" class="photo-btn" onclick="document.querySelector('#img').click();">
                     사진 선택
                 </button>
                 <input type="file" id="img" name="profFile" style="display:none;">
@@ -219,7 +219,7 @@
 
     <div class="form-group">
         <div class="form-label">주민등록번호 <span>*</span></div>
-        <input type="text" name="userRrno" class="input-control" hidden="hidden">
+        <input type="text" name="userRrno" id="userRrno" class="input-control" hidden="hidden">
         <input type="text" class="input-control" id="rrno1" name="rrno1" placeholder="주민번호 앞자리">
         <input type="text" class="input-control" id="rrno2" name="rrno2" placeholder="주민번호 뒷자리">
         <div class="input-hint">예시 000000-0000000</div>
@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 
         try {
-            const response = await fetch('/member/join', {
+            const resp = await fetch('/member/join', {
                 method: 'POST',
                 headers: {
                     [csrfHeader]: csrfToken,
@@ -364,15 +364,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: formData
             });
 
-            if(response.ok){
-                alert("회원가입이 완료되었습니다.")
+            const result = await resp.json();
+            if(resp.ok){
+                alert(result.message);
                 window.close(); // 성공시 팝업 닫기
             }else{
-                const error = await response.json();
-                alert("가입 실패: " + error.message );
+                alert("가입 실패: " + result.message );
             }
-        } catch (err) {
-            console.error("통신 에러 발생 : ", err);
+        } catch (error) {
+            console.error("통신 에러 발생 : ", error);
             alert("서버와 통신 중 문제가 발생했습니다.")
         }
     });

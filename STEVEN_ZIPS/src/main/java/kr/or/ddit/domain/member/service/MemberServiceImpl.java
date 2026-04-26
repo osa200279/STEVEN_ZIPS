@@ -1,7 +1,10 @@
 package kr.or.ddit.domain.member.service;
 
 import kr.or.ddit.common.ServiceResult;
+import kr.or.ddit.common.api.google.service.GoogleDriveService;
+import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.util.AESUtil;
+import kr.or.ddit.common.vo.AttachFileVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
@@ -9,15 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
 public class MemberServiceImpl implements IMemberService {
 
     @Autowired
-    private IMemberMapper mapper;
+    private IMemberMapper memberMapper;
+
+    @Autowired
+    private IAttachFileMapper attachFileMapper;
 
     @Autowired
     private PasswordEncoder pe;
@@ -25,25 +33,50 @@ public class MemberServiceImpl implements IMemberService {
     @Autowired
     private AESUtil aes;
 
-    @Override
+    @Autowired
+    private GoogleDriveService googleDriveService;
+
     @Transactional(rollbackFor = Exception.class)   // encrypt(암호화)에러와 insert에러 모두 트랜잭션 적용
-    public ServiceResult joinMember(MemberVO member) {
-        ServiceResult res = null;
+    @Override
+    public ServiceResult joinMember(MemberVO member, MultipartFile profFile) {
+        ServiceResult res = ServiceResult.FAILED;
 
         try{
             if(member.getUserPw() != null) {
                 member.setUserPw(pe.encode(member.getUserPw()));    // 비밀번호 암호화
             }
 
-            if(member.getUserRrno() != null){
+            if(member.getUserRrno() != null){       // 주민번호 암호화
                 member.setUserRrno(aes.encrypt(member.getUserRrno()));
-                log.info("암호화된 비밀번호 {}",member.getUserRrno());
+                log.info("암호화된 주민번호 {}",member.getUserRrno());
             }
 
-            int status = mapper.joinMember(member);     // 회원 등록
+            // 프로필 파일 업로드 처리
+            AttachFileVO attachFile = null;
+            if(profFile != null && !profFile.isEmpty()){
+                String originalFilename = profFile.getOriginalFilename();
+                String uuid = UUID.randomUUID().toString().replace("-", "");
 
-            if(status>0){
-                mapper.addAuth(member.getUserNo());
+                // 저장 될 파일명
+                String savedFileName = uuid + "_" +  originalFilename;
+
+                // 경로 설정
+                String folderPath = "member/prof_img/" + member.getUserId();
+                String googleId = googleDriveService.uploadFile(profFile, folderPath, savedFileName);
+
+//                attachFile = AttachFileVO.from(profFile,"MEM_PROF", uuid, googleId,
+//                                                      folderPath + "/" + savedFileName,1 );
+                attachFile = AttachFileVO.from(profFile,"MEM_PROF", uuid.substring(0,2), googleId,
+                        folderPath + "/" + savedFileName,1 );   // 테스트용 코드 정해지면 지우고 위에 주석처리한거 쓸 것
+
+                member.setProfFileId(attachFile.getFileGroupId() + "_" + uuid);
+                attachFileMapper.insertAttachFile(attachFile);
+            }
+
+            int status = memberMapper.joinMember(member);     // 회원 등록
+
+            if(status > 0){
+                memberMapper.addAuth(member.getUserNo());
                 res = ServiceResult.OK;
             }else{
                 res = ServiceResult.FAILED;
@@ -71,7 +104,7 @@ public class MemberServiceImpl implements IMemberService {
                 member.setUserRrno(aes.encrypt(member.getUserRrno()));
             }
 
-            int status = mapper.updateMember(member);
+            int status = memberMapper.updateMember(member);
 
             // 🔥 결과 로그
             log.info("🔥 update 결과 = {}", status);
@@ -86,7 +119,7 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     public void deleteMember(String userNo) {
-        mapper.deleteMember(userNo);
+        memberMapper.deleteMember(userNo);
     }
 
     @Override
@@ -96,17 +129,17 @@ public class MemberServiceImpl implements IMemberService {
         String encodedPw = pe.encode(newPw);
 
         // 2. DB 업데이트
-        mapper.updatePassword(userNo, encodedPw);
+        memberMapper.updatePassword(userNo, encodedPw);
     }
 
     @Override
     public MemberVO getMemberByUserNo(String userNo) {
-        return mapper.getMemberByUserNo(userNo);
+        return memberMapper.getMemberByUserNo(userNo);
     }
 
     @Override
     public void updateAlarm(Map<String, Object> param) {
-        mapper.updateAlarm(param);
+        memberMapper.updateAlarm(param);
     }
     }
 
