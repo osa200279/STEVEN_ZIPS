@@ -5,6 +5,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>   <%-- 서버가 정해준 이름(편지봉투) --%>
+    <meta name="_csrf" content="${_csrf.token}"/>   <%-- 실제 1회용 암호 값(편지) --%>
     <script src="/js/common/file-util.js"></script>
 
     <title>회원가입 팝업</title>
@@ -217,7 +219,9 @@
 
     <div class="form-group">
         <div class="form-label">주민등록번호 <span>*</span></div>
-        <input type="text" name="userRrno" class="input-control" placeholder="주민등록 번호를 입력하세요">
+        <input type="text" name="userRrno" class="input-control" hidden="hidden">
+        <input type="text" class="input-control" id="rrno1" name="rrno1" placeholder="주민번호 앞자리">
+        <input type="text" class="input-control" id="rrno2" name="rrno2" placeholder="주민번호 뒷자리">
         <div class="input-hint">예시 000000-0000000</div>
     </div>
 
@@ -245,8 +249,9 @@
         <input type="email" name="userEml" class="input-control" placeholder="이메일을 입력하세요">
     </div>
 
-    <%-- 토큰 추가 --%>
+    <%-- 토큰 추가 (동기방식 이용시)
     <sec:csrfInput/>
+    --%>
     <div class="btn-area">
         <button type="submit" class="btn-submit" id="memRegBtn">회원등록</button>
         <button type="button" class="btn-cancel" onclick="window.close()">취소</button>
@@ -262,10 +267,17 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         const form = document.querySelector("#joinForm");
 
-        let tel1box = document.querySelector('#tel1');
-        let tel1 = tel1box.options[tel1box.selectedIndex].value;
-        let tel2 = document.querySelector('#tel2').value;
-        let tel3 = document.querySelector('#tel3').value;
+        const rrno1 = form.elements['rrno1'].value;
+        const rrno2 = form.elements['rrno2'].value;
+
+        let userRrno = document.querySelector("#userRrno");
+        userRrno.value = rrno1 + rrno2;
+
+
+        const tel1box = document.querySelector('#tel1');
+        const tel1 = tel1box.options[tel1box.selectedIndex].value;
+        const tel2 = document.querySelector('#tel2').value;
+        const tel3 = document.querySelector('#tel3').value;
         let userTelno = document.querySelector('#userTelno');
         userTelno.value = tel1 + tel2 + tel3;
 
@@ -286,9 +298,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 regex: /^[가-힣]{2,10}$/,
                 invalidMsg: "이름은 한글로 작성해주세요"
             },
-            userRrno: {
-                label: "주민등록번호",
-                regex: /^[0-9]{6}-[0-9]{7}$/,  // 형식 000000-0000000
+            rrno1: {
+                label: "주민등록번호 앞자리",
+                regex: /^[0-9]{6}$/,  // 형식 000000-0000000
+                invalidMsg: "주민등록번호 형식이 올바르지 않습니다."
+            },
+            rrno2: {
+                label: "주민등록번호 뒷자리",
+                regex: /^[0-9]{7}$/,  // 형식 000000-0000000
                 invalidMsg: "주민등록번호 형식이 올바르지 않습니다."
             },
             userTelno: {
@@ -333,19 +350,27 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // 주민등록번호 '-' 제거
-        let userRrno = form.elements[userRrno]
-        userRrno.value = userRrno.value.replace(/-/g,"");
-
-
-        form.submit();
-
-
         // 비동기 통신 회원가입
+        const formData = new FormData(form);
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+
         try {
-            const formData = new FormData(form);
+            const response = await fetch('/member/join', {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken,
+                },
+                body: formData
+            });
 
-
+            if(response.ok){
+                alert("회원가입이 완료되었습니다.")
+                window.close(); // 성공시 팝업 닫기
+            }else{
+                const error = await response.json();
+                alert("가입 실패: " + error.message );
+            }
         } catch (err) {
             console.error("통신 에러 발생 : ", err);
             alert("서버와 통신 중 문제가 발생했습니다.")
