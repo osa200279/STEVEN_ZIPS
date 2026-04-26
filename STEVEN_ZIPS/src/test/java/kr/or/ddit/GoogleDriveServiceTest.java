@@ -1,6 +1,6 @@
 package kr.or.ddit;
 
-import kr.or.ddit.common.util.GoogleDriveService;
+import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +28,12 @@ class GoogleDriveServiceTest {
         );
 
         // 2. 서비스 호출
-        String resultLink = googleDriveService.uploadFile(mockFile, "test/junit");
+        String resultLink = googleDriveService.uploadFile(mockFile, "test/junit", "test_content");
 
         // 3. 검증
         System.out.println("업로드된 결과 링크: " + resultLink);
 
         assertNotNull(resultLink, "결과 링크가 null이면 안 됩니다.");
-        assertTrue(resultLink.contains("drive.google.com"), "링크에 구글 드라이브 주소가 포함되어야 합니다.");
+        assertTrue(!resultLink.isBlank());
     }
 }

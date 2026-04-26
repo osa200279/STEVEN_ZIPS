@@ -1,4 +1,4 @@
-package kr.or.ddit.common.util;
+package kr.or.ddit.common.api.google.service;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -34,7 +34,7 @@ public class GoogleDriveService {
     private String folderId;
 
     // 업로드 파일 메서드
-    public String uploadFile(MultipartFile file, String path) throws IOException {
+    public String uploadFile(MultipartFile file, String path, String savedFileName) throws IOException {
         try {
             InputStream in = new ClassPathResource("client_secrets.json").getInputStream();
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
@@ -64,7 +64,7 @@ public class GoogleDriveService {
 
             // 2. 파일 메타데이터 설정 (부모 폴더를 targetFolderId로 지정)
             File fileMetadata = new File();
-            fileMetadata.setName(file.getOriginalFilename());
+            fileMetadata.setName(savedFileName);
             fileMetadata.setParents(Collections.singletonList(targetFolderId));
 
             InputStreamContent mediaContent = new InputStreamContent(
