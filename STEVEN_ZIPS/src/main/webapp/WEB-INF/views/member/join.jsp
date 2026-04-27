@@ -626,11 +626,19 @@
             const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 
             formData.set('smsRcvYn', document.querySelector('#smsRcvYn').checked ? 'Y' : 'N');
-            formData.set('smsNtcRcvYn', document.querySelector('#smsNtcRcvYn').checked ? 'Y' : 'N');
-            formData.set('smsCtrtRcvYn', document.querySelector('#smsCtrtRcvYn').checked ? 'Y' : 'N');
             formData.set('emlRcvYn', document.querySelector('#emlRcvYn').checked ? 'Y' : 'N');
-            formData.set('emlNtcRcvYn', document.querySelector('#emlNtcRcvYn').checked ? 'Y' : 'N');
-            formData.set('emlCtrtRcvYn', document.querySelector('#emlCtrtRcvYn').checked ? 'Y' : 'N');
+
+            const subAreas = ['#subSmsArea', '#subEmlArea'];
+
+            subAreas.forEach(area => {
+                const container = document.querySelector(area);
+                if (container) {
+                    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(cb => {
+                        formData.set(cb.id, cb.checked ? 'Y' : 'N');
+                    });
+                }
+            });
 
             try {
                 const resp = await fetch('/member/join', {
