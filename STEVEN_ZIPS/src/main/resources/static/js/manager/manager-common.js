@@ -161,9 +161,9 @@ function showAlert(message) {
 ============================================================ */
 function reloadFragment(url, title) {
 
-    if (typeof loadContent === "function") {
-        loadContent(url, title || "", { force: true });
-    } else {
+    if (url) {
         location.href = url;
+    } else {
+        location.reload();
     }
 }
