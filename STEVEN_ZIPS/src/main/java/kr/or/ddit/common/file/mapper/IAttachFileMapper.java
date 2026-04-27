@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface IAttachFileMapper {
 
-    public void insertAttachFile(AttachFileVO attachFile);
+    public int insertAttachFile(AttachFileVO attachFile);
 
     public long seqNextVal();
 }

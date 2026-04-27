@@ -64,14 +64,15 @@ public class MemberServiceImpl implements IMemberService {
                 String folderPath = "member/prof_img/" + member.getUserId();
 
                 String cat = "mem_prof";
+                // 구글 드라이브에 업로드
                 String googleId = googleDriveService.uploadFile(profFile, folderPath, savedFileName);
 
+                // 데이터베이스에 인서트
                 long seq = attachFileMapper.seqNextVal();
-
                 attachFile = AttachFileVO.from(profFile, seq, cat, savedFileName, googleId,
                         folderPath + "/" + savedFileName,1 );   // 테스트용 코드 정해지면 지우고 위에 주석처리한거 쓸 것
 
-                member.setProfFileId(attachFile.getFileGroupNo() + "_" + uuid);
+                member.setProfFileId(attachFile.getFileGroupNo() + "_" + savedFileName);
                 attachFileMapper.insertAttachFile(attachFile);
             }
 
