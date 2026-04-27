@@ -1,0 +1,163 @@
+package kr.or.ddit.domain.manager.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.domain.manager.service.IMngrEmployeeService;
+import kr.or.ddit.domain.manager.vo.ManagerVO;
+import kr.or.ddit.domain.manager.vo.MngrRqstVO;
+import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Slf4j
+@Controller
+@RequestMapping("/manager/employee")
+public class MngrEmployeeController {
+
+    @Autowired
+    private IMngrEmployeeService service;
+
+    /**
+     * 직원 계정 관리 화면 진입
+     */
+    @GetMapping("/account")
+    public String mngrAccount(Model model) {
+
+        List<ManagerVO> managerList = service.selectManagerList();
+        List<MngrRqstVO> requestList = service.selectRequestList();
+
+        log.info("managerList size : {}", managerList.size());
+        log.info("requestList size : {}", requestList.size());
+
+        model.addAttribute("managerList", managerList);
+        model.addAttribute("requestList", requestList);
+
+        return "manager/employee/mngr_account";
+    }
+
+    /**
+     * 재직 직원 목록 비동기 조회
+     */
+    @ResponseBody
+    @GetMapping("/manager/list")
+    public List<ManagerVO> selectManagerList() {
+        return service.selectManagerList();
+    }
+
+    /**
+     * 계정 생성 요청 목록 비동기 조회
+     */
+    @ResponseBody
+    @GetMapping("/request/list")
+    public List<MngrRqstVO> selectRequestList() {
+        return service.selectRequestList();
+    }
+
+    /**
+     * 재직 직원 상세 조회
+     */
+    @ResponseBody
+    @GetMapping("/manager/{userNo}")
+    public ManagerVO selectManagerDetail(@PathVariable String userNo) {
+        return service.selectManagerDetail(userNo);
+    }
+
+    /**
+     * 계정 생성 요청 상세 조회
+     */
+    @ResponseBody
+    @GetMapping("/request/{rqstNo}")
+    public MngrRqstVO selectRequestDetail(@PathVariable String rqstNo) {
+        return service.selectRequestDetail(rqstNo);
+    }
+
+    /**
+     * 계정 생성 요청 등록
+     */
+    @ResponseBody
+    @PostMapping("/request/insert")
+    public Map<String, Object> insertRequest(@RequestBody MngrRqstVO mngrRqstVO) {
+
+        int result = service.insertRequest(mngrRqstVO);
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("success", result > 0);
+        resultMap.put("message", result > 0 ? "계정 생성 요청이 등록되었습니다." : "계정 생성 요청 등록에 실패했습니다.");
+
+        return resultMap;
+    }
+
+    /**
+     * 계정 생성 요청 수정
+     */
+    @ResponseBody
+    @PostMapping("/request/update")
+    public Map<String, Object> updateRequest(@RequestBody MngrRqstVO mngrRqstVO) {
+
+        int result = service.updateRequest(mngrRqstVO);
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("success", result > 0);
+        resultMap.put("message", result > 0 ? "계정 생성 요청이 수정되었습니다." : "계정 생성 요청 수정에 실패했습니다.");
+
+        return resultMap;
+    }
+
+    /**
+     * 계정 생성 요청 취소
+     */
+    @ResponseBody
+    @PostMapping("/request/cancel")
+    public Map<String, Object> cancelRequest(@RequestBody MngrRqstVO mngrRqstVO) {
+
+        int result = service.cancelRequest(mngrRqstVO);
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("success", result > 0);
+        resultMap.put("message", result > 0 ? "계정 생성 요청이 취소되었습니다." : "계정 생성 요청 취소에 실패했습니다.");
+
+        return resultMap;
+    }
+
+    /**
+     * 재직 직원 정보 수정
+     */
+    @ResponseBody
+    @PostMapping("/manager/update")
+    public Map<String, Object> updateManager(@RequestBody ManagerVO managerVO) {
+
+        int result = service.updateManager(managerVO);
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("success", result > 0);
+        resultMap.put("message", result > 0 ? "직원 정보가 수정되었습니다." : "직원 정보 수정에 실패했습니다.");
+
+        return resultMap;
+    }
+
+    /**
+     * 재직 직원 계정 비활성화
+     */
+    @ResponseBody
+    @PostMapping("/manager/deactivate")
+    public Map<String, Object> deactivateManager(@RequestBody ManagerVO managerVO) {
+
+        int result = service.deactivateManager(managerVO);
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("success", result > 0);
+        resultMap.put("message", result > 0 ? "직원 계정이 비활성화되었습니다." : "직원 계정 비활성화에 실패했습니다.");
+
+        return resultMap;
+    }
+}
