@@ -86,9 +86,27 @@
 
     <update id="updateMember">
         update member
-        set user_telno = #{userTelno},
-            user_eml = #{userEml},
+        <set>
+
+            <if test="userNm != null and userNm != ''">
+                user_nm = #{userNm},
+            </if>
+
+            <if test="userTelno != null">
+                user_telno = #{userTelno},
+            </if>
+
+            <if test="userEml != null">
+                user_eml = #{userEml},
+            </if>
+
+            <if test="profFileId != null and profFileId != ''">
+                prof_file_id = #{profFileId},
+            </if>
+
             mdfcn_dt = sysdate
+
+        </set>
         where user_no = #{userNo}
     </update>
     <select id="getMemberByUserNo" parameterType="string" resultMap="memberMap">
