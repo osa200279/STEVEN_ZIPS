@@ -125,12 +125,73 @@ public class GoogleDriveService {
                 folderMetadata.setName(name);
                 folderMetadata.setMimeType("application/vnd.google-apps.folder");   // 폴더 타입으로 생성
                 folderMetadata.setParents(Collections.singletonList(currentParentId));  // 현재 생성하는 폴더의 부모(상위)폴더 설정
-                // 구글 드라이
 
                 File folder = service.files().create(folderMetadata).setFields("id").execute();
                 currentParentId = folder.getId();
             }
         }
         return currentParentId; // 매개변수 path로 받은 경로의 최종목적지 폴더 위치 값
+    }
+
+    /**
+     *
+     * @param service
+     * @param rootId
+     * @param fullPath  파일명까지 포함한 전체 경로(attach_file테이블의 file_path)
+     * @return googleId 구글 파일 아이디 값
+     * @throws IOException
+     */
+    private String getFolderIdByPath(Drive service, String rootId, String fullPath) throws IOException {
+        int lastSlash = fullPath.lastIndexOf("/");
+
+        String pathParts= "";
+        String targetName=fullPath;
+        if(lastSlash != -1) {
+            pathParts = fullPath.substring(0, lastSlash);
+            targetName = fullPath.substring(lastSlash + 1);   // file.img
+        }
+
+        String currentParentId = rootId;
+        String targetType = "application/vnd.google-apps.folder";
+        FileList result = null;
+
+        if (!pathParts.isEmpty()) {
+            String[] folderNames = pathParts.split("/");
+            for (String name : folderNames) {
+                if (name.trim().isEmpty()) continue;
+
+                String query = String.format(
+                        "name = '%s' and " +    // 찾을 폴더명
+                                "mimeType = '%s' and " +   // targetType
+                                "'%s' in parents and " +    // currentParentId
+                                "trashed = false ",    // 휴지통에 있는 폴더 제외
+                        name, targetType, currentParentId);
+                result = service.files().list().
+                        setQ(query).
+                        setFields(("files(id)")).
+                        execute();
+
+                if (result.getFiles().isEmpty()) return null; // 부모 폴더가 없으면 중단
+
+                // 탐색된 게 있으면 부모폴더로 갱신
+                currentParentId = result.getFiles().get(0).getId();
+            }
+        }
+        String fileQuery = String.format(
+                "name = '%s' and " +
+                        "mimeType != 'application/vnd.google-apps.folder' and " +
+                        "'%s' in parents and " +
+                        "trashed = false",
+                targetName, currentParentId);
+
+        result = service.files().list().
+                setQ(fileQuery).
+                setFields(("files(id)")).execute();
+
+        if (result.getFiles() != null && !result.getFiles().isEmpty()) {
+            return result.getFiles().get(0).getId();    // 파일 찾으면 구글id 문자열 반환
+        }
+
+        return null;    // 최종적으로 파일이 없으면 null 반환
     }
 }

@@ -49,10 +49,10 @@ class ProfileUploadSimpleTest {
                 testFile, seq, cat, savedFileName, googleId, folderPath, 1
         );
 
-        // 5. DB 저장
-        // int result = attachFileMapper.insertAttachFile(attachFile);
-
-        // 6. 결과 확인
+//        // 5. DB 저장
+//         int result = attachFileMapper.insertAttachFile(attachFile);
+//
+//        // 6. 결과 확인
 //        if(result > 0) {
 //            log.info("✅ 시연 성공! 구글 드라이브와 ATTACH_FILE 테이블을 확인하세요.");
 //            log.info("🔗 최종 연결 ID (Member에 들어갈 값): {}_{}", seq, savedFileName);
