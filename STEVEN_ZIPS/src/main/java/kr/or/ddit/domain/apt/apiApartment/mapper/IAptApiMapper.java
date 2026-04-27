@@ -3,11 +3,6 @@ package kr.or.ddit.domain.apt.apiApartment.mapper;
 
 import kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptInfraEntity;
-import kr.or.ddit.domain.apt.apiApartment.vo.MgmtOfficeEntity;
-import kr.or.ddit.domain.apt.manager.vo.ManagerVO;
-import kr.or.ddit.domain.apt.vo.AptDetailVO;
-import kr.or.ddit.domain.apt.vo.AptUnitVO;
-import kr.or.ddit.domain.member.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -19,21 +14,7 @@ public interface IAptApiMapper {
 
     List<String> selectMapoLawdCdList();
 
+    void insertInfraBatch(List<AptInfraEntity> list);
+
     void insertAptBatch(List<AptComplexEntity> list);
-
-    void insertMgmtOfficeBatch(List<MgmtOfficeEntity> list);
-
-    void insertMemberBatch(List<MemberVO> list);
-
-    void insertManagerBatch(List<ManagerVO> list);
-
-    void insertAptUnitBatch(List<AptUnitVO> list);
-
-    void insertAptDetailBatch(List<AptDetailVO> list);
-
-    void insertInfraOne(AptInfraEntity infra);
-
-    long getMemberSeq();
-
-    long getMgmtOfcNoSeq();
 }

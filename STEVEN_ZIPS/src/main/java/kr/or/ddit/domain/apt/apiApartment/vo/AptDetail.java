@@ -16,12 +16,10 @@ public class AptDetail {
 
     private String welfareFacility; // 공용시설 종류
     private String kaptdWtimebus;   // 버스걸리는시간
-    private String subwayLine;   // 지하철역
+    private String subwayStation;   // 지하철역
     private String kaptdWtimesub;   // 지하철걸리는시간
     private String convenientFacility;  // 편의시설?
     private String educationFacility;   // 교육시설
-
-
 
     private String useYn;
 }

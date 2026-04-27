@@ -37,7 +37,6 @@ public class SecurityConfig {
             "/member/join",
             "/member/update",
             "/member/mypage.do",
-            "/member/idCheck",
             "/.well-known/**"
     };
 

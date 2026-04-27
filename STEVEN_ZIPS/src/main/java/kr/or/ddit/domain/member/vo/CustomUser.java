@@ -1,7 +1,5 @@
 package kr.or.ddit.domain.member.vo;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -9,8 +7,6 @@ import org.springframework.security.core.userdetails.User;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
 public class CustomUser extends User {
     private static final long serialVersionUID = 1L;
     private MemberVO member;
@@ -29,5 +25,12 @@ public class CustomUser extends User {
                 member.getAuthList().stream().map(auth -> new SimpleGrantedAuthority(auth.getAuth())).collect(Collectors.toList()));
 
         this.member = member;
+    }
+
+    public MemberVO getMember() {
+        return member;
+    }
+
+    public void setMember(MemberVO updated) {
     }
 }

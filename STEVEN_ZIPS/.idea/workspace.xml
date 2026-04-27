@@ -4,38 +4,99 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b3c0aa25-2624-4f48-ac6a-e182acf8aa68" name="Changes" comment="2026.04.22 이용로&#10;메인페이지 변경 및 로그인&amp;로그아웃 연결">
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/ztest" afterDir="true" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/ztest/ZTestController.java" afterDir="false" />
+    <list default="true" id="0fe31220-b1dd-4929-a4fe-9f07bb2f87e2" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/webContexts.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/webContexts.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/mvnw.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/ServiceResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/ServiceResult.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/security/CustomAccessDeniedHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/security/CustomAccessDeniedHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/security/CustomLoginFailureHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/security/CustomLoginFailureHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/security/CustomLoginSuccessHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/security/CustomLoginSuccessHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/security/CustomUserDetailsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/security/CustomUserDetailsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/util/AESUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/common/util/AESUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/controller/AptApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/controller/AptApiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/mapper/IAptApiMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/mapper/IAptApiMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/service/AptApiServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/service/AptApiServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/service/IAptApiService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/service/IAptApiService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptBass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptBass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptBassBody.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptBassBody.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptBassResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptBassResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptBassResponseWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptBassResponseWrapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptComplexEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptComplexEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptDetailBody.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptDetailBody.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptDetailResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptDetailResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptDetailResponseWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptDetailResponseWrapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptInfraEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptInfraEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptListBody.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptListBody.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptListItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptListItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptListResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptListResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptListResponseWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/AptListResponseWrapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/Header.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/apiApartment/vo/Header.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/manager/controller/OfficeEmployeeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/manager/controller/OfficeEmployeeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/manager/controller/OfficeMainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/apt/manager/controller/OfficeMainController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/main/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/main/controller/HomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/controller/ConnController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/controller/ConnController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/controller/MemberController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/controller/MemberController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/mapper/IMemberMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/mapper/IMemberMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/service/IMemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/service/IMemberService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/service/MemberServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/service/MemberServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/vo/AuthVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/vo/AuthVO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/vo/CustomUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/vo/CustomUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/vo/MemberVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/member/vo/MemberVO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/resident/controller/ResidentMainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/resident/controller/ResidentMainController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/ztest/ZTestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/kr/or/ddit/domain/ztest/ZTestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/mapper/apiApartment/aptApi_Mapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/mapper/apiApartment/aptApi_Mapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/mapper/apiApartment/blank_apt_Mapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/mapper/apiApartment/blank_apt_Mapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/mapper/contract_Mapper/contract_Mapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/mapper/contract_Mapper/contract_Mapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mybatis/mapper/member/member_Mapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/mybatis/mapper/member/member_Mapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/centralAside.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/centralAside.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/centralCommon.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/centralCommon.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/centralHeader.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/centralHeader.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/footerStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/footerStyle.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/headerStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/headerStyle.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/loginStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/loginStyle.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/office-layout.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/office-layout.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/sidebarStyle.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/sidebarStyle.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/common/conn.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/common/conn.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/footerLayout.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/footerLayout.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/headerLayout.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/headerLayout.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/register.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/register.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/kr/or/ddit/common/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/kr/or/ddit/common/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/office_header.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/office_header.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/office_sidebar.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/office_sidebar.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/sidebarLayout.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/include/sidebarLayout.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/manager/employee/mngr_account.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/manager/employee/mngr_account.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/manager/employee/vacation.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/manager/employee/vacation.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/manager/office.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/manager/office.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/join.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/join.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/login.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/login.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/password.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/password.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/resident/complaint_apply.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/member/resident/complaint_apply.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/ztestview/aptapi.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/views/ztestview/aptapi.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/kr/or/ddit/GoogleDriveServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/kr/or/ddit/GoogleDriveServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/kr/or/ddit/PasswordTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/kr/or/ddit/PasswordTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tokens/StoredCredential" beforeDir="false" afterPath="$PROJECT_DIR$/tokens/StoredCredential" afterDir="false" />
     </list>
-    <list id="343fa0da-9507-4a67-b325-573df1309072" name="ignore_list" comment="ignore_list" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CommittedChangesCache">
-    <option name="refreshEnabled" value="true" />
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="250" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="HTML File" />
-        <option value="Jsp File" />
-        <option value="Interface" />
-        <option value="Class" />
-      </list>
-    </option>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="KubernetesApiPersistence">{}</component>
-  <component name="KubernetesApiProvider">{
-  &quot;isMigrated&quot;: true
+  <component name="HttpClientOnboardingState">{
+  &quot;isOnboardingCommentShown&quot;: true
 }</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
@@ -44,38 +105,47 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6,
   &quot;fromUser&quot;: false
 }</component>
-  <component name="ProjectId" id="3CdxRORKX8YHk28KsWEWSJSxgWg" />
+  <component name="ProjectId" id="3CsuU4fVFxdCwTlDtJgWdACRO05" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "JUnit.PasswordTest.generatePassword.executor": "Run",
-    "JUnit.PasswordTest.generatedRRNO.executor": "Run",
-    "Maven.ddit [clean].executor": "Run",
-    "Maven.ddit [test].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
     "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Spring Boot.StevenZipsApplication.executor": "Run",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Final/workspace/STEVEN_ZIPS/src/main/webapp/WEB-INF/views/ztestview",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/home/osa/dev/STEVEN_ZIPS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Facets",
-    "project.structure.proportion": "0.15",
+    "project.structure.last.edited": "프로젝트",
+    "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -84,73 +154,7 @@
     ]
   }
 }]]></component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\WEB-INF\views\ztestview" />
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\java\kr\or\ddit\common\security" />
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\resources\mybatis\mapper\member" />
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\WEB-INF\views" />
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\java\kr\or\ddit" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\resources\static" />
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\resources\css" />
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\WEB-INF\views\include" />
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\WEB-INF\views\member" />
-      <recent name="D:\Final\workspace\STEVEN_ZIPS\src\main\webapp\resources" />
-    </key>
-    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
-      <recent name="kr.or.ddit" />
-    </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="kr.or.ddit.controller" />
-      <recent name="kr.or.ddit" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Spring Boot.StevenZipsApplication">
-    <configuration name="PasswordTest.generatePassword" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="ddit" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="kr.or.ddit.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="kr.or.ddit" />
-      <option name="MAIN_CLASS_NAME" value="kr.or.ddit.PasswordTest" />
-      <option name="METHOD_NAME" value="generatePassword" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="PasswordTest.generatedRRNO" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="ddit" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="kr.or.ddit.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="kr.or.ddit" />
-      <option name="MAIN_CLASS_NAME" value="kr.or.ddit.PasswordTest" />
-      <option name="METHOD_NAME" value="generatedRRNO" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="STEVEN_ZIPS" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="STEVEN_ZIPS" />
-      <option name="filePath" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager">
     <configuration name="StevenZipsApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="ddit" />
@@ -159,193 +163,60 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="JUnit.PasswordTest.generatePassword" />
-        <item itemvalue="JUnit.PasswordTest.generatedRRNO" />
-      </list>
-    </recent_temporary>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
-      </set>
-    </attachedChunks>
   </component>
   <component name="SvnConfiguration" cleanupOnStartRun="true">
-    <configuration>C:\Users\PC-24\AppData\Roaming\Subversion</configuration>
+    <configuration>$USER_HOME$/.subversion</configuration>
     <supportedVersion>125</supportedVersion>
   </component>
   <component name="SvnFileUrlMappingImpl">
     <option name="myMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="D:\Final\workspace\STEVEN_ZIPS" />
-          <option name="myCopyRoot" value="D:\Final\workspace\STEVEN_ZIPS" />
+          <option name="myVcsRoot" value="$PROJECT_DIR$" />
+          <option name="myCopyRoot" value="$PROJECT_DIR$" />
         </SvnCopyRootSimple>
       </list>
     </option>
     <option name="myMoreRealMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="D:\Final\workspace\STEVEN_ZIPS" />
-          <option name="myCopyRoot" value="D:\Final\workspace\STEVEN_ZIPS" />
+          <option name="myVcsRoot" value="$PROJECT_DIR$" />
+          <option name="myCopyRoot" value="$PROJECT_DIR$" />
         </SvnCopyRootSimple>
       </list>
     </option>
   </component>
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="b3c0aa25-2624-4f48-ac6a-e182acf8aa68" name="Changes" comment="" />
-      <changelist id="343fa0da-9507-4a67-b325-573df1309072" name="ignore_list" comment="" />
-      <created>1776729239403</created>
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="0fe31220-b1dd-4929-a4fe-9f07bb2f87e2" name="변경" comment="" />
+      <created>1777186610324</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1776729239403</updated>
-      <workItem from="1776729241156" duration="13300000" />
-      <workItem from="1776816137285" duration="1130000" />
-      <workItem from="1776817496075" duration="11960000" />
-      <workItem from="1776833589988" duration="20427000" />
-      <workItem from="1776857162677" duration="38000" />
-      <workItem from="1776902072489" duration="2689000" />
-      <workItem from="1776904791171" duration="2222000" />
-      <workItem from="1776907251249" duration="14266000" />
+      <updated>1777186610324</updated>
+      <workItem from="1777186611385" duration="9057000" />
+      <workItem from="1777196440851" duration="27436000" />
+      <workItem from="1777299406380" duration="104000" />
+      <workItem from="1777300455392" duration="128000" />
+      <workItem from="1777300598691" duration="239000" />
     </task>
-    <task id="LOCAL-00001" summary="2026.04.21&#10;First Commit">
-      <option name="closed" value="true" />
-      <created>1776729975785</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1776729975785</updated>
-    </task>
-    <task id="LOCAL-00002" summary="2026.04.21&#10;초기 설정 파일 커밋">
-      <option name="closed" value="true" />
-      <created>1776730232246</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1776730232246</updated>
-    </task>
-    <task id="LOCAL-00003" summary="2026.04.21&#10;초기 설정 누락부분 커밋">
-      <option name="closed" value="true" />
-      <created>1776732254624</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1776732254624</updated>
-    </task>
-    <task id="LOCAL-00004" summary="2026.04.21 이용로&#10;시큐리티 핸들러 설정">
-      <option name="closed" value="true" />
-      <created>1776742353712</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1776742353712</updated>
-    </task>
-    <task id="LOCAL-00005" summary="2026.04.21 이용로&#10;시큐리티 설정 수정">
-      <option name="closed" value="true" />
-      <created>1776771041259</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1776771041259</updated>
-    </task>
-    <task id="LOCAL-00006" summary="2026.04.22 이용로&#10;디렉토리 구조 변경 및 메인페이지 및 홈 컨트롤러">
-      <option name="closed" value="true" />
-      <created>1776827019755</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1776827019755</updated>
-    </task>
-    <task id="LOCAL-00007" summary="2026.04.22 이용로&#10;시큐리티 + 로그인 기능 구현완료">
-      <option name="closed" value="true" />
-      <created>1776853916537</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1776853916537</updated>
-    </task>
-    <task id="LOCAL-00008" summary="2026.04.22 이용로&#10;시큐리티 불필요 로그 제거">
-      <option name="closed" value="true" />
-      <created>1776854259853</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1776854259853</updated>
-    </task>
-    <task id="LOCAL-00009" summary="2026.04.22 이용로&#10;로그인 성공시 메인 뷰페이지 변화">
-      <option name="closed" value="true" />
-      <created>1776855156722</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1776855156722</updated>
-    </task>
-    <task id="LOCAL-00010" summary="2026.04.22 이용로&#10;로그인 성공시 메인 뷰페이지 변화2">
-      <option name="closed" value="true" />
-      <created>1776856635152</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1776856635152</updated>
-    </task>
-    <task id="LOCAL-00011" summary="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리 생성">
-      <option name="closed" value="true" />
-      <created>1776909004599</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1776909004599</updated>
-    </task>
-    <task id="LOCAL-00012" summary="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리명 수정">
-      <option name="closed" value="true" />
-      <created>1776912043009</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1776912043009</updated>
-    </task>
-    <task id="LOCAL-00013" summary="2026.04.22 이용로&#10;메인페이지 추가">
-      <option name="closed" value="true" />
-      <created>1776912387228</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1776912387228</updated>
-    </task>
-    <task id="LOCAL-00014" summary="2026.04.22 이용로&#10;메인페이지 변경 및 로그인&amp;로그아웃 연결">
-      <option name="closed" value="true" />
-      <created>1776914090556</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1776914090556</updated>
-    </task>
-    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="2026.04.21&#10;First Commit" />
-    <MESSAGE value="2026.04.21&#10;초기 설정 파일 커밋" />
-    <MESSAGE value="2026.04.21&#10;초기 설정 누락부분 커밋" />
-    <MESSAGE value="2026.04.21 이용로&#10;시큐리티 핸들러 설정" />
-    <MESSAGE value="2026.04.21 이용로&#10;시큐리티 설정 수정" />
-    <MESSAGE value="2026.04.22 이용로&#10;디렉토리 구조 변경 및 메인페이지 및 홈 컨트롤러" />
-    <MESSAGE value="2026.04.22 이용로&#10;시큐리티 + 로그인 기능 구현완료" />
-    <MESSAGE value="2026.04.22 이용로&#10;시큐리티 불필요 로그 제거" />
-    <MESSAGE value="2026.04.22 이용로&#10;로그인 성공시 메인 뷰페이지 변화" />
-    <MESSAGE value="2026.04.22 이용로&#10;로그인 성공시 메인 뷰페이지 변화2" />
-    <MESSAGE value="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리 생성" />
-    <MESSAGE value="2026.04.22 이용로&#10;공통css, 헤더 푸터 분리 및 디렉토리명 수정" />
-    <MESSAGE value="2026.04.22 이용로&#10;메인페이지 추가" />
-    <MESSAGE value="2026.04.22 이용로&#10;메인페이지 변경 및 로그인&amp;로그아웃 연결" />
-    <option name="LAST_COMMIT_MESSAGE" value="2026.04.22 이용로&#10;메인페이지 변경 및 로그인&amp;로그아웃 연결" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
