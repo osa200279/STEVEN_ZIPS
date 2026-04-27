@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.contract.mapper.ContractMapper">
+
+    <sql id="contractSearch">
+        <if test="type != null and type != ''">
+            and rl.rent_type_cd = #{type}
+        </if>
+        <if test="user != null and user != ''">
+            and m.user_id like '%' || #{user} || '%'
+        </if>
+        <if test="status != null and status != ''">
+            and rc.ctrt_stts_cd = #{status}
+        </if>
+    </sql>
+
+    <select id="selectContractCount"
+            parameterType="kr.or.ddit.domain.central.contract.vo.PaginationInfoVO"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM RENT_CTRT rc
+        JOIN MEMBER m ON m.USER_NO = rc.USER_NO
+        JOIN RENT_LISTING rl ON rl.RENT_LSTG_NO = rc.RENT_LSTG_NO
+        LEFT JOIN (
+        SELECT user_no, apt_cmplex_no
+        FROM (
+        SELECT rr.USER_NO, rr.APT_CMPLEX_NO,
+        ROW_NUMBER() OVER (PARTITION BY rr.USER_NO ORDER BY rr.RCPT_DT DESC) AS rn
+        FROM RESIDENT_RQST rr
+        )
+        WHERE rn = 1
+        ) rr1 ON rr1.USER_NO = rc.USER_NO
+        LEFT JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = rr1.APT_CMPLEX_NO
+        WHERE 1=1
+        <include refid="contractSearch"/>
+    </select>
+
+    <select id="selectContractList"
+            parameterType="kr.or.ddit.domain.central.contract.vo.PaginationInfoVO"
+            resultType="kr.or.ddit.domain.central.contract.vo.ContractVO">
+        SELECT *
+        FROM (
+        SELECT
+        ROW_NUMBER() OVER (ORDER BY rc.REG_DT DESC) AS rn,
+        rc.RENT_CTRT_NO AS rentCtrtNo,
+        rl.RENT_TYPE_CD AS rentTypeCd,
+        m.USER_ID AS userId,
+        rr1.APT_CMPLEX_NO AS aptCmplexNm,
+        rc.REG_DT AS regDt,
+        rc.CTRT_STTS_CD AS ctrtSttsCd
+        FROM RENT_CTRT rc
+        JOIN MEMBER m ON m.USER_NO = rc.USER_NO
+        JOIN RENT_LISTING rl ON rl.RENT_LSTG_NO = rc.RENT_LSTG_NO
+        LEFT JOIN (
+        SELECT user_no, apt_cmplex_no
+        FROM (
+        SELECT rr.USER_NO, rr.APT_CMPLEX_NO,
+        ROW_NUMBER() OVER (PARTITION BY rr.USER_NO ORDER BY rr.RCPT_DT DESC) AS rn
+        FROM RESIDENT_RQST rr
+        )
+        WHERE rn = 1
+        ) rr1 ON rr1.USER_NO = rc.USER_NO
+        WHERE 1=1
+        <include refid="contractSearch"/>
+        )
+        WHERE rn BETWEEN #{startRow} AND #{endRow}
+        ORDER BY rn DESC
+    </select>
+</mapper>
