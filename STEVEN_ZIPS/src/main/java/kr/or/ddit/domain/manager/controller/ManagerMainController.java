@@ -87,4 +87,9 @@ public class ManagerMainController {
     public String accountArrears() {
         return "manager/mngr_accountArrears";
     }
+
+    @GetMapping("/complex/edit")
+    public String complexEdit() {
+        return "manager/mngr_complex_edit";
+    }
 }

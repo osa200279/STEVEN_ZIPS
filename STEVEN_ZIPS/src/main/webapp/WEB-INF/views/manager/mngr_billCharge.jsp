@@ -309,7 +309,6 @@
                   + '<td><span style="display:inline-flex; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; background:' + s.bg + '; color:' + s.color + ';">' + s.text + '</span></td>'
                   + '</tr>';
         }).join("");
-      } else {
         document.getElementById("unpaidPanel").style.display = "none";
       }
     }
