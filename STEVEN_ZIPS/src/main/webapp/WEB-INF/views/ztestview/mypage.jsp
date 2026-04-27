@@ -161,6 +161,12 @@
             </p>
 
             <div class="border-t mt-6 pt-4 grid grid-cols-2 text-center">
+
+
+
+
+
+
                 <div>
                     <p class="text-gray-400 text-xs">회원번호</p>
                     <p class="font-semibold">${member.userNo}</p>
@@ -176,7 +182,13 @@
                     </p>
                 </div>
             </div>
-
+            <!-- 🔥 계약신청내역조회 버튼 -->
+            <div class="mt-6">
+                <button onclick="openContractPage()"
+                        class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                    계약신청내역조회
+                </button>
+            </div>
 
         </div>
         <div class="bg-white rounded-2xl p-6 shadow-sm">
@@ -194,8 +206,9 @@
                 <!-- 이름 -->
                 <div class="space-y-2">
                     <label class="text-gray-500">이름</label>
-                    <input type="text" value="${member.userNm}" readonly
-                           class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
+                    <input type="text" name="userNm"
+                           value="${member.userNm}"
+                           class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
                 </div>
 
                 <!-- 아이디 -->
@@ -420,6 +433,7 @@
                     ch.disabled = true;
                 } else {
                     ch.disabled = false;
+                    ch.checked = true;
                 }
             });
         }
@@ -431,6 +445,7 @@
                     ch.disabled = true;
                 } else {
                     ch.disabled = false;
+                    ch.checked = true;
                 }
             });
         }
@@ -495,7 +510,13 @@
     const saveBtn = document.getElementById("saveBtn");
     const form = document.getElementById("updateForm");
 
-
+    function openContractPage() {
+        window.open(
+            "/contract/list.do",   // 👉 연결할 JSP or 컨트롤러 URL
+            "contractPopup",
+            "width=1000,height=700,scrollbars=yes"
+        );
+    }
 
 
 </script>
