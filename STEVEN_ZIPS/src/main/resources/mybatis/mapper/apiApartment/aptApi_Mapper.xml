@@ -8,44 +8,24 @@
         WHERE SIGUNGU_NM = '마포구'
     </select>
 
-    <insert id="insertAptOne">
-        INSERT INTO APT_COMPLEX (
-            APT_CMPLEX_NO,
-            APT_CMPLEX_NM,
-            BJD_CD,
-            SIDO_NM,
-            SIGUNGU_NM,
-            EMD_NM,
-            LAT_VAL,
-            LON_VAL,
-            UNIT_CNT,
-            BLD_YR,
-            CNSCO_NM,
-            HEAT_TY,
-            PKG_CNT,
-            MAX_FLOOR,
-            DONG_CNT,
-            DOROJUSO
-        ) VALUES (
-                     #{aptCmplexNo},
-                     #{aptCmplexNm},
-                     #{bjdCd},
-                     #{sidoNm},
-                     #{sigunguNm},
-                     #{emdNm},
-                     #{latVal},
-                     #{lonVal},
-                     #{unitCnt},
-                     #{bldYr},
-                     #{cnscoNm},
-                     #{heatTy},
-                     #{pkgCnt},
-                     #{maxFloor},
-                     #{dongCnt},
-                     #{dorojuso}
-                 )
+    <insert id="insertAptBatch">
+        INSERT ALL
+        <foreach collection="list" item="item">
+            INTO APT_COMPLEX (
+            APT_CMPLEX_NO, APT_CMPLEX_NM, BJD_CD, SIDO_NM, SIGUNGU_NM, EMD_NM,
+            LAT_VAL, LON_VAL, UNIT_CNT, BLD_YR, CNSCO_NM, HEAT_TY,
+            PKG_CNT, MAX_FLOOR, DONG_CNT, DOROJUSO, CC_CNT
+            ) VALUES (
+            #{item.aptCmplexNo}, #{item.aptCmplexNm}, #{item.bjdCd},
+            #{item.sidoNm}, #{item.sigunguNm}, #{item.emdNm},
+            #{item.latVal}, #{item.lonVal}, #{item.unitCnt},
+            #{item.bldYr}, #{item.cnscoNm}, #{item.heatTy},
+            #{item.pkgCnt}, #{item.maxFloor}, #{item.dongCnt},
+            #{item.dorojuso}, #{item.ccCnt}
+            )
+        </foreach>
+        SELECT 1 FROM DUAL
     </insert>
-
 
     <insert id="insertInfraOne">
         INSERT INTO APT_INFRA (
@@ -54,11 +34,104 @@
             CATEGORY_CD,
             APT_CMPLEX_NO
         ) VALUES (
-             SEQ_APT_INFRA.NEXTVAL,
-             #{infraNm},
-             #{categoryCd},
-             #{aptCmplexNo}
-         )
+            SEQ_APT_INFRA.NEXTVAL,
+            #{infraNm},
+            #{categoryCd},
+            #{aptCmplexNo}
+        )
     </insert>
+
+    <insert id="insertMgmtOfficeBatch">
+        INSERT ALL
+        <foreach collection="list" item="item">
+            INTO MGMT_OFFICE(
+            MGMT_OFC_NO, APT_CMPLEX_NO, MGMT_OFC_NM,
+            MGMT_OFC_TELNO, MGMT_OFC_BANK_CD,
+            MGMT_OFC_ACNT_HLDR_NM, MGMT_OFC_ACNT_NO, REG_DT
+            ) VALUES (
+            #{item.mgmtOfcNo},
+            #{item.aptCmplexNo},
+            #{item.mgmtOfcNm},
+            #{item.mgmtOfcTelno},
+            #{item.mgmtOfcBankCd},
+            #{item.mgmtOfcAcntHldrNm},
+            #{item.mgmtOfcAcntNo},
+            SYSDATE
+            )
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
+    <insert id="insertMemberBatch">
+        INSERT ALL
+        <foreach collection="list" item="item">
+            INTO MEMBER(
+            USER_NO, USER_ID, USER_PW, USER_NM, USER_RRNO, USER_TELNO
+            ) VALUES (
+            #{item.userNo},
+            #{item.userId},
+            #{item.userPw},
+            #{item.userNm},
+            #{item.userRrno},
+            #{item.userTelno}
+            )
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
+    <insert id="insertManagerBatch">
+        INSERT ALL
+        <foreach collection="list" item="item">
+            INTO MANAGER(
+            USER_NO, MGMT_OFC_NO, MNGR_DUTY_CD
+            ) VALUES (
+            #{item.userNo},
+            #{item.mgmtOfcNo},
+            #{item.mngrDutyCd}
+            )
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
+    <insert id="insertAptUnitBatch">
+        INSERT ALL
+        <foreach collection="list" item="item">
+            INTO APT_UNIT(
+            DONG_NO, DONG_NM, FLOOR, UNIT_CNT, APT_CMPLEX_NO
+            ) VALUES (
+            #{item.dongNo},
+            #{item.dongNm},
+            #{item.floor},
+            #{item.unitCnt},
+            #{item.aptCmplexNo}
+            )
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
+    <insert id="insertAptDetailBatch">
+        INSERT ALL
+        <foreach collection="list" item="item">
+            INTO APT_DETAIL(
+            HO_NO, FLOOR, EXCLUSIVE_SIZE, DONG_NO, HO
+            ) VALUES (
+            #{item.hoNo},
+            #{item.floor},
+            #{item.exclusiveSize},
+            #{item.dongNo},
+            #{item.ho}
+            )
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
+    <select id="getMemberSeq" resultType="long" useCache="false">
+        SELECT SEQ_MEMBER.NEXTVAL FROM DUAL
+    </select>
+
+    <select id="getMgmtOfcNoSeq" resultType="long" useCache="false">
+        SELECT SEQ_MGMT_OFFICE.NEXTVAL FROM DUAL
+    </select>
+
 
 </mapper>

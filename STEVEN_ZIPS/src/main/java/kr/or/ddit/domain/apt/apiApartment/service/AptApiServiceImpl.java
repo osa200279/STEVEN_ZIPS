@@ -2,6 +2,10 @@
 
     import kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper;
     import kr.or.ddit.domain.apt.apiApartment.vo.*;
+    import kr.or.ddit.domain.apt.manager.vo.ManagerVO;
+    import kr.or.ddit.domain.apt.vo.AptDetailVO;
+    import kr.or.ddit.domain.apt.vo.AptUnitVO;
+    import kr.or.ddit.domain.member.vo.MemberVO;
     import lombok.extern.slf4j.Slf4j;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.http.HttpEntity;
@@ -13,12 +17,11 @@
     import org.springframework.web.client.RestTemplate;
     import tools.jackson.databind.ObjectMapper;
 
-    import java.io.UnsupportedEncodingException;
-    import java.net.URLEncoder;
     import java.util.ArrayList;
     import java.util.HashMap;
     import java.util.List;
     import java.util.Map;
+    import java.util.function.Consumer;
 
     @Service
     @Slf4j
@@ -26,6 +29,9 @@
 
         @Autowired
         private IAptApiMapper aptMapper;
+
+        @Autowired
+        private ISeqService aptService;
 
         private String serviceKey = "279564b17283c0863ff904cbfee96deb15c26cd426ec71fe7c5966a865f64f2f";
         private String kakaoKey = "e91015a224888fbe9e2afc3320c22a1b";
@@ -42,7 +48,6 @@
             RestTemplate restTemplate = new RestTemplate();
 
             List<AptListItem> AptItemList = new ArrayList<>();
-            List<AptBass> bassList = new ArrayList<>();
 
 
             for (String bjdCode : lawdCdList) {
@@ -139,7 +144,7 @@
                     detailMap.put(kaptCode, detailItem);
 
                 } catch (Exception e) {
-                    log.error("kaptCode {} bass API 오류", kaptCode, e);
+                    log.error("kaptCode {} detail API 오류", kaptCode, e);
                 }
             }
 
@@ -147,38 +152,57 @@
 
             List<AptInfraEntity> infraEntityList = new ArrayList<>();
             List<AptComplexEntity> entityList = new ArrayList<>();
+            List<MgmtOfficeEntity> mgmtOfficeEntityList = new ArrayList<>();
+            List<ManagerVO> managerVOList = new ArrayList<>();
+            List<MemberVO> memberVOList = new ArrayList<>();
+            List<AptUnitVO> aptUnitVOList = new ArrayList<>();
+            List<AptDetailVO> aptDetailVOList = new ArrayList<>();
+
 
             for (AptListItem listItem : AptItemList) {
+
+                String userNo = aptService.getMemberSeq();
+                String mgmtOfcNo = aptService.getMgmtSeq();
+
+                log.info("mgmtOfcNo = {}", mgmtOfcNo);
 
                 AptBass bassItem = bassMap.get(listItem.getKaptCode());
                 AptDetail detailItem = detailMap.get(listItem.getKaptCode());
                 String welfareFacility = detailMap.get(listItem.getKaptCode()).getWelfareFacility();
                 String convenientFacility = detailMap.get(listItem.getKaptCode()).getConvenientFacility();
                 String educationFacility = detailMap.get(listItem.getKaptCode()).getEducationFacility();
-
+                String subwayLine = detailMap.get(listItem.getKaptCode()).getSubwayLine();
+                String kaptdWtimesub = detailMap.get(listItem.getKaptCode()).getKaptdWtimesub();
 
                 /*      인프라 entity 구성 시작! */
                 toInfraEntity(welfareFacility, "WELFARE", listItem.getKaptCode(), infraEntityList);
                 toInfraEntity(convenientFacility, "CONVENIENCE", listItem.getKaptCode(), infraEntityList);
                 toInfraEntity(educationFacility, "EDUCATION", listItem.getKaptCode(), infraEntityList);
+                toInfraEntity2(subwayLine,"TRANSIT_LINES",listItem.getKaptCode(), infraEntityList);
+                toInfraEntity2(kaptdWtimesub,"TRANSIT_ACCESS",listItem.getKaptCode(), infraEntityList);
                 /*      인프라 entity 구성 끝! */
 
                 /*      단지관리소 entity 구성 시작! */
-
+                toMgmtOfficeEntity(bassItem,mgmtOfficeEntityList,mgmtOfcNo);
                 /*      단지관리소 entity 구성 끝! */
 
                 /*      단지관리자(member+manager) entity 구성 시작! */
-
+                toMemberEntity(bassItem,memberVOList, userNo);
+                toManagerEntity(managerVOList,userNo, mgmtOfcNo);
                 /*      단지관리자(member) entity 구성 끝! */
 
                 /*      동 테이블 entity 구성 시작! */
+                toAptUnitVO(aptUnitVOList,bassItem);
                 /*      동 테이블 entity 구성 끝! */
 
                 /*      호 테이블 entity 구성 시작! */
+                toAptDetailVO(aptDetailVOList, bassItem);
                 /*      호 테이블 entity 구성 끝! */
 
                 entityList.add(toEntity(listItem, bassItem,detailItem));
             }
+
+
 
             log.info("총 엔티티 개수: {}", entityList.size());
             log.info("총 인프라 개수: {}", infraEntityList.size());
@@ -189,30 +213,20 @@
 
             /*                   inser 작업 실행 start                */
 
-            int batchSize = 100;
-            int count = 0;
+            batchInsert(entityList, aptMapper::insertAptBatch);
+            batchInsert(mgmtOfficeEntityList, aptMapper::insertMgmtOfficeBatch);
+            batchInsert(memberVOList, aptMapper::insertMemberBatch);
+            batchInsert(managerVOList, aptMapper::insertManagerBatch);
+            batchInsert(aptUnitVOList, aptMapper::insertAptUnitBatch);
+            batchInsert(aptDetailVOList, aptMapper::insertAptDetailBatch);
 
-    // 🔵 아파트 insert
-            for (AptComplexEntity apt : entityList) {
-                aptMapper.insertAptOne(apt);
-
-                count++;
-                if (count % batchSize == 0) {
-                    log.info("APT {}건 insert 완료", count);
-                }
-            }
-
-    // 🔵 인프라 insert
-            count = 0;
             for (AptInfraEntity infra : infraEntityList) {
                 aptMapper.insertInfraOne(infra);
-
-                count++;
-                if (count % batchSize == 0) {
-                    log.info("INFRA {}건 insert 완료", count);
-                }
             }
 
+            log.info("APT {}건 insert 완료", entityList.size());
+            log.info("INFRA {}건 insert 완료", infraEntityList.size());
+            log.info("MGMT {}건 insert 완료", mgmtOfficeEntityList.size());
             /*                   inser 작업 실행 end                */
 
         }
@@ -234,14 +248,23 @@
                 apt.setHeatTy(bassItem.getCodeHeatNm());
                 apt.setBldYr(bassItem.getKaptUsedate());
                 apt.setCnscoNm(bassItem.getKaptBcompany());
-                apt.setMaxFloor(bassItem.getKaptTopFloor());
+                int maxFloor = Math.max(
+                        bassItem.getKaptTopFloor(),
+                        bassItem.getKtownFlrNo()
+                );
+
+                apt.setMaxFloor(maxFloor);
 
                 if (bassItem.getKaptDongCnt() != null
                         && !bassItem.getKaptDongCnt().trim().isEmpty()) {
 
-                    apt.setDongCnt(Integer.parseInt(bassItem.getKaptDongCnt()));
+                    apt.setDongCnt(safeParseInt(bassItem.getKaptDongCnt()));
                 }
+                if (bassItem.getKaptdaCnt() != null
+                        && !bassItem.getKaptdaCnt().trim().isEmpty()) {
 
+                    apt.setUnitCnt(safeParseInt(bassItem.getKaptdaCnt()));
+                }
                 apt.setDorojuso(bassItem.getDoroJuso());
             }
 
@@ -249,7 +272,11 @@
             if (detailItem != null && "Y".equals(detailItem.getUseYn())){
                 if (detailItem.getKaptdPcnt() != null
                         && !detailItem.getKaptdPcnt().trim().isEmpty()) {
-                    apt.setPkgCnt(Integer.parseInt(detailItem.getKaptdPcnt())+Integer.parseInt(detailItem.getKaptdPcntu()));
+                    apt.setPkgCnt(safeParseInt(detailItem.getKaptdPcnt())+safeParseInt(detailItem.getKaptdPcntu()));
+                }
+                if (detailItem.getKaptdCccnt() != null
+                        && !detailItem.getKaptdCccnt().trim().isEmpty()) {
+                    apt.setCcCnt(safeParseInt(detailItem.getKaptdCccnt()));
                 }
             }
 
@@ -323,7 +350,7 @@
 
                     String trimmed = name.trim();
 
-                    if (trimmed.isEmpty()) continue; // 이거 필수
+                    if (trimmed.isEmpty()) continue;
 
                     AptInfraEntity infra = new AptInfraEntity();
                     infra.setCategoryCd(categoryCd);
@@ -333,6 +360,25 @@
                     infraEntityList.add(infra);
                 }
             }
+
+            return infraEntityList;
+        }
+
+        private List<AptInfraEntity> toInfraEntity2(
+                String value,
+                String categoryCd,
+                String kaptCode,
+                List<AptInfraEntity> infraEntityList) {
+
+            if (value == null || value.trim().isEmpty()) return infraEntityList;
+
+            AptInfraEntity infra = new AptInfraEntity();
+
+            infra.setCategoryCd(categoryCd);
+            infra.setAptCmplexNo(kaptCode);
+            infra.setInfraNm(value);
+
+            infraEntityList.add(infra);
 
             return infraEntityList;
         }
@@ -395,7 +441,182 @@
 
             return result;
         }
-/*        private List<MgmtOfficeEntity> toMgmtOfficeEntity (){
+        private List<MgmtOfficeEntity> toMgmtOfficeEntity (AptBass bassItem,List<MgmtOfficeEntity> MgmtOfficeEntityList,String mgmtOfcNo){
 
-        }*/
+            MgmtOfficeEntity mgmtOfficeEntity = new MgmtOfficeEntity();
+            mgmtOfficeEntity.setMgmtOfcNo(mgmtOfcNo);
+            mgmtOfficeEntity.setAptCmplexNo(bassItem.getKaptCode());
+            mgmtOfficeEntity.setMgmtOfcNm(bassItem.getKaptName()+" 관리사무소");
+
+            if (bassItem.getKaptTel() == null || bassItem.getKaptTel().trim().isEmpty()) {
+                mgmtOfficeEntity.setMgmtOfcTelno("000-0000");
+            } else {
+                mgmtOfficeEntity.setMgmtOfcTelno(bassItem.getKaptTel());
+            }
+
+            mgmtOfficeEntity.setMgmtOfcBankCd("KB");
+            mgmtOfficeEntity.setMgmtOfcAcntHldrNm(bassItem.getKaptName()+" 관리사무소");
+            mgmtOfficeEntity.setMgmtOfcAcntNo("0000-0000");
+
+            MgmtOfficeEntityList.add(mgmtOfficeEntity);
+
+            return MgmtOfficeEntityList;
+        }
+
+        private List<ManagerVO> toManagerEntity(List<ManagerVO> ManagerList, String userNo, String mgmtOfcNo){
+
+            ManagerVO manager = new ManagerVO();
+
+            manager.setUserNo(userNo);
+            manager.setMngrDutyCd("HEAD");
+            manager.setMgmtOfcNo(mgmtOfcNo);
+
+            ManagerList.add(manager);
+
+            return ManagerList;
+        }
+
+        private List<MemberVO> toMemberEntity(AptBass bassItem, List<MemberVO>memberList, String userNo){
+
+            MemberVO member = new MemberVO();
+            member.setUserNo(userNo);
+            member.setUserId(bassItem.getKaptCode());
+            member.setUserPw("1234");
+            member.setUserNm(bassItem.getKaptName()+"_관리소장");
+            member.setUserRrno("1234561234567");
+            member.setUserTelno(bassItem.getKaptTel());
+
+            memberList.add(member);
+
+            return memberList;
+        }
+
+        private List<AptUnitVO> toAptUnitVO (List<AptUnitVO> AptUnitVOList, AptBass bassItem){
+
+            int dongCnt = 0;
+            int TotalunitCnt = 0;
+            int unitCnt = 0;
+            int unitCntRemain = 0;
+
+            if (bassItem.getKaptdaCnt()!=null&&!bassItem.getKaptdaCnt().trim().isEmpty()){
+                TotalunitCnt = safeParseInt(bassItem.getKaptdaCnt());
+            }
+            if (bassItem.getKaptDongCnt() != null
+                    && !bassItem.getKaptDongCnt().trim().isEmpty()) {
+
+                dongCnt = safeParseInt(bassItem.getKaptDongCnt());
+            }
+
+
+            if (dongCnt != 0){
+                unitCnt = TotalunitCnt/dongCnt;
+                unitCntRemain =TotalunitCnt%dongCnt;
+            };
+
+            for(int i=1;i<=dongCnt;i++){
+                AptUnitVO aptUnitVO = new AptUnitVO();
+
+                aptUnitVO.setDongNo(bassItem.getKaptCode()+"_"+i);
+                aptUnitVO.setAptCmplexNo(bassItem.getKaptCode());
+                aptUnitVO.setDongNm(i+"");
+
+                int maxFloor = Math.max(
+                        bassItem.getKaptTopFloor(),
+                        bassItem.getKtownFlrNo()
+                );
+
+                aptUnitVO.setFloor(maxFloor);
+
+                if(i == dongCnt){
+                    aptUnitVO.setUnitCnt(unitCnt+unitCntRemain);
+                }else{
+                    aptUnitVO.setUnitCnt(unitCnt);
+                }
+
+                AptUnitVOList.add(aptUnitVO);
+            }
+
+            return AptUnitVOList;
+        }
+
+        private List<AptDetailVO> toAptDetailVO (List<AptDetailVO> aptDetailVOList, AptBass bassItem){
+
+            int totalUnitCnt = safeParseInt(bassItem.getKaptdaCnt());
+            int dongCnt = safeParseInt(bassItem.getKaptDongCnt());
+            int maxFloor = Math.max(
+                    bassItem.getKaptTopFloor(),
+                    bassItem.getKtownFlrNo()
+            );
+
+            if (dongCnt == 0 || maxFloor == 0) return aptDetailVOList;
+
+            int householdsPerFloor = (int) Math.ceil(
+                    (double) totalUnitCnt / dongCnt / maxFloor
+            );
+
+            Map<String, Integer> map = new HashMap<>();
+            map.put("60", safeParseInt(bassItem.getKaptMparea60()));
+            map.put("85", safeParseInt(bassItem.getKaptMparea85()));
+            map.put("135", safeParseInt(bassItem.getKaptMparea135()));
+            map.put("136", safeParseInt(bassItem.getKaptMparea136()));
+
+            String maxKey = null;
+            int maxValue = Integer.MIN_VALUE;
+
+            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                if (entry.getValue() > maxValue) {
+                    maxValue = entry.getValue();
+                    maxKey = entry.getKey();
+                }
+            }
+
+            for(int i=1; i<=dongCnt; i++){
+
+                int unitCnt = totalUnitCnt / dongCnt;
+
+                if(i == dongCnt){
+                    unitCnt += totalUnitCnt % dongCnt;
+                }
+
+                int unitIndex = 1;
+
+                for(int f=1; f<=maxFloor; f++){
+                    for(int h=1; h<=householdsPerFloor; h++){
+
+                        if(unitIndex > unitCnt) break;
+
+                        AptDetailVO aptDetail = new AptDetailVO();
+
+                        aptDetail.setDongNo(bassItem.getKaptCode()+"_"+i);
+                        aptDetail.setFloor(f);
+                        aptDetail.setHo(String.valueOf(f*100 + h));
+                        aptDetail.setHoNo(bassItem.getKaptCode()+"_"+i+"_"+(f*100+h));
+                        aptDetail.setExclusiveSize(maxKey);
+
+                        aptDetailVOList.add(aptDetail);
+
+                        unitIndex++;
+                    }
+                }
+            }
+            return aptDetailVOList;
+        }
+
+        private int safeParseInt(String str) {
+            if (str == null || str.trim().isEmpty()) return 0;
+            return (int) Double.parseDouble(str);
+        }
+
+        private <T> void batchInsert(List<T> list, Consumer<List<T>> mapperFunc) {
+
+            if (list == null || list.isEmpty()) return;
+
+            int batchSize = 200;
+
+            for (int i = 0; i < list.size(); i += batchSize) {
+                List<T> subList = list.subList(i, Math.min(i + batchSize, list.size()));
+                mapperFunc.accept(subList);
+            }
+        }
+
     }

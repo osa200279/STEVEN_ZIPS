@@ -13,7 +13,7 @@ public class AptComplexEntity {
     private String emdNm;   // 동읍명 이름
     private double latVal;  // 위도
     private double lonVal;  // 경도
-    private int unitCnt;    // 세대 수
+    private int unitCnt; // 세대 수
     private String bldYr;   // 준공년도
     private String cnscoNm; // 시공사
 
@@ -25,5 +25,5 @@ public class AptComplexEntity {
     private int freePkgCnt; // 한 세대당 기본 차량 수
     private int dongCnt;    // 동갯수
     private String dorojuso;// 도로주소
-    private String ccCnt;   // cctv 갯수
+    private int ccCnt;   // cctv 갯수
 }

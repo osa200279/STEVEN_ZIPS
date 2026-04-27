@@ -33,5 +33,4 @@ public class ContractVO {
     private String rentTypeNm;
     private String mgrNm;
 
-
 }
