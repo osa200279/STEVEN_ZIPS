@@ -1,24 +1,20 @@
 package kr.or.ddit.domain.manager.controller;
 
-import kr.or.ddit.domain.manager.vo.ManagerVO;
-import kr.or.ddit.domain.manager.vo.MngrRqstVO;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
 @Controller
 @RequestMapping("/manager")
 public class ManagerMainController {
 
     @GetMapping("/vacation")
-    public String vacation(Model model) {
+    public String vacation() {
         return "manager/employee/vacation";
     }
 
     @GetMapping("/resident/list")
-    public String residentList(Model model) {
+    public String residentList() {
         return "manager/mngr_resident_list";
     }
 
@@ -27,16 +23,19 @@ public class ManagerMainController {
         return "manager/mngr_resident_auth";
     }
 
-
     @GetMapping("/resident/moveList")
     public String moveList() {
         return "manager/mngr_resident_moveList";
     }
 
-
     @GetMapping("/resident/auto")
     public String residentAuto() {
         return "manager/mngr_resident_auto";
+    }
+
+    @GetMapping("/visit/auto")
+    public String visitAuto() {
+        return "manager/mngr_visit_auto";
     }
 
     @GetMapping("/facilityList")
@@ -84,7 +83,8 @@ public class ManagerMainController {
         return "manager/mngr_billItemSummary";
     }
 
-  /*  @GetMapping("/account/arrears")
-    public String accountArrears() { return "manager/mngr_accountArrears"; }*/
-
+    @GetMapping("/account/arrears")
+    public String accountArrears() {
+        return "manager/mngr_accountArrears";
+    }
 }
