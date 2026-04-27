@@ -14,10 +14,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttachFileVO {
-    private String fileGroupId;
-    private String fileNo;
-    private String fileOgName;
+    private long fileGroupNo;
+    private String cat;
     private String fileSaveUuid;
+    private String fileOgName;
     private String filePath;
     private String fileExt;
     private long fileSize;
@@ -28,8 +28,8 @@ public class AttachFileVO {
     private int downCnt;
     private String googleId;
 
-    public static AttachFileVO from(
-            MultipartFile file, String fileGroupId, String uuid, String googleId, String path, int fileSortOrder) {
+    public static AttachFileVO from(MultipartFile file, long fileGroupNo, String cat, String uuid,
+                                    String googleId, String path, int fileSortOrder) {
         String originalFilename = file.getOriginalFilename();
         String ext = "";
         if (originalFilename != null && originalFilename.contains(".")) {
@@ -37,8 +37,8 @@ public class AttachFileVO {
         }
 
         return AttachFileVO.builder()
-                .fileGroupId(fileGroupId)
-                .fileNo(uuid)
+                .fileGroupNo(fileGroupNo)
+                .cat(cat)
                 .fileOgName(originalFilename)
                 .fileSaveUuid(uuid)
                 .fileExt(ext)

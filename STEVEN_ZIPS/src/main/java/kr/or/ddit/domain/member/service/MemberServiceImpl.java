@@ -62,14 +62,16 @@ public class MemberServiceImpl implements IMemberService {
 
                 // 경로 설정
                 String folderPath = "member/prof_img/" + member.getUserId();
+
+                String cat = "mem_prof";
                 String googleId = googleDriveService.uploadFile(profFile, folderPath, savedFileName);
 
-//                attachFile = AttachFileVO.from(profFile,"MEM_PROF", uuid, googleId,
-//                                                      folderPath + "/" + savedFileName,1 );
-                attachFile = AttachFileVO.from(profFile,"MEM_PROF", uuid.substring(0,2), googleId,
+                long seq = attachFileMapper.seqNextVal();
+
+                attachFile = AttachFileVO.from(profFile, seq, cat, savedFileName, googleId,
                         folderPath + "/" + savedFileName,1 );   // 테스트용 코드 정해지면 지우고 위에 주석처리한거 쓸 것
 
-                member.setProfFileId(attachFile.getFileGroupId() + "_" + uuid);
+                member.setProfFileId(attachFile.getFileGroupNo() + "_" + uuid);
                 attachFileMapper.insertAttachFile(attachFile);
             }
 

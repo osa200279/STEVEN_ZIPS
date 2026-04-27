@@ -8,4 +8,5 @@ public interface IAttachFileMapper {
 
     public void insertAttachFile(AttachFileVO attachFile);
 
+    public long seqNextVal();
 }

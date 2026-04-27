@@ -4,14 +4,18 @@
 
     <insert id="insertAttachFile" parameterType="kr.or.ddit.common.file.vo.AttachFileVO">
         insert into attach_file (
-            FILE_GROUP_ID, FILE_NO, FILE_OG_NAME, FILE_SAVE_UUID,
+            FILE_GROUP_NO, FILE_SAVE_UUID, CAT, FILE_OG_NAME,
             FILE_PATH, FILE_EXT, FILE_SIZE, MIME_TYPE, REG_DT, MDF_DT,
             FILE_SORT_ORDER, DOWN_CNT, GOOGLE_ID
         ) values (
-                  #{fileGroupId}, #{fileNo}, #{fileOgName}, #{fileSaveUuid},
+                  #{fileGroupNo}, #{fileSaveUuid}, #{cat}, #{fileOgName},
                              #{filePath}, #{fileExt}, #{fileSize}, #{mimeType},
                   sysdate, default, #{fileSortOrder}, default, #{googleId}
                   )
     </insert>
+
+    <select id="seqNextVal" resultType="long">
+        select seq_attach_file_group_no.nextval from dual
+    </select>
 
 </mapper>
