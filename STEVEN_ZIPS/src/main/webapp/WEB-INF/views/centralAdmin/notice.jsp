@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralAside.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralHeader.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralCommon.css" />
-    <script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
-    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>
+    <%--<script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
+    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>--%>
     <style id="page-style">
       .write-modal-body{display:flex}
       .write-modal-left{flex:7;padding:22px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}

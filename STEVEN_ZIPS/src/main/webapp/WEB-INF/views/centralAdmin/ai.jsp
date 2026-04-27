@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralAside.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralHeader.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralCommon.css" />
-    <script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
-    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>
+    <%--<script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
+    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>--%>
   </head>
   <body>
     <%@ include file="centralAside.jsp" %>

@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralAside.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralHeader.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralCommon.css" />
-    <script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
-    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>
+    <%--<script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
+    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>--%>
     <style id="page-style">
       /* resident.jsp 전용 — 동/호수 맵 */
       .building-map {
@@ -87,30 +87,30 @@
         <div class="section-divider"></div>
         <div class="nav-group">
           <span class="section-label">건물 · 입주민</span>
-          <a href="<%= request.getContextPath() %>/conManagement/buildSearch" class="nav-item"><span class="material-symbols-rounded nav-icon">manage_search</span><span class="nav-text">매물 통합 검색</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/buildRegister" class="nav-item"><span class="material-symbols-rounded nav-icon">apartment</span><span class="nav-text">건물 등록 및 열람</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/residentList" class="nav-item active"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-text">입주민 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/buildSearch" class="nav-item"><span class="material-symbols-rounded nav-icon">manage_search</span><span class="nav-text">매물 통합 검색</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/buildRegister" class="nav-item"><span class="material-symbols-rounded nav-icon">apartment</span><span class="nav-text">건물 등록 및 열람</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/residentList" class="nav-item active"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-text">입주민 관리</span></a>
         </div>
         <div class="section-divider"></div>
         <div class="nav-group">
           <span class="section-label">계약 · 재무</span>
-          <a href="<%= request.getContextPath() %>/conManagement/contractList.do" class="nav-item"><span class="material-symbols-rounded nav-icon">contract</span><span class="nav-text">계약 관리</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/statistics" class="nav-item"><span class="material-symbols-rounded nav-icon">bar_chart_4_bars</span><span class="nav-text">통계</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/contractList.do" class="nav-item"><span class="material-symbols-rounded nav-icon">contract</span><span class="nav-text">계약 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/statistics" class="nav-item"><span class="material-symbols-rounded nav-icon">bar_chart_4_bars</span><span class="nav-text">통계</span></a>
         </div>
         <div class="section-divider"></div>
         <div class="nav-group">
           <span class="section-label">민원 · 소통</span>
-          <a href="<%= request.getContextPath() %>/conManagement/civilCom" class="nav-item"><span class="material-symbols-rounded nav-icon">support_agent</span><span class="nav-text">민원 관리</span><span class="nav-badge">3</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/ai" class="nav-item"><span class="material-symbols-rounded nav-icon">forum</span><span class="nav-text">문의 관리</span><span class="nav-badge yellow">4</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/announcement" class="nav-item"><span class="material-symbols-rounded nav-icon">campaign</span><span class="nav-text">공고 관리</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/notice" class="nav-item"><span class="material-symbols-rounded nav-icon">article</span><span class="nav-text">통합 게시판 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/civilCom" class="nav-item"><span class="material-symbols-rounded nav-icon">support_agent</span><span class="nav-text">민원 관리</span><span class="nav-badge">3</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/ai" class="nav-item"><span class="material-symbols-rounded nav-icon">forum</span><span class="nav-text">문의 관리</span><span class="nav-badge yellow">4</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/announcement" class="nav-item"><span class="material-symbols-rounded nav-icon">campaign</span><span class="nav-text">공고 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/notice" class="nav-item"><span class="material-symbols-rounded nav-icon">article</span><span class="nav-text">통합 게시판 관리</span></a>
         </div>
         <div class="section-divider"></div>
         <div class="nav-group">
           <span class="section-label">시설 · 시스템</span>
-          <a href="<%= request.getContextPath() %>/conManagement/facility" class="nav-item"><span class="material-symbols-rounded nav-icon">handyman</span><span class="nav-text">시설 관리</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/proHistory" class="nav-item"><span class="material-symbols-rounded nav-icon">warning</span><span class="nav-text">비정상 세대 관리</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/subAdmin" class="nav-item"><span class="material-symbols-rounded nav-icon">manage_accounts</span><span class="nav-text">하위관리자 계정</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/facility" class="nav-item"><span class="material-symbols-rounded nav-icon">handyman</span><span class="nav-text">시설 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/proHistory" class="nav-item"><span class="material-symbols-rounded nav-icon">warning</span><span class="nav-text">비정상 세대 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/subAdmin" class="nav-item"><span class="material-symbols-rounded nav-icon">manage_accounts</span><span class="nav-text">하위관리자 계정</span></a>
         </div>
       </nav>
       <div class="admin-card">

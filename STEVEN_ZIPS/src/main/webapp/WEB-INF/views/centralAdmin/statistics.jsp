@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralAside.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralHeader.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralCommon.css" />
-    <script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
-    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>
+    <%--<script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
+    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>--%>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <style>
       .page-meta-info{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-tertiary)} .page-meta-info .material-symbols-rounded{font-size:13px}

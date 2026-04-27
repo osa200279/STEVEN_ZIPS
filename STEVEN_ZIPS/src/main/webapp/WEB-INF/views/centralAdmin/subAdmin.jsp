@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralAside.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralHeader.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralCommon.css" />
-    <script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
-    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>
+    <%--<script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
+    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>--%>
     <style id="page-style">
       .role-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
       .role-card{border:1.5px solid var(--border);border-radius:var(--r-md);padding:16px;cursor:default;transition:border-color .15s,box-shadow .15s;background:var(--card);position:relative}

@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralAside.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralHeader.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralCommon.css" />
-    <script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
-    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>
+    <%--<script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
+    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>--%>
     <style id="page-style">
       /* 시설 관리 페이지에서는 미답변 문의 플로팅 위젯을 사용하지 않음 */
       .floating-alert,
@@ -43,30 +43,30 @@
         <div class="section-divider"></div>
         <div class="nav-group">
           <span class="section-label">건물 · 입주민</span>
-          <a href="<%= request.getContextPath() %>/conManagement/buildSearch" class="nav-item" data-page="매물 통합 검색" data-parent="건물·입주민"><span class="material-symbols-rounded nav-icon">manage_search</span><span class="nav-text">매물 통합 검색</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/buildRegister" class="nav-item" data-page="건물 등록 및 열람" data-parent="건물·입주민"><span class="material-symbols-rounded nav-icon">apartment</span><span class="nav-text">건물 등록 및 열람</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/residentList" class="nav-item" data-page="입주민 관리" data-parent="건물·입주민"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-text">입주민 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/buildSearch" class="nav-item" data-page="매물 통합 검색" data-parent="건물·입주민"><span class="material-symbols-rounded nav-icon">manage_search</span><span class="nav-text">매물 통합 검색</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/buildRegister" class="nav-item" data-page="건물 등록 및 열람" data-parent="건물·입주민"><span class="material-symbols-rounded nav-icon">apartment</span><span class="nav-text">건물 등록 및 열람</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/residentList" class="nav-item" data-page="입주민 관리" data-parent="건물·입주민"><span class="material-symbols-rounded nav-icon">groups</span><span class="nav-text">입주민 관리</span></a>
         </div>
         <div class="section-divider"></div>
         <div class="nav-group">
           <span class="section-label">계약 · 재무</span>
-          <a href="<%= request.getContextPath() %>/conManagement/contractList.do" class="nav-item" data-page="계약 관리" data-parent="계약·재무"><span class="material-symbols-rounded nav-icon">contract</span><span class="nav-text">계약 관리</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/statistics" class="nav-item" data-page="통계" data-parent="계약·재무"><span class="material-symbols-rounded nav-icon">bar_chart_4_bars</span><span class="nav-text">통계</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/contractList.do" class="nav-item" data-page="계약 관리" data-parent="계약·재무"><span class="material-symbols-rounded nav-icon">contract</span><span class="nav-text">계약 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/statistics" class="nav-item" data-page="통계" data-parent="계약·재무"><span class="material-symbols-rounded nav-icon">bar_chart_4_bars</span><span class="nav-text">통계</span></a>
         </div>
         <div class="section-divider"></div>
         <div class="nav-group">
           <span class="section-label">민원 · 소통</span>
-          <a href="<%= request.getContextPath() %>/conManagement/civilCom" class="nav-item" data-page="민원 관리" data-parent="민원·소통"><span class="material-symbols-rounded nav-icon">support_agent</span><span class="nav-text">민원 관리</span><span class="nav-badge">3</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/ai" class="nav-item" data-page="문의 관리" data-parent="민원·소통"><span class="material-symbols-rounded nav-icon">forum</span><span class="nav-text">문의 관리</span><span class="nav-badge yellow">4</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/announcement" class="nav-item" data-page="공고 관리" data-parent="민원·소통"><span class="material-symbols-rounded nav-icon">campaign</span><span class="nav-text">공고 관리</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/notice" class="nav-item" data-page="통합 게시판 관리" data-parent="민원·소통"><span class="material-symbols-rounded nav-icon">article</span><span class="nav-text">통합 게시판 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/civilCom" class="nav-item" data-page="민원 관리" data-parent="민원·소통"><span class="material-symbols-rounded nav-icon">support_agent</span><span class="nav-text">민원 관리</span><span class="nav-badge">3</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/ai" class="nav-item" data-page="문의 관리" data-parent="민원·소통"><span class="material-symbols-rounded nav-icon">forum</span><span class="nav-text">문의 관리</span><span class="nav-badge yellow">4</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/announcement" class="nav-item" data-page="공고 관리" data-parent="민원·소통"><span class="material-symbols-rounded nav-icon">campaign</span><span class="nav-text">공고 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/notice" class="nav-item" data-page="통합 게시판 관리" data-parent="민원·소통"><span class="material-symbols-rounded nav-icon">article</span><span class="nav-text">통합 게시판 관리</span></a>
         </div>
         <div class="section-divider"></div>
         <div class="nav-group">
           <span class="section-label">시설 · 시스템</span>
-          <a href="<%= request.getContextPath() %>/conManagement/facility" class="nav-item active" data-page="시설 관리" data-parent="시설·시스템"><span class="material-symbols-rounded nav-icon">handyman</span><span class="nav-text">시설 관리</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/proHistory" class="nav-item" data-page="비정상 세대 관리" data-parent="시설·시스템"><span class="material-symbols-rounded nav-icon">warning</span><span class="nav-text">비정상 세대 관리</span></a>
-          <a href="<%= request.getContextPath() %>/conManagement/subAdmin" class="nav-item" data-page="하위관리자 계정" data-parent="시설·시스템"><span class="material-symbols-rounded nav-icon">manage_accounts</span><span class="nav-text">하위관리자 계정</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/facility" class="nav-item active" data-page="시설 관리" data-parent="시설·시스템"><span class="material-symbols-rounded nav-icon">handyman</span><span class="nav-text">시설 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/proHistory" class="nav-item" data-page="비정상 세대 관리" data-parent="시설·시스템"><span class="material-symbols-rounded nav-icon">warning</span><span class="nav-text">비정상 세대 관리</span></a>
+          <a href="<%= request.getContextPath() %>/centralAdmin/subAdmin" class="nav-item" data-page="하위관리자 계정" data-parent="시설·시스템"><span class="material-symbols-rounded nav-icon">manage_accounts</span><span class="nav-text">하위관리자 계정</span></a>
         </div>
       </nav>
       <div class="admin-card">
@@ -140,7 +140,7 @@
                       <th style="width: 120px">위치</th>
                       <th style="width: 110px">점검 일자</th>
                       <th style="width: 100px">점검 결과</th>
-                      <th style="width: 90px; text-align:right">고장 횟수</th>
+                      <th style="width: 90px; text-align: right">고장 횟수</th>
                       <th style="width: 100px">고장 상태</th>
                       <th style="width: 100px">업무 상태</th>
                     </tr>
@@ -152,12 +152,11 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- 시설 상세 모달 -->
-    <div class="c-modal-overlay is-hidden" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+    <div class="c-modal-overlay is-hidden" id="detailOverlay" onclick="if (event.target === this) closeDetail();">
       <div class="c-modal" id="detailModal" role="dialog" aria-labelledby="detailTitle" aria-modal="true">
         <div class="c-modal__header">
           <span id="detailTitle">시설 상세</span>
@@ -232,25 +231,20 @@
       };
 
       function filteredTab0() {
-        return TAB0.filter(r => (!state.tab0.q || r.name.toLowerCase().includes(state.tab0.q.toLowerCase()))
-          && (!state.tab0.status || r.result === state.tab0.status || r.fault === state.tab0.status));
+        return TAB0.filter((r) => (!state.tab0.q || r.name.toLowerCase().includes(state.tab0.q.toLowerCase())) && (!state.tab0.status || r.result === state.tab0.status || r.fault === state.tab0.status));
       }
       function filteredTab1() {
-        return TAB1.filter(r => (!state.tab1.q || r.name.toLowerCase().includes(state.tab1.q.toLowerCase()))
-          && (!state.tab1.inspect || r.inspect === state.tab1.inspect));
+        return TAB1.filter((r) => (!state.tab1.q || r.name.toLowerCase().includes(state.tab1.q.toLowerCase())) && (!state.tab1.inspect || r.inspect === state.tab1.inspect));
       }
       function filteredTab2() {
-        return TAB2.filter(r => (!state.tab2.q || r.name.toLowerCase().includes(state.tab2.q.toLowerCase()))
-          && (!state.tab2.task || r.task === state.tab2.task));
+        return TAB2.filter((r) => (!state.tab2.q || r.name.toLowerCase().includes(state.tab2.q.toLowerCase())) && (!state.tab2.task || r.task === state.tab2.task));
       }
 
       let _detailData = null;
 
       function openDetail(title, fields) {
         document.getElementById("detailTitle").textContent = title;
-        document.getElementById("detailContent").innerHTML = fields.map(([label, value]) =>
-          `<div class="c-info-block"><div class="c-label">${label}</div><div class="c-value">${value}</div></div>`
-        ).join("");
+        document.getElementById("detailContent").innerHTML = fields.map(([label, value]) => `<div class="c-info-block"><div class="c-label">${label}</div><div class="c-value">${value}</div></div>`).join("");
         document.getElementById("detailOverlay").classList.remove("is-hidden");
       }
 
@@ -262,8 +256,11 @@
         const all = filteredTab0();
         const last = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
         if (state.tab0.page > last) state.tab0.page = last;
-        const slice = all.slice((state.tab0.page-1)*PAGE_SIZE, state.tab0.page*PAGE_SIZE);
-        document.getElementById("tab0-tbody").innerHTML = slice.length ? slice.map((r, i) => `
+        const slice = all.slice((state.tab0.page - 1) * PAGE_SIZE, state.tab0.page * PAGE_SIZE);
+        document.getElementById("tab0-tbody").innerHTML = slice.length
+          ? slice
+              .map(
+                (r, i) => `
           <tr style="cursor:pointer" onclick="openDetail('${r.name} — 점검 이력', [['시설명','${r.name}'],['위치','${r.loc}'],['점검 일자','${r.date}'],['점검 결과','${r.result}'],['고장 횟수','${r.failures}회'],['고장 상태','${r.fault}'],['업무 상태','${r.task}']])">
             <td><strong>${r.name}</strong></td>
             <td class="muted">${r.loc}</td>
@@ -272,17 +269,26 @@
             <td style="text-align:right">${r.failures}</td>
             <td>${r.fault === "-" ? '<span style="color:var(--text-tertiary)">-</span>' : badge(r.fault)}</td>
             <td>${r.task}</td>
-          </tr>`).join("") : `<tr class="c-table__empty"><td colspan="7">조회 결과가 없습니다.</td></tr>`;
+          </tr>`,
+              )
+              .join("")
+          : `<tr class="c-table__empty"><td colspan="7">조회 결과가 없습니다.</td></tr>`;
         document.getElementById("tab0-subtitle").textContent = `총 ${all.length}건 / ${state.tab0.page} 페이지`;
-        renderPagination("tab0-pagination", all.length, state.tab0.page, last, p => { state.tab0.page = p; renderTab0(); });
+        renderPagination("tab0-pagination", all.length, state.tab0.page, last, (p) => {
+          state.tab0.page = p;
+          renderTab0();
+        });
       }
 
       function renderTab1() {
         const all = filteredTab1();
         const last = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
         if (state.tab1.page > last) state.tab1.page = last;
-        const slice = all.slice((state.tab1.page-1)*PAGE_SIZE, state.tab1.page*PAGE_SIZE);
-        document.getElementById("tab1-tbody").innerHTML = slice.length ? slice.map((r, i) => `
+        const slice = all.slice((state.tab1.page - 1) * PAGE_SIZE, state.tab1.page * PAGE_SIZE);
+        document.getElementById("tab1-tbody").innerHTML = slice.length
+          ? slice
+              .map(
+                (r, i) => `
           <tr style="cursor:pointer" onclick="openDetail('${r.name} — 고장 통계', [['시설명','${r.name}'],['위치','${r.loc}'],['점검 상태','${r.inspect}'],['고장 횟수','${r.failures}회'],['최근 고장일','${r.last}'],['고장 상태','${r.fault}'],['판정',${r.failures >= 3 ? "'반복 고장'" : "'-'"}]])">
             <td><strong>${r.name}</strong> <span class="muted" style="margin-left:4px">${r.loc}</span></td>
             <td>${badge(r.inspect)}</td>
@@ -290,16 +296,25 @@
             <td class="muted">${r.last}</td>
             <td>${badge(r.fault)}</td>
             <td>${r.failures >= 3 ? '<span style="color:var(--red);font-weight:700">반복 고장</span>' : '<span style="color:var(--text-tertiary)">-</span>'}</td>
-          </tr>`).join("") : `<tr class="c-table__empty"><td colspan="6">조회 결과가 없습니다.</td></tr>`;
-        renderPagination("tab1-pagination", all.length, state.tab1.page, last, p => { state.tab1.page = p; renderTab1(); });
+          </tr>`,
+              )
+              .join("")
+          : `<tr class="c-table__empty"><td colspan="6">조회 결과가 없습니다.</td></tr>`;
+        renderPagination("tab1-pagination", all.length, state.tab1.page, last, (p) => {
+          state.tab1.page = p;
+          renderTab1();
+        });
       }
 
       function renderTab2() {
         const all = filteredTab2();
         const last = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
         if (state.tab2.page > last) state.tab2.page = last;
-        const slice = all.slice((state.tab2.page-1)*PAGE_SIZE, state.tab2.page*PAGE_SIZE);
-        document.getElementById("tab2-tbody").innerHTML = slice.length ? slice.map((r, i) => `
+        const slice = all.slice((state.tab2.page - 1) * PAGE_SIZE, state.tab2.page * PAGE_SIZE);
+        document.getElementById("tab2-tbody").innerHTML = slice.length
+          ? slice
+              .map(
+                (r, i) => `
           <tr style="cursor:pointer" onclick="openDetail('${r.name} — 업무 확인', [['시설명','${r.name}'],['점검 일자','${r.date}'],['점검 결과','${r.result}'],['업무 상태','${r.task}'],['담당자','${r.manager}'],['처리 상태','${r.proc}']])">
             <td><strong>${r.name}</strong></td>
             <td class="muted">${r.date}</td>
@@ -307,24 +322,33 @@
             <td>${badge(r.task)}</td>
             <td>${r.manager}</td>
             <td>${r.proc}</td>
-          </tr>`).join("") : `<tr class="c-table__empty"><td colspan="6">조회 결과가 없습니다.</td></tr>`;
-        renderPagination("tab2-pagination", all.length, state.tab2.page, last, p => { state.tab2.page = p; renderTab2(); });
+          </tr>`,
+              )
+              .join("")
+          : `<tr class="c-table__empty"><td colspan="6">조회 결과가 없습니다.</td></tr>`;
+        renderPagination("tab2-pagination", all.length, state.tab2.page, last, (p) => {
+          state.tab2.page = p;
+          renderTab2();
+        });
       }
 
       function renderPagination(targetId, total, current, last, onChange) {
         const el = document.getElementById(targetId);
-        if (last <= 1) { el.innerHTML = ""; return; }
-        const btn = (label, page, opts={}) => {
+        if (last <= 1) {
+          el.innerHTML = "";
+          return;
+        }
+        const btn = (label, page, opts = {}) => {
           const cls = ["c-pagination__btn"];
           if (opts.active) cls.push("is-active");
           if (opts.disabled) cls.push("is-disabled");
           return `<button class="${cls.join(" ")}" data-page="${page}">${label}</button>`;
         };
-        let html = btn(`<span class="material-symbols-rounded">chevron_left</span>`, current-1, { disabled: current===1 });
+        let html = btn(`<span class="material-symbols-rounded">chevron_left</span>`, current - 1, { disabled: current === 1 });
         for (let i = 1; i <= last; i++) html += btn(i, i, { active: i === current });
-        html += btn(`<span class="material-symbols-rounded">chevron_right</span>`, current+1, { disabled: current===last });
+        html += btn(`<span class="material-symbols-rounded">chevron_right</span>`, current + 1, { disabled: current === last });
         el.innerHTML = html;
-        el.querySelectorAll(".c-pagination__btn").forEach(b => {
+        el.querySelectorAll(".c-pagination__btn").forEach((b) => {
           b.addEventListener("click", () => {
             if (b.classList.contains("is-disabled") || b.classList.contains("is-active")) return;
             onChange(Number(b.dataset.page));
@@ -334,19 +358,53 @@
 
       // 상단 탭 제거: tab0(점검 이력) 단일 뷰로 사용
 
-      function searchTab0(v){state.tab0.q=v;state.tab0.page=1;renderTab0();}
-      function filterTab0Status(v){state.tab0.status=v;state.tab0.page=1;renderTab0();}
-      function searchTab1(v){state.tab1.q=v;state.tab1.page=1;renderTab1();}
-      function filterTab1State(v){state.tab1.inspect=v;state.tab1.page=1;renderTab1();}
-      function searchTab2(v){state.tab2.q=v;state.tab2.page=1;renderTab2();}
-      function filterTab2State(v){state.tab2.task=v;state.tab2.page=1;renderTab2();}
+      function searchTab0(v) {
+        state.tab0.q = v;
+        state.tab0.page = 1;
+        renderTab0();
+      }
+      function filterTab0Status(v) {
+        state.tab0.status = v;
+        state.tab0.page = 1;
+        renderTab0();
+      }
+      function searchTab1(v) {
+        state.tab1.q = v;
+        state.tab1.page = 1;
+        renderTab1();
+      }
+      function filterTab1State(v) {
+        state.tab1.inspect = v;
+        state.tab1.page = 1;
+        renderTab1();
+      }
+      function searchTab2(v) {
+        state.tab2.q = v;
+        state.tab2.page = 1;
+        renderTab2();
+      }
+      function filterTab2State(v) {
+        state.tab2.task = v;
+        state.tab2.page = 1;
+        renderTab2();
+      }
 
-      renderTab0(); renderTab1(); renderTab2();
+      renderTab0();
+      renderTab1();
+      renderTab2();
     </script>
     <script>
-      function toggleSidebar(){var s=document.getElementById("sidebar");if(s)s.classList.toggle("collapsed");}
-      var logoIcon=document.getElementById("logoIcon");
-      if(logoIcon){logoIcon.onclick=function(){var s=document.getElementById("sidebar");if(s&&s.classList.contains("collapsed"))toggleSidebar();};}
+      function toggleSidebar() {
+        var s = document.getElementById("sidebar");
+        if (s) s.classList.toggle("collapsed");
+      }
+      var logoIcon = document.getElementById("logoIcon");
+      if (logoIcon) {
+        logoIcon.onclick = function () {
+          var s = document.getElementById("sidebar");
+          if (s && s.classList.contains("collapsed")) toggleSidebar();
+        };
+      }
     </script>
   </body>
 </html>
