@@ -11,9 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
-
 @Slf4j
 @Controller
 @RequestMapping("/member")
@@ -56,13 +56,14 @@ public class MyPageController {
 
     @PostMapping("/updateSimple")
     public String updateMember(MemberVO member,
-                               @AuthenticationPrincipal CustomUser customUser,
-                               Model model) {
+                               @RequestParam(value="profileImage", required=false) MultipartFile profileImage,
+                               @AuthenticationPrincipal CustomUser customUser) {
 
         if (customUser != null && customUser.getMember() != null) {
             String userNo = customUser.getMember().getUserNo();
             member.setUserNo(userNo.trim());
         }
+
 
         if(member.getUserPw() == null || member.getUserPw().isEmpty()){
             member.setUserPw(null);  // 🔥 그냥 null 넘겨
@@ -107,4 +108,6 @@ public class MyPageController {
 
         return "OK";
     }
+
+
 }
