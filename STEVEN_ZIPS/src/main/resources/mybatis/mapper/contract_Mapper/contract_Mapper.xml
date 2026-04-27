@@ -12,7 +12,71 @@
         <if test="status != null and status != ''">
             and rc.ctrt_stts_cd = #{status}
         </if>
+        <if test="ctrtNo != null and ctrtNo != ''">
+            and rc.rent_ctrt_no = #{ctrtNo}
+
+        </if>
+        <if test="expiry != null and expiry != ''">
+            <choose>
+                <when test="expiry == 'expired'">
+                    AND rc.MVOUT_DT &lt; SYSDATE
+                </when>
+                <otherwise>
+                    AND rc.MVOUT_DT BETWEEN SYSDATE AND SYSDATE + ${expiry}
+                </otherwise>
+            </choose>
+        </if>
+
     </sql>
+    <insert id="insertContract" parameterType="kr.or.ddit.domain.central.contract.vo.RentContractVO">
+        <selectKey keyProperty="rentCtrtNo" resultType="String" order="BEFORE">
+            SELECT TO_CHAR(SEQ_RENT_CTRT.NEXTVAL) FROM DUAL
+        </selectKey>
+        INSERT INTO RENT_CTRT (
+        RENT_CTRT_NO,
+        RENT_LSTG_NO,
+        CTRT_ID,
+        MVIN_YN,
+        MVIN_DT,
+        MVOUT_DT,
+        MVOUT_CMPL_DT,
+        REG_DT,
+        MDF_DT,
+        CTRT_STTS_CD,
+        CTRT_AMT,
+        MID_PAY_AMT,
+        BAL_AMT,
+        DPST_AMT,
+        MTHLY_RENT_AMT,
+        USER_NO
+        ) VALUES (
+        #{rentCtrtNo},
+        #{rentLstgNo},
+        #{ctrtId},
+        #{mvinYn},
+        <choose>
+            <when test="mvinDt != null and mvinDt != ''">TO_DATE(#{mvinDt}, 'YYYY-MM-DD')</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        <choose>
+            <when test="mvoutDt != null and mvoutDt != ''">TO_DATE(#{mvoutDt}, 'YYYY-MM-DD')</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        <choose>
+            <when test="mvoutCmplDt != null and mvoutCmplDt != ''">TO_DATE(#{mvoutCmplDt}, 'YYYY-MM-DD')</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        SYSDATE,
+        SYSDATE,
+        #{ctrtSttsCd},
+        #{ctrtAmt},
+        #{midPayAmt},
+        #{balAmt},
+        #{dpstAmt},
+        #{mthlyRentAmt},
+        #{userNo}
+        )
+    </insert>
 
     <select id="selectContractCount"
             parameterType="kr.or.ddit.domain.central.contract.vo.PaginationInfoVO"
@@ -42,14 +106,16 @@
         FROM (
         SELECT
         ROW_NUMBER() OVER (ORDER BY rc.REG_DT DESC) AS rn,
-        rc.RENT_CTRT_NO AS rentCtrtNo,
-        rl.RENT_TYPE_CD AS rentTypeCd,
-        m.USER_ID AS userId,
-        rr1.APT_CMPLEX_NO AS aptCmplexNm,
-        rc.REG_DT AS regDt,
-        rc.CTRT_STTS_CD AS ctrtSttsCd
+        rc.RENT_CTRT_NO  AS rentCtrtNo,
+        rl.RENT_TYPE_CD  AS rentTypeCd,
+        m.USER_ID        AS userId,
+        ac.APT_CMPLEX_NM AS aptCmplexNm,
+        rc.MVIN_DT       AS mvinDt,
+        rc.MVOUT_DT      AS mvoutDt,
+        rc.REG_DT        AS regDt,
+        rc.CTRT_STTS_CD  AS ctrtSttsCd
         FROM RENT_CTRT rc
-        JOIN MEMBER m ON m.USER_NO = rc.USER_NO
+        JOIN MEMBER m        ON m.USER_NO      = rc.USER_NO
         JOIN RENT_LISTING rl ON rl.RENT_LSTG_NO = rc.RENT_LSTG_NO
         LEFT JOIN (
         SELECT user_no, apt_cmplex_no
@@ -60,10 +126,14 @@
         )
         WHERE rn = 1
         ) rr1 ON rr1.USER_NO = rc.USER_NO
+        LEFT JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = rr1.APT_CMPLEX_NO
         WHERE 1=1
         <include refid="contractSearch"/>
         )
         WHERE rn BETWEEN #{startRow} AND #{endRow}
-        ORDER BY rn DESC
+    </select>
+    <select id="selectContractDetail" resultType="kr.or.ddit.domain.central.contract.vo.ContractVO" parameterType="string">
+        select RENT_CTRT_NO, RENT_LSTG_NO, USER_NO, CTRT_STTS_CD
+        from RENT_CTRT
     </select>
 </mapper>

@@ -1322,6 +1322,47 @@ input[type="range"].c-range::-moz-range-thumb {
   background: var(--gray-soft);
   text-align: center;
 }
+
+/* ================================================
+   FILE ROW / SIMPLE UPLOAD — 계약/민원 상세/등록에서 공통으로 쓰는 간단 파일 행
+   - 테이블/모달 내부의 "파일명 + 버튼" 형태
+   ================================================ */
+.file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--gray-soft);
+  border-radius: var(--r-sm);
+}
+.file-row + .file-row { margin-top: 6px; }
+.file-name {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+}
+.file-upload-row { display: flex; align-items: center; gap: 12px; }
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  background: var(--gray-soft);
+  white-space: nowrap;
+}
+.file-label:hover { background: var(--border); }
+.file-label input[type="file"] { display: none; }
+.file-fname { font-size: 12px; color: var(--text-tertiary); }
+.form-err { font-size: 11px; color: var(--red); min-height: 14px; }
+.req { color: var(--red); }
 .c-drop-zone:hover,
 .c-drop-zone.drag-over {
   border-color: var(--accent);
