@@ -24,8 +24,6 @@ public class CustomUserDetailsService implements UserDetailsService{
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		log.info("## 1234의 진짜 암호문: " + passwordEncoder.encode("1234"));
-		log.info("## abcd의 진짜 암호문: " + passwordEncoder.encode("abcd"));
 		log.info("## CustomUserDetailsService.loadUserByUsername() 실행...!");
 		log.info("## username : " + username);
 		

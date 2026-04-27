@@ -134,14 +134,14 @@ public class GoogleDriveService {
     }
 
     /**
-     *
+     * 전체 경로를 통해 타겟 파일 찾기
      * @param service
      * @param rootId
      * @param fullPath  파일명까지 포함한 전체 경로(attach_file테이블의 file_path)
      * @return googleId 구글 파일 아이디 값
      * @throws IOException
      */
-    private String getFolderIdByPath(Drive service, String rootId, String fullPath) throws IOException {
+    public String getFileIdByPath(Drive service, String rootId, String fullPath) throws IOException {
         int lastSlash = fullPath.lastIndexOf("/");
 
         String pathParts= "";

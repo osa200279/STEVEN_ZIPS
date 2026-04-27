@@ -2,11 +2,15 @@ package kr.or.ddit.domain.ztest;
 
 import jakarta.servlet.http.HttpSession;
 import kr.or.ddit.common.ServiceResult;
+import kr.or.ddit.common.file.mapper.IAttachFileMapper;
+import kr.or.ddit.common.file.service.IAttachFileService;
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.member.service.IMemberService;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,34 +26,29 @@ public class MyPageController {
     @Autowired
     private IMemberService service;
 
+    @Autowired
+    private IAttachFileService attachFileService;
+
+    @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/mypage.do")
-    public String mypage(@AuthenticationPrincipal CustomUser customUser, Model model) {
+    public String myPage(@AuthenticationPrincipal CustomUser customUser, Model model) {
+        // 인증 객체에서 멤버 정보 가져오기
+        MemberVO member = customUser.getMember();
+        String profFileId = member.getProfFileId();
 
-        MemberVO member = new MemberVO();
+        if(profFileId != null && !profFileId.isBlank()){
+            String FileGroupNo = profFileId.split("_")[0];
+            String fileSaveUuid = profFileId.split("_")[1];
 
-        if (customUser != null && customUser.getMember() != null) {
-            member = customUser.getMember();
-        }
-        String role = "ROLE_USER";
+            AttachFileVO file = attachFileService.getAttachFile(FileGroupNo, fileSaveUuid);
 
-        if (customUser != null) {
-            if (customUser.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                role = "ROLE_ADMIN";
-            } else if (customUser.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_RESIDENT"))) {
-                role = "ROLE_RESIDENT";
+            if(file != null){
+                model.addAttribute("file", file);   // 파일 정보 전체
+                model.addAttribute("googleId", file.getGoogleId()); // 파일의 구글아이디만 추출
             }
         }
+
         model.addAttribute("member", member);
-        model.addAttribute("role", role);
-        model.addAttribute("activeMember", member.getUserYn() == 'Y');
-        model.addAttribute("smsRcv", member.getSmsRcvYn() == 'Y');
-        model.addAttribute("smsNtcRcv", member.getSmsNtcRcvYn() == 'Y');
-        model.addAttribute("smsCtrtRcv", member.getSmsCtrtRcvYn() == 'Y');
-        model.addAttribute("emlRcv", member.getEmlRcvYn() == 'Y');
-        model.addAttribute("emlNtcRcv", member.getEmlNtcRcvYn() == 'Y');
-        model.addAttribute("emlCtrtRcv", member.getEmlCtrtRcvYn() == 'Y');
 
         return "ztestview/mypage";
     }

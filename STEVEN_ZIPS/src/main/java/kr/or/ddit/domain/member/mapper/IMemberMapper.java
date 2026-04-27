@@ -1,6 +1,8 @@
 package kr.or.ddit.domain.member.mapper;
+import kr.or.ddit.common.ServiceResult;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
 
@@ -11,6 +13,9 @@ public interface IMemberMapper {
     MemberVO readByUserInfo(String username);
 
     int joinMember(MemberVO member);
+
+    int idCheck(@Param("userId") String userId);
+
     int updateMember(MemberVO member);
 
     void addAuth(String userNo);

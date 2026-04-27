@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -20,7 +20,11 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        .toggle:checked { background: #16a34a; }
+
+        .toggle:checked {
+            background: #16a34a;
+        }
+
         .toggle::before {
             content: "";
             width: 18px;
@@ -32,9 +36,11 @@
             left: 2px;
             transition: 0.3s;
         }
+
         .toggle:checked::before {
             transform: translateX(20px);
         }
+
         .form-group {
             display: flex;
             flex-direction: column;
@@ -54,19 +60,22 @@
             font-size: 14px;
             background-color: #FFF;
         }
+
         .input-control::placeholder {
             color: #aaa;
         }
+
         .toggle:disabled {
             opacity: 0.35;
             cursor: not-allowed;
             pointer-events: none;
         }
+
         .card {
             background: #fff;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .form-grid {
@@ -123,8 +132,8 @@
 <body class="bg-gray-50">
 
 
-    <%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-        <div class="max-w-6xl mx-auto p-8 pt-24">
+<%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
+<div class="max-w-6xl mx-auto p-8 pt-24">
     <!-- 상단 -->
     <div class="flex justify-between items-center mb-8">
         <div>
@@ -142,268 +151,247 @@
         <div class="col-span-1">
             <%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
         </div>
+
         <div class="col-span-3 grid grid-cols-3 gap-6">
 
 
-        <!-- 좌측 프로필 -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm">
+            <!-- 좌측 프로필 -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
 
-            <div class="w-24 h-24 mx-auto rounded-full bg-green-100 flex items-center justify-center text-2xl font-bold text-green-700">
-                ${fn:substring(member.userNm,0,1)}
-            </div>
-
-            <h2 class="text-center text-xl font-bold mt-4">
-                ${member.userNm}
-            </h2>
-
-            <p class="text-center text-gray-500 text-sm">
-                가입일: <fmt:formatDate value="${member.regDt}" pattern="yyyy-MM-dd"/>
-            </p>
-
-            <div class="border-t mt-6 pt-4 grid grid-cols-2 text-center">
-
-
-
-
-
-
-                <div>
-                    <p class="text-gray-400 text-xs">회원번호</p>
-                    <p class="font-semibold">${member.userNo}</p>
-                </div>
-                <div>
-                    <p class="text-gray-400 text-xs">회원구분</p>
-                    <p class="font-semibold">
-                        <c:choose>
-                            <c:when test="${role=='ROLE_ADMIN'}">관리자</c:when>
-                            <c:when test="${role=='ROLE_RESIDENT'}">입주민</c:when>
-                            <c:otherwise>사용자</c:otherwise>
-                        </c:choose>
-                    </p>
-                </div>
-            </div>
-            <!-- 🔥 계약신청내역조회 버튼 -->
-            <div class="mt-6">
-                <button onclick="openContractPage()"
-                        class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
-                    계약신청내역조회
-                </button>
-            </div>
-
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-        <form action="${pageContext.request.contextPath}/member/updateSimple" method="post" class="space-y-6">
-
-            <!-- 🔥 반드시 필요 -->
-
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-
-
-            <input type="hidden" name="userNo" value="${member.userNo}"/>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <!-- 이름 -->
-                <div class="space-y-2">
-                    <label class="text-gray-500">이름</label>
-                    <input type="text" name="userNm"
-                           value="${member.userNm}"
-                           class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
+                <div class="w-24 h-24 mx-auto rounded-full bg-green-100 flex items-center justify-center text-2xl font-bold text-green-700">
+                    ${fn:substring(member.userNm,0,1)}
                 </div>
 
-                <!-- 아이디 -->
-                <div class="space-y-2">
-                    <label class="text-gray-500">아이디</label>
-                    <input type="text" value="${member.userId}" readonly
-                           class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
-                </div>
+                <h2 class="text-center text-xl font-bold mt-4"></h2>
 
-                <!-- 회원번호 -->
-                <div class="space-y-2">
-                    <label class="text-gray-500">회원번호</label>
-                    <input type="text" value="${member.userNo}" readonly
-                           class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
-                </div>
+                <p class="text-center text-gray-500 text-sm">
+                    가입일: <fmt:formatDate value="${member.regDt}" pattern="yyyy-MM-dd"/>
+                </p>
 
-                <!-- 프로필ID -->
-          <%--      <div class="space-y-2">
-                    <label class="text-gray-500">프로필ID</label>
-                    <input type="text" value="${member.profileId}" readonly
-                           class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
-                </div>--%>
+                <div class="border-t mt-6 pt-4 grid grid-cols-2 text-center">
 
-            </div>
-
-            <hr class="my-2"/>
-
-            <!-- 🔥 수정 가능 영역 -->
-            <div class="space-y-6">
-
-                <div class="space-y-2">
-                    <label>이메일</label>
-                    <input type="email" name="userEml"
-                           value="${member.userEml}"
-                           class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
-                </div>
-
-                <div class="space-y-2">
-                    <label>연락처</label>
-                    <input type="text" name="userTelno"
-                           value="${member.userTelno}"
-                           class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
-                </div>
-
-                <div class="space-y-2">
-                    <label>비밀번호</label>
-                    <input type="password" name="userPw"
-                           placeholder="변경 시 입력"
-                           class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
-                </div>
-
-            </div>
-
-            <!-- 버튼 -->
-            <div class="pt-4">
-                <button type="submit"
-                        class="w-full bg-green-600 text-white py-4 rounded-xl font-bold">
-                    수정 완료
-                </button>
-            </div>
-
-        </form>
-        </div>
-        <div class="bg-white rounded-2xl shadow-sm divide-y">
-            <!-- 하단 버튼 -->
-            <div class="flex justify-end gap-3 mt-6">
-            </div>
-
-
-
-            <!-- SMS 전체 -->
-            <div class="px-6 py-5">
-
-                <!-- 부모 -->
-                <div class="flex justify-between items-center mb-4">
                     <div>
-                        <p class="font-semibold">문자 알림</p>
-                        <p class="text-sm text-gray-400">긴급 알림 수신</p>
+                        <p class="text-gray-400 text-xs">회원번호</p>
+                        <p class="font-semibold">${member.userNo}</p>
                     </div>
-                    <input type="checkbox"
-                           id="smsRcv"
-                           name="smsRcvYn"
-                           class="toggle"
-                    ${smsRcv ? "checked":""}>
-                </div>
-
-                <!-- 자식 -->
-                <div class="ml-6 space-y-4">
-
-                    <!-- 공지 -->
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-medium">공지사항 알림</p>
-                            <p class="text-xs text-gray-400">관리사무소 공지</p>
-                        </div>
-                        <input type="checkbox"
-                               class="toggle sms-child"
-                               name="smsNtcRcvYn"
-                        ${smsNtcRcv ? "checked":""}>
-                    </div>
-
-                    <!-- 계약 -->
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-medium">계약 상태 알림</p>
-                            <p class="text-xs text-gray-400">신청 상태 변경</p>
-                        </div>
-                        <input type="checkbox"
-                               class="toggle sms-child"
-                               name="smsCtrtRcvYn"
-                        ${smsCtrtRcv ? "checked":""}>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- 이메일 전체 -->
-            <div class="px-6 py-5">
-
-                <!-- 부모 -->
-                <div class="flex justify-between items-center mb-4">
                     <div>
-                        <p class="font-semibold">이메일 알림</p>
-                        <p class="text-sm text-gray-400">상세 안내 수신</p>
+                        <p class="text-gray-400 text-xs">회원구분</p>
+                        <p class="font-semibold">
+                            <c:choose>
+                                <c:when test="${role=='ROLE_ADMIN'}">중앙관리자</c:when>
+                                <c:when test="${role=='ROLE_MGR'}">단지관리자</c:when>
+                                <c:when test="${role=='ROLE_RESIDENT'}">입주민</c:when>
+                                <c:otherwise>일반회원</c:otherwise>
+                            </c:choose>
+                        </p>
                     </div>
-                    <input type="checkbox"
-                           id="emlRcv"
-                           name="emlRcvYn"
-                           class="toggle"
-                    ${emlRcv ? "checked":""}>
                 </div>
-
-                <!-- 자식 -->
-                <div class="ml-6 space-y-4">
-
-                    <!-- 공지 -->
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-medium">공지사항 알림</p>
-                            <p class="text-xs text-gray-400">이메일 공지</p>
-                        </div>
-                        <input type="checkbox"
-                               class="toggle eml-child"
-                               name="emlNtcRcvYn"
-                        ${emlNtcRcv ? "checked":""}>
-                    </div>
-
-                    <!-- 계약 -->
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="font-medium">계약 상태 알림</p>
-                            <p class="text-xs text-gray-400">이메일 상태 변경</p>
-                        </div>
-                        <input type="checkbox"
-                               class="toggle eml-child"
-                               name="emlCtrtRcvYn"
-                        ${emlCtrtRcv ? "checked":""}>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="p-6 flex justify-end">
-
-                <form action="${pageContext.request.contextPath}/member/delete"
-                      method="post"
-                      onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
-
-                    <button type="submit"
-                            class="px-5 py-2 border border-red-600 text-red-600 rounded-lg">
-                        탈퇴하기
+                <!-- 🔥 계약신청내역조회 버튼 -->
+                <div class="mt-6">
+                    <button onclick="openContractPage()"
+                            class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                        계약신청내역조회
                     </button>
-                </form>
+                </div>
 
             </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <form action="${pageContext.request.contextPath}/member/updateSimple" method="post" class="space-y-6">
+
+                    <!-- 🔥 반드시 필요 -->
+
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+
+
+                    <input type="hidden" name="userNo" value="${member.userNo}"/>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <!-- 이름 -->
+                        <div class="space-y-2">
+                            <label class="text-gray-500">이름</label>
+                            <input type="text" name="userNm"
+                                   value="${member.userNm}"
+                                   class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
+                        </div>
+
+                        <!-- 아이디 -->
+                        <div class="space-y-2">
+                            <label class="text-gray-500">아이디</label>
+                            <input type="text" value="${member.userId}" readonly
+                                   class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
+                        </div>
+
+                    </div>
+
+                    <hr class="my-2"/>
+
+                    <!-- 🔥 수정 가능 영역 -->
+                    <div class="space-y-6">
+
+                        <div class="space-y-2">
+                            <label>이메일</label>
+                            <input type="email" name="userEml"
+                                   value="${member.userEml}"
+                                   class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label>연락처</label>
+                            <input type="text" name="userTelno"
+                                   value="${member.userTelno}"
+                                   class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label>비밀번호</label>
+                            <input type="password" name="userPw"
+                                   placeholder="변경 시 입력"
+                                   class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
+                        </div>
+
+                    </div>
+
+                    <!-- 버튼 -->
+                    <div class="pt-4">
+                        <button type="submit"
+                                class="w-full bg-green-600 text-white py-4 rounded-xl font-bold">
+                            수정 완료
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm divide-y">
+                <!-- 하단 버튼 -->
+                <div class="flex justify-end gap-3 mt-6">
+                </div>
+
+
+                <!-- SMS 전체 -->
+                <div class="px-6 py-5">
+
+                    <!-- 부모 -->
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <p class="font-semibold">문자 알림</p>
+                            <p class="text-sm text-gray-400">긴급 알림 수신</p>
+                        </div>
+                        <input type="checkbox"
+                               id="smsRcv"
+                               name="smsRcvYn"
+                               class="toggle"
+                        ${smsRcv ? "checked":""}>
+                    </div>
+
+                    <!-- 자식 -->
+                    <div class="ml-6 space-y-4">
+
+                        <!-- 공지 -->
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-medium">공지사항 알림</p>
+                                <p class="text-xs text-gray-400">관리사무소 공지</p>
+                            </div>
+                            <input type="checkbox"
+                                   class="toggle sms-child"
+                                   name="smsNtcRcvYn"
+                            ${smsNtcRcv ? "checked":""}>
+                        </div>
+
+                        <!-- 계약 -->
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-medium">계약 상태 알림</p>
+                                <p class="text-xs text-gray-400">신청 상태 변경</p>
+                            </div>
+                            <input type="checkbox"
+                                   class="toggle sms-child"
+                                   name="smsCtrtRcvYn"
+                            ${smsCtrtRcv ? "checked":""}>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 이메일 전체 -->
+                <div class="px-6 py-5">
+
+                    <!-- 부모 -->
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <p class="font-semibold">이메일 알림</p>
+                            <p class="text-sm text-gray-400">상세 안내 수신</p>
+                        </div>
+                        <input type="checkbox"
+                               id="emlRcv"
+                               name="emlRcvYn"
+                               class="toggle"
+                        ${emlRcv ? "checked":""}>
+                    </div>
+
+                    <!-- 자식 -->
+                    <div class="ml-6 space-y-4">
+
+                        <!-- 공지 -->
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-medium">공지사항 알림</p>
+                                <p class="text-xs text-gray-400">이메일 공지</p>
+                            </div>
+                            <input type="checkbox"
+                                   class="toggle eml-child"
+                                   name="emlNtcRcvYn"
+                            ${emlNtcRcv ? "checked":""}>
+                        </div>
+
+                        <!-- 계약 -->
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="font-medium">계약 상태 알림</p>
+                                <p class="text-xs text-gray-400">이메일 상태 변경</p>
+                            </div>
+                            <input type="checkbox"
+                                   class="toggle eml-child"
+                                   name="emlCtrtRcvYn"
+                            ${emlCtrtRcv ? "checked":""}>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="p-6 flex justify-end">
+
+                    <form action="${pageContext.request.contextPath}/member/delete"
+                          method="post"
+                          onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
+
+                        <button type="submit"
+                                class="px-5 py-2 border border-red-600 text-red-600 rounded-lg">
+                            탈퇴하기
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+
         </div>
-
-
-
-    </div>
         <!-- 🔥 알림 설정 -->
 
-            <!-- SMS 수신 (부모) -->
-            <!-- 🔥 알림 설정 -->
+        <!-- SMS 수신 (부모) -->
+        <!-- 🔥 알림 설정 -->
 
-            <meta name="_csrf" content="${_csrf.token}"/>
-            <meta name="_csrf_header" content="${_csrf.headerName}"/>
-
-        </div>
+        <meta name="_csrf" content="${_csrf.token}"/>
+        <meta name="_csrf_header" content="${_csrf.headerName}"/>
+    </div>
+</div>
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
-        const smsParent   = document.getElementById("smsRcv");
-        const emlParent   = document.getElementById("emlRcv");
+        const smsParent = document.getElementById("smsRcv");
+        const emlParent = document.getElementById("emlRcv");
         const smsChildren = document.querySelectorAll(".sms-child");
         const emlChildren = document.querySelectorAll(".eml-child");
 
@@ -419,9 +407,9 @@
             smsParent.checked = s.smsRcvYn === 'Y';
             emlParent.checked = s.emlRcvYn === 'Y';
 
-            document.querySelector("[name=smsNtcRcvYn]").checked  = s.smsNtcRcvYn  === 'Y';
+            document.querySelector("[name=smsNtcRcvYn]").checked = s.smsNtcRcvYn === 'Y';
             document.querySelector("[name=smsCtrtRcvYn]").checked = s.smsCtrtRcvYn === 'Y';
-            document.querySelector("[name=emlNtcRcvYn]").checked  = s.emlNtcRcvYn  === 'Y';
+            document.querySelector("[name=emlNtcRcvYn]").checked = s.emlNtcRcvYn === 'Y';
             document.querySelector("[name=emlCtrtRcvYn]").checked = s.emlCtrtRcvYn === 'Y';
         }
 
@@ -429,7 +417,7 @@
         function updateSmsChildren() {
             smsChildren.forEach(ch => {
                 if (!smsParent.checked) {
-                    ch.checked  = false;
+                    ch.checked = false;
                     ch.disabled = true;
                 } else {
                     ch.disabled = false;
@@ -441,7 +429,7 @@
         function updateEmlChildren() {
             emlChildren.forEach(ch => {
                 if (!emlParent.checked) {
-                    ch.checked  = false;
+                    ch.checked = false;
                     ch.disabled = true;
                 } else {
                     ch.disabled = false;
@@ -453,25 +441,24 @@
         /* ── 서버 저장 + localStorage 저장 ── */
         function updateAlarmSetting() {
 
-            const token  = document.querySelector("meta[name='_csrf']").content;
+            const token = document.querySelector("meta[name='_csrf']").content;
             const header = document.querySelector("meta[name='_csrf_header']").content;
 
             const smsOn = smsParent.checked;
             const emlOn = emlParent.checked;
 
             const data = {
-                smsRcvYn:     smsOn ? 'Y' : 'N',
-                smsNtcRcvYn:  smsOn && document.querySelector("[name=smsNtcRcvYn]").checked  ? 'Y' : 'N',
+                smsRcvYn: smsOn ? 'Y' : 'N',
+                smsNtcRcvYn: smsOn && document.querySelector("[name=smsNtcRcvYn]").checked ? 'Y' : 'N',
                 smsCtrtRcvYn: smsOn && document.querySelector("[name=smsCtrtRcvYn]").checked ? 'Y' : 'N',
 
-                emlRcvYn:     emlOn ? 'Y' : 'N',
-                emlNtcRcvYn:  emlOn && document.querySelector("[name=emlNtcRcvYn]").checked  ? 'Y' : 'N',
+                emlRcvYn: emlOn ? 'Y' : 'N',
+                emlNtcRcvYn: emlOn && document.querySelector("[name=emlNtcRcvYn]").checked ? 'Y' : 'N',
                 emlCtrtRcvYn: emlOn && document.querySelector("[name=emlCtrtRcvYn]").checked ? 'Y' : 'N'
             };
 
             /* localStorage에 즉시 저장 */
             localStorage.setItem(LS_KEY, JSON.stringify(data));
-
 
 
             fetch("/member/alarm/update", {

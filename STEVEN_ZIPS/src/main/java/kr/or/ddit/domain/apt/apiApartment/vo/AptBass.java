@@ -23,17 +23,18 @@ public class AptBass {
     private String kaptUrl;     // 홈페이지 주소
     private String codeAptNm;   // 단지분류
     private String doroJuso;    // 도로주소
+    private String kaptdaCnt;   // 세대 수
 
     private String kaptUsedate; // 사용일
 
-
     private double kaptMarea;   // 관리비 부과면적
 
-    private int kaptMparea60;   // 전용면적별 세대현황
-    private int kaptMparea85;   // 전용면적별 세대현황
-    private int kaptMparea135;  // 전용면적별 세대현황
-    private int kaptMparea136;  // 전용면적별 세대현황
+    private String kaptMparea60;   // 전용면적별 세대현황
+    private String kaptMparea85;   // 전용면적별 세대현황
+    private String kaptMparea135;  // 전용면적별 세대현황
+    private String kaptMparea136;  // 전용면적별 세대현황
 
+    private int ktownFlrNo;
     private int kaptTopFloor;   // 최고층
     private int kaptBaseFloor;  // 지하층
 }

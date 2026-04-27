@@ -17,8 +17,8 @@ Date: 2026-04-24
 @Component
 public class AESUtil {
     private final String alg = "AES/CBC/PKCS5Padding";
-    private final String key = "12345678901234567890123456789012"; // 32글자 키
-    private final String iv = key.substring(0, 16); // 16글자 IV
+    private final String key = "v9Z2kR8nL4mP7qX1wY5bC3jA6sT0uD4f"; // 32글자 키
+    private final String iv = "aafec1c3aafec1c3"; // 16글자 IV
 
     // 암호화
     public String encrypt(String text) throws Exception {

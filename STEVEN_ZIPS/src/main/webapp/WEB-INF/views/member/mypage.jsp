@@ -2,7 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -36,14 +35,96 @@
         .toggle:checked::before {
             transform: translateX(20px);
         }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #DDD;
+            border-radius: 10px;
+            font-size: 14px;
+            background-color: #FFF;
+        }
+        .input-control::placeholder {
+            color: #aaa;
+        }
+        .toggle:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-grid div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #777;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        input:read-only {
+            background-color: #f5f5f5;
+        }
+
+        .btn-area {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #editBtn {
+            background: #666;
+            color: #fff;
+        }
+
+        #saveBtn {
+            background: #4CAF50;
+            color: #fff;
+        }
     </style>
 
 </head>
-
 <body class="bg-gray-50">
 
-<div class="max-w-6xl mx-auto p-8">
 
+    <%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
+        <div class="max-w-6xl mx-auto p-8 pt-24">
     <!-- 상단 -->
     <div class="flex justify-between items-center mb-8">
         <div>
@@ -57,6 +138,12 @@
     </div>
 
     <div class="grid grid-cols-3 gap-6">
+
+        <div class="col-span-1">
+            <%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
+        </div>
+        <div class="col-span-3 grid grid-cols-3 gap-6">
+
 
         <!-- 좌측 프로필 -->
         <div class="bg-white rounded-2xl p-5 shadow-sm">
@@ -74,6 +161,12 @@
             </p>
 
             <div class="border-t mt-6 pt-4 grid grid-cols-2 text-center">
+
+
+
+
+
+
                 <div>
                     <p class="text-gray-400 text-xs">회원번호</p>
                     <p class="font-semibold">${member.userNo}</p>
@@ -89,201 +182,342 @@
                     </p>
                 </div>
             </div>
-
+            <!-- 🔥 계약신청내역조회 버튼 -->
+            <div class="mt-6">
+                <button onclick="openContractPage()"
+                        class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                    계약신청내역조회
+                </button>
+            </div>
 
         </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm">
+        <form action="${pageContext.request.contextPath}/member/updateSimple" method="post" class="space-y-6">
 
-        <!-- 우측 -->
-        <div class="col-span-2 space-y-6">
+            <!-- 🔥 반드시 필요 -->
 
-            <!-- 기본 정보 -->
-            <div class="bg-white rounded-2xl shadow-sm">
-                <div class="px-6 py-4 border-b font-semibold">기본 정보</div>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 
-                <div class="grid grid-cols-2 gap-6 p-6">
-                    <div><p class="text-gray-400 text-xs">이름</p>${member.userNm}</div>
-                    <div><p class="text-gray-400 text-xs">아이디</p>${member.userId}</div>
-                    <div><p class="text-gray-400 text-xs">이메일</p>${member.userEml}</div>
-                    <div><p class="text-gray-400 text-xs">연락처</p>${member.userTelno}</div>
-                    <div><p class="text-gray-400 text-xs">주민번호</p>${member.userRrno}</div>
-                    <div><p class="text-gray-400 text-xs">프로필ID</p>${member.profFileId}</div>
+
+            <input type="hidden" name="userNo" value="${member.userNo}"/>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- 이름 -->
+                <div class="space-y-2">
+                    <label class="text-gray-500">이름</label>
+                    <input type="text" name="userNm"
+                           value="${member.userNm}"
+                           class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <!-- 아이디 -->
+                <div class="space-y-2">
+                    <label class="text-gray-500">아이디</label>
+                    <input type="text" value="${member.userId}" readonly
+                           class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
+                </div>
+
+                <!-- 회원번호 -->
+                <div class="space-y-2">
+                    <label class="text-gray-500">회원번호</label>
+                    <input type="text" value="${member.userNo}" readonly
+                           class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
+                </div>
+
+                <!-- 프로필ID -->
+          <%--      <div class="space-y-2">
+                    <label class="text-gray-500">프로필ID</label>
+                    <input type="text" value="${member.profileId}" readonly
+                           class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
+                </div>--%>
+
+            </div>
+
+            <hr class="my-2"/>
+
+            <!-- 🔥 수정 가능 영역 -->
+            <div class="space-y-6">
+
+                <div class="space-y-2">
+                    <label>이메일</label>
+                    <input type="email" name="userEml"
+                           value="${member.userEml}"
+                           class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <div class="space-y-2">
+                    <label>연락처</label>
+                    <input type="text" name="userTelno"
+                           value="${member.userTelno}"
+                           class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
+                </div>
+
+                <div class="space-y-2">
+                    <label>비밀번호</label>
+                    <input type="password" name="userPw"
+                           placeholder="변경 시 입력"
+                           class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500">
+                </div>
+
+            </div>
+
+            <!-- 버튼 -->
+            <div class="pt-4">
+                <button type="submit"
+                        class="w-full bg-green-600 text-white py-4 rounded-xl font-bold">
+                    수정 완료
+                </button>
+            </div>
+
+        </form>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm divide-y">
+            <!-- 하단 버튼 -->
+            <div class="flex justify-end gap-3 mt-6">
+            </div>
+
+
+
+            <!-- SMS 전체 -->
+            <div class="px-6 py-5">
+
+                <!-- 부모 -->
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <p class="font-semibold">문자 알림</p>
+                        <p class="text-sm text-gray-400">긴급 알림 수신</p>
+                    </div>
+                    <input type="checkbox"
+                           id="smsRcv"
+                           name="smsRcvYn"
+                           class="toggle"
+                    ${smsRcv ? "checked":""}>
+                </div>
+
+                <!-- 자식 -->
+                <div class="ml-6 space-y-4">
+
+                    <!-- 공지 -->
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">공지사항 알림</p>
+                            <p class="text-xs text-gray-400">관리사무소 공지</p>
+                        </div>
+                        <input type="checkbox"
+                               class="toggle sms-child"
+                               name="smsNtcRcvYn"
+                        ${smsNtcRcv ? "checked":""}>
+                    </div>
+
+                    <!-- 계약 -->
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">계약 상태 알림</p>
+                            <p class="text-xs text-gray-400">신청 상태 변경</p>
+                        </div>
+                        <input type="checkbox"
+                               class="toggle sms-child"
+                               name="smsCtrtRcvYn"
+                        ${smsCtrtRcv ? "checked":""}>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- 🔥 알림 설정 -->
-            <div>
+            <!-- 이메일 전체 -->
+            <div class="px-6 py-5">
 
-                <!-- SMS 수신 (부모) -->
-                <!-- 🔥 알림 설정 -->
-                <div class="bg-white rounded-2xl shadow-sm divide-y">
+                <!-- 부모 -->
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <p class="font-semibold">이메일 알림</p>
+                        <p class="text-sm text-gray-400">상세 안내 수신</p>
+                    </div>
+                    <input type="checkbox"
+                           id="emlRcv"
+                           name="emlRcvYn"
+                           class="toggle"
+                    ${emlRcv ? "checked":""}>
+                </div>
 
-                    <!-- SMS 전체 -->
-                    <div class="px-6 py-5">
+                <!-- 자식 -->
+                <div class="ml-6 space-y-4">
 
-                        <!-- 부모 -->
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <p class="font-semibold">문자 알림</p>
-                                <p class="text-sm text-gray-400">긴급 알림 수신</p>
-                            </div>
-                            <input type="checkbox"
-                                   id="smsRcv"
-                                   name="smsRcvYn"
-                                   class="toggle"
-                            ${smsRcv ? "checked":""}>
+                    <!-- 공지 -->
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">공지사항 알림</p>
+                            <p class="text-xs text-gray-400">이메일 공지</p>
                         </div>
-
-                        <!-- 자식 -->
-                        <div class="ml-6 space-y-4">
-
-                            <!-- 공지 -->
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="font-medium">공지사항 알림</p>
-                                    <p class="text-xs text-gray-400">관리사무소 공지</p>
-                                </div>
-                                <input type="checkbox"
-                                       class="toggle sms-child"
-                                       name="smsNtcRcvYn"
-                                ${smsNtcRcv ? "checked":""}>
-                            </div>
-
-                            <!-- 계약 -->
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="font-medium">계약 상태 알림</p>
-                                    <p class="text-xs text-gray-400">신청 상태 변경</p>
-                                </div>
-                                <input type="checkbox"
-                                       class="toggle sms-child"
-                                       name="smsCtrtRcvYn"
-                                ${smsCtrtRcv ? "checked":""}>
-                            </div>
-
-                        </div>
+                        <input type="checkbox"
+                               class="toggle eml-child"
+                               name="emlNtcRcvYn"
+                        ${emlNtcRcv ? "checked":""}>
                     </div>
 
-                    <!-- 이메일 전체 -->
-                    <div class="px-6 py-5">
-
-                        <!-- 부모 -->
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <p class="font-semibold">이메일 알림</p>
-                                <p class="text-sm text-gray-400">상세 안내 수신</p>
-                            </div>
-                            <input type="checkbox"
-                                   id="emlRcv"
-                                   name="emlRcvYn"
-                                   class="toggle"
-                            ${emlRcv ? "checked":""}>
+                    <!-- 계약 -->
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">계약 상태 알림</p>
+                            <p class="text-xs text-gray-400">이메일 상태 변경</p>
                         </div>
-
-                        <!-- 자식 -->
-                        <div class="ml-6 space-y-4">
-
-                            <!-- 공지 -->
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="font-medium">공지사항 알림</p>
-                                    <p class="text-xs text-gray-400">이메일 공지</p>
-                                </div>
-                                <input type="checkbox"
-                                       class="toggle eml-child"
-                                       name="emlNtcRcvYn"
-                                ${emlNtcRcv ? "checked":""}>
-                            </div>
-
-                            <!-- 계약 -->
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <p class="font-medium">계약 상태 알림</p>
-                                    <p class="text-xs text-gray-400">이메일 상태 변경</p>
-                                </div>
-                                <input type="checkbox"
-                                       class="toggle eml-child"
-                                       name="emlCtrtRcvYn"
-                                ${emlCtrtRcv ? "checked":""}>
-                            </div>
-
-                        </div>
+                        <input type="checkbox"
+                               class="toggle eml-child"
+                               name="emlCtrtRcvYn"
+                        ${emlCtrtRcv ? "checked":""}>
                     </div>
 
                 </div>
-<!-- 하단 버튼 -->
-<div class="flex justify-end gap-3 mt-6">
+            </div>
 
-    <a href="${pageContext.request.contextPath}/member/edit.do"
-       class="px-5 py-2 bg-green-700 text-white rounded-lg">
-        수정하기
-    </a>
+            <div class="p-6 flex justify-end">
 
-    <a href="${pageContext.request.contextPath}/member/password"
-       class="px-5 py-2 bg-gray-600 text-white rounded-lg">
-        비밀번호 변경
-    </a>
+                <form action="${pageContext.request.contextPath}/member/delete"
+                      method="post"
+                      onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
 
-    <form action="${pageContext.request.contextPath}/member/delete"
-          method="post"
-          onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
+                    <button type="submit"
+                            class="px-5 py-2 border border-red-600 text-red-600 rounded-lg">
+                        탈퇴하기
+                    </button>
+                </form>
 
-        <button type="submit"
-                class="px-5 py-2 border border-red-600 text-red-600 rounded-lg">
-            탈퇴하기
-        </button>
-    </form>
-</div>
+            </div>
+        </div>
 
-</div>
+
+
+    </div>
+        <!-- 🔥 알림 설정 -->
+
+            <!-- SMS 수신 (부모) -->
+            <!-- 🔥 알림 설정 -->
+
+            <meta name="_csrf" content="${_csrf.token}"/>
+            <meta name="_csrf_header" content="${_csrf.headerName}"/>
+
+        </div>
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
-        const smsParent = document.getElementById("smsRcv");
+        const smsParent   = document.getElementById("smsRcv");
+        const emlParent   = document.getElementById("emlRcv");
         const smsChildren = document.querySelectorAll(".sms-child");
+        const emlChildren = document.querySelectorAll(".eml-child");
 
-        function updateSmsChildren() {
-            if (!smsParent.checked) {
-                smsChildren.forEach(ch => {
-                    ch.checked = false;   // 🔥 자식 OFF
-                    ch.disabled = true;   // 🔥 클릭 못하게
-                });
-            } else {
-                smsChildren.forEach(ch => {
-                    ch.disabled = false;  // 🔥 다시 활성화
-                });
-            }
+        /* ── localStorage 키 ── */
+        const LS_KEY = "alarmSettings";
+
+        /* ── localStorage에서 복원 ── */
+        function restoreFromStorage() {
+            const saved = localStorage.getItem(LS_KEY);
+            if (!saved) return;
+            const s = JSON.parse(saved);
+
+            smsParent.checked = s.smsRcvYn === 'Y';
+            emlParent.checked = s.emlRcvYn === 'Y';
+
+            document.querySelector("[name=smsNtcRcvYn]").checked  = s.smsNtcRcvYn  === 'Y';
+            document.querySelector("[name=smsCtrtRcvYn]").checked = s.smsCtrtRcvYn === 'Y';
+            document.querySelector("[name=emlNtcRcvYn]").checked  = s.emlNtcRcvYn  === 'Y';
+            document.querySelector("[name=emlCtrtRcvYn]").checked = s.emlCtrtRcvYn === 'Y';
         }
 
-        // 부모 변경 시 실행
-        smsParent.addEventListener("change", updateSmsChildren);
+        /* ── 자식 토글 활성/비활성 ── */
+        function updateSmsChildren() {
+            smsChildren.forEach(ch => {
+                if (!smsParent.checked) {
+                    ch.checked  = false;
+                    ch.disabled = true;
+                } else {
+                    ch.disabled = false;
+                    ch.checked = true;
+                }
+            });
+        }
 
-        // 처음 화면 로딩 시 적용
+        function updateEmlChildren() {
+            emlChildren.forEach(ch => {
+                if (!emlParent.checked) {
+                    ch.checked  = false;
+                    ch.disabled = true;
+                } else {
+                    ch.disabled = false;
+                    ch.checked = true;
+                }
+            });
+        }
+
+        /* ── 서버 저장 + localStorage 저장 ── */
+        function updateAlarmSetting() {
+
+            const token  = document.querySelector("meta[name='_csrf']").content;
+            const header = document.querySelector("meta[name='_csrf_header']").content;
+
+            const smsOn = smsParent.checked;
+            const emlOn = emlParent.checked;
+
+            const data = {
+                smsRcvYn:     smsOn ? 'Y' : 'N',
+                smsNtcRcvYn:  smsOn && document.querySelector("[name=smsNtcRcvYn]").checked  ? 'Y' : 'N',
+                smsCtrtRcvYn: smsOn && document.querySelector("[name=smsCtrtRcvYn]").checked ? 'Y' : 'N',
+
+                emlRcvYn:     emlOn ? 'Y' : 'N',
+                emlNtcRcvYn:  emlOn && document.querySelector("[name=emlNtcRcvYn]").checked  ? 'Y' : 'N',
+                emlCtrtRcvYn: emlOn && document.querySelector("[name=emlCtrtRcvYn]").checked ? 'Y' : 'N'
+            };
+
+            /* localStorage에 즉시 저장 */
+            localStorage.setItem(LS_KEY, JSON.stringify(data));
+
+
+
+            fetch("/member/alarm/update", {
+
+
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    [header]: token
+                },
+                body: JSON.stringify(data)
+            });
+        }
+
+        /* ── 이벤트 등록 (부모) ── */
+        smsParent.addEventListener("change", () => {
+            updateSmsChildren();
+            updateAlarmSetting();
+        });
+
+        emlParent.addEventListener("change", () => {
+            updateEmlChildren();
+            updateAlarmSetting();
+        });
+
+        /* ── 이벤트 등록 (자식) ── */
+        smsChildren.forEach(cb => cb.addEventListener("change", updateAlarmSetting));
+        emlChildren.forEach(cb => cb.addEventListener("change", updateAlarmSetting));
+
+        /* ── 페이지 로드 시: localStorage 우선, 없으면 서버값 유지 ── */
+        restoreFromStorage();
         updateSmsChildren();
+        updateEmlChildren();
     });
 
-    function updateAlarmSetting() {
+    const saveBtn = document.getElementById("saveBtn");
+    const form = document.getElementById("updateForm");
 
-        const data = {
-            smsRcvYn: document.getElementById("smsRcv").checked ? 'Y' : 'N',
-            smsNtcRcvYn: document.querySelector("[name=smsNtcRcvYn]").checked ? 'Y' : 'N',
-            smsCtrtRcvYn: document.querySelector("[name=smsCtrtRcvYn]").checked ? 'Y' : 'N'
-        };
-
-        fetch("/member/alarm/update", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-            .then(res => res.text())
-            .then(res => console.log("저장 완료:", res))
-            .catch(err => console.error(err));
+    function openContractPage() {
+        window.open(
+            "/contract/list.do",   // 👉 연결할 JSP or 컨트롤러 URL
+            "contractPopup",
+            "width=1000,height=700,scrollbars=yes"
+        );
     }
 
-    document.querySelectorAll("input[type=checkbox]").forEach(cb => {
-        cb.addEventListener("change", updateAlarmSetting);
-    });
+
 </script>
 </html>

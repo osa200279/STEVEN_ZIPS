@@ -18,4 +18,9 @@
         select seq_attach_file_group_no.nextval from dual
     </select>
 
+    <select id="getAttachFile" parameterType="string" resultType="kr.or.ddit.common.file.vo.AttachFileVO">
+        select * from attach_file
+        where file_group_no = #{fileGroupNo} and file_save_uuid = #{fileSaveUuid}
+    </select>
+
 </mapper>

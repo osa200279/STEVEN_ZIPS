@@ -73,6 +73,10 @@
         )
     </insert>
 
+    <select id="idCheck" parameterType="string" resultType="int">
+        select count(*) from member where user_id = #{userId}
+    </select>
+
     <insert id="addAuth" parameterType="string">
         insert into auth(user_no, user_role_cd)
         values (
@@ -80,13 +84,29 @@
        )
     </insert>
 
-    <update id="updateMember" parameterType="kr.or.ddit.domain.member.vo.MemberVO">
+    <update id="updateMember">
         update member
-        set user_nm = #{userNm},
-            user_rrno = #{userRrno},
-            user_telno = #{userTelno},
-            user_eml = #{userEml},
+        <set>
+
+            <if test="userNm != null and userNm != ''">
+                user_nm = #{userNm},
+            </if>
+
+            <if test="userTelno != null">
+                user_telno = #{userTelno},
+            </if>
+
+            <if test="userEml != null">
+                user_eml = #{userEml},
+            </if>
+
+            <if test="profFileId != null and profFileId != ''">
+                prof_file_id = #{profFileId},
+            </if>
+
             mdfcn_dt = sysdate
+
+        </set>
         where user_no = #{userNo}
     </update>
     <select id="getMemberByUserNo" parameterType="string" resultMap="memberMap">
