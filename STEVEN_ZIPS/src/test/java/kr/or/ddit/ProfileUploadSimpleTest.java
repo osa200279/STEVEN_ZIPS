@@ -37,7 +37,7 @@ class ProfileUploadSimpleTest {
         // 2. 파일명 및 경로 생성 (로직 시연)
         String uuid = UUID.randomUUID().toString().replace("-", "");
         String savedFileName = uuid + "_" + testFile.getOriginalFilename();
-        String folderPath = "test/junit" + testUserId;
+        String folderPath = "test/junit/" + testUserId;
         String cat = "upload_test";
 
         log.info("▶ 1. 구글 드라이브 업로드 시작... 경로: {}", folderPath);
