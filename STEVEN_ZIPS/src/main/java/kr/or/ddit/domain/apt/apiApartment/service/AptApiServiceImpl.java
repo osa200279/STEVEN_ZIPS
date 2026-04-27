@@ -157,20 +157,24 @@
                 String educationFacility = detailMap.get(listItem.getKaptCode()).getEducationFacility();
 
 
-                /*      인프라 entity 구성 중! */
+                /*      인프라 entity 구성 시작! */
                 toInfraEntity(welfareFacility, "WELFARE", listItem.getKaptCode(), infraEntityList);
                 toInfraEntity(convenientFacility, "CONVENIENCE", listItem.getKaptCode(), infraEntityList);
                 toInfraEntity(educationFacility, "EDUCATION", listItem.getKaptCode(), infraEntityList);
                 /*      인프라 entity 구성 끝! */
 
-                /*      단지관리소 entity 구성 중! */
+                /*      단지관리소 entity 구성 시작! */
 
                 /*      단지관리소 entity 구성 끝! */
 
-                /*      동 테이블 entity 구성 중! */
+                /*      단지관리자(member+manager) entity 구성 시작! */
+
+                /*      단지관리자(member) entity 구성 끝! */
+
+                /*      동 테이블 entity 구성 시작! */
                 /*      동 테이블 entity 구성 끝! */
 
-                /*      호 테이블 entity 구성 중! */
+                /*      호 테이블 entity 구성 시작! */
                 /*      호 테이블 entity 구성 끝! */
 
                 entityList.add(toEntity(listItem, bassItem,detailItem));
