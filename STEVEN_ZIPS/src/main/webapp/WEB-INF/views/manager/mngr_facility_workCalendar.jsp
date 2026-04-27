@@ -1,906 +1,585 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<div class="office-page" id="facilityWorkCalendarPage">
-
-  <style>
-    .work-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 330px;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .calendar-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--r-lg);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-
-    .calendar-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 22px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .calendar-title {
-      font-size: 17px;
-      font-weight: 800;
-      color: var(--text-primary);
-    }
-
-    .calendar-nav {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .calendar-filter-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 22px;
-      border-bottom: 1px solid var(--border);
-      background: #fafafa;
-      flex-wrap: wrap;
-    }
-
-    .calendar-grid {
-      padding: 16px 22px 22px;
-    }
-
-    .calendar-week,
-    .calendar-days {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-    }
-
-    .calendar-week div {
-      padding: 8px 6px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-tertiary);
-      text-align: center;
-    }
-
-    .calendar-day {
-      min-height: 112px;
-      border: 1px solid var(--border);
-      margin: -1px 0 0 -1px;
-      padding: 8px;
-      background: #fff;
-    }
-
-    .calendar-day.is-muted {
-      background: #fafafa;
-    }
-
-    .calendar-day.is-today {
-      background: #f8fbff;
-      box-shadow: inset 0 0 0 1px var(--btn-primary);
-    }
-
-    .day-num {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-    }
-
-    .event-chip {
-      width: 100%;
-      border-radius: 5px;
-      padding: 4px 6px;
-      margin-bottom: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      text-align: left;
-      cursor: pointer;
-      line-height: 1.35;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .event-contract {
-      background: #f5f0e8;
-      color: #7a4e18;
-      border: 1px solid #ddc89a;
-    }
-
-    .event-check {
-      background: #ecf4ee;
-      color: #1e6040;
-      border: 1px solid #b8dcc4;
-    }
-
-    .side-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .mini-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .mini-item {
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 10px 12px;
-      background: #fff;
-      cursor: pointer;
-    }
-
-    .mini-item:hover {
-      background: #f9fafb;
-    }
-
-    .mini-item-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .mini-item-meta {
-      font-size: 11px;
-      color: var(--text-tertiary);
-      margin-top: 3px;
-    }
-
-    .status-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .status-box {
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 12px;
-      background: #fff;
-    }
-
-    .status-box strong {
-      display: block;
-      font-size: 20px;
-      line-height: 1;
-      color: var(--text-primary);
-    }
-
-    .status-box span {
-      display: block;
-      font-size: 11px;
-      color: var(--text-tertiary);
-      margin-top: 5px;
-    }
-
-    .work-status-actions {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-
-    @media (max-width: 1100px) {
-      .work-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<div class="office-page" id="schedulePage">
 
   <div class="page-header">
     <div class="page-title-block">
       <h2>공사·점검 일정</h2>
-      <p>공사 계약 기간과 시설 점검일을 기준으로 일정을 확인하고, 진행 중인 점검 작업을 관리합니다.</p>
+      <p>단지 내 모든 시설의 유지보수 및 점검 일정을 관리합니다.</p>
     </div>
     <div class="page-actions">
-      <button type="button" class="btn btn-secondary" data-action="today">
-        <span class="material-symbols-rounded">today</span>
-        오늘
-      </button>
-      <button type="button" class="btn btn-primary" data-action="open-create">
+      <button type="button" class="btn btn-primary" data-action="openRegister">
         <span class="material-symbols-rounded">add</span>
-        점검 등록
+        일정 등록
       </button>
     </div>
   </div>
 
-  <div class="tab-bar">
-    <button type="button" class="tab-btn active" data-tab="calendar">
-      <span class="material-symbols-rounded">calendar_month</span>
-      일정 캘린더
-    </button>
-    <button type="button" class="tab-btn" data-tab="work">
-      <span class="material-symbols-rounded">task_alt</span>
-      진행 작업 관리
-    </button>
-  </div>
+  <!-- 메인 레이아웃: 달력 + 우측 패널 -->
+  <div style="display:grid; grid-template-columns:1fr 270px; gap:16px;">
 
-  <div class="tab-panel active" id="calendarTab">
-    <div class="work-layout">
-      <div class="calendar-card">
-        <div class="calendar-toolbar">
-          <div class="calendar-title" id="calendarTitle">2026년 4월</div>
-          <div class="calendar-nav">
-            <button type="button" class="btn btn-secondary btn-sm" data-action="prev-month">
-              <span class="material-symbols-rounded">chevron_left</span>
-            </button>
-            <button type="button" class="btn btn-secondary btn-sm" data-action="next-month">
-              <span class="material-symbols-rounded">chevron_right</span>
-            </button>
+    <!-- 좌: 달력 -->
+    <div>
+      <div class="panel" style="margin-bottom:16px; padding:0; overflow:hidden;">
+
+        <!-- 달력 헤더 -->
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border);">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="display:flex; gap:4px;">
+              <button type="button" class="icon-btn" id="prevMonth">&#8249;</button>
+              <button type="button" class="icon-btn" id="nextMonth">&#8250;</button>
+            </div>
+            <span style="font-size:18px; font-weight:800;" id="calTitle"></span>
+          </div>
+          <div style="display:flex; gap:14px; align-items:center;">
+            <span style="display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-secondary);">
+              <span style="width:10px; height:10px; border-radius:50%; background:#f59e0b; display:inline-block;"></span>유지보수
+            </span>
+            <span style="display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-secondary);">
+              <span style="width:10px; height:10px; border-radius:50%; background:#3b82f6; display:inline-block;"></span>정기점검
+            </span>
+            <span style="display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-secondary);">
+              <span style="width:10px; height:10px; border-radius:50%; background:#10b981; display:inline-block;"></span>안전점검
+            </span>
+            <span style="display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-secondary);">
+              <span style="width:10px; height:10px; border-radius:50%; background:#ec4899; display:inline-block;"></span>공사
+            </span>
           </div>
         </div>
 
-        <div class="calendar-filter-row">
-          <select class="form-select" id="filterWorkType" style="width: 150px;">
-            <option value="">전체 일정</option>
-            <option value="CONTRACT">공사/계약</option>
-            <option value="CHECK">점검</option>
-          </select>
-
-          <select class="form-select" id="filterStatus" style="width: 150px;">
-            <option value="">상태 전체</option>
-            <option value="WAIT">예정</option>
-            <option value="PROC">진행중</option>
-            <option value="DONE">완료</option>
-          </select>
-
-          <input type="date" class="form-input" id="filterStartDate" style="width: 150px;">
-          <input type="date" class="form-input" id="filterEndDate" style="width: 150px;">
-
-          <button type="button" class="btn btn-primary" data-action="search">조회</button>
-          <button type="button" class="btn btn-secondary" data-action="reset">초기화</button>
+        <!-- 요일 헤더 -->
+        <div style="display:grid; grid-template-columns:repeat(7,1fr); border-bottom:1px solid var(--border);">
+          <div style="text-align:center; padding:8px 0; font-size:11px; font-weight:700; color:#dc2626;">SUN</div>
+          <div style="text-align:center; padding:8px 0; font-size:11px; font-weight:700; color:var(--text-tertiary);">MON</div>
+          <div style="text-align:center; padding:8px 0; font-size:11px; font-weight:700; color:var(--text-tertiary);">TUE</div>
+          <div style="text-align:center; padding:8px 0; font-size:11px; font-weight:700; color:var(--text-tertiary);">WED</div>
+          <div style="text-align:center; padding:8px 0; font-size:11px; font-weight:700; color:var(--text-tertiary);">THU</div>
+          <div style="text-align:center; padding:8px 0; font-size:11px; font-weight:700; color:var(--text-tertiary);">FRI</div>
+          <div style="text-align:center; padding:8px 0; font-size:11px; font-weight:700; color:#2563eb;">SAT</div>
         </div>
 
-        <div class="calendar-grid">
-          <div class="calendar-week">
-            <div>일</div>
-            <div>월</div>
-            <div>화</div>
-            <div>수</div>
-            <div>목</div>
-            <div>금</div>
-            <div>토</div>
-          </div>
-          <div class="calendar-days" id="calendarDays"></div>
-        </div>
+        <!-- 달력 셀 -->
+        <div style="display:grid; grid-template-columns:repeat(7,1fr);" id="calBody"></div>
       </div>
 
-      <div class="side-panel">
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span class="material-symbols-rounded">event_available</span>
-              오늘의 작업
-            </div>
-          </div>
-          <div class="panel-body">
-            <div class="mini-list" id="todayList"></div>
-          </div>
+      <!-- 일정 목록 -->
+      <div class="panel" style="padding:0; overflow:hidden;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border);">
+          <h3 class="panel-title">
+            <span class="material-symbols-rounded">list_alt</span>
+            조회된 일정 목록
+          </h3>
+          <span style="font-size:11px; color:var(--text-tertiary);">COMPLEX_SCHEDULE · <span class="list-count" id="listCount">0건</span></span>
         </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span class="material-symbols-rounded">query_stats</span>
-              이달의 작업 현황
-            </div>
-          </div>
-          <div class="panel-body">
-            <div class="status-row">
-              <div class="status-box">
-                <strong id="monthTotal">0</strong>
-                <span>전체 일정</span>
-              </div>
-              <div class="status-box">
-                <strong id="monthContract">0</strong>
-                <span>공사/계약</span>
-              </div>
-              <div class="status-box">
-                <strong id="monthCheck">0</strong>
-                <span>점검</span>
-              </div>
-              <div class="status-box">
-                <strong id="monthDone">0</strong>
-                <span>완료</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span class="material-symbols-rounded">list_alt</span>
-              선택 월 일정
-            </div>
-          </div>
-          <div class="panel-body">
-            <div class="mini-list" id="monthList"></div>
-          </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+            <tr>
+              <th>날짜</th>
+              <th>일정명</th>
+              <th>장소</th>
+              <th>유형</th>
+              <th>상태</th>
+              <th style="width:100px;">관리</th>
+            </tr>
+            </thead>
+            <tbody id="scheduleListBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="tab-panel" id="workTab">
-    <div class="filter-card">
-      <select class="form-select" id="workFilterStatus" style="width: 150px;">
-        <option value="">상태 전체</option>
-        <option value="WAIT">예정</option>
-        <option value="PROC">진행중</option>
-        <option value="DONE">완료</option>
-      </select>
+    <!-- 우: 사이드 패널 -->
+    <div style="display:flex; flex-direction:column; gap:14px;">
 
-      <select class="form-select" id="workFilterType" style="width: 150px;">
-        <option value="">점검유형 전체</option>
-        <option value="REG">정기</option>
-        <option value="SAFE">안전</option>
-        <option value="EMER">긴급</option>
-      </select>
-
-      <div class="search-wrap" style="width: 280px;">
-        <span class="material-symbols-rounded">search</span>
-        <input type="text" class="form-input" id="workKeyword" placeholder="시설번호, 업체번호, 내용 검색">
-      </div>
-
-      <button type="button" class="btn btn-primary" data-action="work-search">조회</button>
-      <button type="button" class="btn btn-secondary" data-action="work-reset">초기화</button>
-    </div>
-
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">
-          <span class="material-symbols-rounded">engineering</span>
-          진행 작업 목록
+      <!-- 오늘 작업 -->
+      <div class="panel" style="padding:0; overflow:hidden;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:#f7f8f9;">
+          <span style="font-size:13px; font-weight:700;">
+            <span class="material-symbols-rounded" style="font-size:14px; vertical-align:middle; margin-right:3px;">today</span>
+            오늘의 작업
+          </span>
+          <span style="font-size:11px; color:var(--text-tertiary);" id="todayLabel"></span>
         </div>
-        <span class="list-count">FACILITY_CHECK_HSTRY 기준</span>
+        <div style="padding:12px;" id="todayTaskList"></div>
       </div>
 
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead>
-          <tr>
-            <th>점검이력번호</th>
-            <th>시설번호</th>
-            <th>업체번호</th>
-            <th>점검유형</th>
-            <th>점검일자</th>
-            <th>상태</th>
-            <th>점검내용</th>
-            <th style="width: 220px;">관리</th>
-          </tr>
-          </thead>
-          <tbody id="workTbody"></tbody>
-        </table>
+      <!-- 이달 작업 현황 -->
+      <div class="panel" style="padding:0; overflow:hidden;">
+        <div style="padding:12px 16px; border-bottom:1px solid var(--border); background:#f7f8f9;">
+          <span style="font-size:13px; font-weight:700;">
+            <span class="material-symbols-rounded" style="font-size:14px; vertical-align:middle; margin-right:3px;">donut_large</span>
+            이달의 작업 현황
+          </span>
+        </div>
+        <div style="padding:16px;">
+          <!-- 도넛 차트 -->
+          <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:14px;">
+            <div style="position:relative; width:90px; height:90px; flex-shrink:0;">
+              <svg width="90" height="90" viewBox="0 0 90 90">
+                <circle cx="45" cy="45" r="36" fill="none" stroke="#f0f1f3" stroke-width="10"/>
+                <circle cx="45" cy="45" r="36" fill="none" stroke="#2e5c38" stroke-width="10"
+                        stroke-dasharray="226" stroke-dashoffset="56"
+                        stroke-linecap="round" transform="rotate(-90 45 45)" id="donutCircle"/>
+              </svg>
+              <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;">
+                <div style="font-size:18px; font-weight:800; color:#2e5c38;" id="donutPct">0%</div>
+                <div style="font-size:10px; color:var(--text-tertiary);">완료율</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; flex:1;">
+              <div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+                <span style="color:var(--text-secondary); width:44px;">정기점검</span>
+                <div style="flex:1; height:4px; background:#f0f1f3; border-radius:99px; overflow:hidden;">
+                  <div style="height:100%; background:#2e5c38; border-radius:99px;" id="barCheck"></div>
+                </div>
+                <span style="font-weight:700; min-width:28px; text-align:right;" id="cntCheck">0/0</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+                <span style="color:var(--text-secondary); width:44px;">유지보수</span>
+                <div style="flex:1; height:4px; background:#f0f1f3; border-radius:99px; overflow:hidden;">
+                  <div style="height:100%; background:#f59e0b; border-radius:99px;" id="barRepair"></div>
+                </div>
+                <span style="font-weight:700; min-width:28px; text-align:right;" id="cntRepair">0/0</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px; font-size:11px;">
+                <span style="color:var(--text-secondary); width:44px;">공사</span>
+                <div style="flex:1; height:4px; background:#f0f1f3; border-radius:99px; overflow:hidden;">
+                  <div style="height:100%; background:#ec4899; border-radius:99px;" id="barConst"></div>
+                </div>
+                <span style="font-weight:700; min-width:28px; text-align:right;" id="cntConst">0/0</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- 유형별 필터 -->
+      <div class="panel" style="padding:0; overflow:hidden;">
+        <div style="padding:12px 16px; border-bottom:1px solid var(--border); background:#f7f8f9;">
+          <span style="font-size:13px; font-weight:700;">
+            <span class="material-symbols-rounded" style="font-size:14px; vertical-align:middle; margin-right:3px;">filter_list</span>
+            유형별 보기
+          </span>
+        </div>
+        <div style="padding:10px; display:flex; flex-direction:column; gap:5px;">
+          <button type="button" class="type-filter-btn active" data-type="ALL"
+                  style="padding:8px 12px; border-radius:8px; border:1px solid transparent; background:#2e5c38; color:#fff; font-size:12px; font-weight:600; cursor:pointer; text-align:left; transition:0.15s;">
+            전체 일정
+          </button>
+          <button type="button" class="type-filter-btn" data-type="repair"
+                  style="padding:8px 12px; border-radius:8px; border:1px solid #fde68a; background:#fefce8; color:#92400e; font-size:12px; font-weight:600; cursor:pointer; text-align:left; transition:0.15s;">
+            ● 유지보수
+          </button>
+          <button type="button" class="type-filter-btn" data-type="check"
+                  style="padding:8px 12px; border-radius:8px; border:1px solid #bfdbfe; background:#eff6ff; color:#1e40af; font-size:12px; font-weight:600; cursor:pointer; text-align:left; transition:0.15s;">
+            ● 정기점검
+          </button>
+          <button type="button" class="type-filter-btn" data-type="safe"
+                  style="padding:8px 12px; border-radius:8px; border:1px solid #bbf7d0; background:#f0fdf4; color:#166534; font-size:12px; font-weight:600; cursor:pointer; text-align:left; transition:0.15s;">
+            ● 안전점검
+          </button>
+          <button type="button" class="type-filter-btn" data-type="const"
+                  style="padding:8px 12px; border-radius:8px; border:1px solid #fbcfe8; background:#fdf2f8; color:#9d174d; font-size:12px; font-weight:600; cursor:pointer; text-align:left; transition:0.15s;">
+            ● 공사
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <div class="modal-overlay" id="workModal">
-    <div class="modal modal-lg">
-      <div class="modal-header">
-        <h3 class="modal-title" id="workModalTitle">점검 등록</h3>
-        <button type="button" class="modal-close" data-action="close-modal">
+  <!-- 등록/수정 모달 -->
+  <div class="modal-overlay" id="scheduleModal">
+    <div class="modal modal-md">
+      <div class="modal-header primary">
+        <h3 class="modal-title" id="scheduleModalTitle">일정 등록</h3>
+        <button type="button" class="modal-close" data-action="closeModal">
           <span class="material-symbols-rounded">close</span>
         </button>
       </div>
 
-      <form id="workForm">
+      <form id="scheduleForm">
+        <input type="hidden" id="scheduleNo">
+
         <div class="modal-body">
-          <input type="hidden" id="formMode" value="create">
-          <input type="hidden" id="workType" value="CHECK">
-
           <div class="form-section">
             <div class="form-section-title">
-              <span class="material-symbols-rounded">fact_check</span>
-              점검 기본 정보
+              <span class="material-symbols-rounded">calendar_month</span>
+              일정 정보 (COMPLEX_SCHEDULE)
             </div>
 
-            <div class="form-row cols-2">
+            <div class="form-row cols-1">
               <div class="form-field">
-                <label class="field-label">시설점검이력번호</label>
-                <input type="text" class="form-input" id="facChkHstryNo" placeholder="신규 등록 시 자동 생성">
-              </div>
-              <div class="form-field">
-                <label class="field-label">점검일자 <span class="req">*</span></label>
-                <input type="date" class="form-input" id="chkDt" required>
-              </div>
-            </div>
-
-            <div class="form-row cols-2">
-              <div class="form-field">
-                <label class="field-label">시설번호 <span class="req">*</span></label>
-                <input type="text" class="form-input" id="facilityNo" required>
-              </div>
-              <div class="form-field">
-                <label class="field-label">업체번호</label>
-                <input type="text" class="form-input" id="partnerNo">
+                <label class="field-label">일정 제목 (SCHDL_TTL) <span class="req">*</span></label>
+                <input type="text" class="form-input" id="mSchdlTtl" placeholder="예: 엘리베이터 정기점검">
               </div>
             </div>
 
             <div class="form-row cols-2">
               <div class="form-field">
-                <label class="field-label">점검유형코드</label>
-                <select class="form-select" id="chkTyCd">
-                  <option value="REG">정기</option>
-                  <option value="SAFE">안전</option>
-                  <option value="EMER">긴급</option>
+                <label class="field-label">일정 날짜 <span class="req">*</span></label>
+                <input type="date" class="form-input" id="mSchdlDt">
+              </div>
+              <div class="form-field">
+                <label class="field-label">일정 유형</label>
+                <select class="form-select" id="mSchdlType">
+                  <option value="repair">유지보수</option>
+                  <option value="check">정기점검</option>
+                  <option value="safe">안전점검</option>
+                  <option value="const">공사</option>
                 </select>
               </div>
+            </div>
+
+            <div class="form-row cols-2">
               <div class="form-field">
-                <label class="field-label">점검상태코드</label>
-                <select class="form-select" id="chkSttsCd">
-                  <option value="WAIT">예정</option>
-                  <option value="PROC">진행중</option>
+                <label class="field-label">장소 (LOC_CN)</label>
+                <input type="text" class="form-input" id="mLocCn" placeholder="예: 101동 지하 1층">
+              </div>
+              <div class="form-field">
+                <label class="field-label">일정 상태 (SCHDL_STTS_CD)</label>
+                <select class="form-select" id="mSchdlSttsCd">
+                  <option value="READY">예정</option>
+                  <option value="ING">진행중</option>
                   <option value="DONE">완료</option>
+                  <option value="CANCEL">취소</option>
                 </select>
               </div>
             </div>
-          </div>
-
-          <div class="form-section">
-            <div class="form-section-title">
-              <span class="material-symbols-rounded">notes</span>
-              점검 내용
-            </div>
 
             <div class="form-row cols-1">
               <div class="form-field">
-                <label class="field-label">점검내용</label>
-                <textarea class="form-textarea" id="chkCn"></textarea>
-              </div>
-            </div>
-
-            <div class="form-row cols-1">
-              <div class="form-field">
-                <label class="field-label">비고</label>
-                <textarea class="form-textarea" id="rmk"></textarea>
+                <label class="field-label">일정 내용 (SCHDL_CN)</label>
+                <textarea class="form-textarea" id="mSchdlCn" placeholder="일정 상세 내용을 입력하세요."></textarea>
               </div>
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-action="close-modal">닫기</button>
-          <button type="button" class="btn btn-primary" id="detailEditBtn" data-action="change-edit" style="display:none;">수정하기</button>
-          <button type="button" class="btn btn-danger" id="deleteBtn" data-action="delete" style="display:none;">삭제</button>
-          <button type="submit" class="btn btn-primary" id="saveBtn">저장</button>
+          <button type="button" class="btn btn-secondary" data-action="closeModal">닫기</button>
+          <button type="button" class="btn btn-primary" id="scheduleEditBtn"
+                  data-action="changeToEdit" style="display:none;">수정하기</button>
+          <button type="submit" class="btn btn-primary" id="scheduleSaveBtn">저장</button>
         </div>
       </form>
     </div>
   </div>
+
 </div>
 
 <script>
-  (function () {
-    const page = document.getElementById('facilityWorkCalendarPage');
-    if (!page || page.dataset.bound === 'true') return;
-    page.dataset.bound = 'true';
+  (function() {
+    var page = document.getElementById("schedulePage");
+    if (!page || page.dataset.bound === "true") return;
+    page.dataset.bound = "true";
 
-    let currentDate = new Date(2026, 3, 1);
-    let currentDetailId = null;
+    var today      = new Date();
+    var curYear    = today.getFullYear();
+    var curMonth   = today.getMonth();
+    var activeType = "ALL";
+    var editTargetIdx = null;
 
-    const workList = [
-      {
-        id: 'FC-001',
-        workType: 'CONTRACT',
-        title: '승강기 정기보수 계약',
-        facilityNo: 'FAC-001',
-        partnerNo: 'PT-001',
-        startDate: '2026-04-03',
-        endDate: '2026-04-07',
-        status: 'DONE',
-        statusNm: '완료',
-        chkTyCd: '',
-        content: '계약 기간 기준 일정입니다.',
-        rmk: '공사/계약 일정은 조회 중심으로 표시합니다.'
-      },
-      {
-        id: 'FCH-001',
-        workType: 'CHECK',
-        title: '소방설비 정기점검',
-        facilityNo: 'FAC-004',
-        partnerNo: 'PT-003',
-        startDate: '2026-04-15',
-        endDate: '2026-04-15',
-        status: 'DONE',
-        statusNm: '완료',
-        chkTyCd: 'REG',
-        content: '소방설비 정기 점검 완료',
-        rmk: '특이사항 없음'
-      },
-      {
-        id: 'FCH-002',
-        workType: 'CHECK',
-        title: '급수펌프 긴급점검',
-        facilityNo: 'FAC-014',
-        partnerNo: 'PT-002',
-        startDate: '2026-04-27',
-        endDate: '2026-04-27',
-        status: 'PROC',
-        statusNm: '진행중',
-        chkTyCd: 'EMER',
-        content: '지하 급수펌프 소음 확인 및 부품 점검',
-        rmk: '완료 후 재점검 필요'
-      },
-      {
-        id: 'FCH-003',
-        workType: 'CHECK',
-        title: '전기실 안전점검',
-        facilityNo: 'FAC-008',
-        partnerNo: 'PT-004',
-        startDate: '2026-04-30',
-        endDate: '2026-04-30',
-        status: 'WAIT',
-        statusNm: '예정',
-        chkTyCd: 'SAFE',
-        content: '전기실 분전반 및 차단기 안전점검 예정',
-        rmk: ''
-      }
+    var modal      = document.getElementById("scheduleModal");
+    var form       = document.getElementById("scheduleForm");
+    var modalTitle = document.getElementById("scheduleModalTitle");
+    var saveBtn    = document.getElementById("scheduleSaveBtn");
+    var editBtn    = document.getElementById("scheduleEditBtn");
+
+    /* ── 더미 데이터 (COMPLEX_SCHEDULE 기준)
+       ERD 컬럼: SCHEDULE_NO, APT_CMPLEX_NO, SCHDL_TTL, LOC_CN,
+                 SCHDL_STTS_CD, SCHDL_CN, RGTR_ID, METER_WRK_NO
+       ※ dt(날짜)/type(유형)은 실제 구현 시 METER_WRK_NO 조인으로 처리
+    ── */
+    var schedules = [
+      { scheduleNo:"SC-001", schdlTtl:"엘리베이터 노후 부품 교체", locCn:"제1동 승강기 B호",   schdlSttsCd:"ING",    schdlCn:"노후 부품 전면 교체 작업", type:"repair", dt:"2026-04-13" },
+      { scheduleNo:"SC-002", schdlTtl:"지하주차장 배수펌프 점검",   locCn:"지하 2층 중앙 기계실", schdlSttsCd:"READY",  schdlCn:"정기 배수펌프 상태 점검", type:"check",  dt:"2026-04-16" },
+      { scheduleNo:"SC-003", schdlTtl:"옥상 방수 누수 보수 작업",   locCn:"제3동 옥상",        schdlSttsCd:"DONE",   schdlCn:"방수 코팅 및 누수 보수",  type:"repair", dt:"2026-04-07" },
+      { scheduleNo:"SC-004", schdlTtl:"소방 설비 정기 점검",        locCn:"전 동 공통",        schdlSttsCd:"READY",  schdlCn:"법정 소방점검 실시",      type:"safe",   dt:"2026-04-20" },
+      { scheduleNo:"SC-005", schdlTtl:"어린이 놀이터 안전 점검",    locCn:"단지 내 놀이터",    schdlSttsCd:"READY",  schdlCn:"어린이 안전 점검 실시",   type:"safe",   dt:"2026-04-13" },
+      { scheduleNo:"SC-006", schdlTtl:"단지 내 도로 포장 공사",     locCn:"단지 내 진입로",    schdlSttsCd:"ING",    schdlCn:"아스팔트 재포장 공사",    type:"const",  dt:"2026-04-22" },
+      { scheduleNo:"SC-007", schdlTtl:"전기실 배전반 점검",         locCn:"지하 1층 전기실",   schdlSttsCd:"DONE",   schdlCn:"배전반 정기 점검 완료",   type:"check",  dt:"2026-04-08" },
     ];
 
-    function pad(num) {
-      return String(num).padStart(2, '0');
-    }
+    var STTS_TEXT  = { READY:"예정", ING:"진행중", DONE:"완료", CANCEL:"취소" };
+    var STTS_BADGE = { READY:"badge-gray", ING:"badge-yellow", DONE:"badge-green", CANCEL:"badge-red" };
+    var TYPE_TEXT  = { repair:"유지보수", check:"정기점검", safe:"안전점검", const:"공사" };
+    var TYPE_COLOR = { repair:"#f59e0b", check:"#3b82f6", safe:"#10b981", const:"#ec4899" };
+    var TYPE_BG    = { repair:"#fef3c7", check:"#dbeafe", safe:"#dcfce7", const:"#fce7f3" };
+    var TYPE_FG    = { repair:"#92400e", check:"#1e40af", safe:"#166534", const:"#9d174d" };
 
-    function toDateText(date) {
-      return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
-    }
-
-    function getTypeNm(type) {
-      if (type === 'CONTRACT') return '공사/계약';
-      if (type === 'CHECK') return '점검';
-      return type;
-    }
-
-    function getChkTyNm(code) {
-      if (code === 'REG') return '정기';
-      if (code === 'SAFE') return '안전';
-      if (code === 'EMER') return '긴급';
-      return '-';
-    }
-
-    function getStatusNm(code) {
-      if (code === 'WAIT') return '예정';
-      if (code === 'PROC') return '진행중';
-      if (code === 'DONE') return '완료';
-      return code;
-    }
-
-    function statusBadge(code) {
-      if (code === 'WAIT') return '<span class="badge badge-orange">예정</span>';
-      if (code === 'PROC') return '<span class="badge badge-blue">진행중</span>';
-      if (code === 'DONE') return '<span class="badge badge-green">완료</span>';
-      return '<span class="badge badge-gray">' + code + '</span>';
-    }
-
-    function findWork(id) {
-      return workList.find(function (item) {
-        return item.id === id;
-      });
-    }
-
-    function isEventOnDate(item, dateText) {
-      return item.startDate <= dateText && item.endDate >= dateText;
-    }
-
-    function getFilteredCalendarList() {
-      const type = document.getElementById('filterWorkType').value;
-      const status = document.getElementById('filterStatus').value;
-      const start = document.getElementById('filterStartDate').value;
-      const end = document.getElementById('filterEndDate').value;
-
-      return workList.filter(function (item) {
-        const matchType = !type || item.workType === type;
-        const matchStatus = !status || item.status === status;
-        const matchStart = !start || item.endDate >= start;
-        const matchEnd = !end || item.startDate <= end;
-        return matchType && matchStatus && matchStart && matchEnd;
-      });
-    }
-
-    function getMonthEvents(list) {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
-      const monthStart = year + '-' + pad(month + 1) + '-01';
-      const monthEnd = year + '-' + pad(month + 1) + '-' + pad(new Date(year, month + 1, 0).getDate());
-
-      return list.filter(function (item) {
-        return item.endDate >= monthStart && item.startDate <= monthEnd;
-      });
-    }
-
+    /* ── 달력 렌더 ── */
     function renderCalendar() {
-      const list = getFilteredCalendarList();
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
+      document.getElementById("calTitle").textContent = curYear + "년 " + (curMonth + 1) + "월";
 
-      document.getElementById('calendarTitle').textContent = year + '년 ' + (month + 1) + '월';
+      var firstDay    = new Date(curYear, curMonth, 1).getDay();
+      var lastDate    = new Date(curYear, curMonth + 1, 0).getDate();
+      var prevLast    = new Date(curYear, curMonth, 0).getDate();
+      var totalCells  = Math.ceil((firstDay + lastDate) / 7) * 7;
+      var body        = document.getElementById("calBody");
+      body.innerHTML  = "";
 
-      const firstDay = new Date(year, month, 1);
-      const startDay = firstDay.getDay();
-      const lastDate = new Date(year, month + 1, 0).getDate();
-      const prevLastDate = new Date(year, month, 0).getDate();
+      var evMap = {};
+      schedules.forEach(function(s) {
+        if (activeType !== "ALL" && s.type !== activeType) return;
+        var d = new Date(s.dt);
+        if (d.getFullYear() === curYear && d.getMonth() === curMonth) {
+          var day = d.getDate();
+          if (!evMap[day]) evMap[day] = [];
+          evMap[day].push(s);
+        }
+      });
 
-      const todayText = '2026-04-27';
-      const daysWrap = document.getElementById('calendarDays');
-      daysWrap.innerHTML = '';
+      var todayStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,"0") + "-" + String(today.getDate()).padStart(2,"0");
 
-      for (let i = 0; i < 42; i++) {
-        let dayNum;
-        let cellDate;
-        let muted = false;
+      for (var i = 0; i < totalCells; i++) {
+        var cell = document.createElement("div");
+        cell.style.cssText = "min-height:90px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px; position:relative;";
+        if ((i + 1) % 7 === 0) cell.style.borderRight = "none";
 
-        if (i < startDay) {
-          dayNum = prevLastDate - startDay + i + 1;
-          cellDate = new Date(year, month - 1, dayNum);
-          muted = true;
-        } else if (i >= startDay + lastDate) {
-          dayNum = i - startDay - lastDate + 1;
-          cellDate = new Date(year, month + 1, dayNum);
-          muted = true;
+        var dayNum, isOther = false, dateStr;
+        var dow = i % 7;
+
+        if (i < firstDay) {
+          dayNum = prevLast - firstDay + i + 1;
+          isOther = true;
+          dateStr = (curYear) + "-" + String(curMonth).padStart(2,"0") + "-" + String(dayNum).padStart(2,"0");
+        } else if (i >= firstDay + lastDate) {
+          dayNum = i - firstDay - lastDate + 1;
+          isOther = true;
+          dateStr = curYear + "-" + String(curMonth+2).padStart(2,"0") + "-" + String(dayNum).padStart(2,"0");
         } else {
-          dayNum = i - startDay + 1;
-          cellDate = new Date(year, month, dayNum);
+          dayNum = i - firstDay + 1;
+          dateStr = curYear + "-" + String(curMonth+1).padStart(2,"0") + "-" + String(dayNum).padStart(2,"0");
         }
 
-        const dateText = toDateText(cellDate);
-        const dayEvents = list.filter(function (item) {
-          return isEventOnDate(item, dateText);
-        });
+        var isToday = (dateStr === todayStr && !isOther);
+        if (isToday) cell.style.background = "#f0f7f2";
 
-        const dayEl = document.createElement('div');
-        dayEl.className = 'calendar-day' + (muted ? ' is-muted' : '') + (dateText === todayText ? ' is-today' : '');
-        dayEl.innerHTML = '<div class="day-num">' + dayNum + '</div>';
+        var dateDiv = document.createElement("div");
+        dateDiv.style.cssText = "font-size:12px; font-weight:700; width:24px; height:24px; display:flex; align-items:center; justify-content:center; margin-bottom:4px; border-radius:50%;";
 
-        dayEvents.forEach(function (item) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'event-chip ' + (item.workType === 'CONTRACT' ? 'event-contract' : 'event-check');
-          btn.dataset.action = 'detail';
-          btn.dataset.id = item.id;
-          btn.textContent = item.title;
-          dayEl.appendChild(btn);
-        });
+        if (isToday) {
+          dateDiv.style.background = "#2e5c38";
+          dateDiv.style.color = "#fff";
+        } else if (isOther) {
+          dateDiv.style.color = "var(--text-tertiary)";
+        } else if (dow === 0) {
+          dateDiv.style.color = "#dc2626";
+        } else if (dow === 6) {
+          dateDiv.style.color = "#2563eb";
+        } else {
+          dateDiv.style.color = "var(--text-primary)";
+        }
 
-        daysWrap.appendChild(dayEl);
+        dateDiv.textContent = dayNum;
+        cell.appendChild(dateDiv);
+
+        if (!isOther && evMap[dayNum]) {
+          evMap[dayNum].forEach(function(s) {
+            var ev = document.createElement("div");
+            ev.style.cssText = "font-size:10px; font-weight:600; padding:2px 5px; border-radius:3px; margin-bottom:2px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:" + TYPE_BG[s.type] + "; color:" + TYPE_FG[s.type] + ";";
+            ev.textContent = s.schdlTtl;
+            ev.title = s.schdlTtl;
+            ev.addEventListener("click", function() {
+              var idx = schedules.indexOf(s);
+              openModal("detail", idx);
+            });
+            cell.appendChild(ev);
+          });
+        }
+
+        body.appendChild(cell);
       }
 
-      renderSide(list);
+      renderList();
+      renderSidePanel();
     }
 
-    function renderSide(list) {
-      const monthEvents = getMonthEvents(list);
-      const todayEvents = list.filter(function (item) {
-        return isEventOnDate(item, '2026-04-27');
+    /* ── 목록 렌더 ── */
+    function renderList() {
+      var filtered = schedules.filter(function(s) {
+        return activeType === "ALL" || s.type === activeType;
       });
 
-      document.getElementById('monthTotal').textContent = monthEvents.length;
-      document.getElementById('monthContract').textContent = monthEvents.filter(item => item.workType === 'CONTRACT').length;
-      document.getElementById('monthCheck').textContent = monthEvents.filter(item => item.workType === 'CHECK').length;
-      document.getElementById('monthDone').textContent = monthEvents.filter(item => item.status === 'DONE').length;
+      document.getElementById("listCount").textContent = filtered.length + "건";
 
-      renderMiniList('todayList', todayEvents);
-      renderMiniList('monthList', monthEvents);
-    }
-
-    function renderMiniList(targetId, list) {
-      const wrap = document.getElementById(targetId);
-      wrap.innerHTML = '';
-
-      if (list.length === 0) {
-        wrap.innerHTML = '<div class="mini-item"><div class="mini-item-meta">조회된 일정이 없습니다.</div></div>';
+      var tbody = document.getElementById("scheduleListBody");
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-tertiary);">일정이 없습니다.</td></tr>';
         return;
       }
 
-      list.forEach(function (item) {
-        const div = document.createElement('div');
-        div.className = 'mini-item';
-        div.dataset.action = 'detail';
-        div.dataset.id = item.id;
-        div.innerHTML =
-                '<div class="mini-item-title">' + item.title + '</div>' +
-                '<div class="mini-item-meta">' + item.startDate + ' ~ ' + item.endDate + ' · ' + item.facilityNo + '</div>';
-        wrap.appendChild(div);
-      });
+      tbody.innerHTML = filtered.map(function(s, idx) {
+        var realIdx = schedules.indexOf(s);
+        var typeBadge = '<span style="display:inline-flex; align-items:center; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; background:' + TYPE_BG[s.type] + '; color:' + TYPE_FG[s.type] + ';">' + (TYPE_TEXT[s.type] || "-") + '</span>';
+        var sttsBadge = '<span class="badge ' + (STTS_BADGE[s.schdlSttsCd] || "badge-gray") + '">' + (STTS_TEXT[s.schdlSttsCd] || "-") + '</span>';
+        return '<tr>'
+                + '<td style="font-family:monospace; font-size:12px; color:var(--text-secondary);">' + s.dt + '</td>'
+                + '<td class="td-bold">' + s.schdlTtl + '</td>'
+                + '<td style="font-size:12px; color:var(--text-secondary);">' + (s.locCn || "-") + '</td>'
+                + '<td>' + typeBadge + '</td>'
+                + '<td>' + sttsBadge + '</td>'
+                + '<td><div class="grid-actions">'
+                + '<button type="button" class="btn btn-xs btn-detail" data-action="detail" data-idx="' + realIdx + '">상세</button>'
+                + '<button type="button" class="btn btn-xs btn-edit"   data-action="edit"   data-idx="' + realIdx + '">수정</button>'
+                + '</div></td>'
+                + '</tr>';
+      }).join("");
     }
 
-    function renderWorkTable() {
-      const status = document.getElementById('workFilterStatus').value;
-      const type = document.getElementById('workFilterType').value;
-      const keyword = document.getElementById('workKeyword').value.trim();
+    /* ── 사이드 패널 렌더 ── */
+    function renderSidePanel() {
+      // 오늘 작업
+      var todayStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,"0") + "-" + String(today.getDate()).padStart(2,"0");
+      var todayTasks = schedules.filter(function(s){ return s.dt === todayStr; });
+      document.getElementById("todayLabel").textContent = (today.getMonth()+1) + "월 " + today.getDate() + "일";
 
-      const list = workList.filter(function (item) {
-        if (item.workType !== 'CHECK') return false;
+      var taskList = document.getElementById("todayTaskList");
+      if (todayTasks.length === 0) {
+        taskList.innerHTML = '<div style="text-align:center; padding:12px; font-size:12px; color:var(--text-tertiary);">오늘 예정된 작업이 없습니다.</div>';
+      } else {
+        taskList.innerHTML = todayTasks.map(function(s) {
+          return '<div style="padding:10px 12px; border-radius:8px; border:1px solid var(--border); margin-bottom:8px; cursor:pointer; border-left:3px solid ' + TYPE_COLOR[s.type] + ';">'
+                  + '<div style="font-size:12px; font-weight:700; color:var(--text-primary); margin-bottom:3px;">' + s.schdlTtl + '</div>'
+                  + '<div style="font-size:11px; color:var(--text-tertiary);">' + (s.locCn || "-") + '</div>'
+                  + '</div>';
+        }).join("");
+      }
 
-        const matchStatus = !status || item.status === status;
-        const matchType = !type || item.chkTyCd === type;
-        const matchKeyword = !keyword ||
-                item.facilityNo.includes(keyword) ||
-                item.partnerNo.includes(keyword) ||
-                item.content.includes(keyword);
-
-        return matchStatus && matchType && matchKeyword;
+      // 이달 현황
+      var monthSchedules = schedules.filter(function(s) {
+        var d = new Date(s.dt);
+        return d.getFullYear() === curYear && d.getMonth() === curMonth;
       });
+      var total = monthSchedules.length;
+      var done  = monthSchedules.filter(function(s){ return s.schdlSttsCd === "DONE"; }).length;
+      var pct   = total > 0 ? Math.round(done / total * 100) : 0;
+      var circumference = 226;
+      var offset = circumference - (pct / 100 * circumference);
 
-      const tbody = document.getElementById('workTbody');
-      tbody.innerHTML = '';
+      document.getElementById("donutPct").textContent = pct + "%";
+      document.getElementById("donutCircle").setAttribute("stroke-dashoffset", offset);
 
-      list.forEach(function (item) {
-        const tr = document.createElement('tr');
-        tr.innerHTML =
-                '<td class="td-mono">' + item.id + '</td>' +
-                '<td>' + item.facilityNo + '</td>' +
-                '<td>' + item.partnerNo + '</td>' +
-                '<td>' + getChkTyNm(item.chkTyCd) + '</td>' +
-                '<td>' + item.startDate + '</td>' +
-                '<td>' + statusBadge(item.status) + '</td>' +
-                '<td>' + item.content + '</td>' +
-                '<td>' +
-                '<div class="work-status-actions">' +
-                '<button type="button" class="btn btn-xs btn-detail" data-action="detail" data-id="' + item.id + '">상세</button>' +
-                '<button type="button" class="btn btn-xs btn-edit" data-action="edit" data-id="' + item.id + '">수정</button>' +
-                '<button type="button" class="btn btn-xs btn-primary" data-action="complete" data-id="' + item.id + '">완료</button>' +
-                '</div>' +
-                '</td>';
+      var checkAll  = monthSchedules.filter(function(s){ return s.type === "check"; });
+      var repairAll = monthSchedules.filter(function(s){ return s.type === "repair"; });
+      var constAll  = monthSchedules.filter(function(s){ return s.type === "const"; });
 
-        tbody.appendChild(tr);
-      });
+      function countDone(arr) { return arr.filter(function(s){ return s.schdlSttsCd === "DONE"; }).length; }
+
+      document.getElementById("cntCheck").textContent  = countDone(checkAll)  + "/" + checkAll.length;
+      document.getElementById("cntRepair").textContent = countDone(repairAll) + "/" + repairAll.length;
+      document.getElementById("cntConst").textContent  = countDone(constAll)  + "/" + constAll.length;
+
+      document.getElementById("barCheck").style.width  = (checkAll.length  > 0 ? Math.round(countDone(checkAll)  / checkAll.length  * 100) : 0) + "%";
+      document.getElementById("barRepair").style.width = (repairAll.length > 0 ? Math.round(countDone(repairAll) / repairAll.length * 100) : 0) + "%";
+      document.getElementById("barConst").style.width  = (constAll.length  > 0 ? Math.round(countDone(constAll)  / constAll.length  * 100) : 0) + "%";
     }
 
-    function openModal(mode, data) {
-      currentDetailId = data ? data.id : null;
+    /* ── 모달 ── */
+    function openModal(mode, idx) {
+      form.reset();
+      saveBtn.style.display = "inline-flex";
+      editBtn.style.display = "none";
+      setFormDisabled(false);
+      editTargetIdx = null;
 
-      document.getElementById('formMode').value = mode;
-      document.getElementById('workType').value = data ? data.workType : 'CHECK';
+      if (mode === "register") {
+        modalTitle.textContent = "일정 등록";
+        document.getElementById("scheduleNo").value = "";
+        var todayVal = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,"0") + "-" + String(today.getDate()).padStart(2,"0");
+        document.getElementById("mSchdlDt").value = todayVal;
+      }
+      if (mode === "detail" && idx !== undefined) {
+        modalTitle.textContent = "일정 상세";
+        fillForm(schedules[idx]);
+        setFormDisabled(true);
+        saveBtn.style.display = "none";
+        editBtn.style.display = "inline-flex";
+        editBtn.dataset.idx   = idx;
+      }
+      if (mode === "edit" && idx !== undefined) {
+        modalTitle.textContent = "일정 수정";
+        fillForm(schedules[idx]);
+        editTargetIdx = idx;
+      }
+      modal.classList.add("open");
+    }
 
-      document.getElementById('workModalTitle').textContent =
-              mode === 'create' ? '점검 등록' :
-                      mode === 'detail' ? '일정 상세' :
-                              '점검 수정';
+    function fillForm(s) {
+      document.getElementById("scheduleNo").value   = s.scheduleNo   || "";
+      document.getElementById("mSchdlTtl").value    = s.schdlTtl    || "";
+      document.getElementById("mSchdlDt").value     = s.dt          || "";
+      document.getElementById("mSchdlType").value   = s.type        || "check";
+      document.getElementById("mLocCn").value       = s.locCn       || "";
+      document.getElementById("mSchdlSttsCd").value = s.schdlSttsCd || "READY";
+      document.getElementById("mSchdlCn").value     = s.schdlCn     || "";
+    }
 
-      document.getElementById('facChkHstryNo').value = data ? data.id : '';
-      document.getElementById('facilityNo').value = data ? data.facilityNo : '';
-      document.getElementById('partnerNo').value = data ? data.partnerNo : '';
-      document.getElementById('chkDt').value = data ? data.startDate : '';
-      document.getElementById('chkTyCd').value = data && data.chkTyCd ? data.chkTyCd : 'REG';
-      document.getElementById('chkSttsCd').value = data ? data.status : 'WAIT';
-      document.getElementById('chkCn').value = data ? data.content : '';
-      document.getElementById('rmk').value = data ? data.rmk : '';
+    function setFormDisabled(disabled) {
+      form.querySelectorAll("input, select, textarea").forEach(function(el){ el.disabled = disabled; });
+    }
 
-      const isContract = data && data.workType === 'CONTRACT';
-      const readonly = mode === 'detail' || isContract;
+    function closeModal() { modal.classList.remove("open"); }
 
-      page.querySelectorAll('#workForm input, #workForm select, #workForm textarea').forEach(function (el) {
-        if (el.id !== 'formMode' && el.id !== 'workType') {
-          el.disabled = readonly;
+    /* ── 유형 필터 버튼 ── */
+    function setTypeFilter(type) {
+      activeType = type;
+      page.querySelectorAll(".type-filter-btn").forEach(function(btn) {
+        var t = btn.dataset.type;
+        if (t === type) {
+          btn.style.background = "#2e5c38";
+          btn.style.color      = "#fff";
+          btn.style.borderColor = "transparent";
+        } else {
+          if (t === "repair") { btn.style.background="#fefce8"; btn.style.color="#92400e"; btn.style.borderColor="#fde68a"; }
+          if (t === "check")  { btn.style.background="#eff6ff"; btn.style.color="#1e40af"; btn.style.borderColor="#bfdbfe"; }
+          if (t === "safe")   { btn.style.background="#f0fdf4"; btn.style.color="#166534"; btn.style.borderColor="#bbf7d0"; }
+          if (t === "const")  { btn.style.background="#fdf2f8"; btn.style.color="#9d174d"; btn.style.borderColor="#fbcfe8"; }
+          if (t === "ALL")    { btn.style.background="#f3f4f6"; btn.style.color="var(--text-secondary)"; btn.style.borderColor="transparent"; }
         }
       });
-
-      document.getElementById('detailEditBtn').style.display =
-              mode === 'detail' && !isContract ? 'inline-flex' : 'none';
-
-      document.getElementById('saveBtn').style.display =
-              mode === 'detail' || isContract ? 'none' : 'inline-flex';
-
-      document.getElementById('deleteBtn').style.display =
-              mode === 'edit' ? 'inline-flex' : 'none';
-
-      document.getElementById('workModal').style.display = 'flex';
-    }
-
-    function changeToEditMode() {
-      const data = findWork(currentDetailId);
-      if (!data || data.workType === 'CONTRACT') return;
-      openModal('edit', data);
-    }
-
-    function closeModal() {
-      document.getElementById('workModal').style.display = 'none';
-      page.querySelectorAll('#workForm input, #workForm select, #workForm textarea').forEach(function (el) {
-        el.disabled = false;
-      });
-    }
-
-    function setComplete(id) {
-      const item = findWork(id);
-      if (!item || item.workType !== 'CHECK') return;
-
-      item.status = 'DONE';
-      item.statusNm = '완료';
-
       renderCalendar();
-      renderWorkTable();
     }
 
-    page.addEventListener('click', function (event) {
-      const tabBtn = event.target.closest('[data-tab]');
-      if (tabBtn) {
-        page.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        tabBtn.classList.add('active');
-
-        page.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-
-        if (tabBtn.dataset.tab === 'calendar') {
-          document.getElementById('calendarTab').classList.add('active');
-        }
-
-        if (tabBtn.dataset.tab === 'work') {
-          document.getElementById('workTab').classList.add('active');
-          renderWorkTable();
-        }
-
-        return;
-      }
-
-      const btn = event.target.closest('[data-action]');
-      if (!btn) return;
-
-      const action = btn.dataset.action;
-      const id = btn.dataset.id;
-      const data = id ? findWork(id) : null;
-
-      if (action === 'prev-month') {
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        renderCalendar();
-      }
-
-      if (action === 'next-month') {
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        renderCalendar();
-      }
-
-      if (action === 'today') {
-        currentDate = new Date(2026, 3, 1);
-        renderCalendar();
-      }
-
-      if (action === 'search') renderCalendar();
-
-      if (action === 'reset') {
-        document.getElementById('filterWorkType').value = '';
-        document.getElementById('filterStatus').value = '';
-        document.getElementById('filterStartDate').value = '';
-        document.getElementById('filterEndDate').value = '';
-        renderCalendar();
-      }
-
-      if (action === 'work-search') renderWorkTable();
-
-      if (action === 'work-reset') {
-        document.getElementById('workFilterStatus').value = '';
-        document.getElementById('workFilterType').value = '';
-        document.getElementById('workKeyword').value = '';
-        renderWorkTable();
-      }
-
-      if (action === 'open-create') openModal('create');
-      if (action === 'detail' && data) openModal('detail', data);
-      if (action === 'edit' && data) openModal('edit', data);
-      if (action === 'change-edit') changeToEditMode();
-      if (action === 'complete') setComplete(id);
-      if (action === 'close-modal') closeModal();
-
-      if (action === 'delete') {
-        alert('삭제는 FAC_CHK_HSTRY_NO 기준으로 처리하면 됩니다.');
-        closeModal();
-      }
+    /* ── 이벤트 ── */
+    document.getElementById("prevMonth").addEventListener("click", function() {
+      curMonth--; if (curMonth < 0) { curMonth = 11; curYear--; }
+      renderCalendar();
+    });
+    document.getElementById("nextMonth").addEventListener("click", function() {
+      curMonth++; if (curMonth > 11) { curMonth = 0; curYear++; }
+      renderCalendar();
     });
 
-    document.getElementById('workForm').addEventListener('submit', function (event) {
-      event.preventDefault();
-      alert('저장 시 FACILITY_CHECK_HSTRY 기준으로 insert/update 처리하면 됩니다.');
+    page.addEventListener("click", function(e) {
+      var typeBtn = e.target.closest(".type-filter-btn");
+      if (typeBtn) { setTypeFilter(typeBtn.dataset.type); return; }
+
+      var btn = e.target.closest("[data-action]");
+      if (!btn) return;
+      var action = btn.dataset.action;
+      var idx    = btn.dataset.idx !== undefined ? Number(btn.dataset.idx) : undefined;
+
+      if (action === "openRegister") openModal("register");
+      if (action === "detail")       openModal("detail", idx);
+      if (action === "edit")         openModal("edit", idx);
+      if (action === "changeToEdit") openModal("edit", Number(editBtn.dataset.idx));
+      if (action === "closeModal")   closeModal();
+    });
+
+    modal.addEventListener("click", function(e){ if (e.target === modal) closeModal(); });
+
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      if (!document.getElementById("mSchdlTtl").value.trim()) { alert("일정 제목을 입력하세요."); return; }
+      if (!document.getElementById("mSchdlDt").value)         { alert("날짜를 입력하세요."); return; }
+      alert("저장 처리 연결 예정입니다.");
       closeModal();
     });
 
     renderCalendar();
-    renderWorkTable();
   })();
 </script>

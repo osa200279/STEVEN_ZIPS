@@ -157,38 +157,14 @@
                         <span class="nav-text">공사·점검 일정</span>
                     </a>
 
-                    <a href="#" class="nav-item"
-                       data-parent="시설·공사 관리"
-                       data-title="작업 진행 현황"
-                       data-url="${pageContext.request.contextPath}/office/facility/workStatusFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">작업 진행 현황</span>
-                    </a>
-
                     <span class="sub-group-label">협력업체</span>
 
                     <a href="#" class="nav-item"
                        data-parent="시설·공사 관리"
-                       data-title="업체 조회·등록"
+                       data-title="협력업체 관리"
                        data-url="${pageContext.request.contextPath}/office/partner/listFragment">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">업체 조회·등록</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="시설·공사 관리"
-                       data-title="계약 만료 관리"
-                       data-url="${pageContext.request.contextPath}/office/partner/contractFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">계약 만료 관리</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="시설·공사 관리"
-                       data-title="참여 이력"
-                       data-url="${pageContext.request.contextPath}/office/partner/historyFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">참여 이력</span>
+                        <span class="nav-text">협력업체 관리</span>
                     </a>
 
                 </div>
@@ -212,31 +188,23 @@
                     <a href="#" class="nav-item"
                        data-parent="회계·운영 관리"
                        data-title="관리비 항목·집계"
-                       data-url="${pageContext.request.contextPath}/office/account/feeFragment">
+                       data-url="${pageContext.request.contextPath}/manager/bill/item-summary">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">관리비 항목·집계</span>
                     </a>
 
                     <a href="#" class="nav-item"
                        data-parent="회계·운영 관리"
-                       data-title="세대별 부과 내역"
-                       data-url="${pageContext.request.contextPath}/office/account/chargeFragment">
+                       data-title="관리비 부과·연체"
+                       data-url="${pageContext.request.contextPath}/manager/bill/issue">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">세대별 부과 내역</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="회계·운영 관리"
-                       data-title="연체 내역 관리"
-                       data-url="${pageContext.request.contextPath}/office/account/arrearsFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">연체 내역 관리</span>
+                        <span class="nav-text">관리비 부과·연체</span>
                     </a>
 
                     <a href="#" class="nav-item"
                        data-parent="회계·운영 관리"
                        data-title="납부 고지서 등록"
-                       data-url="${pageContext.request.contextPath}/office/account/billFragment">
+                       data-url="${pageContext.request.contextPath}/manager/bill/charge">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">납부 고지서 등록</span>
                     </a>
