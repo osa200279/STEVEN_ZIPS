@@ -37,22 +37,17 @@ class ProfileUploadSimpleTest {
         // 2. 파일명 및 경로 생성 (로직 시연)
         String uuid = UUID.randomUUID().toString().replace("-", "");
         String savedFileName = uuid + "_" + testFile.getOriginalFilename();
-        String folderPath = "test/junit/" + testUserId;
-        String cat = "upload_test";
-
-        log.info("▶ 1. 구글 드라이브 업로드 시작... 경로: {}", folderPath);
+        String folderPath = "test/junit/" + testUserId;     // 동적으로 폴더를 만들고 싶다면 ex.testUserId
+        String cat = "upload_test";                         // 카테고리 (공통코드)
 
         // 3. 구글 업로드 실행
         String googleId = googleDriveService.uploadFile(testFile, folderPath, savedFileName);
-        log.info("▶ 2. 구글 업로드 완료! Google File ID: {}", googleId);
 
         // 4. DB 시퀀스 채번 및 VO 생성
         long seq = attachFileMapper.seqNextVal();
         AttachFileVO attachFile = AttachFileVO.from(
-                testFile, (int)seq, cat, savedFileName, googleId, folderPath, 1
+                testFile, seq, cat, savedFileName, googleId, folderPath, 1
         );
-
-        log.info("▶ 3. DB 데이터 준비 완료: {} (GroupNo: {})", attachFile.getFileSaveUuid(), seq);
 
         // 5. DB 저장
         int result = attachFileMapper.insertAttachFile(attachFile);
