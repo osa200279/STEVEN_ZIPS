@@ -5,8 +5,10 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="_csrf_header" content="${_csrf.headerName}"/>   <%-- 서버가 정해준 이름(편지봉투) --%>
-    <meta name="_csrf" content="${_csrf.token}"/>   <%-- 실제 1회용 암호 값(편지) --%>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+    <%-- 서버가 정해준 이름(편지봉투) --%>
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <%-- 실제 1회용 암호 값(편지) --%>
     <script src="/js/common/file-util.js"></script>
 
     <title>회원가입 팝업</title>
@@ -208,6 +210,89 @@
             cursor: pointer;
             font-size: 16px;
         }
+
+        /* 스위치 컨테이너 */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 5px;
+            border-bottom: 1px solid #F0EDE4;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        /* 스위치 본체 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #E9E6D7;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #7BA131;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* 자식 스위치 영역 (애니메이션) */
+        .sub-toggle-area {
+            background: #FCF9F0;
+            border-radius: 8px;
+            padding: 5px 15px;
+            margin-top: 5px;
+            display: none; /* 기본 숨김 */
+        }
+
+        /* (선택) 문구 스타일 */
+        .optional-text {
+            font-size: 12px; /* 작게 */
+            color: rgba(97, 45, 7, 0.53) !important;
+            font-weight: normal; /* 굵지 않게 */
+            margin-left: 5px; /* 레이블과 약간의 간격 */
+        }
+
+        .sub-toggle-area .toggle-label {
+            font-size: 13px;
+            color: #8B8365;
+        }
     </style>
 </head>
 <body>
@@ -224,7 +309,7 @@
         <div class="form-label">프로필 사진</div>
         <div class="profile-flex">
             <div class="photo-preview" id="preview">
-                  미리보기
+                미리보기
             </div>
             <div>
                 <button type="button" class="photo-btn" onclick="document.querySelector('#img').click();">
@@ -295,13 +380,69 @@
     </div>
 
     <div class="form-group">
+
+        <div class="toggle-group">
+            <div class="form-label">SMS 수신여부<span class="optional-text">(선택)</span></div>
+            <label class="switch">
+                <input type="checkbox" id="smsRcvYn" name="smsRcvYn">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div id="subSmsArea" class="sub-toggle-area">
+            <div class="toggle-group">
+                <span class="toggle-label">공지사항 알림</span>
+                <label class="switch">
+                    <input type="checkbox" id="smsNtcRcvYn" name="smsNtcRcvYn">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-group" style="border:none;">
+                <span class="toggle-label">계약관련 알림</span>
+                <label class="switch">
+                    <input type="checkbox" id="smsCtrtRcvYn" name="smsCtrtRcvYn">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
         <div class="form-label">이메일 <span>*</span></div>
         <input type="email" name="userEml" class="input-control" placeholder="이메일을 입력하세요">
     </div>
 
+    <div class="form-group">
+        <div class="toggle-group">
+            <div class="form-label">e-mail 수신여부<span class="optional-text">(선택)</span></div>
+            <label class="switch">
+                <input type="checkbox" id="emlRcvYn" name="emlRcvYn">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div id="subEmlArea" class="sub-toggle-area">
+            <div class="toggle-group">
+                <span class="toggle-label">공지사항 알림</span>
+                <label class="switch">
+                    <input type="checkbox" id="emlNtcRcvYn" name="emlNtcRcvYn">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-group" style="border:none;">
+                <span class="toggle-label">계약관련 알림</span>
+                <label class="switch">
+                    <input type="checkbox" id="emlCtrtRcvYn" name="emlCtrtRcvYn">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+
     <%-- 토큰 추가 (동기방식 이용시)
-    <sec:csrfInput/>
-    --%>
+        <sec:csrfInput/>
+        --%>
     <div class="btn-area">
         <button type="submit" class="btn-submit" id="memRegBtn">회원등록</button>
         <button type="button" class="btn-cancel" onclick="window.close()">취소</button>
@@ -309,186 +450,223 @@
 </form>
 
 <script type="module">
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
 
-    // 아이디 중복확인 기능
-    const idCheckBtn = document.querySelector('#idCheckBtn');
-    idCheckBtn.addEventListener('click', async e => {
-        e.preventDefault();
-        const form = document.querySelector("#joinForm");
-        const userId = document.querySelector('#userId').value.trim();
+        // SMS 수신여부 스위치 토글 제어
+        const smsYnSwitch = document.querySelector('#smsRcvYn');
+        const subSmsArea = document.querySelector('#subSmsArea');
 
-        if(!userId){
-            alert("아이디를 입력해주세요.");
-            form.elements['userId'].focus();
-            return;
-        }
-
-        const regex = /^[a-zA-Z0-9]{4,20}$/;
-
-        if (regex && !regex.test(userId)) {
-            alert("아이디는 영문, 숫자 조합 4~20자로 입력해주세요.");
-            form.elements['userId'].focus();
-            return;
-        }
-
-        try{
-            const resp = await fetch(`/member/idCheck?userId=\${userId}`);
-
-            const result = await resp.json();
-            if(result.res === "NOTEXIST"){
-                document.querySelector('#isIdChecked').value = "Y";
-                alert(result.message);
+        smsYnSwitch.addEventListener('change', function () {
+            if (this.checked) {
+                subSmsArea.style.display = 'block';
+                subSmsArea.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
             } else {
-                document.querySelector('#isIdChecked').value = "N";
-                alert(result.message);
+                subSmsArea.style.display = 'none';
+                // 부모가 꺼지면 자식 체크도 모두 해제
+                subSmsArea.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
             }
+        });
 
-        } catch (error){
-            console.log("Fetch 에러발생 : ", error);
-        }
-    });
+        // e-mail 수신여부 스위치 토글 제어
+        const emlYnSwitch = document.querySelector('#emlRcvYn');
+        const subEmlArea = document.querySelector('#subEmlArea');
 
-    // 아이디 입력란 값이 바뀌면 아이디 중복체크 상태 초기화
-    document.querySelector('#userId').addEventListener('input', () => {
-        document.querySelector('#isIdChecked').value = "N";
-    });
-
-    // 회원등록 버튼 클릭 이벤트
-    const memRegBtn = document.querySelector("#memRegBtn");
-    memRegBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        const form = document.querySelector("#joinForm");
-
-        const rrno1 = form.elements['rrno1'].value;
-        const rrno2 = form.elements['rrno2'].value;
-
-        let userRrno = document.querySelector("#userRrno");
-        userRrno.value = rrno1 + rrno2;
-
-
-        const tel1box = document.querySelector('#tel1');
-        const tel1 = tel1box.options[tel1box.selectedIndex].value;
-        const tel2 = document.querySelector('#tel2').value;
-        const tel3 = document.querySelector('#tel3').value;
-        let userTelno = document.querySelector('#userTelno');
-        userTelno.value = tel1 + tel2 + tel3;
-
-        // 인풋 별 정규식 및 안내문구 설정
-        const validationRules = {
-            userId: {
-                label: "아이디",
-                regex: /^[a-zA-Z0-9]{4,20}$/,
-                invalidMsg: "아이디는 영문, 숫자 조합 4~20자로 입력해주세요."
-            },
-            userPw: {
-                label: "비밀번호",
-                regex: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9가-힣\s])[^가-힣\s]{8,20}$/,  // ( ?= )전방 탐색, 공백, 한글 검사
-                invalidMsg: "비밀번호는 영문, 숫자, 특수문자 조합 8~20자로 입력해주세요."
-            },
-            userNm: {
-                label: "이름",
-                regex: /^[가-힣]{2,10}$/,
-                invalidMsg: "이름은 한글로 작성해주세요"
-            },
-            rrno1: {
-                label: "주민등록번호 앞자리",
-                regex: /^[0-9]{6}$/,  // 형식 000000-0000000
-                invalidMsg: "주민등록번호 형식이 올바르지 않습니다."
-            },
-            rrno2: {
-                label: "주민등록번호 뒷자리",
-                regex: /^[0-9]{7}$/,  // 형식 000000-0000000
-                invalidMsg: "주민등록번호 형식이 올바르지 않습니다."
-            },
-            userTelno: {
-                label: "전화번호",
-                regex: /^[0-9]{10,11}$/,
-                invalidMsg: "전화번호는 10~11자리 숫자입니다."
-            },
-            userEml: {
-                label: "이메일",
-                regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                invalidMsg: "올바른 이메일 형식이 아닙니다."
+        emlYnSwitch.addEventListener('change', function () {
+            if (this.checked) {
+                subEmlArea.style.display = 'block';
+                subEmlArea.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            } else {
+                subEmlArea.style.display = 'none';
+                // 부모가 꺼지면 자식 체크도 모두 해제
+                subEmlArea.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
             }
-        };
+        });
 
-        // id중복체크 여부 확인
-        if(document.querySelector('#isIdChecked').value === "N"){
-            alert("아이디 중복체크를 해주세요!");
-            return;
-        }
+        // 아이디 중복확인 기능
+        const idCheckBtn = document.querySelector('#idCheckBtn');
+        idCheckBtn.addEventListener('click', async e => {
+            e.preventDefault();
+            const form = document.querySelector("#joinForm");
+            const userId = document.querySelector('#userId').value.trim();
 
-        // 유효성 체크
-        for (const [inputName, rule] of Object.entries(validationRules)) {
-            const input = form.elements[inputName];
-            if (!input) continue;
-
-            const value = input.value.trim();
-
-            // 미입력 체크
-            if (!value) {
-                alert(`\${rule.label}을(를) 입력해주세요.`);
-                console.log(rule.label);
-                input.focus();
+            if (!userId) {
+                alert("아이디를 입력해주세요.");
+                form.elements['userId'].focus();
                 return;
             }
 
-            // 정규식 체크 :: 일치 true, 불일치 false
-            if (rule.regex && !rule.regex.test(value)) {
-                alert(rule.invalidMsg);
-                input.focus();
+            const regex = /^[a-zA-Z0-9]{4,20}$/;
+
+            if (regex && !regex.test(userId)) {
+                alert("아이디는 영문, 숫자 조합 4~20자로 입력해주세요.");
+                form.elements['userId'].focus();
                 return;
             }
 
-        }
-        // 비밀번호 확인 일치여부
-        if (form.userPw.value !== form.userPwConfirm.value) {
-            alert("비밀번호가 일치하지 않습니다.");
-            form.userPwConfirm.focus();
-            return;
-        }
+            try {
+                const resp = await fetch(`/member/idCheck?userId=\${userId}`);
 
-        // 비동기 통신 회원가입
-        const formData = new FormData(form);
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
-        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+                const result = await resp.json();
+                if (result.res === "NOTEXIST") {
+                    document.querySelector('#isIdChecked').value = "Y";
+                    alert(result.message);
+                } else {
+                    document.querySelector('#isIdChecked').value = "N";
+                    alert(result.message);
+                }
 
-        try {
-            const resp = await fetch('/member/join', {
-                method: 'POST',
-                headers: {
-                    [csrfHeader]: csrfToken,
+            } catch (error) {
+                console.log("Fetch 에러발생 : ", error);
+            }
+        });
+
+        // 아이디 입력란 값이 바뀌면 아이디 중복체크 상태 초기화
+        document.querySelector('#userId').addEventListener('input', () => {
+            document.querySelector('#isIdChecked').value = "N";
+        });
+
+        // 회원등록 버튼 클릭 이벤트
+        const memRegBtn = document.querySelector("#memRegBtn");
+        memRegBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const form = document.querySelector("#joinForm");
+
+            const rrno1 = form.elements['rrno1'].value;
+            const rrno2 = form.elements['rrno2'].value;
+
+            let userRrno = document.querySelector("#userRrno");
+            userRrno.value = rrno1 + rrno2;
+
+
+            const tel1box = document.querySelector('#tel1');
+            const tel1 = tel1box.options[tel1box.selectedIndex].value;
+            const tel2 = document.querySelector('#tel2').value;
+            const tel3 = document.querySelector('#tel3').value;
+            let userTelno = document.querySelector('#userTelno');
+            userTelno.value = tel1 + tel2 + tel3;
+
+            // 인풋 별 정규식 및 안내문구 설정
+            const validationRules = {
+                userId: {
+                    label: "아이디",
+                    regex: /^[a-zA-Z0-9]{4,20}$/,
+                    invalidMsg: "아이디는 영문, 숫자 조합 4~20자로 입력해주세요."
                 },
-                body: formData
-            });
+                userPw: {
+                    label: "비밀번호",
+                    regex: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9가-힣\s])[^가-힣\s]{8,20}$/,  // ( ?= )전방 탐색, 공백, 한글 검사
+                    invalidMsg: "비밀번호는 영문, 숫자, 특수문자 조합 8~20자로 입력해주세요."
+                },
+                userNm: {
+                    label: "이름",
+                    regex: /^[가-힣]{2,10}$/,
+                    invalidMsg: "이름은 한글로 작성해주세요"
+                },
+                rrno1: {
+                    label: "주민등록번호 앞자리",
+                    regex: /^[0-9]{6}$/,  // 형식 000000-0000000
+                    invalidMsg: "주민등록번호 형식이 올바르지 않습니다."
+                },
+                rrno2: {
+                    label: "주민등록번호 뒷자리",
+                    regex: /^[0-9]{7}$/,  // 형식 000000-0000000
+                    invalidMsg: "주민등록번호 형식이 올바르지 않습니다."
+                },
+                userTelno: {
+                    label: "전화번호",
+                    regex: /^[0-9]{10,11}$/,
+                    invalidMsg: "전화번호는 10~11자리 숫자입니다."
+                },
+                userEml: {
+                    label: "이메일",
+                    regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    invalidMsg: "올바른 이메일 형식이 아닙니다."
+                }
+            };
 
-            const result = await resp.json();
-            if(resp.ok){
-                alert(result.message);
-                window.close(); // 성공시 팝업 닫기
-            }else{
-                alert("가입 실패: " + result.message );
+            // id중복체크 여부 확인
+            if (document.querySelector('#isIdChecked').value === "N") {
+                alert("아이디 중복체크를 해주세요!");
+                return;
             }
-        } catch (error) {
-            console.error("통신 에러 발생 : ", error);
-            alert("서버와 통신 중 문제가 발생했습니다.")
-        }
-    });
-});
 
-// 이미지 썸네일 미리보기
-let preview = document.querySelector("#preview");   // 미리보기 div
-let img = document.querySelector("#img");           // input
-if(img) {
-    img.addEventListener('change', function () {
-        imgPreview(img, preview);
+            // 유효성 체크
+            for (const [inputName, rule] of Object.entries(validationRules)) {
+                const input = form.elements[inputName];
+                if (!input) continue;
 
-        if(img.files.length > 0) {
-            document.querySelector("#fileName").textContent = img.files[0].name;
-        }
+                const value = input.value.trim();
+
+                // 미입력 체크
+                if (!value) {
+                    alert(`\${rule.label}을(를) 입력해주세요.`);
+                    console.log(rule.label);
+                    input.focus();
+                    return;
+                }
+
+                // 정규식 체크 :: 일치 true, 불일치 false
+                if (rule.regex && !rule.regex.test(value)) {
+                    alert(rule.invalidMsg);
+                    input.focus();
+                    return;
+                }
+
+            }
+            // 비밀번호 확인 일치여부
+            if (form.userPw.value !== form.userPwConfirm.value) {
+                alert("비밀번호가 일치하지 않습니다.");
+                form.userPwConfirm.focus();
+                return;
+            }
+
+            // 비동기 통신 회원가입
+            const formData = new FormData(form);
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+            const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+
+            formData.set('smsRcvYn', document.querySelector('#smsRcvYn').checked ? 'Y' : 'N');
+            formData.set('smsNtcRcvYn', document.querySelector('#smsNtcRcvYn').checked ? 'Y' : 'N');
+            formData.set('smsCtrtRcvYn', document.querySelector('#smsCtrtRcvYn').checked ? 'Y' : 'N');
+            formData.set('emlRcvYn', document.querySelector('#emlRcvYn').checked ? 'Y' : 'N');
+            formData.set('emlNtcRcvYn', document.querySelector('#emlNtcRcvYn').checked ? 'Y' : 'N');
+            formData.set('emlCtrtRcvYn', document.querySelector('#emlCtrtRcvYn').checked ? 'Y' : 'N');
+
+            try {
+                const resp = await fetch('/member/join', {
+                    method: 'POST',
+                    headers: {
+                        [csrfHeader]: csrfToken,
+                    },
+                    body: formData
+                });
+
+                const result = await resp.json();
+                if (resp.ok) {
+                    alert(result.message);
+                    window.close(); // 성공시 팝업 닫기
+                } else {
+                    alert("가입 실패: " + result.message);
+                }
+            } catch (error) {
+                console.error("통신 에러 발생 : ", error);
+                alert("서버와 통신 중 문제가 발생했습니다.")
+            }
+        });
     });
-}
+
+    // 이미지 썸네일 미리보기
+    let preview = document.querySelector("#preview");   // 미리보기 div
+    let img = document.querySelector("#img");           // input
+    if (img) {
+        img.addEventListener('change', function () {
+            imgPreview(img, preview);
+
+            if (img.files.length > 0) {
+                document.querySelector("#fileName").textContent = img.files[0].name;
+            }
+        });
+    }
 </script>
 </body>
 </html>
