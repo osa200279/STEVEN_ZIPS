@@ -36,44 +36,65 @@
                     <a href="#" class="nav-item active"
                        data-parent="인사·인력 관리"
                        data-title="직원 계정 관리"
-                       data-url="${pageContext.request.contextPath}/manager/employee/mngr_account">
+                       data-url="${pageContext.request.contextPath}/manager/employee/account">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">직원 계정 관리</span>
                     </a>
 
-
                     <a href="#" class="nav-item"
                        data-parent="인사·인력 관리"
                        data-title="휴가 일정"
-                       data-url="${pageContext.request.contextPath}/manager/employee/vacation">
+                       data-url="${pageContext.request.contextPath}/manager/vacation">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">휴가 일정</span>
                     </a>
 
-                    <span class="sub-group-label">입주민 관리</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <%-- 입주민 관리 --%>
+        <div class="nav-group">
+            <button type="button" class="cat-btn">
+                <span class="material-symbols-rounded nav-icon nav-icon-top">groups</span>
+                <span class="cat-label">입주민 관리</span>
+                <span class="material-symbols-rounded cat-chevron">expand_more</span>
+            </button>
+            <div class="submenu-wrap">
+                <div class="submenu-inner">
 
                     <a href="#" class="nav-item"
-                       data-parent="인사·인력 관리"
+                       data-parent="입주민 관리"
                        data-title="입주민 목록"
-                       data-url="${pageContext.request.contextPath}/office/resident/listFragment">
+                       data-url="${pageContext.request.contextPath}/manager/resident/list">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">입주민 목록</span>
                     </a>
 
                     <a href="#" class="nav-item"
-                       data-parent="인사·인력 관리"
-                       data-title="회원 권한 변경"
-                       data-url="${pageContext.request.contextPath}/office/resident/roleFragment">
+                       data-parent="입주민 관리"
+                       data-title="권한 신청 처리"
+                       data-url="${pageContext.request.contextPath}/manager/resident/auth">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">회원 권한 변경</span>
+                        <span class="nav-text">권한 신청 처리</span>
                     </a>
 
                     <a href="#" class="nav-item"
-                       data-parent="인사·인력 관리"
-                       data-title="전출자 관리"
-                       data-url="${pageContext.request.contextPath}/office/resident/moveoutFragment">
+                       data-parent="입주민 관리"
+                       data-title="입주/퇴거 관리"
+                       data-url="${pageContext.request.contextPath}/manager/resident/moveList">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">전출자 관리</span>
+                        <span class="nav-text">입주/퇴거 관리</span>
+                    </a>
+
+                    <a href="#" class="nav-item"
+                       data-parent="입주민 관리"
+                       data-title="입주민 차량 관리"
+                       data-url="${pageContext.request.contextPath}/manager/resident/auto">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">입주민 차량 관리</span>
                     </a>
 
                 </div>
@@ -97,7 +118,7 @@
                     <a href="#" class="nav-item"
                        data-parent="시설·공사 관리"
                        data-title="시설 자산 관리"
-                       data-url="${pageContext.request.contextPath}/office/facility/assetFragment">
+                       data-url="${pageContext.request.contextPath}/manager/facilityList">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">시설 자산 관리</span>
                     </a>
@@ -105,7 +126,7 @@
                     <a href="#" class="nav-item"
                        data-parent="시설·공사 관리"
                        data-title="공용 시설 관리"
-                       data-url="${pageContext.request.contextPath}/office/facility/publicFragment">
+                       data-url="${pageContext.request.contextPath}/manager/publicFacilityList">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">공용 시설 관리</span>
                     </a>
@@ -113,7 +134,7 @@
                     <a href="#" class="nav-item"
                        data-parent="시설·공사 관리"
                        data-title="검침 관리"
-                       data-url="${pageContext.request.contextPath}/office/facility/meterFragment">
+                       data-url="${pageContext.request.contextPath}/manager/meterReading">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">검침 관리</span>
                     </a>
@@ -123,7 +144,7 @@
                     <a href="#" class="nav-item"
                        data-parent="시설·공사 관리"
                        data-title="유지보수·점검 이력"
-                       data-url="${pageContext.request.contextPath}/office/employee/mngr_account">
+                       data-url="${pageContext.request.contextPath}/manager/checkHistory">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">유지보수·점검 이력</span>
                     </a>
@@ -131,7 +152,7 @@
                     <a href="#" class="nav-item"
                        data-parent="시설·공사 관리"
                        data-title="공사·점검 일정"
-                       data-url="${pageContext.request.contextPath}/office/facility/scheduleFragment">
+                       data-url="${pageContext.request.contextPath}/manager/facility/workCalendar">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">공사·점검 일정</span>
                     </a>
@@ -282,18 +303,18 @@
 
                     <a href="#" class="nav-item"
                        data-parent="소통·행정 관리"
-                       data-title="1:1 채팅 문의"
-                       data-url="${pageContext.request.contextPath}/office/civil/chatFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">1:1 채팅 문의</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
                        data-title="고위험 민원 알림"
                        data-url="${pageContext.request.contextPath}/office/civil/alertFragment">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">고위험 민원 알림</span>
+                    </a>
+
+                    <a href="#" class="nav-item"
+                       data-parent="소통·행정 관리"
+                       data-title="1:1 채팅 문의"
+                       data-url="${pageContext.request.contextPath}/office/civil/chatFragment">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">1:1 채팅 문의</span>
                     </a>
 
                     <span class="sub-group-label">게시판</span>
@@ -312,14 +333,6 @@
                        data-url="${pageContext.request.contextPath}/office/board/infoFragment">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">생활안내·운영정보</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="의무공개 게시글"
-                       data-url="${pageContext.request.contextPath}/office/board/disclosureFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">의무공개 게시글</span>
                     </a>
 
                     <a href="#" class="nav-item"
@@ -374,14 +387,6 @@
                         <span class="nav-text">단지 일정 캘린더</span>
                     </a>
 
-                    <a href="#" class="nav-item"
-                       data-parent="단지 운영 관리"
-                       data-title="안내 방송 송출 이력"
-                       data-url="${pageContext.request.contextPath}/office/complex/broadcastFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">안내 방송 송출 이력</span>
-                    </a>
-
                     <span class="sub-group-label">시설 대여</span>
 
                     <a href="#" class="nav-item"
@@ -409,14 +414,6 @@
                     </a>
 
                     <span class="sub-group-label">차량</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="단지 운영 관리"
-                       data-title="입주민 차량 승인"
-                       data-url="${pageContext.request.contextPath}/office/car/residentFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">입주민 차량 승인</span>
-                    </a>
 
                     <a href="#" class="nav-item"
                        data-parent="단지 운영 관리"
@@ -458,65 +455,57 @@
 
 <%-- ── 사이드바 JS ── --%>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    var sidebar    = document.getElementById("sidebar");
-    var toggleBtn  = document.getElementById("sidebarToggleBtn");
-    var logoArea = document.querySelector(".sidebar-logo");
+        var sidebar   = document.getElementById("sidebar");
+        var toggleBtn = document.getElementById("sidebarToggleBtn");
+        var logoArea  = document.querySelector(".sidebar-logo");
 
-    /* 사이드바 접기 / 펼치기 */
-    if (toggleBtn && sidebar) {
-        toggleBtn.addEventListener("click", function () {
-            sidebar.classList.toggle("collapsed");
-        });
-    }
-
-    /* 추가: 로고 영역을 클릭해도 사이드바가 토글되도록 설정 */
-    if (logoArea && sidebar) {
-        logoArea.style.cursor = "pointer"; // 클릭 가능하다는 표시
-        logoArea.addEventListener("click", function (e) {
-            // 버튼 자체를 누른 게 아닐 때만 작동 (이벤트 중복 방지)
-            if (!e.target.closest("#sidebarToggleBtn")) {
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener("click", function () {
                 sidebar.classList.toggle("collapsed");
-            }
-        });
-    }
-
-    /* 카테고리 accordion */
-    document.querySelectorAll(".cat-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-            var group = btn.closest(".nav-group");
-            if (group) group.classList.toggle("open");
-        });
-    });
-
-    /* 메뉴 아이템 클릭 */
-    document.querySelectorAll(".nav-item").forEach(function (item) {
-        item.addEventListener("click", function (e) {
-            e.preventDefault();
-
-            /* active 처리 */
-            document.querySelectorAll(".nav-item").forEach(function (el) {
-                el.classList.remove("active");
             });
-            item.classList.add("active");
+        }
 
-            /* breadcrumb 업데이트 */
-            var parent  = item.getAttribute("data-parent");
-            var title   = item.getAttribute("data-title");
-            var url     = item.getAttribute("data-url");
+        if (logoArea && sidebar) {
+            logoArea.style.cursor = "pointer";
+            logoArea.addEventListener("click", function (e) {
+                if (!e.target.closest("#sidebarToggleBtn")) {
+                    sidebar.classList.toggle("collapsed");
+                }
+            });
+        }
 
-            var bcParent  = document.getElementById("bc-parent");
-            var bcCurrent = document.getElementById("bc-current");
-            if (bcParent)  bcParent.textContent  = parent;
-            if (bcCurrent) bcCurrent.textContent = title;
-
-            /* 화면 로드 */
-            if (typeof loadContent === "function" && url) {
-                loadContent(url, title);
-            }
+        document.querySelectorAll(".cat-btn").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var group = btn.closest(".nav-group");
+                if (group) group.classList.toggle("open");
+            });
         });
-    });
 
-});
+        document.querySelectorAll(".nav-item").forEach(function (item) {
+            item.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                document.querySelectorAll(".nav-item").forEach(function (el) {
+                    el.classList.remove("active");
+                });
+                item.classList.add("active");
+
+                var parent  = item.getAttribute("data-parent");
+                var title   = item.getAttribute("data-title");
+                var url     = item.getAttribute("data-url");
+
+                var bcParent  = document.getElementById("bc-parent");
+                var bcCurrent = document.getElementById("bc-current");
+                if (bcParent)  bcParent.textContent  = parent;
+                if (bcCurrent) bcCurrent.textContent = title;
+
+                if (typeof loadContent === "function" && url) {
+                    loadContent(url, title);
+                }
+            });
+        });
+
+    });
 </script>
