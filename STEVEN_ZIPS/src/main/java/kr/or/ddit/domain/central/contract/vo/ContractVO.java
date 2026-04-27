@@ -17,7 +17,7 @@ public class ContractVO {
     private Date regDt;
     private Date mdfDt;
     private String ctrtSttsCd;
-    private int CTRT_AMT;
+    private long CTRT_AMT;
     private long midPayAmt;
     private long balAmt;
     private long dpstAmt;
@@ -29,6 +29,9 @@ public class ContractVO {
     private String aptCmplexNm;
     private String hoNo;
     private String dongNo;
+    private String ctrtSttsNm;
+    private String rentTypeNm;
+    private String mgrNm;
 
 
 }

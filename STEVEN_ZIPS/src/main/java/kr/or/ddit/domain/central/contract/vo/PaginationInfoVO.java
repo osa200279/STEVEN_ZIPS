@@ -21,6 +21,8 @@ public class PaginationInfoVO<T> {
 	private String type;
 	private String user;
 	private String status;
+	private String ctrtNo;
+	private String expiry;
 
 	
 	
