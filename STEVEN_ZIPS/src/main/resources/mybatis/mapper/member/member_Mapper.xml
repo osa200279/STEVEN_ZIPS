@@ -84,11 +84,9 @@
        )
     </insert>
 
-    <update id="updateMember" parameterType="kr.or.ddit.domain.member.vo.MemberVO">
+    <update id="updateMember">
         update member
-        set user_nm = #{userNm},
-            user_rrno = #{userRrno},
-            user_telno = #{userTelno},
+        set user_telno = #{userTelno},
             user_eml = #{userEml},
             mdfcn_dt = sysdate
         where user_no = #{userNo}
