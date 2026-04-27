@@ -1,16 +1,17 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<c:set var="uri" value="${pageContext.request.requestURI}" />
 
 <aside class="sidebar" id="sidebar">
-
-    <%-- ── 로고 ── --%>
     <div class="sidebar-logo">
         <div class="logo-mark">
             <div class="logo-icon">
                 <span class="material-symbols-rounded">home_work</span>
             </div>
             <div class="logo-text">
-                <h1>우리집맵핑</h1>
-                <p>관리사무소 시스템</p>
+                <h1>관리사무소</h1>
+                <p>동기 화면 전환</p>
             </div>
         </div>
         <button type="button" class="collapse-btn" id="sidebarToggleBtn" title="사이드바 접기">
@@ -18,333 +19,192 @@
         </button>
     </div>
 
-    <%-- ── 네비게이션 ── --%>
     <nav class="sidebar-nav">
+        <!-- 대시보드: 최상단 단독 메뉴 -->
+        <a href="${pageContext.request.contextPath}/manager/main"
+           class="nav-item nav-dashboard ${fn:contains(uri, '/manager/main') ? 'active' : ''}">
+            <span class="material-symbols-rounded nav-icon">dashboard</span>
+            <span class="nav-text">대시보드</span>
+        </a>
 
-        <%-- 인사·인력 관리 --%>
-        <div class="nav-group open">
-            <button type="button" class="cat-btn">
+        <div class="section-divider"></div>
+
+        <details class="nav-group" ${fn:contains(uri, '/manager/employee') or fn:contains(uri, '/manager/vacation') ? 'open="open"' : ''}>
+            <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">badge</span>
                 <span class="cat-label">인사·인력 관리</span>
                 <span class="material-symbols-rounded cat-chevron">expand_more</span>
-            </button>
+            </summary>
             <div class="submenu-wrap">
                 <div class="submenu-inner">
-
                     <span class="sub-group-label">직원 관리</span>
-
-                    <a href="#" class="nav-item active"
-                       data-parent="인사·인력 관리"
-                       data-title="직원 계정 관리"
-                       data-url="${pageContext.request.contextPath}/manager/employee/account">
+                    <a href="${pageContext.request.contextPath}/manager/employee/account" class="nav-item ${fn:contains(uri, '/manager/employee/account') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">직원 계정 관리</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="인사·인력 관리"
-                       data-title="휴가 일정"
-                       data-url="${pageContext.request.contextPath}/manager/vacation">
+                    <a href="${pageContext.request.contextPath}/manager/vacation" class="nav-item ${fn:contains(uri, '/manager/vacation') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">휴가 일정</span>
                     </a>
-
                 </div>
             </div>
-        </div>
+        </details>
 
         <div class="section-divider"></div>
 
-        <%-- 입주민 관리 --%>
-        <div class="nav-group">
-            <button type="button" class="cat-btn">
+        <details class="nav-group" ${fn:contains(uri, '/manager/resident') or fn:contains(uri, '/manager/visit/auto') ? 'open="open"' : ''}>
+            <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">groups</span>
                 <span class="cat-label">입주민 관리</span>
                 <span class="material-symbols-rounded cat-chevron">expand_more</span>
-            </button>
+            </summary>
             <div class="submenu-wrap">
                 <div class="submenu-inner">
-
-                    <a href="#" class="nav-item"
-                       data-parent="입주민 관리"
-                       data-title="입주민 목록"
-                       data-url="${pageContext.request.contextPath}/manager/resident/list">
+                    <a href="${pageContext.request.contextPath}/manager/resident/list" class="nav-item ${fn:contains(uri, '/manager/resident/list') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">입주민 목록</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="입주민 관리"
-                       data-title="권한 신청 처리"
-                       data-url="${pageContext.request.contextPath}/manager/resident/auth">
+                    <a href="${pageContext.request.contextPath}/manager/resident/auth" class="nav-item ${fn:contains(uri, '/manager/resident/auth') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">권한 신청 처리</span>
+                        <span class="nav-text">회원 권한 변경</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="입주민 관리"
-                       data-title="입주/퇴거 관리"
-                       data-url="${pageContext.request.contextPath}/manager/resident/moveList">
+                    <a href="${pageContext.request.contextPath}/manager/resident/moveList" class="nav-item ${fn:contains(uri, '/manager/resident/moveList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">입주/퇴거 관리</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="입주민 관리"
-                       data-title="입주민 차량 관리"
-                       data-url="${pageContext.request.contextPath}/manager/resident/auto">
+                    <a href="${pageContext.request.contextPath}/manager/resident/auto" class="nav-item ${fn:contains(uri, '/manager/resident/auto') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">입주민 차량 관리</span>
                     </a>
-
+                    <a href="${pageContext.request.contextPath}/manager/visit/auto" class="nav-item ${fn:contains(uri, '/manager/visit/auto') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">방문 차량 관리</span>
+                    </a>
                 </div>
             </div>
-        </div>
+        </details>
 
         <div class="section-divider"></div>
 
-        <%-- 시설·공사 관리 --%>
-        <div class="nav-group">
-            <button type="button" class="cat-btn">
+        <details class="nav-group" ${fn:contains(uri, '/manager/facility') or fn:contains(uri, '/manager/publicFacilityList') or fn:contains(uri, '/manager/meterReading') or fn:contains(uri, '/manager/checkHistory') ? 'open="open"' : ''}>
+            <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">apartment</span>
                 <span class="cat-label">시설·공사 관리</span>
                 <span class="material-symbols-rounded cat-chevron">expand_more</span>
-            </button>
+            </summary>
             <div class="submenu-wrap">
                 <div class="submenu-inner">
-
                     <span class="sub-group-label">시설 관리</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="시설·공사 관리"
-                       data-title="시설 자산 관리"
-                       data-url="${pageContext.request.contextPath}/manager/facilityList">
+                    <a href="${pageContext.request.contextPath}/manager/facilityList" class="nav-item ${fn:contains(uri, '/manager/facilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">시설 자산 관리</span>
+                        <span class="nav-text">시설 목록</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="시설·공사 관리"
-                       data-title="공용 시설 관리"
-                       data-url="${pageContext.request.contextPath}/manager/publicFacilityList">
+                    <a href="${pageContext.request.contextPath}/manager/publicFacilityList" class="nav-item ${fn:contains(uri, '/manager/publicFacilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">공용 시설 관리</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="시설·공사 관리"
-                       data-title="검침 관리"
-                       data-url="${pageContext.request.contextPath}/manager/meterReading">
+                    <a href="${pageContext.request.contextPath}/manager/meterReading" class="nav-item ${fn:contains(uri, '/manager/meterReading') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">검침 관리</span>
+                        <span class="nav-text">검침 기록 관리</span>
                     </a>
-
                     <span class="sub-group-label">공사·점검</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="시설·공사 관리"
-                       data-title="유지보수·점검 이력"
-                       data-url="${pageContext.request.contextPath}/manager/checkHistory">
+                    <a href="${pageContext.request.contextPath}/manager/checkHistory" class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">유지보수·점검 이력</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="시설·공사 관리"
-                       data-title="공사·점검 일정"
-                       data-url="${pageContext.request.contextPath}/manager/facility/workCalendar">
+                    <a href="${pageContext.request.contextPath}/manager/facility/workCalendar" class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">공사·점검 일정</span>
                     </a>
-
                     <span class="sub-group-label">협력업체</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="시설·공사 관리"
-                       data-title="협력업체 관리"
-                       data-url="${pageContext.request.contextPath}/office/partner/listFragment">
+                    <a href="${pageContext.request.contextPath}/manager/facility/partnerList" class="nav-item ${fn:contains(uri, '/manager/facility/partnerList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">협력업체 관리</span>
                     </a>
-
                 </div>
             </div>
-        </div>
+        </details>
 
         <div class="section-divider"></div>
 
-        <%-- 회계·운영 관리 --%>
-        <div class="nav-group">
-            <button type="button" class="cat-btn">
+        <details class="nav-group" ${fn:contains(uri, '/manager/bill') or fn:contains(uri, '/manager/account/arrears') ? 'open="open"' : ''}>
+            <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">receipt_long</span>
                 <span class="cat-label">회계·운영 관리</span>
                 <span class="material-symbols-rounded cat-chevron">expand_more</span>
-            </button>
+            </summary>
             <div class="submenu-wrap">
                 <div class="submenu-inner">
-
                     <span class="sub-group-label">관리비</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="회계·운영 관리"
-                       data-title="관리비 항목·집계"
-                       data-url="${pageContext.request.contextPath}/manager/bill/item-summary">
+                    <a href="${pageContext.request.contextPath}/manager/bill/item-summary" class="nav-item ${fn:contains(uri, '/manager/bill/item-summary') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">관리비 항목·집계</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="회계·운영 관리"
-                       data-title="관리비 부과·연체"
-                       data-url="${pageContext.request.contextPath}/manager/bill/issue">
+                    <a href="${pageContext.request.contextPath}/manager/bill/charge" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">고지서 등록</span>
+                    </a>
+                    <a href="${pageContext.request.contextPath}/manager/bill/issue" class="nav-item ${fn:contains(uri, '/manager/bill/issue') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">관리비 부과·연체</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="회계·운영 관리"
-                       data-title="납부 고지서 등록"
-                       data-url="${pageContext.request.contextPath}/manager/bill/charge">
+                    <a href="${pageContext.request.contextPath}/manager/account/arrears" class="nav-item ${fn:contains(uri, '/manager/account/arrears') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">납부 고지서 등록</span>
+                        <span class="nav-text">연체 내역 관리</span>
                     </a>
-
                     <span class="sub-group-label">지출·예산</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="회계·운영 관리"
-                       data-title="지출 내역 관리"
-                       data-url="${pageContext.request.contextPath}/office/budget/expenseFragment">
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">지출 내역 관리</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="회계·운영 관리"
-                       data-title="예산 편성·조회"
-                       data-url="${pageContext.request.contextPath}/office/budget/planFragment">
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">예산 편성·조회</span>
                     </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="회계·운영 관리"
-                       data-title="지출 통계"
-                       data-url="${pageContext.request.contextPath}/office/budget/statsFragment">
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">지출 통계</span>
                     </a>
-
                 </div>
             </div>
-        </div>
+        </details>
 
         <div class="section-divider"></div>
 
-        <%-- 소통·행정 관리 --%>
-        <div class="nav-group">
-            <button type="button" class="cat-btn">
+        <details class="nav-group">
+            <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">campaign</span>
                 <span class="cat-label">소통·행정 관리</span>
                 <span class="material-symbols-rounded cat-chevron">expand_more</span>
-            </button>
+            </summary>
             <div class="submenu-wrap">
                 <div class="submenu-inner">
-
                     <span class="sub-group-label">민원</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="민원 접수 현황"
-                       data-url="${pageContext.request.contextPath}/office/civil/listFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">민원 접수 현황</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="민원 처리"
-                       data-url="${pageContext.request.contextPath}/office/civil/processFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">민원 처리</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="고위험 민원 알림"
-                       data-url="${pageContext.request.contextPath}/office/civil/alertFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">고위험 민원 알림</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="1:1 채팅 문의"
-                       data-url="${pageContext.request.contextPath}/office/civil/chatFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">1:1 채팅 문의</span>
-                    </a>
-
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">민원 접수 현황</span></a>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">민원 처리</span></a>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">고위험 민원 알림</span></a>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">1:1 채팅 문의</span></a>
                     <span class="sub-group-label">게시판</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="공지사항 관리"
-                       data-url="${pageContext.request.contextPath}/office/board/noticeFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">공지사항 관리</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="생활안내·운영정보"
-                       data-url="${pageContext.request.contextPath}/office/board/infoFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">생활안내·운영정보</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="긴급 SMS 발송"
-                       data-url="${pageContext.request.contextPath}/office/board/smsFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">긴급 SMS 발송</span>
-                    </a>
-
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">공지사항 관리</span></a>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">생활안내·운영정보</span></a>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">긴급 SMS 발송</span></a>
                     <span class="sub-group-label">투표·설문</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="투표 등록·관리"
-                       data-url="${pageContext.request.contextPath}/office/vote/manageFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">투표 등록·관리</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="소통·행정 관리"
-                       data-title="설문 등록·관리"
-                       data-url="${pageContext.request.contextPath}/office/survey/manageFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">설문 등록·관리</span>
-                    </a>
-
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">투표 등록·관리</span></a>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">설문 등록·관리</span></a>
                 </div>
             </div>
-        </div>
+        </details>
 
         <div class="section-divider"></div>
 
-        <%-- 단지 운영 관리 --%>
-        <div class="nav-group">
-            <button type="button" class="cat-btn">
+        <details class="nav-group">
+            <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">home_work</span>
                 <span class="cat-label">단지 운영 관리</span>
                 <span class="material-symbols-rounded cat-chevron">expand_more</span>
-            </button>
+            </summary>
             <div class="submenu-wrap">
                 <div class="submenu-inner">
-
                     <span class="sub-group-label">단지정보</span>
 
                     <a href="#" class="nav-item"
@@ -356,95 +216,82 @@
                     </a>
 
                     <span class="sub-group-label">일정</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="단지 운영 관리"
-                       data-title="단지 일정 캘린더"
-                       data-url="${pageContext.request.contextPath}/office/complex/calendarFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">단지 일정 캘린더</span>
-                    </a>
-
-                    <span class="sub-group-label">시설 대여</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="단지 운영 관리"
-                       data-title="대여 시설 목록"
-                       data-url="${pageContext.request.contextPath}/office/rental/listFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">대여 시설 목록</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="단지 운영 관리"
-                       data-title="예약 접수·승인"
-                       data-url="${pageContext.request.contextPath}/office/rental/approveFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">예약 접수·승인</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="단지 운영 관리"
-                       data-title="시설 이용 내역"
-                       data-url="${pageContext.request.contextPath}/office/rental/historyFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">시설 이용 내역</span>
-                    </a>
-
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">단지 일정 캘린더</span></a>
+                    <span class="sub-group-label">대여시설</span>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">대여시설 목록</span></a>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">예약 접수·확인</span></a>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">시설 이용 내역</span></a>
                     <span class="sub-group-label">차량</span>
-
-                    <a href="#" class="nav-item"
-                       data-parent="단지 운영 관리"
-                       data-title="등록 차량 목록"
-                       data-url="${pageContext.request.contextPath}/office/car/listFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">등록 차량 목록</span>
-                    </a>
-
-                    <a href="#" class="nav-item"
-                       data-parent="단지 운영 관리"
-                       data-title="방문 차량 승인"
-                       data-url="${pageContext.request.contextPath}/office/car/visitorFragment">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">방문 차량 승인</span>
-                    </a>
-
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">등록 차량 목록</span></a>
                 </div>
             </div>
-        </div>
-
+        </details>
     </nav>
 
-    <%-- ── 하단 관리자 카드 ── --%>
     <div class="admin-card">
         <div class="admin-avatar">
             <span class="material-symbols-rounded" style="color:#fff; font-size:16px;">person</span>
         </div>
         <div class="admin-info">
-            <p>관리소장님</p>
-            <span>푸르지오 관리사무소</span>
+            <p>관리사무소</p>
+            <span>동기 화면 전환</span>
         </div>
-        <button type="button" class="icon-btn" title="로그아웃">
-            <span class="material-symbols-rounded">logout</span>
-        </button>
+        <a href="${pageContext.request.contextPath}/manager/main" class="icon-btn" title="메인">
+            <span class="material-symbols-rounded">home</span>
+        </a>
     </div>
-
 </aside>
-
-<%-- ── 사이드바 JS ── --%>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-
-        var sidebar   = document.getElementById("sidebar");
+        var sidebar = document.getElementById("sidebar");
         var toggleBtn = document.getElementById("sidebarToggleBtn");
-        var logoArea  = document.querySelector(".sidebar-logo");
+        var logoArea = document.querySelector(".sidebar-logo");
+        var groups = Array.prototype.slice.call(document.querySelectorAll(".nav-group"));
+        var currentPath = window.location.pathname;
 
+        /* 현재 주소와 일치하는 메뉴만 active 처리 */
+        document.querySelectorAll(".nav-item").forEach(function (item) {
+            var href = item.getAttribute("href");
+
+            item.classList.remove("active");
+
+            /* 준비중 메뉴, # 메뉴는 주소 비교에서 제외 */
+            if (!href || href === "#" || href.indexOf("javascript:") === 0) {
+                return;
+            }
+
+            var linkPath;
+
+            try {
+                linkPath = new URL(item.href, window.location.origin).pathname;
+            } catch (e) {
+                return;
+            }
+
+            if (linkPath === currentPath) {
+                item.classList.add("active");
+
+                var activeGroup = item.closest(".nav-group");
+
+                groups.forEach(function (group) {
+                    group.removeAttribute("open");
+                });
+
+                if (activeGroup) {
+                    activeGroup.setAttribute("open", "open");
+                }
+            }
+        });
+
+        /* 사이드바 접기 버튼 */
         if (toggleBtn && sidebar) {
-            toggleBtn.addEventListener("click", function () {
+            toggleBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
                 sidebar.classList.toggle("collapsed");
             });
         }
 
+        /* 로고 영역 클릭 시 사이드바 접기 */
         if (logoArea && sidebar) {
             logoArea.style.cursor = "pointer";
             logoArea.addEventListener("click", function (e) {
@@ -454,36 +301,49 @@
             });
         }
 
-        document.querySelectorAll(".cat-btn").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-                var group = btn.closest(".nav-group");
-                if (group) group.classList.toggle("open");
-            });
-        });
-
-        document.querySelectorAll(".nav-item").forEach(function (item) {
-            item.addEventListener("click", function (e) {
+        /* 카테고리 클릭 시 클릭한 그룹만 열기 */
+        document.querySelectorAll(".nav-group > summary").forEach(function (summary) {
+            summary.addEventListener("click", function (e) {
                 e.preventDefault();
 
-                document.querySelectorAll(".nav-item").forEach(function (el) {
-                    el.classList.remove("active");
+                var group = summary.closest(".nav-group");
+                var isOpen = group.hasAttribute("open");
+
+                groups.forEach(function (otherGroup) {
+                    otherGroup.removeAttribute("open");
                 });
-                item.classList.add("active");
 
-                var parent  = item.getAttribute("data-parent");
-                var title   = item.getAttribute("data-title");
-                var url     = item.getAttribute("data-url");
-
-                var bcParent  = document.getElementById("bc-parent");
-                var bcCurrent = document.getElementById("bc-current");
-                if (bcParent)  bcParent.textContent  = parent;
-                if (bcCurrent) bcCurrent.textContent = title;
-
-                if (typeof loadContent === "function" && url) {
-                    loadContent(url, title);
+                if (!isOpen) {
+                    group.setAttribute("open", "open");
                 }
             });
         });
 
+        /* 메뉴 클릭 시 active 하나만 유지 */
+        document.querySelectorAll(".nav-item").forEach(function (item) {
+            item.addEventListener("click", function () {
+                if (item.getAttribute("aria-disabled") === "true") {
+                    return;
+                }
+
+                document.querySelectorAll(".nav-item").forEach(function (otherItem) {
+                    otherItem.classList.remove("active");
+                });
+
+                item.classList.add("active");
+
+                var group = item.closest(".nav-group");
+
+                groups.forEach(function (otherGroup) {
+                    if (otherGroup !== group) {
+                        otherGroup.removeAttribute("open");
+                    }
+                });
+
+                if (group) {
+                    group.setAttribute("open", "open");
+                }
+            });
+        });
     });
 </script>
