@@ -50,7 +50,6 @@ public class ContractController {
         return "centralAdmin/conManagement";
     }
 
-
     // 호환(오타/이전 링크) 경로 방어: /centralAdmin/contractManagement → 계약목록으로 이동
     @GetMapping("/contractManagement")
     public String contractManagementAlias() {
