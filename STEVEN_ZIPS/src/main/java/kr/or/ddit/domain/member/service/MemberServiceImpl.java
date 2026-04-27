@@ -69,7 +69,7 @@ public class MemberServiceImpl implements IMemberService {
 
                 // 데이터베이스에 인서트
                 long seq = attachFileMapper.seqNextVal();
-                attachFile = AttachFileVO.from(profFile, seq, cat, savedFileName, googleId,
+                attachFile = AttachFileVO.fileSettings(profFile, seq, cat, savedFileName, googleId,
                         folderPath + "/" + savedFileName,1 );   // 테스트용 코드 정해지면 지우고 위에 주석처리한거 쓸 것
 
                 member.setProfFileId(attachFile.getFileGroupNo() + "_" + savedFileName);

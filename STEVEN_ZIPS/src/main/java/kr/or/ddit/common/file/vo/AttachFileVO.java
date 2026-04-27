@@ -28,7 +28,7 @@ public class AttachFileVO {
     private int downCnt;
     private String googleId;
 
-    public static AttachFileVO from(MultipartFile file, long fileGroupNo, String cat, String uuid,
+    public static AttachFileVO fileSettings(MultipartFile file, long fileGroupNo, String cat, String uuid,
                                     String googleId, String path, int fileSortOrder) {
         String originalFilename = file.getOriginalFilename();
         String ext = "";

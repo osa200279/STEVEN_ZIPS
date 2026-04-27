@@ -45,7 +45,7 @@ class ProfileUploadSimpleTest {
 
         // 4. DB 시퀀스 채번 및 VO 생성
         long seq = attachFileMapper.seqNextVal();
-        AttachFileVO attachFile = AttachFileVO.from(
+        AttachFileVO attachFile = AttachFileVO.fileSettings(
                 testFile, seq, cat, savedFileName, googleId, folderPath, 1
         );
 
