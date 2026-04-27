@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>우리집맵핑 · 하위관리자 계정</title>
+    <title>우리집맵핑 · 단지 관리자 계정</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -50,7 +50,7 @@
           <span style="margin: 0 4px">/</span>
           <span>시설·시스템</span>
           <span style="margin: 0 4px">/</span>
-          <span class="bc-current">하위관리자 계정</span>
+          <span class="bc-current">단지관리자 계정</span>
         </div>
         <div class="topbar-actions">
           <button class="topbar-icon-btn" data-tooltip="알림">
@@ -65,7 +65,7 @@
         <!-- 페이지 헤더 -->
         <div class="page-header">
           <div>
-            <div class="page-title">하위 관리자 계정 관리</div>
+            <div class="page-title">단지 관리자 계정 관리</div>
             <div class="page-subtitle">단지별 계정 생성·매핑, 권한 레벨 설정 및 활성화 상태를 통합 제어합니다.</div>
           </div>
           <div class="page-header__right">

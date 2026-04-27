@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/*  전체 중앙관리자 콘트롤러 */
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/centralAdmin")
@@ -174,4 +176,8 @@ public class ContractController {
         return service.selectContractDeatil(ctrtNo);
 
     }
+
+
+
+
 }
