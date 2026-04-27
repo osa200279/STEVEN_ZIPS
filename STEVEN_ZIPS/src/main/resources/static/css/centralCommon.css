@@ -44,8 +44,10 @@
   --green-bg:   rgba(22, 163, 74, 0.08);
   --orange:     #f97316;
   --orange-bg:  rgba(249, 115, 22, 0.08);
-  --yellow:     #d97706;
-  --yellow-bg:  rgba(217, 119, 6, 0.08);
+  /*--yellow:     #d97706;*/
+  /*--yellow-bg:  rgba(217, 119, 6, 0.08);*/
+  --yellow:     #f59e0b;
+  --yellow-bg:  #fef3c7;
   --red-bg:     rgba(220, 38, 38, 0.08);
   --blue-bg:    rgba(59, 130, 246, 0.08);
   --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
@@ -67,7 +69,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 7px;
 }
 .page-title {
   font-size: 20px;
@@ -98,6 +100,51 @@
   font-size: 11px;
   color: var(--text-tertiary);
   white-space: nowrap;
+}
+
+/*.chip-row {*/
+/*  display: flex;*/
+/*  gap: 8px;*/
+/*  flex-wrap: wrap;*/
+/*  margin-top: 14px;*/
+/*}*/
+
+/*.chip {*/
+/*  padding: 6px 12px;*/
+/*  border-radius: 999px;*/
+/*  font-size: 12px;*/
+/*  font-weight: 700;*/
+/*  background: rgba(255,255,255,.18);*/
+/*  color: #fff;*/
+/*}*/
+
+.page-header > div:first-child {
+  padding-left: 4px;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+
+  background: #f3f4f6;   /* 👉 요청한 연한 회색 */
+  color: #6b7280;        /* 차분한 그레이 */
+
+  border: 1px solid #e5e7eb;
+
+  transition: all 0.2s ease;
+}
+
+.chip-row {
+  margin-top: 4px;     /* 👉 위쪽 간격 줄임 (subtitle과 가까워짐) */
+  margin-bottom: 16px; /* 👉 아래 카드랑 안겹치게 띄움 */
+  padding-left: 4px;
+}
+
+.chip:hover {
+  background: #e5e7eb;   /* hover 시 살짝 진하게 */
+  color: #374151;        /* 진한 회색 */
 }
 
 /* ================================================

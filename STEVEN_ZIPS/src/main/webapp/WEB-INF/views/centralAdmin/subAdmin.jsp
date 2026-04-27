@@ -38,6 +38,268 @@
       .toggle-thumb{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
       .toggle-wrap input:checked~.toggle-track{background:var(--green)} .toggle-wrap input:checked~.toggle-thumb{left:19px}
       .row-inactive td:not(:last-child){opacity:.45}
+
+      /* 단지 관리자 신청 계정 목록 --시작-- */
+      /* 부모 기준 잡기 */
+      .input-with-icon {
+        position: relative;
+        width: 200px;
+      }
+
+      /* input 오른쪽 공간 확보 */
+      .input-with-icon .c-input {
+        width: 100%;
+        padding-right: 36px;
+        /* 👉 이거 없으면 아이콘이랑 글자 겹침 */
+      }
+
+      /* 아이콘 위치 고정 */
+      .search-icon {
+        position: absolute;
+        right: 10px;      /* 👉 오른쪽 안쪽 */
+        top: 50%;
+        transform: translateY(-50%);  /* 👉 수직 가운데 */
+
+        font-size: 18px;
+        color: #9ca3af;
+        cursor: pointer;
+      }
+
+      /* ================================
+   단지 관리자 신청 계정 목록
+   - 두 번째 화면과 같은 카드/테이블 스타일
+================================ */
+
+      .panel {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+
+      .section-hd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px 10px;
+      }
+
+      .section-title-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .section-title-left .material-symbols-rounded {
+        font-size: 18px;
+        color: #64748b;
+      }
+
+      .section-title-left h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 800;
+        color: #111827;
+      }
+
+      .section-hd > span {
+        font-size: 12px;
+        color: #94a3b8;
+      }
+
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 0 20px 14px;
+      }
+
+      .search-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .search-box {
+        position: relative;
+        width: 220px;
+      }
+
+      .fake-input {
+        width: 100%;
+        height: 34px;
+        padding: 0 34px 0 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 12px;
+        outline: none;
+      }
+
+      .search-box .search-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 17px;
+        color: #94a3b8;
+        cursor: pointer;
+      }
+
+      .select-box {
+        position: relative;
+        width: 110px;
+      }
+
+      .fake-select {
+        width: 100%;
+        height: 34px;
+        padding: 0 30px 0 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 12px;
+        background: #fff;
+        appearance: none;
+        outline: none;
+      }
+
+      .select-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+      }
+
+      .btn-row-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-sub,
+      .btn-danger {
+        height: 34px;
+        padding: 0 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+      }
+
+      .btn-sub {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+      }
+
+      .btn-danger {
+        background: #fff1f2;
+        border: 1px solid #fecdd3;
+        color: #be123c;
+      }
+
+      .btn-sub .material-symbols-rounded,
+      .btn-danger .material-symbols-rounded {
+        font-size: 16px;
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+
+      .data-table thead th {
+        background: #f8fafc;
+        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 10px 12px;
+        font-size: 12px;
+        font-weight: 800;
+        color: #475569;
+        text-align: left;
+      }
+
+      .data-table tbody td {
+        border-bottom: 1px solid #e5e7eb;
+        padding: 12px;
+        font-size: 12px;
+        color: #334155;
+        vertical-align: middle;
+      }
+
+      .data-table tbody tr:hover {
+        background: #f9fafb;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .badge.info {
+        background: #eef2ff;
+        color: #4338ca;
+      }
+
+      .badge.wait {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .badge.ok {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .badge.reject {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .row-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+      }
+
+      .icon-btn-sm {
+        width: 28px;
+        height: 28px;
+        border: 1px solid #e5e7eb;
+        border-radius: 7px;
+        background: #fff;
+        cursor: pointer;
+      }
+
+      .icon-btn-sm .material-symbols-rounded {
+        font-size: 17px;
+      }
+
+      .icon-btn-sm.danger {
+        color: #be123c;
+      }
+
+      .table-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 20px;
+        font-size: 12px;
+        color: #64748b;
+      }
+      /* 단지 관리자 신청 계정 목록 --끝-- */
+
     </style>
   </head>
   <body>
@@ -68,11 +330,21 @@
             <div class="page-title">단지 관리자 계정 관리</div>
             <div class="page-subtitle">단지별 계정 생성·매핑, 권한 레벨 설정 및 활성화 상태를 통합 제어합니다.</div>
           </div>
+
           <div class="page-header__right">
             <button class="c-btn c-btn--primary" onclick="openModal()">
-              <span class="material-symbols-rounded">person_add</span>신규 계정 생성
+              <span class="material-symbols-rounded">download</span>
+              엑셀 내보내기
             </button>
+<%--            <button class="c-btn c-btn--primary" onclick="openModal()">--%>
+<%--              <span class="material-symbols-rounded">person_add</span>신규 계정 생성--%>
+<%--            </button>--%>
           </div>
+        </div>
+        <div class="chip-row">
+          <span class="chip">승인 대기 3건</span>
+          <span class="chip">활성 계정 22건</span>
+          <span class="chip">비활성 계정 2건</span>
         </div>
 
         <!-- 권한 레벨 안내 (접기/펼치기) -->
@@ -92,6 +364,152 @@
             <div class="role-grid" id="roleGrid"></div>
           </div>
         </div>
+      <%-- 단지관리자 직원 계정 승인 여부 --%>
+        <section class="panel">
+          <div class="section-hd">
+            <div class="section-title-left">
+<%--              <span class="material-symbols-rounded">person_search</span>--%>
+              <h3>단지 관리자 신청 계정 목록</h3>
+            </div>
+            <span>승인/반려 처리</span>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-row">
+              <div class="search-box">
+                <input type="text" id="searchInput1" class="fake-input"
+                       placeholder="이름, 아이디, 단지명 검색"
+                       oninput="searchTable('rqstTable', this.value)">
+                <span class="material-symbols-rounded search-icon"
+                      onclick="searchBtnClick('rqstTable', 'searchInput1')">search</span>
+              </div>
+
+              <div class="select-box">
+                <select class="fake-select" onchange="filterTable('rqstTable', this.value)">
+                  <option value="all">전체</option>
+                  <option value="wait">승인대기</option>
+                  <option value="ok">승인완료</option>
+                  <option value="reject">반려</option>
+                </select>
+                <span class="select-icon">▾</span>
+              </div>
+            </div>
+
+            <div class="btn-row-right">
+              <button type="button" class="btn-sub" onclick="openApprovalModal()">
+                <span class="material-symbols-rounded">task_alt</span>
+                선택 계정 승인
+              </button>
+              <button type="button" class="btn-danger" onclick="openRejectModal()">
+                <span class="material-symbols-rounded">cancel</span>
+                선택 계정 반려
+              </button>
+            </div>
+          </div>
+
+          <div style="overflow-x:auto;">
+            <table class="data-table" id="rqstTable">
+              <thead>
+              <tr>
+                <th style="width:44px;">
+                  <input type="checkbox" onclick="toggleAll('rqstTable', this)">
+                </th>
+                <th>신청자 정보</th>
+                <th>소속 단지</th>
+                <th>신청 직무</th>
+                <th>신청일자</th>
+                <th>처리상태</th>
+                <th style="text-align:right;">관리</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr data-status="wait" data-name="김관리 admin_kim 행복아파트">
+                <td><input type="checkbox" class="row-check"></td>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">김</div>
+                    <div>
+                      <div class="user-name">김관리</div>
+                      <div class="user-id">admin_kim</div>
+                    </div>
+                  </div>
+                </td>
+                <td>행복아파트 · A단지</td>
+                <td><span class="badge info">관리소장</span></td>
+                <td>2026-04-21</td>
+                <td><span class="badge wait">승인대기</span></td>
+                <td>
+                  <div class="row-actions">
+                    <button type="button" class="icon-btn-sm" onclick="openApprovalModal()" title="승인">
+                      <span class="material-symbols-rounded">check</span>
+                    </button>
+                    <button type="button" class="icon-btn-sm danger" onclick="openRejectModal()" title="반려">
+                      <span class="material-symbols-rounded">close</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-status="wait" data-name="이회계 acct_lee 행복아파트">
+                <td><input type="checkbox" class="row-check"></td>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">이</div>
+                    <div>
+                      <div class="user-name">이회계</div>
+                      <div class="user-id">acct_lee</div>
+                    </div>
+                  </div>
+                </td>
+                <td>행복아파트 · A단지</td>
+                <td><span class="badge info">회계</span></td>
+                <td>2026-04-20</td>
+                <td><span class="badge wait">승인대기</span></td>
+                <td>
+                  <div class="row-actions">
+                    <button type="button" class="icon-btn-sm" onclick="openApprovalModal()" title="승인">
+                      <span class="material-symbols-rounded">check</span>
+                    </button>
+                    <button type="button" class="icon-btn-sm danger" onclick="openRejectModal()" title="반려">
+                      <span class="material-symbols-rounded">close</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr data-status="ok" data-name="박행정 admin_park 희망빌라">
+                <td><input type="checkbox" class="row-check"></td>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">박</div>
+                    <div>
+                      <div class="user-name">박행정</div>
+                      <div class="user-id">admin_park</div>
+                    </div>
+                  </div>
+                </td>
+                <td>희망빌라 · B단지</td>
+                <td><span class="badge info">행정</span></td>
+                <td>2026-04-18</td>
+                <td><span class="badge ok">승인완료</span></td>
+                <td>
+                  <div class="row-actions">
+                    <button type="button" class="icon-btn-sm" title="상세">
+                      <span class="material-symbols-rounded">visibility</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-footer">
+            <span>총 <strong>3</strong>건 표시 중</span>
+            <span>체크 후 승인/반려 버튼을 누르면 모달창이 열립니다.</span>
+          </div>
+        </section>
+
 
         <!-- 계정 목록 -->
         <div class="c-card c-card--divide">
@@ -101,8 +519,24 @@
               <div class="c-card__sub" id="acctSubtitle">총 0건 / 1 페이지</div>
             </div>
             <div class="c-card__actions">
-              <input type="search" class="c-input" placeholder="이름·아이디·단지 검색" style="width: 200px" oninput="searchAccounts(this.value)" />
-              <select class="c-select" style="width: 110px" onchange="filterStatus(this.value)">
+<%--              <input type="search" class="c-input" placeholder="이름·아이디·단지 검색" style="width: 200px" oninput="searchAccounts(this.value)" />--%>
+            <div class="input-with-icon">
+              <input
+                      type="search"
+                      id="searchInput"
+                      class="c-input"
+                      placeholder="이름·아이디·단지 검색"
+                      onkeydown="handleSearchKey(event)"
+              />
+
+              <!-- 돋보기 -->
+              <span class="material-symbols-rounded search-icon"
+                    onclick="handleSearchClick()">
+                search
+              </span>
+            </div>
+
+  <select class="c-select" style="width: 110px" onchange="filterStatus(this.value)">
                 <option value="">전체</option>
                 <option value="active">활성</option>
                 <option value="inactive">비활성</option>
@@ -151,64 +585,64 @@
       </div>
     </div>
 
-    <!-- 신규 계정 생성 모달 -->
-    <div class="c-modal-overlay is-hidden" id="modalOverlay" onclick="closeModalOutside(event)">
-      <div class="c-modal">
-        <div class="c-modal__header">
-          <div>
-            <h4 class="c-modal__title">신규 계정 생성</h4>
-            <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 3px">계정을 생성하고 담당 단지에 즉시 매핑합니다.</p>
-          </div>
-          <button class="c-modal__close" onclick="closeModal()" aria-label="닫기"><span class="material-symbols-rounded">close</span></button>
-        </div>
-        <div class="c-modal__body">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-            <div class="c-field">
-              <label class="c-label">관리자 이름 <span class="req">*</span></label>
-              <input class="c-input" type="text" placeholder="성명 입력" />
-            </div>
-            <div class="c-field">
-              <label class="c-label">접속 아이디 <span class="req">*</span></label>
-              <input class="c-input" type="text" placeholder="6자 이상 영문·숫자" />
-            </div>
-            <div class="c-field">
-              <label class="c-label">임시 비밀번호 <span class="req">*</span></label>
-              <input class="c-input" type="password" placeholder="초기 비밀번호" />
-            </div>
-            <div class="c-field">
-              <label class="c-label">연락처</label>
-              <input class="c-input" type="text" placeholder="010-0000-0000" />
-            </div>
-            <div class="c-field">
-              <label class="c-label">소속 단지 <span class="req">*</span></label>
-              <select class="c-select">
-                <option value="">단지 선택</option>
-                <option>A단지 · 행복아파트</option>
-                <option>B단지 · 희망빌라</option>
-                <option>C단지 · 미래아파트</option>
-                <option>D단지 · 푸른마을</option>
-              </select>
-            </div>
-            <div class="c-field">
-              <label class="c-label">권한 레벨 <span class="req">*</span></label>
-              <select class="c-select" id="roleSelect"></select>
-            </div>
-          </div>
-        </div>
-        <div class="c-modal__footer">
-          <button class="c-btn c-btn--ghost" onclick="closeModal()">취소</button>
-          <button class="c-btn c-btn--primary"><span class="material-symbols-rounded">person_add</span>계정 생성</button>
-        </div>
-      </div>
-    </div>
+<%--    <!-- 신규 계정 생성 모달 (엑셀 내보내기)--> --%>
+<%--    <div class="c-modal-overlay is-hidden" id="modalOverlay" onclick="closeModalOutside(event)">--%>
+<%--      <div class="c-modal">--%>
+<%--        <div class="c-modal__header">--%>
+<%--          <div>--%>
+<%--            <h4 class="c-modal__title">신규 계정 생성</h4>--%>
+<%--            <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 3px">계정을 생성하고 담당 단지에 즉시 매핑합니다.</p>--%>
+<%--          </div>--%>
+<%--          <button class="c-modal__close" onclick="closeModal()" aria-label="닫기"><span class="material-symbols-rounded">close</span></button>--%>
+<%--        </div>--%>
+<%--        <div class="c-modal__body">--%>
+<%--          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">--%>
+<%--            <div class="c-field">--%>
+<%--              <label class="c-label">관리자 이름 <span class="req">*</span></label>--%>
+<%--              <input class="c-input" type="text" placeholder="성명 입력" />--%>
+<%--            </div>--%>
+<%--            <div class="c-field">--%>
+<%--              <label class="c-label">접속 아이디 <span class="req">*</span></label>--%>
+<%--              <input class="c-input" type="text" placeholder="6자 이상 영문·숫자" />--%>
+<%--            </div>--%>
+<%--            <div class="c-field">--%>
+<%--              <label class="c-label">임시 비밀번호 <span class="req">*</span></label>--%>
+<%--              <input class="c-input" type="password" placeholder="초기 비밀번호" />--%>
+<%--            </div>--%>
+<%--            <div class="c-field">--%>
+<%--              <label class="c-label">연락처</label>--%>
+<%--              <input class="c-input" type="text" placeholder="010-0000-0000" />--%>
+<%--            </div>--%>
+<%--            <div class="c-field">--%>
+<%--              <label class="c-label">소속 단지 <span class="req">*</span></label>--%>
+<%--              <select class="c-select">--%>
+<%--                <option value="">단지 선택</option>--%>
+<%--                <option>A단지 · 행복아파트</option>--%>
+<%--                <option>B단지 · 희망빌라</option>--%>
+<%--                <option>C단지 · 미래아파트</option>--%>
+<%--                <option>D단지 · 푸른마을</option>--%>
+<%--              </select>--%>
+<%--            </div>--%>
+<%--            <div class="c-field">--%>
+<%--              <label class="c-label">권한 레벨 <span class="req">*</span></label>--%>
+<%--              <select class="c-select" id="roleSelect"></select>--%>
+<%--            </div>--%>
+<%--          </div>--%>
+<%--        </div>--%>
+<%--        <div class="c-modal__footer">--%>
+<%--          <button class="c-btn c-btn--ghost" onclick="closeModal()">취소</button>--%>
+<%--          <button class="c-btn c-btn--primary"><span class="material-symbols-rounded">person_add</span>계정 생성</button>--%>
+<%--        </div>--%>
+<%--      </div>--%>
+<%--    </div>--%>
 
     <script>
       const PAGE_SIZE=10;
       const ROLES=[
-        {key:"관리소장",level:4,color:"blue",icon:"shield_person",title:"관리소장",desc:"단지 내 최상위 권한. 모든 메뉴 접근 가능",perms:[{ok:1,text:"전체 메뉴 열람·편집"},{ok:1,text:"계약·재무 처리"},{ok:1,text:"민원·공고 승인"}]},
-        {key:"회계",level:3,color:"yellow",icon:"account_balance",title:"회계",desc:"재무 데이터 전담. 수납·정산 권한",perms:[{ok:1,text:"계약·재무 전체"},{ok:1,text:"수납 내역 수정"},{ok:0,text:"민원·시설 불가"}]},
-        {key:"행정",level:2,color:"green",icon:"edit_document",title:"행정",desc:"입주민 소통 전담. 민원·공고 처리",perms:[{ok:1,text:"입주민 관리 열람"},{ok:1,text:"민원·공고 처리"},{ok:0,text:"재무 접근 불가"}]},
-        {key:"시설",level:1,color:"orange",icon:"handyman",title:"시설",desc:"시설 점검 전담. 최소 접근 권한",perms:[{ok:1,text:"시설 민원·점검"},{ok:1,text:"점검 일지 작성"},{ok:0,text:"재무·계약 불가"}]},
+        {key:"관리소장",level:"HEAD",color:"blue",icon:"shield_person",title:"관리소장",desc:"단지 내 최상위 권한. 모든 메뉴 접근 가능",perms:[{ok:1,text:"전체 메뉴 열람·편집"},{ok:1,text:"계약·재무 처리"},{ok:1,text:"민원·공고 승인"}]},
+        {key:"회계",level:"ACNT",color:"yellow",icon:"account_balance",title:"회계",desc:"재무 데이터 전담. 수납·정산 권한",perms:[{ok:1,text:"계약·재무 전체"},{ok:1,text:"수납 내역 수정"},{ok:0,text:"민원·시설 불가"}]},
+        {key:"행정",level:"ADM",color:"green",icon:"edit_document",title:"행정",desc:"입주민 소통 전담. 민원·공고 처리",perms:[{ok:1,text:"입주민 관리 열람"},{ok:1,text:"민원·공고 처리"},{ok:0,text:"재무 접근 불가"}]},
+        {key:"시설",level:"FAC",color:"orange",icon:"handyman",title:"시설",desc:"시설 점검 전담. 최소 접근 권한",perms:[{ok:1,text:"시설 민원·점검"},{ok:1,text:"점검 일지 작성"},{ok:0,text:"재무·계약 불가"}]},
       ];
       const ACCOUNTS=[];(function(){
         const rows=[
@@ -240,25 +674,35 @@
       function renderRoleGuide() {
         const grid = document.getElementById("roleGrid");
         if (!grid) return;
-        grid.innerHTML = ROLES.map((r) => `
-          <div class="role-card">
-            <div class="role-card__top">
-              <div class="role-card__icon" style="background: ${ROLE_BG[r.color]}">
-                <span class="material-symbols-rounded" style="color: ${ROLE_FG[r.color]}">${r.icon}</span>
-              </div>
-              <span class="role-card__lv" style="background: ${ROLE_BG[r.color]}; color: ${ROLE_FG[r.color]}">Lv.${r.level}</span>
-            </div>
-            <div class="role-card__title">${r.title}</div>
-            <div class="role-card__desc">${r.desc}</div>
-            <div class="role-card__perms">
-              ${r.perms.map(p => `
-                <div class="role-card__perm ${p.ok ? "yes" : "no"}">
-                  <span class="material-symbols-rounded">${p.ok ? "check_circle" : "remove_circle"}</span>${p.text}
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `).join("");
+
+        grid.innerHTML = ROLES.map(function(r) {
+
+          // 권한 상세 목록 HTML 생성
+          const permHtml = r.perms.map(function(p) {
+            return ''
+                    + '<div class="role-card__perm ' + (p.ok ? 'yes' : 'no') + '">'
+                    + '  <span class="material-symbols-rounded">'
+                    +      (p.ok ? 'check_circle' : 'remove_circle')
+                    + '  </span>'
+                    +    p.text
+                    + '</div>';
+          }).join('');
+
+          return ''
+                  + '<div class="role-card">'
+                  + '  <div class="role-card__top">'
+                  + '    <div class="role-card__icon" style="background: ' + ROLE_BG[r.color] + '">'
+                  + '      <span class="material-symbols-rounded" style="color: ' + ROLE_FG[r.color] + '">' + r.icon + '</span>'
+                  + '    </div>'
+                  + '    <span class="role-card__lv" style="background: ' + ROLE_BG[r.color] + '; color: ' + ROLE_FG[r.color] + '">' + r.level + '</span>'
+                  + '  </div>'
+                  + '  <div class="role-card__title">' + r.title + '</div>'
+                  + '  <div class="role-card__desc">' + r.desc + '</div>'
+                  + '  <div class="role-card__perms">'
+                  +      permHtml
+                  + '  </div>'
+                  + '</div>';
+        }).join('');
       }
 
       function toggleRoleGuide() {
@@ -271,14 +715,18 @@
       function initRoleSelects() {
         const roleSelect = document.getElementById("roleSelect");
         if (roleSelect) {
-          roleSelect.innerHTML = ROLES.map(r => `<option value="${r.key}">${r.title} (Lv.${r.level})</option>`).join("");
+          roleSelect.innerHTML =
+                  ROLES.map(r => `<option value="${r.key}">${r.title} (${r.level})</option>`).join("");
           roleSelect.addEventListener("change", () => setDefaultRole(roleSelect.value));
         }
 
         const roleFilter = document.getElementById("roleFilter");
         if (roleFilter) {
-          const first = roleFilter.querySelector("option[value='']") ? "" : `<option value="">전체 권한</option>`;
-          roleFilter.innerHTML = first + ROLES.map(r => `<option value="${r.key}">${r.title}</option>`).join("");
+          // value="" 는 전체 조회를 의미함
+          // filteredAccounts()에서 state.role 값이 비어 있으면 권한 필터를 적용하지 않음
+          roleFilter.innerHTML =
+                  `<option value="">전체</option>` +
+                  ROLES.map(r => `<option value="${r.key}">${r.title}</option>`).join("");
         }
       }
 
@@ -364,6 +812,31 @@
         if (a) a.active = cb.checked;
         renderAccounts();
       }
+
+      // 검색 실행 공통 함수
+      function executeSearch() {
+        const input = document.getElementById("searchInput");
+
+        // input이 없으면 오류 방지
+        if (!input) return;
+
+        // trim() : 앞뒤 공백 제거
+        // 예: " 김관리 " → "김관리"
+        searchAccounts(input.value.trim());
+      }
+
+      // 엔터 키 검색
+      function handleSearchKey(event) {
+        if (event.key === "Enter") {
+          executeSearch();
+        }
+      }
+
+      // 돋보기 아이콘 클릭 검색
+      function handleSearchClick() {
+        executeSearch();
+      }
+
       function searchAccounts(v) { state.q = v; state.page = 1; renderAccounts(); }
       function filterStatus(v) { state.status = v; state.page = 1; renderAccounts(); }
       function filterRole(v) { state.role = v; state.page = 1; renderAccounts(); }
