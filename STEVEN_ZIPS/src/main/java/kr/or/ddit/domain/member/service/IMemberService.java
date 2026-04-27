@@ -10,6 +10,8 @@ public interface IMemberService {
 
     ServiceResult joinMember(MemberVO member, MultipartFile profFile);
 
+    ServiceResult idCheck(String userId);
+
     ServiceResult updateMember(MemberVO member);
 
     void deleteMember(String userNo);
@@ -19,4 +21,5 @@ public interface IMemberService {
     MemberVO getMemberByUserNo(String userNo);
 
     void updateAlarm(Map<String, Object> param);
+
 }

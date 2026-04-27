@@ -54,4 +54,27 @@ public class MemberController {
         }
     }
 
+    @ResponseBody
+    @GetMapping("/idCheck")
+    public ResponseEntity<Map<String, String>> idCheck(@RequestParam String userId){
+        log.info("idCheck() 실행");
+        Map<String, String> resp = new HashMap<>();
+
+        try{
+            ServiceResult result = service.idCheck(userId);
+
+            if(ServiceResult.EXIST.equals(result)){
+                resp.put("res", "EXIST");
+                resp.put("message", "이미 사용 중인 아이디입니다!");
+                return new ResponseEntity<>(resp, HttpStatus.OK);
+            }else {
+                resp.put("res", "NOTEXIST");
+                resp.put("message", "사용 가능한 아이디입니다!");
+                return new ResponseEntity<>(resp, HttpStatus.OK);
+            }
+        }catch (Exception e){
+            resp.put("message", "서버 에러로 인해 중복확인에 실패하였습니다.");
+            return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

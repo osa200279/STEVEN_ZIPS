@@ -73,6 +73,10 @@
         )
     </insert>
 
+    <select id="idCheck" parameterType="string" resultType="int">
+        select count(*) from member where user_id = #{userId}
+    </select>
+
     <insert id="addAuth" parameterType="string">
         insert into auth(user_no, user_role_cd)
         values (

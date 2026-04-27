@@ -90,6 +90,40 @@
             border-color: #7BA131;
         }
 
+        /* 힌트와 버튼을 양 끝으로 배치 */
+        .id-check-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        /* 힌트 메시지 기본 여백 제거 */
+        .id-check-row .input-hint {
+            margin-top: 0;
+        }
+
+        .id-btn-small {
+            background: #E9E6D7;
+            border: 1px solid #D1CDBA;
+            color: #7A745C;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .id-btn-small:hover {
+            background: #DEDAC6;
+        }
+
+        .input-control:read-only {
+            background-color: #F9F9F9;
+            color: #888;
+        }
+
         .input-hint {
             font-size: 12px;
             color: #AAA;
@@ -137,6 +171,13 @@
             gap: 15px;
             margin-top: 0px;
             padding-bottom: 8px;
+        }
+
+        .tel-area span {
+            display: inline-block;
+            transform: translateY(8px);
+            font-weight: bold;
+            font-size: 18px;
         }
 
         /* 하단 버튼 영역 */
@@ -197,8 +238,15 @@
 
     <div class="form-group">
         <div class="form-label">아이디 <span>*</span></div>
-        <input type="text" name="userId" class="input-control" placeholder="아이디를 입력하세요">
-        <div class="input-hint">영문, 숫자 조합 4~20자 권장</div>
+        <input type="text" name="userId" id="userId" class="input-control" placeholder="아이디를 입력하세요">
+        <div class="id-check-row">
+            <div class="input-hint">영문, 숫자 조합 4~20자 권장</div>
+            <button type="button" id="idCheckBtn" class="id-btn-small">
+                중복확인
+            </button>
+        </div>
+
+        <input type="hidden" id="isIdChecked" value="N">
     </div>
 
     <div class="form-group">
@@ -220,9 +268,11 @@
     <div class="form-group">
         <div class="form-label">주민등록번호 <span>*</span></div>
         <input type="text" name="userRrno" id="userRrno" class="input-control" hidden="hidden">
-        <input type="text" class="input-control" id="rrno1" name="rrno1" placeholder="주민번호 앞자리">
-        <input type="text" class="input-control" id="rrno2" name="rrno2" placeholder="주민번호 뒷자리">
-        <div class="input-hint">예시 000000-0000000</div>
+        <div class="tel-area">
+            <input type="text" class="input-control" id="rrno1" name="rrno1" placeholder="주민번호 앞자리 6자">
+            <span>-</span>
+            <input type="text" class="input-control" id="rrno2" name="rrno2" placeholder="주민번호 뒷자리 7자">
+        </div>
     </div>
 
     <div class="form-group">
@@ -236,9 +286,9 @@
                 <option value="018">018</option>
                 <option value="019">019</option>
             </select>
-            -
+            <span>-</span>
             <input type="text" class="input-control" id="tel2"/>
-            -
+            <span>-</span>
             <input type="text" class="input-control" id="tel3"/>
         </div>
         <input type="text" name="userTelno" id="userTelno" hidden="hidden">
@@ -260,6 +310,49 @@
 
 <script type="module">
 document.addEventListener('DOMContentLoaded', function () {
+
+    // 아이디 중복확인 기능
+    const idCheckBtn = document.querySelector('#idCheckBtn');
+    idCheckBtn.addEventListener('click', async e => {
+        e.preventDefault();
+        const form = document.querySelector("#joinForm");
+        const userId = document.querySelector('#userId').value.trim();
+
+        if(!userId){
+            alert("아이디를 입력해주세요.");
+            form.elements['userId'].focus();
+            return;
+        }
+
+        const regex = /^[a-zA-Z0-9]{4,20}$/;
+
+        if (regex && !regex.test(userId)) {
+            alert("아이디는 영문, 숫자 조합 4~20자로 입력해주세요.");
+            form.elements['userId'].focus();
+            return;
+        }
+
+        try{
+            const resp = await fetch(`/member/idCheck?userId=\${userId}`);
+
+            const result = await resp.json();
+            if(result.res === "NOTEXIST"){
+                document.querySelector('#isIdChecked').value = "Y";
+                alert(result.message);
+            } else {
+                document.querySelector('#isIdChecked').value = "N";
+                alert(result.message);
+            }
+
+        } catch (error){
+            console.log("Fetch 에러발생 : ", error);
+        }
+    });
+
+    // 아이디 입력란 값이 바뀌면 아이디 중복체크 상태 초기화
+    document.querySelector('#userId').addEventListener('input', () => {
+        document.querySelector('#isIdChecked').value = "N";
+    });
 
     // 회원등록 버튼 클릭 이벤트
     const memRegBtn = document.querySelector("#memRegBtn");
@@ -319,6 +412,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 invalidMsg: "올바른 이메일 형식이 아닙니다."
             }
         };
+
+        // id중복체크 여부 확인
+        if(document.querySelector('#isIdChecked').value === "N"){
+            alert("아이디 중복체크를 해주세요!");
+            return;
+        }
 
         // 유효성 체크
         for (const [inputName, rule] of Object.entries(validationRules)) {

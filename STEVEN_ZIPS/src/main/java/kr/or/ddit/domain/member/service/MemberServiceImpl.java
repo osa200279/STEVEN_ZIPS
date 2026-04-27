@@ -8,6 +8,7 @@ import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -92,6 +93,15 @@ public class MemberServiceImpl implements IMemberService {
         return res;
     }
 
+    @Override
+    public ServiceResult idCheck(@Param("userId") String userId) {
+        int count = memberMapper.idCheck(userId);
+        if(count > 0){
+            return ServiceResult.EXIST;
+        }else{
+            return ServiceResult.NOTEXIST;
+        }
+    }
 
     @Override
     public ServiceResult updateMember(MemberVO member) {
