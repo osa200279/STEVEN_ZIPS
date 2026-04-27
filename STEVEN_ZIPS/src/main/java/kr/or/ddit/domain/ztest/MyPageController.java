@@ -37,10 +37,9 @@ public class MyPageController {
         String profFileId = member.getProfFileId();
 
         if(profFileId != null && !profFileId.isBlank()){
-            String FileGroupNo = profFileId.split("_")[0];
+            String fileGroupNo = profFileId.split("_")[0];
             String fileSaveUuid = profFileId.split("_")[1];
-
-            AttachFileVO file = attachFileService.getAttachFile(FileGroupNo, fileSaveUuid);
+            AttachFileVO file = attachFileService.getAttachFile(fileGroupNo, fileSaveUuid);
 
             if(file != null){
                 model.addAttribute("file", file);   // 파일 정보 전체

@@ -20,7 +20,7 @@
 
     <select id="getAttachFile" parameterType="string" resultType="kr.or.ddit.common.file.vo.AttachFileVO">
         select * from attach_file
-        where file_group_no = #{fileGroupNo} and file_save_uuid = #{fileSaveUuid}
+        where file_group_no = to_number(#{fileGroupNo}) and file_save_uuid = #{fileSaveUuid}
     </select>
 
 </mapper>
