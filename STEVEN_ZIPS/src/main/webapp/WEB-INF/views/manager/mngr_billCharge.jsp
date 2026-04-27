@@ -1,5 +1,34 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리사무소</title>
+    <sec:csrfMetaTags/>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/ag-grid.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/ag-theme-alpine.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-agGrid.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
+    <script src="${pageContext.request.contextPath}/js/manager/ag-grid-community.min.js"></script>
+    <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
+    <script src="${pageContext.request.contextPath}/js/manager/manager-agGrid.js"></script>
+</head>
+<body>
+<div class="app-wrapper">
+    <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
+    <div class="main-wrap">
+        <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
+        <main class="main-content">
 
 <div class="office-page" id="billChargePage">
 
@@ -60,15 +89,15 @@
           <div class="form-row cols-3">
             <div class="form-field">
               <label class="field-label">관리비 연월 (BILL_YM) <span class="req">*</span></label>
-              <input type="month" class="form-input" id="billYm" oninput="updatePreview()">
+              <input type="month" class="form-input" id="billYm">
             </div>
             <div class="form-field">
               <label class="field-label">고지일자 (BILL_PBLANC_DT) <span class="req">*</span></label>
-              <input type="date" class="form-input" id="billPblancDt" oninput="updatePreview()">
+              <input type="date" class="form-input" id="billPblancDt">
             </div>
             <div class="form-field">
               <label class="field-label">납부기한 (DUE_DT) <span class="req">*</span></label>
-              <input type="date" class="form-input" id="dueDt" oninput="updatePreview()">
+              <input type="date" class="form-input" id="dueDt">
             </div>
           </div>
         </div>
@@ -111,7 +140,7 @@
               산출 근거 첨부 (BILL_DETAIL.ATCH_FILE_ID)
             </label>
             <div style="border:2px dashed var(--border); border-radius:8px; padding:16px; text-align:center; cursor:pointer; background:#fafafa;"
-                 onclick="document.getElementById('billAtchFile').click()">
+                 id="billFileTrigger">
               <span class="material-symbols-rounded" style="font-size:24px; color:var(--text-tertiary); display:block; margin-bottom:4px;">upload_file</span>
               <div style="font-size:12px; color:var(--text-secondary);">엑셀 또는 PDF 파일을 업로드하세요</div>
             </div>
@@ -212,10 +241,9 @@
 </div>
 
 <script>
-  (function() {
+  document.addEventListener("DOMContentLoaded", function () {
     var page = document.getElementById("billChargePage");
-    if (!page || page.dataset.bound === "true") return;
-    page.dataset.bound = "true";
+    if (!page) return;
 
     /* ── 더미 단지 정보 (APT_COMPLEX) ── */
     var complexData = {
@@ -318,7 +346,7 @@
     }
 
     /* ── 미리보기 업데이트 ── */
-    window.updatePreview = function() {
+    function updatePreview() {
       var ym       = document.getElementById("billYm").value;
       var pblancDt = document.getElementById("billPblancDt").value;
       var dueDt    = document.getElementById("dueDt").value;
@@ -341,10 +369,14 @@
                           + '</div>';
                 }).join("") + '</div>';
       }
-    };
+    }
 
     /* ── 이벤트 ── */
     document.getElementById("btnLoadComplex").addEventListener("click", loadComplex);
+
+    ["billYm", "billPblancDt", "dueDt"].forEach(function(id) {
+      document.getElementById(id).addEventListener("input", updatePreview);
+    });
 
     document.getElementById("btnAddItem").addEventListener("click", function() {
       items.push({ cd:"", nm:"", amt:0 });
@@ -367,6 +399,10 @@
       if (!btn) return;
       items.splice(Number(btn.dataset.idx), 1);
       renderItems();
+    });
+
+    document.getElementById("billFileTrigger").addEventListener("click", function () {
+      document.getElementById("billAtchFile").click();
     });
 
     /* 파일 업로드 */
@@ -395,5 +431,10 @@
     /* 초기 렌더 */
     renderItems();
     updatePreview();
-  })();
+  });
 </script>
+        </main>
+    </div>
+</div>
+</body>
+</html>
