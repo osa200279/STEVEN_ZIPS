@@ -96,7 +96,7 @@ body {
 
 .main-content {
     flex: 1;
-    padding: 20px 22px;
+    padding: 26px 22px 20px;
     overflow-y: auto;
 }
 
@@ -304,6 +304,7 @@ body {
     flex-shrink: 0;
 }
 
+.nav-group[open] .cat-chevron,
 .nav-group.open .cat-chevron {
     transform: rotate(180deg);
 }
@@ -314,6 +315,7 @@ body {
     transition: grid-template-rows 0.28s cubic-bezier(0.25,1,0.5,1);
 }
 
+.nav-group[open] .submenu-wrap,
 .nav-group.open .submenu-wrap {
     grid-template-rows: 1fr;
 }

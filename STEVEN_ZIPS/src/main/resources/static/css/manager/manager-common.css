@@ -10,6 +10,9 @@
    페이지 기본
 ============================================================ */
 .office-page {
+    width: 100%;
+    max-width: 1520px;
+    margin: 0 auto;
     padding: 0;
     color: var(--text-primary);
     font-family: "Noto Sans KR", sans-serif;
@@ -656,6 +659,7 @@
 ============================================================ */
 .table-wrap {
     overflow-x: auto;
+    padding: 0 14px 14px;
 }
 
 table,
@@ -663,6 +667,10 @@ table,
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
+}
+
+.tbl-fixed {
+    table-layout: fixed;
 }
 
 thead th,
@@ -706,6 +714,12 @@ tbody tr:hover td,
     font-family: monospace;
     font-size: 12px;
     color: var(--text-tertiary);
+}
+
+.tbl-fixed th,
+.tbl-fixed td {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ============================================================
