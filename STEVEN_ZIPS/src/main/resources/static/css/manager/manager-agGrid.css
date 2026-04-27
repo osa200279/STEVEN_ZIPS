@@ -1,0 +1,405 @@
+@charset "UTF-8";
+
+/* ============================================================
+   manager-agGrid.css
+   관리사무소 AG Grid 공통 스타일
+============================================================ */
+
+/* ============================================================
+   Grid Wrapper
+============================================================ */
+.manager-grid-wrap {
+    width: 100%;
+    background: var(--card);
+}
+
+.manager-ag-grid {
+    width: 100%;
+    min-height: 462px;
+}
+
+.manager-ag-grid .ag-body-viewport,
+.manager-ag-grid .ag-center-cols-viewport {
+    overflow-y: hidden !important;
+}
+
+.manager-ag-grid .ag-body-horizontal-scroll {
+    min-height: 12px;
+}
+
+/* ============================================================
+   Theme Base
+============================================================ */
+.manager-ag-grid.ag-theme-alpine {
+    --ag-font-family: "Noto Sans KR", sans-serif;
+    --ag-font-size: 13px;
+    --ag-background-color: var(--card);
+    --ag-header-background-color: #f7f8f9;
+    --ag-odd-row-background-color: #ffffff;
+    --ag-row-hover-color: #f7f8f9;
+    --ag-border-color: var(--border);
+    --ag-secondary-border-color: var(--border);
+    --ag-header-foreground-color: var(--text-tertiary);
+    --ag-foreground-color: var(--text-secondary);
+    --ag-selected-row-background-color: #f0f4f8;
+    --ag-range-selection-border-color: var(--btn-primary);
+    --ag-wrapper-border-radius: var(--r-md);
+}
+
+.manager-ag-grid .ag-root-wrapper {
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.manager-ag-grid .ag-header {
+    border-bottom: 1px solid var(--border);
+}
+
+.manager-ag-grid .ag-header-cell {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.manager-ag-grid .ag-header-cell-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.manager-ag-grid .ag-cell {
+    padding-left: 16px;
+    padding-right: 16px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+}
+
+.manager-ag-grid .ag-cell.ag-cell-focus {
+    border-color: transparent !important;
+}
+
+.manager-ag-grid .ag-row {
+    border-bottom: 1px solid var(--border);
+}
+
+.manager-ag-grid .ag-row:last-child {
+    border-bottom: none;
+}
+
+.manager-ag-grid .ag-paging-panel {
+    height: 44px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-tertiary);
+    background: var(--card);
+}
+
+.manager-ag-grid .ag-paging-button {
+    color: var(--text-secondary);
+}
+
+.manager-ag-grid .ag-paging-button:hover {
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   Grid 상단 보조 영역
+============================================================ */
+.grid-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 20px;
+    border-bottom: 1px solid var(--border);
+    background: #f7f8f9;
+}
+
+.grid-summary-left strong {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.grid-summary-left span {
+    display: block;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+}
+
+.grid-summary-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   아바타 (그리드 전용 — 텍스트 이니셜 없음, 단색 아이콘형)
+============================================================ */
+.avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 그리드 내 아바타: 원형 제거, 사각 모서리, 중립 회색 */
+.manager-ag-grid .avatar.avatar-sm {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #e9eaec;
+    color: #52585f;
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-image: none;
+}
+
+.avatar-info {
+    line-height: 1.35;
+}
+
+.avatar-info .name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.avatar-info .sub {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+}
+
+/* ============================================================
+   Grid 내부 버튼
+============================================================ */
+.grid-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+}
+
+.grid-actions .btn {
+    min-height: 26px;
+    height: 26px;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 5px;
+    letter-spacing: 0;
+}
+
+.grid-actions .btn-detail {
+    background: transparent;
+    color: var(--text-tertiary);
+    border: 1px solid var(--border);
+}
+
+.grid-actions .btn-detail:hover {
+    background: #f0f2f5;
+    color: var(--text-primary);
+    border-color: #d1d5db;
+}
+
+.grid-actions .btn-edit {
+    background: var(--btn-primary);
+    color: #fff;
+    border: none;
+}
+
+.grid-actions .btn-edit:hover {
+    background: var(--btn-hover);
+}
+
+/* 삭제/비활성 버튼 — 채도 낮춤, 텍스트 위주 */
+.grid-actions .btn-delete {
+    background: #f5ecec;
+    color: #8a2c2c;
+    border: 1px solid #e8c4c4;
+}
+
+.grid-actions .btn-delete:hover {
+    background: #eedada;
+    color: #7a1e1e;
+}
+
+/* ============================================================
+   Grid 내부 배지 — 채도 낮추고 pill → tag 형태로
+============================================================ */
+.grid-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 4px;          /* pill → 살짝 각진 태그 */
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+/* 직무 배지 — 초록 테마에 맞춰 채도 낮은 단색 계열 */
+.grid-badge.duty-head {
+    background: #f0f4ff;
+    color: #3a4e8a;
+}
+
+.grid-badge.duty-adm {
+    background: #f0f7f2;
+    color: #2d5a3a;
+}
+
+.grid-badge.duty-fac {
+    background: #fdf6ee;
+    color: #7a5020;
+}
+
+.grid-badge.duty-acnt {
+    background: #f5f2fa;
+    color: #5a3a7a;
+}
+
+/* 상태 배지 */
+.grid-badge.status-wait {
+    background: #fffbf0;
+    color: #8a6400;
+    border: 1px solid #e8d080;
+}
+
+.grid-badge.status-aprv {
+    background: #f0f7f2;
+    color: #2d5a3a;
+    border: 1px solid #a8ccb0;
+}
+
+.grid-badge.status-rjct {
+    background: #fff0f0;
+    color: #8a2020;
+    border: 1px solid #e0a8a8;
+}
+
+.grid-badge.status-hold {
+    background: #f0f4ff;
+    color: #3a4e8a;
+    border: 1px solid #b0bce8;
+}
+
+/* 사용여부 배지 */
+.grid-badge.status-active {
+    background: #f0f7f2;
+    color: #2d5a3a;
+    border: 1px solid #a8ccb0;
+}
+
+.grid-badge.status-inactive {
+    background: #f4f4f5;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+
+/* 기존 범용 컬러 (다른 화면 호환용) */
+.grid-badge.green  { background: #f0f7f2; color: #2d5a3a; }
+.grid-badge.blue   { background: #f0f4ff; color: #3a4e8a; }
+.grid-badge.orange { background: #fdf6ee; color: #7a5020; }
+.grid-badge.yellow { background: #fffbf0; color: #8a6400; }
+.grid-badge.red    { background: #fff0f0; color: #8a2020; }
+.grid-badge.gray   { background: #f4f4f5; color: #6b7280; }
+.grid-badge.purple { background: #f5f2fa; color: #5a3a7a; }
+
+/* ============================================================
+   Grid 내부 텍스트
+============================================================ */
+.grid-main-text {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 13px;
+}
+
+.grid-sub-text {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 1px;
+}
+
+.grid-mono {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+/* ============================================================
+   Empty / Loading
+============================================================ */
+.manager-ag-empty,
+.manager-ag-loading {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    font-size: 13px;
+    background: var(--card);
+}
+
+/* ============================================================
+   Size Variants
+============================================================ */
+.manager-ag-grid.grid-size-5  { height: 316px; }
+.manager-ag-grid.grid-size-8  { height: 454px; }
+.manager-ag-grid.grid-size-10 { height: 546px; }
+.manager-ag-grid.grid-size-12 { height: 638px; }
+
+.manager-ag-grid:not(.grid-size-5):not(.grid-size-8):not(.grid-size-10):not(.grid-size-12):not(.grid-size-auto) {
+    height: 546px;
+}
+
+/* ============================================================
+   Responsive
+============================================================ */
+@media (max-width: 920px) {
+    .grid-summary {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .grid-summary-right {
+        justify-content: flex-start;
+    }
+
+    .manager-ag-grid {
+        min-width: 760px;
+    }
+
+    .manager-grid-wrap {
+        overflow-x: auto;
+    }
+
+    .manager-ag-grid.grid-size-auto {
+        height: auto;
+        min-height: 220px;
+    }
+
+    .manager-ag-grid.grid-size-auto .ag-root-wrapper {
+        min-height: 220px;
+    }
+
+    .manager-ag-grid.grid-size-auto .ag-center-cols-viewport,
+    .manager-ag-grid.grid-size-auto .ag-layout-auto-height .ag-center-cols-viewport,
+    .manager-ag-grid.grid-size-auto .ag-layout-auto-height .ag-center-cols-container {
+        min-height: 0 !important;
+    }
+}
