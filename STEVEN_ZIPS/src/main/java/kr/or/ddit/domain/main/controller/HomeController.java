@@ -5,9 +5,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
+
 	@GetMapping("/")
 	public String main() {
 		return "main";
+	}
+
+	@GetMapping("/apt-main")
+	public String aptMain() {
+		return "apt-main";
 	}
 
 }

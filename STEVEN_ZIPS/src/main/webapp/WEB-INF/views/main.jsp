@@ -1,534 +1,375 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>대덕아파트 – 메인</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/headerStyle.css">
+<script
+	src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link
+	href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Manrope:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+	rel="stylesheet" />
+<link
+	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+	rel="stylesheet" />
+<script id="tailwind-config">
+	tailwind.config = {
+		darkMode : "class",
+		theme : {
+			extend : {
+				"colors" : {
+					"tertiary-fixed" : "#ffdcc1",
+					"background" : "#f8f9fa",
+					"tertiary-container" : "#a45b00",
+					"primary-fixed" : "#b1f0ce",
+					"on-secondary-fixed-variant" : "#274e45",
+					"outline" : "#707a6c",
+					"primary-fixed-dim" : "#95d4b3",
+					"on-background" : "#191c1d",
+					"inverse-on-surface" : "#f0f1f2",
+					"on-error-container" : "#93000a",
+					"on-primary-fixed" : "#002114",
+					"outline-variant" : "#bfcaba",
+					"surface-variant" : "#e1e3e4",
+					"inverse-surface" : "#2e3132",
+					"surface-tint" : "#2c694e",
+					"on-tertiary-fixed-variant" : "#6c3a00",
+					"on-tertiary-fixed" : "#2e1500",
+					"surface-container-low" : "#f3f4f5",
+					"primary-container" : "#3d795d",
+					"on-primary-container" : "#c1ffdd",
+					"surface-dim" : "#d9dadb",
+					"secondary-fixed-dim" : "#a6cfc3",
+					"surface-container-high" : "#e7e8e9",
+					"surface" : "#f8f9fa",
+					"secondary-container" : "#bee8dc",
+					"tertiary-fixed-dim" : "#ffb778",
+					"on-secondary" : "#ffffff",
+					"inverse-primary" : "#95d4b3",
+					"primary" : "#226046",
+					"secondary-fixed" : "#c1ebdf",
+					"on-secondary-container" : "#436a60",
+					"on-surface" : "#191c1d",
+					"on-surface-variant" : "#40493d",
+					"surface-container-lowest" : "#ffffff",
+					"secondary" : "#3f665c",
+					"on-tertiary-container" : "#ffeee2",
+					"on-primary" : "#ffffff",
+					"on-tertiary" : "#ffffff",
+					"surface-container-highest" : "#e1e3e4",
+					"error" : "#ba1a1a",
+					"on-error" : "#ffffff",
+					"on-secondary-fixed" : "#00201a",
+					"on-primary-fixed-variant" : "#0e5138",
+					"surface-container" : "#edeeef",
+					"surface-bright" : "#f8f9fa",
+					"tertiary" : "#814700",
+					"error-container" : "#ffdad6"
+				},
+				"borderRadius" : {
+					"DEFAULT" : "0.25rem",
+					"lg" : "0.5rem",
+					"xl" : "1.5rem",
+					"full" : "9999px"
+				},
+				"fontFamily" : {
+					"headline" : [ "Plus Jakarta Sans" ],
+					"body" : [ "Manrope" ],
+					"label" : [ "Manrope" ]
+				}
+			},
+		},
+	}
+</script>
 <style>
-/* ═══════════════════════════════════════
-   RESET & ROOT
-═══════════════════════════════════════ */
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-:root {
-  --green-dark:   #2d5a3d;
-  --green-mid:    #3d7a52;
-  --green-accent: #4a9060;
-  --green-light:  #e8f2ec;
-  --green-pale:   #f4f9f6;
-  --text-dark:    #1a1a1a;
-  --text-mid:     #444;
-  --text-light:   #777;
-  --border:       #dde8e2;
-  --white:        #ffffff;
-  --bg:           #f8faf9;
-}
-html { scroll-behavior: smooth; }
-body { font-family: 'Noto Sans KR', sans-serif; background: var(--white); color: var(--text-dark); }
-a { text-decoration: none; color: inherit; }
-img { display: block; width: 100%; }
-
-
-/* ═══════════════════════════════════════
-   HERO SLIDER
-═══════════════════════════════════════ */
-.hero {
-  position:relative; height: 520px; overflow:hidden;
-}
-.hero-slides { display:flex; height:100%; transition:transform .7s cubic-bezier(.4,0,.2,1); }
-.hero-slide {
-  min-width:100%; height:100%; position:relative; flex-shrink:0;
-}
-.hero-slide-bg {
-  width:100%; height:100%; object-fit:cover;
-  transform:scale(1.06);
-  transition:transform 6s ease;
-}
-.hero-slide.active .hero-slide-bg { transform:scale(1); }
-.hero-overlay {
-  position:absolute; inset:0;
-  background:linear-gradient(to bottom, rgba(0,0,0,.15) 0%, rgba(0,0,0,.45) 100%);
-}
-.hero-content {
-  position:absolute; inset:0; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; text-align:center;
-  padding:0 20px;
-  opacity:0; transform:translateY(18px); transition:opacity .6s .3s, transform .6s .3s;
-}
-.hero-slide.active .hero-content { opacity:1; transform:translateY(0); }
-.hero-content h1 {
-  font-family:'Noto Serif KR', serif;
-  font-size: clamp(32px, 5vw, 54px);
-  font-weight:700; color:var(--white);
-  letter-spacing:-.5px; line-height:1.15;
-  text-shadow:0 2px 16px rgba(0,0,0,.3);
-}
-.hero-content h1 em { color:#a8d5b5; font-style:normal; }
-.hero-content p {
-  margin-top:16px; font-size:15px; color:rgba(255,255,255,.88);
-  line-height:1.8; letter-spacing:-.2px;
-  text-shadow:0 1px 6px rgba(0,0,0,.3);
-}
-/* 슬라이더 컨트롤 */
-.hero-dots {
-  position:absolute; bottom:22px; left:50%; transform:translateX(-50%);
-  display:flex; gap:8px; z-index:10;
-}
-.hero-dot {
-  width:8px; height:8px; border-radius:50%;
-  background:rgba(255,255,255,.45); border:none; cursor:pointer; transition:all .2s;
-}
-.hero-dot.active { background:var(--white); width:24px; border-radius:4px; }
-.hero-arrow {
-  position:absolute; top:50%; transform:translateY(-50%);
-  width:40px; height:40px; border-radius:50%;
-  background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.4);
-  color:var(--white); display:flex; align-items:center; justify-content:center;
-  cursor:pointer; z-index:10; backdrop-filter:blur(4px);
-  transition:background .2s, border-color .2s;
-}
-.hero-arrow:hover { background:rgba(255,255,255,.32); border-color:rgba(255,255,255,.7); }
-.hero-arrow.prev { left:24px; }
-.hero-arrow.next { right:24px; }
-.hero-arrow svg { width:18px; height:18px; }
-
-/* ═══════════════════════════════════════
-   퀵메뉴 바
-═══════════════════════════════════════ */
-.quick-bar {
-  display:flex; align-items:stretch; max-width:1100px; margin:-52px auto 0;
-  position:relative; z-index:100; border-radius:10px; overflow:hidden;
-  box-shadow:0 8px 32px rgba(0,0,0,.14);
-}
-.quick-consult {
-  background:var(--green-dark); color:var(--white);
-  padding:28px 32px; min-width:220px; flex-shrink:0;
-  display:flex; flex-direction:column; gap:6px;
-}
-.quick-consult .label { font-size:12px; opacity:.75; letter-spacing:.5px; }
-.quick-consult .phone { font-size:28px; font-weight:700; letter-spacing:-.5px; }
-.quick-consult .address { font-size:11.5px; opacity:.7; line-height:1.6; margin-top:2px; }
-.quick-consult-btn {
-  display:inline-flex; align-items:center; gap:6px;
-  margin-top:10px; padding:8px 14px;
-  border:1.5px solid rgba(255,255,255,.5); border-radius:4px;
-  font-size:12.5px; color:var(--white); cursor:pointer; transition:background .18s;
-  background:transparent; font-family:'Noto Sans KR',sans-serif;
-  width:fit-content;
-}
-.quick-consult-btn:hover { background:rgba(255,255,255,.15); }
-.quick-consult-btn svg { width:13px; height:13px; }
-.quick-menus {
-  flex:1; background:var(--white);
-  display:grid; grid-template-columns:repeat(4,1fr);
-}
-.quick-menu-item {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:10px; padding:28px 16px; border-left:1px solid var(--border);
-  cursor:pointer; transition:background .18s; text-decoration:none;
-}
-.quick-menu-item:hover { background:var(--green-pale); }
-.quick-menu-item:hover .qm-icon { color:var(--green-dark); }
-.qm-icon { width:38px; height:38px; color:var(--text-mid); transition:color .18s; }
-.qm-label { font-size:13.5px; font-weight:600; color:var(--text-dark); letter-spacing:-.3px; }
-.qm-sub { font-size:10.5px; color:var(--text-light); letter-spacing:.5px; margin-top:-6px; }
-
-/* ═══════════════════════════════════════
-   섹션 공통
-═══════════════════════════════════════ */
-.section-wrap { max-width:1100px; margin:0 auto; padding:72px 24px; }
-.section-badge {
-  display:inline-block; font-size:11.5px; font-weight:600; letter-spacing:1.5px;
-  color:var(--green-accent); text-transform:uppercase; margin-bottom:10px;
-}
-.section-title {
-  font-family:'Noto Serif KR',serif;
-  font-size:clamp(22px,3vw,32px); font-weight:700;
-  color:var(--text-dark); letter-spacing:-.5px; line-height:1.3;
-}
-.section-title em { color:var(--green-dark); font-style:normal; }
-.section-desc { font-size:14px; color:var(--text-light); line-height:1.9; margin-top:10px; }
-.section-divider {
-  display:flex; align-items:center; gap:12px; margin:6px 0 32px;
-}
-.section-divider .label {
-  font-size:11px; font-weight:600; letter-spacing:2px;
-  color:var(--green-accent); text-transform:uppercase; white-space:nowrap;
-}
-.section-divider::after {
-  content:''; flex:1; height:1px; background:var(--border);
+body {
+	font-family: 'Manrope', sans-serif;
+	background-color: #f8f9fa;
+	color: #191c1d;
 }
 
-/* ═══════════════════════════════════════
-   프리미엄 라이프 (슬라이드 + 카드)
-═══════════════════════════════════════ */
-.premium-grid {
-  display:grid; grid-template-columns:1.6fr 1fr; gap:20px; margin-top:8px;
-}
-.premium-main {
-  position:relative; border-radius:10px; overflow:hidden;
-  height:420px; cursor:pointer;
-}
-.premium-main img { width:100%; height:100%; object-fit:cover; transition:transform .5s; }
-.premium-main:hover img { transform:scale(1.04); }
-.premium-main-overlay {
-  position:absolute; inset:0;
-  background:linear-gradient(to top, rgba(0,0,0,.65) 0%, transparent 60%);
-}
-.premium-main-info {
-  position:absolute; bottom:0; left:0; right:0; padding:28px;
-}
-.premium-tag {
-  display:inline-block; font-size:10px; font-weight:700; letter-spacing:1px;
-  color:var(--white); background:var(--green-dark); padding:3px 9px;
-  border-radius:3px; margin-bottom:10px; text-transform:uppercase;
-}
-.premium-main-info h3 {
-  font-family:'Noto Serif KR',serif; font-size:22px; font-weight:700;
-  color:var(--white); letter-spacing:-.3px; line-height:1.35;
-}
-.premium-main-info p { font-size:13px; color:rgba(255,255,255,.8); margin-top:6px; }
-/* 슬라이드 도트 */
-.premium-dots { display:flex; gap:6px; margin-top:14px; }
-.premium-dot {
-  width:6px; height:6px; border-radius:50%;
-  background:rgba(255,255,255,.4); cursor:pointer; transition:all .2s;
-}
-.premium-dot.active { background:var(--white); width:18px; border-radius:3px; }
-
-.premium-sub { display:flex; flex-direction:column; gap:20px; }
-.premium-card {
-  position:relative; border-radius:10px; overflow:hidden;
-  height:196px; cursor:pointer; flex:1;
-}
-.premium-card img { width:100%; height:100%; object-fit:cover; transition:transform .5s; }
-.premium-card:hover img { transform:scale(1.05); }
-.premium-card-overlay {
-  position:absolute; inset:0;
-  background:linear-gradient(to top, rgba(0,0,0,.6) 0%, transparent 55%);
-}
-.premium-card-info { position:absolute; bottom:0; left:0; right:0; padding:18px 20px; }
-.premium-card-info h4 {
-  font-size:15px; font-weight:600; color:var(--white);
-  letter-spacing:-.3px; line-height:1.3;
-}
-.premium-card-info p { font-size:12px; color:rgba(255,255,255,.75); margin-top:4px; }
-
-/* ═══════════════════════════════════════
-   최신 뉴스
-═══════════════════════════════════════ */
-.news-section { background:var(--green-pale); }
-.news-inner { max-width:1100px; margin:0 auto; padding:64px 24px; }
-.news-header { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:28px; }
-.more-btn {
-  display:inline-flex; align-items:center; gap:5px;
-  font-size:12.5px; font-weight:600; color:var(--white);
-  background:var(--green-dark); border:none; border-radius:4px;
-  padding:8px 16px; cursor:pointer; font-family:'Noto Sans KR',sans-serif;
-  transition:background .18s; text-decoration:none;
-}
-.more-btn:hover { background:var(--green-mid); }
-.more-btn svg { width:13px; height:13px; }
-.news-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
-.news-card {
-  background:var(--white); border-radius:8px; border:1px solid var(--border);
-  padding:22px; display:flex; flex-direction:column; gap:10px;
-  transition:box-shadow .2s, transform .2s;
-}
-.news-card:hover { box-shadow:0 6px 24px rgba(45,90,61,.10); transform:translateY(-2px); }
-.news-card-tag {
-  font-size:10.5px; font-weight:700; color:var(--green-accent);
-  letter-spacing:1px; text-transform:uppercase;
-}
-.news-card h4 {
-  font-size:15px; font-weight:600; color:var(--text-dark);
-  letter-spacing:-.3px; line-height:1.5;
-}
-.news-card p { font-size:13px; color:var(--text-light); line-height:1.8; flex:1; }
-.news-card-date {
-  font-size:11.5px; color:var(--text-light); letter-spacing:.3px;
-  padding-top:10px; border-top:1px solid var(--border);
+.font-headline {
+	font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* ═══════════════════════════════════════
-   안내 배너 (초록 배경)
-═══════════════════════════════════════ */
-.banner-section {
-  background:var(--green-dark);
-  padding:56px 24px;
+.material-symbols-outlined {
+	font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
-.banner-inner {
-  max-width:1100px; margin:0 auto;
-  display:flex; align-items:center; justify-content:space-between; gap:24px;
-  flex-wrap:wrap;
-}
-.banner-text h2 {
-  font-family:'Noto Serif KR',serif;
-  font-size:clamp(20px,2.5vw,28px); font-weight:700; color:var(--white);
-  letter-spacing:-.3px; line-height:1.4;
-}
-.banner-text p { font-size:14px; color:rgba(255,255,255,.72); margin-top:8px; line-height:1.8; }
-.banner-btn {
-  display:inline-flex; align-items:center; gap:8px;
-  padding:13px 28px; border:2px solid rgba(255,255,255,.6);
-  border-radius:5px; color:var(--white); font-size:14px; font-weight:600;
-  cursor:pointer; white-space:nowrap; transition:background .2s, border-color .2s;
-  background:transparent; font-family:'Noto Sans KR',sans-serif; flex-shrink:0;
-}
-.banner-btn:hover { background:rgba(255,255,255,.15); border-color:var(--white); }
-.banner-btn svg { width:16px; height:16px; }
 
-
-/* ═══════════════════════════════════════
-   애니메이션
-═══════════════════════════════════════ */
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(24px); }
-  to   { opacity:1; transform:translateY(0); }
+/* Smooth Mega Menu Transition */
+.mega-menu {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s
+		ease;
+	opacity: 0;
+	pointer-events: none;
 }
-.fade-up { animation: fadeUp .6s ease both; }
-.delay-1 { animation-delay:.1s; }
-.delay-2 { animation-delay:.2s; }
-.delay-3 { animation-delay:.3s; }
-.delay-4 { animation-delay:.4s; }
+
+.group:hover .mega-menu {
+	max-height: 600px;
+	opacity: 1;
+	pointer-events: auto;
+}
 </style>
 </head>
-<body>
-<%@ include file="/WEB-INF/views/include/headerLayout.jsp" %>
-
-<main class="ml-80 pt-20 min-h-screen bg-background p-8">
-<%-- ══════════════ HERO SLIDER ══════════════ --%>
-<section class="hero" id="hero">
-  <div class="hero-slides" id="heroSlides">
-
-    <div class="hero-slide active">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1400&auto=format&fit=crop" alt="대덕아파트 전경">
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <h1>자연을 품은<br><em>프리미엄 주거공간</em></h1>
-        <p>단순한 집이 아닌<br>삶의 가치를 높일 수 있는 아파트가 되겠습니다.</p>
-      </div>
-    </div>
-
-    <div class="hero-slide">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&auto=format&fit=crop" alt="단지 전경">
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <h1>도심 속에서<br><em>자연을 누리다</em></h1>
-        <p>쾌적한 환경과 풍요로운 생활<br>대덕아파트가 함께합니다.</p>
-      </div>
-    </div>
-
-    <div class="hero-slide">
-      <img class="hero-slide-bg" src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1400&auto=format&fit=crop" alt="인테리어">
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <h1>편안함과<br><em>품격 있는 일상</em></h1>
-        <p>세심하게 설계된 공간에서<br>매일이 특별한 하루가 됩니다.</p>
-      </div>
-    </div>
-
-  </div>
-
-  <button class="hero-arrow prev" id="heroPrev" aria-label="이전">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
-  </button>
-  <button class="hero-arrow next" id="heroNext" aria-label="다음">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
-  </button>
-  <div class="hero-dots" id="heroDots">
-    <button class="hero-dot active"></button>
-    <button class="hero-dot"></button>
-    <button class="hero-dot"></button>
-  </div>
-</section>
-
-<%-- ══════════════ 상담 + 퀵메뉴 ══════════════ --%>
-<div class="quick-bar fade-up">
-  <div class="quick-consult">
-    <span class="label">관리사무소</span>
-    <span class="phone">042-000-0000</span>
-    <span class="address">대전시 대덕구 대덕대로 123<br>대덕아파트 관리사무소 1층</span>
-    <button class="quick-consult-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
-      </svg>
-      아파트 위치 자세히보기
-    </button>
-  </div>
-  <div class="quick-menus">
-
-  <!-- 공지사항 -->
-  <a href="${pageContext.request.contextPath}/resident/manage/intro" class="quick-menu-item">
-    <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 11v2a2 2 0 002 2h3l5 3V6l-5 3H5a2 2 0 00-2 2z"/>
-      <path d="M16 8a4 4 0 010 8"/>
-    </svg>
-    <span class="qm-label">공지사항</span>
-  </a>
-
-  <!-- 관리비조회 -->
-  <a href="${pageContext.request.contextPath}/resident/bill/guide" class="quick-menu-item">
-    <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <path d="M8 13h8M8 17h6"/>
-      <circle cx="16" cy="17" r="1"/>
-    </svg>
-    <span class="qm-label">관리비조회</span>
-  </a>
-
-  <!-- 입주민 게시판 -->
-  <a href="${pageContext.request.contextPath}/resident/manage/facility" class="quick-menu-item">
-    <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-    </svg>
-    <span class="qm-label">입주민 게시판</span>
-  </a>
-
-  <!-- 시설예약 -->
-  <a href="${pageContext.request.contextPath}/resident/stats/custom" class="quick-menu-item">
-    <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2"/>
-      <line x1="16" y1="2" x2="16" y2="6"/>
-      <line x1="8" y1="2" x2="8" y2="6"/>
-      <line x1="3" y1="10" x2="21" y2="10"/>
-    </svg>
-    <span class="qm-label">시설예약</span>
-  </a>
-
-</div>
-</div>
-
-<%-- ══════════════ 최신 뉴스 ══════════════ --%>
-<section class="news-section">
-  <div class="news-inner">
-    <div class="news-header">
-      <div>
-        <span class="section-badge">입주민 소식</span>
-        <h2 class="section-title" style="margin-top:6px">Latest <em>News</em></h2>
-      </div>
-      <a href="${pageContext.request.contextPath}/resident/board/notice" class="more-btn">
-        more view
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-    </div>
-    <div class="news-grid">
-      <div class="news-card">
-        <span class="news-card-tag">공지사항</span>
-        <h4>사이닝에서 인원을 채용합니다.</h4>
-        <p>사이닝에서 안정된 인재를 모집하오니 많은 지원 부탁드립니다.</p>
-        <div class="news-card-date">2024. 08. 24</div>
-      </div>
-      <div class="news-card">
-        <span class="news-card-tag">공지사항</span>
-        <h4>새롭게 홈페이지를 오픈하였습니다!</h4>
-        <p>저희 make24에서 양질의 서비스와 발전하는 기업이 되기위해 새로이 홈페이지를 오픈하였습니다.</p>
-        <div class="news-card-date">2024. 08. 24</div>
-      </div>
-      <div class="news-card">
-        <span class="news-card-tag">안내</span>
-        <h4>2024년 하반기 시설 점검 안내</h4>
-        <p>공용 시설물 정기 점검이 진행될 예정이오니 입주민 여러분의 양해를 부탁드립니다.</p>
-        <div class="news-card-date">2024. 08. 10</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<%-- ══════════════ 안내 배너 ══════════════ --%>
-<section class="banner-section">
-  <div class="banner-inner">
-    <div class="banner-text">
-      <h2>지금 바로 상담 신청하세요</h2>
-      <p>대덕아파트 전문 상담사가 친절하게 안내해 드립니다.<br>평일 09:00 – 18:00 운영</p>
-    </div>
-    <a href="${pageContext.request.contextPath}/resident/complaint/apply" class="banner-btn">
-      상담 신청하기
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-  </div>
-</section>
-
-<%@ include file="/WEB-INF/views/include/footerLayout.jsp" %>
-</main>
-<script>
-(function () {
-
-  /* ── 히어로 슬라이더 ── */
-  var slides    = document.querySelectorAll('.hero-slide');
-  var dots      = document.querySelectorAll('.hero-dot');
-  var slidesWrap = document.getElementById('heroSlides');
-  var current   = 0;
-  var timer;
-
-  function goTo(idx) {
-    slides[current].classList.remove('active');
-    dots[current].classList.remove('active');
-    current = (idx + slides.length) % slides.length;
-    slides[current].classList.add('active');
-    dots[current].classList.add('active');
-    slidesWrap.style.transform = 'translateX(-' + current * 100 + '%)';
-  }
-  function startTimer() {
-    clearInterval(timer);
-    timer = setInterval(function(){ goTo(current + 1); }, 5000);
-  }
-  document.getElementById('heroNext').addEventListener('click', function(){ goTo(current+1); startTimer(); });
-  document.getElementById('heroPrev').addEventListener('click', function(){ goTo(current-1); startTimer(); });
-  dots.forEach(function(dot, i){
-    dot.addEventListener('click', function(){ goTo(i); startTimer(); });
-  });
-  startTimer();
-
-  /* ── 프리미엄 슬라이드 도트 ── */
-  var premiumData = [
-    { tag:'Premium 01', title:'쾌적한 자연환경',   desc:'도심속에서 누리는 자연환경',
-      src:'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=900&auto=format&fit=crop' },
-    { tag:'Premium 02', title:'프리미엄 단지 설계', desc:'넓고 쾌적한 조경 및 단지 설계',
-      src:'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&auto=format&fit=crop' },
-    { tag:'Premium 03', title:'스마트 홈 시스템',   desc:'첨단 IoT 기반의 스마트 생활',
-      src:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=900&auto=format&fit=crop' }
-  ];
-  var pDots = document.querySelectorAll('.premium-dot');
-  var pImg  = document.getElementById('premiumMainImg');
-  var pTag  = document.getElementById('premiumTag');
-  var pTitle= document.getElementById('premiumTitle');
-  var pDesc = document.getElementById('premiumDesc');
-  pDots.forEach(function(dot, i){
-    dot.addEventListener('click', function(){
-      pDots.forEach(function(d){ d.classList.remove('active'); });
-      dot.classList.add('active');
-      pImg.style.opacity = '0';
-      setTimeout(function(){
-        pImg.src   = premiumData[i].src;
-        pTag.textContent   = premiumData[i].tag;
-        pTitle.textContent = premiumData[i].title;
-        pDesc.textContent  = premiumData[i].desc;
-        pImg.style.opacity = '1';
-      }, 250);
-    });
-  });
-
-  /* ── 스크롤 fade-up ── */
-  var fadeEls = document.querySelectorAll('.fade-up');
-  var observer = new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){
-      if(entry.isIntersecting){
-        entry.target.style.animationPlayState = 'running';
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-  fadeEls.forEach(function(el){
-    el.style.animationPlayState = 'paused';
-    observer.observe(el);
-  });
-})();
-</script>
+<body class="min-h-screen flex flex-col">
+	<!-- TopNavBar -->
+	<header
+		class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.04)]">
+		<nav
+			class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+			<!-- 로고 -->
+			<div
+				class="text-xl font-bold tracking-tight text-primary font-headline flex-none">
+				우리집맵핑</div>
+			<!-- 메뉴 전체를 group으로 감싸야 메가메뉴 유지됨 -->
+			<div
+				class="hidden md:flex items-center justify-center flex-1 relative group">
+				<!-- 상단 메뉴 -->
+				<div class="flex gap-8 py-2">
+					<a
+						class="text-primary font-bold border-b-2 border-primary pb-1 cursor-pointer transition-colors hover:text-primary">서비스
+						소개</a> <a
+						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">계약공고</a>
+					<a
+						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">계약
+						신청 및 조회</a> <a
+						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">단지찾기</a>
+					<a
+						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">시설이력조회</a>
+					<a
+						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">공지사항</a>
+				</div>
+				<!-- 🔥 메가메뉴 -->
+				<div
+					class="mega-menu absolute left-1/2 -translate-x-1/2 top-full w-screen bg-[#226046ee] backdrop-blur-md border-t border-white/10">
+					<div
+						class="max-w-7xl mx-auto px-8 py-10 grid grid-cols-6 gap-10 text-sm text-white">
+						<div class="space-y-4">
+							<h4 class="font-bold text-base border-b border-white/20 pb-2">서비스
+								소개</h4>
+						</div>
+						<div class="space-y-4">
+							<h4 class="font-bold text-base border-b border-white/20 pb-2">계약공고</h4>
+							<div class="flex flex-col gap-2 opacity-80">
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">계약
+									공고</p>
+							</div>
+						</div>
+						<div class="space-y-4">
+							<h4 class="font-bold text-base border-b border-white/20 pb-2">계약
+								신청 및 조회</h4>
+							<div class="flex flex-col gap-2 opacity-80">
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">계약
+									신청하기</p>
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">계약
+									조회</p>
+							</div>
+						</div>
+						<div class="space-y-4">
+							<h4 class="font-bold text-base border-b border-white/20 pb-2">단지찾기</h4>
+							<div class="flex flex-col gap-2 opacity-80">
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">단지
+									목록</p>
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">단지
+									검색</p>
+							</div>
+						</div>
+						<div class="space-y-4">
+							<h4 class="font-bold text-base border-b border-white/20 pb-2">시설이력
+								조회</h4>
+							<div class="flex flex-col gap-2 opacity-80">
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">시설
+									유지보수 이력</p>
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">시설
+									하자보수 이력</p>
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">시설
+									점검 기록 확인</p>
+							</div>
+						</div>
+						<div class="space-y-4">
+							<h4 class="font-bold text-base border-b border-white/20 pb-2">공지사항</h4>
+							<div class="flex flex-col gap-2 opacity-80">
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">공지사항</p>
+								<p
+									class="hover:text-white hover:underline cursor-pointer transition-all">문의게시판</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 오른쪽 버튼 -->
+			<div class="flex items-center gap-4 flex-none">
+				<button
+					class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">로그인</button>
+				<button
+					class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">회원가입</button>
+			</div>
+		</nav>
+	</header>
+	<main class="flex-grow">
+		<!-- Hero Section -->
+		<section
+			class="relative min-h-[870px] flex items-center pt-20 overflow-hidden">
+			<div class="absolute inset-0 z-0">
+				<img class="w-full h-full object-cover opacity-20"
+					data-alt="Modern high-rise apartment building against a clear sky with soft, bright daylight and architectural elegance"
+					src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHhnh6wIbc8oTVwnu4ofpfMP3uZ0lXYmGP4YdW5_LFLAaS6jbHw-y8OQJgLj-o2C8zpqrYgjJDSAFS4vKEI6k4VasvG2hksOa2wWz3yh2z-CH2Euy0CDeaN2ELfISPSU8zxLQBE6jxAHA__IWLvPBoufF5-sBsDNruOEUOpK2m_ImLSyLhYO4D9dOJxLyhDtP44sHkMLpqikYnfB3n1WGK_xVTs6dnkLX_S2Bal2ZX6vW8l6M-PzaaAlZZp_haH_HGMsZXrRJ_XjON" />
+				<div
+					class="absolute inset-0 bg-gradient-to-r from-surface via-surface/60 to-transparent"></div>
+			</div>
+			<div class="relative z-10 max-w-7xl mx-auto px-8 w-full">
+				<div class="max-w-2xl">
+					<h1
+						class="text-5xl md:text-6xl font-extrabold text-on-surface font-headline leading-[1.1] tracking-tight mb-6">
+						당신의 다음 보금자리,<br />여기서 <span class="text-primary">맵핑</span>하세요
+					</h1>
+					<p
+						class="text-lg text-on-surface-variant font-body leading-relaxed mb-12">
+						공공주택부터 민간 분양까지, 신뢰할 수 있는 데이터로 스마트하게 내 집 마련의 꿈을 설계하세요. 투명한 정보와 간편한
+						신청 프로세스를 제공합니다.</p>
+				</div>
+			</div>
+		</section>
+		<!-- Search Section (Overlapping) -->
+		<section class="relative z-20 -mt-16 px-8">
+			<div class="max-w-5xl mx-auto">
+				<div
+					class="bg-surface-container-lowest p-4 md:p-6 rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.06)] flex flex-col md:flex-row items-center gap-4">
+					<div
+						class="flex items-center flex-1 w-full gap-3 px-6 py-3 bg-surface-container-low rounded-full">
+						<span class="material-symbols-outlined text-outline">search</span>
+						<input
+							class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-outline-variant font-body"
+							placeholder="공고, 관심지역을 검색하세요" type="text" />
+					</div>
+					<div
+						class="flex items-center w-full md:w-auto gap-3 px-6 py-3 bg-surface-container-low rounded-full cursor-pointer group">
+						<span
+							class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">location_on</span>
+						<select
+							class="bg-transparent border-none focus:ring-0 text-on-surface font-medium pr-8 font-body cursor-pointer">
+							<option>지역 선택</option>
+							<option>서울특별시</option>
+							<option>경기도</option>
+							<option>인천광역시</option>
+						</select>
+					</div>
+					<button
+						class="w-full md:w-auto bg-primary text-on-primary px-10 py-4 rounded-full font-bold text-lg hover:bg-primary-container transition-all shadow-lg hover:shadow-primary/20">
+						검색하기</button>
+				</div>
+			</div>
+		</section>
+		<!-- Service Cards Section -->
+		<section class="py-24 bg-surface-container-low mt-12">
+			<div class="max-w-7xl mx-auto px-8">
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+					<!-- Card 1 -->
+					<div
+						class="bg-surface-container-lowest p-8 rounded-xl transition-all duration-300 hover:translate-y-[-8px] group">
+						<div
+							class="w-16 h-16 bg-primary-container/20 rounded-2xl flex items-center justify-center mb-8">
+							<span class="material-symbols-outlined text-primary text-3xl"
+								data-weight="fill">description</span>
+						</div>
+						<h3 class="text-xl font-bold text-on-surface font-headline mb-4">계약공고</h3>
+						<p class="text-on-surface-variant font-body leading-relaxed">
+							최신 공공주택 분양 및 임대 공고를 실시간으로 확인하세요. 맞춤형 알림 서비스로 기회를 놓치지 마세요.</p>
+						<div
+							class="mt-8 flex items-center text-primary font-bold gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+							자세히 보기 <span class="material-symbols-outlined">arrow_forward</span>
+						</div>
+					</div>
+					<!-- Card 2 -->
+					<div
+						class="bg-surface-container-lowest p-8 rounded-xl transition-all duration-300 hover:translate-y-[-8px] group">
+						<div
+							class="w-16 h-16 bg-primary-container/20 rounded-2xl flex items-center justify-center mb-8">
+							<span class="material-symbols-outlined text-primary text-3xl"
+								data-weight="fill">campaign</span>
+						</div>
+						<h3 class="text-xl font-bold text-on-surface font-headline mb-4">공지사항</h3>
+						<p class="text-on-surface-variant font-body leading-relaxed">
+							우리집맵핑의 새로운 소식과 정책 변경, 주거 지원 혜택에 대한 중요한 안내를 확인하실 수 있습니다.</p>
+						<div
+							class="mt-8 flex items-center text-primary font-bold gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+							자세히 보기 <span class="material-symbols-outlined">arrow_forward</span>
+						</div>
+					</div>
+					<!-- Card 3 -->
+					<div
+						class="bg-surface-container-lowest p-8 rounded-xl transition-all duration-300 hover:translate-y-[-8px] group">
+						<div
+							class="w-16 h-16 bg-primary-container/20 rounded-2xl flex items-center justify-center mb-8">
+							<span class="material-symbols-outlined text-primary text-3xl"
+								data-weight="fill">contact_support</span>
+						</div>
+						<h3 class="text-xl font-bold text-on-surface font-headline mb-4">문의사항</h3>
+						<p class="text-on-surface-variant font-body leading-relaxed">
+							이용 중 궁금한 점이나 도움이 필요하신가요? 전문 상담사가 친절하고 정확하게 답변해 드립니다.</p>
+						<div
+							class="mt-8 flex items-center text-primary font-bold gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+							문의하기 <span class="material-symbols-outlined">arrow_forward</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- Stats Section (Extra) -->
+		<section class="py-20 bg-surface">
+			<div class="max-w-7xl mx-auto px-8">
+				<div
+					class="bg-primary rounded-xl p-12 text-on-primary flex flex-wrap justify-around items-center gap-8">
+					<div class="text-center">
+						<div class="text-4xl font-headline font-extrabold mb-2">1,250+</div>
+						<div class="text-on-primary-container/80 font-body">진행 중인 공고</div>
+					</div>
+					<div class="text-center">
+						<div class="text-4xl font-headline font-extrabold mb-2">85,000+</div>
+						<div class="text-on-primary-container/80 font-body">누적 계약 완료</div>
+					</div>
+					<div class="text-center">
+						<div class="text-4xl font-headline font-extrabold mb-2">120k+</div>
+						<div class="text-on-primary-container/80 font-body">월간 활성
+							이용자</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+	<!-- Footer -->
+	<footer class="bg-slate-50 dark:bg-slate-900 w-full py-12 mt-auto">
+		<div
+			class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+			<div class="flex flex-col gap-2">
+				<div class="text-lg font-semibold text-primary font-headline">우리집맵핑</div>
+				<div class="text-slate-500 font-body text-[0.875rem]">© 2024
+					우리집맵핑. All rights reserved.</div>
+			</div>
+			<div class="flex gap-8">
+				<a
+					class="text-slate-500 font-body text-[0.875rem] hover:underline decoration-primary/30 opacity-80 hover:opacity-100 transition-opacity"
+					href="#">이용약관</a> <a
+					class="text-slate-500 font-body text-[0.875rem] hover:underline decoration-primary/30 opacity-80 hover:opacity-100 transition-opacity"
+					href="#">개인정보처리방침</a> <a
+					class="text-slate-500 font-body text-[0.875rem] hover:underline decoration-primary/30 opacity-80 hover:opacity-100 transition-opacity"
+					href="#">고객센터</a> <a
+					class="text-slate-500 font-body text-[0.875rem] hover:underline decoration-primary/30 opacity-80 hover:opacity-100 transition-opacity"
+					href="#">찾아오시는 길</a>
+			</div>
+		</div>
+	</footer>
 </body>
 </html>

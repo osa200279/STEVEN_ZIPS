@@ -38,7 +38,10 @@ public class ZTestController {
         return "ztestview/aptapi";
     }
 
-
+    @GetMapping("/center-main.do")
+    public String centermain(){
+        return "ztestview/center-main";
+    }
 
 
 
