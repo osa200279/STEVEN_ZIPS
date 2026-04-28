@@ -513,7 +513,6 @@ img { display: block; width: 100%; }
       }, 250);
     });
   });
-  pImg.style.transition = 'opacity .3s';
 
   /* ── 스크롤 fade-up ── */
   var fadeEls = document.querySelectorAll('.fade-up');

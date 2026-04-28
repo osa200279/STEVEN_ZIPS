@@ -31,7 +31,6 @@
 
             <sec:authorize access="isAnonymous()">
                 <a href="/login.do" class="btn-outline">로그인</a>
-                <%--<a href="/member/register.do" class="btn-filled">회원가입</a>--%>
                 <button type="button" class="btn-filled" id="joinFormBtn">회원가입</button>
             </sec:authorize>
         </div>
