@@ -160,8 +160,14 @@
             <div class="bg-white rounded-2xl p-5 shadow-sm">
 
                 <div class="w-24 h-24 mx-auto rounded-full bg-green-100 flex items-center justify-center text-2xl font-bold text-green-700">
-                    ${fn:substring(member.userNm,0,1)}
-                    <img src="/file/display/${file.googleId}" alt="${file.googleId}">
+                    <c:choose>
+                        <c:when test="${empty file.googleId}">
+                            ${fn:substring(member.userNm,0,1)}
+                        </c:when>
+                        <c:otherwise>
+                            <img src="/file/display/${file.googleId}" alt="${file.googleId}" class="w-full h-full object-cover rounded-full">
+                        </c:otherwise>
+                    </c:choose>
                 </div>
 
                 <h2 class="text-center text-xl font-bold mt-4"></h2>
