@@ -61,16 +61,22 @@ function closeModal(modalId) {
 ============================================================ */
 (function bindModalEvents() {
 
+    if (!document.body) {
+        document.addEventListener("DOMContentLoaded", bindModalEvents);
+        return;
+    }
+
     if (document.body.dataset.modalBound === "true") return;
     document.body.dataset.modalBound = "true";
 
     document.addEventListener("click", function (e) {
 
-        // 닫기 버튼
         const closeBtn = e.target.closest("[data-modal-close]");
         if (closeBtn) {
+            e.stopPropagation();
             const modal = closeBtn.closest(".modal-overlay");
             if (modal) closeModal(modal.id);
+            return;
         }
 
         // 바깥 클릭
