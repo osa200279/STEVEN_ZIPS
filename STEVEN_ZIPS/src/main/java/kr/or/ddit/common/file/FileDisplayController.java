@@ -65,7 +65,7 @@ public class FileDisplayController {
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(gFile.getMimeType()))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + gFile.getName() + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + encodedFileName + "\"")
                     .body(resource);
 
         }catch (IOException | GeneralSecurityException e){  // 파일을 못 찾거나 시큐리티 보안 에러

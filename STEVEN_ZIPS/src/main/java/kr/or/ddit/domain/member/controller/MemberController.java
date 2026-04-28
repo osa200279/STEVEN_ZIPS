@@ -66,12 +66,11 @@ public class MemberController {
             if(ServiceResult.EXIST.equals(result)){
                 resp.put("res", "EXIST");
                 resp.put("message", "이미 사용 중인 아이디입니다!");
-                return new ResponseEntity<>(resp, HttpStatus.OK);
             }else {
                 resp.put("res", "NOTEXIST");
                 resp.put("message", "사용 가능한 아이디입니다!");
-                return new ResponseEntity<>(resp, HttpStatus.OK);
             }
+            return new ResponseEntity<>(resp, HttpStatus.OK);
         }catch (Exception e){
             resp.put("message", "서버 에러로 인해 중복확인에 실패하였습니다.");
             return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
