@@ -6,7 +6,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>마이페이지</title>
+    <title>마이 페이지</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
