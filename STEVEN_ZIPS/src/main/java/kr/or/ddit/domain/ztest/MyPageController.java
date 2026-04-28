@@ -31,11 +31,10 @@ public class MyPageController {
 
     // 마이페이지 컨트롤러
     @PreAuthorize("hasRole('MEMBER')")
-    @GetMapping("/mypage.do")
+    @GetMapping("/myPage.do")
     public String myPage(@AuthenticationPrincipal CustomUser customUser,
                          Model model) {
         log.info("myPage() 실행");
-
         // 인증 객체에서 멤버 정보 가져오기
         MemberVO member = customUser.getMember();
         String profFileId = member.getProfFileId();

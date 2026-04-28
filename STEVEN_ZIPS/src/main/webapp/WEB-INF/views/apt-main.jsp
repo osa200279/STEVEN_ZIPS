@@ -298,7 +298,7 @@ img { display: block; width: 100%; }
 </style>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/headerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
 
 <main class="ml-80 pt-20 min-h-screen bg-background p-8">
 <%-- ══════════════ HERO SLIDER ══════════════ --%>
@@ -454,7 +454,7 @@ img { display: block; width: 100%; }
   </div>
 </section>
 
-<%@ include file="/WEB-INF/views/include/footerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 </main>
 <script>
 (function () {

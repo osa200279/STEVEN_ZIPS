@@ -47,7 +47,7 @@
 
 </head>
 <body>
-  <%@ include file="/WEB-INF/views/include/headerLayout.jsp" %>
+  <%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
   <div class="main-shell">
     <%@ include file="/WEB-INF/views/include/sidebarLayout.jsp" %>
     <main class="content-area">
@@ -88,6 +88,6 @@
       </div>
     </main>
   </div>
-  <%@ include file="/WEB-INF/views/include/footerLayout.jsp" %>
+  <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 </body>
 </html>

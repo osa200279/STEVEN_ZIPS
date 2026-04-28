@@ -4,7 +4,6 @@
 <html lang="ko">
 <meta charset="utf-8" />
 <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/headerStyle.css">
 <script
 	src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link
@@ -115,109 +114,7 @@ body {
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
-	<!-- TopNavBar -->
-	<header
-		class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.04)]">
-		<nav
-			class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
-			<!-- 로고 -->
-			<div
-				class="text-xl font-bold tracking-tight text-primary font-headline flex-none">
-				우리집맵핑</div>
-			<!-- 메뉴 전체를 group으로 감싸야 메가메뉴 유지됨 -->
-			<div
-				class="hidden md:flex items-center justify-center flex-1 relative group">
-				<!-- 상단 메뉴 -->
-				<div class="flex gap-8 py-2">
-					<a
-						class="text-primary font-bold border-b-2 border-primary pb-1 cursor-pointer transition-colors hover:text-primary">서비스
-						소개</a> <a
-						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">계약공고</a>
-					<a
-						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">계약
-						신청 및 조회</a> <a
-						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">단지찾기</a>
-					<a
-						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">시설이력조회</a>
-					<a
-						class="text-slate-600 hover:text-primary cursor-pointer transition-colors">공지사항</a>
-				</div>
-				<!-- 🔥 메가메뉴 -->
-				<div
-					class="mega-menu absolute left-1/2 -translate-x-1/2 top-full w-screen bg-[#226046ee] backdrop-blur-md border-t border-white/10">
-					<div
-						class="max-w-7xl mx-auto px-8 py-10 grid grid-cols-6 gap-10 text-sm text-white">
-						<div class="space-y-4">
-							<h4 class="font-bold text-base border-b border-white/20 pb-2">서비스
-								소개</h4>
-						</div>
-						<div class="space-y-4">
-							<h4 class="font-bold text-base border-b border-white/20 pb-2">계약공고</h4>
-							<div class="flex flex-col gap-2 opacity-80">
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">계약
-									공고</p>
-							</div>
-						</div>
-						<div class="space-y-4">
-							<h4 class="font-bold text-base border-b border-white/20 pb-2">계약
-								신청 및 조회</h4>
-							<div class="flex flex-col gap-2 opacity-80">
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">계약
-									신청하기</p>
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">계약
-									조회</p>
-							</div>
-						</div>
-						<div class="space-y-4">
-							<h4 class="font-bold text-base border-b border-white/20 pb-2">단지찾기</h4>
-							<div class="flex flex-col gap-2 opacity-80">
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">단지
-									목록</p>
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">단지
-									검색</p>
-							</div>
-						</div>
-						<div class="space-y-4">
-							<h4 class="font-bold text-base border-b border-white/20 pb-2">시설이력
-								조회</h4>
-							<div class="flex flex-col gap-2 opacity-80">
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">시설
-									유지보수 이력</p>
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">시설
-									하자보수 이력</p>
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">시설
-									점검 기록 확인</p>
-							</div>
-						</div>
-						<div class="space-y-4">
-							<h4 class="font-bold text-base border-b border-white/20 pb-2">공지사항</h4>
-							<div class="flex flex-col gap-2 opacity-80">
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">공지사항</p>
-								<p
-									class="hover:text-white hover:underline cursor-pointer transition-all">문의게시판</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- 오른쪽 버튼 -->
-			<div class="flex items-center gap-4 flex-none">
-				<button
-					class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">로그인</button>
-				<button
-					class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">회원가입</button>
-			</div>
-		</nav>
-	</header>
+	<%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
 	<main class="flex-grow">
 		<!-- Hero Section -->
 		<section
@@ -349,27 +246,6 @@ body {
 			</div>
 		</section>
 	</main>
-	<!-- Footer -->
-	<footer class="bg-slate-50 dark:bg-slate-900 w-full py-12 mt-auto">
-		<div
-			class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
-			<div class="flex flex-col gap-2">
-				<div class="text-lg font-semibold text-primary font-headline">우리집맵핑</div>
-				<div class="text-slate-500 font-body text-[0.875rem]">© 2024
-					우리집맵핑. All rights reserved.</div>
-			</div>
-			<div class="flex gap-8">
-				<a
-					class="text-slate-500 font-body text-[0.875rem] hover:underline decoration-primary/30 opacity-80 hover:opacity-100 transition-opacity"
-					href="#">이용약관</a> <a
-					class="text-slate-500 font-body text-[0.875rem] hover:underline decoration-primary/30 opacity-80 hover:opacity-100 transition-opacity"
-					href="#">개인정보처리방침</a> <a
-					class="text-slate-500 font-body text-[0.875rem] hover:underline decoration-primary/30 opacity-80 hover:opacity-100 transition-opacity"
-					href="#">고객센터</a> <a
-					class="text-slate-500 font-body text-[0.875rem] hover:underline decoration-primary/30 opacity-80 hover:opacity-100 transition-opacity"
-					href="#">찾아오시는 길</a>
-			</div>
-		</div>
-	</footer>
+	<%@ include file="/WEB-INF/views/include/main_footerLayout.jsp" %>
 </body>
 </html>

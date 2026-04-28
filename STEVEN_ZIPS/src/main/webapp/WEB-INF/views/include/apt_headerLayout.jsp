@@ -18,10 +18,10 @@
 
         <div class="header-actions">
             <sec:authorize access="isAuthenticated()">
-        <span style="font-size:1.2em; color:blue; font-weight:bold;">
-          <sec:authentication property="principal.member.userNm"/>
-        </span>님
-                <a href="/member/mypage.do" class="btn-filled">마이페이지</a>
+            <span style="font-size:1.2em; color:blue; font-weight:bold;">
+            <sec:authentication property="principal.member.userNm"/>
+            </span>님
+                <a href="/member/myPage.do" class="btn-filled">마이페이지</a>
                 <button type="button" id="logoutBtn" class="btn-outline">로그아웃</button>
                 <%-- 로그아웃을 위한 히든 폼 --%>
                 <form id="logoutForm" action="/logout" method="post" style="display: none;">
@@ -36,16 +36,17 @@
         </div>
     </div>
 
-  <nav class="header-nav">
-    <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/manage') ? 'active' : ''}">
-      <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
-      <div class="slim-drop">
-        <a href="${pageContext.request.contextPath}/resident/manage/intro">관리사무소 소개</a>
-        <a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>
-        <a href="${pageContext.request.contextPath}/resident/manage/facility">시설관리이력</a>
-        <a href="${pageContext.request.contextPath}/resident/manage/favorite">즐겨찾기</a>
-      </div>
-    </div>
+    <nav class="header-nav">
+        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/manage') ? 'active' : ''}">
+            <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
+                    d="M6 9l6 6 6-6"/></svg></span>
+            <div class="slim-drop">
+                <a href="${pageContext.request.contextPath}/resident/manage/intro">관리사무소 소개</a>
+                <a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>
+                <a href="${pageContext.request.contextPath}/resident/manage/facility">시설관리이력</a>
+                <a href="${pageContext.request.contextPath}/resident/manage/favorite">즐겨찾기</a>
+            </div>
+        </div>
 
         <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/bill') ? 'active' : ''}">
             <span>아파트관리비<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
