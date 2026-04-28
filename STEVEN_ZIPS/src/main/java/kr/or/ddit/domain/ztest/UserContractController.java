@@ -12,8 +12,30 @@ public class UserContractController {
 
 
 
-    @GetMapping("/list.do")
-    public String contractList() {
-        return "ztestview/contractList";
+        @GetMapping("/list.do")
+        public String contractList() {
+
+            return "ztestview/contractList";
+        }
+
+
+        @GetMapping("/notice.do")
+        public String contractNotice() {
+            return "ztestview/contractNotice"; // JSP 이름
+        }
+
+        @GetMapping("/apply.do")
+        public String contractApply() {
+            return "ztestview/contractApply";
+        }
+
+    @GetMapping("/noticeList.do")
+    public String noticeList() {
+        return "ztestview/notice";
     }
+
+
+
+
+
 }
