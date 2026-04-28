@@ -45,24 +45,7 @@
     </resultMap>
 
 
-    <!--
-      신청 계정 목록 조회
-
-      조인 흐름:
-      MNGR_RQST.USER_NO
-      → MANAGER.USER_NO
-      → RESIDENT_RQST.USER_NO
-      → RESIDENT_RQST.APT_CMPLEX_NO
-      → APT_COMPLEX.APT_CMPLEX_NO
-
-      LEFT JOIN이란?
-      → 기준 테이블(MNGR_RQST)의 데이터는 무조건 보여주고,
-        연결되는 테이블 데이터가 있으면 붙이는 조인.
-
-      왜 LEFT JOIN 사용?
-      → 승인대기 상태는 USER_NO가 NULL일 수 있어서
-        INNER JOIN을 쓰면 신청 목록에서 사라질 수 있음.
-  -->
+    <!-- 신청 계정 목록 조회 -->
     <select id="selectRequestList"
             parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO"
             resultMap="subAdminMap">
@@ -110,8 +93,22 @@
         LEFT JOIN MANAGER G
         ON R.USER_NO = G.USER_NO
 
-        LEFT JOIN RESIDENT_RQST RR
-        ON G.USER_NO = RR.USER_NO
+        <!--
+            핵심 수정:
+            RESIDENT_RQST.USER_NO = 입주민 사용자 번호
+            RESIDENT_RQST.MNG_NO  = 담당 관리자 번호
+
+            따라서 관리자 기준 단지를 찾을 때는
+            RR.MNG_NO = G.USER_NO 로 연결해야 함.
+        -->
+        LEFT JOIN (
+        SELECT
+        MNG_NO,
+        MAX(APT_CMPLEX_NO) AS APT_CMPLEX_NO
+        FROM RESIDENT_RQST
+        GROUP BY MNG_NO
+        ) RR
+        ON RR.MNG_NO = G.USER_NO
 
         LEFT JOIN APT_COMPLEX A
         ON RR.APT_CMPLEX_NO = A.APT_CMPLEX_NO
@@ -142,16 +139,7 @@
 
 
 
-    <!--
-    신청 계정 단건 조회
-
-    사용 위치:
-    → 신청 상세 보기, 승인/반려 처리 전 데이터 확인용
-
-    핵심:
-    → MNGR_RQST에는 APT_CMPLEX_NO가 없으므로
-      RESIDENT_RQST를 거쳐서 APT_CMPLEX_NO를 가져옴.
--->
+    <!-- 신청 계정 단건 조회 -->
     <select id="selectRequest" parameterType="string" resultMap="subAdminMap">
 
         SELECT
@@ -197,8 +185,14 @@
                  LEFT JOIN MANAGER G
                            ON R.USER_NO = G.USER_NO
 
-                 LEFT JOIN RESIDENT_RQST RR
-                           ON G.USER_NO = RR.USER_NO
+                 LEFT JOIN (
+            SELECT
+                MNG_NO,
+                MAX(APT_CMPLEX_NO) AS APT_CMPLEX_NO
+            FROM RESIDENT_RQST
+            GROUP BY MNG_NO
+        ) RR
+                           ON RR.MNG_NO = G.USER_NO
 
                  LEFT JOIN APT_COMPLEX A
                            ON RR.APT_CMPLEX_NO = A.APT_CMPLEX_NO
@@ -207,18 +201,7 @@
     </select>
 
 
-    <!--
-        승인 완료된 실제 관리자 계정 목록 조회
-
-        조인 흐름:
-        MEMBER
-        → MANAGER
-        → MGMT_OFFICE
-        → APT_COMPLEX
-
-        이 쿼리가 JSP 아래쪽
-        '단지 관리자 계정 목록 및 활성화' 테이블에 들어감.
-    -->
+    <!-- 승인 완료된 실제 관리자 계정 목록 조회 -->
     <select id="selectAccountList"
             parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO"
             resultMap="subAdminMap">
@@ -240,14 +223,14 @@
         A.APT_CMPLEX_NM,
 
         CASE G.MNGR_DUTY_CD
-        WHEN 'DUTY_HEAD' THEN '관리소장'
-        WHEN 'DUTY_ACC' THEN '회계'
+        WHEN 'DUTY_HEAD'  THEN '관리소장'
+        WHEN 'DUTY_ACC'   THEN '회계'
         WHEN 'DUTY_ADMIN' THEN '행정'
-        WHEN 'DUTY_FAC' THEN '시설'
-        WHEN 'HEAD' THEN '관리소장'
-        WHEN 'ACNT' THEN '회계'
-        WHEN 'ADM' THEN '행정'
-        WHEN 'FAC' THEN '시설'
+        WHEN 'DUTY_FAC'   THEN '시설'
+        WHEN 'HEAD'       THEN '관리소장'
+        WHEN 'ACNT'       THEN '회계'
+        WHEN 'ADM'        THEN '행정'
+        WHEN 'FAC'        THEN '시설'
         ELSE G.MNGR_DUTY_CD
         END AS DUTY_NM,
 
@@ -255,6 +238,10 @@
         TO_CHAR(NVL(M.MDFCN_DT, M.REG_DT), 'HH24:MI') AS LAST_LOGIN_TM
 
         FROM MEMBER M
+
+        JOIN AUTH AU
+        ON M.USER_NO = AU.USER_NO
+        AND AU.USER_ROLE_CD = 'ROLE_MANAGER'
 
         JOIN MANAGER G
         ON M.USER_NO = G.USER_NO
@@ -265,7 +252,7 @@
         LEFT JOIN APT_COMPLEX A
         ON O.APT_CMPLEX_NO = A.APT_CMPLEX_NO
 
-        WHERE M.USER_ROLE_CD = 'ROLE_MANAGER'
+        WHERE 1 = 1
 
         <if test="keyword != null and keyword != ''">
             AND (
@@ -296,6 +283,7 @@
 
     <!-- 계정 상세 조회 -->
     <select id="selectAccount" parameterType="string" resultMap="subAdminMap">
+
         SELECT
             M.USER_NO,
             M.USER_ID,
@@ -313,14 +301,14 @@
             A.APT_CMPLEX_NM,
 
             CASE G.MNGR_DUTY_CD
-                WHEN 'DUTY_HEAD' THEN '관리소장'
-                WHEN 'DUTY_ACC' THEN '회계'
+                WHEN 'DUTY_HEAD'  THEN '관리소장'
+                WHEN 'DUTY_ACC'   THEN '회계'
                 WHEN 'DUTY_ADMIN' THEN '행정'
-                WHEN 'DUTY_FAC' THEN '시설'
-                WHEN 'HEAD' THEN '관리소장'
-                WHEN 'ACNT' THEN '회계'
-                WHEN 'ADM' THEN '행정'
-                WHEN 'FAC' THEN '시설'
+                WHEN 'DUTY_FAC'   THEN '시설'
+                WHEN 'HEAD'       THEN '관리소장'
+                WHEN 'ACNT'       THEN '회계'
+                WHEN 'ADM'        THEN '행정'
+                WHEN 'FAC'        THEN '시설'
                 ELSE G.MNGR_DUTY_CD
                 END AS DUTY_NM,
 
@@ -328,6 +316,10 @@
             TO_CHAR(NVL(M.MDFCN_DT, M.REG_DT), 'HH24:MI') AS LAST_LOGIN_TM
 
         FROM MEMBER M
+
+                 JOIN AUTH AU
+                      ON M.USER_NO = AU.USER_NO
+                          AND AU.USER_ROLE_CD = 'ROLE_MANAGER'
 
                  JOIN MANAGER G
                       ON M.USER_NO = G.USER_NO
@@ -441,16 +433,7 @@
     </delete>
 
 
-    <!--
-        승인 시 MEMBER 생성
-
-        MEMBER란?
-        → 실제 로그인 계정 테이블.
-
-        왜 MNGR_RQST와 분리?
-        → 신청 데이터와 실제 로그인 계정은 생명주기가 다르기 때문.
-          신청은 반려될 수 있지만, MEMBER는 승인 후 생성됨.
-    -->
+    <!-- 승인 시 MEMBER 생성 -->
     <insert id="insertMemberForManager" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
         <selectKey keyProperty="userNo" resultType="string" order="BEFORE">
             SELECT 'USR' || LPAD(seq_member.NEXTVAL, 12, '0')
@@ -459,7 +442,6 @@
 
         INSERT INTO MEMBER (
         USER_NO,
-        USER_ROLE_CD,
         USER_ID,
         USER_PW,
         USER_NM,
@@ -476,7 +458,6 @@
         EML_CTRT_RCV_YN
         ) VALUES (
         #{userNo},
-        'ROLE_MANAGER',
         #{rqstLoginId},
         '{noop}1234',
         #{rqstMngrNm},

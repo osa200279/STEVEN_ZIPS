@@ -104,12 +104,6 @@ public class ContractController {
         return "centralAdmin/subAdmin";
     }
 
-    /* 합친 후 삭제예정 */
-    @GetMapping("/adminSubMgmt")
-    public String subAdminForm2() {
-        return "centralAdmin/adminSubMgmt";
-    }
-
 
     @PostMapping("/contractInsert.do")
     public String contractInsert(RentContractVO rentContractVO,
