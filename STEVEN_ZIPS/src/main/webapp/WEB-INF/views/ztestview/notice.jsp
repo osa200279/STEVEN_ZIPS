@@ -53,11 +53,11 @@
 
 <%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
 
-<body class="p-4 md:p-8">
+<body class="bg-[#f8faf6]">
 <%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
 <%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
 
-<main class="ml-80 p-10 pt-28 bg-[#f8faf6]">
+<main class="ml-80 p-10 pt-28 >
     <!-- BEGIN: PageHeader -->
     <div class="mb-8" data-purpose="page-title-section">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">공지사항</h1>
