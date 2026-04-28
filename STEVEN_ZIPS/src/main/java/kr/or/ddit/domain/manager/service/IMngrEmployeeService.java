@@ -2,8 +2,8 @@ package kr.or.ddit.domain.manager.service;
 
 import java.util.List;
 
-import kr.or.ddit.domain.apt.manager.vo.ManagerVO;
 import kr.or.ddit.domain.apt.manager.vo.MngrRqstVO;
+import kr.or.ddit.domain.manager.vo.ManagerVO;
 
 public interface IMngrEmployeeService {
 

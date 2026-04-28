@@ -7,5 +7,7 @@ public interface IAptComplexService {
 
 //   public AptComplexVO selectAptDetailList(String aptCmplexNo);
 
+   public String selectManagerAptCmplexNo(String userNo);
+
    public int updateAptComplex(AptComplexVO aptComplexVO);
 }

@@ -23,6 +23,11 @@ public class AptComplexServiceImpl implements IAptComplexService{
     }*/
 
     @Override
+    public String selectManagerAptCmplexNo(String userNo) {
+        return aptComplexMapper.selectManagerAptCmplexNo(userNo);
+    }
+
+    @Override
     @Transactional
     public int updateAptComplex(AptComplexVO aptComplexVO) {
         return aptComplexMapper.updateAptComplex(aptComplexVO);

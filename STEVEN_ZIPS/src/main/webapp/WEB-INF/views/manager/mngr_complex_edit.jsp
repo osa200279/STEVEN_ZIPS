@@ -21,7 +21,7 @@
 
     <style>
         .complex-readonly {
-            background: var(--bg-secondary, #f5f5f5);
+            background: #f5f5f5;
             color: var(--text-tertiary);
             cursor: not-allowed;
         }
@@ -127,11 +127,11 @@
 <body>
 <div class="app-wrapper">
 
-    <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
+    <%@ include file="../include/office_sidebar.jsp" %>
 
     <div class="main-wrap">
 
-        <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
+        <%@ include file="../include/office_header.jsp" %>
 
         <main class="main-content">
             <div class="office-page" id="complexEditPage">
