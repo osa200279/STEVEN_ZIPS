@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.apt.manager.mapper.IEmployeeMapper">
+
+    <!-- ════════════════════════════════════════════
+         ResultMap
+    ════════════════════════════════════════════ -->
+
+    <resultMap id="managerMap" type="kr.or.ddit.domain.apt.manager.vo.ManagerVO">
+        <result property="userNo"      column="USER_NO"/>
+        <result property="mgmtOfcNo"   column="MGMT_OFC_NO"/>
+        <result property="mngrDutyCd"  column="MNGR_DUTY_CD"/>
+        <result property="userId"      column="USER_ID"/>
+        <result property="userNm"      column="USER_NM"/>
+        <result property="telno"       column="USER_TELNO"/>
+        <result property="userEml"     column="USER_EML"/>
+        <result property="userYn"      column="USER_YN"/>
+        <result property="birthDate"   column="BIRTH_DATE"/>
+        <result property="mgmtOfcNm"   column="MGMT_OFC_NM"/>
+        <result property="aptCmplexNm" column="APT_CMPLEX_NM"/>
+    </resultMap>
+
+    <resultMap id="mngrRqstMap" type="kr.or.ddit.domain.apt.manager.vo.MngrRqstVO">
+        <result property="rqstNo"      column="RQST_NO"/>
+        <result property="rqstLoginId" column="RQST_LOGIN_ID"/>
+        <result property="rqstMngrNm"  column="RQST_MNGR_NM"/>
+        <result property="rqstDutyCd"  column="RQST_DUTY_CD"/>
+        <result property="rqstDt"      column="RQST_DT"/>
+        <result property="aprvDt"      column="APRV_DT"/>
+        <result property="rqstSttsCd"  column="RQST_STTS_CD"/>
+        <result property="aprvId"      column="APRV_ID"/>
+        <result property="rjctRsnCn"   column="RJCT_RSN_CN"/>
+        <result property="rmrkCn"      column="RMRK_CN"/>
+        <result property="userNo"      column="USER_NO"/>
+        <result property="mgmtOfcNo"   column="MGMT_OFC_NO"/>
+        <result property="mgmtOfcNm"   column="MGMT_OFC_NM"/>
+        <result property="aptCmplexNm" column="APT_CMPLEX_NM"/>
+    </resultMap>
+
+    <resultMap id="memberSearchMap" type="kr.or.ddit.domain.apt.manager.vo.MemberSearchVO">
+        <result property="userNo"    column="USER_NO"/>
+        <result property="userId"    column="USER_ID"/>
+        <result property="userNm"    column="USER_NM"/>
+        <result property="userTelno" column="USER_TELNO"/>
+    </resultMap>
+
+    <!-- ════════════════════════════════════════════
+         재직 직원
+    ════════════════════════════════════════════ -->
+
+    <select id="selectManagerList" resultMap="managerMap">
+        SELECT
+            mg.USER_NO,
+            mg.MGMT_OFC_NO,
+            mg.MNGR_DUTY_CD,
+            m.USER_ID,
+            m.USER_NM,
+            m.USER_TELNO,
+            m.USER_EML,
+            m.USER_YN,
+            SUBSTR(m.USER_RRNO, 1, 6) AS BIRTH_DATE,
+            mo.MGMT_OFC_NM,
+            ac.APT_CMPLEX_NM
+        FROM MANAGER mg
+                 JOIN MEMBER m       ON m.USER_NO       = mg.USER_NO
+                 JOIN MGMT_OFFICE mo ON mo.MGMT_OFC_NO  = mg.MGMT_OFC_NO
+                 JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = mo.APT_CMPLEX_NO
+        WHERE mg.MGMT_OFC_NO = #{mgmtOfcNo}
+          AND mg.MNGR_DUTY_CD != 'HEAD'
+        ORDER BY m.USER_NM
+    </select>
+
+    <update id="updateManagerDuty" parameterType="kr.or.ddit.domain.apt.manager.vo.ManagerVO">
+        UPDATE MANAGER
+        SET MNGR_DUTY_CD = #{mngrDutyCd}
+        WHERE USER_NO = #{userNo}
+    </update>
+
+    <update id="deactivateMember">
+        UPDATE MEMBER
+        SET USER_YN  = 'N',
+            MDFCN_DT = SYSDATE
+        WHERE USER_NO = #{userNo}
+    </update>
+
+    <!-- ════════════════════════════════════════════
+         계정 생성 요청 (MNGR_RQST)
+    ════════════════════════════════════════════ -->
+
+    <select id="selectRequestList" resultMap="mngrRqstMap">
+        SELECT
+            mr.RQST_NO,
+            mr.RQST_LOGIN_ID,
+            mr.RQST_MNGR_NM,
+            mr.RQST_DUTY_CD,
+            TO_CHAR(mr.RQST_DT, 'YYYY-MM-DD') AS RQST_DT,
+            TO_CHAR(mr.APRV_DT, 'YYYY-MM-DD') AS APRV_DT,
+            mr.RQST_STTS_CD,
+            mr.APRV_ID,
+            mr.RJCT_RSN_CN,
+            mr.RMRK_CN,
+            mr.USER_NO,
+            mo.MGMT_OFC_NO,
+            mo.MGMT_OFC_NM,
+            ac.APT_CMPLEX_NM
+        FROM MNGR_RQST mr
+                 JOIN MANAGER mg     ON mg.USER_NO      = mr.USER_NO
+                 JOIN MGMT_OFFICE mo ON mo.MGMT_OFC_NO  = mg.MGMT_OFC_NO
+                 JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = mo.APT_CMPLEX_NO
+        WHERE mg.MGMT_OFC_NO = #{mgmtOfcNo}
+          AND mr.RQST_STTS_CD != 'CNL'
+        ORDER BY mr.RQST_DT DESC
+    </select>
+
+    <insert id="insertRequest" parameterType="kr.or.ddit.domain.apt.manager.vo.MngrRqstVO">
+        <selectKey keyProperty="rqstNo" resultType="String" order="BEFORE">
+            SELECT TO_CHAR(SEQ_MANAGER_RQST.NEXTVAL) FROM DUAL
+        </selectKey>
+        INSERT INTO MNGR_RQST (
+        RQST_NO,
+        RQST_LOGIN_ID,
+        RQST_MNGR_NM,
+        RQST_DUTY_CD,
+        RQST_DT,
+        RQST_STTS_CD,
+        RMRK_CN,
+        USER_NO
+        ) VALUES (
+        #{rqstNo},
+        #{rqstLoginId},
+        #{rqstMngrNm},
+        #{rqstDutyCd},
+        SYSDATE,
+        'WAIT',
+        #{rmrkCn},
+        #{userNo}
+        )
+    </insert>
+
+    <update id="updateRequest" parameterType="kr.or.ddit.domain.apt.manager.vo.MngrRqstVO">
+        UPDATE MNGR_RQST
+        SET RQST_DUTY_CD = #{rqstDutyCd},
+            RMRK_CN      = #{rmrkCn}
+        WHERE RQST_NO      = #{rqstNo}
+          AND RQST_STTS_CD = 'WAIT'
+    </update>
+
+    <update id="cancelRequest" parameterType="kr.or.ddit.domain.apt.manager.vo.MngrRqstVO">
+        UPDATE MNGR_RQST
+        SET RQST_STTS_CD = 'CNL',
+            RMRK_CN      = #{rmrkCn}
+        WHERE RQST_NO      = #{rqstNo}
+          AND RQST_STTS_CD = 'WAIT'
+    </update>
+
+    <!-- ════════════════════════════════════════════
+         회원 검색
+    ════════════════════════════════════════════ -->
+
+    <select id="searchMember" resultMap="memberSearchMap">
+        SELECT USER_NO, USER_ID, USER_NM, USER_TELNO
+        FROM MEMBER
+        WHERE USER_YN = 'Y'
+          AND (
+            USER_NM LIKE '%' || #{keyword} || '%'
+                OR USER_ID LIKE '%' || #{keyword} || '%'
+            )
+          AND EXISTS (
+            SELECT 1 FROM AUTH
+            WHERE USER_NO = MEMBER.USER_NO
+              AND USER_ROLE_CD = 'ROLE_MEMBER'
+        )
+          AND NOT EXISTS (
+            SELECT 1 FROM AUTH
+            WHERE USER_NO = MEMBER.USER_NO
+              AND USER_ROLE_CD = 'ROLE_MANAGER'
+        )
+        ORDER BY USER_NM
+    </select>
+
+    <!-- ════════════════════════════════════════════
+         로그인 소장 정보
+    ════════════════════════════════════════════ -->
+
+    <select id="selectLoginManagerInfo" resultMap="managerMap">
+        SELECT
+            mg.USER_NO,
+            mg.MGMT_OFC_NO,
+            mg.MNGR_DUTY_CD,
+            m.USER_NM,
+            mo.MGMT_OFC_NM,
+            ac.APT_CMPLEX_NM
+        FROM MANAGER mg
+                 JOIN MEMBER m       ON m.USER_NO       = mg.USER_NO
+                 JOIN MGMT_OFFICE mo ON mo.MGMT_OFC_NO  = mg.MGMT_OFC_NO
+                 JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = mo.APT_CMPLEX_NO
+        WHERE mg.USER_NO = #{userNo}
+    </select>
+
+
+    <!-- ════════════════════════════════════════════
+         전체 재직 직원 목록 (ADMIN용)
+    ════════════════════════════════════════════ -->
+
+    <select id="selectAllManagerList" resultMap="managerMap">
+        SELECT
+            mg.USER_NO,
+            mg.MGMT_OFC_NO,
+            mg.MNGR_DUTY_CD,
+            m.USER_ID,
+            m.USER_NM,
+            m.USER_TELNO,
+            m.USER_EML,
+            m.USER_YN,
+            SUBSTR(m.USER_RRNO, 1, 6) AS BIRTH_DATE,
+            mo.MGMT_OFC_NM,
+            ac.APT_CMPLEX_NM
+        FROM MANAGER mg
+                 JOIN MEMBER m       ON m.USER_NO       = mg.USER_NO
+                 JOIN MGMT_OFFICE mo ON mo.MGMT_OFC_NO  = mg.MGMT_OFC_NO
+                 JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = mo.APT_CMPLEX_NO
+        WHERE mg.MNGR_DUTY_CD != 'HEAD'
+        ORDER BY m.USER_NM
+    </select>
+
+    <!-- ════════════════════════════════════════════
+         전체 요청 목록 (ADMIN용)
+    ════════════════════════════════════════════ -->
+
+    <select id="selectAllRequestList" resultMap="mngrRqstMap">
+        SELECT
+            mr.RQST_NO,
+            mr.RQST_LOGIN_ID,
+            mr.RQST_MNGR_NM,
+            mr.RQST_DUTY_CD,
+            TO_CHAR(mr.RQST_DT, 'YYYY-MM-DD') AS RQST_DT,
+            TO_CHAR(mr.APRV_DT, 'YYYY-MM-DD') AS APRV_DT,
+            mr.RQST_STTS_CD,
+            mr.APRV_ID,
+            mr.RJCT_RSN_CN,
+            mr.RMRK_CN,
+            mr.USER_NO,
+            mo.MGMT_OFC_NO,
+            mo.MGMT_OFC_NM,
+            ac.APT_CMPLEX_NM
+        FROM MNGR_RQST mr
+                 JOIN MANAGER mg     ON mg.USER_NO      = mr.USER_NO
+                 JOIN MGMT_OFFICE mo ON mo.MGMT_OFC_NO  = mg.MGMT_OFC_NO
+                 JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = mo.APT_CMPLEX_NO
+        WHERE mr.RQST_STTS_CD != 'CNL'
+        ORDER BY mr.RQST_DT DESC
+    </select>
+
+    <!-- ════════════════════════════════════════════
+         로그인 소장 정보 (userId로 조회)
+    ════════════════════════════════════════════ -->
+
+    <select id="selectLoginManagerInfoByUserId" resultMap="managerMap">
+        SELECT
+            mg.USER_NO,
+            mg.MGMT_OFC_NO,
+            mg.MNGR_DUTY_CD,
+            m.USER_NM,
+            mo.MGMT_OFC_NM,
+            ac.APT_CMPLEX_NM
+        FROM MANAGER mg
+                 JOIN MEMBER m       ON m.USER_NO       = mg.USER_NO
+                 JOIN MGMT_OFFICE mo ON mo.MGMT_OFC_NO  = mg.MGMT_OFC_NO
+                 JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = mo.APT_CMPLEX_NO
+        WHERE m.USER_ID = #{userId}
+    </select>
+
+</mapper>
