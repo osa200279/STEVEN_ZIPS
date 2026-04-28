@@ -57,8 +57,8 @@ public class SecurityConfig {
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.withDefaultRolePrefix()    // withDefaultRolePrefix() :: 권한명 앞에 "ROLE_"을 붙여주는 메서드
-                .role("ADMIN").implies("MGR")
-                .role("MGR").implies("RESIDENT")
+                .role("ADMIN").implies("MNGR")
+                .role("MNGR").implies("RESIDENT")
                 .role("RESIDENT").implies("MEMBER")
                 .build();
     }
