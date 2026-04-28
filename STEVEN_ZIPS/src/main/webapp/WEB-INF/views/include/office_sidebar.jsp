@@ -207,15 +207,13 @@
                 <div class="submenu-inner">
                     <span class="sub-group-label">단지정보</span>
 
-                    <a href="#" class="nav-item"
-                       data-parent="단지 운영 관리"
-                       data-title="단지 정보 수정"
-                       data-url="${pageContext.request.contextPath}/manager/complex/edit">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">단지 정보 수정</span>
-                    </a>
+                        <a href="${pageContext.request.contextPath}/manager/complex/edit"
+                           class="nav-item ${fn:contains(uri, '/manager/complex/edit') ? 'active' : ''}">
+                            <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                            <span class="nav-text">단지 정보 수정</span>
+                        </a>
 
-                    <span class="sub-group-label">일정</span>
+                        <span class="sub-group-label">일정</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">단지 일정 캘린더</span></a>
                     <span class="sub-group-label">대여시설</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">대여시설 목록</span></a>
