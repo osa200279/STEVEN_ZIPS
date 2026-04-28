@@ -683,6 +683,8 @@ public class AptApiServiceImpl implements IAptApiService {
 
                 memberMapper.insertMemberAssign(hshldHeadEntity);
                 memberMapper.updateMemberAuth(userNo);
+                /*aptMapper.updateEmpty(HoNo)*/
+
 
                 assigned++;
                 userIndex++;
