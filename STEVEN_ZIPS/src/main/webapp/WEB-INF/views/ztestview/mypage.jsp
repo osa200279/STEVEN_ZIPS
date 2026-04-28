@@ -126,8 +126,9 @@
             background: #4CAF50;
             color: #fff;
         }
-    </style>
 
+    </style>
+    <%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
 </head>
 <body class="bg-gray-50">
 
