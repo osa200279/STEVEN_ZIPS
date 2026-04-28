@@ -596,8 +596,18 @@
             <td><span class="badge ok">승인완료</span></td>
             <td>
               <div class="row-actions">
-                <button type="button" class="icon-btn-sm" title="상세">
-                  <span class="material-symbols-rounded">visibility</span>
+<%--                <button type="button" class="icon-btn-sm" title="상세">--%>
+<%--                  <span class="material-symbols-rounded">visibility</span>--%>
+<%--                </button>--%>
+                <button type="button" class="icon-btn-sm" title="승인 계정 목록 추가" onclick="addApprovedAccount(this)">
+                  <%--
+                    move_to_inbox
+    → 아래 목록으로 이동/보관한다는 의미가 더 직관적인 아이콘
+
+                    왜 사용?
+                    → 승인완료된 신청 계정을 아래 '계정 목록 및 활성화' 목록으로 내려보낸다는 의미를 주기 위해 사용
+                  --%>
+                    <span class="material-symbols-rounded">move_to_inbox</span>
                 </button>
               </div>
             </td>
@@ -617,7 +627,7 @@
     <div class="c-card c-card--divide">
       <div class="c-card__header">
         <div>
-          <div class="c-card__title">계정 목록 및 활성화</div>
+          <div class="c-card__title">단지 관리자 계정 목록 및 활성화</div>
           <div class="c-card__sub" id="acctSubtitle">총 0건 / 1 페이지</div>
         </div>
         <div class="c-card__actions">
@@ -746,6 +756,8 @@
     {key:"행정",level:"ADM",color:"green",icon:"edit_document",title:"행정",desc:"입주민 소통 전담. 민원·공고 처리",perms:[{ok:1,text:"입주민 관리 열람"},{ok:1,text:"민원·공고 처리"},{ok:0,text:"재무 접근 불가"}]},
     {key:"시설",level:"FAC",color:"orange",icon:"handyman",title:"시설",desc:"시설 점검 전담. 최소 접근 권한",perms:[{ok:1,text:"시설 민원·점검"},{ok:1,text:"점검 일지 작성"},{ok:0,text:"재무·계약 불가"}]},
   ];
+
+  /* 하드코딩 데이터 - DB연결 후, 삭제 예정 --시작-- */
   const ACCOUNTS=[];(function(){
     const rows=[
       ["김관리","admin_kim","행복아파트 · A단지","관리소장","blue","2026-04-21","15:30",1,"김","#dbeafe","#1d4ed8"],
@@ -763,6 +775,21 @@
     ];
     rows.forEach((r,i)=>ACCOUNTS.push({id:i+1,name:r[0],uid:r[1],complex:r[2],role:r[3],roleColor:r[4],lastDate:r[5],lastTime:r[6],active:!!r[7],avatar:r[8],avatarBg:r[9],avatarColor:r[10]}));
   })();
+  /* 하드코딩 데이터 - DB연결 후, 삭제 예정 --끝-- */
+
+    <%--    DB 연결 후, 사용예정 --시작 --%>
+    <%--      서버에서 내려준 계정 목록 데이터--%>
+    <%--${accountListJson}--%>
+    <%--    → Controller에서 Oracle DB 조회 결과를 JSON 문자열로 만들어 JSP에 전달한 값--%>
+    <%--    JSON이란?--%>
+    <%--    → JavaScript에서 바로 사용할 수 있는 데이터 형식--%>
+    <%--    왜 사용?--%>
+    <%--    → DB에서 가져온 목록을 JS 배열처럼 사용하기 위해--%>
+    <%--    --%>
+    <%--  const ACCOUNTS = ${accountListJson};
+    DB 연결 후, 사용예정 --끝 --%>
+
+
 
   const ROLE_BG = { blue: "var(--blue-bg)", yellow: "var(--yellow-bg)", green: "var(--green-bg)", orange: "var(--orange-bg)" };
   const ROLE_FG = { blue: "var(--accent)", yellow: "var(--yellow)", green: "var(--green)", orange: "var(--orange)" };
@@ -1107,8 +1134,8 @@
       const actionTd = row.children[6];
       actionTd.innerHTML =
               '<div class="row-actions">' +
-              '  <button type="button" class="icon-btn-sm" title="상세">' +
-              '    <span class="material-symbols-rounded">visibility</span>' +
+              '  <button type="button" class="icon-btn-sm" title="승인 계정 목록 추가" onclick="addApprovedAccount(this)">' +
+              '<span class="material-symbols-rounded">move_to_inbox</span>' +
               '  </button>' +
               '</div>';
 
@@ -1184,6 +1211,137 @@
     const row = btn.closest("tr");
     const reason = row.dataset.rejectReason || "등록된 반려 사유가 없습니다.";
     alert("반려 사유: " + reason);
+  }
+
+  /*
+  addApprovedAccount()
+  → 승인완료된 신청 계정을 아래 '계정 목록 및 활성화' 목록에 추가하는 함수
+
+  함수란?
+  → 특정 기능을 재사용하기 위해 이름을 붙여놓은 코드 묶음
+
+  왜 사용?
+  → 승인완료 행마다 같은 추가 로직을 반복 작성하지 않고,
+    버튼 클릭 시 이 함수 하나만 실행하면 되게 하기 위해 사용
+*/
+  function addApprovedAccount(btn) {
+    const row = btn.closest("tr");
+
+    if (!row) return;
+
+    /*
+      dataset.status
+      → tr 태그의 data-status 값을 가져옴
+      예: <tr data-status="ok">
+      여기서 row.dataset.status 값은 "ok"
+    */
+    if (row.dataset.status !== "ok") {
+      alert("승인완료 상태의 계정만 추가할 수 있습니다.");
+      return;
+    }
+
+    if (!confirm("승인 계정 목록에 추가하시겠습니까?")) {
+      return;
+    }
+
+    const name = row.querySelector(".user-name")?.textContent.trim() || "";
+    const uid = row.querySelector(".user-id")?.textContent.trim() || "";
+    const complex = row.children[2]?.textContent.trim() || "";
+    const role = row.children[3]?.innerText.trim() || "";
+
+    /*
+      중복 체크
+      → 이미 아래 계정 목록에 같은 아이디가 있으면 다시 추가하지 않음
+
+      왜 필요?
+      → 같은 승인 계정을 여러 번 누르면 목록에 중복으로 들어가는 문제 방지
+    */
+    const exists = ACCOUNTS.some(function(account) {
+      return account.uid === uid;
+    });
+
+    if (exists) {
+      alert("이미 계정 목록에 추가된 계정입니다.");
+
+      /*
+        remove()
+        → HTML 요소를 화면에서 제거하는 함수
+
+        왜 사용?
+        → 이미 아래 계정 목록에 추가된 신청 건은
+          위 신청 목록에 계속 남아 있을 필요가 없기 때문에 삭제 처리함
+      */
+      row.remove();
+
+      /*
+        updateRequestCount()
+        → 위 신청 목록의 총 건수/승인대기/승인완료/반려 건수를 다시 계산
+      */
+      updateRequestCount();
+
+      /*
+        renderRequestTable()
+        → 현재 검색어/필터 조건을 다시 적용해서 화면을 정리
+      */
+      renderRequestTable();
+
+      return;
+    }
+
+    const roleColorMap = {
+      "관리소장": "blue",
+      "회계": "yellow",
+      "행정": "green",
+      "시설": "orange"
+    };
+
+    const avatarBgMap = {
+      "관리소장": "#dbeafe",
+      "회계": "#fef3c7",
+      "행정": "#dcfce7",
+      "시설": "#fed7aa"
+    };
+
+    const avatarColorMap = {
+      "관리소장": "#1d4ed8",
+      "회계": "#92400e",
+      "행정": "#166534",
+      "시설": "#c2410c"
+    };
+
+    /*
+      push()
+      → 배열 마지막에 데이터를 추가하는 함수
+
+      ACCOUNTS란?
+      → 아래 '계정 목록 및 활성화' 테이블을 그릴 때 사용하는 데이터 배열
+    */
+    ACCOUNTS.push({
+      id: ACCOUNTS.length + 1,
+      name: name,
+      uid: uid,
+      complex: complex,
+      role: role,
+      roleColor: roleColorMap[role] || "green",
+      lastDate: new Date().toISOString().slice(0, 10),
+      lastTime: "00:00",
+      active: true,
+      avatar: name.substring(0, 1),
+      avatarBg: avatarBgMap[role] || "#dcfce7",
+      avatarColor: avatarColorMap[role] || "#166534"
+    });
+
+    /*
+      renderAccounts()
+      → ACCOUNTS 배열을 기준으로 아래 계정 목록 테이블을 다시 그림
+
+      왜 필요?
+      → 배열에 데이터만 추가하면 화면은 자동으로 바뀌지 않기 때문에
+        화면을 다시 렌더링해야 함
+    */
+    renderAccounts();
+
+    alert("계정 목록 및 활성화 목록에 추가되었습니다.");
   }
 
   /*
