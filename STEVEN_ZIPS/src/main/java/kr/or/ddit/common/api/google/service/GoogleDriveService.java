@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 /*
@@ -33,31 +34,43 @@ public class GoogleDriveService {
     @Value("${google.drive.folder-id}")
     private String folderId;
 
+    /**
+     * google drive service 객체 생성 및 반환 메서드
+     * @return Drive 객체
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public Drive getDriveService() throws IOException, GeneralSecurityException {
+        InputStream in = new ClassPathResource("client_secrets.json").getInputStream();
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
+                GsonFactory.getDefaultInstance(), new InputStreamReader(in));
+
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance(),
+                clientSecrets,
+                Collections.singleton(DriveScopes.DRIVE_FILE))
+                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File("tokens")))
+                .setAccessType("offline")
+                .build();
+
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+
+        Drive drive = new Drive.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                GsonFactory.getDefaultInstance(),
+                credential)
+                .setApplicationName("StevenZips")
+                .build();
+
+        return drive;
+    }
+
     // 업로드 파일 메서드
     public String uploadFile(MultipartFile file, String path, String savedFileName) throws IOException {
         try {
-            InputStream in = new ClassPathResource("client_secrets.json").getInputStream();
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
-                    GsonFactory.getDefaultInstance(), new InputStreamReader(in));
-
-            GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    GsonFactory.getDefaultInstance(),
-                    clientSecrets,
-                    Collections.singleton(DriveScopes.DRIVE_FILE))
-                    .setDataStoreFactory(new FileDataStoreFactory(new java.io.File("tokens")))
-                    .setAccessType("offline")
-                    .build();
-
-            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-            Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-
-            Drive service = new Drive.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    GsonFactory.getDefaultInstance(),
-                    credential)
-                    .setApplicationName("StevenZips")
-                    .build();
+            Drive service = this.getDriveService();
 
             // 1. mkdirs() 로직 메서드인 getOrCreateFolders 실행 (하위 폴더 생성 및 최종 폴더 ID 추출)
             String targetFolderId = getOrCreateFolders(service, folderId, path);
@@ -87,9 +100,10 @@ public class GoogleDriveService {
 
     /**
      * mkdirs() 처럼 동작하는 폴더 생성/탐색 메서드
+     *
      * @param service - 사용할 google drive 서비스 객체
-     * @param rootId - 탐색을 시작할 최상위 폴더 이름
-     * @param path - 파일을 저장할 경로
+     * @param rootId  - 탐색을 시작할 최상위 폴더 이름
+     * @param path    - 파일을 저장할 경로
      * @return currentParentId - 최종 생성된 폴더명
      * @throws IOException
      * @query name = '' :: 찾고자 하는 콘텐츠 명
@@ -107,14 +121,14 @@ public class GoogleDriveService {
 
             String query = String.format(
                     "name = '%s' and " +    // 찾을 폴더명
-                    "mimeType = '%s' and " +   // targetType
-                    "'%s' in parents and " +    // currentParentId
-                    "trashed = false ",    // 휴지통에 있는 폴더 제외
-                    name, targetType, currentParentId );
+                            "mimeType = '%s' and " +   // targetType
+                            "'%s' in parents and " +    // currentParentId
+                            "trashed = false ",    // 휴지통에 있는 폴더 제외
+                    name, targetType, currentParentId);
 
             FileList result = service.files().list().   // 파일 목록 조회 메서드
-                                setQ(query).   // 쿼리로 조건 필터링
-                                setFields("files(id)").execute();   // 찾은 파일들 중에서 파일 아이디만 가져오기(속도 및 효율성)
+                    setQ(query).   // 쿼리로 조건 필터링
+                    setFields("files(id)").execute();   // 찾은 파일들 중에서 파일 아이디만 가져오기(속도 및 효율성)
 
             if (!result.getFiles().isEmpty()) {
                 // 찾은게 있으면 해당 ID로 이동
@@ -135,18 +149,19 @@ public class GoogleDriveService {
 
     /**
      * 전체 경로를 통해 타겟 파일 찾기
+     *
      * @param service
      * @param rootId
-     * @param fullPath  파일명까지 포함한 전체 경로(attach_file테이블의 file_path)
+     * @param fullPath 파일명까지 포함한 전체 경로(attach_file테이블의 file_path)
      * @return googleId 구글 파일 아이디 값
      * @throws IOException
      */
     public String getFileIdByPath(Drive service, String rootId, String fullPath) throws IOException {
         int lastSlash = fullPath.lastIndexOf("/");
 
-        String pathParts= "";
-        String targetName=fullPath;
-        if(lastSlash != -1) {
+        String pathParts = "";
+        String targetName = fullPath;
+        if (lastSlash != -1) {
             pathParts = fullPath.substring(0, lastSlash);
             targetName = fullPath.substring(lastSlash + 1);   // file.img
         }
@@ -177,6 +192,7 @@ public class GoogleDriveService {
                 currentParentId = result.getFiles().get(0).getId();
             }
         }
+        // 최종 폴더 경로에서 파일 찾을 쿼리 세팅
         String fileQuery = String.format(
                 "name = '%s' and " +
                         "mimeType != 'application/vnd.google-apps.folder' and " +
