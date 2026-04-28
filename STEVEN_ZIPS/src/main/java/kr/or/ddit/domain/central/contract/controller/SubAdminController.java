@@ -1,0 +1,138 @@
+package kr.or.ddit.domain.central.contract.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.domain.central.contract.service.ISubAdminService;
+import kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO;
+import kr.or.ddit.domain.central.contract.vo.SubAdminVO;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * 단지 관리자 계정 관리 Controller
+ *
+ * Controller란?
+ * → 브라우저 요청 URL을 받아서 Service를 호출하고, JSP 화면 또는 JSON 데이터를 응답하는 계층.
+ * 왜 사용?
+ * → 화면 이동과 업무 처리를 분리해서 유지보수하기 쉽게 만들기 위해 사용한다.
+ */
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/centralAdmin/subAdmin")
+public class SubAdminController {
+
+    private final ISubAdminService service;
+
+
+    /*
+     * 주의:
+     * @GetMapping
+     * public String page(...)
+     * 이 메서드는 만들면 안 된다.
+     *
+     * 이유:
+     * ContractController#subAdminForm()이 이미
+     * GET /centralAdmin/subAdmin 주소를 사용하고 있기 때문이다.
+     */
+
+    /** 신청 계정 목록 조회 */
+    @GetMapping("/requests")
+    @ResponseBody
+    public List<SubAdminVO> requestList(@ModelAttribute SubAdminSearchVO searchVO) {
+        return service.getRequestList(searchVO);
+    }
+
+    /** 승인 완료 후 실제 계정 목록 조회 */
+    @GetMapping("/accounts")
+    @ResponseBody
+    public List<SubAdminVO> accountList(@ModelAttribute SubAdminSearchVO searchVO) {
+        return service.getAccountList(searchVO);
+    }
+
+    /** 계정 상세 조회 */
+    @GetMapping("/accounts/{userNo}")
+    @ResponseBody
+    public SubAdminVO accountDetail(@PathVariable String userNo) {
+        return service.getAccount(userNo);
+    }
+
+    /** 신청 계정 등록 */
+    @PostMapping("/requests")
+    @ResponseBody
+    public Map<String, Object> insertRequest(@RequestBody SubAdminVO vo) {
+        return result(service.insertRequest(vo));
+    }
+
+    /** 신청 계정 수정 */
+    @PutMapping("/requests/{rqstNo}")
+    @ResponseBody
+    public Map<String, Object> updateRequest(@PathVariable String rqstNo, @RequestBody SubAdminVO vo) {
+        vo.setRqstNo(rqstNo);
+        return result(service.updateRequest(vo));
+    }
+
+    /**
+     * 신청 계정 승인
+     * 승인 시 MEMBER, AUTH, MANAGER 테이블에 실제 계정을 생성한다.
+     */
+    @PostMapping("/requests/{rqstNo}/approve")
+    @ResponseBody
+    public Map<String, Object> approve(@PathVariable String rqstNo) {
+        // TODO 로그인 연동 후에는 SecurityContext에서 로그인한 중앙관리자 ID를 가져오면 된다.
+        String aprvId = "central_admin";
+        return result(service.approveRequest(rqstNo, aprvId));
+    }
+
+    /** 신청 계정 반려 */
+    @PostMapping("/requests/{rqstNo}/reject")
+    @ResponseBody
+    public Map<String, Object> reject(@PathVariable String rqstNo, @RequestBody SubAdminVO vo) {
+        String aprvId = "central_admin";
+        return result(service.rejectRequest(rqstNo, aprvId, vo.getRjctRsnCn()));
+    }
+
+    /** 신청 계정 삭제 */
+    @DeleteMapping("/requests/{rqstNo}")
+    @ResponseBody
+    public Map<String, Object> deleteRequest(@PathVariable String rqstNo) {
+        return result(service.deleteRequest(rqstNo));
+    }
+
+    /** 계정 활성/비활성 변경 */
+    @PutMapping("/accounts/{userNo}/use")
+    @ResponseBody
+    public Map<String, Object> updateUseYn(@PathVariable String userNo, @RequestBody SubAdminVO vo) {
+        return result(service.updateAccountUseYn(userNo, vo.getUserYn()));
+    }
+
+    /** 계정 삭제 */
+    @DeleteMapping("/accounts/{userNo}")
+    @ResponseBody
+    public Map<String, Object> deleteAccount(@PathVariable String userNo) {
+        return result(service.deleteAccount(userNo));
+    }
+
+    /**
+     * 공통 응답 형식
+     * JSON이란?
+     * → 자바스크립트에서 읽기 쉬운 데이터 형식. fetch/AJAX 응답으로 많이 사용한다.
+     */
+    private Map<String, Object> result(int cnt) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("success", cnt > 0);
+        map.put("count", cnt);
+        return map;
+    }
+}

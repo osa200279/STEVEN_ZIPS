@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.contract.mapper.ISubAdminMapper">
+
+    <!--
+      resultMap이란?
+      → DB 컬럼명과 Java VO 필드명을 연결하는 설정.
+      왜 사용?
+      → Oracle 컬럼은 RQST_NO, Java 필드는 rqstNo처럼 이름 규칙이 다르기 때문.
+    -->
+    <resultMap id="subAdminMap" type="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+        <id property="rqstNo" column="rqst_no"/>
+        <result property="rqstLoginId" column="rqst_login_id"/>
+        <result property="rqstMngrNm" column="rqst_mngr_nm"/>
+        <result property="rqstDutyCd" column="rqst_duty_cd"/>
+        <result property="rqstDt" column="rqst_dt"/>
+        <result property="aprvDt" column="aprv_dt"/>
+        <result property="rqstSttsCd" column="rqst_stts_cd"/>
+        <result property="aprvId" column="aprv_id"/>
+        <result property="rjctRsnCn" column="rjct_rsn_cn"/>
+        <result property="rmrkCn" column="rmrk_cn"/>
+        <result property="userNo" column="user_no"/>
+        <result property="aptCmplexNo" column="apt_cmplex_no"/>
+        <result property="aptCmplexNm" column="apt_cmplex_nm"/>
+        <result property="mgmtOfcNo" column="mgmt_ofc_no"/>
+        <result property="userId" column="user_id"/>
+        <result property="userNm" column="user_nm"/>
+        <result property="userTelno" column="user_telno"/>
+        <result property="userEml" column="user_eml"/>
+        <result property="userYn" column="user_yn"/>
+        <result property="mngrDutyCd" column="mngr_duty_cd"/>
+        <result property="regDt" column="reg_dt"/>
+        <result property="mdfcnDt" column="mdfcn_dt"/>
+        <result property="dutyNm" column="duty_nm"/>
+        <result property="sttsNm" column="stts_nm"/>
+        <result property="lastLoginDt" column="last_login_dt"/>
+        <result property="lastLoginTm" column="last_login_tm"/>
+    </resultMap>
+
+    <select id="selectRequestList" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO" resultMap="subAdminMap">
+        select
+            r.rqst_no,
+            r.rqst_login_id,
+            r.rqst_mngr_nm,
+            r.rqst_duty_cd,
+            r.rqst_dt,
+            r.aprv_dt,
+            r.rqst_stts_cd,
+            r.aprv_id,
+            r.rjct_rsn_cn,
+            r.rmrk_cn,
+            r.user_no,
+            r.apt_cmplex_no,
+            a.apt_cmplex_nm,
+            case r.rqst_duty_cd
+                when 'HEAD' then '관리소장'
+                when 'ACNT' then '회계'
+                when 'ADM' then '행정'
+                when 'FAC' then '시설'
+                else r.rqst_duty_cd
+            end as duty_nm,
+            case r.rqst_stts_cd
+                when 'wait' then '승인대기'
+                when 'ok' then '승인완료'
+                when 'reject' then '반려'
+                else r.rqst_stts_cd
+            end as stts_nm
+        from mngr_rqst r
+        left join apt_complex a on r.apt_cmplex_no = a.apt_cmplex_no
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (
+                    lower(r.rqst_mngr_nm) like '%' || lower(#{keyword}) || '%'
+                    or lower(r.rqst_login_id) like '%' || lower(#{keyword}) || '%'
+                    or lower(a.apt_cmplex_nm) like '%' || lower(#{keyword}) || '%'
+                )
+            </if>
+            <if test="status != null and status != '' and status != 'all'">
+                and r.rqst_stts_cd = #{status}
+            </if>
+            <if test="role != null and role != ''">
+                and (
+                    r.rqst_duty_cd = #{role}
+                    or case r.rqst_duty_cd
+                        when 'HEAD' then '관리소장'
+                        when 'ACNT' then '회계'
+                        when 'ADM' then '행정'
+                        when 'FAC' then '시설'
+                        else r.rqst_duty_cd
+                    end = #{role}
+                )
+            </if>
+        </where>
+        order by r.rqst_dt desc, r.rqst_no desc
+    </select>
+
+    <select id="selectRequest" parameterType="string" resultMap="subAdminMap">
+        select
+            r.rqst_no,
+            r.rqst_login_id,
+            r.rqst_mngr_nm,
+            r.rqst_duty_cd,
+            r.rqst_dt,
+            r.aprv_dt,
+            r.rqst_stts_cd,
+            r.aprv_id,
+            r.rjct_rsn_cn,
+            r.rmrk_cn,
+            r.user_no,
+            r.apt_cmplex_no,
+            a.apt_cmplex_nm,
+            case r.rqst_duty_cd
+                when 'HEAD' then '관리소장'
+                when 'ACNT' then '회계'
+                when 'ADM' then '행정'
+                when 'FAC' then '시설'
+                else r.rqst_duty_cd
+            end as duty_nm
+        from mngr_rqst r
+        left join apt_complex a on r.apt_cmplex_no = a.apt_cmplex_no
+        where r.rqst_no = #{rqstNo}
+    </select>
+
+    <select id="selectAccountList" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO" resultMap="subAdminMap">
+        select
+            m.user_no,
+            m.user_id,
+            m.user_nm,
+            m.user_telno,
+            m.user_eml,
+            m.user_yn,
+            m.reg_dt,
+            m.mdfcn_dt,
+            g.mgmt_ofc_no,
+            g.mngr_duty_cd,
+            o.apt_cmplex_no,
+            a.apt_cmplex_nm,
+            case g.mngr_duty_cd
+                when 'HEAD' then '관리소장'
+                when 'ACNT' then '회계'
+                when 'ADM' then '행정'
+                when 'FAC' then '시설'
+                else g.mngr_duty_cd
+            end as duty_nm,
+            to_char(nvl(m.mdfcn_dt, m.reg_dt), 'YYYY-MM-DD') as last_login_dt,
+            to_char(nvl(m.mdfcn_dt, m.reg_dt), 'HH24:MI') as last_login_tm
+        from member m
+        join manager g on m.user_no = g.user_no
+        left join mgmt_office o on g.mgmt_ofc_no = o.mgmt_ofc_no
+        left join apt_complex a on o.apt_cmplex_no = a.apt_cmplex_no
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (
+                    lower(m.user_nm) like '%' || lower(#{keyword}) || '%'
+                    or lower(m.user_id) like '%' || lower(#{keyword}) || '%'
+                    or lower(a.apt_cmplex_nm) like '%' || lower(#{keyword}) || '%'
+                )
+            </if>
+            <if test="status != null and status != '' and status != 'all'">
+                <choose>
+                    <when test="status == 'active'">and m.user_yn = 'Y'</when>
+                    <when test="status == 'inactive'">and m.user_yn = 'N'</when>
+                </choose>
+            </if>
+            <if test="role != null and role != ''">
+                and (
+                    g.mngr_duty_cd = #{role}
+                    or case g.mngr_duty_cd
+                        when 'HEAD' then '관리소장'
+                        when 'ACNT' then '회계'
+                        when 'ADM' then '행정'
+                        when 'FAC' then '시설'
+                        else g.mngr_duty_cd
+                    end = #{role}
+                )
+            </if>
+        </where>
+        order by m.reg_dt desc, m.user_no desc
+    </select>
+
+    <select id="selectAccount" parameterType="string" resultMap="subAdminMap">
+        select
+            m.user_no,
+            m.user_id,
+            m.user_nm,
+            m.user_telno,
+            m.user_eml,
+            m.user_yn,
+            m.reg_dt,
+            m.mdfcn_dt,
+            g.mgmt_ofc_no,
+            g.mngr_duty_cd,
+            o.apt_cmplex_no,
+            a.apt_cmplex_nm,
+            case g.mngr_duty_cd
+                when 'HEAD' then '관리소장'
+                when 'ACNT' then '회계'
+                when 'ADM' then '행정'
+                when 'FAC' then '시설'
+                else g.mngr_duty_cd
+            end as duty_nm,
+            to_char(nvl(m.mdfcn_dt, m.reg_dt), 'YYYY-MM-DD') as last_login_dt,
+            to_char(nvl(m.mdfcn_dt, m.reg_dt), 'HH24:MI') as last_login_tm
+        from member m
+        join manager g on m.user_no = g.user_no
+        left join mgmt_office o on g.mgmt_ofc_no = o.mgmt_ofc_no
+        left join apt_complex a on o.apt_cmplex_no = a.apt_cmplex_no
+        where m.user_no = #{userNo}
+    </select>
+
+    <select id="countMemberByUserId" parameterType="string" resultType="int">
+        select count(*) from member where user_id = #{userId}
+    </select>
+
+    <insert id="insertRequest" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+        <selectKey keyProperty="rqstNo" resultType="string" order="BEFORE">
+            select 'MRQ' || lpad(seq_mngr_rqst.nextval, 12, '0') from dual
+        </selectKey>
+        insert into mngr_rqst (
+            rqst_no,
+            rqst_login_id,
+            rqst_mngr_nm,
+            rqst_duty_cd,
+            rqst_dt,
+            rqst_stts_cd,
+            rmrk_cn,
+            apt_cmplex_no
+        ) values (
+            #{rqstNo},
+            #{rqstLoginId},
+            #{rqstMngrNm},
+            #{rqstDutyCd},
+            sysdate,
+            'wait',
+            #{rmrkCn},
+            #{aptCmplexNo}
+        )
+    </insert>
+
+    <update id="updateRequest" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+        update mngr_rqst
+        <set>
+            <if test="rqstLoginId != null and rqstLoginId != ''">rqst_login_id = #{rqstLoginId},</if>
+            <if test="rqstMngrNm != null and rqstMngrNm != ''">rqst_mngr_nm = #{rqstMngrNm},</if>
+            <if test="rqstDutyCd != null and rqstDutyCd != ''">rqst_duty_cd = #{rqstDutyCd},</if>
+            <if test="rqstSttsCd != null and rqstSttsCd != ''">rqst_stts_cd = #{rqstSttsCd},</if>
+            <if test="rjctRsnCn != null">rjct_rsn_cn = #{rjctRsnCn},</if>
+            <if test="rmrkCn != null">rmrk_cn = #{rmrkCn},</if>
+            <if test="aptCmplexNo != null and aptCmplexNo != ''">apt_cmplex_no = #{aptCmplexNo},</if>
+            rqst_no = #{rqstNo}
+        </set>
+        where rqst_no = #{rqstNo}
+    </update>
+
+    <update id="approveRequest">
+        update mngr_rqst
+           set rqst_stts_cd = 'ok',
+               aprv_dt = sysdate,
+               aprv_id = #{aprvId},
+               user_no = #{userNo},
+               rjct_rsn_cn = null
+         where rqst_no = #{rqstNo}
+    </update>
+
+    <update id="rejectRequest">
+        update mngr_rqst
+           set rqst_stts_cd = 'reject',
+               aprv_dt = sysdate,
+               aprv_id = #{aprvId},
+               rjct_rsn_cn = #{rjctRsnCn}
+         where rqst_no = #{rqstNo}
+    </update>
+
+    <delete id="deleteRequest" parameterType="string">
+        delete from mngr_rqst where rqst_no = #{rqstNo}
+    </delete>
+
+    <insert id="insertMemberForManager" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+        <selectKey keyProperty="userNo" resultType="string" order="BEFORE">
+            select 'USR' || lpad(seq_member.nextval, 12, '0') from dual
+        </selectKey>
+        insert into member (
+            user_no,
+            user_role_cd,
+            user_id,
+            user_pw,
+            user_nm,
+            user_rrno,
+            user_telno,
+            user_eml,
+            reg_dt,
+            user_yn,
+            sms_rcv_yn,
+            sms_ntc_rcv_yn,
+            sms_ctrt_rcv_yn,
+            eml_rcv_yn,
+            eml_ntc_rcv_yn,
+            eml_ctrt_rcv_yn
+        ) values (
+            #{userNo},
+            'ROLE_MANAGER',
+            #{rqstLoginId},
+            '{noop}1234',
+            #{rqstMngrNm},
+            '값없음',
+            '값없음',
+            null,
+            sysdate,
+            'Y',
+            'N',
+            'N',
+            'N',
+            'N',
+            'N',
+            'N'
+        )
+    </insert>
+
+    <insert id="insertAuthForManager" parameterType="string">
+        insert into auth (user_no, user_role_cd)
+        values (#{userNo}, 'ROLE_MANAGER')
+    </insert>
+
+    <insert id="insertManager" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+        insert into manager (user_no, mgmt_ofc_no, mngr_duty_cd)
+        values (#{userNo}, #{mgmtOfcNo}, #{rqstDutyCd})
+    </insert>
+
+    <update id="updateAccountUseYn">
+        update member
+           set user_yn = #{userYn},
+               mdfcn_dt = sysdate
+         where user_no = #{userNo}
+    </update>
+
+    <delete id="deleteManager" parameterType="string">
+        delete from manager where user_no = #{userNo}
+    </delete>
+
+    <delete id="deleteAuth" parameterType="string">
+        delete from auth where user_no = #{userNo}
+    </delete>
+
+    <delete id="deleteMember" parameterType="string">
+        delete from member where user_no = #{userNo}
+    </delete>
+
+    <select id="selectMgmtOfcNoByApt" parameterType="string" resultType="string">
+        select mgmt_ofc_no
+          from mgmt_office
+         where apt_cmplex_no = #{aptCmplexNo}
+           and use_yn = 'Y'
+           and rownum = 1
+    </select>
+
+</mapper>
