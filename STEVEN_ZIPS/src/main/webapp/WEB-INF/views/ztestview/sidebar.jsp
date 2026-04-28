@@ -35,7 +35,10 @@
         <span class="material-symbols-outlined text-sm expand-icon transition-transform" data-icon="expand_more">expand_more</span>
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
-        <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all" href="${pageContext.request.contextPath}/contract/notice.do">계약 공고</a>
+        <a class="px-4 py-2 text-sm ..."
+           href="${pageContext.request.contextPath}/contract/notice.do">
+          계약 공고
+        </a>
       </div>
     </details>
     <!-- 3. 시설 이력 조회 -->
@@ -92,7 +95,10 @@
         <span class="material-symbols-outlined text-sm expand-icon transition-transform" data-icon="expand_more">expand_more</span>
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
-        <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all" href="#">공지사항</a>
+        <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all"
+           href="${pageContext.request.contextPath}/contract/noticeList.do">
+          공지사항
+        </a>
         <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all" href="#">문의게시판</a>
       </div>
     </details>
