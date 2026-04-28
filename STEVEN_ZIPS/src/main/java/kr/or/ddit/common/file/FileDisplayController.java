@@ -27,7 +27,7 @@ import java.security.GeneralSecurityException;
 
 @Slf4j
 @Controller
-@RequestMapping("file")
+@RequestMapping("/file")
 public class FileDisplayController {
 
     @Autowired
