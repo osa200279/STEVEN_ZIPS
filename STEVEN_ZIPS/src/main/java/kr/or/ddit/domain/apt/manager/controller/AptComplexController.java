@@ -54,8 +54,10 @@ public class AptComplexController {
              * complexImgFiles 저장 후 imgFileNo 세팅하는 흐름으로 확장하면 됨.
              */
 
+            log.info("수정요청 aptComplexVO = {}", aptComplexVO);
             int updateCnt = aptComplexService.updateAptComplex(aptComplexVO);
 
+            log.info("단지정보 수정 updateCnt = {}", updateCnt);
             if (updateCnt > 0) {
                 result.put("success", true);
                 result.put("message", "단지 정보가 수정되었습니다.");

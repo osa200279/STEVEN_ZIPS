@@ -150,7 +150,7 @@
 
                         <button type="button" class="btn btn-primary" id="btnSaveComplex">
                             <span class="material-symbols-rounded">save</span>
-                            저장
+                            수정
                         </button>
                     </div>
                 </div>
@@ -381,9 +381,9 @@
                                         <label class="field-label">난방 방식</label>
                                         <select class="form-select" id="heatTy" name="heatTy">
                                             <option value="">선택</option>
-                                            <option value="CENTRAL" ${complex.heatTy eq 'CENTRAL' ? 'selected' : ''}>중앙난방</option>
-                                            <option value="INDIVIDUAL" ${complex.heatTy eq 'INDIVIDUAL' ? 'selected' : ''}>개별난방</option>
-                                            <option value="DISTRICT" ${complex.heatTy eq 'DISTRICT' ? 'selected' : ''}>지역난방</option>
+                                            <option value="중앙난방" ${complex.heatTy eq '중앙난방' ? 'selected' : ''}>중앙난방</option>
+                                            <option value="개별난방" ${complex.heatTy eq '개별난방' ? 'selected' : ''}>개별난방</option>
+                                            <option value="지역난방" ${complex.heatTy eq '지역난방' ? 'selected' : ''}>지역난방</option>
                                         </select>
                                     </div>
                                 </div>
@@ -506,7 +506,7 @@
 
                             <button type="submit" class="btn btn-primary" id="btnSaveComplexBottom">
                                 <span class="material-symbols-rounded">save</span>
-                                저장
+                                수정
                             </button>
                         </div>
                     </div>
@@ -567,28 +567,36 @@
             var form = document.getElementById("complexEditForm");
             var formData = new FormData(form);
 
-            /*
-             * Controller URL에 맞게 수정해서 사용.
-             * 예:
-             * @PostMapping("/office/complex/update")
-             */
+            // Spring Security CSRF 토큰 가져오기
+            var csrfToken = document.querySelector("meta[name='_csrf']");
+            var csrfHeader = document.querySelector("meta[name='_csrf_header']");
+
+            var headers = {};
+
+            if (csrfToken && csrfHeader) {
+                headers[csrfHeader.getAttribute("content")] = csrfToken.getAttribute("content");
+            }
+
             fetch("${pageContext.request.contextPath}/manager/complex/update", {
                 method: "POST",
+                headers: headers,
                 body: formData
             })
             .then(function (response) {
                 if (!response.ok) {
-                    throw new Error("서버 응답 오류");
+                    throw new Error("서버 응답 오류" + response.status);
                 }
 
                 return response.json();
             })
             .then(function (result) {
                 if (result.success) {
-                    alert(result.message || "단지 정보가 저장되었습니다.");
-                    location.reload();
+                    alert(result.message || "단지 정보가 수정되었습니다.");
+
+                    var aptCmplexNo = document.getElementById("aptCmplexNo").value;
+                    location.href = "${pageContext.request.contextPath}/manager/complex/edit?aptCmplexNo=" + encodeURIComponent(aptCmplexNo);
                 } else {
-                    alert(result.message || "저장 중 오류가 발생했습니다.");
+                    alert(result.message || "수정 중 오류가 발생했습니다.");
                 }
             })
             .catch(function (error) {
