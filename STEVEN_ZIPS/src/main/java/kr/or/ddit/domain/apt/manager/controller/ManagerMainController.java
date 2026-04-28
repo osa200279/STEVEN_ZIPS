@@ -13,6 +13,9 @@ public class ManagerMainController {
         return "manager/office";
     }
 
+    /*@GetMapping("/employee/account")
+    public String employeeAccount(){return "manager/employee/mngr_account";}*/
+
     @GetMapping("/vacation")
     public String vacation() {
         return "manager/employee/vacation";
