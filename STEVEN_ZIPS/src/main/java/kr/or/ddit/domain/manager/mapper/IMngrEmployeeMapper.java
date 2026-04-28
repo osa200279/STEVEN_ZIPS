@@ -1,7 +1,7 @@
 package kr.or.ddit.domain.manager.mapper;
 
-import kr.or.ddit.domain.manager.vo.ManagerVO;
-import kr.or.ddit.domain.manager.vo.MngrRqstVO;
+import kr.or.ddit.domain.apt.manager.vo.ManagerVO;
+import kr.or.ddit.domain.apt.manager.vo.MngrRqstVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
