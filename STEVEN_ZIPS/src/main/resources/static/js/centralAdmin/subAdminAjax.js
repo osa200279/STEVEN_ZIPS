@@ -121,7 +121,20 @@ function renderRequestTable() {
     tbody.innerHTML = requestRows.map(row => {
         const status = row.rqstSttsCd || "wait";
         const statusClass = status === "ok" ? "ok" : status === "reject" ? "reject" : "wait";
-        const statusName = row.sttsNm || (status === "ok" ? "승인완료" : status === "reject" ? "반려" : "승인대기");
+        // const statusName = row.sttsNm || (status === "ok" ? "승인완료" : status === "reject" ? "반려" : "승인대기");
+        /* 상태명 매핑 추가 */
+        let statusName = "";
+
+        if (status === "ok") {
+            statusName = "승인완료";
+        } else if (status === "reject") {
+            statusName = "반려";
+        } else if (status === "cancel") {
+            statusName = "신청취소";   // ⭐ 여기 추가
+        } else {
+            statusName = "승인대기";
+        }
+
         const firstChar = (row.rqstMngrNm || "?").substring(0, 1);
 
         let actionHtml = "";
@@ -164,12 +177,13 @@ function renderRequestTable() {
 
 function updateRequestCount() {
     const total = requestRows.length;
+    const cancel = requestRows.filter(r => r.rqstSttsCd === "cancel").length;
     const wait = requestRows.filter(r => r.rqstSttsCd === "wait").length;
     const ok = requestRows.filter(r => r.rqstSttsCd === "ok").length;
     const reject = requestRows.filter(r => r.rqstSttsCd === "reject").length;
 
     const summary = document.getElementById("rqstSummary");
-    if (summary) summary.textContent = `총 ${total}건 / 승인대기 ${wait}건 / 승인완료 ${ok}건 / 반려 ${reject}건`;
+    if (summary) summary.textContent = `총 ${total}건 / 신청취소 ${cancel}건 / 승인대기 ${wait}건 / 승인완료 ${ok}건 / 반려 ${reject}건`;
 
     const footerTotal = document.getElementById("rqstFooterTotal");
     if (footerTotal) footerTotal.innerHTML = `총 <strong>${total}</strong>건 표시 중`;

@@ -23,7 +23,7 @@
         .role-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.role-card{border:1.5px solid #e5e7eb;border-radius:12px;padding:16px;background:#fff}.role-card__top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}.role-card__icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center}.role-card__icon .material-symbols-rounded{font-size:19px}.role-card__lv{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px}.role-card__title{font-size:13px;font-weight:800}.role-card__desc{font-size:11.5px;color:#94a3b8;margin-top:3px}
         .input-with-icon,.search-box,.select-box{position:relative}.input-with-icon{width:210px}.search-box{width:220px}.select-box{width:110px}.c-input,.fake-input,.c-select,.fake-select{height:34px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;background:#fff;outline:none}.c-input,.fake-input{width:100%;padding:0 34px 0 12px}.c-select,.fake-select{width:100%;padding:0 30px 0 12px;appearance:none}.search-icon,.select-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:17px;color:#94a3b8}.search-icon{cursor:pointer}.select-icon{pointer-events:none}
         .c-btn,.btn-sub,.btn-danger{height:34px;padding:0 12px;border-radius:8px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;cursor:pointer}.c-btn{border:1px solid #cbd5e1;background:#fff;color:#334155}.c-btn--primary{background:#2563eb;border-color:#2563eb;color:#fff}.c-btn--ghost{background:#f8fafc;border-color:#e5e7eb;color:#334155}.c-btn--danger,.btn-danger{background:#fff1f2;border:1px solid #fecdd3;color:#be123c}.btn-sub{background:#f8fafc;border:1px solid #cbd5e1;color:#334155}.c-btn--sm{height:30px;padding:0 10px}.material-symbols-rounded{font-size:17px}
-        .user-cell{display:flex;align-items:center;gap:10px}.user-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}.user-name{font-size:13px;font-weight:700;color:#111827}.user-id{font-size:11px;color:#94a3b8;margin-top:1px}.badge,.c-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}.badge.info{background:#eef2ff;color:#4338ca}.badge.wait{background:#fef3c7;color:#92400e}.badge.ok{background:#dcfce7;color:#166534}.badge.reject{background:#fee2e2;color:#991b1b}.row-actions{display:flex;justify-content:flex-end;gap:6px}.icon-btn-sm{width:28px;height:28px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;cursor:pointer}.icon-btn-sm.danger{color:#be123c}.rqst-check{width:15px;height:15px;accent-color:#2563eb;cursor:pointer}.table-footer{display:flex;justify-content:space-between;padding:12px 20px;font-size:12px;color:#64748b}
+        .user-cell{display:flex;align-items:center;gap:10px}.user-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}.user-name{font-size:13px;font-weight:700;color:#111827}.user-id{font-size:11px;color:#94a3b8;margin-top:1px}.badge,.c-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}.badge.info{background:#eef2ff;color:#4338ca}.badge.cancel{background:#ffe4cc;color:#9a3412}.badge.wait{background:#fef3c7;color:#92400e}.badge.ok{background:#dcfce7;color:#166534}.badge.reject{background:#fee2e2;color:#991b1b}.row-actions{display:flex;justify-content:flex-end;gap:6px}.icon-btn-sm{width:28px;height:28px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;cursor:pointer}.icon-btn-sm.danger{color:#be123c}.rqst-check{width:15px;height:15px;accent-color:#2563eb;cursor:pointer}.table-footer{display:flex;justify-content:space-between;padding:12px 20px;font-size:12px;color:#64748b}
         .toggle-wrap{position:relative;display:inline-block;width:36px;height:20px;cursor:pointer}.toggle-wrap input{opacity:0;width:0;height:0}.toggle-track{position:absolute;inset:0;background:#e2e5ea;border-radius:99px;transition:.18s}.toggle-thumb{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.15)}.toggle-wrap input:checked~.toggle-track{background:#16a34a}.toggle-wrap input:checked~.toggle-thumb{left:19px}.c-pagination{display:flex;justify-content:center;gap:6px;padding:14px}.c-pagination__btn{min-width:30px;height:30px;border:1px solid #e5e7eb;background:#fff;border-radius:7px;cursor:pointer}.c-pagination__btn.is-active{background:#2563eb;color:#fff;border-color:#2563eb}.c-pagination__btn.is-disabled{opacity:.4;pointer-events:none}
         .c-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;z-index:1000}.c-modal-overlay.is-hidden{display:none}.c-modal{width:520px;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}.c-modal__header,.c-modal__footer{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e5e7eb}.c-modal__footer{border-top:1px solid #e5e7eb;border-bottom:0;justify-content:flex-end;gap:8px}.c-modal__body{padding:20px}.c-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.c-info-block{background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px}.c-label{font-size:11px;color:#94a3b8;font-weight:700}.c-value{font-size:13px;color:#111827;font-weight:700;margin-top:4px}
     </style>
@@ -87,7 +87,8 @@
                         </div>
                         <div class="select-box">
                             <select class="fake-select" onchange="filterTable('rqstTable', this.value)">
-                                <option value="all">전체</option>
+                                <option value="all">전체 상태</option>
+                                <option value="cancel">신청취소</option>
                                 <option value="wait">승인대기</option>
                                 <option value="ok">승인완료</option>
                                 <option value="reject">반려</option>
@@ -127,7 +128,7 @@
         <div class="c-card">
             <div class="c-card__header">
                 <div>
-                    <div class="c-card__title">단지 관리자 계정 목록 및 활성화</div>
+                    <div class="c-card__title">단지 관리자 계정 목록 및 상태</div>
                     <div class="c-card__sub" id="acctSubtitle">총 0건 / 1 페이지</div>
                 </div>
                 <div class="c-card__actions">
@@ -137,9 +138,9 @@
                     </div>
                     <div class="select-box">
                         <select class="c-select" onchange="filterStatus(this.value)">
-                            <option value="">전체</option>
-                            <option value="active">활성</option>
-                            <option value="inactive">비활성</option>
+                            <option value="">상태 전체</option>
+                            <option value="active">사용</option>
+                            <option value="inactive">미사용</option>
                         </select>
                         <span class="select-icon">▾</span>
                     </div>
