@@ -12,7 +12,7 @@
 </head>
 <body>
 <h1>profImgView.jsp</h1>
-<img src="${pageContext.request.contextPath}/file/display/${googleId}" alt="엑스박스" />
+<img src="/file/display/${googleId}" alt="엑스박스" />
 
 </body>
 <script>
