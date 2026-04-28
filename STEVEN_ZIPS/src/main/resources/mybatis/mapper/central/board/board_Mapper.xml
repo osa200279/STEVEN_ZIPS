@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.board.mapper.INoticeMapper">
+
+
+
+    <select id="selectNoticeList" resultType="kr.or.ddit.domain.central.board.vo.NoticeVO">
+        SELECT
+            ANN_NO,
+            BOARD_NO,
+            TTL,
+            CN,
+            WRTR_ID,
+            TOP_FXD_YN,
+            PBLANC_BGNG_DT,
+            PBLANC_END_DT,
+            RCRT_BGNG_DT,
+            RCRT_END_DT,
+            REG_DTTM,
+            MDF_DTTM,
+            INQ_CNT,
+            DEL_YN,
+            ATCH_FILE_ID
+        FROM NOTICE
+        WHERE DEL_YN = 'N'
+        ORDER BY REG_DTTM DESC
+    </select>
+
+
+
+
+
+
+
+
+
+</mapper>
