@@ -96,7 +96,7 @@
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
         <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all"
-           href="${pageContext.request.contextPath}/contract/noticeList.do">
+           href="${pageContext.request.contextPath}/notice/list.do">
           공지사항
         </a>
         <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all"
