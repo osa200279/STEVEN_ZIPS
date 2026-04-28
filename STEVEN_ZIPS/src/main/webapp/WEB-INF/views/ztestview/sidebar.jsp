@@ -99,7 +99,10 @@
            href="${pageContext.request.contextPath}/contract/noticeList.do">
           공지사항
         </a>
-        <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all" href="#">문의게시판</a>
+        <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all"
+           href="${pageContext.request.contextPath}/qna/list.do">
+          문의게시판
+        </a>
       </div>
     </details>
   </nav>
