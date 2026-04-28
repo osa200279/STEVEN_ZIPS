@@ -1,7 +1,6 @@
 
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <header class="fixed top-0 w-full bg-white z-50 border-b border-gray-100">
 
   <div class="max-w-7xl mx-auto flex items-center justify-between px-8 py-4">
