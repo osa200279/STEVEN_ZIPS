@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/manager")
 public class ManagerMainController {
 
+    @GetMapping("/main")
+    public String managerMain(){
+        return "manager/office";
+    }
+
     @GetMapping("/vacation")
     public String vacation() {
         return "manager/employee/vacation";
