@@ -178,9 +178,9 @@
                         <p class="text-gray-400 text-xs">회원구분</p>
                         <p class="font-semibold">
                             <c:choose>
-                                <c:when test="${role=='ROLE_ADMIN'}">중앙관리자</c:when>
-                                <c:when test="${role=='ROLE_MGR'}">단지관리자</c:when>
-                                <c:when test="${role=='ROLE_RESIDENT'}">입주민</c:when>
+                                <c:when test="${member.authList[0].auth =='ROLE_ADMIN'}">중앙관리자</c:when>
+                                <c:when test="${member.authList[0].auth =='ROLE_MGR'}">단지관리자</c:when>
+                                <c:when test="${member.authList[0].auth =='ROLE_RESIDENT'}">입주민</c:when>
                                 <c:otherwise>일반회원</c:otherwise>
                             </c:choose>
                         </p>
