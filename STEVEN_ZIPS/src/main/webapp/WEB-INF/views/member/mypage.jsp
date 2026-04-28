@@ -6,7 +6,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>마이 페이지</title>
+    <title>마이페이지</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -126,8 +126,9 @@
             background: #4CAF50;
             color: #fff;
         }
-    </style>
 
+    </style>
+    <%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
 </head>
 <body class="bg-gray-50">
 
@@ -151,6 +152,7 @@
         <div class="col-span-1">
             <%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
         </div>
+
         <div class="col-span-3 grid grid-cols-3 gap-6">
 
 
@@ -159,18 +161,16 @@
 
                 <div class="w-24 h-24 mx-auto rounded-full bg-green-100 flex items-center justify-center text-2xl font-bold text-green-700">
                     ${fn:substring(member.userNm,0,1)}
+                    <img src="/file/display/${file.googleId}" alt="${file.googleId}">
                 </div>
 
-                <h2 class="text-center text-xl font-bold mt-4">
-                    ${member.userNm}
-                </h2>
+                <h2 class="text-center text-xl font-bold mt-4"></h2>
 
                 <p class="text-center text-gray-500 text-sm">
                     가입일: <fmt:formatDate value="${member.regDt}" pattern="yyyy-MM-dd"/>
                 </p>
 
                 <div class="border-t mt-6 pt-4 grid grid-cols-2 text-center">
-
 
                     <div>
                         <p class="text-gray-400 text-xs">회원번호</p>
@@ -180,9 +180,10 @@
                         <p class="text-gray-400 text-xs">회원구분</p>
                         <p class="font-semibold">
                             <c:choose>
-                                <c:when test="${member.authList[0]=='ROLE_ADMIN'}">관리자</c:when>
-                                <c:when test="${member.authList[0]=='ROLE_RESIDENT'}">입주민</c:when>
-                                <c:otherwise>사용자</c:otherwise>
+                                <c:when test="${member.authList[0].auth =='ROLE_ADMIN'}">중앙관리자</c:when>
+                                <c:when test="${member.authList[0].auth =='ROLE_MGR'}">단지관리자</c:when>
+                                <c:when test="${member.authList[0].auth =='ROLE_RESIDENT'}">입주민</c:when>
+                                <c:otherwise>일반회원</c:otherwise>
                             </c:choose>
                         </p>
                     </div>
@@ -222,20 +223,6 @@
                             <input type="text" value="${member.userId}" readonly
                                    class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
                         </div>
-
-                        <!-- 회원번호 -->
-                        <div class="space-y-2">
-                            <label class="text-gray-500">회원번호</label>
-                            <input type="text" value="${member.userNo}" readonly
-                                   class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
-                        </div>
-
-                        <!-- 프로필ID -->
-                        <%--      <div class="space-y-2">
-                                  <label class="text-gray-500">프로필ID</label>
-                                  <input type="text" value="${member.profileId}" readonly
-                                         class="w-full bg-gray-100 border rounded-lg px-4 py-3 text-gray-500">
-                              </div>--%>
 
                     </div>
 
@@ -399,7 +386,6 @@
 
         <meta name="_csrf" content="${_csrf.token}"/>
         <meta name="_csrf_header" content="${_csrf.headerName}"/>
-
     </div>
 </div>
 </body>

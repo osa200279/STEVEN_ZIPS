@@ -29,27 +29,28 @@ public class MyPageController {
     @Autowired
     private IAttachFileService attachFileService;
 
+    // 마이페이지 컨트롤러
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/mypage.do")
-    public String myPage(@AuthenticationPrincipal CustomUser customUser, Model model) {
+    public String myPage(@AuthenticationPrincipal CustomUser customUser,
+                         Model model) {
+        log.info("myPage() 실행");
+
         // 인증 객체에서 멤버 정보 가져오기
         MemberVO member = customUser.getMember();
         String profFileId = member.getProfFileId();
 
         if(profFileId != null && !profFileId.isBlank()){
-            String fileGroupNo = profFileId.split("_")[0];
-            String fileSaveUuid = profFileId.split("_")[1];
-            AttachFileVO file = attachFileService.getAttachFile(fileGroupNo, fileSaveUuid);
+            // 파일 데이터 세팅
+            AttachFileVO file = attachFileService.setFileMetaData(profFileId);
 
             if(file != null){
                 model.addAttribute("file", file);   // 파일 정보 전체
-                model.addAttribute("googleId", file.getGoogleId()); // 파일의 구글아이디만 추출
             }
         }
-
         model.addAttribute("member", member);
 
-        return "ztestview/mypage";
+        return "member/mypage";
     }
 
     @PostMapping("/updateSimple")
