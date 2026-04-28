@@ -7,6 +7,7 @@ import kr.or.ddit.domain.apt.apiApartment.vo.MgmtOfficeEntity;
 import kr.or.ddit.domain.apt.manager.vo.ManagerVO;
 import kr.or.ddit.domain.apt.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.vo.AptUnitVO;
+import kr.or.ddit.domain.member.vo.AuthVO;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -36,4 +37,20 @@ public interface IAptApiMapper {
     long getMemberSeq();
 
     long getMgmtOfcNoSeq();
+
+    List<String> selectSidoList();
+
+    List<String> selectSigunguList(String sido);
+
+    List<String> selectEmdList(String sido, String sigungu);
+
+    List<AptComplexEntity> selectAptList(String sido, String sigungu, String emd);
+
+    void insertAuthBatch(List<AuthVO> list);
+
+    List<AptComplexEntity> selectNoCoordList();
+
+    void updateLatLng(AptComplexEntity apt);
+
+    List<AptDetailVO> selectAvailableUnits(List<String> aptList);
 }

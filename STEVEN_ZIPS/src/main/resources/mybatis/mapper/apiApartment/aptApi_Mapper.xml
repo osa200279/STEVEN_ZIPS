@@ -4,8 +4,8 @@
 
     <select id="selectMapoLawdCdList" resultType="string">
         SELECT LAWD_CD
-        FROM LAW_DONG
-        WHERE SIGUNGU_NM = '마포구'
+        from LAW_DONG
+        where SIGUNGU_NM = '강북구'
     </select>
 
     <insert id="insertAptBatch">
@@ -125,6 +125,20 @@
         SELECT 1 FROM DUAL
     </insert>
 
+    <insert id="insertAuthBatch">
+        INSERT ALL
+        <foreach collection="list" item="item">
+            INTO AUTH(
+                USER_NO,
+                USER_ROLE_CD
+            ) VALUES (
+               #{userNo},
+                #{auth}
+            )
+        </foreach>
+        SELECT 1 FROM DUAL
+    </insert>
+
     <select id="getMemberSeq" resultType="long" useCache="false">
         SELECT SEQ_MEMBER.NEXTVAL FROM DUAL
     </select>
@@ -133,5 +147,75 @@
         SELECT SEQ_MGMT_OFFICE.NEXTVAL FROM DUAL
     </select>
 
+
+
+
+    <select id="selectSidoList" resultType="string">
+        SELECT DISTINCT SIDO_NM FROM LAW_DONG
+    </select>
+
+    <select id="selectSigunguList" resultType="string">
+        SELECT DISTINCT SIGUNGU_NM
+        FROM LAW_DONG
+        WHERE SIDO_NM = #{sido}
+    </select>
+
+    <select id="selectEmdList" resultType="string">
+        SELECT DISTINCT DONG_NM
+        FROM LAW_DONG
+        WHERE SIDO_NM = #{sido}
+          AND SIGUNGU_NM = #{sigungu}
+    </select>
+
+    <select id="selectAptList" resultType="kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity">
+        SELECT *
+        FROM APT_COMPLEX
+        WHERE 1=1
+
+        <if test="sido != null and sido != ''">
+            AND SIDO_NM = #{sido}
+        </if>
+
+        <if test="sigungu != null and sigungu != ''">
+            AND SIGUNGU_NM = #{sigungu}
+        </if>
+
+        <if test="emd != null and emd != ''">
+            AND EMD_NM = #{emd}
+        </if>
+    </select>
+
+    <select id="selectNoCoordList" resultType="kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity">
+        SELECT
+            APT_CMPLEX_NO,
+            DOROJUSO
+        FROM APT_COMPLEX
+        WHERE LAT_VAL IS NULL
+           OR LON_VAL IS NULL
+    </select>
+
+    <select id="selectAvailableUnits" resultType="kr.or.ddit.domain.apt.vo.AptDetailVO">
+        SELECT
+        D.HO_NO,
+        D.HO,
+        D.FLOOR,
+        U.DONG_NO,
+        U.APT_CMPLEX_NO
+        FROM APT_DETAIL D
+        JOIN APT_UNIT U ON D.DONG_NO = U.DONG_NO
+        WHERE U.APT_CMPLEX_NO IN
+        <foreach collection="aptList" item="apt" open="(" separator="," close=")">
+            #{apt}
+        </foreach>
+        AND D.EMPTY = 'Y'
+    </select>
+
+    <update id="updateLatLng">
+        UPDATE APT_COMPLEX
+        SET
+            LAT_VAL = #{latVal},
+            LON_VAL = #{lonVal}
+        WHERE APT_CMPLEX_NO = #{aptCmplexNo}
+    </update>
 
 </mapper>

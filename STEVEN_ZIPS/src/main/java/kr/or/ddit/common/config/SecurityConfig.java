@@ -86,7 +86,7 @@ public class SecurityConfig {
                          하지만 FORWARD나 ASYNC는 이미 서버 안에서 일어나는 일이라 굳이 두 번 일 시키지 않으려고 쓰는 설정.
                          */
                         .requestMatchers(PASS_URL).permitAll()
-                        .requestMatchers("/api/**").permitAll() // 테스트용입니다(이거 한줄 지우셔도 됩니다..(도선호))
+                        .requestMatchers("/api/**").permitAll() // api용입니다(이거 한줄 지우셔도 됩니다..(도선호))
                         .requestMatchers(TEST_URL).permitAll()  // ⚠️⚠️테스트용 임시 허용 배포시 삭제할 것
                         .anyRequest().authenticated()   // 위의 것들(PASS_URL)을 제외한 모든 리퀘스트는 인증을 거쳐야한다는 설정
                 );
