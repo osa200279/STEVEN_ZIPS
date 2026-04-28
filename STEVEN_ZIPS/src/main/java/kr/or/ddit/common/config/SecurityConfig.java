@@ -27,8 +27,9 @@ public class SecurityConfig {
 
     // 인증객체 없어도(모두가) 접근할 수 있는 URL => JSP페이지
     private static final String[] PASS_URL = {
-            "/",
             "/index.html",
+            "/",
+            "/apt-main",
             "/login",
             "/error",
             "/login.do",
