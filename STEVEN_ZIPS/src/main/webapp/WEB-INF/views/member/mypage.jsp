@@ -187,7 +187,7 @@
                         <p class="font-semibold">
                             <c:choose>
                                 <c:when test="${member.authList[0].auth =='ROLE_ADMIN'}">중앙관리자</c:when>
-                                <c:when test="${member.authList[0].auth =='ROLE_MGR'}">단지관리자</c:when>
+                                <c:when test="${member.authList[0].auth =='ROLE_MNGR'}">단지관리자</c:when>
                                 <c:when test="${member.authList[0].auth =='ROLE_RESIDENT'}">입주민</c:when>
                                 <c:otherwise>일반회원</c:otherwise>
                             </c:choose>
@@ -283,7 +283,6 @@
                     <div class="flex justify-between items-center mb-4">
                         <div>
                             <p class="font-semibold">문자 알림</p>
-                            <p class="text-sm text-gray-400">긴급 알림 수신</p>
                         </div>
                         <input type="checkbox"
                                id="smsRcv"
@@ -299,7 +298,7 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 <p class="font-medium">공지사항 알림</p>
-                                <p class="text-xs text-gray-400">관리사무소 공지</p>
+                                <p class="text-xs text-gray-400"></p>
                             </div>
                             <input type="checkbox"
                                    class="toggle sms-child"
@@ -311,7 +310,7 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 <p class="font-medium">계약 상태 알림</p>
-                                <p class="text-xs text-gray-400">신청 상태 변경</p>
+                                <p class="text-xs text-gray-400"></p>
                             </div>
                             <input type="checkbox"
                                    class="toggle sms-child"
@@ -329,7 +328,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <div>
                             <p class="font-semibold">이메일 알림</p>
-                            <p class="text-sm text-gray-400">상세 안내 수신</p>
+                            <p class="text-sm text-gray-400"></p>
                         </div>
                         <input type="checkbox"
                                id="emlRcv"
@@ -345,7 +344,7 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 <p class="font-medium">공지사항 알림</p>
-                                <p class="text-xs text-gray-400">이메일 공지</p>
+                                <p class="text-xs text-gray-400"></p>
                             </div>
                             <input type="checkbox"
                                    class="toggle eml-child"
@@ -357,7 +356,7 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 <p class="font-medium">계약 상태 알림</p>
-                                <p class="text-xs text-gray-400">이메일 상태 변경</p>
+                                <p class="text-xs text-gray-400"></p>
                             </div>
                             <input type="checkbox"
                                    class="toggle eml-child"

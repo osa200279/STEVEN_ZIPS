@@ -12,7 +12,8 @@
 </head>
 <body>
 <h1>profImgView.jsp</h1>
-<img src="/file/display/${googleId}" alt="엑스박스" />
+<img src="/file/display/${file.googleId}" alt="엑스박스" />
+<a href="/file/download/${file.googleId}" class="btn-download">파일 다운로드</a>
 
 </body>
 <script>

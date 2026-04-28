@@ -44,7 +44,17 @@ public class FileDisplayController {
     @ResponseBody
     @GetMapping("/display/{googleId}")
     public ResponseEntity<Resource> displayFile(@PathVariable String googleId) {
+        return serveFile("inline", googleId);
+    }
 
+    @ResponseBody
+    @GetMapping("/download/{googleId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String googleId) {
+        return serveFile("attachment", googleId);
+    }
+
+    private ResponseEntity<Resource> serveFile(String disposition, @PathVariable String googleId) {
+        log.info("serveFile() 실행");
         try {
             // 구글 드라이브 서비스 객체 가져오기
             Drive driveService = googleDriveService.getDriveService();
@@ -65,7 +75,7 @@ public class FileDisplayController {
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(gFile.getMimeType()))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + encodedFileName + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, disposition +"; filename=\"" + encodedFileName + "\"")  // attachment; filename="encodedFileName"
                     .body(resource);
 
         }catch (IOException | GeneralSecurityException e){  // 파일을 못 찾거나 시큐리티 보안 에러
