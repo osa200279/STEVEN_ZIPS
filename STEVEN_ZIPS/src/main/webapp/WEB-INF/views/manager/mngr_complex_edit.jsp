@@ -9,34 +9,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>단지 정보 수정</title>
 
-    <!-- Spring Security CSRF 메타 태그: 추후 POST/fetch 저장 처리 시 CSRF 토큰 사용 가능 -->
     <sec:csrfMetaTags/>
 
-    <!-- Google Fonts: 화면 기본 한글 폰트(Noto Sans KR) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-
-    <!-- Google Fonts: 폰트 파일 로딩 최적화용 연결 -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <!-- Google Fonts: Noto Sans KR 폰트 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-    <!-- Google Material Symbols: 아이콘 폰트(refresh, save, apartment 등) -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet" />
 
-    <!-- 프로젝트 공통 레이아웃 CSS: 관리사무소 사이드바/헤더/전체 레이아웃 -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
-
-    <!-- 프로젝트 관리사무소 공통 UI CSS: 버튼/패널/폼/테이블/모달 공통 스타일 -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
 
     <style>
-        /* =========================================================
-           단지 정보 수정 화면 전용 스타일
-           - inline style 제거
-           - 이미지 업로드 박스/미리보기 스타일 정리
-        ========================================================= */
-
         .complex-readonly {
             background: var(--bg-secondary, #f5f5f5);
             color: var(--text-tertiary);
@@ -143,21 +126,16 @@
 
 <body>
 <div class="app-wrapper">
-    <!-- 프로젝트 공통 JSP include: 관리사무소 사이드바 -->
+
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
 
     <div class="main-wrap">
-        <!-- 프로젝트 공통 JSP include: 관리사무소 헤더 -->
+
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
 
         <main class="main-content">
             <div class="office-page" id="complexEditPage">
 
-                <!-- =====================================================
-                     페이지 헤더
-                     - 단지 정보 수정 화면 제목
-                     - 상단 초기화/저장 버튼
-                ====================================================== -->
                 <div class="page-header">
                     <div class="page-title-block">
                         <h2>단지 정보 수정</h2>
@@ -178,11 +156,10 @@
                 </div>
 
                 <form id="complexEditForm" enctype="multipart/form-data">
-                    <input type="hidden" id="aptCmplexNo" name="aptCmplexNo">
+                    <input type="hidden" id="aptCmplexNo" name="aptCmplexNo" value="${complex.aptCmplexNo}">
 
                     <!-- =====================================================
                          섹션 1. 기본 정보
-                         - 단지명, 법정동 코드, 주소 정보
                     ====================================================== -->
                     <div class="panel">
                         <div class="panel-header">
@@ -200,36 +177,66 @@
                                             아파트 단지명
                                             <span class="complex-readonly-note">※ 수정 불가</span>
                                         </label>
-                                        <input type="text" class="form-input complex-readonly" id="aptCmplexNm" name="aptCmplexNm" readonly>
+                                        <input type="text"
+                                               class="form-input complex-readonly"
+                                               id="aptCmplexNm"
+                                               name="aptCmplexNm"
+                                               value="${complex.aptCmplexNm}"
+                                               readonly>
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">법정동 코드</label>
-                                        <input type="text" class="form-input" id="bjdCd" name="bjdCd" placeholder="예: 1111010100">
+                                        <input type="text"
+                                               class="form-input"
+                                               id="bjdCd"
+                                               name="bjdCd"
+                                               value="${complex.bjdCd}"
+                                               placeholder="예: 1111010100">
                                     </div>
                                 </div>
 
                                 <div class="form-row cols-3">
                                     <div class="form-field">
                                         <label class="field-label">시도명 <span class="req">*</span></label>
-                                        <input type="text" class="form-input" id="sidoNm" name="sidoNm" placeholder="예: 서울특별시">
+                                        <input type="text"
+                                               class="form-input"
+                                               id="sidoNm"
+                                               name="sidoNm"
+                                               value="${complex.sidoNm}"
+                                               placeholder="예: 서울특별시">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">시군구명 <span class="req">*</span></label>
-                                        <input type="text" class="form-input" id="sigunguNm" name="sigunguNm" placeholder="예: 강남구">
+                                        <input type="text"
+                                               class="form-input"
+                                               id="sigunguNm"
+                                               name="sigunguNm"
+                                               value="${complex.sigunguNm}"
+                                               placeholder="예: 강남구">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">읍면동명 <span class="req">*</span></label>
-                                        <input type="text" class="form-input" id="emdNm" name="emdNm" placeholder="예: 역삼동">
+                                        <input type="text"
+                                               class="form-input"
+                                               id="emdNm"
+                                               name="emdNm"
+                                               value="${complex.emdNm}"
+                                               placeholder="예: 역삼동">
                                     </div>
                                 </div>
 
                                 <div class="form-row cols-1">
                                     <div class="form-field">
                                         <label class="field-label">도로명 주소</label>
-                                        <input type="text" class="form-input" id="dorojuso" name="dorojuso" placeholder="예: 서울특별시 강남구 테헤란로 123">
+                                        <input type="text"
+                                               class="form-input"
+                                               id="dorojuso"
+                                               name="dorojuso"
+                                               value="${complex.dorojuso}"
+                                               placeholder="예: 서울특별시 강남구 테헤란로 123">
                                     </div>
                                 </div>
                             </div>
@@ -238,8 +245,6 @@
 
                     <!-- =====================================================
                          섹션 2. 위치 정보
-                         - 위도/경도 입력
-                         - 추후 지도 API 연결 가능
                     ====================================================== -->
                     <div class="panel">
                         <div class="panel-header">
@@ -254,12 +259,24 @@
                                 <div class="form-row cols-2">
                                     <div class="form-field">
                                         <label class="field-label">위도</label>
-                                        <input type="number" class="form-input" id="latVal" name="latVal" step="0.0000001" placeholder="예: 37.5012743">
+                                        <input type="number"
+                                               class="form-input"
+                                               id="latVal"
+                                               name="latVal"
+                                               value="${complex.latVal}"
+                                               step="0.0000001"
+                                               placeholder="예: 37.5012743">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">경도</label>
-                                        <input type="number" class="form-input" id="lonVal" name="lonVal" step="0.0000001" placeholder="예: 127.0396597">
+                                        <input type="number"
+                                               class="form-input"
+                                               id="lonVal"
+                                               name="lonVal"
+                                               value="${complex.lonVal}"
+                                               step="0.0000001"
+                                               placeholder="예: 127.0396597">
                                     </div>
                                 </div>
                             </div>
@@ -268,7 +285,6 @@
 
                     <!-- =====================================================
                          섹션 3. 단지 현황
-                         - 세대/동/층/주차/CCTV/준공/난방/건설사 정보
                     ====================================================== -->
                     <div class="panel">
                         <div class="panel-header">
@@ -283,50 +299,91 @@
                                 <div class="form-row cols-3">
                                     <div class="form-field">
                                         <label class="field-label">세대 수</label>
-                                        <input type="number" class="form-input" id="unitCnt" name="unitCnt" min="0" placeholder="예: 500">
+                                        <input type="number"
+                                               class="form-input"
+                                               id="unitCnt"
+                                               name="unitCnt"
+                                               value="${complex.unitCnt}"
+                                               min="0"
+                                               placeholder="예: 500">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">동 수</label>
-                                        <input type="number" class="form-input" id="dongCnt" name="dongCnt" min="0" placeholder="예: 10">
+                                        <input type="number"
+                                               class="form-input"
+                                               id="dongCnt"
+                                               name="dongCnt"
+                                               value="${complex.dongCnt}"
+                                               min="0"
+                                               placeholder="예: 10">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">최대 층수</label>
-                                        <input type="number" class="form-input" id="maxFloor" name="maxFloor" min="0" placeholder="예: 25">
+                                        <input type="number"
+                                               class="form-input"
+                                               id="maxFloor"
+                                               name="maxFloor"
+                                               value="${complex.maxFloor}"
+                                               min="0"
+                                               placeholder="예: 25">
                                     </div>
                                 </div>
 
                                 <div class="form-row cols-3">
                                     <div class="form-field">
                                         <label class="field-label">주차 가능 대수</label>
-                                        <input type="number" class="form-input" id="pkgCnt" name="pkgCnt" min="0" placeholder="예: 600">
+                                        <input type="number"
+                                               class="form-input"
+                                               id="pkgCnt"
+                                               name="pkgCnt"
+                                               value="${complex.pkgCnt}"
+                                               min="0"
+                                               placeholder="예: 600">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">세대당 무료 주차 대수</label>
-                                        <input type="number" class="form-input" id="freePkgCnt" name="freePkgCnt" min="0" placeholder="예: 1">
+                                        <input type="number"
+                                               class="form-input"
+                                               id="freePkgCnt"
+                                               name="freePkgCnt"
+                                               value="${complex.freePkgCnt}"
+                                               min="0"
+                                               placeholder="예: 1">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">CCTV 수</label>
-                                        <input type="text" class="form-input" id="ccCnt" name="ccCnt" placeholder="예: 32">
+                                        <input type="text"
+                                               class="form-input"
+                                               id="ccCnt"
+                                               name="ccCnt"
+                                               value="${complex.ccCnt}"
+                                               placeholder="예: 32">
                                     </div>
                                 </div>
 
                                 <div class="form-row cols-2">
                                     <div class="form-field">
                                         <label class="field-label">준공 연도</label>
-                                        <input type="text" class="form-input" id="bldYr" name="bldYr" maxlength="8" placeholder="예: 20050301">
+                                        <input type="text"
+                                               class="form-input"
+                                               id="bldYr"
+                                               name="bldYr"
+                                               value="${complex.bldYr}"
+                                               maxlength="8"
+                                               placeholder="예: 20050301">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">난방 방식</label>
-                                        <select class="form-select" id="heatTyCd" name="heatTyCd">
+                                        <select class="form-select" id="heatTy" name="heatTy">
                                             <option value="">선택</option>
-                                            <option value="CENTRAL">중앙난방</option>
-                                            <option value="INDIVIDUAL">개별난방</option>
-                                            <option value="DISTRICT">지역난방</option>
+                                            <option value="CENTRAL" ${complex.heatTy eq 'CENTRAL' ? 'selected' : ''}>중앙난방</option>
+                                            <option value="INDIVIDUAL" ${complex.heatTy eq 'INDIVIDUAL' ? 'selected' : ''}>개별난방</option>
+                                            <option value="DISTRICT" ${complex.heatTy eq 'DISTRICT' ? 'selected' : ''}>지역난방</option>
                                         </select>
                                     </div>
                                 </div>
@@ -334,7 +391,12 @@
                                 <div class="form-row cols-1">
                                     <div class="form-field">
                                         <label class="field-label">건설사명</label>
-                                        <input type="text" class="form-input" id="cnscoNm" name="cnscoNm" placeholder="예: 현대건설">
+                                        <input type="text"
+                                               class="form-input"
+                                               id="cnscoNm"
+                                               name="cnscoNm"
+                                               value="${complex.cnscoNm}"
+                                               placeholder="예: 현대건설">
                                     </div>
                                 </div>
                             </div>
@@ -343,9 +405,6 @@
 
                     <!-- =====================================================
                          섹션 4. 단지 이미지
-                         - 대표 이미지 1장
-                         - 일반 단지 사진 최대 5장
-                         - 현재는 화면 미리보기용 FileReader 처리
                     ====================================================== -->
                     <div class="panel">
                         <div class="panel-header">
@@ -366,7 +425,13 @@
                                 <div class="form-row cols-2">
                                     <div class="form-field">
                                         <label class="field-label">현재 대표 이미지 번호</label>
-                                        <input type="text" class="form-input complex-readonly" id="rprsntImgFileNo" name="rprsntImgFileNo" placeholder="기존 파일 번호" readonly>
+                                        <input type="text"
+                                               class="form-input complex-readonly"
+                                               id="rprsntImgFileNo"
+                                               name="rprsntImgFileNo"
+                                               value="${complex.rprsntImgFileNo}"
+                                               placeholder="기존 파일 번호"
+                                               readonly>
                                     </div>
 
                                     <div class="form-field">
@@ -378,7 +443,12 @@
                                             <div class="complex-upload-desc">JPG, PNG · 최대 10MB</div>
                                         </div>
 
-                                        <input type="file" id="mainImgFileInput" name="mainImgFile" accept="image/*" style="display:none;">
+                                        <input type="file"
+                                               id="mainImgFileInput"
+                                               name="mainImgFile"
+                                               accept="image/*"
+                                               style="display:none;">
+
                                         <div id="mainImgPreview" class="complex-preview"></div>
                                     </div>
                                 </div>
@@ -391,7 +461,13 @@
                                 <div class="form-row cols-2">
                                     <div class="form-field">
                                         <label class="field-label">현재 이미지 파일 번호</label>
-                                        <input type="text" class="form-input complex-readonly" id="imgFileNo" name="imgFileNo" placeholder="기존 파일 번호" readonly>
+                                        <input type="text"
+                                               class="form-input complex-readonly"
+                                               id="imgFileNo"
+                                               name="imgFileNo"
+                                               value="${complex.imgFileNo}"
+                                               placeholder="기존 파일 번호"
+                                               readonly>
                                     </div>
 
                                     <div class="form-field">
@@ -403,7 +479,13 @@
                                             <div class="complex-upload-desc">JPG, PNG · 최대 10MB · 최대 5장</div>
                                         </div>
 
-                                        <input type="file" id="complexImgFileInput" name="complexImgFiles" accept="image/*" multiple style="display:none;">
+                                        <input type="file"
+                                               id="complexImgFileInput"
+                                               name="complexImgFiles"
+                                               accept="image/*"
+                                               multiple
+                                               style="display:none;">
+
                                         <div id="complexImgPreview" class="complex-preview-list"></div>
                                     </div>
                                 </div>
@@ -414,7 +496,6 @@
 
                     <!-- =====================================================
                          하단 버튼
-                         - 화면 하단에서도 초기화/저장 가능
                     ====================================================== -->
                     <div class="panel complex-footer-panel">
                         <div class="modal-footer complex-footer">
@@ -442,58 +523,9 @@
     });
 
     function initComplexEditPage() {
-        /*
-         * 화면 확인용 더미 데이터
-         * 실제 DB 연결 시 서버에서 단지 정보 조회 후 model 또는 JSON으로 교체 예정
-         */
-        var complexData = {
-            aptCmplexNo: "APT001",
-            aptCmplexNm: "래미안 강남포레스트",
-            bjdCd: "1168010500",
-            sidoNm: "서울특별시",
-            sigunguNm: "강남구",
-            emdNm: "일원동",
-            dorojuso: "서울특별시 강남구 개포로 621",
-            latVal: 37.4870,
-            lonVal: 127.0586,
-            unitCnt: 2296,
-            dongCnt: 15,
-            maxFloor: 35,
-            pkgCnt: 2800,
-            freePkgCnt: 1,
-            ccCnt: "120",
-            bldYr: "20191122",
-            heatTyCd: "DISTRICT",
-            cnscoNm: "삼성물산",
-            imgFileNo: "F0001",
-            rprsntImgFileNo: "F0002"
-        };
-
-        function fillForm(data) {
-            document.getElementById("aptCmplexNo").value = data.aptCmplexNo || "";
-            document.getElementById("aptCmplexNm").value = data.aptCmplexNm || "";
-            document.getElementById("bjdCd").value = data.bjdCd || "";
-            document.getElementById("sidoNm").value = data.sidoNm || "";
-            document.getElementById("sigunguNm").value = data.sigunguNm || "";
-            document.getElementById("emdNm").value = data.emdNm || "";
-            document.getElementById("dorojuso").value = data.dorojuso || "";
-            document.getElementById("latVal").value = data.latVal || "";
-            document.getElementById("lonVal").value = data.lonVal || "";
-            document.getElementById("unitCnt").value = data.unitCnt || "";
-            document.getElementById("dongCnt").value = data.dongCnt || "";
-            document.getElementById("maxFloor").value = data.maxFloor || "";
-            document.getElementById("pkgCnt").value = data.pkgCnt || "";
-            document.getElementById("freePkgCnt").value = data.freePkgCnt !== undefined ? data.freePkgCnt : "";
-            document.getElementById("ccCnt").value = data.ccCnt || "";
-            document.getElementById("bldYr").value = data.bldYr || "";
-            document.getElementById("heatTyCd").value = data.heatTyCd || "";
-            document.getElementById("cnscoNm").value = data.cnscoNm || "";
-            document.getElementById("imgFileNo").value = data.imgFileNo || "";
-            document.getElementById("rprsntImgFileNo").value = data.rprsntImgFileNo || "";
-        }
 
         function resetForm() {
-            fillForm(complexData);
+            document.getElementById("complexEditForm").reset();
 
             document.getElementById("mainImgPreview").innerHTML = "";
             document.getElementById("complexImgPreview").innerHTML = "";
@@ -528,14 +560,41 @@
         }
 
         function saveComplex() {
-            if (!validateForm()) return;
+            if (!validateForm()) {
+                return;
+            }
+
+            var form = document.getElementById("complexEditForm");
+            var formData = new FormData(form);
 
             /*
-             * TODO
-             * 실제 저장 연결 시 FormData로 multipart/form-data 전송
-             * 대표 이미지/단지 사진 파일도 함께 서버로 전달
+             * Controller URL에 맞게 수정해서 사용.
+             * 예:
+             * @PostMapping("/office/complex/update")
              */
-            alert("단지 정보가 저장되었습니다.");
+            fetch("${pageContext.request.contextPath}/manager/complex/update", {
+                method: "POST",
+                body: formData
+            })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("서버 응답 오류");
+                }
+
+                return response.json();
+            })
+            .then(function (result) {
+                if (result.success) {
+                    alert(result.message || "단지 정보가 저장되었습니다.");
+                    location.reload();
+                } else {
+                    alert(result.message || "저장 중 오류가 발생했습니다.");
+                }
+            })
+            .catch(function (error) {
+                console.error(error);
+                alert("저장 요청 중 오류가 발생했습니다.");
+            });
         }
 
         function createPreviewItem(src) {
@@ -626,8 +685,6 @@
 
         bindUploadBox("mainImgUploadArea", "mainImgFileInput");
         bindUploadBox("complexImgUploadArea", "complexImgFileInput");
-
-        fillForm(complexData);
     }
 </script>
 </body>
