@@ -58,9 +58,14 @@
         <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
-        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="#">단지 목록</a>
-        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="#">단지 검색</a>
-        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="#">단지별 통계 조회</a>
+        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
+           href="${pageContext.request.contextPath}/apt/list.do">단지 목록</a>
+
+        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
+           href="${pageContext.request.contextPath}/apt/search.do">단지 검색</a>
+
+        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
+           href="${pageContext.request.contextPath}/apt/dashboard.do">단지별 통계 조회</a>
       </div>
     </details>
 
@@ -74,7 +79,6 @@
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="#">시설 유지보수 이력</a>
-        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="#">시설 하자보수 이력</a>
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="#">시설 점검 기록 확인</a>
       </div>
     </details>
