@@ -28,7 +28,18 @@ public class AttachFileVO {
     private int downCnt;
     private String googleId;
 
-    public static AttachFileVO fileSettings(MultipartFile file, long fileGroupNo, String cat, String uuid,
+    /**
+     *
+     * @param file 파일 객체
+     * @param fileGroupNo   attach_file 테이블의 file_group_no 컬럼에 해당하는 값
+     * @param cat            attach_file 테이블의 cat 컬럼에 해당하는 값
+     * @param fileSaveUuid  attach_file 테이블의 fileSaveUuid 컬럼에 해당하는 값
+     * @param googleId      구글드라이브에서 발급한 파일 식별 번호
+     * @param path          저장된 uuid파일명까지 포함한 전체경로  (ex.member/profile/img/pic.jpg)
+     * @param fileSortOrder  파일 우선순위(노출순서)
+     * @return
+     */
+    public static AttachFileVO fileSettings(MultipartFile file, long fileGroupNo, String cat, String fileSaveUuid,
                                     String googleId, String path, int fileSortOrder) {
         String originalFilename = file.getOriginalFilename();
         String ext = "";
@@ -40,7 +51,7 @@ public class AttachFileVO {
                 .fileGroupNo(fileGroupNo)
                 .cat(cat)
                 .fileOgName(originalFilename)
-                .fileSaveUuid(uuid)
+                .fileSaveUuid(fileSaveUuid)
                 .fileExt(ext)
                 .fileSize(file.getSize())
                 .mimeType(file.getContentType())
