@@ -119,9 +119,9 @@ function renderRequestTable() {
     }
 
     tbody.innerHTML = requestRows.map(row => {
-        const status = row.rqstSttsCd || "wait";
-        const statusClass = status === "ok" ? "ok" : status === "reject" ? "reject" : status === "cnl" ? "cancel" : "wait";
-        // const statusName = row.sttsNm || (status === "ok" ? "승인완료" : status === "reject" ? "반려" : "승인대기");
+        const status = row.rqstSttsCd || "WAIT";
+        const statusClass = status === "ok" ? "ok" : status === "REJECT" ? "REJECT" : status === "CNL" ? "CANCEL" : "WAIT";
+        // const statusName = row.sttsNm || (status === "OK" ? "승인완료" : status === "REJECT" ? "반려" : "승인대기");
         let statusName = "";
 
         /*
@@ -131,11 +131,11 @@ function renderRequestTable() {
             → DB에는 코드값(cnl, wait, ok...)으로 저장하고
               화면에서는 사람이 읽을 수 있는 값으로 보여주기 위해
         */
-        if (status === "ok") {
+        if (status === "OK") {
             statusName = "승인완료";
-        } else if (status === "reject") {
+        } else if (status === "REJECT") {
             statusName = "반려";
-        } else if (status === "cnl") {
+        } else if (status === "CNL") {
             statusName = "신청취소";
         } else {
             statusName = "승인대기";
@@ -144,17 +144,17 @@ function renderRequestTable() {
         const firstChar = (row.rqstMngrNm || "?").substring(0, 1);
 
         let actionHtml = "";
-        if (status === "wait") {
+        if (status === "WAIT") {
             actionHtml =
                 '<button type="button" class="icon-btn-sm" onclick="openApprovalModal(this)" title="승인">' +
                 '<span class="material-symbols-rounded">check</span></button>' +
                 '<button type="button" class="icon-btn-sm danger" onclick="openRejectModal(this)" title="반려">' +
                 '<span class="material-symbols-rounded">close</span></button>';
-        } else if (status === "reject") {
+        } else if (status === "REJECT") {
             actionHtml =
                 '<button type="button" class="icon-btn-sm danger" onclick="showRejectReason(this)" title="반려사유">' +
                 '<span class="material-symbols-rounded">visibility</span></button>';
-        } else if (status === "ok") {
+        } else if (status === "OK") {
             /*
                 승인완료 상태일 때만 아래로 내리는 아이콘 표시.
 
@@ -194,13 +194,13 @@ function renderRequestTable() {
 
 function updateRequestCount() {
     const total = requestRows.length;
-    const cancel = requestRows.filter(r => r.rqstSttsCd === "cnl").length;
-    const wait = requestRows.filter(r => r.rqstSttsCd === "wait").length;
-    const ok = requestRows.filter(r => r.rqstSttsCd === "ok").length;
-    const reject = requestRows.filter(r => r.rqstSttsCd === "reject").length;
+    const cancel = requestRows.filter(r => r.rqstSttsCd === "CNL").length;
+    const wait = requestRows.filter(r => r.rqstSttsCd === "WAIT").length;
+    const ok = requestRows.filter(r => r.rqstSttsCd === "OK").length;
+    const reject = requestRows.filter(r => r.rqstSttsCd === "REJECT").length;
 
     const summary = document.getElementById("rqstSummary");
-    if (summary) summary.textContent = `총 ${total}건 / 신청취소 ${cancel}건 / 승인대기 ${wait}건 / 승인완료 ${ok}건 / 반려 ${reject}건`;
+    if (summary) summary.textContent = `총 ${total}건 / 신청취소 ${CANCEL}건 / 승인대기 ${WAIT}건 / 승인완료 ${OK}건 / 반려 ${REJECT}건`;
 
     const footerTotal = document.getElementById("rqstFooterTotal");
     if (footerTotal) footerTotal.innerHTML = `총 <strong>${total}</strong>건 표시 중`;
@@ -442,7 +442,10 @@ function addApprovedAccountToList(btn) {
 
 function toggleActive(userNo, checkbox) {
     sendJson(API_BASE + "/accounts/" + encodeURIComponent(userNo) + "/use", "PUT", { userYn: checkbox.checked ? "Y" : "N" })
-        .then(() => loadAccountList())
+        .then(() => {
+            alert("상태가 변경되었습니다.");
+            loadAccountList();
+        })
         .catch(err => {
             checkbox.checked = !checkbox.checked;
             alert(err.message);

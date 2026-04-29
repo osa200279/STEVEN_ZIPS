@@ -25,6 +25,7 @@ public interface ISubAdminService {
     int approveRequest(String rqstNo, String aprvId);
     int rejectRequest(String rqstNo, String aprvId, String rjctRsnCn);
 
+    /* 계정 사용/미사용 */
     int updateAccountUseYn(String userNo, String userYn);
     int deleteAccount(String userNo);
 

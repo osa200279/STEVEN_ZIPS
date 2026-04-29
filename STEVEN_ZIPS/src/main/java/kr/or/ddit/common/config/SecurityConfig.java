@@ -89,6 +89,7 @@ public class SecurityConfig {
                         .requestMatchers(PASS_URL).permitAll()
                         .requestMatchers("/api/**").permitAll() // api용입니다(이거 한줄 지우셔도 됩니다..(도선호))
                         .requestMatchers(TEST_URL).permitAll()  // ⚠️⚠️테스트용 임시 허용 배포시 삭제할 것
+                        //.requestMatchers("/centralAdmin/**").permitAll() // 중앙관리자 임시 테스트 허용 - 테스트 후 삭제
                         .anyRequest().authenticated()   // 위의 것들(PASS_URL)을 제외한 모든 리퀘스트는 인증을 거쳐야한다는 설정
                 );
         // 권한이 없는 사용자가 접근했을때, 커스텀 규칙으로 처리
@@ -117,6 +118,7 @@ public class SecurityConfig {
         );
 
         // JSP구역은 csrf정책 유지
+        // 테스트 후, 아래 "/centralAdmin/**" <- 삭제
         http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
 
         return http.build();
