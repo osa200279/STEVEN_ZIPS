@@ -27,12 +27,25 @@ public interface ISubAdminMapper {
 
     int insertRequest(SubAdminVO vo);
     int updateRequest(SubAdminVO vo);
-    int approveRequest(@Param("rqstNo") String rqstNo, @Param("aprvId") String aprvId, @Param("userNo") String userNo);
-    int rejectRequest(@Param("rqstNo") String rqstNo, @Param("aprvId") String aprvId, @Param("rjctRsnCn") String rjctRsnCn);
+
+    /* 승인, 반려 */
+    int approveRequest(
+            @Param("rqstNo") String rqstNo,
+            @Param("aprvId") String aprvId,
+            @Param("userNo") String userNo,
+            @Param("rmrkCn") String rmrkCn
+    );
+    int rejectRequest(
+            @Param("rqstNo") String rqstNo,
+            @Param("aprvId") String aprvId,
+            @Param("rjctRsnCn") String rjctRsnCn,
+            @Param("rmrkCn") String rmrkCn
+    );
+
     int deleteRequest(String rqstNo);
 
     int insertMemberForManager(SubAdminVO vo);
-    int insertAuthForManager(String userNo);
+    int updateAuthToManager(String userNo);
     int insertManager(SubAdminVO vo);
 
     int updateAccountUseYn(@Param("userNo") String userNo, @Param("userYn") String userYn);
@@ -40,6 +53,9 @@ public interface ISubAdminMapper {
     int deleteManager(String userNo);
     int deleteAuth(String userNo);
     int deleteMember(String userNo);
+
+    // 중복 MANAGER 체크용
+    int countManagerByUserNo(String userNo);
 
     String selectMgmtOfcNoByApt(String aptCmplexNo);
 }

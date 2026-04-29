@@ -17,7 +17,7 @@
 
     <style>
         body{font-family:'Noto Sans KR',sans-serif;background:#f5f6f8;color:#111827}
-        .main-wrap{min-height:100vh}.main-content{padding:24px}.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}.page-title{font-size:24px;font-weight:800}.page-subtitle{font-size:13px;color:#64748b;margin-top:4px}
+        .main-wrap{min-height:100vh}.main-content{padding:24px}.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}.page-title{font-size:20px;font-weight:800}.page-subtitle{font-size:13px;color:#64748b;margin-top:4px}
         .topbar{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid #e5e7eb;background:#fff}.breadcrumb{font-size:12px;color:#64748b;display:flex;align-items:center}.bc-current{font-weight:800;color:#111827}.topbar-actions{display:flex;gap:8px}.topbar-icon-btn{position:relative;border:1px solid #e5e7eb;background:#fff;border-radius:10px;width:34px;height:34px;cursor:pointer}.topbar-icon-btn .material-symbols-rounded{font-size:18px}.dot{position:absolute;right:7px;top:7px;width:6px;height:6px;background:#ef4444;border-radius:50%}
         .c-card,.panel{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 1px 3px rgba(15,23,42,.08);margin-bottom:16px;overflow:hidden}.c-card__header,.rqst-header{display:flex;justify-content:space-between;align-items:flex-start;padding:16px 20px 14px}.c-card__title,.rqst-title h3{font-size:14px;font-weight:800;color:#111827;margin:0}.c-card__sub,.rqst-summary{font-size:12px;color:#94a3b8;margin-top:3px}.c-card__actions,.rqst-search-row,.rqst-button-row{display:flex;align-items:center;gap:8px}.rqst-toolbar-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}.c-card__body{padding:16px 20px}.c-table-wrap{overflow-x:auto}.c-table,.data-table{width:100%;border-collapse:collapse;table-layout:fixed}.c-table th,.data-table th{background:#f8fafc;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;padding:10px 12px;font-size:12px;font-weight:800;color:#475569;text-align:left}.c-table td,.data-table td{border-bottom:1px solid #e5e7eb;padding:12px;font-size:12px;color:#334155;vertical-align:middle}.c-table tr:hover,.data-table tr:hover{background:#f9fafb}.muted{color:#64748b}.row-inactive td:not(:last-child){opacity:.45}
         .role-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.role-card{border:1.5px solid #e5e7eb;border-radius:12px;padding:16px;background:#fff}.role-card__top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}.role-card__icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center}.role-card__icon .material-symbols-rounded{font-size:19px}.role-card__lv{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px}.role-card__title{font-size:13px;font-weight:800}.role-card__desc{font-size:11.5px;color:#94a3b8;margin-top:3px}
@@ -50,7 +50,7 @@
         <div class="page-header">
             <div>
                 <div class="page-title">단지 관리자 계정 관리</div>
-                <div class="page-subtitle">단지별 계정 생성·매핑, 권한 레벨 설정 및 활성화 상태를 통합 제어합니다.</div>
+                <div class="page-subtitle">단지별 계정 생성·매핑, 권한 레벨 설정 및 상태를 통합 제어합니다.</div>
             </div>
             <button class="c-btn c-btn--primary" type="button" onclick="exportAccountsToExcel()">
                 <span class="material-symbols-rounded">download</span>엑셀 내보내기
@@ -159,7 +159,7 @@
                             <th style="width:180px">소속 단지</th>
                             <th style="width:130px">권한 레벨</th>
                             <th style="width:150px">최근 접속</th>
-                            <th style="width:110px">활성화</th>
+                            <th style="width:110px">상태</th>
                         </tr>
                         </thead>
                         <tbody id="acctTbody"></tbody>

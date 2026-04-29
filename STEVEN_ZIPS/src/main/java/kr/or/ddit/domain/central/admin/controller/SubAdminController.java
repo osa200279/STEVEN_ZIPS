@@ -69,12 +69,6 @@ public class SubAdminController {
         return service.getAccount(userNo);
     }
 
-    /** 신청 계정 등록 */
-    @PostMapping("/requests")
-    @ResponseBody
-    public Map<String, Object> insertRequest(@RequestBody SubAdminVO vo) {
-        return result(service.insertRequest(vo));
-    }
 
     /** 신청 계정 수정 */
     @PutMapping("/requests/{rqstNo}")
@@ -144,6 +138,7 @@ public class SubAdminController {
         service.addApprovedAccount(rqstNo);
         return ResponseEntity.ok(Map.of("result", "OK"));
     }
+
 
 
 }

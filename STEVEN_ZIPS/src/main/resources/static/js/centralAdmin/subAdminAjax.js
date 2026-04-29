@@ -3,7 +3,7 @@
    단지 관리자 계정 관리 JSP DB 연동 스크립트
    - fetch API로 Controller와 통신한다.
    - fetch란? 브라우저에서 서버 URL로 데이터를 요청하는 JavaScript 기능.
-   - 왜 사용? JSP 새로고침 없이 목록/승인/반려/활성화 처리를 하기 위해 사용한다.
+   - 왜 사용? JSP 새로고침 없이 목록/승인/반려/상태 처리를 하기 위해 사용한다.
 ========================================================= */
 
 const API_BASE = window.APP_CTX + "/centralAdmin/subAdmin";
@@ -194,7 +194,7 @@ function renderRequestTable() {
 
 function updateRequestCount() {
     const total = requestRows.length;
-    const cancel = requestRows.filter(r => r.rqstSttsCd === "cancel").length;
+    const cancel = requestRows.filter(r => r.rqstSttsCd === "cnl").length;
     const wait = requestRows.filter(r => r.rqstSttsCd === "wait").length;
     const ok = requestRows.filter(r => r.rqstSttsCd === "ok").length;
     const reject = requestRows.filter(r => r.rqstSttsCd === "reject").length;
@@ -246,7 +246,7 @@ function renderAccounts() {
                                 <div class="toggle-track"></div>
                                 <div class="toggle-thumb"></div>
                             </label>
-                            <span style="font-size:12px;font-weight:700;color:${active ? "var(--green, #166534)" : "var(--text-tertiary, #94a3b8)"}">${active ? "활성" : "비활성"}</span>
+                            <span style="font-size:12px;font-weight:700;color:${active ? "var(--green, #166534)" : "var(--text-tertiary, #94a3b8)"}">${active ? "사용" : "미사용"}</span>
                         </div>
                     </td>
                 </tr>`;
@@ -460,7 +460,7 @@ function openAccountDetail(userNo) {
                 ["소속 단지", row.aptCmplexNm],
                 ["권한", row.dutyNm || roleName(row.mngrDutyCd)],
                 ["최근 접속", (row.lastLoginDt || "-") + " " + (row.lastLoginTm || "")],
-                ["상태", row.userYn === "N" ? "비활성" : "활성"]
+                ["상태", row.userYn === "N" ? "미사용" : "사용"]
             ].map(([label, value]) => `
                 <div class="c-info-block">
                     <div class="c-label">${esc(label)}</div>
@@ -503,7 +503,7 @@ function exportAccountsToExcel() {
         row.dutyNm || roleName(row.mngrDutyCd),
         row.lastLoginDt || dateText(row.regDt),
         row.lastLoginTm || "",
-        row.userYn === "N" ? "비활성" : "활성"
+        row.userYn === "N" ? "미사용" : "사용"
     ]);
 
     const csv = [header].concat(rows)

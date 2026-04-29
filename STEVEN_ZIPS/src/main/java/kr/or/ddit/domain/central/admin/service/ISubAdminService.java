@@ -19,7 +19,6 @@ public interface ISubAdminService {
     List<SubAdminVO> getAccountList(SubAdminSearchVO searchVO);
     SubAdminVO getAccount(String userNo);
 
-    int insertRequest(SubAdminVO vo);
     int updateRequest(SubAdminVO vo);
     int deleteRequest(String rqstNo);
 

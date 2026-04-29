@@ -237,6 +237,13 @@
         O.APT_CMPLEX_NO,
         A.APT_CMPLEX_NM,
 
+        /*
+        CASE란?
+        → DB 코드값을 화면용 한글명으로 바꾸는 SQL 문법.
+        왜 사용?
+        → DB에는 HEAD, ACNT 같은 코드로 저장하고
+        화면에는 관리소장, 회계처럼 보여주기 위해 사용.
+        */
         CASE G.MNGR_DUTY_CD
         WHEN 'DUTY_HEAD'  THEN '관리소장'
         WHEN 'DUTY_ACC'   THEN '회계'
@@ -254,11 +261,15 @@
 
         FROM MEMBER M
 
-        JOIN AUTH AU
+        /*
+        INNER JOIN이 아니라 LEFT JOIN으로 둔 이유:
+        → AUTH나 MANAGER 데이터가 빠졌는지 확인하기 쉽게 하기 위함.
+        단, WHERE에서 ROLE_MNGR 조건을 걸어 실제 관리자 권한만 조회한다.
+        */
+        LEFT JOIN AUTH AU
         ON M.USER_NO = AU.USER_NO
-        AND AU.USER_ROLE_CD = 'ROLE_MNGR'
 
-        JOIN MANAGER G
+        LEFT JOIN MANAGER G
         ON M.USER_NO = G.USER_NO
 
         LEFT JOIN MGMT_OFFICE O
@@ -267,7 +278,8 @@
         LEFT JOIN APT_COMPLEX A
         ON O.APT_CMPLEX_NO = A.APT_CMPLEX_NO
 
-        WHERE 1 = 1
+        WHERE AU.USER_ROLE_CD = 'ROLE_MNGR'
+        AND G.USER_NO IS NOT NULL
 
         <if test="keyword != null and keyword != ''">
             AND (
@@ -357,39 +369,6 @@
     </select>
 
 
-    <!--
-        신청 등록
-
-        중요:
-        FINAL SQL 기준 MNGR_RQST에는 APT_CMPLEX_NO 컬럼이 없으므로
-        INSERT 컬럼 목록에서 APT_CMPLEX_NO를 제거함.
-    -->
-    <insert id="insertRequest" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
-        <selectKey keyProperty="rqstNo" resultType="string" order="BEFORE">
-            SELECT 'MRQ' || LPAD(seq_mngr_rqst.NEXTVAL, 12, '0')
-            FROM DUAL
-        </selectKey>
-
-        INSERT INTO MNGR_RQST (
-        RQST_NO,
-        RQST_LOGIN_ID,
-        RQST_MNGR_NM,
-        RQST_DUTY_CD,
-        RQST_DT,
-        RQST_STTS_CD,
-        RMRK_CN
-        ) VALUES (
-        #{rqstNo},
-        #{rqstLoginId},
-        #{rqstMngrNm},
-        #{rqstDutyCd},
-        SYSDATE,
-        'wait',
-        #{rmrkCn}
-        )
-    </insert>
-
-
     <!-- 신청 수정 -->
     <update id="updateRequest" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
         UPDATE MNGR_RQST
@@ -425,7 +404,8 @@
             APRV_DT = SYSDATE,
             APRV_ID = #{aprvId},
             USER_NO = #{userNo},
-            RJCT_RSN_CN = NULL
+            RJCT_RSN_CN = NULL,
+            RMRK_CN = #{rmrkCn}
         WHERE RQST_NO = #{rqstNo}
     </update>
 
@@ -436,7 +416,8 @@
         SET RQST_STTS_CD = 'reject',
             APRV_DT = SYSDATE,
             APRV_ID = #{aprvId},
-            RJCT_RSN_CN = #{rjctRsnCn}
+            RJCT_RSN_CN = #{rjctRsnCn},
+            RMRK_CN = #{rmrkCn}
         WHERE RQST_NO = #{rqstNo}
     </update>
 
@@ -490,31 +471,29 @@
         )
     </insert>
 
-
-    <!-- 권한 테이블 등록 -->
-    <insert id="insertAuthForManager" parameterType="string">
-        INSERT INTO AUTH (
-            USER_NO,
-            USER_ROLE_CD
-        ) VALUES (
-                     #{userNo},
-                     'ROLE_MNGR'
-                 )
-    </insert>
+    <!--
+    일반 회원 권한을 단지관리자 권한으로 변경
+    -->
+    <update id="updateAuthToManager" parameterType="string">
+        UPDATE AUTH
+        SET USER_ROLE_CD = 'ROLE_MNGR'
+        WHERE USER_NO = #{userNo}
+    </update>
 
 
-    <!-- 관리자 테이블 등록 -->
-    <insert id="insertManager" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
-        INSERT INTO MANAGER (
-            USER_NO,
-            MGMT_OFC_NO,
-            MNGR_DUTY_CD
-        ) VALUES (
-                     #{userNo},
-                     #{mgmtOfcNo},
-                     #{rqstDutyCd}
-                 )
-    </insert>
+    <!--
+    MANAGER 중복 등록 방지용 조회
+
+    COUNT란?
+    → 조건에 맞는 데이터 개수를 세는 SQL.
+    왜 사용?
+    → 이미 MANAGER에 등록된 사용자를 다시 INSERT하면 PK 중복 오류가 나기 때문.
+-->
+    <select id="countManagerByUserNo" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM MANAGER
+        WHERE USER_NO = #{userNo}
+    </select>
 
 
     <!-- 계정 활성/비활성 변경 -->

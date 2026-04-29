@@ -39,11 +39,6 @@ public class SubAdminServiceImpl implements ISubAdminService {
     }
 
     @Override
-    public int insertRequest(SubAdminVO vo) {
-        return mapper.insertRequest(vo);
-    }
-
-    @Override
     public int updateRequest(SubAdminVO vo) {
         return mapper.updateRequest(vo);
     }
@@ -53,15 +48,15 @@ public class SubAdminServiceImpl implements ISubAdminService {
         return mapper.deleteRequest(rqstNo);
     }
 
-
     @Override
     @Transactional
     public int approveRequest(String rqstNo, String aprvId) {
     /*
-        승인 버튼 클릭 시 실행되는 메서드.
+        승인 처리 흐름
 
-        지금 구조에서는 승인 버튼을 누르면
-        MEMBER, AUTH, MANAGER에 바로 등록되도록 처리한다.
+        → 기존 신청 조회
+        → AUTH 권한만 ROLE_MNGR로 UPDATE
+        → MNGR_RQST 상태 UPDATE
     */
 
         SubAdminVO rqst = mapper.selectRequest(rqstNo);
@@ -70,17 +65,14 @@ public class SubAdminServiceImpl implements ISubAdminService {
             throw new IllegalStateException("신청 정보를 찾을 수 없습니다.");
         }
 
-        // 이미 승인되어 USER_NO가 있으면 중복 생성 방지
-        if (StringUtils.hasText(rqst.getUserNo())) {
-            return 0;
+        if (!StringUtils.hasText(rqst.getUserNo())) {
+            throw new IllegalStateException("신청 정보에 USER_NO가 없습니다. MNGR_RQST.USER_NO를 먼저 연결해야 합니다.");
         }
 
-        // MEMBER.USER_ID 중복 방지
-        if (mapper.countMemberByUserId(rqst.getRqstLoginId()) > 0) {
-            throw new IllegalStateException("이미 사용 중인 로그인 아이디입니다: " + rqst.getRqstLoginId());
+        if ("ok".equalsIgnoreCase(rqst.getRqstSttsCd())) {
+            throw new IllegalStateException("이미 승인완료된 신청입니다.");
         }
 
-        // 신청 단지에 연결된 관리사무소 번호 조회
         String mgmtOfcNo = mapper.selectMgmtOfcNoByApt(rqst.getAptCmplexNo());
 
         if (!StringUtils.hasText(mgmtOfcNo)) {
@@ -89,64 +81,42 @@ public class SubAdminServiceImpl implements ISubAdminService {
 
         rqst.setMgmtOfcNo(mgmtOfcNo);
 
-        mapper.insertMemberForManager(rqst);
-        mapper.insertAuthForManager(rqst.getUserNo());
-        mapper.insertManager(rqst);
+        // AUTH는 INSERT가 아니라 UPDATE
+        mapper.updateAuthToManager(rqst.getUserNo());
 
-        return mapper.approveRequest(rqstNo, aprvId, rqst.getUserNo());
+        return mapper.approveRequest(
+                rqstNo,
+                aprvId,
+                rqst.getUserNo(),
+                "단지 관리자 권한 승인 처리"
+        );
     }
 
     @Override
     @Transactional
     public int addApprovedAccount(String rqstNo) {
     /*
-        승인완료 상태의 신청 건을 실제 계정 목록에 반영하는 메서드.
+        addApprovedAccount는 approveRequest와 기능이 겹친다.
 
-        처리 흐름:
-        1. 신청 정보 조회
-        2. MEMBER 생성 여부 확인
-        3. AUTH 권한 등록
-        4. MANAGER 등록
-        5. 신청 상태 승인완료 처리
+        실무적으로는 승인 버튼 하나에서
+        AUTH UPDATE + MANAGER INSERT + MNGR_RQST UPDATE를 끝내는 것이 맞다.
     */
-
-        SubAdminVO rqst = mapper.selectRequest(rqstNo);
-
-        if (rqst == null) {
-            throw new IllegalStateException("신청 정보를 찾을 수 없습니다.");
-        }
-
-    /*
-        이미 USER_NO가 있으면 이미 MEMBER가 생성된 상태로 판단.
-        중복 insert 방지용.
-    */
-        if (StringUtils.hasText(rqst.getUserNo())) {
-            return 0;
-        }
-
-        if (mapper.countMemberByUserId(rqst.getRqstLoginId()) > 0) {
-            throw new IllegalStateException("이미 사용 중인 로그인 아이디입니다: " + rqst.getRqstLoginId());
-        }
-
-        String mgmtOfcNo = mapper.selectMgmtOfcNoByApt(rqst.getAptCmplexNo());
-
-        if (!StringUtils.hasText(mgmtOfcNo)) {
-            throw new IllegalStateException("해당 단지에 연결된 관리사무소가 없습니다.");
-        }
-
-        rqst.setMgmtOfcNo(mgmtOfcNo);
-
-        mapper.insertMemberForManager(rqst);
-        mapper.insertAuthForManager(rqst.getUserNo());
-        mapper.insertManager(rqst);
-
-        return mapper.approveRequest(rqstNo, "central_admin", rqst.getUserNo());
+        return approveRequest(rqstNo, "central_admin");
     }
 
     @Override
     @Transactional
     public int rejectRequest(String rqstNo, String aprvId, String rjctRsnCn) {
-        return mapper.rejectRequest(rqstNo, aprvId, rjctRsnCn);
+    /*
+        반려는 계정을 만들지 않는다.
+        MNGR_RQST 상태만 reject로 변경한다.
+    */
+        return mapper.rejectRequest(
+                rqstNo,
+                aprvId,
+                rjctRsnCn,
+                "단지 관리자 권한 신청 반려 처리"
+        );
     }
 
     @Override
