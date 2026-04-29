@@ -281,7 +281,7 @@ public class CentralController {
         return "redirect:/centralAdmin/contractFormList.do";
     }
 
-    @GetMapping
+    /*@GetMapping
     public String contractDocList(
             @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage,
             @RequestParam(name = "sbmsnDocNo", required = false) String sbmsnDocNo,
@@ -316,5 +316,5 @@ public class CentralController {
         model.addAttribute("pagingVO", pagingVO);
 
         return "centralAdmin/contractForm";
-    }
+    }*/
 }
