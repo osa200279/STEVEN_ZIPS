@@ -102,20 +102,26 @@
         <!-- 오른쪽 버튼 -->
         <div class="flex items-center gap-4 flex-none">
             <sec:authorize access="isAnonymous()">
-                <button type="button" id="loginFormBtn" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">
+                <button type="button" id="loginFormBtn"
+                        class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">
                     로그인
                 </button>
-                <button type="button" id="joinFormBtn" class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">
+                <button type="button" id="joinFormBtn"
+                        class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">
                     회원가입
                 </button>
             </sec:authorize>
 
             <sec:authorize access="isAuthenticated()">
-                <button type="button" id="myAptBtn" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">🏢나의 아파트️</button>
-                <button type="button" id="myPageBtn" class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">
+                <button type="button" id="myAptBtn"
+                        class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">🏢나의 아파트️
+                </button>
+                <button type="button" id="myPageBtn"
+                        class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">
                     마이페이지
                 </button>
-                <button type="button" id="logoutBtn" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">
+                <button type="button" id="logoutBtn"
+                        class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">
                     로그아웃
                 </button>
                 <%-- 로그아웃을 위한 히든 폼 --%>
@@ -131,17 +137,20 @@
 <script type="module">
     const myAptBtn = document.getElementById("myAptBtn");
 
-    if(myAptBtn) {
+    if (myAptBtn) {
         myAptBtn.addEventListener("click", () => {
             const width = 700;
             const height = 400;
 
-            const left = (window.screen.width / 2) - (width/ 2);
-            const top = (window.screen.height / 2) - (height/2);
+            // 1. 현재 브라우저 창의 왼쪽 좌표 + 현재 창의 너비 - 팝업 너비
+            // 이렇게 하면 브라우저가 어느 모니터에 있든 그 창의 오른쪽 끝에 뜹니다.
+            const left = window.screenLeft + window.outerWidth - width - 100;
+            const top = window.screenTop + (window.outerHeight / 2) - (height) + 60;
 
-            window.open(
-              '/apt'
-            );
+            const specs = "width=" + width + ",height=" + height + ",top=" + top + ",left=" + left + ",scrollbars=yes,resizable=no";
+
+            // 'myAptPopup' 이름을 매번 다르게 주면 설정값이 초기화되어 확실히 위치가 바뀝니다.
+            window.open('/resident/myApt', 'myAptPopup_' + Date.now(), specs);
         });
     }
 
