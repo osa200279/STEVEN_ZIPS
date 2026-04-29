@@ -2,9 +2,14 @@ package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
+import kr.or.ddit.domain.member.resident.vo.ResidentVO;
+import kr.or.ddit.domain.member.vo.CustomUser;
+import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +22,15 @@ public class ResidentMainController {
 
     @Autowired
     private IMgmtOfficeService mgmtOfficeService;
+
+    @PreAuthorize("hasRole('MEMBER')")
+    @GetMapping("/myApt")
+    public String myApt(@AuthenticationPrincipal CustomUser customUser, Model model) {
+        ResidentVO resident = (ResidentVO) customUser.getMember();
+
+        return "member/resident/myApt";
+    }
+
     /* =========================
      * 관리사무소
      * ========================= */
