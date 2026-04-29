@@ -1,9 +1,9 @@
-package kr.or.ddit.domain.central.contract.service;
+package kr.or.ddit.domain.central.admin.service;
 
 import java.util.List;
 
-import kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO;
-import kr.or.ddit.domain.central.contract.vo.SubAdminVO;
+import kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO;
+import kr.or.ddit.domain.central.admin.vo.SubAdminVO;
 
 /**
  * Service란?

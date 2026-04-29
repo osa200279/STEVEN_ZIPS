@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.or.ddit.domain.central.contract.mapper.ISubAdminMapper">
+<mapper namespace="kr.or.ddit.domain.central.admin.mapper.ISubAdminMapper">
 
     <!--
         resultMap이란?
@@ -11,7 +11,7 @@
         → Oracle 컬럼명은 USER_NO처럼 스네이크 표기,
           Java 필드는 userNo처럼 카멜 표기를 사용하기 때문.
     -->
-    <resultMap id="subAdminMap" type="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+    <resultMap id="subAdminMap" type="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
         <id property="rqstNo" column="rqst_no"/>
 
         <result property="rqstLoginId" column="rqst_login_id"/>
@@ -47,7 +47,7 @@
 
     <!-- 신청 계정 목록 조회 -->
     <select id="selectRequestList"
-            parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO"
+            parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO"
             resultMap="subAdminMap">
 
         SELECT
@@ -203,7 +203,7 @@
 
     <!-- 승인 완료된 실제 관리자 계정 목록 조회 -->
     <select id="selectAccountList"
-            parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO"
+            parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO"
             resultMap="subAdminMap">
 
         SELECT
@@ -349,7 +349,7 @@
         FINAL SQL 기준 MNGR_RQST에는 APT_CMPLEX_NO 컬럼이 없으므로
         INSERT 컬럼 목록에서 APT_CMPLEX_NO를 제거함.
     -->
-    <insert id="insertRequest" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+    <insert id="insertRequest" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
         <selectKey keyProperty="rqstNo" resultType="string" order="BEFORE">
             SELECT 'MRQ' || LPAD(seq_mngr_rqst.NEXTVAL, 12, '0')
             FROM DUAL
@@ -376,7 +376,7 @@
 
 
     <!-- 신청 수정 -->
-    <update id="updateRequest" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+    <update id="updateRequest" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
         UPDATE MNGR_RQST
         <set>
             <if test="rqstLoginId != null and rqstLoginId != ''">
@@ -434,7 +434,7 @@
 
 
     <!-- 승인 시 MEMBER 생성 -->
-    <insert id="insertMemberForManager" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+    <insert id="insertMemberForManager" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
         <selectKey keyProperty="userNo" resultType="string" order="BEFORE">
             SELECT 'USR' || LPAD(seq_member.NEXTVAL, 12, '0')
             FROM DUAL
@@ -489,7 +489,7 @@
 
 
     <!-- 관리자 테이블 등록 -->
-    <insert id="insertManager" parameterType="kr.or.ddit.domain.central.contract.vo.SubAdminVO">
+    <insert id="insertManager" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
         INSERT INTO MANAGER (
             USER_NO,
             MGMT_OFC_NO,

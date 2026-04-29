@@ -1,9 +1,9 @@
-package kr.or.ddit.domain.central.contract.controller;
+package kr.or.ddit.domain.central.admin.controller;
 
-import kr.or.ddit.domain.central.contract.service.ContractService;
-import kr.or.ddit.domain.central.contract.vo.ContractVO;
-import kr.or.ddit.domain.central.contract.vo.PaginationInfoVO;
-import kr.or.ddit.domain.central.contract.vo.RentContractVO;
+import kr.or.ddit.domain.central.admin.service.CentralService;
+import kr.or.ddit.domain.central.admin.vo.ContractVO;
+import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.domain.central.admin.vo.RentContractVO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -18,9 +18,9 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/centralAdmin")
-public class ContractController {
+public class CentralController {
 
-    private final ContractService service;
+    private final CentralService service;
 
     @GetMapping("/dashboard")
     public String dashboardForm() {

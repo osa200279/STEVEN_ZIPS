@@ -1,12 +1,12 @@
-package kr.or.ddit.domain.central.contract.service;
+package kr.or.ddit.domain.central.admin.service;
 
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
-import kr.or.ddit.domain.central.contract.mapper.ContractMapper;
-import kr.or.ddit.domain.central.contract.vo.ContractVO;
-import kr.or.ddit.domain.central.contract.vo.PaginationInfoVO;
-import kr.or.ddit.domain.central.contract.vo.RentContractVO;
+import kr.or.ddit.domain.central.admin.mapper.CentralMapper;
+import kr.or.ddit.domain.central.admin.vo.ContractVO;
+import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.domain.central.admin.vo.RentContractVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +16,9 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ContractServiceImpl implements ContractService {
+public class CentralServiceImpl implements CentralService {
 
-    private final ContractMapper mapper;
+    private final CentralMapper mapper;
     private final GoogleDriveService googleDriveService;
     private final IAttachFileMapper attachFileMapper;
 

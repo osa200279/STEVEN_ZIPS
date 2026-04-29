@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.central.contract.controller;
+package kr.or.ddit.domain.central.admin.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import kr.or.ddit.domain.central.contract.service.ISubAdminService;
-import kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO;
-import kr.or.ddit.domain.central.contract.vo.SubAdminVO;
+import kr.or.ddit.domain.central.admin.service.ISubAdminService;
+import kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO;
+import kr.or.ddit.domain.central.admin.vo.SubAdminVO;
 import lombok.RequiredArgsConstructor;
 
 /**

@@ -3,19 +3,19 @@
   String _uri = request.getRequestURI();
   String _ctx = request.getContextPath();
   if (_uri != null && _ctx != null && !_ctx.isEmpty() && _uri.startsWith(_ctx)) _uri = _uri.substring(_ctx.length());
-  boolean isDashboard = _uri != null && (_uri.equals("/") || _uri.startsWith("/conManagement/main"));
-  boolean isBuildSearch = _uri != null && _uri.startsWith("/conManagement/buildSearch");
-  boolean isBuildRegister = _uri != null && _uri.startsWith("/conManagement/buildRegister");
-  boolean isResidentList = _uri != null && (_uri.startsWith("/conManagement/residentList") || _uri.startsWith("/conManagement/residentStatus") || _uri.startsWith("/conManagement/resident"));
-  boolean isContract = _uri != null && (_uri.startsWith("/conManagement/contractList") || _uri.startsWith("/conManagement/conManagement") || _uri.startsWith("/conManagement/contract"));
-  boolean isStatistics = _uri != null && _uri.startsWith("/conManagement/statistics");
-  boolean isCivilCom = _uri != null && _uri.startsWith("/conManagement/civilCom");
-  boolean isAi = _uri != null && _uri.startsWith("/conManagement/ai");
-  boolean isAnnouncement = _uri != null && _uri.startsWith("/conManagement/announcement");
-  boolean isNotice = _uri != null && _uri.startsWith("/conManagement/notice");
-  boolean isFacility = _uri != null && _uri.startsWith("/conManagement/facility");
-  boolean isProHistory = _uri != null && _uri.startsWith("/conManagement/proHistory");
-  boolean isSubAdmin = _uri != null && _uri.startsWith("/conManagement/subAdmin");
+  boolean isDashboard = _uri != null && (_uri.equals("/") || _uri.startsWith("/centralAdmin/main"));
+  boolean isBuildSearch = _uri != null && _uri.startsWith("/centralAdmin/buildSearch");
+  boolean isBuildRegister = _uri != null && _uri.startsWith("/centralAdmin/buildRegister");
+  boolean isResidentList = _uri != null && (_uri.startsWith("/centralAdmin/residentList") || _uri.startsWith("/centralAdmin/residentStatus") || _uri.startsWith("/centralAdmin/resident"));
+  boolean isContract = _uri != null && (_uri.startsWith("/centralAdmin/contractList") || _uri.startsWith("/centralAdmin/conManagement") || _uri.startsWith("/centralAdmin/contract"));
+  boolean isStatistics = _uri != null && _uri.startsWith("/centralAdmin/statistics");
+  boolean isCivilCom = _uri != null && _uri.startsWith("/centralAdmin/civilCom");
+  boolean isAi = _uri != null && _uri.startsWith("/centralAdmin/ai");
+  boolean isAnnouncement = _uri != null && _uri.startsWith("/centralAdmin/announcement");
+  boolean isNotice = _uri != null && _uri.startsWith("/centralAdmin/notice");
+  boolean isFacility = _uri != null && _uri.startsWith("/centralAdmin/facility");
+  boolean isProHistory = _uri != null && _uri.startsWith("/centralAdmin/proHistory");
+  boolean isSubAdmin = _uri != null && _uri.startsWith("/centralAdmin/subAdmin");
 %>
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
@@ -40,15 +40,15 @@
         <div class="section-divider"></div>
         <div class="nav-group">
             <span class="section-label">건물 · 입주민</span>
-            <a href="<%= request.getContextPath() %>/conManagement/buildSearch" class="nav-item <%= isBuildSearch ? "active" : "" %>" data-page="매물 통합 검색" data-parent="건물·입주민">
+            <a href="<%= request.getContextPath() %>/centralAdmin/buildSearch" class="nav-item <%= isBuildSearch ? "active" : "" %>" data-page="매물 통합 검색" data-parent="건물·입주민">
                 <span class="material-symbols-rounded nav-icon">manage_search</span>
                 <span class="nav-text">매물 통합 검색</span>
             </a>
-            <a href="<%= request.getContextPath() %>/conManagement/buildRegister" class="nav-item <%= isBuildRegister ? "active" : "" %>" data-page="건물 등록 및 열람" data-parent="건물·입주민">
+            <a href="<%= request.getContextPath() %>/centralAdmin/buildRegister" class="nav-item <%= isBuildRegister ? "active" : "" %>" data-page="건물 등록 및 열람" data-parent="건물·입주민">
                 <span class="material-symbols-rounded nav-icon">apartment</span>
                 <span class="nav-text">건물 등록 및 열람</span>
             </a>
-            <a href="<%= request.getContextPath() %>/conManagement/residentList" class="nav-item <%= isResidentList ? "active" : "" %>" data-page="입주민 관리" data-parent="건물·입주민">
+            <a href="<%= request.getContextPath() %>/centralAdmin/residentList" class="nav-item <%= isResidentList ? "active" : "" %>" data-page="입주민 관리" data-parent="건물·입주민">
                 <span class="material-symbols-rounded nav-icon">groups</span>
                 <span class="nav-text">입주민 관리</span>
             </a>
@@ -56,11 +56,11 @@
         <div class="section-divider"></div>
         <div class="nav-group">
             <span class="section-label">계약 · 재무</span>
-            <a href="<%= request.getContextPath() %>/conManagement/contractList.do" class="nav-item <%= isContract ? "active" : "" %>" data-page="계약 관리" data-parent="계약·재무">
+            <a href="<%= request.getContextPath() %>/centralAdmin/contractList.do" class="nav-item <%= isContract ? "active" : "" %>" data-page="계약 관리" data-parent="계약·재무">
                 <span class="material-symbols-rounded nav-icon">contract</span>
                 <span class="nav-text">계약 관리</span>
             </a>
-            <a href="<%= request.getContextPath() %>/conManagement/statistics" class="nav-item <%= isStatistics ? "active" : "" %>" data-page="통계" data-parent="계약·재무">
+            <a href="<%= request.getContextPath() %>/centralAdmin/statistics" class="nav-item <%= isStatistics ? "active" : "" %>" data-page="통계" data-parent="계약·재무">
                 <span class="material-symbols-rounded nav-icon">bar_chart_4_bars</span>
                 <span class="nav-text">통계</span>
             </a>
@@ -68,21 +68,21 @@
         <div class="section-divider"></div>
         <div class="nav-group">
             <span class="section-label">민원 · 소통</span>
-            <a href="<%= request.getContextPath() %>/conManagement/civilCom" class="nav-item <%= isCivilCom ? "active" : "" %>" data-page="민원 관리" data-parent="민원·소통">
+            <a href="<%= request.getContextPath() %>/centralAdmin/civilCom" class="nav-item <%= isCivilCom ? "active" : "" %>" data-page="민원 관리" data-parent="민원·소통">
                 <span class="material-symbols-rounded nav-icon">support_agent</span>
                 <span class="nav-text">민원 관리</span>
                 <span class="nav-badge">3</span>
             </a>
-            <a href="<%= request.getContextPath() %>/conManagement/ai" class="nav-item <%= isAi ? "active" : "" %>" data-page="문의 관리" data-parent="민원·소통">
+            <a href="<%= request.getContextPath() %>/centralAdmin/ai" class="nav-item <%= isAi ? "active" : "" %>" data-page="문의 관리" data-parent="민원·소통">
                 <span class="material-symbols-rounded nav-icon">forum</span>
                 <span class="nav-text">문의 관리</span>
                 <span class="nav-badge yellow">4</span>
             </a>
-            <a href="<%= request.getContextPath() %>/conManagement/announcement" class="nav-item <%= isAnnouncement ? "active" : "" %>" data-page="공고 관리" data-parent="민원·소통">
+            <a href="<%= request.getContextPath() %>/centralAdmin/announcement" class="nav-item <%= isAnnouncement ? "active" : "" %>" data-page="공고 관리" data-parent="민원·소통">
                 <span class="material-symbols-rounded nav-icon">campaign</span>
                 <span class="nav-text">공고 관리</span>
             </a>
-            <a href="<%= request.getContextPath() %>/conManagement/notice" class="nav-item <%= isNotice ? "active" : "" %>" data-page="통합 게시판 관리" data-parent="민원·소통">
+            <a href="<%= request.getContextPath() %>/centralAdmin/notice" class="nav-item <%= isNotice ? "active" : "" %>" data-page="통합 게시판 관리" data-parent="민원·소통">
                 <span class="material-symbols-rounded nav-icon">article</span>
                 <span class="nav-text">통합 게시판 관리</span>
             </a>
@@ -90,17 +90,17 @@
         <div class="section-divider"></div>
         <div class="nav-group">
             <span class="section-label">시설 · 시스템</span>
-            <a href="<%= request.getContextPath() %>/conManagement/facility" class="nav-item <%= isFacility ? "active" : "" %>" data-page="시설 관리" data-parent="시설·시스템">
+            <a href="<%= request.getContextPath() %>/centralAdmin/facility" class="nav-item <%= isFacility ? "active" : "" %>" data-page="시설 관리" data-parent="시설·시스템">
                 <span class="material-symbols-rounded nav-icon">handyman</span>
                 <span class="nav-text">시설 관리</span>
             </a>
-            <a href="<%= request.getContextPath() %>/conManagement/proHistory" class="nav-item <%= isProHistory ? "active" : "" %>" data-page="비정상 세대 관리" data-parent="시설·시스템">
+            <a href="<%= request.getContextPath() %>/centralAdmin/proHistory" class="nav-item <%= isProHistory ? "active" : "" %>" data-page="비정상 세대 관리" data-parent="시설·시스템">
                 <span class="material-symbols-rounded nav-icon">warning</span>
                 <span class="nav-text">비정상 세대 관리</span>
             </a>
-            <a href="<%= request.getContextPath() %>/conManagement/subAdmin" class="nav-item <%= isSubAdmin ? "active" : "" %>" data-page="하위관리자 계정" data-parent="시설·시스템">
+            <a href="<%= request.getContextPath() %>/centralAdmin/subAdmin" class="nav-item <%= isSubAdmin ? "active" : "" %>" data-page="단지관리자 계정" data-parent="시설·시스템">
                 <span class="material-symbols-rounded nav-icon">manage_accounts</span>
-                <span class="nav-text">하위관리자 계정</span>
+                <span class="nav-text">단지관리자 계정</span>
             </a>
         </div>
     </nav>

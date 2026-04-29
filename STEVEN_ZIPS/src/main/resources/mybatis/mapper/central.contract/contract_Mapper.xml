@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.or.ddit.domain.central.contract.mapper.ContractMapper">
+<mapper namespace="kr.or.ddit.domain.central.admin.mapper.CentralMapper">
 
     <sql id="contractSearch">
         <if test="type != null and type != ''">
@@ -28,7 +28,7 @@
         </if>
 
     </sql>
-    <insert id="insertContract" parameterType="kr.or.ddit.domain.central.contract.vo.RentContractVO">
+    <insert id="insertContract" parameterType="kr.or.ddit.domain.central.admin.vo.RentContractVO">
         <selectKey keyProperty="rentCtrtNo" resultType="String" order="BEFORE">
             SELECT TO_CHAR(SEQ_RENT_CTRT.NEXTVAL) FROM DUAL
         </selectKey>
@@ -79,7 +79,7 @@
     </insert>
 
     <select id="selectContractCount"
-            parameterType="kr.or.ddit.domain.central.contract.vo.PaginationInfoVO"
+            parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO"
             resultType="int">
         SELECT COUNT(*)
         FROM RENT_CTRT rc
@@ -100,8 +100,8 @@
     </select>
 
     <select id="selectContractList"
-            parameterType="kr.or.ddit.domain.central.contract.vo.PaginationInfoVO"
-            resultType="kr.or.ddit.domain.central.contract.vo.ContractVO">
+            parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO"
+            resultType="kr.or.ddit.domain.central.admin.vo.ContractVO">
         SELECT *
         FROM (
         SELECT
@@ -132,7 +132,7 @@
         )
         WHERE rn BETWEEN #{startRow} AND #{endRow}
     </select>
-    <select id="selectContractDetail" resultType="kr.or.ddit.domain.central.contract.vo.ContractVO" parameterType="string">
+    <select id="selectContractDetail" resultType="kr.or.ddit.domain.central.admin.vo.ContractVO" parameterType="string">
         select RENT_CTRT_NO, RENT_LSTG_NO, USER_NO, CTRT_STTS_CD
         from RENT_CTRT
     </select>

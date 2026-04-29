@@ -1,12 +1,12 @@
-package kr.or.ddit.domain.central.contract.mapper;
+package kr.or.ddit.domain.central.admin.mapper;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import kr.or.ddit.domain.central.contract.vo.SubAdminSearchVO;
-import kr.or.ddit.domain.central.contract.vo.SubAdminVO;
+import kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO;
+import kr.or.ddit.domain.central.admin.vo.SubAdminVO;
 
 /**
  * Mapper란?
