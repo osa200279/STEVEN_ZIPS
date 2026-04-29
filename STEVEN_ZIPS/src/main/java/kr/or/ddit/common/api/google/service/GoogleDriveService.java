@@ -106,7 +106,7 @@ public class GoogleDriveService {
     }
 
     /**
-     * mkdirs() 처럼 동작하는 폴더 생성/탐색 메서드
+     * mkdirs() 처럼 동작하는 폴더(경로) 탐색 메서드
      *
      * @param service - 사용할 google drive 서비스 객체
      * @param rootId  - 탐색을 시작할 최상위 폴더 이름

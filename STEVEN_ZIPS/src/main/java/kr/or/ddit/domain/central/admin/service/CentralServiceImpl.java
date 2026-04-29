@@ -31,6 +31,7 @@ public class CentralServiceImpl implements CentralService {
         String[] cats = {"계약서", "신분증", "추가서류"};
         String folderPath = "contract/" + vo.getRentCtrtNo();
 
+        long seq = attachFileMapper.seqNextVal();
         for (int i = 0; i < files.length; i++) {
             if (files[i] != null && !files[i].isEmpty()) {
                 String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -38,7 +39,6 @@ public class CentralServiceImpl implements CentralService {
 
                 String googleId = googleDriveService.uploadFile(files[i], folderPath, savedFileName);
 
-                long seq = attachFileMapper.seqNextVal();
                 AttachFileVO attachFile = AttachFileVO.fileSettings(
                         files[i], seq, cats[i], savedFileName, googleId, folderPath, i + 1
                 );

@@ -30,7 +30,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
         try {
             String fileGroupNo = fileId.split("_")[0];
-            String fileSaveUuid = fileId.split("_",2)[1];
+            String fileSaveUuid = fileId.split("_",2)[1];   // limit 총 몇개로 나눌지
             log.info("** 파일그룹번호 : {}, 파일저장명 : {}", fileGroupNo, fileSaveUuid);
             AttachFileVO file = this.getAttachFile(fileGroupNo, fileSaveUuid);
             log.info("파일 있음? {}", file);

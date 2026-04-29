@@ -71,10 +71,13 @@ public class MemberServiceImpl implements IMemberService {
                 // 데이터베이스에 인서트
                 long seq = attachFileMapper.seqNextVal();
                 attachFile = AttachFileVO.fileSettings(profFile, seq, cat, savedFileName, googleId,
-                        folderPath + "/" + savedFileName,1 );   // 테스트용 코드 정해지면 지우고 위에 주석처리한거 쓸 것
+                        folderPath + "/" + savedFileName,1 );
+                int cnt = attachFileMapper.insertAttachFile(attachFile);
 
-                member.setProfFileId(attachFile.getFileGroupNo() + "_" + savedFileName);
-                attachFileMapper.insertAttachFile(attachFile);
+                if(cnt > 0){    // 파일 인서트 성공시
+                    // 매핑되는 테이블 컬럼(member의 profFileId)에  인서트
+                    member.setProfFileId(attachFile.getFileGroupNo() + "_" + savedFileName);
+                }
             }
 
             int status = memberMapper.joinMember(member);     // 회원 등록
