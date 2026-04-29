@@ -6,7 +6,7 @@
   <title>계약 신청 내역 조회</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-8">
+<body class="bg-[#F3F6EC] p-8">
 
 <div class="max-w-4xl mx-auto space-y-6">
 
@@ -17,7 +17,7 @@
   </div>
 
   <!-- 2. 신청 카드 -->
-  <div class="bg-white rounded-xl shadow p-6 space-y-4">
+  <div class="bg-white rounded-xl shadow border border-[#E2E8D5] p-6 space-y-4">
 
     <div class="flex justify-between items-center">
       <div>
