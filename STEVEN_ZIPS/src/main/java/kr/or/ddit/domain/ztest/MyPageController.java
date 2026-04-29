@@ -52,6 +52,7 @@ public class MyPageController {
         return "member/mypage";
     }
 
+    // 회원정보 수정
     @PostMapping("/updateSimple")
     public String updateMember(MemberVO member,
                                @RequestParam(value="profileImage", required=false) MultipartFile profileImage,

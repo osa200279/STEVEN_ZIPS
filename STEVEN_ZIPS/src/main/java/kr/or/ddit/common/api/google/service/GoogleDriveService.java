@@ -49,12 +49,12 @@ public class GoogleDriveService {
                 GoogleNetHttpTransport.newTrustedTransport(),
                 GsonFactory.getDefaultInstance(),
                 clientSecrets,
-                Collections.singleton(DriveScopes.DRIVE_FILE))
+                Collections.singleton(DriveScopes.DRIVE))   // 전체 접근 권한
                 .setDataStoreFactory(new FileDataStoreFactory(new java.io.File("tokens")))
                 .setAccessType("offline")
                 .build();
 
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(-1).build();   // setPort(-1) 랜덤으로 포트 설정
         Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
 
         Drive drive = new Drive.Builder(
