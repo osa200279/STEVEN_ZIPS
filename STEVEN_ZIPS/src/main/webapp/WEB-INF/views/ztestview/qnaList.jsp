@@ -1,7 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>시설 관리 이력 조회 - 우리집맵핑</title>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
   <script id="tailwind-config">
     tailwind.config = {
@@ -9,53 +14,53 @@
       theme: {
         extend: {
           "colors": {
-            "surface-bright": "#fbf9f1",
-            "outline-variant": "#c6c8b8",
-            "on-error-container": "#93000a",
-            "on-primary-fixed-variant": "#3f4c15",
-            "secondary-fixed": "#d0e9d2",
-            "secondary-container": "#d0e9d2",
-            "on-secondary-container": "#546a58",
-            "on-surface": "#1b1c1a",
-            "surface-variant": "#e4e3da",
-            "on-primary": "#ffffff",
-            "outline": "#76786b",
-            "on-surface-variant": "#46483c",
-            "error-container": "#ffdad6",
-            "on-tertiary-container": "#aae6c3",
-            "primary-container": "#8a9a5b",
-            "on-secondary": "#ffffff",
-            "secondary": "#4e6452",
-            "on-primary-fixed": "#161e00",
-            "background": "#fbf9f5",
-            "error": "#ba1a1a",
-            "surface-tint": "#56642b",
-            "on-tertiary-fixed": "#002112",
-            "inverse-on-surface": "#f3f1e9",
-            "on-secondary-fixed-variant": "#364c3b",
-            "inverse-surface": "#30312b",
-            "primary-fixed": "#d9eaa3",
-            "on-secondary-fixed": "#0b2012",
-            "on-tertiary-fixed-variant": "#145136",
-            "surface-dim": "#dcdad2",
-            "on-primary-container": "#cfe09a",
-            "surface-container-lowest": "#ffffff",
-            "surface-container": "#f0eee6",
-            "surface-container-low": "#f6f4eb",
-            "tertiary-container": "#30694d",
-            "on-tertiary": "#ffffff",
-            "primary-fixed-dim": "#bdce89",
-            "on-error": "#ffffff",
-            "tertiary-fixed-dim": "#98d3b1",
-            "surface-container-high": "#eae8e0",
-            "secondary-fixed-dim": "#b4cdb7",
-            "tertiary-fixed": "#b3f0cc",
-            "tertiary": "#30694d",
-            "on-background": "#1b1c17",
-            "inverse-primary": "#bdce89",
             "surface": "#fbf9f5",
-            "primary": "#3f4c15",
-            "surface-container-highest": "#e4e3da"
+            "primary": "#56642b",
+            "on-primary-container": "#253000",
+            "surface-container": "#efeeea",
+            "on-surface": "#1b1c1a",
+            "on-error": "#ffffff",
+            "inverse-surface": "#30312e",
+            "surface-tint": "#56642b",
+            "surface-container-low": "#f5f3ef",
+            "inverse-primary": "#bdce89",
+            "secondary-fixed-dim": "#b4cdb7",
+            "background": "#fbf9f5",
+            "secondary-fixed": "#d0e9d2",
+            "on-primary-fixed-variant": "#3e4c16",
+            "on-secondary": "#ffffff",
+            "on-background": "#1b1c1a",
+            "surface-container-high": "#eae8e4",
+            "primary-fixed": "#d9eaa3",
+            "on-tertiary-fixed-variant": "#155037",
+            "tertiary": "#30694d",
+            "on-primary": "#ffffff",
+            "on-secondary-container": "#546a58",
+            "on-tertiary-container": "#003320",
+            "error": "#ba1a1a",
+            "on-surface-variant": "#46483c",
+            "outline": "#76786b",
+            "surface-variant": "#e4e2de",
+            "inverse-on-surface": "#f2f0ed",
+            "surface-container-highest": "#e4e2de",
+            "tertiary-fixed": "#b4f0cd",
+            "primary-fixed-dim": "#bdce89",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-fixed": "#002113",
+            "tertiary-container": "#669f80",
+            "surface-dim": "#dbdad6",
+            "error-container": "#ffdad6",
+            "outline-variant": "#c6c8b8",
+            "on-primary-fixed": "#161f00",
+            "secondary-container": "#d0e9d2",
+            "tertiary-fixed-dim": "#98d3b2",
+            "secondary": "#4e6452",
+            "on-error-container": "#93000a",
+            "on-tertiary": "#ffffff",
+            "primary-container": "#8a9a5b",
+            "on-secondary-fixed-variant": "#364c3b",
+            "on-secondary-fixed": "#0b2012",
+            "surface-bright": "#fbf9f5"
           },
           "borderRadius": {
             "DEFAULT": "0.25rem",
@@ -63,200 +68,145 @@
             "xl": "0.75rem",
             "full": "9999px"
           },
-          "spacing": {
-            "base": "4px",
-            "gutter": "1.5rem",
-            "md": "1.5rem",
-            "xs": "0.5rem",
-            "sm": "1rem",
-            "xl": "4rem",
-            "margin": "2rem",
-            "lg": "2.5rem"
-          },
           "fontFamily": {
-            "body-lg": ["Manrope"],
-            "h2": ["Manrope"],
-            "h1": ["Manrope"],
-            "label-small": ["Manrope"],
-            "body-md": ["Manrope"],
-            "h3": ["Manrope"]
-          },
-          "fontSize": {
-            "body-lg": ["1rem", {"lineHeight": "1.6", "fontWeight": "400"}],
-            "h2": ["1.25rem", {"lineHeight": "1.4", "fontWeight": "700"}],
-            "h1": ["3rem", {"lineHeight": "1.1", "letterSpacing": "-0.025em", "fontWeight": "700"}],
-            "label-small": ["10px", {"lineHeight": "1rem", "letterSpacing": "0.1em", "fontWeight": "900"}],
-            "body-md": ["0.875rem", {"lineHeight": "1.5", "fontWeight": "400"}],
-            "h3": ["1.125rem", {"lineHeight": "1.5", "fontWeight": "600"}]
+            "headline": ["Manrope"],
+            "body": ["Manrope"],
+            "label": ["Manrope"]
           }
         },
       },
     }
   </script>
   <style>
-    body {
-      background-color: #f8f7f4;
-      font-family: 'Manrope', sans-serif;
-    }
+    body { font-family: 'Manrope', sans-serif; }
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #e4e3da;
-      border-radius: 10px;
-    }
   </style>
 </head>
-  <%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen">
 
-  <body class="bg-[#f8faf6]">
+<%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
+<%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
+<%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
 
-  <%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-  <%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
-<!-- Main Content Area (Single Column Layout) -->
-  <main class="ml-80 p-10 pt-28 bg-[#f8faf6] flex flex-col gap-10">
-  <!-- Header & Title -->
-  <div class="flex flex-col gap-2">
-    <h2 class="font-h1 text-4xl text-primary">문의게시판</h2>
-    <p class="text-on-surface-variant font-body-lg">우리집맵핑 입주민 및 파트너사의 소중한 의견을 신속하게 확인하고 처리합니다.</p>
+<main class="flex-grow pt-32 pb-20 ml-64 bg-[#f8f7f4]">
+
+  <div class="w-full px-10">
+
+
+    <h1 class="text-3xl font-bold">문의게시판</h1>
+    <!-- 제목 -->
+    <p class="text-gray-500 mb-6">
+      문의사항을 등록하고 답변을 확인할 수 있습니다.
+    </p>
+
+    <!-- 탭 -->
+    <div class="flex gap-2 mb-6">
+      <button class="tab-btn bg-[#5c6b2f] text-white px-4 py-2 rounded-full text-sm">전체</button>
+      <button class="tab-btn bg-gray-200 px-4 py-2 rounded-full text-sm">답변대기</button>
+      <button class="tab-btn bg-gray-200 px-4 py-2 rounded-full text-sm">답변완료</button>
+      <button class="tab-btn bg-gray-200 px-4 py-2 rounded-full text-sm">내 문의</button>
+    </div>
+
+    <!-- 검색 -->
+    <div class="bg-[#f1efea] p-4 rounded-2xl flex items-center gap-3 mb-6 shadow-sm">
+      <input type="text" placeholder="문의 내용을 검색하세요"
+             class="flex-1 px-4 py-2 rounded-md bg-white shadow-sm text-sm">
+    </div>
+
+    <!-- 리스트 -->
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
+
+      <table class="w-full text-sm">
+
+        <thead class="bg-[#f3f1ec] text-gray-500">
+        <tr>
+          <th class="p-4 text-left w-20">No</th>
+          <th class="p-4 text-left">제목</th>
+          <th class="p-4 text-left w-32">작성자</th>
+          <th class="p-4 text-left w-32">등록일</th>
+          <th class="p-4 text-left w-32">상태</th>
+        </tr>
+        </thead>
+
+        <tbody class="divide-y">
+
+        <tr class="hover:bg-gray-50 cursor-pointer">
+          <td class="p-4">243</td>
+          <td class="p-4 font-semibold text-[#4d5c2b]">단지 내 가로등 점검 요청</td>
+          <td class="p-4">홍길동</td>
+          <td class="p-4">2024.05.20</td>
+          <td class="p-4">
+            <span class="bg-orange-100 text-orange-500 px-3 py-1 rounded-full text-xs">답변대기</span>
+          </td>
+        </tr>
+
+        <tr class="hover:bg-gray-50 cursor-pointer">
+          <td class="p-4">242</td>
+          <td class="p-4">분리수거장 청소 상태 점검</td>
+          <td class="p-4">이영희</td>
+          <td class="p-4">2024.05.19</td>
+          <td class="p-4">
+            <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs">답변완료</span>
+          </td>
+        </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <!-- 상세 -->
+    <div class="bg-white rounded-md shadow-sm p-6 mb-6">
+
+      <h2 class="text-xl font-bold mb-2">단지 내 가로등 점검 요청</h2>
+
+      <p class="text-sm text-gray-400 mb-4">
+        작성자 홍길동 · 등록일 2024.05.20
+      </p>
+
+      <p class="text-sm text-gray-700 mb-6">
+        103동 앞 가로등이 고장 나서 밤에 매우 어둡습니다. 빠른 점검 부탁드립니다.
+      </p>
+
+      <!-- 관리자 답변 -->
+      <div class="bg-[#f1efea] p-4 rounded-md">
+
+        <p class="font-semibold mb-2 text-[#4d5c2b]">관리자 답변</p>
+
+        <p class="text-sm text-gray-700">
+          확인 결과 해당 가로등은 전기 문제로 확인되었으며,
+          금일 중 수리 진행 예정입니다.
+        </p>
+
+      </div>
+
+    </div>
+
+    <!-- 작성 -->
+    <div class="bg-white rounded-md shadow-sm p-6">
+
+      <h3 class="font-bold mb-4">새 문의 작성</h3>
+
+      <input type="text" placeholder="제목을 입력하세요"
+             class="w-full mb-3 px-4 py-2 rounded-md bg-gray-100 text-sm">
+
+      <textarea placeholder="문의 내용을 입력하세요"
+                class="w-full h-32 mb-4 px-4 py-2 rounded-md bg-gray-100 text-sm"></textarea>
+
+      <div class="flex justify-end gap-2">
+        <button class="px-4 py-2 bg-gray-200 rounded-full text-sm">취소</button>
+        <button class="px-6 py-2 bg-[#5c6b2f] text-white rounded-full text-sm">등록</button>
+      </div>
+
+    </div>
+
   </div>
-  <!-- Inquiry List Section -->
-  <section class="flex flex-col gap-6">
-    <!-- Filters & Search -->
-    <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col md:flex-row items-center justify-between gap-4 border border-outline-variant/30">
-      <div class="flex p-1 bg-surface-container rounded-full w-full md:w-auto">
-        <button class="flex-1 md:flex-none px-4 py-2 rounded-full text-sm font-bold bg-primary text-white shadow-sm">전체</button>
-        <button class="flex-1 md:flex-none px-4 py-2 rounded-full text-sm font-medium text-on-surface-variant hover:text-primary transition-colors">답변대기</button>
-        <button class="flex-1 md:flex-none px-4 py-2 rounded-full text-sm font-medium text-on-surface-variant hover:text-primary transition-colors">답변완료</button>
-        <button class="flex-1 md:flex-none px-4 py-2 rounded-full text-sm font-medium text-on-surface-variant hover:text-primary transition-colors">내 문의</button>
-      </div>
-      <div class="flex gap-2 w-full md:w-auto">
-        <div class="relative flex-1 md:w-64">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm" data-icon="search">search</span>
-          <input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary-container transition-all" placeholder="검색어 입력" type="text"/>
-        </div>
-        <button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-full text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-all">
-          <span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
-          최신순
-        </button>
-      </div>
-    </div>
-    <!-- Table Container -->
-    <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-outline-variant/30">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[600px]">
-          <thead>
-          <tr class="bg-surface-container/50 border-b border-outline-variant/30">
-            <th class="px-4 py-4 font-label-small text-outline uppercase tracking-wider text-center w-16">No</th>
-            <th class="px-4 py-4 font-label-small text-outline uppercase tracking-wider">제목</th>
-            <th class="px-4 py-4 font-label-small text-outline uppercase tracking-wider w-28">작성자</th>
-            <th class="px-4 py-4 font-label-small text-outline uppercase tracking-wider w-32">등록일</th>
-            <th class="px-4 py-4 font-label-small text-outline uppercase tracking-wider w-28 text-center">상태</th>
-          </tr>
-          </thead>
-          <tbody class="divide-y divide-outline-variant/20">
 
-<c:forEach var="n" items="${noticeList}" varStatus="status">
-    <tr class="hover:bg-gray-50">
-        <td class="px-4 py-3 text-center">
-            ${status.count}
-        </td>
-        <td class="px-4 py-3">
-            ${n.title}
-        </td>
-        <td class="px-4 py-3 text-center">
-            ${n.regDate}
-        </td>
-    </tr>
-</c:forEach>
-</tbody>
-
-        </table>
-      </div>
-      <div class="px-4 py-4 flex flex-col sm:flex-row items-center justify-between bg-surface-container-lowest gap-4">
-        <span class="text-sm text-on-surface-variant">총 <strong>1,240</strong>건의 문의</span>
-        <div class="flex gap-1">
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container"><span class="material-symbols-outlined text-lg" data-icon="chevron_left">chevron_left</span></button>
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold shadow-sm">1</button>
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-sm">2</button>
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-sm">3</button>
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-sm">4</button>
-          <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container"><span class="material-symbols-outlined text-lg" data-icon="chevron_right">chevron_right</span></button>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- Detail View Section (Flowing Naturally Below) -->
-  <section class="bg-[#fcfbf9] rounded-lg shadow-sm p-4 border border-primary/20 relative overflow-hidden">
-    <div class="absolute top-0 right-0 p-4">
-      <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-orange-100 text-orange-700 text-[10px] font-bold">CURRENT SELECTION</span>
-    </div>
-    <div class="mb-4">
-      <div class="flex items-center flex-wrap gap-2 text-on-surface-variant text-xs mb-3">
-        <div class="flex items-center gap-1">
-          <span class="material-symbols-outlined text-xs" data-icon="person">person</span>
-          <span>이수호 (No.42)</span>
-        </div>
-        <span class="hidden sm:inline mx-1 text-outline-variant">•</span>
-        <div class="flex items-center gap-1">
-          <span class="material-symbols-outlined text-xs" data-icon="calendar_today">calendar_today</span>
-          <span>2024.05.21 14:30</span>
-        </div>
-      </div>
-      <h3 class="font-h2 text-2xl md:text-3xl text-primary leading-tight">프리미엄 지도 데이터 업데이트 주기 문의</h3>
-    </div>
-    <div class="font-body-md text-on-surface leading-relaxed mb-10 max-w-3xl">
-      안녕하세요. 이번에 새로 입주한 입주민입니다.<br/><br/>
-      우리집맵핑 프리미엄 서비스에서 제공하는 지도 데이터의 업데이트 주기가 궁금합니다.
-      최근에 단지 내 상가 리모델링이 완료되었는데, 맵핑 상에는 아직 이전 모습으로 보여서요.<br/><br/>
-      주기적인 업데이트 일정이 있는지, 아니면 사용자 요청 시 반영되는지 답변 부탁드립니다.
-    </div>
-    <div class="bg-white/80 rounded-xl p-4 border border-outline-variant/30 shadow-inner">
-      <div class="flex items-center gap-2 mb-4">
-        <span class="material-symbols-outlined text-secondary" data-icon="support_agent">support_agent</span>
-        <span class="font-h3 text-secondary text-base">관리자 답변</span>
-      </div>
-      <div class="font-body-md text-on-surface-variant text-sm italic mb-6">
-        문의 내용을 확인 중입니다. 잠시만 기다려 주세요...
-      </div>
-      <div class="pt-6 border-t border-outline-variant/20">
-        <label class="block font-label-small text-outline mb-2">답변 작성</label>
-        <textarea class="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm focus:ring-2 focus:ring-secondary transition-all resize-none mb-4 custom-scrollbar" placeholder="답변을 입력하세요 (관리자 전용)" rows="2"></textarea>
-        <div class="flex justify-end">
-          <button class="px-8 py-3 bg-secondary text-white text-sm font-bold rounded-xl hover:bg-secondary/90 active:scale-95 transition-all shadow-md">답변 완료 처리</button>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- New Inquiry Form Section -->
-    <!-- 수정 -->
-    <section class="bg-white rounded-lg shadow-sm p-4 border border-outline-variant/30 mb-6">
-    <div class="flex items-center gap-3 mb-8">
-      <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary" data-icon="edit_square">edit_square</span>
-      </div>
-      <h3 class="font-h3 text-xl text-on-surface">신규 문의 작성</h3>
-    </div>
-    <div class="grid grid-cols-1 gap-4">
-      <div>
-        <label class="block font-label-small text-outline mb-2">문의 제목</label>
-        <input class="w-full bg-surface-container border-none rounded-xl py-4 px-5 text-sm focus:ring-2 focus:ring-primary transition-all" placeholder="문의 제목을 입력하세요" type="text"/>
-      </div>
-      <div>
-        <label class="block font-label-small text-outline mb-2">상세 문의 내용</label>
-        <textarea class="w-full bg-surface-container border-none rounded-xl py-4 px-5 text-sm focus:ring-2 focus:ring-primary transition-all resize-none custom-scrollbar" placeholder="문의하실 내용을 상세히 적어주세요. 신속하고 정확한 답변에 도움이 됩니다." rows="8"></textarea>
-      </div>
-      <div class="flex flex-col sm:flex-row gap-2 mb-4">
-        <button class="flex-1 py-4 rounded-xl border border-outline-variant text-sm font-bold text-on-surface-variant hover:bg-surface-container transition-all">작성 취소</button>
-        <button class="flex-[2] py-4 rounded-xl bg-primary text-white text-sm font-bold shadow-lg hover:brightness-110 active:scale-[0.98] transition-all">문의 등록하기</button>
-      </div>
-    </div>
-  </section>
 </main>
-</body></html>
+</body>
+
+
+</html>
