@@ -44,7 +44,7 @@ class ProfileUploadSimpleTest {
         String googleId = googleDriveService.uploadFile(testFile, folderPath, savedFileName);
 
         // 4. DB 시퀀스 채번 및 VO 생성
-        long seq = attachFileMapper.seqNextVal();
+        long seq = attachFileMapper.getSeqFileGroupNo();
         AttachFileVO attachFile = AttachFileVO.fileSettings(
                 testFile, seq, cat, savedFileName, googleId, folderPath, 1
         );

@@ -9,7 +9,7 @@ public interface IAttachFileMapper {
 
     int insertAttachFile(AttachFileVO attachFile);
 
-    long seqNextVal();
+    long getSeqFileGroupNo();
 
     AttachFileVO getAttachFile(@Param("fileGroupNo") String fileGroupNo, @Param("fileSaveUuid") String fileSaveUuid);
 }

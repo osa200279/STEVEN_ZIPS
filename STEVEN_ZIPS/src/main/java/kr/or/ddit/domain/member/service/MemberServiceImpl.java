@@ -69,7 +69,7 @@ public class MemberServiceImpl implements IMemberService {
                 String googleId = googleDriveService.uploadFile(profFile, folderPath, savedFileName);
 
                 // 데이터베이스에 인서트
-                long seq = attachFileMapper.seqNextVal();
+                long seq = attachFileMapper.getSeqFileGroupNo();
                 attachFile = AttachFileVO.fileSettings(profFile, seq, cat, savedFileName, googleId,
                         folderPath + "/" + savedFileName,1 );
                 int cnt = attachFileMapper.insertAttachFile(attachFile);

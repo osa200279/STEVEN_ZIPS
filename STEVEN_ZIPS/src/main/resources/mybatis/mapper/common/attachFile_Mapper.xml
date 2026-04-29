@@ -14,7 +14,7 @@
                   )
     </insert>
 
-    <select id="seqNextVal" resultType="long">
+    <select id="getSeqFileGroupNo" resultType="long">
         select seq_attach_file_group_no.nextval from dual
     </select>
 
