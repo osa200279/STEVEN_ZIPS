@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>관리사무소 소개 – 대덕아파트</title>
+  <title>관리사무소 소개 – ${office.aptCmplexNm}</title>
 
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
@@ -432,12 +432,21 @@
             </svg>
           </div>
           <div class="office-profile-info">
-            <h2>대덕아파트 관리사무소</h2>
-            <div class="addr">대전광역시 유성구 대덕대로 123번길 45</div>
+            <h2>${office.mgmtOfcNm}</h2>
+            <div class="addr">
+              <c:choose>
+                <c:when test="${not empty office.dorojuso}">
+                  ${office.dorojuso}
+                </c:when>
+                <c:otherwise>
+                  ${office.sidoNm} ${office.sigunguNm} ${office.emdNm}
+                </c:otherwise>
+              </c:choose>
+            </div>
             <div class="office-tags">
-              <span class="office-tag">48세대</span>
-              <span class="office-tag">8동</span>
-              <span class="office-tag">준공 2015년</span>
+              <span class="office-tag">${office.unitCnt}세대</span>
+              <span class="office-tag">${office.dongCnt}동</span>
+              <span class="office-tag">${office.bldYr} 준공</span>
             </div>
           </div>
         </div>
@@ -446,7 +455,14 @@
           <tbody>
             <tr>
               <th>대표번호</th>
-              <td>042-000-1234</td>
+              <td>
+                <c:choose>
+                  <c:when test="${not empty office.mgmtOfcTelno}">
+                    ${office.mgmtOfcTelno}
+                  </c:when>
+                  <c:otherwise>-</c:otherwise>
+                </c:choose>
+              </td>
               <th class="r">운영시간</th>
               <td>평일 09:00 ~ 18:00</td>
             </tr>
@@ -458,7 +474,14 @@
             </tr>
             <tr>
               <th>이메일</th>
-              <td>daeduk@apt.co.kr</td>
+              <td>
+                <c:choose>
+                  <c:when test="${not empty office.mgmtOfcEmail}">
+                    ${office.mgmtOfcEmail}
+                  </c:when>
+                  <c:otherwise>-</c:otherwise>
+                </c:choose>
+              </td>
               <th class="r">휴무일</th>
               <td>토일·공휴일</td>
             </tr>

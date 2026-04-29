@@ -1,18 +1,41 @@
 package kr.or.ddit.domain.resident.controller;
 
+import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
+import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@Slf4j
 @Controller
 @RequestMapping("/resident")
 public class ResidentMainController {
 
+    @Autowired
+    private IMgmtOfficeService mgmtOfficeService;
     /* =========================
      * 관리사무소
      * ========================= */
     @GetMapping("/manage/intro")
-    public String manageIntro() {
+    public String manageIntro(Authentication authentication, Model model) {
+        String userId = authentication.getName();
+
+        log.info("관리사무소 소개 조회 userId = {}", userId);
+
+        MgmtOfficeVO office = mgmtOfficeService.selectMgmtOfficeByManagerUserNo(userId);
+
+        log.info("조회된 관리사무소 정보 = {}", office);
+
+        if (office == null) {
+            model.addAttribute("message", "로그인 계정에 연결된 관리사무소 정보가 없습니다.");
+            return "manager/mngr_office_error";
+        }
+
+        model.addAttribute("office", office);
         return "member/resident/manage_intro";
     }
 

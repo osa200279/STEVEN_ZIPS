@@ -60,11 +60,97 @@
           <span class="cur">시설관리이력</span>
         </div>
         <h1 class="page-title">시설관리이력</h1>
-        <p class="page-desc">PPT 기준의 시설관리이력 화면입니다. 주요 설비 상태를 카드형으로 보여주고 상세 점검 내역을 표로 구성했습니다.</p>
 
-        <section class="hero-card"><h2>주요 시설 점검 현황</h2><p>승강기, 소방설비, 급수시설, 전기설비의 최근 점검 상태를 카드형 UI로 제공하고, 하단에서 상세 점검 내역을 확인할 수 있습니다.</p><div class="chip-row"><span class="chip">정기점검</span><span class="chip">상태 모니터링</span><span class="chip">관리비 납부 연결</span></div></section>
-        <section class="stats-grid"><div class="stat-card"><div class="stat-label">승강기</div><div class="stat-value">정상</div><div class="stat-sub">최근 점검 2026-04-12</div></div><div class="stat-card"><div class="stat-label">소방설비</div><div class="stat-value">점검완료</div><div class="stat-sub">정밀 점검 이상 없음</div></div><div class="stat-card"><div class="stat-label">급수시설</div><div class="stat-value">양호</div><div class="stat-sub">수질 검사 통과</div></div><div class="stat-card"><div class="stat-label">전기설비</div><div class="stat-value">정상</div><div class="stat-sub">부하 점검 완료</div></div></section>
-        <section class="panel"><div class="section-hd"><h3>상세 점검 내역</h3><span>최근 5건</span></div><table class="data-table"><thead><tr><th>점검일</th><th>구분</th><th>세부 내용</th><th>상태</th><th>담당자</th></tr></thead><tbody><tr><td>2026-04-12</td><td>승강기</td><td>운행 상태 및 비상통화 장치 점검</td><td><span class="badge ok">정상</span></td><td>시설팀 김민수</td></tr><tr><td>2026-04-11</td><td>소방설비</td><td>소화전 압력 및 경보 설비 테스트</td><td><span class="badge ok">완료</span></td><td>안전팀 이서연</td></tr><tr><td>2026-04-09</td><td>급수시설</td><td>저수조 청소 및 배관 점검</td><td><span class="badge ok">양호</span></td><td>외부업체</td></tr><tr><td>2026-04-07</td><td>전기설비</td><td>비상 발전기 시운전 및 패널 확인</td><td><span class="badge ok">정상</span></td><td>전기실 박정훈</td></tr><tr><td>2026-04-04</td><td>공용부</td><td>주차장 조명 교체 이력 등록</td><td><span class="badge info">처리완료</span></td><td>관리사무소</td></tr></tbody></table><div class="btn-row"><a href="${pageContext.request.contextPath}/fee/inquiry" class="btn-main">관리비 납부하기</a></div></section>
+        <section class="hero-card">
+          <h2>주요 시설 점검 현황</h2>
+          <p>승강기, 소방설비, 급수시설, 전기설비의 최근 점검 상태를 카드형 UI로 제공하고, 하단에서 상세 점검 내역을 확인할 수 있습니다.</p>
+          <div class="chip-row">
+            <span class="chip">정기점검</span>
+            <span class="chip">상태 모니터링</span>
+            <span class="chip">관리비 납부 연결</span>
+          </div>
+        </section>
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">승강기</div>
+            <div class="stat-value">정상</div>
+            <div class="stat-sub">최근 점검 2026-04-12</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">소방설비</div>
+            <div class="stat-value">점검완료</div>
+            <div class="stat-sub">정밀 점검 이상 없음</div>
+          </div>
+          <div class="stat-card">
+          <div class="stat-label">급수시설</div>
+            <div class="stat-value">양호</div>
+            <div class="stat-sub">수질 검사 통과</div>
+          </div><div class="stat-card">
+          <div class="stat-label">전기설비</div>
+          <div class="stat-value">정상</div>
+          <div class="stat-sub">부하 점검 완료</div>
+        </div>
+        </section>
+        <section class="panel">
+          <div class="section-hd">
+            <h3>상세 점검 내역</h3>
+            <span>최근 5건</span>
+          </div>
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th>점검일</th>
+              <th>구분</th>
+              <th>세부 내용</th>
+              <th>상태</th>
+              <th>담당자</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>2026-04-12</td>
+              <td>승강기</td>
+              <td>운행 상태 및 비상통화 장치 점검</td>
+              <td>
+                <span class="badge ok">정상</span>
+              </td>
+              <td>시설팀 김민수</td>
+            </tr>
+            <tr>
+              <td>2026-04-11</td>
+              <td>소방설비</td>
+              <td>소화전 압력 및 경보 설비 테스트</td>
+              <td>
+                <span class="badge ok">완료</span>
+              </td>
+              <td>안전팀 이서연</td>
+            </tr>
+            <tr>
+              <td>2026-04-09</td>
+              <td>급수시설</td>
+              <td>저수조 청소 및 배관 점검</td>
+              <td>
+                <span class="badge ok">양호</span>
+              </td>
+              <td>외부업체</td>
+            </tr>
+            <tr>
+              <td>2026-04-07</td>
+              <td>전기설비</td>
+              <td>비상 발전기 시운전 및 패널 확인</td>
+              <td><span class="badge ok">정상</span></td>
+              <td>전기실 박정훈</td>
+            </tr>
+            <tr>
+              <td>2026-04-04</td>
+              <td>공용부</td>
+              <td>주차장 조명 교체 이력 등록</td>
+              <td><span class="badge info">처리완료</span></td>
+              <td>관리사무소</td>
+            </tr>
+            </tbody>
+          </table>
+        </section>
 
       </div>
     </main>

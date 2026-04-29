@@ -11,8 +11,8 @@
                 <path d="M9 21V12h6v9"/>
             </svg>
             <div class="logo-text">
-                <span class="ko">대덕아파트</span>
-                <span class="en">DAEDEOK APARTMENT</span>
+                <span class="ko">${office.aptCmplexNm}</span>
+                <span class="en">${office.aptCmplexNm} APARTMENT</span>
             </div>
         </a>
 

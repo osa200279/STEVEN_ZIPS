@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -350,9 +351,22 @@ img { display: block; width: 100%; }
 <%-- ══════════════ 상담 + 퀵메뉴 ══════════════ --%>
 <div class="quick-bar fade-up">
   <div class="quick-consult">
-    <span class="label">관리사무소</span>
-    <span class="phone">042-000-0000</span>
-    <span class="address">대전시 대덕구 대덕대로 123<br>대덕아파트 관리사무소 1층</span>
+    <c:choose>
+      <c:when test="${not empty office}">
+          <div class="quick-consult">
+              <span class="label">관리사무소</span>
+              <span class="phone">${office.mgmtOfcTelno}</span>
+              <span class="address">${office.dorojuso}<br>${office.mgmtOfcNm}</span>
+          </div>
+      </c:when>
+      <c:otherwise>
+          <div class="quick-consult">
+              <span class="label">관리사무소</span>
+              <span class="phone">정보 없음</span>
+              <span class="address">로그인 후 관리사무소 정보를 확인할 수 있습니다.</span>
+          </div>
+      </c:otherwise>
+    </c:choose>
     <button class="quick-consult-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
