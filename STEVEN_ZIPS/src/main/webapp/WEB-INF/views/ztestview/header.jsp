@@ -4,7 +4,9 @@
 
   <div class="absolute top-0 left-0 w-full h-20 bg-white shadow-sm pointer-events-auto border-b border-gray-100 z-40">
     <div class="absolute left-0 top-0 w-64 h-20 flex items-center px-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-      <span class="text-xl font-bold text-[#226046] cursor-pointer">우리집맵핑</span>
+      <span class="text-xl font-bold text-[#226046] cursor-pointer">
+        <a href="/">우리집맵핑</a>
+      </span>
     </div>
 
     <div class="ml-64 h-full bg-white group-hover:border-transparent">

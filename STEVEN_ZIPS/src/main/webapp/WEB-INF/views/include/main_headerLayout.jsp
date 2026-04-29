@@ -14,7 +14,7 @@
     <nav class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
         <!-- 로고 -->
         <div class="text-xl font-bold tracking-tight text-primary font-headline flex-none">
-            우리집맵핑
+            <a href="/">우리집맵핑</a>
         </div>
         <!-- 메뉴 전체를 group으로 감싸야 메가메뉴 유지됨 -->
         <div class="hidden md:flex items-center justify-center flex-1 relative group">
