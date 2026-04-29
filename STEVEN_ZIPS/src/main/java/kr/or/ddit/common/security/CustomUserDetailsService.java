@@ -1,6 +1,7 @@
 package kr.or.ddit.common.security;
 
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
+import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,16 @@ public class CustomUserDetailsService implements UserDetailsService{
 		
 		MemberVO member = memberMapper.readByUserInfo(username);
 		log.info("## member : " + member);
+
+		if("ROLE_RESIDENT".equals(member.getAuthList().get(0).getAuth())){
+			ResidentVO resident = new ResidentVO();
+
+		}else if("ROLE_MNGR".equals(member.getAuthList().get(0).getAuth())){
+
+		}else if("ROLE_ADMIN".equals(member.getAuthList().get(0).getAuth())){
+
+		}
+
 
 		// 넘겨받은 member가 null인 경우라면 UsernameNotFoundException 에러에 의해 회원정보가 존재하지 않는다는
 		// 에러를 응답으로 출력한다.

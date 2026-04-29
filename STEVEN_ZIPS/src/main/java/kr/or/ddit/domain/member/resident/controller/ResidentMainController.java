@@ -26,7 +26,7 @@ public class ResidentMainController {
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/myApt")
     public String myApt(@AuthenticationPrincipal CustomUser customUser, Model model) {
-        ResidentVO resident = (ResidentVO) customUser.getMember();
+        ResidentVO resident;
 
         return "member/resident/myApt";
     }

@@ -29,7 +29,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
             String userLevel = "UNKNOWN";   // 방어코드, 디버깅용
             if (request.isUserInRole("ROLE_ADMIN")) userLevel = "ADMIN";
-            else if (request.isUserInRole("ROLE_MGR")) userLevel = "MANAGER";
+            else if (request.isUserInRole("ROLE_MNGR")) userLevel = "MNGR";
             else if (request.isUserInRole("ROLE_RESIDENT")) userLevel = "RESIDENT";
             else if (request.isUserInRole("ROLE_USER")) userLevel = "USER";
 
