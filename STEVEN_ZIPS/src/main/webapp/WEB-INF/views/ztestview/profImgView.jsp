@@ -12,11 +12,18 @@
 </head>
 <body>
 <h1>profImgView.jsp</h1>
-<img src="/file/display/${file.googleId}" alt="엑스박스" />
+<img src="/file/display/${file.googleId}" alt="엑스박스"/>
 <a href="/file/download/${file.googleId}" class="btn-download">파일 다운로드</a>
 
+<div>
+    <button class="btn-primary" id="myHomeBtn">우리집 가기</button>
+</div>
 </body>
 <script>
+    const myHomeBtn = document.querySelector('#myHomeBtn');
+    myHomeBtn.addEventListener('click', () => {
+        location.href="/apt/myHome";
+    });
 
 </script>
 </html>
