@@ -27,5 +27,8 @@ public class APTController {
         return "ztestview/aptDashboard";
     }
 
-
+    @GetMapping("/intro.do")
+    public String intro() {
+        return "ztestview/service";
+    }
 }
