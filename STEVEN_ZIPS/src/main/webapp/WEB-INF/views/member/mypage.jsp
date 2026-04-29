@@ -133,7 +133,6 @@
 </head>
 <body class="bg-gray-50">
 
-
 <%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
 <div class="max-w-[1500px] p-10 pt-24 ml-64">
     <!-- 상단 -->
