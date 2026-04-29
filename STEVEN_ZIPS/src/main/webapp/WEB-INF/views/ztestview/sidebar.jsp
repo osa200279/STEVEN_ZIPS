@@ -6,12 +6,15 @@
 
 <!-- SideNavBar -->
 <!-- SideNavBar Shell -->
-<aside class="h-[calc(100vh-64px)] w-80 fixed left-0 top-[64px] bg-surface-container-lowest border-r border-outline-variant/20 flex flex-col py-8 z-40 overflow-y-auto">
-  <div class="px-8 mb-8">
-    <h1 class="text-2xl font-black text-primary tracking-tighter font-headline">우리집맵핑</h1>
-    <p class="text-on-surface-variant/60 text-[10px] font-label font-bold uppercase tracking-[0.2em] mt-1">Premium Concierge</p>
+<aside class="h-screen w-80 fixed left-0 top-0 bg-[#e6f4ee] border-r border-[#d0e8dd] flex flex-col z-40 overflow-y-auto">
+
+  <!-- 우리집맵핑 (헤더랑 맞춤) -->
+  <div class="text-xl font-bold text-[#226046] px-4 h-16 flex items-center">
+
   </div>
-  <nav class="flex flex-col gap-1 px-4">
+
+  <!-- 메뉴 -->
+  <nav class="flex flex-col gap-1 px-4 mt-10">
     <!-- 1. 안내 공고 확인 -->
     <details class="nav-item group" open="">
       <summary class="flex items-center justify-between px-4 py-3 rounded-full cursor-pointer hover:bg-primary/5 transition-colors text-on-surface">
