@@ -53,23 +53,73 @@ public class SubAdminServiceImpl implements ISubAdminService {
         return mapper.deleteRequest(rqstNo);
     }
 
-    /**
-     * 승인 처리
-     * @Transactional이란?
-     * → 여러 SQL을 하나의 작업 단위로 묶는 기능.
-     * 왜 사용?
-     * → MEMBER 생성은 됐는데 MANAGER 생성이 실패하면 데이터가 꼬인다.
-     *   그래서 중간에 하나라도 실패하면 전체를 rollback 하기 위해 사용한다.
-     */
+
     @Override
     @Transactional
     public int approveRequest(String rqstNo, String aprvId) {
+    /*
+        승인 버튼 클릭 시 실행되는 메서드.
+
+        지금 구조에서는 승인 버튼을 누르면
+        MEMBER, AUTH, MANAGER에 바로 등록되도록 처리한다.
+    */
+
         SubAdminVO rqst = mapper.selectRequest(rqstNo);
+
         if (rqst == null) {
+            throw new IllegalStateException("신청 정보를 찾을 수 없습니다.");
+        }
+
+        // 이미 승인되어 USER_NO가 있으면 중복 생성 방지
+        if (StringUtils.hasText(rqst.getUserNo())) {
             return 0;
         }
 
-        // 이미 승인되어 USER_NO가 연결된 신청 건은 중복 계정 생성을 막는다.
+        // MEMBER.USER_ID 중복 방지
+        if (mapper.countMemberByUserId(rqst.getRqstLoginId()) > 0) {
+            throw new IllegalStateException("이미 사용 중인 로그인 아이디입니다: " + rqst.getRqstLoginId());
+        }
+
+        // 신청 단지에 연결된 관리사무소 번호 조회
+        String mgmtOfcNo = mapper.selectMgmtOfcNoByApt(rqst.getAptCmplexNo());
+
+        if (!StringUtils.hasText(mgmtOfcNo)) {
+            throw new IllegalStateException("해당 단지에 연결된 관리사무소가 없습니다.");
+        }
+
+        rqst.setMgmtOfcNo(mgmtOfcNo);
+
+        mapper.insertMemberForManager(rqst);
+        mapper.insertAuthForManager(rqst.getUserNo());
+        mapper.insertManager(rqst);
+
+        return mapper.approveRequest(rqstNo, aprvId, rqst.getUserNo());
+    }
+
+    @Override
+    @Transactional
+    public int addApprovedAccount(String rqstNo) {
+    /*
+        승인완료 상태의 신청 건을 실제 계정 목록에 반영하는 메서드.
+
+        처리 흐름:
+        1. 신청 정보 조회
+        2. MEMBER 생성 여부 확인
+        3. AUTH 권한 등록
+        4. MANAGER 등록
+        5. 신청 상태 승인완료 처리
+    */
+
+        SubAdminVO rqst = mapper.selectRequest(rqstNo);
+
+        if (rqst == null) {
+            throw new IllegalStateException("신청 정보를 찾을 수 없습니다.");
+        }
+
+    /*
+        이미 USER_NO가 있으면 이미 MEMBER가 생성된 상태로 판단.
+        중복 insert 방지용.
+    */
         if (StringUtils.hasText(rqst.getUserNo())) {
             return 0;
         }
@@ -79,16 +129,18 @@ public class SubAdminServiceImpl implements ISubAdminService {
         }
 
         String mgmtOfcNo = mapper.selectMgmtOfcNoByApt(rqst.getAptCmplexNo());
+
         if (!StringUtils.hasText(mgmtOfcNo)) {
-            throw new IllegalStateException("해당 단지에 연결된 관리사무소가 없습니다. MGMT_OFFICE 데이터를 먼저 등록하세요.");
+            throw new IllegalStateException("해당 단지에 연결된 관리사무소가 없습니다.");
         }
+
         rqst.setMgmtOfcNo(mgmtOfcNo);
 
-        mapper.insertMemberForManager(rqst);     // 로그인 사용자 생성
-        mapper.insertAuthForManager(rqst.getUserNo()); // 권한 생성
-        mapper.insertManager(rqst);              // 단지 관리자 정보 생성
+        mapper.insertMemberForManager(rqst);
+        mapper.insertAuthForManager(rqst.getUserNo());
+        mapper.insertManager(rqst);
 
-        return mapper.approveRequest(rqstNo, aprvId, rqst.getUserNo());
+        return mapper.approveRequest(rqstNo, "central_admin", rqst.getUserNo());
     }
 
     @Override

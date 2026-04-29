@@ -2,8 +2,10 @@ package kr.or.ddit.domain.central.admin.service;
 
 import java.util.List;
 
+import kr.or.ddit.domain.central.admin.mapper.ISubAdminMapper;
 import kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO;
 import kr.or.ddit.domain.central.admin.vo.SubAdminVO;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service란?
@@ -26,4 +28,11 @@ public interface ISubAdminService {
 
     int updateAccountUseYn(String userNo, String userYn);
     int deleteAccount(String userNo);
+
+    /*
+         승인완료된 신청 건을 실제 단지 관리자 계정 목록에 추가
+     */
+    int addApprovedAccount(String rqstNo);
+
+
 }

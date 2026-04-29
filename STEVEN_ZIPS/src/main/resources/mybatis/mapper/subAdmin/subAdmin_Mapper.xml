@@ -132,6 +132,21 @@
                 OR G.MNGR_DUTY_CD = #{role}
                 )
             </if>
+
+            <!--
+                승인완료 후 실제 계정 목록에 등록된 신청 건은
+                신청 목록에서 숨긴다.
+
+                EXISTS란?
+                → 특정 조건의 데이터가 존재하는지 확인하는 SQL 조건.
+            -->
+            AND NOT EXISTS (
+            SELECT 1
+            FROM AUTH AU
+            WHERE AU.USER_NO = R.USER_NO
+            AND AU.USER_ROLE_CD = 'ROLE_MNGR'
+            )
+
         </where>
 
         ORDER BY R.RQST_DT DESC, R.RQST_NO DESC
@@ -241,7 +256,7 @@
 
         JOIN AUTH AU
         ON M.USER_NO = AU.USER_NO
-        AND AU.USER_ROLE_CD = 'ROLE_MANAGER'
+        AND AU.USER_ROLE_CD = 'ROLE_MNGR'
 
         JOIN MANAGER G
         ON M.USER_NO = G.USER_NO
@@ -319,7 +334,7 @@
 
                  JOIN AUTH AU
                       ON M.USER_NO = AU.USER_NO
-                          AND AU.USER_ROLE_CD = 'ROLE_MANAGER'
+                          AND AU.USER_ROLE_CD = 'ROLE_MNGR'
 
                  JOIN MANAGER G
                       ON M.USER_NO = G.USER_NO
@@ -483,7 +498,7 @@
             USER_ROLE_CD
         ) VALUES (
                      #{userNo},
-                     'ROLE_MANAGER'
+                     'ROLE_MNGR'
                  )
     </insert>
 

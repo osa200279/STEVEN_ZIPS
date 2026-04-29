@@ -120,17 +120,23 @@ function renderRequestTable() {
 
     tbody.innerHTML = requestRows.map(row => {
         const status = row.rqstSttsCd || "wait";
-        const statusClass = status === "ok" ? "ok" : status === "reject" ? "reject" : "wait";
+        const statusClass = status === "ok" ? "ok" : status === "reject" ? "reject" : status === "cnl" ? "cancel" : "wait";
         // const statusName = row.sttsNm || (status === "ok" ? "승인완료" : status === "reject" ? "반려" : "승인대기");
-        /* 상태명 매핑 추가 */
         let statusName = "";
 
+        /*
+            상태 코드 매핑
+
+            왜 필요?
+            → DB에는 코드값(cnl, wait, ok...)으로 저장하고
+              화면에서는 사람이 읽을 수 있는 값으로 보여주기 위해
+        */
         if (status === "ok") {
             statusName = "승인완료";
         } else if (status === "reject") {
             statusName = "반려";
-        } else if (status === "cancel") {
-            statusName = "신청취소";   // ⭐ 여기 추가
+        } else if (status === "cnl") {
+            statusName = "신청취소";
         } else {
             statusName = "승인대기";
         }
@@ -148,8 +154,19 @@ function renderRequestTable() {
             actionHtml =
                 '<button type="button" class="icon-btn-sm danger" onclick="showRejectReason(this)" title="반려사유">' +
                 '<span class="material-symbols-rounded">visibility</span></button>';
+        } else if (status === "ok") {
+            /*
+                승인완료 상태일 때만 아래로 내리는 아이콘 표시.
+
+                publish 아이콘?
+                → Material Symbols 아이콘 이름.
+                여기서는 "아래 목록으로 추가/이동" 느낌을 주기 위해 사용.
+            */
+            actionHtml =
+                '<button type="button" class="icon-btn-sm" onclick="addApprovedAccountToList(this)" title="계정 목록에 추가">' +
+                '<span class="material-symbols-rounded">download</span></button>';
         } else {
-            actionHtml = '<span style="font-size:11px;color:#94a3b8;">처리완료</span>';
+            actionHtml = '<span style="font-size:11px;color:#94a3b8;">-</span>';
         }
 
         return `
@@ -369,6 +386,59 @@ function showRejectReason(btn) {
     const row = btn.closest("tr");
     alert("반려 사유: " + (row?.dataset.rejectReason || "등록된 반려 사유가 없습니다."));
 }
+
+function addApprovedAccountToList(btn) {
+    /*
+        btn.closest("tr")란?
+        → 클릭한 버튼에서 가장 가까운 tr, 즉 현재 행을 찾는 기능.
+
+        왜 사용?
+        → 어떤 신청 건의 버튼을 눌렀는지 RQST_NO를 알아야 하기 때문.
+    */
+    const row = btn.closest("tr");
+
+    if (!row) {
+        alert("선택한 신청 정보를 찾을 수 없습니다.");
+        return;
+    }
+
+    const rqstNo = row.dataset.rqstNo;
+
+    if (!rqstNo) {
+        alert("신청 번호가 없습니다.");
+        return;
+    }
+
+    /*
+        confirm이란?
+        → 확인/취소를 선택하는 기본 팝업창.
+
+        확인을 누르면 true, 취소를 누르면 false가 반환된다.
+    */
+    if (!confirm("'단지 관리자 계정 목록 및 상태'에 추가하시겠습니까?")) {
+        return;
+    }
+
+    /*
+        서버에 승인완료 신청 건을 실제 계정 목록으로 반영 요청.
+
+        이 API는 Controller/Service에서 만들어져 있어야 함.
+        내부에서는 MEMBER, AUTH, MANAGER 등록 또는 확인 처리를 해야 한다.
+    */
+    sendJson(API_BASE + "/requests/" + encodeURIComponent(rqstNo) + "/add-account", "POST")
+        .then(() => {
+            alert("단지 관리자 계정 목록에 추가되었습니다.");
+
+            /*
+                loadAll()
+                → 위 신청 목록과 아래 계정 목록을 둘 다 다시 조회한다.
+                그래서 위 목록에서는 사라지고, 아래 목록에는 보이게 된다.
+            */
+            return loadAll();
+        })
+        .catch(err => alert(err.message));
+}
+
 
 function toggleActive(userNo, checkbox) {
     sendJson(API_BASE + "/accounts/" + encodeURIComponent(userNo) + "/use", "PUT", { userYn: checkbox.checked ? "Y" : "N" })

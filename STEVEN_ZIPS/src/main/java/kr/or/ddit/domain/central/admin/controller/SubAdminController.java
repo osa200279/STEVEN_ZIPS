@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -135,4 +136,14 @@ public class SubAdminController {
         map.put("count", cnt);
         return map;
     }
+
+    /* 중앙관리자 - 단지관리자 관리 승인여부쪽  */
+    @PostMapping("/requests/{rqstNo}/add-account")
+    @ResponseBody
+    public ResponseEntity<?> addApprovedAccount(@PathVariable String rqstNo) {
+        service.addApprovedAccount(rqstNo);
+        return ResponseEntity.ok(Map.of("result", "OK"));
+    }
+
+
 }
