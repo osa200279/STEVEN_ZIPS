@@ -6,14 +6,14 @@ import java.math.BigDecimal;
 
 @Data
 public class AptComplexVO {
-    private String aptCmplexNo;
+    private String aptCmplexNo; // kAptCode
     private String aptCmplexNm;
     private String bjdCd;
     private String sidoNm;
     private String sigunguNm;
     private String emdNm;
-    private BigDecimal latVal;
-    private BigDecimal lonVal;
+    private BigDecimal latVal;  // 경도
+    private BigDecimal lonVal;  // 위도
     private int unitCnt;
     private String bldYr;
     private String cnscoNm;
