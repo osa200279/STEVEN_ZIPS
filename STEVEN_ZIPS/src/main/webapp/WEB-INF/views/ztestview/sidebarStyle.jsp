@@ -78,5 +78,12 @@
   .nav-item[open] summary .expand-icon { transform: rotate(180deg); }
   .nav-item summary::-webkit-details-marker { display: none; }
   .nav-item summary { list-style: none; }
+  #sidebar-nav {
+      width: 18rem;
+  }
+
+  aside {
+      width: 18rem !important;
+  }
 </style>
 </head>
