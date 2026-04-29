@@ -29,7 +29,7 @@ public class AttachFileVO {
     private String googleId;
 
     /**
-     *
+     * 파일객체 메타데이터 정보 세팅
      * @param file 파일 객체
      * @param fileGroupNo   attach_file 테이블의 file_group_no 컬럼에 해당하는 값
      * @param cat            attach_file 테이블의 cat 컬럼에 해당하는 값
