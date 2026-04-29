@@ -70,7 +70,7 @@ public class GoogleDriveService {
     /**
      * 파일 업로드 메서드
      * @param file  저장할 파일vo 객체
-     * @param path  파일을 저장할 *폴더*의 전체 경로 (ex. member/prof_img/파일.txt면 member/prof_img, 파일명은 제거한다)
+     * @param path  파일을 저장할 *폴더*의 전체 경로 (ex. member/prof_img/파일.txt면 member/prof_img까지 마자막 '/'와 파일명은 제거한다)
      * @param savedFileName uuid_name 형식의 저장 될 파일명
      * @return googleId : 구글 드라이브에서 업로드 한 파일에 발급한 식별코드
      * @throws IOException
