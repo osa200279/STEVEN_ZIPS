@@ -84,7 +84,7 @@
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
         <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all" href="#">시설 유지보수 이력</a>
-        <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all" href="#">시설 하자보수 이력</a>
+
         <a class="px-4 py-2 text-sm text-on-surface-variant/80 hover:text-primary hover:bg-primary/5 rounded-full transition-all" href="#">시설 점검 기록 확인</a>
       </div>
     </details>
