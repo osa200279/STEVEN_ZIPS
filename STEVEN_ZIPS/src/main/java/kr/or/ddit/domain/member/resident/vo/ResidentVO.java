@@ -14,6 +14,7 @@ public class ResidentVO extends MemberVO {
     private Date moveOutDt;         // 퇴거일
     private char headYn = 'N';      // 세대주 여부
 
+    // 아파트 단지(APT_COMPLEX) 테이블과 조인 필요
     private List<MyAptVO> myAptList;    // 거주지 리스트
 
 }
