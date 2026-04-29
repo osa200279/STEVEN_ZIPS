@@ -1,5 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // 로그인 폼
+    const loginFormBtn = document.querySelector("#loginFormBtn");
+    if(loginFormBtn) {
+        loginFormBtn.addEventListener("click", () => {
+            location.href="/login.do";
+        })
+    }
+
     // 로그인 기능
     const loginBtn = document.querySelector("#loginBtn");
     const loginForm = document.querySelector("#loginForm");
@@ -35,4 +43,26 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-});
+
+    // 회원가입 폼 버튼
+    const joinFormBtn = document.querySelector("#joinFormBtn");
+
+    if(joinFormBtn) {
+        joinFormBtn.addEventListener("click", (e) => {
+            // 팝업창 크기
+            const width = 700;
+            const height = 1000;
+
+            // 화면 중앙 정렬 계산
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+
+            window.open(
+                '/member/join.do',
+                'joinPopup',
+                'width=' + width + ', height=' + height +
+                ', top=' + top + ', left=' + left + ', scrollbars=yes, resizable=no'
+            );
+        });
+    }
+})

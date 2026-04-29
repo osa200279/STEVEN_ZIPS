@@ -12,7 +12,7 @@
             class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
         <div class="flex flex-col gap-2">
             <div class="text-lg font-semibold text-primary font-headline">우리집맵핑</div>
-            <div class="text-slate-500 font-body text-[0.875rem]">© 2024
+            <div class="text-slate-500 font-body text-[0.875rem]">© 2026
                 우리집맵핑. All rights reserved.
             </div>
         </div>

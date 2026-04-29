@@ -24,6 +24,6 @@ public class ConnController {
     @GetMapping("/logout.do")
     public String logoutPage(){
         log.info("logoutPage() 실행");
-        return "apt-main";
+        return "main";
     }
 }

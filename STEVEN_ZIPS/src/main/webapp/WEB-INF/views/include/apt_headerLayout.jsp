@@ -230,24 +230,4 @@
         if (e.key === 'Escape') closeMenu();
     });
 
-
-    // 회원가입 폼 버튼 클릭
-    const joinFormBtn = document.querySelector("#joinFormBtn");
-    joinFormBtn.addEventListener("click", (e) => {
-        // 팝업창 크기
-        const width = 700;
-        const height = 1000;
-
-        // 화면 중앙 정렬 계산
-        const left = (window.screen.width / 2) - (width / 2);
-        const top = (window.screen.height / 2) - (height / 2);
-
-        window.open(
-            '/member/join.do',
-            'joinPopup',
-            'width=' + width + ', height=' + height +
-            ', top=' + top + ', left=' + left + ', scrollbars=yes, resizable=no'
-        );
-    });
-
 </script>
