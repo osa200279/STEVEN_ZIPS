@@ -87,7 +87,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <!-- Category Chips -->
             <div class="flex flex-wrap gap-2" data-purpose="category-filters">
-                <button class="px-5 py-2 rounded-full bg-brand-green text-white text-sm font-medium transition-colors">
+                <button class="px-5 py-2 rounded-full bg-[#6F7F3F] text-white text-sm font-medium transition-colors hover:bg-[#5f6e35]">
                     전체
                 </button>
 
@@ -126,7 +126,7 @@
 
                         <!-- 번호 -->
                         <td class="px-6 py-5 text-sm text-gray-400 text-center">
-                                ${notice.annNo}
+                                 ${status.index + 1}
                         </td>
 
 
@@ -166,7 +166,7 @@
                 </svg>
             </button>
             <!-- Page Numbers -->
-            <button class="w-10 h-10 flex items-center justify-center rounded-lg bg-brand-green text-white font-medium text-sm">
+            <button class="w-10 h-10 rounded-full bg-[#6F7F3F] text-white">
                 1
             </button>
             <button class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-sm font-medium transition-colors">
