@@ -314,6 +314,10 @@
         })
             .then(res => res.text())
             .then(msg => alert(msg));
+z
+        $("#assignCount").val("");
+
+        loadNotAssignedUserCount();
     });
 
 </script>

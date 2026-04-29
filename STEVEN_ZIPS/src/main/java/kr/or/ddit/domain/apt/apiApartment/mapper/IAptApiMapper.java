@@ -53,4 +53,6 @@ public interface IAptApiMapper {
     void updateLatLng(AptComplexEntity apt);
 
     List<AptDetailVO> selectAvailableUnits(List<String> aptList);
+
+    void updateEmpty(String hoNo);
 }

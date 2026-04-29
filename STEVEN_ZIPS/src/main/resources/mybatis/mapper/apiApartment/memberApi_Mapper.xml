@@ -44,10 +44,19 @@
             HEAD_YN
         )VALUES (
             #{userNo},
-             #{hoNo},
-             #{inoutCd},
+            #{hoNo},
+            #{inoutCd},
             SYSDATE,
-             #{headYn}
+            #{headYn}
+        )
+    </insert>
+    <insert id="insertHshldMember">
+        INSERT INTO HSHLD_MEMBER (
+            HO_NO,
+            HSHLD_MBR_NM
+        )values (
+            #{hoNo},
+            #{hshldMbrNm}
         )
     </insert>
 

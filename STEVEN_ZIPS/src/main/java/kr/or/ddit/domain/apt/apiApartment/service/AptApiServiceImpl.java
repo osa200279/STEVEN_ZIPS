@@ -673,6 +673,7 @@ public class AptApiServiceImpl implements IAptApiService {
 
                 MemberVO user = users.get(userIndex);
                 HshldHeadEntity hshldHeadEntity = new HshldHeadEntity();
+                HshldMemberEntity HshldMember = new HshldMemberEntity();
 
                 String userNo = user.getUserNo();
 
@@ -681,10 +682,13 @@ public class AptApiServiceImpl implements IAptApiService {
                 hshldHeadEntity.setHoNo(unit.getHoNo());
                 hshldHeadEntity.setInoutCd("LIVE");
 
+                HshldMember.setHoNo(unit.getHoNo());
+                HshldMember.setHshldMbrNm(user.getUserNm());
+
                 memberMapper.insertMemberAssign(hshldHeadEntity);
                 memberMapper.updateMemberAuth(userNo);
-                /*aptMapper.updateEmpty(HoNo)*/
-
+                aptMapper.updateEmpty(unit.getHoNo());
+                memberMapper.insertHshldMember(HshldMember);
 
                 assigned++;
                 userIndex++;

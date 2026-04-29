@@ -218,4 +218,11 @@
         WHERE APT_CMPLEX_NO = #{aptCmplexNo}
     </update>
 
+    <update id="updateEmpty">
+        UPDATE APT_DETAIL
+        SET
+            EMPTY = 'N'
+        WHERE HO_NO = #{hoNo}
+    </update>
+
 </mapper>
