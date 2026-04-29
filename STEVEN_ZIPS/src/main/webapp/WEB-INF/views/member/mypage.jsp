@@ -134,7 +134,7 @@
 
 
 <%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-<div class="max-w-6xl mx-auto p-8 pt-24">
+<div class="max-w-[1500px] p-10 pt-24 ml-64">
     <!-- 상단 -->
     <div class="flex justify-between items-center mb-8">
         <div>
@@ -142,18 +142,18 @@
             <p class="text-gray-500">회원 정보 확인</p>
         </div>
 
-        <div class="bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold">
+        <div class="bg-[#E6EED6] text-[#6F7F3F] px-4 py-2 rounded-full font-semibold">
             이용중
         </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-6">
+    <div class="grid grid-cols-2 gap-6">
 
         <div class="col-span-1">
             <%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
         </div>
 
-        <div class="col-span-3 grid grid-cols-3 gap-6">
+        <div class="col-span-3 grid grid-cols-[1.2fr_1.5fr_1.3fr] gap-6">
 
 
             <!-- 좌측 프로필 -->
@@ -197,7 +197,7 @@
                 <!-- 🔥 계약신청내역조회 버튼 -->
                 <div class="mt-6">
                     <button onclick="openContractPage()"
-                            class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                            class="w-full bg-[#6F7F3F] text-white py-4 rounded-full font-bold hover:bg-[#5f6e35] transition">
                         계약신청내역조회
                     </button>
                 </div>
@@ -263,7 +263,7 @@
                     <!-- 버튼 -->
                     <div class="pt-4">
                         <button type="submit"
-                                class="w-full bg-green-600 text-white py-4 rounded-xl font-bold">
+                                class="w-full bg-[#6F7F3F] text-white py-4 rounded-full font-bold hover:bg-[#5f6e35] transition">
                             수정 완료
                         </button>
                     </div>
@@ -374,7 +374,7 @@
                           onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
 
                         <button type="submit"
-                                class="px-5 py-2 border border-red-600 text-red-600 rounded-lg">
+                                class="px-3 py-1 text-sm bg-red-500 text-white rounded-full hover:bg-red-600 transition">
                             탈퇴하기
                         </button>
                     </form>
