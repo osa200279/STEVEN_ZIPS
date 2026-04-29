@@ -65,4 +65,13 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         });
     }
+
+    // 마이페이지 버튼
+    const myPageBtn = document.querySelector("#myPageBtn");
+    if(myPageBtn) {
+        myPageBtn.addEventListener("click", (e) => {
+            location.href="/member/myPage.do";
+        });
+    }
+
 })
