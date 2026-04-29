@@ -54,12 +54,12 @@
           "surface-variant": "#e1e3df",
           "on-tertiary": "#ffffff"
         },
-        "borderRadius": {
-          "DEFAULT": "1rem",
-          "lg": "2rem",
-          "xl": "3rem",
-          "full": "9999px"
-        },
+          "borderRadius": {
+              "DEFAULT": "0.25rem",
+              "lg": "0.5rem",
+              "xl": "0.75rem",
+              "full": "9999px"
+          },
         "fontFamily": {
           "headline": ["Plus Jakarta Sans"],
           "body": ["Manrope"],
