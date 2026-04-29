@@ -26,7 +26,9 @@
           신청일 2026.04.09 · 접수번호 LS-2026-0409-11 · 신청자 김태현
         </p>
       </div>
-      <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-sm">승인 완료</span>
+      <span class="bg-[#E6EED6] text-[#6F7F3F] px-3 py-1 rounded-full text-sm">
+  승인 완료
+</span>
     </div>
 
     <p class="text-sm text-gray-500">
@@ -51,19 +53,20 @@
     <div class="grid grid-cols-4 gap-4 text-center">
 
       <div class="p-4 border rounded-lg">
-        <div class="w-8 h-8 mx-auto bg-green-600 text-white rounded-full flex items-center justify-center text-sm">1</div>
+        <div class="w-8 h-8 mx-auto bg-[#6F7F3F] text-white rounded-full flex items-center justify-center text-sm">1</div>
         <p class="mt-2 font-medium">신청 접수</p>
         <p class="text-xs text-gray-400">2026.04.12</p>
       </div>
 
       <div class="p-4 border rounded-lg">
-        <div class="w-8 h-8 mx-auto bg-green-600 text-white rounded-full flex items-center justify-center text-sm">2</div>
+        <div class="w-8 h-8 mx-auto bg-[#6F7F3F] text-white rounded-full flex items-center justify-center text-sm">2</div>
+
         <p class="mt-2 font-medium">서류 확인</p>
         <p class="text-xs text-gray-400">2026.04.13</p>
       </div>
 
       <div class="p-4 border rounded-lg">
-        <div class="w-8 h-8 mx-auto bg-green-600 text-white rounded-full flex items-center justify-center text-sm">3</div>
+        <div class="w-8 h-8 mx-auto bg-[#6F7F3F] text-white rounded-full flex items-center justify-center text-sm">3</div>
         <p class="mt-2 font-medium">관리사무소 검토</p>
         <p class="text-xs text-gray-400">진행 중</p>
       </div>
