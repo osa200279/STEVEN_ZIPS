@@ -4,11 +4,10 @@ import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.central.admin.mapper.CentralMapper;
-import kr.or.ddit.domain.central.admin.vo.ContractVO;
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
-import kr.or.ddit.domain.central.admin.vo.RentContractVO;
+import kr.or.ddit.domain.central.admin.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -24,6 +23,7 @@ public class CentralServiceImpl implements CentralService {
 
     @Override
     public void insertContract(RentContractVO vo, MultipartFile[] files) throws Exception {
+
         // 1. 계약 INSERT
         mapper.insertContract(vo);
 
@@ -32,9 +32,10 @@ public class CentralServiceImpl implements CentralService {
         String folderPath = "contract/" + vo.getRentCtrtNo();
 
         long seq = attachFileMapper.getSeqFileGroupNo();
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        
         for (int i = 0; i < files.length; i++) {
             if (files[i] != null && !files[i].isEmpty()) {
-                String uuid = UUID.randomUUID().toString().replace("-", "");
                 String savedFileName = uuid + "_" + files[i].getOriginalFilename();
 
                 String googleId = googleDriveService.uploadFile(files[i], folderPath, savedFileName);
@@ -62,5 +63,70 @@ public class CentralServiceImpl implements CentralService {
         return mapper.selectContractDetail(ctrtNo);
     }
 
+    @Override
+    public void updateContract(RentContractVO vo, MultipartFile[] files) throws Exception {
+        mapper.updateContract(vo);
+
+        String[] cats = {"계약서", "신분증", "추가서류"};
+        String folderPath = "contract/" + vo.getRentCtrtNo();
+
+        long seq = attachFileMapper.getSeqFileGroupNo();
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+
+        for (int i = 0; i < files.length; i++) {
+            if (files[i] != null && !files[i].isEmpty()) {
+
+                String savedFileName = uuid + "_" + files[i].getOriginalFilename();
+
+                String googleId = googleDriveService.uploadFile(files[i], folderPath, savedFileName);
+
+                AttachFileVO attachFile = AttachFileVO.fileSettings(
+                        files[i], seq, cats[i], savedFileName, googleId, folderPath, i + 1
+                );
+                attachFileMapper.insertAttachFile(attachFile);
+            }
+        }
+    }
+
+    @Override
+    public void contractModifyStatus(String rentCtrtNo, String status) {
+        mapper.contractModifyStatus(rentCtrtNo, status);
+    }
+
+    @Override
+    public void insertContractForm(ContractFormVO contractFormVO, MultipartFile formFile) {
+        // 파일 업로드·파일번호 반영은 추후 연동. 현재는 VO 필드만 INSERT (file_no는 null 가능 시)
+        mapper.contractFormInsert(contractFormVO);
+    }
+
+    @Override
+    public void deleteContractForm(String frmNo) {
+        mapper.contractFormDelete(frmNo);
+    }
+
+    @Override
+    public ContractFormVO contractFormDetail(String frmNo) {
+        return mapper.contractFormDetail(frmNo);
+    }
+
+    @Override
+    public void contractFormUpdate(ContractFormVO contractFormVO) {
+        mapper.contractFormUpdate(contractFormVO);
+    }
+
+    @Override
+    public List<ContractAptVO> contractForm(Model model) {
+        return mapper.contractForm(model);
+    }
+
+    @Override
+    public int selectContractFormCount(PaginationInfoVO<ContractFormVO> pagingVO) {
+        return mapper.selectContractFormCount(pagingVO);
+    }
+
+    @Override
+    public List<ContractFormVO> selectContractFormList(PaginationInfoVO<ContractFormVO> pagingVO) {
+        return mapper.SelectContractFormList(pagingVO);
+    }
 
 }

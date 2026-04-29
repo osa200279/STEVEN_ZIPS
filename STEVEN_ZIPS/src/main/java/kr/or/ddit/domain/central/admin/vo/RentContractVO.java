@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.central.admin.vo;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -14,8 +15,8 @@ public class RentContractVO {
     private String mvinDt;
     private String mvoutDt;
     private String mvoutCmplDt;
-    private Date regDt;
-    private Date mdfDt;
+    private String regDt;
+    private String mdfDt;
     private String ctrtSttsCd;
     private long ctrtAmt;
     private long midPayAmt;

@@ -23,9 +23,14 @@ public class PaginationInfoVO<T> {
 	private String status;
 	private String ctrtNo;
 	private String expiry;
+	private String aptCmplexNo;
+	private String aptCmplexNm;
+	private String frmNo;
+	private String frmNm;
+	private String rentTypeNm;
 
-	
-	
+
+
 	public int getTotalPage() {
 		return totalPage;
 	}
@@ -95,7 +100,7 @@ public class PaginationInfoVO<T> {
 	public int getTotalRecord() {
 		return totalRecord;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "PaginationInfoVO [totalRecord=" + totalRecord + ", totalPage=" + totalPage + ", currentPage="
@@ -110,7 +115,7 @@ public class PaginationInfoVO<T> {
 		this.screenSize = screenSize;
 		this.blockSize = blockSize;
 	}
-	
+
 	public void setTotalRecord(int totalRecord) {
 		// 총 게시글 수를 저장하고, 총 게시글수를 페이지 당 나타낼 게시글 수로 나눠 총 페이지수를 구합니다.
 		this.totalRecord = totalRecord;
@@ -118,14 +123,14 @@ public class PaginationInfoVO<T> {
 		// ceil은 올림
 		totalPage = (int)Math.ceil(totalRecord / (double)screenSize);
 	}
-	
+
 	public void setCurrentPage(int currentPage) {
 		this.currentPage = currentPage; // 현재 페이지 저장
 		// startRow, endRow, startRow, endPage를 currentPage 값을 활용해 자동 설정
 		// startRow, endRow는 screenSize의 값을 활용해서 공식화
 		endRow = currentPage * screenSize; // 끝 row = 현재 페이지 * 한 페이지당 게시글 수
 		startRow = endRow - (screenSize - 1); // 시작 row = 끝 row - (한 페이지당 게시글 수 - 1)
-		
+
 		// startPage, endPage는 blockSize의 값을 활용해서 공식화
 		// 마지막 페이지 = (현재 페이지 + (블록 사이즈 - 1)) / 블록 사이즈 * 블록 사이즈
 		// / blockSize * blockSize는 1,2,3,4,5... 페이지마다 실수계산이 아닌 정수 계산을 이용해
@@ -133,11 +138,11 @@ public class PaginationInfoVO<T> {
 		endPage = (currentPage + (blockSize - 1)) / blockSize * blockSize;
 		startPage = endPage - (blockSize - 1); // 시작 페이지 = 끝 페이지 - (블록 사이즈 - 1)
 	}
-	
+
 	public String getPagingHTML() {
 		StringBuffer html = new StringBuffer();
 		html.append("<ul class='pagination pagination-sm m-0 float-right'>");
-		
+
 		// prev 1 2 3 4 5 next
 		// 'Prev' 버튼은 현재 페이지가 blockSize(현재 5)를 넘었을 때 나타나야 합니다
 		// 현재 페이지가 1-5 사이의 범위에 있다면 startPage는 무조건 1이 됩니다.
@@ -155,21 +160,25 @@ public class PaginationInfoVO<T> {
 		for(int i = startPage; i <= (endPage < totalPage ? endPage : totalPage); i++) {
 			if (i == currentPage) {
 				html.append("<li class='page-item active'><span class='page-link'>" +
-				i + "</span></li>");
+						i + "</span></li>");
 			}else {
 				html.append("<li class='page-item'><a href='' class='page-link' data-page='"
 						+ i +"'>" + i + "</a></li>");
 			}
 		}
-		
+
 		if(endPage < totalPage) {
 			html.append("<li class='page-item'><a href='' class='page-link' data-page='"
 					+ (endPage + 1) + "'>Next</a></li>");
 		}
-		
+
 		html.append("</ul>");
 		return html.toString();
 	}
+
+
+
+
 }
 
 

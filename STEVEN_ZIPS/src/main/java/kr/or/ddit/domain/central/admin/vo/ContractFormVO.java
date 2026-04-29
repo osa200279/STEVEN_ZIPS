@@ -13,6 +13,6 @@ public class ContractFormVO {
     private String regDt;
     private String mdfDt;
     private String fileNo;
-    private String aptCmlexNm;
+    private String aptCmplexNm;
     private String rentTypeNm;
 }

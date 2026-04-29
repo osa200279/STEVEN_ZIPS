@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralAside.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralHeader.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralCommon.css" />
-    <script defer src="${pageContext.request.contextPath}/js/centralAside.js"></script>
-    <script defer src="${pageContext.request.contextPath}/js/centralHeader.js"></script>
+    <script src="${pageContext.request.contextPath}/js/centralAdmin/toggleSidebar.js"></script>
+    <script src="${pageContext.request.contextPath}/js/centralHeader.js"></script>
     <style>
       .doc-chip {
         display: inline-flex;
@@ -349,34 +349,12 @@
     </div>
     <script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
       /* 사이드바 */
-      function toggleSidebar() {
-        var s = document.getElementById("sidebar");
-        if (s) s.classList.toggle("collapsed");
-      }
-      var logoIcon = document.getElementById("logoIcon");
-      if (logoIcon) {
-        logoIcon.addEventListener("click", function () {
-          var s = document.getElementById("sidebar");
-          if (s && s.classList.contains("collapsed")) toggleSidebar();
-        });
-      }
+
 
       // 초기 렌더
       renderDocTable();
     </script>
+      <script src="${pageContext.request.contextPath}/js/centralAdmin/toggleSidebar.js"></script>
   </body>
 </html>

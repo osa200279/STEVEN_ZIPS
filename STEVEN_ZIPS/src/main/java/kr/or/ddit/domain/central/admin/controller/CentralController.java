@@ -1,9 +1,7 @@
 package kr.or.ddit.domain.central.admin.controller;
 
 import kr.or.ddit.domain.central.admin.service.CentralService;
-import kr.or.ddit.domain.central.admin.vo.ContractVO;
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
-import kr.or.ddit.domain.central.admin.vo.RentContractVO;
+import kr.or.ddit.domain.central.admin.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -11,7 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*  전체 중앙관리자 콘트롤러 */
 
@@ -93,7 +93,6 @@ public class CentralController {
         return "centralAdmin/residentStatus";
     }
 
-
     @GetMapping("/facility")
     public String facilityForm() {
         return "centralAdmin/facility";
@@ -104,17 +103,19 @@ public class CentralController {
         return "centralAdmin/subAdmin";
     }
 
+    /* 합친 후 삭제예정 */
+    @GetMapping("/adminSubMgmt")
+    public String subAdminForm2() {
+        return "centralAdmin/adminSubMgmt";
+    }
 
-    @PostMapping("/contractInsert.do")
-    public String contractInsert(RentContractVO rentContractVO,
-                                 MultipartFile contractFile,
-                                 MultipartFile idFile,
-                                 MultipartFile etcFile,
-                                 Model model) throws Exception {
-        rentContractVO.setCtrtSttsCd("승인대기");
-        rentContractVO.setMvinYn("N");
-        service.insertContract(rentContractVO, new MultipartFile[]{contractFile, idFile, etcFile});
-        return "redirect:/centralAdmin/contractList.do";
+    @GetMapping("/contractForm.do")
+    public String contractForm() {
+        return "redirect:/centralAdmin/contractFormList.do";
+    }
+    @GetMapping("/contractDoc.do")
+    public String contractDocForm(){
+        return "centralAdmin/contractDoc";
     }
 
     @GetMapping("/contractList.do")
@@ -125,11 +126,10 @@ public class CentralController {
             @RequestParam(name = "user", required = false) String user,
             @RequestParam(name = "status", required = false) String status,
             @RequestParam(name = "expiry", required = false) String expiry,
-            Model model
-    ) {
-        PaginationInfoVO<ContractVO> pagingVO = new PaginationInfoVO<>();
+            Model model) {
 
-        // 검색 시 추가
+        kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<kr.or.ddit.domain.central.admin.vo.ContractVO> pagingVO = new kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<>();
+
         if (StringUtils.isNotBlank(type)) {
             pagingVO.setType(type);
             model.addAttribute("type", type);
@@ -151,18 +151,11 @@ public class CentralController {
             model.addAttribute("ctrtNo", ctrtNo);
         }
 
-        // start/endRow, start/endPage 필드 설정
         pagingVO.setCurrentPage(currentPage);
         int totalRecord = service.selectContractCount(pagingVO);
-        // totalPage 설정
         pagingVO.setTotalRecord(totalRecord);
-        // 1page에 해당하는 screenSize(10개) 만큼의 게시글 목록을 가져옵니다.
-        List<ContractVO> dataList = service.selectContractList(pagingVO);
-        System.out.println("[contractList] totalRecord = " + totalRecord);
-        System.out.println("[contractList] dataList.size=" + (dataList == null ? "null" : dataList.size()));
-        if (dataList != null && !dataList.isEmpty()) {
-            System.out.println("[contractList] first.rentCtrtNo=" + dataList.get(0).getRentCtrtNo());
-        }
+
+        List<kr.or.ddit.domain.central.admin.vo.ContractVO> dataList = service.selectContractList(pagingVO);
         pagingVO.setDataList(dataList);
 
         model.addAttribute("pagingVO", pagingVO);
@@ -170,14 +163,158 @@ public class CentralController {
         return "centralAdmin/conManagement";
     }
 
+    @GetMapping("/contractFormList.do")
+    public String contractFormList(
+            @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage,
+            @RequestParam(name = "frmNm", required = false) String frmNm,
+            @RequestParam(name = "aptCmplexNo", required = false) String aptCmplexNo,
+            @RequestParam(name = "rentTypeCd", required = false) String rentTypeCd,
+            Model model) {
+
+        kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<ContractFormVO> pagingVO = new kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<>();
+
+        if (StringUtils.isNotBlank(frmNm)) {
+            pagingVO.setFrmNm(frmNm);
+            model.addAttribute("frmNm", frmNm);
+        }
+        if (StringUtils.isNotBlank(aptCmplexNo)) {
+            pagingVO.setAptCmplexNo(aptCmplexNo);
+            model.addAttribute("aptCmplexNo", aptCmplexNo);
+        }
+        if (StringUtils.isNotBlank(rentTypeCd)) {
+            // PaginationInfoVO는 rentTypeNm 필드를 사용
+            pagingVO.setRentTypeNm(rentTypeCd);
+            model.addAttribute("rentTypeCd", rentTypeCd);
+        }
+
+        pagingVO.setCurrentPage(currentPage);
+        int totalRecord = service.selectContractFormCount(pagingVO);
+        pagingVO.setTotalRecord(totalRecord);
+
+        List<ContractFormVO> dataList = service.selectContractFormList(pagingVO);
+        pagingVO.setDataList(dataList);
+
+        // 아파트 목록 드롭다운용
+        model.addAttribute("aptList", service.contractForm(model));
+        model.addAttribute("pagingVO", pagingVO);
+
+        return "centralAdmin/contractForm";
+    }
+
+    @PostMapping("/contractInsert.do")
+    public String contractInsert(RentContractVO rentContractVO,
+                                 MultipartFile contractFile,
+                                 MultipartFile idFile,
+                                 MultipartFile etcFile,
+                                 Model model) throws Exception {
+        // RENT_CTRT.CTRT_STTS_CD는 코드값(SUB/APR/RJC) 기준으로 처리
+        rentContractVO.setCtrtSttsCd("SUB");
+        rentContractVO.setMvinYn("N");
+        service.insertContract(rentContractVO, new MultipartFile[]{contractFile, idFile, etcFile});
+        return "redirect:/centralAdmin/contractList.do";
+    }
+
     @GetMapping("/contractDetail.do")
     @ResponseBody
     public ContractVO contractDetail(@RequestParam String ctrtNo) {
         return service.selectContractDeatil(ctrtNo);
+    }
+    @PostMapping("/contractModifyStatus")
+    @ResponseBody
+    public Map<String, Object> contractModifyStatus(
+            @RequestParam String rentCtrtNo,
+            @RequestParam String status) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            service.contractModifyStatus(rentCtrtNo, status);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
 
+    @PostMapping("/contractUpdate.do")
+    public String contractUpdate(RentContractVO rentContractVO,
+                                 MultipartFile contractFile,
+                                 MultipartFile idFile,
+                                 MultipartFile etcFile) throws Exception {
+        service.updateContract(rentContractVO, new MultipartFile[]{contractFile, idFile, etcFile});
+        return "redirect:/centralAdmin/contractList.do";
+    }
+    
+    @GetMapping("/contractFormDetail.do")
+    @ResponseBody
+    public ContractFormVO contractFormDetail(@RequestParam String frmNo){
+
+        return service.contractFormDetail(frmNo);
+    }
+
+    @PostMapping("/contractFormInsert.do")
+    public String contractFormInsert(ContractFormVO contractFormVO,
+                                     MultipartFile formFile) throws Exception {
+        service.insertContractForm(contractFormVO, formFile);
+        return "redirect:/centralAdmin/contractFormList.do";
+    }
+
+    @PostMapping("contractFormUpdate.do")
+    @ResponseBody
+    public Map<String, Object> contractFormUpdate(ContractFormVO contractFormVO){
+        Map<String, Object> result = new HashMap<>();
+        try {
+            service.contractFormUpdate(contractFormVO);
+            result.put("success", true);
+        } catch (Exception e){
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
     }
 
 
+    @PostMapping("/contractFormDelete.do")
+    public String contractFormDelete(@RequestParam(name = "frmNo") String frmNo) {
+        if (StringUtils.isNotBlank(frmNo)) {
+            service.deleteContractForm(frmNo);
+        }
+        return "redirect:/centralAdmin/contractFormList.do";
+    }
 
+    @GetMapping
+    public String contractDocList(
+            @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage,
+            @RequestParam(name = "sbmsnDocNo", required = false) String sbmsnDocNo,
+            @RequestParam(name = "sbmsnDocTyNo", required = false) String sbmsnDocTyNo,
+            @RequestParam(name = "rentTypeCd", required = false) String rentTypeCd,
+            Model model) {
+        PaginationInfoVO<ContractFormVO> pagingVO = new PaginationInfoVO<>();
 
+        if (StringUtils.isNotBlank(frmNm)) {
+            pagingVO.setFrmNm(frmNm);
+            model.addAttribute("frmNm", frmNm);
+        }
+        if (StringUtils.isNotBlank(aptCmplexNo)) {
+            pagingVO.setAptCmplexNo(aptCmplexNo);
+            model.addAttribute("aptCmplexNo", aptCmplexNo);
+        }
+        if (StringUtils.isNotBlank(rentTypeCd)) {
+            // PaginationInfoVO는 rentTypeNm 필드를 사용
+            pagingVO.setRentTypeNm(rentTypeCd);
+            model.addAttribute("rentTypeCd", rentTypeCd);
+        }
+
+        pagingVO.setCurrentPage(currentPage);
+        int totalRecord = service.selectContractFormCount(pagingVO);
+        pagingVO.setTotalRecord(totalRecord);
+
+        List<ContractFormVO> dataList = service.selectContractFormList(pagingVO);
+        pagingVO.setDataList(dataList);
+
+        // 아파트 목록 드롭다운용
+        model.addAttribute("aptList", service.contractForm(model));
+        model.addAttribute("pagingVO", pagingVO);
+
+        return "centralAdmin/contractForm";
+    }
 }
