@@ -111,7 +111,8 @@
             </sec:authorize>
 
             <sec:authorize access="isAuthenticated()">
-                <button type="button" id="myPageBtn" href="/member/myPage.do" class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">
+                <button type="button" id="myAptBtn" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">🏢나의 아파트️</button>
+                <button type="button" id="myPageBtn" class="bg-primary text-white px-6 py-2.5 rounded-full font-semibold hover:bg-primary/90 transition-colors">
                     마이페이지
                 </button>
                 <button type="button" id="logoutBtn" class="text-slate-600 hover:text-primary px-4 py-2 text-sm font-medium">
@@ -126,3 +127,22 @@
     </nav>
     <script src="${pageContext.request.contextPath}/js/common/conn.js"></script>
 </header>
+
+<script type="module">
+    const myAptBtn = document.getElementById("myAptBtn");
+
+    if(myAptBtn) {
+        myAptBtn.addEventListener("click", () => {
+            const width = 700;
+            const height = 400;
+
+            const left = (window.screen.width / 2) - (width/ 2);
+            const top = (window.screen.height / 2) - (height/2);
+
+            window.open(
+              '/apt'
+            );
+        });
+    }
+
+</script>

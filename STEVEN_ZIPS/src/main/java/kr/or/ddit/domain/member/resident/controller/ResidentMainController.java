@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.resident.controller;
+package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
