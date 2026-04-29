@@ -74,7 +74,7 @@
   .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 
-  /* Accordion custom styling */
+  /* Accordion custom styling! */
   .nav-item[open] summary .expand-icon { transform: rotate(180deg); }
   .nav-item summary::-webkit-details-marker { display: none; }
   .nav-item summary { list-style: none; }
