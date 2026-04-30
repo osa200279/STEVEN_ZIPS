@@ -123,7 +123,7 @@
 <div class="all-menu-overlay" id="allMenuOverlay" role="dialog" aria-modal="true">
     <div class="all-menu-panel">
         <div class="all-menu-header">
-            <div class="all-menu-title">대덕아파트 전체메뉴</div>
+            <div class="all-menu-title">${office.aptCmplexNm} 전체메뉴</div>
             <button class="all-menu-close" id="allMenuClose" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                     <line x1="18" y1="6" x2="6" y2="18"/>

@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -446,7 +448,19 @@
             <div class="office-tags">
               <span class="office-tag">${office.unitCnt}세대</span>
               <span class="office-tag">${office.dongCnt}동</span>
-              <span class="office-tag">${office.bldYr} 준공</span>
+              <span class="office-tag">
+                <c:choose>
+                    <c:when test="${not empty office.bldYr and fn:length(office.bldYr) == 8}">
+                        ${fn:substring(office.bldYr, 0, 4)}년
+                        ${fn:substring(office.bldYr, 4, 6)}월
+                        ${fn:substring(office.bldYr, 6, 8)}일 준공
+                    </c:when>
+
+                    <c:otherwise>
+                        ${office.bldYr} 준공
+                    </c:otherwise>
+                </c:choose>
+              </span>
             </div>
           </div>
         </div>
@@ -456,12 +470,31 @@
             <tr>
               <th>대표번호</th>
               <td>
-                <c:choose>
-                  <c:when test="${not empty office.mgmtOfcTelno}">
-                    ${office.mgmtOfcTelno}
+              <%-- 전화번호 '-' 추가 방법 (참고 : apt-main.jsp와 동일) --%>
+              <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, '-', '')}" />
+              <c:set var="telNo" value="${fn:replace(telNo, ' ', '')}" />
+              <c:set var="telLength" value="${fn:length(telNo)}" />
+                 <c:choose>
+                  <c:when test="${fn:startsWith(telNo, '02') and telLength == 9}">
+                      ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 5)}-${fn:substring(telNo, 5, 9)}
                   </c:when>
-                  <c:otherwise>-</c:otherwise>
-                </c:choose>
+
+                  <c:when test="${fn:startsWith(telNo, '02') and telLength == 10}">
+                      ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 6)}-${fn:substring(telNo, 6, 10)}
+                  </c:when>
+
+                  <c:when test="${not fn:startsWith(telNo, '02') and telLength == 10}">
+                      ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 6)}-${fn:substring(telNo, 6, 10)}
+                  </c:when>
+
+                  <c:when test="${not fn:startsWith(telNo, '02') and telLength == 11}">
+                      ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 7)}-${fn:substring(telNo, 7, 11)}
+                  </c:when>
+
+                  <c:otherwise>
+                      ${office.mgmtOfcTelno}
+                  </c:otherwise>
+              </c:choose>
               </td>
               <th class="r">운영시간</th>
               <td>평일 09:00 ~ 18:00</td>
