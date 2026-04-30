@@ -2,7 +2,9 @@ package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
+import kr.or.ddit.domain.member.mapper.IMemberMapper;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
+import kr.or.ddit.domain.member.resident.vo.RsidVhclEntity;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +17,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequestMapping("/resident")
 public class ResidentMainController {
+
+    @Autowired
+    private IMemberMapper memberMapper;
 
     @Autowired
     private IMgmtOfficeService mgmtOfficeService;
@@ -106,10 +113,18 @@ public class ResidentMainController {
     }
 
     @GetMapping("/service/car")
-    public String serviceCar() {
-        return "member/resident/service/service_car";
-    }
+    public String serviceCar(@AuthenticationPrincipal CustomUser user, Model model) {
 
+        MemberVO memberVO = user.getMember();
+
+        // 현재는 호 정보 없이 userNo 로 전부 가져옴, 추후 호 정보가 생기면 추가할 것!
+        List<RsidVhclEntity> vhclList = memberMapper.getVhclList(memberVO.getUserNo());
+
+        model.addAttribute("user", memberVO);
+        model.addAttribute("vhclList", vhclList);
+
+        return "member/resident/service_car";
+    }
     @GetMapping("/service/visitor")
     public String serviceVisitor() {
         return "member/resident/service/service_visitor";

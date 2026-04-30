@@ -1,9 +1,11 @@
 package kr.or.ddit.domain.member.mapper;
-import kr.or.ddit.common.ServiceResult;
+
+import kr.or.ddit.domain.member.resident.vo.RsidVhclEntity;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -27,4 +29,6 @@ public interface IMemberMapper {
     MemberVO getMemberByUserNo(String userNo);
 
     void updateAlarm(Map<String, Object> param);
+
+    List<RsidVhclEntity> getVhclList(String userNo);
 }
