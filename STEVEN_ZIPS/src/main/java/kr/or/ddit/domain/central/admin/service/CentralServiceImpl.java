@@ -109,26 +109,31 @@ public class CentralServiceImpl implements CentralService {
 
     @Override
     public void insertContractForm(ContractFormVO contractFormVO, MultipartFile formFile) throws IOException {
+        // 4. DB 시퀀스 채번 및 VO 생성
+        long seq = attachFileMapper.getSeqFileGroupNo();
 
         // 2. 파일명 및 경로 생성 (로직 시연)
+        contractFormVO.setFileNo(String.valueOf(seq));
+
+        mapper.contractFormInsert(contractFormVO);
+
+        String ContractNo = contractFormVO.getFrmNo();
+
         String uuid = UUID.randomUUID().toString().replace("-", "");
         String savedFileName = uuid + "_" + formFile.getOriginalFilename();
-        String folderPath = "contract/" + uuid;
+        String folderPath = "contract/" + "contractNo_"+ ContractNo;
+
 
         // 3. 구글 업로드 실행
         String googleId = googleDriveService.uploadFile(formFile, folderPath, savedFileName);
 
-        // 4. DB 시퀀스 채번 및 VO 생성
-        long seq = attachFileMapper.getSeqFileGroupNo();
         AttachFileVO attachFile = AttachFileVO.fileSettings(
                 formFile, seq, "서식", savedFileName, googleId, folderPath, 1
         );
 
         attachFileMapper.insertAttachFile(attachFile);
 
-        contractFormVO.setFileNo(String.valueOf(seq));
 
-        mapper.contractFormInsert(contractFormVO);
 
     }
 
