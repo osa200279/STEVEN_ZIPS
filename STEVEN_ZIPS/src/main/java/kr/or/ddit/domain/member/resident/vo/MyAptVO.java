@@ -12,5 +12,5 @@ public class MyAptVO {
     private String sidoNm;         // 시,도 명
     private String sigunguNm;      // 시,군,구 명
     private String emdNm;          // 읍,면,동 명
-    private String dorojuso;       // 도로명 주소
+    private String dorojuso;        // 도로명 주소
 }

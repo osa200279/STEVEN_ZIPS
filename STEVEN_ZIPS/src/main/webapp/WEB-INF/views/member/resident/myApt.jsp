@@ -14,12 +14,12 @@
 <body>
 <h1>나의 아파트</h1>
     <c:choose>
-        <c:when test="${not empty member.aptComplexNo}">
+        <c:when test="${not empty resident.myAptList}">
             <table border="1">
             <tr>
                 <th>아파트 명</th>
             </tr>
-            <c:forEach var="myapt" items="${member.myAptLIst}">
+            <c:forEach var="myapt" items="${resident.myAptLIst}">
                 <td>
                     ${myapt.aptCmlexNm}
                 </td>
