@@ -1,8 +1,9 @@
 package kr.or.ddit.common.security;
 
 import kr.or.ddit.common.util.member.resident.InoutCd;
-import kr.or.ddit.domain.apt.manager.vo.MngrVO;
+import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.admin.AdminVO;
+import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
 import kr.or.ddit.domain.member.resident.mapper.IResidentMapper;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
