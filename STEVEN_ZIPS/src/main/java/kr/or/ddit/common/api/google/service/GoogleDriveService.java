@@ -25,6 +25,10 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 /*
+    @author 이용로
+ */
+
+/*
     google drive 파일 메서드 참고문서
     https://developers.google.com/workspace/drive/api/guides/search-files?hl=ko
 */
@@ -36,6 +40,7 @@ public class GoogleDriveService {
 
     /**
      * google drive service 객체 생성 및 반환 메서드
+     * @author 이용로
      * @return Drive 객체
      * @throws IOException
      * @throws GeneralSecurityException
@@ -69,6 +74,7 @@ public class GoogleDriveService {
 
     /**
      * 파일 업로드 메서드
+     * @author 이용로
      * @param file  저장할 파일vo 객체
      * @param path  파일을 저장할 *폴더*의 전체 경로 (ex. member/prof_img/파일.txt면 member/prof_img까지 마자막 '/'와 파일명은 제거한다)
      * @param savedFileName uuid_name 형식의 저장 될 파일명 (*주의 uuid는 '-'를 제거)
@@ -107,7 +113,7 @@ public class GoogleDriveService {
 
     /**
      * mkdirs() 처럼 동작하는 폴더(경로) 탐색 메서드
-     *
+     * @author 이용로
      * @param service - 사용할 google drive 서비스 객체
      * @param rootId  - 탐색을 시작할 최상위 폴더 이름
      * @param path    - 파일을 저장할 경로
@@ -156,7 +162,7 @@ public class GoogleDriveService {
 
     /**
      * 전체 경로를 통해 타겟 파일 찾기
-     *
+     * @author 이용로
      * @param service
      * @param rootId
      * @param fullPath 파일명까지 포함한 전체 경로(attach_file테이블의 file_path)
