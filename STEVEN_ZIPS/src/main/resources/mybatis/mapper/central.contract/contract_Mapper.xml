@@ -288,11 +288,14 @@
         SET CTRT_STTS_CD = #{status}
         WHERE RENT_CTRT_NO = #{rentCtrtNo}
     </update>
+
     <update id="contractFormUpdate" parameterType="kr.or.ddit.domain.central.admin.vo.ContractFormVO">
         update CNTRCT_FRM
         set FRM_NM = #{frmNm},
-            RENT_TYPE_CD = #{rentTypeCd}
-        where FRM_NO = #{frmNm}
+            RENT_TYPE_CD = #{rentTypeCd},
+            MDF_DT = sysdate,
+            APT_CMPLEX_NO = #{aptCmplexNo}
+        where FRM_NO = #{frmNo}
     </update>
 
 </mapper>

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +19,19 @@ import java.util.UUID;
 public class CentralServiceImpl implements CentralService {
 
     private final CentralMapper mapper;
+
+
+
+    @Override
+    public int selectContractDocCount(PaginationInfoVO<ContractDocVO> pagingVO) {
+        return mapper.selectContractDocCount(pagingVO);
+    }
+
+    @Override
+    public List<ContractDocVO> selectContractDocList(PaginationInfoVO<ContractDocVO> pagingVO) {
+        return mapper.selectContractDocList(pagingVO);
+    }
+
     private final GoogleDriveService googleDriveService;
     private final IAttachFileMapper attachFileMapper;
 
@@ -94,9 +108,28 @@ public class CentralServiceImpl implements CentralService {
     }
 
     @Override
-    public void insertContractForm(ContractFormVO contractFormVO, MultipartFile formFile) {
-        // 파일 업로드·파일번호 반영은 추후 연동. 현재는 VO 필드만 INSERT (file_no는 null 가능 시)
+    public void insertContractForm(ContractFormVO contractFormVO, MultipartFile formFile) throws IOException {
+
+        // 2. 파일명 및 경로 생성 (로직 시연)
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        String savedFileName = uuid + "_" + formFile.getOriginalFilename();
+        String folderPath = "contract/" + uuid;
+
+        // 3. 구글 업로드 실행
+        String googleId = googleDriveService.uploadFile(formFile, folderPath, savedFileName);
+
+        // 4. DB 시퀀스 채번 및 VO 생성
+        long seq = attachFileMapper.getSeqFileGroupNo();
+        AttachFileVO attachFile = AttachFileVO.fileSettings(
+                formFile, seq, "서식", savedFileName, googleId, folderPath, 1
+        );
+
+        attachFileMapper.insertAttachFile(attachFile);
+
+        contractFormVO.setFileNo(String.valueOf(seq));
+
         mapper.contractFormInsert(contractFormVO);
+
     }
 
     @Override

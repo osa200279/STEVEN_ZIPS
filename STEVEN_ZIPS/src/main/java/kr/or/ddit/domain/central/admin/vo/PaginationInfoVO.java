@@ -6,28 +6,31 @@ import java.util.List;
 
 @Data
 public class PaginationInfoVO<T> {
-	private int totalRecord;	// 총 게시글 수
-	private int totalPage;		// 총 페이지 수
-	private int currentPage;	// 현재 페이지
+	private int totalRecord;		// 총 게시글 수
+	private int totalPage;			// 총 페이지 수
+	private int currentPage;		// 현재 페이지
 	private int screenSize = 10;		// 페이지 당 게시글 수
 	private int blockSize = 5;		// 페이지 블록 수
-	private int startRow;		// 시작 row
-	private int endRow;			// 끝 row
-	private int startPage;		// 시작 페이지
-	private int endPage;		// 끝 페이지
-	private List<T> dataList; 	// 결과를 담을 데이터 리스트
-	private String searchType;	// 검색 타입
-	private String searchWord ;	// 검색 단어
+	private int startRow;			// 시작 row
+	private int endRow;				// 끝 row
+	private int startPage;			// 시작 페이지
+	private int endPage;			// 끝 페이지
+	private List<T> dataList; 		// 결과를 담을 데이터 리스트
+	private String searchType;		// 검색 타입
+	private String searchWord ;		// 검색 단어
 	private String type;
 	private String user;
-	private String status;
-	private String ctrtNo;
+	private String status;			// 상태
+	private String ctrtNo;			// 계약 번호
 	private String expiry;
-	private String aptCmplexNo;
-	private String aptCmplexNm;
-	private String frmNo;
-	private String frmNm;
-	private String rentTypeNm;
+	private String aptCmplexNo;		// 아파트 단지 번호
+	private String aptCmplexNm;		// 아파트 단지 명
+	private String frmNo;			// 서식 번호
+	private String frmNm;			// 서식 명
+	private String rentTypeCd;		// 계약 유형
+	private String sbmsnDocTyCd;	// 서류 유형
+	private String sbmsnDocSttsCd;
+	private String sbmsnDocNo;
 
 
 
@@ -175,7 +178,6 @@ public class PaginationInfoVO<T> {
 		html.append("</ul>");
 		return html.toString();
 	}
-
 
 
 

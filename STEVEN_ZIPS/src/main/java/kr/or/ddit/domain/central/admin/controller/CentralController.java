@@ -1,10 +1,7 @@
 package kr.or.ddit.domain.central.admin.controller;
 
 import kr.or.ddit.domain.central.admin.service.CentralService;
-import kr.or.ddit.domain.central.admin.vo.ContractFormVO;
-import kr.or.ddit.domain.central.admin.vo.ContractVO;
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
-import kr.or.ddit.domain.central.admin.vo.RentContractVO;
+import kr.or.ddit.domain.central.admin.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -131,7 +128,7 @@ public class CentralController {
             @RequestParam(name = "expiry", required = false) String expiry,
             Model model) {
 
-        kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<kr.or.ddit.domain.central.admin.vo.ContractVO> pagingVO = new kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<>();
+        PaginationInfoVO<ContractVO> pagingVO = new PaginationInfoVO<>();
 
         if (StringUtils.isNotBlank(type)) {
             pagingVO.setType(type);
@@ -158,7 +155,7 @@ public class CentralController {
         int totalRecord = service.selectContractCount(pagingVO);
         pagingVO.setTotalRecord(totalRecord);
 
-        List<kr.or.ddit.domain.central.admin.vo.ContractVO> dataList = service.selectContractList(pagingVO);
+        List<ContractVO> dataList = service.selectContractList(pagingVO);
         pagingVO.setDataList(dataList);
 
         model.addAttribute("pagingVO", pagingVO);
@@ -174,7 +171,7 @@ public class CentralController {
             @RequestParam(name = "rentTypeCd", required = false) String rentTypeCd,
             Model model) {
 
-        kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<ContractFormVO> pagingVO = new kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<>();
+        PaginationInfoVO<ContractFormVO> pagingVO = new PaginationInfoVO<>();
 
         if (StringUtils.isNotBlank(frmNm)) {
             pagingVO.setFrmNm(frmNm);
@@ -186,7 +183,7 @@ public class CentralController {
         }
         if (StringUtils.isNotBlank(rentTypeCd)) {
             // PaginationInfoVO는 rentTypeNm 필드를 사용
-            pagingVO.setRentTypeNm(rentTypeCd);
+            pagingVO.setRentTypeCd(rentTypeCd);
             model.addAttribute("rentTypeCd", rentTypeCd);
         }
 
@@ -275,7 +272,6 @@ public class CentralController {
         return result;
     }
 
-
     @PostMapping("/contractFormDelete.do")
     public String contractFormDelete(@RequestParam(name = "frmNo") String frmNo) {
         if (StringUtils.isNotBlank(frmNo)) {
@@ -284,40 +280,39 @@ public class CentralController {
         return "redirect:/centralAdmin/contractFormList.do";
     }
 
-    /*@GetMapping
+    // 작성자 : 오수아
+    @GetMapping("/contractDocList.do")
     public String contractDocList(
             @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage,
             @RequestParam(name = "sbmsnDocNo", required = false) String sbmsnDocNo,
-            @RequestParam(name = "sbmsnDocTyNo", required = false) String sbmsnDocTyNo,
+            @RequestParam(name = "sbmsnDocTyCd", required = false) String sbmsnDocTyCd,
             @RequestParam(name = "rentTypeCd", required = false) String rentTypeCd,
             Model model) {
-        PaginationInfoVO<ContractFormVO> pagingVO = new PaginationInfoVO<>();
 
-        if (StringUtils.isNotBlank(frmNm)) {
-            pagingVO.setFrmNm(frmNm);
-            model.addAttribute("frmNm", frmNm);
+        PaginationInfoVO<ContractDocVO> pagingVO = new PaginationInfoVO<>();
+
+        if (StringUtils.isNotBlank(sbmsnDocNo)) {
+            pagingVO.setSbmsnDocNo(sbmsnDocNo);
+            model.addAttribute("sbmsnDocNo", sbmsnDocNo);
         }
-        if (StringUtils.isNotBlank(aptCmplexNo)) {
-            pagingVO.setAptCmplexNo(aptCmplexNo);
-            model.addAttribute("aptCmplexNo", aptCmplexNo);
+        if (StringUtils.isNotBlank(sbmsnDocTyCd)) {
+            pagingVO.setSbmsnDocTyCd(sbmsnDocTyCd);
+            model.addAttribute("sbmsnDocTyCd", sbmsnDocTyCd);
         }
         if (StringUtils.isNotBlank(rentTypeCd)) {
             // PaginationInfoVO는 rentTypeNm 필드를 사용
-            pagingVO.setRentTypeNm(rentTypeCd);
+            pagingVO.setRentTypeCd(rentTypeCd);
             model.addAttribute("rentTypeCd", rentTypeCd);
         }
 
         pagingVO.setCurrentPage(currentPage);
-        int totalRecord = service.selectContractFormCount(pagingVO);
+        int totalRecord = service.selectContractDocCount(pagingVO);
         pagingVO.setTotalRecord(totalRecord);
 
-        List<ContractFormVO> dataList = service.selectContractFormList(pagingVO);
+        List<ContractDocVO> dataList = service.selectContractDocList(pagingVO);
         pagingVO.setDataList(dataList);
 
-        // 아파트 목록 드롭다운용
-        model.addAttribute("aptList", service.contractForm(model));
-        model.addAttribute("pagingVO", pagingVO);
 
-        return "centralAdmin/contractForm";
-    }*/
+        return "centralAdmin/contractDoc";
+    }
 }

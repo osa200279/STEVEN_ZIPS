@@ -13,6 +13,6 @@ public class ContractDocVO {
     private String mdfcnDt;
     private String atchFileId;
     private String rentCtrtNo;
-
+    private String rentTypeCd;
 
 }

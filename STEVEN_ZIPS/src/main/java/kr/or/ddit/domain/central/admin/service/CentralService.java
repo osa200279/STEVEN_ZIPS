@@ -1,9 +1,11 @@
 package kr.or.ddit.domain.central.admin.service;
 
 import kr.or.ddit.domain.central.admin.vo.*;
+import org.jspecify.annotations.Nullable;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CentralService {
@@ -19,7 +21,7 @@ public interface CentralService {
 
     void contractModifyStatus(String rentCtrtNo, String status);
 
-    void insertContractForm(ContractFormVO contractFormVO, MultipartFile formFile);
+    void insertContractForm(ContractFormVO contractFormVO, MultipartFile formFile) throws IOException;
     void deleteContractForm(String frmNo);
 
     List<ContractAptVO> contractForm(Model model);
@@ -32,4 +34,9 @@ public interface CentralService {
     ContractFormVO contractFormDetail(String frmNo);
 
     void contractFormUpdate(ContractFormVO contractFormVO);
+
+    int selectContractDocCount(PaginationInfoVO<ContractDocVO> pagingVO);
+
+    List<ContractDocVO> selectContractDocList(PaginationInfoVO<ContractDocVO> pagingVO);
+
 }

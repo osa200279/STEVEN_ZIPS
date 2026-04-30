@@ -31,7 +31,6 @@ public class ContractVO {
     private String hoNo;
     private String dongNo;
     private String ctrtSttsNm;
-    private String rentTypeNm;
     private String mgrNm;
 
 

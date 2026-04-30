@@ -34,4 +34,8 @@ public interface CentralMapper {
     ContractFormVO contractFormDetail(String frmNo);
 
     void contractFormUpdate(ContractFormVO contractFormVO);
+
+    int selectContractDocCount(PaginationInfoVO<ContractDocVO> pagingVO);
+
+    List<ContractDocVO> selectContractDocList(PaginationInfoVO<ContractDocVO> pagingVO);
 }

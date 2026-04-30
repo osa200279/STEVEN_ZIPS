@@ -161,11 +161,11 @@
           </div>
         </div>
         <div class="c-card__body c-filter-row">
-          <div class="c-field" style="min-width:160px">
-            <label class="c-label">계약번호</label>
+          <div class="c-field" style="min-width:170px">
+            <label class="c-label">계약 번호</label>
             <input type="text" class="c-input" name="ctrtNo" placeholder="예: CTR-001" value="${param.ctrtNo}" />
           </div>
-          <div class="c-field" style="min-width:140px">
+          <div class="c-field" style="min-width:190px">
             <label class="c-label">계약 유형</label>
             <select class="c-select" name="type">
               <option value="">전체 계약</option>
@@ -173,11 +173,11 @@
               <option value="월세" <c:if test="${param.type eq '월세'}">selected</c:if>>월세계약</option>
             </select>
           </div>
-          <div class="c-field" style="min-width:200px">
+          <div class="c-field" style="min-width:350px">
             <label class="c-label">회원 ID</label>
             <input type="text" class="c-input" name="user" placeholder="회원 ID 검색" value="${param.user}" />
           </div>
-          <div class="c-field" style="min-width:140px">
+          <div class="c-field" style="min-width:350px">
             <label class="c-label">상태</label>
             <select class="c-select" name="status">
               <option value="">전체 상태</option>
@@ -185,7 +185,7 @@
               <option value="RJC" <c:if test="${param.status eq 'RJC'}">selected</c:if>>반려</option>
             </select>
           </div>
-          <div class="c-field" style="min-width:170px">
+          <div class="c-field" style="min-width:350px">
             <label class="c-label">만료 임박</label>
             <select class="c-select" name="expiry">
               <option value="">전체</option>
@@ -212,14 +212,14 @@
         <table class="c-table">
           <thead>
           <tr>
-            <th>계약번호</th>
-            <th>유형</th>
-            <th>회원 ID</th>
-            <th>아파트</th>
-            <th>계약기간</th>
-            <th>계약일</th>
-            <th>담당자명</th>
-            <th>상태</th>
+            <th style="width: 80px">계약 번호</th>
+            <th style="width: 40px">계약 유형</th>
+            <th style="width: 100px">회원 ID</th>
+            <th style="width: 180px">아파트</th>
+            <th style="width: 100px">계약 기간</th>
+            <th style="width: 100px">계약일</th>
+            <th style="width: 100px">담당자명</th>
+            <th style="width: 40px">상태</th>
           </tr>
           </thead>
           <tbody id="contractTbody">
@@ -239,7 +239,7 @@
                 <%-- onclick 제거 → data-ctrt-no 로 이벤트 위임 처리 --%>
                 <tr class="table-click-row" style="cursor:pointer" data-ctrt-no="${ct.rentCtrtNo}">
                   <td style="font-weight:700">${ct.rentCtrtNo}</td>
-                  <td>${not empty ct.rentTypeNm ? ct.rentTypeNm : ct.rentTypeCd}</td>
+                  <td>${not empty ct.rentTypeCd ? ct.rentTypeCd : ct.rentTypeCd}</td>
                   <td>${ct.userId}</td>
                   <td>${ct.aptCmplexNm}</td>
                   <td>
@@ -475,7 +475,6 @@
 </div>
 
 <script>
-  var CTX = '${pageContext.request.contextPath}';
   var currentCtrtNo = null;
 
   /* ================================================================
@@ -505,7 +504,7 @@
   function excelDownload() {
     var form = document.getElementById('filterForm');
     var origin = form.action;
-    form.action = CTX + '/centralAdmin/contractExcel.do';
+    form.action = '/centralAdmin/contractExcel.do';
     form.target = '_blank';
     form.submit();
     form.action = origin;
@@ -517,7 +516,7 @@
   ================================================================ */
   function resetRegisterFormForInsert() {
     var form = document.getElementById('registerForm');
-    form.action = CTX + '/centralAdmin/contractInsert.do';
+    form.action = '/centralAdmin/contractInsert.do';
     document.getElementById('registerModalTitle').textContent = '등록';
     document.getElementById('registerSubmitBtn').innerHTML =
             '<span class="material-symbols-rounded">check</span>등록';
@@ -574,7 +573,7 @@
   function openContractEdit() {
     var no = currentCtrtNo;
     if (!no) return;
-    fetch(CTX + '/centralAdmin/contractDetail.do?ctrtNo=' + encodeURIComponent(no))
+    fetch('/centralAdmin/contractDetail.do?ctrtNo=' + encodeURIComponent(no))
             .then(function(res) { if (!res.ok) throw new Error(); return res.json(); })
             .then(function(data) {
               closePanel();
@@ -584,7 +583,7 @@
               });
               document.querySelectorAll('#registerForm input[type="file"]').forEach(function(inp) { inp.value = ''; });
               var form = document.getElementById('registerForm');
-              form.action = CTX + '/centralAdmin/contractUpdate.do';
+              form.action = '/centralAdmin/contractUpdate.do';
               document.getElementById('registerModalTitle').textContent = '계약 수정';
               document.getElementById('registerSubmitBtn').innerHTML =
                       '<span class="material-symbols-rounded">check</span>수정 저장';
@@ -665,7 +664,7 @@
     document.getElementById('err-reason').textContent = '';
     document.getElementById('overlay').classList.remove('is-hidden');
 
-    fetch(CTX + '/centralAdmin/contractDetail.do?ctrtNo=' + encodeURIComponent(rentCtrtNo))
+    fetch('/centralAdmin/contractDetail.do?ctrtNo=' + encodeURIComponent(rentCtrtNo))
             .then(function(res){ if(!res.ok) throw new Error(res.status); return res.json(); })
             .then(function(data){ renderDetail(data); console.log(data); })
             .catch(function(err){
@@ -686,6 +685,7 @@
       ['보증금',    data.dpstAmt     || '-'],
       ['계약 기간', (data.mvinDt && data.mvoutDt) ? data.mvinDt + ' ~ ' + data.mvoutDt : '-'],
       ['현재 상태', '<span class="c-badge ' + (BADGE[data.ctrtSttsCd]||'') + '">' + (data.ctrtSttsNm||data.ctrtSttsCd||'-') + '</span>']
+
     ];
     document.getElementById('so-info').innerHTML = rows.map(function(r){
       return '<div class="c-info-block"><div class="c-info-field__label">' + r[0] + '</div><div class="c-info-field__val">' + r[1] + '</div></div>';
@@ -745,7 +745,7 @@
             + '&status='   + encodeURIComponent(status);
     if (reason) body += '&rejectReason=' + encodeURIComponent(reason);
 
-    fetch(CTX + '/centralAdmin/contractModifyStatus', {
+    fetch('/centralAdmin/contractModifyStatus', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -770,7 +770,7 @@
      파일 보기 — TODO: URL 수정
   ================================================================ */
   function viewFile(atchFileId) {
-    window.open(CTX + '/centralAdmin/fileDownload.do?atchFileId=' + encodeURIComponent(atchFileId), '_blank');
+    window.open('/centralAdmin/fileDownload.do?atchFileId=' + encodeURIComponent(atchFileId), '_blank');
   }
 
   /* ================================================================

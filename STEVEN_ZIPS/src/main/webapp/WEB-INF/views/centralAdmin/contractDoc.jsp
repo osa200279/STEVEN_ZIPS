@@ -238,7 +238,7 @@
         <div>
           <div class="c-card__title">서류 목록</div>
           <div class="c-card__sub">
-            총 <span style="color:var(--accent);font-weight:800" id="docTotalCount">0</span>건
+            총 <span style="color:var(--accent);font-weight:800" id="docTotalCount">0</span>건 · 페이지당 10건
           </div>
         </div>
       </div>
@@ -246,9 +246,9 @@
         <table class="c-table" id="docTable">
           <thead>
           <tr>
-            <th style="width: 80px">서류번호</th>
-            <th style="width: 160px">서류유형</th>
-            <th style="width: 120px">계약유형</th>
+            <th style="width: 80px">서류 번호</th>
+            <th style="width: 160px">서류 유형</th>
+            <th style="width: 120px">계약 유형</th>
             <th style="width: 160px">등록일</th>
             <th style="width: 80px">관리</th>
           </tr>

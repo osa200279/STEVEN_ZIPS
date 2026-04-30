@@ -243,7 +243,7 @@
         <table class="c-table" id="docTable">
           <thead>
           <tr>
-            <th style="width:80px">서식번호</th>
+            <th style="width:80px">서식 번호</th>
             <th style="width:120px">서식명</th>
             <th style="width:150px">아파트 단지 명</th>
             <th style="width:120px">계약 유형</th>
@@ -339,9 +339,10 @@
         <div class="c-info-grid">
           <div class="c-info-block"><div class="c-info-field__label">서식번호</div><div class="c-info-field__val" id="detail-frmNo">-</div></div>
           <div class="c-info-block"><div class="c-info-field__label">서식명</div><div class="c-info-field__val" id="detail-frmNm">-</div></div>
-          <div class="c-info-block"><div class="c-info-field__label">아파트 단지명</div><div class="c-info-field__val" id="detail-aptNm">-</div></div>
+          <div class="c-info-block"><div class="c-info-field__label">아파트 단지 명</div><div class="c-info-field__val" id="detail-aptNm">-</div></div>
           <div class="c-info-block"><div class="c-info-field__label">계약 유형</div><div class="c-info-field__val" id="detail-rentType">-</div></div>
           <div class="c-info-block"><div class="c-info-field__label">등록일</div><div class="c-info-field__val" id="detail-regDt">-</div></div>
+          <div class="c-info-block"><div class="c-info-field__label">수정일</div><div class="c-info-field__val" id="detail-updDt">-</div></div>
         </div>
         <div style="margin-top:14px">
           <div class="c-so__section-title">첨부 서류</div>
@@ -500,18 +501,18 @@ function closeDocModal() {
 function openDocDetailModal(rowEl) {
 
   const frmNo = rowEl.dataset.frmNo
-  var CTX = '${pageContext.request.contextPath}';
 
   document.getElementById('detail-frmNo').textContent    = rowEl.dataset.frmNo    || '-';
   document.getElementById('detail-frmNm').textContent    = rowEl.dataset.frmNm    || '-';
   document.getElementById('detail-aptNm').textContent    = rowEl.dataset.aptNm    || '-';
   document.getElementById('detail-rentType').textContent = rowEl.dataset.rentType || '-';
   document.getElementById('detail-regDt').textContent    = rowEl.dataset.regDt    || '-';
+  document.getElementById('detail-updDt').textContent    = rowEl.dataset.updDt    || '-';
   document.getElementById('docDetailModalOverlay').classList.remove('is-hidden');
   document.getElementById('so-files').innerHTML =
           '<div style="color:var(--text-tertiary);font-size:13px">불러오는중...</div>'
 
-  fetch(CTX + '/centralAdmin/contractFormDetail.do?frmNo=' + encodeURIComponent(frmNo))
+  fetch('/centralAdmin/contractFormDetail.do?frmNo=' + encodeURIComponent(frmNo))
           .then(res => res.json())
           .then(data => {
             document.getElementById('detail-frmNo').textContent = data.frmNo || '-';
@@ -519,6 +520,7 @@ function openDocDetailModal(rowEl) {
             document.getElementById('detail-aptNm').textContent = data.aptCmplexNm || '_';
             document.getElementById('detail-rentType').textContent = data.rentTypeCd || '_';
             document.getElementById('detail-regDt').textContent = data.regDt || '-';
+            document.getElementById('detail-updDt').textContent = data.regDt || '-';
             const files = data.files || [];
             document.getElementById('so-files').innerHTML = files.length === 0
                     ? '<div style="color:var(--text-tertiary);font-size:13px">첨부된 서류가 없습니다.</div>'
@@ -574,7 +576,7 @@ function openDocModalForEdit(data){
   document.getElementById('docModalTitle').textContent = '서식 수정';
   document.getElementById('docSubmitBtn').innerHTML = '<span class="material-symbols-rounded">check</span>수정 저장';
 
-  document.getElementById('docForm').action = CTX + '/centralAdmin/contractFormUpdate.do';
+  document.getElementById('docForm').action = '/centralAdmin/contractFormUpdate.do';
 
   document.getElementById('d-name').value = data.frmNm || '';
   document.getElementById('d-cat').value  = data.rentTypeCd || '';
