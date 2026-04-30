@@ -266,6 +266,14 @@
         WHERE AU.USER_ROLE_CD = 'ROLE_MNGR'
         AND G.USER_NO IS NOT NULL
 
+        <!--
+          계정 삭제 버튼을 누른 계정은 MEMBER.USER_YN = 'N'으로 변경된다.
+
+          기본 목록에서는 USER_YN = 'Y'인 계정만 조회한다.
+          즉, 실제 DELETE는 하지 않고 화면 목록에서만 숨긴다.
+        -->
+        AND M.USER_YN = 'Y'
+
         <if test="keyword != null and keyword != ''">
             AND (
             LOWER(M.USER_NM) LIKE '%' || LOWER(#{keyword}) || '%'
@@ -408,53 +416,59 @@
 
 
     <!-- 신청 삭제 -->
-    <delete id="deleteRequest" parameterType="string">
-        DELETE FROM MNGR_RQST
-        WHERE RQST_NO = #{rqstNo}
-    </delete>
+<!--    <delete id="deleteRequest" parameterType="string">-->
+<!--        DELETE FROM MNGR_RQST-->
+<!--        WHERE RQST_NO = #{rqstNo}-->
+<!--    </delete>-->
+    <update id="deleteRequest">
+        UPDATE MEMBER
+        SET USER_YN = #{userYn},
+            MDFCN_DT = SYSDATE
+        WHERE USER_NO = #{userNo}
+    </update>
 
 
     <!-- 승인 시 MEMBER 생성 -->
-    <insert id="insertMemberForManager" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
-        <selectKey keyProperty="userNo" resultType="string" order="BEFORE">
-            SELECT 'USR' || LPAD(seq_member.NEXTVAL, 12, '0')
-            FROM DUAL
-        </selectKey>
+<!--    <insert id="insertMemberForManager" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">-->
+<!--        <selectKey keyProperty="userNo" resultType="string" order="BEFORE">-->
+<!--            SELECT 'USR' || LPAD(seq_member.NEXTVAL, 12, '0')-->
+<!--            FROM DUAL-->
+<!--        </selectKey>-->
 
-        INSERT INTO MEMBER (
-        USER_NO,
-        USER_ID,
-        USER_PW,
-        USER_NM,
-        USER_RRNO,
-        USER_TELNO,
-        USER_EML,
-        REG_DT,
-        USER_YN,
-        SMS_RCV_YN,
-        SMS_NTC_RCV_YN,
-        SMS_CTRT_RCV_YN,
-        EML_RCV_YN,
-        EML_NTC_RCV_YN,
-        EML_CTRT_RCV_YN
-        ) VALUES (
-        #{userNo},
-        #{rqstLoginId},
-        '{noop}1234',
-        #{rqstMngrNm},
-        '값없음',
-        '값없음',
-        NULL,
-        SYSDATE,
-        'Y',
-        'N',
-        'N',
-        'N',
-        'N',
-        'N',
-        'N'
-        )
-    </insert>
+<!--        INSERT INTO MEMBER (-->
+<!--        USER_NO,-->
+<!--        USER_ID,-->
+<!--        USER_PW,-->
+<!--        USER_NM,-->
+<!--        USER_RRNO,-->
+<!--        USER_TELNO,-->
+<!--        USER_EML,-->
+<!--        REG_DT,-->
+<!--        USER_YN,-->
+<!--        SMS_RCV_YN,-->
+<!--        SMS_NTC_RCV_YN,-->
+<!--        SMS_CTRT_RCV_YN,-->
+<!--        EML_RCV_YN,-->
+<!--        EML_NTC_RCV_YN,-->
+<!--        EML_CTRT_RCV_YN-->
+<!--        ) VALUES (-->
+<!--        #{userNo},-->
+<!--        #{rqstLoginId},-->
+<!--        '{noop}1234',-->
+<!--        #{rqstMngrNm},-->
+<!--        '값없음',-->
+<!--        '값없음',-->
+<!--        NULL,-->
+<!--        SYSDATE,-->
+<!--        'Y',-->
+<!--        'N',-->
+<!--        'N',-->
+<!--        'N',-->
+<!--        'N',-->
+<!--        'N',-->
+<!--        'N'-->
+<!--        )-->
+<!--    </insert>-->
 
     <!--
     일반 회원 권한을 단지관리자 권한으로 변경
@@ -495,20 +509,20 @@
         MANAGER, AUTH가 MEMBER를 참조할 수 있으므로
         자식 테이블을 먼저 삭제하고 MEMBER를 삭제해야 FK 오류가 안 남.
     -->
-    <delete id="deleteManager" parameterType="string">
-        DELETE FROM MANAGER
-        WHERE USER_NO = #{userNo}
-    </delete>
+<!--    <delete id="deleteManager" parameterType="string">-->
+<!--        DELETE FROM MANAGER-->
+<!--        WHERE USER_NO = #{userNo}-->
+<!--    </delete>-->
 
-    <delete id="deleteAuth" parameterType="string">
-        DELETE FROM AUTH
-        WHERE USER_NO = #{userNo}
-    </delete>
+<!--    <delete id="deleteAuth" parameterType="string">-->
+<!--        DELETE FROM AUTH-->
+<!--        WHERE USER_NO = #{userNo}-->
+<!--    </delete>-->
 
-    <delete id="deleteMember" parameterType="string">
-        DELETE FROM MEMBER
-        WHERE USER_NO = #{userNo}
-    </delete>
+<!--    <delete id="deleteMember" parameterType="string">-->
+<!--        DELETE FROM MEMBER-->
+<!--        WHERE USER_NO = #{userNo}-->
+<!--    </delete>-->
 
 
     <!-- 단지번호로 관리사무소 번호 찾기 -->

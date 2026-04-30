@@ -92,7 +92,7 @@
                                 <option value="CNL">신청취소</option>
                                 <option value="WAIT" selected>승인대기</option>
                                 <option value="OK">승인완료</option>
-                                <option value="REJECT">반려</option>
+                                <option value="RJCT">반려</option>
                             </select>
                             <span class="select-icon">▾</span>
                         </div>
@@ -176,13 +176,12 @@
     <div class="c-modal">
         <div class="c-modal__header">
             <strong id="detailAcctTitle">계정 상세</strong>
-            <button class="c-btn c-btn--ghost c-btn--sm" type="button" onclick="closeAccountDetail()"><span class="material-symbols-rounded">close</span>닫기</button>
         </div>
         <div class="c-modal__body">
             <div class="c-info-grid" id="detailAcctContent"></div>
         </div>
         <div class="c-modal__footer">
-            <button class="c-btn c-btn--danger" type="button" onclick="deleteAccount()">계정 삭제</button>
+            <button class="c-btn c-btn--danger" type="button" onclick="deleteAccount()">계정 숨김</button>
             <button class="c-btn" type="button" onclick="closeAccountDetail()">닫기</button>
         </div>
     </div>

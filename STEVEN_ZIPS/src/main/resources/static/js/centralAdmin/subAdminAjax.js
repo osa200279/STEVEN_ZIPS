@@ -165,11 +165,11 @@ function renderRequestTable() {
             actionHtml =
                 '<button type="button" class="icon-btn-sm" onclick="openApprovalModal(this)" title="승인">' +
                 '<span class="material-symbols-rounded">check</span></button>' +
-                '<button type="button" class="icon-btn-sm danger" onclick="openRJCTModal(this)" title="반려">' +
+                '<button type="button" class="icon-btn-sm danger" onclick="openRejectModal(this)" title="반려">' +
                 '<span class="material-symbols-rounded">close</span></button>';
         } else if (status === "RJCT") {
             actionHtml =
-                '<button type="button" class="icon-btn-sm danger" onclick="showRJCTReason(this)" title="반려사유">' +
+                '<button type="button" class="icon-btn-sm danger" onclick="showRejectReason(this)" title="반려사유">' +
                 '<span class="material-symbols-rounded">visibility</span></button>';
         } else if (status === "OK") {
             /*
@@ -511,7 +511,7 @@ function closeAccountDetail() {
 
 function deleteAccount() {
     if (!currentAccountId) return;
-    if (!confirm("해당 계정을 삭제하시겠습니까?")) return;
+    if (!confirm("⚠️주의⚠️ 숨김 처리한 계정은 관리할 수 없습니다.\n해당 계정을 목록에서 숨김 처리하시겠습니까?")) return;
 
     fetch(API_BASE + "/accounts/" + encodeURIComponent(currentAccountId), {
         method: "DELETE",
@@ -521,7 +521,7 @@ function deleteAccount() {
         .then(() => {
             closeAccountDetail();
             loadAccountList();
-            alert("삭제되었습니다.");
+            alert("계정이 목록에서 숨김 처리되었습니다.");
         })
         .catch(err => alert(err.message));
 }

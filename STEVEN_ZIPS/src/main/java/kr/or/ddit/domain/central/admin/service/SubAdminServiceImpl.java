@@ -148,10 +148,16 @@ public class SubAdminServiceImpl implements ISubAdminService {
     @Override
     @Transactional
     public int deleteAccount(String userNo) {
-        // FK란? 외래키. 다른 테이블이 참조하는 데이터.
-        // 왜 자식부터 삭제? MANAGER/AUTH가 MEMBER를 참조하므로 MEMBER를 먼저 지우면 FK 오류가 난다.
-        mapper.deleteManager(userNo);
-        mapper.deleteAuth(userNo);
-        return mapper.deleteMember(userNo);
+        /*
+         * 논리삭제란?
+         * → DB 데이터를 실제 DELETE로 지우지 않고,
+         *   사용 여부값만 N으로 바꿔 화면에서 숨기는 방식.
+         *
+         * 왜 사용?
+         * → 계정 이력, 승인 이력, FK 관계 데이터를 보존하기 위해 사용한다.
+         *
+         * 여기서는 MEMBER 테이블의 USER_YN을 'N'으로 변경한다.
+         */
+        return mapper.updateAccountUseYn(userNo, "N");
     }
 }
