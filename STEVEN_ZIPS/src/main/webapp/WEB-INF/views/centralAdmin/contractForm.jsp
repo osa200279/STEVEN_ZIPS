@@ -566,7 +566,7 @@ function closeDocDetailModal() {
    수정
 ================================================================ */
 function openDocModalForEdit(data){
-  var CTX = '${pageContext.request.contextPath}';
+
   resetDocForm();
   document.getElementById('docMode').value = 'edit';
   document.getElementById('docId').value = data.frmNo;

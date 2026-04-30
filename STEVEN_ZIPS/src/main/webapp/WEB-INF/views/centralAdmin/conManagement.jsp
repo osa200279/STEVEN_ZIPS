@@ -181,7 +181,6 @@
             <label class="c-label">상태</label>
             <select class="c-select" name="status">
               <option value="">전체 상태</option>
-              <option value="SUB" <c:if test="${param.status eq 'SUB'}">selected</c:if>>접수대기</option>
               <option value="APR" <c:if test="${param.status eq 'APR'}">selected</c:if>>승인됨</option>
               <option value="RJC" <c:if test="${param.status eq 'RJC'}">selected</c:if>>반려</option>
             </select>
