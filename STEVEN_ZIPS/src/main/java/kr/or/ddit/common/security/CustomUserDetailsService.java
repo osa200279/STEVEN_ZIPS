@@ -1,5 +1,6 @@
 package kr.or.ddit.common.security;
 
+import kr.or.ddit.common.util.member.resident.InOutCd;
 import kr.or.ddit.domain.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.admin.AdminVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
@@ -43,15 +44,17 @@ public class CustomUserDetailsService implements UserDetailsService{
 		if("ROLE_RESIDENT".equals(auth)){
 			ResidentVO resident = residentMapper.getResidentInfo(member.getUserNo());
 
-			if(resident != null && "LIVE".equals(resident.getInoutCd())){	// LIVE(입주중) 상태이면 입주민으로 판단
+			if(resident != null && InOutCd.LIVE == resident.getInoutCd()){	// LIVE(입주중) 상태이면 입주민으로 판단
 				// BeanUtils.copyProperties(source, target) source와 target의 공통된 필드를 매핑해서 target에 복사(같은 이름 필드끼리 자동맵핑)
 				BeanUtils.copyProperties(member, resident);
 				member = resident;	// 다형성 이용
 			}
 		}else if("ROLE_MNGR".equals(auth)){
             MngrVO mngrVO;
+
 		}else if("ROLE_ADMIN".equals(auth)){
 			AdminVO adminVO;
+
 		}
 
 		// 넘겨받은 member가 null인 경우라면 UsernameNotFoundException 에러에 의해 회원정보가 존재하지 않는다는
