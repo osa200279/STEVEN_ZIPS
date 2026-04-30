@@ -20,4 +20,9 @@ public class NoticeServiceImpl  implements INoticeService {
 
         return noticeMapper.selectNoticeList();
     }
+
+    @Override
+    public NoticeVO getNoticeDetail(String annNo) {
+        return noticeMapper.selectNoticeDetail(annNo);
+    }
 }

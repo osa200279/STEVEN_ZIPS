@@ -10,5 +10,7 @@ public interface INoticeMapper {
 
 
     List<NoticeVO> selectNoticeList();
+
+    NoticeVO selectNoticeDetail(String annNo);
 }
 

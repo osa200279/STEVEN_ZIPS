@@ -8,5 +8,5 @@ public interface INoticeService {
     List<NoticeVO> getNoticeList();
 
 
-
+    NoticeVO getNoticeDetail(String annNo);
 }

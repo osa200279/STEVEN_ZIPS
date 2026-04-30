@@ -30,4 +30,26 @@ public class NoticeController {
         return "ztestview/notice";
 
     }
+
+
+    @GetMapping("/notice/detail.do")
+    public String noticeDetail(String annNo, Model model) {
+
+        NoticeVO notice = noticeService.getNoticeDetail(annNo);
+
+        model.addAttribute("notice", notice);
+
+        return "ztestview/noticeDetail";
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
