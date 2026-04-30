@@ -46,7 +46,7 @@ public class CustomUserDetailsService implements UserDetailsService{
 			if(resident != null && "LIVE".equals(resident.getInoutCd())){	// LIVE(입주중) 상태이면 입주민으로 판단
 				// BeanUtils.copyProperties(source, target) source와 target의 공통된 필드를 매핑해서 target에 복사(같은 이름 필드끼리 자동맵핑)
 				BeanUtils.copyProperties(member, resident);
-				member = resident;
+				member = resident;	// 다형성 이용
 			}
 		}else if("ROLE_MNGR".equals(auth)){
             MngrVO mngrVO;
