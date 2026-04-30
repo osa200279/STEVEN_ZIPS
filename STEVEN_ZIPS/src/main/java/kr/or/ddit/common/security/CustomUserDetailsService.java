@@ -1,7 +1,6 @@
 package kr.or.ddit.common.security;
 
 import kr.or.ddit.common.util.member.resident.InoutCd;
-import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.admin.AdminVO;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
@@ -9,6 +8,7 @@ import kr.or.ddit.domain.member.resident.mapper.IResidentMapper;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +16,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
