@@ -30,10 +30,17 @@ public class ResidentMainController {
     @Autowired
     private IMgmtOfficeService mgmtOfficeService;
 
+    /**
+     * 내 아파트 목록 조회 컨트롤러
+     * @author 이용로
+     * @param customUser 인증 객체
+     * @param model
+     * @return myApt.jsp 내 아파트 목록 조회 페이지
+     */
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/myApt")
     public String myApt(@AuthenticationPrincipal CustomUser customUser, Model model) {
-//        log.info("myApt() 실행");
+        log.info("myApt() 실행");
         MemberVO member = customUser.getMember();
 
         // 입주민이라면 customUser가 member=resident로 초기화 된 member를 반환받아 갖고 있음

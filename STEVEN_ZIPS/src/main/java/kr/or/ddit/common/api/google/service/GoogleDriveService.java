@@ -161,9 +161,9 @@ public class GoogleDriveService {
     }
 
     /**
-     * 전체 경로를 통해 타겟 파일 찾기
+     * 전체 경로를 통해 타겟 파일 찾기 (googleId를 모를때)
      * @author 이용로
-     * @param service
+     * @param service 사용할 google drive 서비스 객체
      * @param rootId 탐색을 시작할 최초(최상위) 폴더 이름
      * @param fullPath 파일명까지 포함한 전체 경로(attach_file테이블의 file_path)
      * @return googleId 구글 파일 아이디 값

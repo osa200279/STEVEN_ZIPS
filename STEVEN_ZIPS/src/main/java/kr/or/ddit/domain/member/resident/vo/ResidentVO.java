@@ -7,6 +7,9 @@ import lombok.Data;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author 이용로
+ */
 @Data
 public class ResidentVO extends MemberVO {
     // 필드

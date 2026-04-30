@@ -33,4 +33,14 @@ public class AptComplexServiceImpl implements IAptComplexService {
     public int updateAptComplex(AptComplexVO aptComplexVO) {
         return aptComplexMapper.updateAptComplex(aptComplexVO);
     }
+
+    /**
+     * 단지 정보 가져오기
+     * @param aptCmplexNo 아파트 단지 코드
+     * @return AptComplexVO
+     */
+    @Override
+    public AptComplexVO getAptCmplexInfo(String aptCmplexNo) {
+        return aptComplexMapper.getAptCmplexInfo(aptCmplexNo);
+    }
 }

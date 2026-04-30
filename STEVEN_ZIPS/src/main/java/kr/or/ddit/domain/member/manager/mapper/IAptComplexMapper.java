@@ -12,4 +12,6 @@ public interface IAptComplexMapper {
     public int updateAptComplex(AptComplexVO aptComplexVO); // 단지 정보 수정
 
     public String selectManagerAptCmplexNo(String userId);
+
+    AptComplexVO getAptCmplexInfo(String aptCmplexNo);
 }

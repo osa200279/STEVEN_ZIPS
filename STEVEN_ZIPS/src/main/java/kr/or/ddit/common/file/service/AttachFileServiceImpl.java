@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author 이용로
+ */
 @Slf4j
 @Service
 public class AttachFileServiceImpl implements IAttachFileService {
@@ -20,6 +23,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
     /**
      * 타겟 파일 메타데이터 세팅
+     * @author 이용로
      * @param fileId - target(FILE_GROUP_NO + "_" + SAVE_FILE_UUID)
      * @return (AttachFileVO)file
      */

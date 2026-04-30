@@ -111,7 +111,15 @@ public class MemberController {
         return "member/mypage";
     }
 
-    // 회원정보 수정
+    /**
+     * 회원정보 수정 컨트롤러
+     * @author 박진아
+     * @param member
+     * @param profileImage
+     * @param customUser
+     * @return
+     */
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     @PostMapping("/updateSimple")
     public String updateMember(MemberVO member,
                                @RequestParam(value="profileImage", required=false) MultipartFile profileImage,
@@ -137,9 +145,10 @@ public class MemberController {
         }
 
         // 🔥 무조건 마이페이지로 보냄
-        return "redirect:/member/mypage.do";
+        return "redirect:/member/myPage.do";
     }
 
+    @PreAuthorize("hasRole('ROLE_MEMBER')")
     @PostMapping("/alarm/update")
     @ResponseBody
     public String updateAlarm(

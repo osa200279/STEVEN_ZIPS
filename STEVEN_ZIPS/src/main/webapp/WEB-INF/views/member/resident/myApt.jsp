@@ -24,6 +24,9 @@
                     <td>
                         ${myapt.aptCmplexNm} ${myapt.dongNm}동 ${myapt.ho}호
                     </td>
+                    <td>
+                        <a href="${myapt.aptCmplexNo}">GO!➡️</a>
+                    </td>
                 </tr>
             </c:forEach>
             </table>

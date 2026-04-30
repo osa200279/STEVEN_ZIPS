@@ -19,8 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/*
- *  2026.04.21 이용로
+/**
+ *  스프링 시큐리티 설정
+ *  @author 이용로
  */
 @Slf4j
 @Configuration
@@ -40,7 +41,6 @@ public class SecurityConfig {
             "/member/join.do",
             "/member/join",
             "/member/update",
-            "/member/mypage.do",
             "/member/idCheck",
             "/.well-known/**"
     };

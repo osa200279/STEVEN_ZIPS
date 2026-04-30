@@ -2,6 +2,9 @@ package kr.or.ddit.domain.member.resident.vo;
 
 import lombok.Data;
 
+/**
+ * @author 이용로
+ */
 @Data
 public class MyAptVO {
     private String aptCmplexNo;    // 아파트 코드

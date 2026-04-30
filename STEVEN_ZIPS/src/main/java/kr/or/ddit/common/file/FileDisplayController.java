@@ -38,6 +38,7 @@ public class FileDisplayController {
 
     /**
      * 구글드라이브 파일 스트리밍 컨트롤러
+     * @author 이용로
      * @param googleId
      * @return 스트림 통로 객체
      */

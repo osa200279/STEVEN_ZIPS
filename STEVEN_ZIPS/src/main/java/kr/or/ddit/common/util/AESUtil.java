@@ -7,13 +7,11 @@ import java.sql.Time;
 import java.util.Base64;
 import org.springframework.stereotype.Component;
 
-/*
-Created by IntelliJ IDEA.
-User: PC-24
+/**
+ 주민등록 번호 암호화 유틸 클래스
+@author  이용로
 Date: 2026-04-24
-    주민등록 번호 암호화 유틸 클래스
 */
-
 @Component
 public class AESUtil {
     private final String alg = "AES/CBC/PKCS5Padding";
