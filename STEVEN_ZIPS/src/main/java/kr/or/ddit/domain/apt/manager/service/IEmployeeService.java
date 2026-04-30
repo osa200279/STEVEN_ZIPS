@@ -19,8 +19,8 @@ public interface IEmployeeService {
     boolean updateRequest(MngrRqstVO vo);
     boolean cancelRequest(MngrRqstVO vo);
 
-    // 회원 검색
-    List<MemberSearchVO> searchMember(String keyword);
+/*    // 회원 검색
+    List<MemberSearchVO> searchMember(String keyword);*/
 
     // 로그인 소장 정보
     ManagerVO getLoginManagerInfo(String userNo);

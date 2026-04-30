@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.manager.vo;
+package kr.or.ddit.domain.apt.manager.vo;
 
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.MemberVO;

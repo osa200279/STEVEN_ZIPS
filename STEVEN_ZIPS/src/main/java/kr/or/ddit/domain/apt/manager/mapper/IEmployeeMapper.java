@@ -31,9 +31,9 @@ public interface IEmployeeMapper {
     // 요청 취소
     int cancelRequest(MngrRqstVO vo);
 
-    // 회원 검색
+ /*   // 회원 검색
     List<MemberSearchVO> searchMember(String keyword);
-
+*/
     // 로그인 소장 정보
     ManagerVO selectLoginManagerInfo(String userNo);
 }

@@ -2,12 +2,12 @@ package kr.or.ddit.domain.apt.manager.service;
 
 import java.util.List;
 
+import kr.or.ddit.domain.apt.manager.vo.MemberSearchVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kr.or.ddit.domain.apt.manager.mapper.IEmployeeMapper;
 import kr.or.ddit.domain.apt.manager.vo.ManagerVO;
-import kr.or.ddit.domain.apt.manager.vo.MemberSearchVO;
 import kr.or.ddit.domain.apt.manager.vo.MngrRqstVO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,11 +60,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return employeeMapper.cancelRequest(vo) > 0;
     }
 
-    // 회원 검색
+    /*// 회원 검색
     @Override
     public List<MemberSearchVO> searchMember(String keyword) {
         return employeeMapper.searchMember(keyword);
-    }
+    }*/
 
     // 로그인 소장 정보
     @Override

@@ -19,14 +19,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.or.ddit.domain.apt.manager.service.IEmployeeService;
 import kr.or.ddit.domain.apt.manager.vo.ManagerVO;
-import kr.or.ddit.domain.apt.manager.vo.MemberSearchVO;
 import kr.or.ddit.domain.apt.manager.vo.MngrRqstVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
-//@PreAuthorize("hasAnyRole('MNGR', 'ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
 @RequestMapping("/manager/employee")
 public class EmployeeController {
 
@@ -165,7 +164,7 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
-    // 회원 검색 (팝업용)
+    /*// 회원 검색 (팝업용)
     @GetMapping("/member/search")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> searchMember(@RequestParam(required = false, defaultValue = "") String keyword) {
@@ -178,5 +177,5 @@ public class EmployeeController {
             result.put("list", new ArrayList<>());
         }
         return ResponseEntity.ok(result);
-    }
+    }*/
 }
