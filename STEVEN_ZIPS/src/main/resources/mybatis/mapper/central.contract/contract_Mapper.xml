@@ -184,12 +184,14 @@
         order by APT_CMPLEX_NO asc
     </select>
 
+
+
     <sql id="contractFormSearch">
         <if test="frmNm != null and frmNm != ''">
             and cf.frm_nm like '%' || #{frmNm} || '%'
         </if>
-        <if test="rentTypeNm != null and rentTypeNm != ''">
-            and cf.rent_type_cd = #{rentTypeNm}
+        <if test="rentTypeCd != null and rentTypeCd != ''">
+            and cf.rent_type_cd = #{rentTypeCd}
         </if>
         <if test="aptCmplexNo != null and aptCmplexNo != ''">
             and ac.apt_cmplex_no = #{aptCmplexNo}
@@ -222,6 +224,44 @@
             )
         where rn between #{startRow} and #{endRow}
     </select>
+    <select id="contractFormDetail" resultType="kr.or.ddit.domain.central.admin.vo.ContractFormVO" parameterType="string">
+            SELECT
+                cf.FRM_NO        AS frmNo,
+                cf.FRM_NM        AS frmNm,
+                cf.APT_CMPLEX_NO AS aptCmplexNo,
+                ac.APT_CMPLEX_NM AS aptCmplexNm,
+                cf.RENT_TYPE_CD  AS rentTypeCd,
+                TO_CHAR(cf.REG_DT, 'YYYY-MM-DD') AS regDt,
+                cf.FILE_NO       AS fileNo
+            FROM CNTRCT_FRM cf
+            inner join APT_COMPLEX ac ON ac.APT_CMPLEX_NO = cf.APT_CMPLEX_NO
+            WHERE cf.FRM_NO = #{frmNo}
+    </select>
+    <select id="selectContractDocList" resultType="kr.or.ddit.domain.central.admin.vo.ContractDocVO">
+        select *
+        from ()
+    </select>
+
+    <sql id="contractDocSearch">
+        <if test="sbmsnDocNo != null and  != 'sbmsnDocNo'" >
+            and sd.sbmsn_doc_No like '%' || #{sbmsnDocNo} || '%'
+        </if>
+        <if test="sbmsnDocTyCd != null and sbmsnDocTyCd != ''" >
+            and sd.sbmsn_doc_ty_cd = #{sbmsnDocTyCd}
+        </if>
+        <if test="rentTypeCd != null and rentTypeCd != ''" >
+            and sd.rent_type_cd = #{rentTypeCd}
+        </if>
+    </sql>
+    <select id="selectContractDocCount" resultType="int" parameterType="kr.or.ddit.domain.central.admin.vo.ContractDocVO">
+        SELECT COUNT(*)
+        FROM SBMSN_DOC sd
+        left join RENT_CTRT rc on sd.RENT_CTRT_NO = rc.RENT_CTRT_NO
+        left join RENT_LISTING rl on rl.RENT_LSTG_NO = rc.RENT_LSTG_NO
+        where 1=1
+        <include refid="contractSearch"/>
+    </select>
+
 
     <update id="updateContract" parameterType="kr.or.ddit.domain.central.admin.vo.RentContractVO">
         UPDATE RENT_CTRT SET
@@ -243,10 +283,16 @@
         WHERE RENT_CTRT_NO = #{rentCtrtNo}
     </update>
 
-    <update id="contractModifyStatus">
+    <update id="contractModifyStatus" parameterType="kr.or.ddit.domain.central.admin.vo.ContractVO">
         UPDATE RENT_CTRT
         SET CTRT_STTS_CD = #{status}
         WHERE RENT_CTRT_NO = #{rentCtrtNo}
+    </update>
+    <update id="contractFormUpdate" parameterType="kr.or.ddit.domain.central.admin.vo.ContractFormVO">
+        update CNTRCT_FRM
+        set FRM_NM = #{frmNm},
+            RENT_TYPE_CD = #{rentTypeCd}
+        where FRM_NO = #{frmNm}
     </update>
 
 </mapper>
