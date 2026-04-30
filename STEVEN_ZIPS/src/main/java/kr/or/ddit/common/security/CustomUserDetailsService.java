@@ -1,7 +1,7 @@
 package kr.or.ddit.common.security;
 
 import kr.or.ddit.common.util.member.resident.InoutCd;
-import kr.or.ddit.domain.manager.vo.MngrVO;
+import kr.or.ddit.domain.apt.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.admin.AdminVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
 import kr.or.ddit.domain.member.resident.mapper.IResidentMapper;
@@ -28,14 +28,14 @@ public class CustomUserDetailsService implements UserDetailsService{
 	@Autowired
 	private IResidentMapper residentMapper;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		log.info("## CustomUserDetailsService.loadUserByUsername() 실행...!");
 		log.info("## username : " + username);
-		
+
 		MemberVO member = memberMapper.readByUserInfo(username);
 		log.info("## member : " + member);
 
@@ -50,7 +50,7 @@ public class CustomUserDetailsService implements UserDetailsService{
 				member = resident;	// 다형성 이용
 			}
 		}else if("ROLE_MNGR".equals(auth)){
-            MngrVO mngrVO;
+			MngrVO mngrVO;
 
 		}else if("ROLE_ADMIN".equals(auth)){
 			AdminVO adminVO;
