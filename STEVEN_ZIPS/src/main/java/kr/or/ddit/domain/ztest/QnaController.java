@@ -17,5 +17,9 @@ public class QnaController {
     }
 
 
+    @GetMapping("/writeForm.do")
+    public String writeForm() {
+        return "ztestview/qnaListDetail";
+    }
 
 }
