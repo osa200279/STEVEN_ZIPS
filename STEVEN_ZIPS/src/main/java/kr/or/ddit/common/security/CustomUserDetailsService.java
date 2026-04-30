@@ -43,9 +43,11 @@ public class CustomUserDetailsService implements UserDetailsService{
 		String auth = member.getAuthList().get(0).getAuth();
 
 		if("ROLE_RESIDENT".equals(auth)){
+			log.info("ROLE_RESIDENT 분기 진입**");
 			ResidentVO resident = residentMapper.getResidentInfo(member.getUserNo());
 
 			if(resident != null && InoutCd.LIVE == resident.getInoutCd()){	// LIVE(입주중) 상태이면 입주민으로 판단
+				log.info("입주중 확인됨! : {}", resident);
 				// BeanUtils.copyProperties(source, target) source와 target의 공통된 필드를 매핑해서 target에 복사(같은 이름 필드끼리 자동맵핑)
 				BeanUtils.copyProperties(member, resident);
 				member = resident;	// 다형성 이용

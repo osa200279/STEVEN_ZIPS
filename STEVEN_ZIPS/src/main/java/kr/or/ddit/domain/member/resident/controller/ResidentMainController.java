@@ -33,11 +33,14 @@ public class ResidentMainController {
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/myApt")
     public String myApt(@AuthenticationPrincipal CustomUser customUser, Model model) {
+//        log.info("myApt() 실행");
         MemberVO member = customUser.getMember();
 
         // 입주민이라면 customUser가 member=resident로 초기화 된 member를 반환받아 갖고 있음
         if(member instanceof ResidentVO) {  // 따라서 순수 member객체인지 resident를 담고있는 member객체인지 확인
             ResidentVO resident = (ResidentVO)member;
+            log.info("RESIDENT INFO : {}", resident);
+
             model.addAttribute("resident", resident);
         }
 

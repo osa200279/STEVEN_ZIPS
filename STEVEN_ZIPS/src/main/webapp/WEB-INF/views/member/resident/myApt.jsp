@@ -13,16 +13,18 @@
 </head>
 <body>
 <h1>나의 아파트</h1>
-    <c:choose>
+<c:choose>
         <c:when test="${not empty resident.myAptList}">
             <table border="1">
             <tr>
                 <th>아파트 명</th>
             </tr>
-            <c:forEach var="myapt" items="${resident.myAptLIst}">
-                <td>
-                    ${myapt.aptCmlexNm}
-                </td>
+            <c:forEach var="myapt" items="${resident.myAptList}">
+                <tr>
+                    <td>
+                        ${myapt.aptCmplexNm} ${myapt.dongNm}동 ${myapt.ho}호
+                    </td>
+                </tr>
             </c:forEach>
             </table>
         </c:when>
