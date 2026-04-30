@@ -78,7 +78,7 @@
         <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
-        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="#">시설 유지보수 이력</a>
+        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"href="/apt/facilityHistory.do">시설 유지보수 이력</a>
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="#">시설 점검 기록 확인</a>
       </div>
     </details>
@@ -103,9 +103,20 @@
 </aside>
 
 <script>
-  document.querySelectorAll('#sidebar-nav details').forEach(d => {
-    d.addEventListener('toggle', function(e) {
-      e.stopImmediatePropagation(); // 🔥 다른 JS 개입 차단
+  const detailsList = document.querySelectorAll('#sidebar-nav details');
+
+  // 저장된 상태 불러오기
+  detailsList.forEach((d, index) => {
+    const isOpen = localStorage.getItem('sidebar_' + index);
+    if (isOpen === 'true') {
+      d.open = true;
+    }
+  });
+
+  // 열고 닫을 때 저장
+  detailsList.forEach((d, index) => {
+    d.addEventListener('toggle', () => {
+      localStorage.setItem('sidebar_' + index, d.open);
     });
   });
 </script>
