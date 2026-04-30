@@ -4,7 +4,11 @@ import jakarta.servlet.http.HttpSession;
 import kr.or.ddit.common.webSocket.chat.service.IChatService;
 import kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO;
 import kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO;
+import kr.or.ddit.domain.member.vo.CustomUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +24,9 @@ public class ChatController {
     // 내 채팅방 목록 가져오기
     @GetMapping("/myRooms")
     @ResponseBody
-    public List<ChatRoomVO> myRooms(HttpSession session) {
-        String userNo = "U001";
+    public List<ChatRoomVO> myRooms(@AuthenticationPrincipal CustomUser user) {
+
+        String userNo = user.getMember().getUserNo();
         return service.getMyRooms(userNo);
     }
 
@@ -35,18 +40,20 @@ public class ChatController {
     // 메시지 전송
     @PostMapping("/send")
     @ResponseBody
-    public String send(@RequestBody ChatMessageVO vo) {
-        String userNo = "U001";
-        service.sendMessage(vo, userNo);
+    public String send(@RequestBody ChatMessageVO vo,
+                       @AuthenticationPrincipal CustomUser user) {
+
+        service.sendMessage(vo, user.getMember().getUserNo());
         return "ok";
     }
 
     // 입장
     @PostMapping("/enter")
     @ResponseBody
-    public String enter(@RequestParam String roomId) {
-        String userNo = "U001";
-        service.enterRoom(roomId, userNo);
+    public String enter(@RequestParam String chatRoomNo,
+                        @AuthenticationPrincipal CustomUser user) {
+
+        service.enterRoom(chatRoomNo, user.getMember().getUserNo());
         return "ok";
     }
 }

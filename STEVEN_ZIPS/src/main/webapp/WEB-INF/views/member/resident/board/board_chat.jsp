@@ -98,7 +98,7 @@
             <div class="search-row">
               <input class="fake-input" value="독서실" />
             </div>
-            <div class="chat-room-item active" onclick="openMyRoom('${room.chatRoomNo}', this)">
+            <div class="chat-room-item active" onclick="openMyRoom('${room.chatRoomNo}', '${room.chatRoomNm}', this)">
               <strong>독서실 이용자 모임</strong>
               <div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 24명</div>
             </div>
@@ -138,25 +138,25 @@ window.onload = function () {
 
   let currentRoomId = null;
 
-  function openMyRoom(roomId,el) {
+  function openMyRoom(roomId,roomNm,el) {
 
     if (el) setActiveRoom(el);
 
+    /* 채팅방 메시지 가져오는 메서드! */
     fetch('/chat/messages?chatRoomNo=' + roomId)
             .then(res => res.json())
             .then(list => {
 
               let html = `
                 <div class="section-hd">
-                    <h3>\${roomId}</h3>
+                    <h3>\${roomNm}</h3>
                 </div>
                 <div class="message-stream">
             `;
 
               list.forEach(msg => {
 
-                const isM
-                e = msg.chatMemberId === "내아이디"; // 나중에 세션
+                const isMe = msg.chatMemberId === "내아이디"; // 나중에 세션
 
                 html += `
                           <div class="message \${isMe ? 'me' : 'other'}">
@@ -217,6 +217,8 @@ window.onload = function () {
     el.classList.add("active");
   }
 
+
+  /*  */
   function loadMyRooms() {
     fetch('/chat/myRooms')
             .then(res => res.json())
