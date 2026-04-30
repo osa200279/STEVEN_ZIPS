@@ -30,7 +30,6 @@ public class HomeController {
 
 			// JSP에서 office가 null일 때 기본 문구 처리하도록 넘김
 			model.addAttribute("office", null);
-
 			return "apt-main";
 		}
 
