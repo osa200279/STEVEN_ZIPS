@@ -1,11 +1,12 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 
 <html class="light" lang="ko"><head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>시설 관리 이력 조회 - 우리집맵핑</title>
+  <title>단지 목록 조회 - 우리집맵핑</title>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -149,10 +150,35 @@
       </div>
     </div>
   </div>
+  <!-- 초성 필터 -->
+  <div class="bg-white p-5 rounded-2xl border border-[#eef2eb] mb-6 shadow-sm">
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-sm font-bold text-slate-500 mr-2">초성</span>
+
+      <c:url var="allUrl" value="/apt/list.do" />
+      <a href="${allUrl}"
+         class="px-4 py-2 rounded-full text-sm font-bold border transition-all
+                ${empty selectedInitial ? 'bg-primary text-white border-primary' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}">
+        전체
+      </a>
+
+      <c:forEach var="initial" items="${fn:split('ㄱ,ㄴ,ㄷ,ㄹ,ㅁ,ㅂ,ㅅ,ㅇ,ㅈ,ㅊ,ㅋ,ㅌ,ㅍ,ㅎ', ',')}">
+        <c:url var="initialUrl" value="/apt/list.do">
+          <c:param name="initial" value="${initial}" />
+        </c:url>
+
+        <a href="${initialUrl}"
+           class="px-4 py-2 rounded-full text-sm font-bold border transition-all
+                  ${selectedInitial eq initial ? 'bg-primary text-white border-primary' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}">
+          ${initial}
+        </a>
+      </c:forEach>
+    </div>
+  </div>
   <!-- Summary Info & Toggle -->
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-2">
-      <span class="text-primary font-bold">총 48개 단지</span>
+      <span class="text-primary font-bold">총 ${fn:length(aptList)}개 단지</span>
     </div>
     <div class="flex bg-[#f1f3ef] p-1 rounded-full">
       <button class="bg-primary text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1">
@@ -167,126 +193,49 @@
   </div>
   <!-- Complex Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-    <!-- Card 1 -->
-    <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
-      <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
-        <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">서울</span>
+    <c:choose>
+      <c:when test="${empty aptList}">
+      <div class="col-span-full bg-white rounded-2xl border border-[#eef2eb] p-10 text-center text-slate-400">
+        조회된 단지가 없습니다.
       </div>
-      <div class="p-5">
-        <h4 class="font-bold text-primary mb-1">OO아파트</h4>
-        <p class="text-xs text-slate-400 mb-4 line-clamp-1">서울특별시 강남구 테헤란로 123</p>
-        <div class="flex justify-between items-center text-[11px] font-bold">
-          <span class="text-slate-600">248세대 4동</span>
-          <span class="text-primary">공고 12</span>
+      </c:when>
+
+      <c:otherwise>
+      <c:forEach var="apt" items="${aptList}">
+      <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
+
+        <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
+
+          <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">
+                ${apt.sidoNm} ${apt.sigunguNm}
+              </span>
         </div>
-      </div>
-    </div>
-    <!-- Card 2 -->
-    <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
-      <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
-        <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">경기</span>
-      </div>
-      <div class="p-5">
-        <h4 class="font-bold text-primary mb-1">△△단지</h4>
-        <p class="text-xs text-slate-400 mb-4 line-clamp-1">경기도 성남시 분당구 판교로 45</p>
-        <div class="flex justify-between items-center text-[11px] font-bold">
-          <span class="text-slate-600">380세대 6동</span>
-          <span class="text-primary">공고 8</span>
+
+        <div class="p-5">
+          <h4 class="font-bold text-primary mb-1">
+              ${apt.aptCmplexNm}
+          </h4>
+
+          <p class="text-xs text-slate-400 mb-4 line-clamp-1">
+              ${apt.dorojuso}
+          </p>
+
+          <div class="flex justify-between items-center text-[11px] font-bold">
+                <span class="text-slate-600">
+                  ${apt.unitCnt}세대 ${apt.dongCnt}동
+                </span>
+
+            <span class="text-primary">
+                  ${apt.bldYr} 준공
+                </span>
+          </div>
         </div>
+
       </div>
-    </div>
-    <!-- Card 3 -->
-    <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
-      <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
-        <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">인천</span>
-      </div>
-      <div class="p-5">
-        <h4 class="font-bold text-primary mb-1">□□하우스</h4>
-        <p class="text-xs text-slate-400 mb-4 line-clamp-1">인천광역시 연수구 송도대로 88</p>
-        <div class="flex justify-between items-center text-[11px] font-bold">
-          <span class="text-slate-600">152세대 3동</span>
-          <span class="text-primary">공고 6</span>
-        </div>
-      </div>
-    </div>
-    <!-- Card 4 -->
-    <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
-      <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
-        <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">부산</span>
-      </div>
-      <div class="p-5">
-        <h4 class="font-bold text-primary mb-1">◇◇빌리지</h4>
-        <p class="text-xs text-slate-400 mb-4 line-clamp-1">부산광역시 해운대구 해운대로 200</p>
-        <div class="flex justify-between items-center text-[11px] font-bold">
-          <span class="text-slate-600">428세대 8동</span>
-          <span class="text-primary">공고 9</span>
-        </div>
-      </div>
-    </div>
-    <!-- Card 5 -->
-    <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
-      <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
-        <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">대전</span>
-      </div>
-      <div class="p-5">
-        <h4 class="font-bold text-primary mb-1">☆☆파크</h4>
-        <p class="text-xs text-slate-400 mb-4 line-clamp-1">대전광역시 유성구 대학로 56</p>
-        <div class="flex justify-between items-center text-[11px] font-bold">
-          <span class="text-slate-600">156세대 2동</span>
-          <span class="text-primary">공고 4</span>
-        </div>
-      </div>
-    </div>
-    <!-- Card 6 -->
-    <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
-      <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
-        <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">광주</span>
-      </div>
-      <div class="p-5">
-        <h4 class="font-bold text-primary mb-1">▽▽그린</h4>
-        <p class="text-xs text-slate-400 mb-4 line-clamp-1">광주광역시 북구 첨단과기로 11</p>
-        <div class="flex justify-between items-center text-[11px] font-bold">
-          <span class="text-slate-600">312세대 5동</span>
-          <span class="text-primary">공고 7</span>
-        </div>
-      </div>
-    </div>
-    <!-- Card 7 -->
-    <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
-      <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
-        <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">울산</span>
-      </div>
-      <div class="p-5">
-        <h4 class="font-bold text-primary mb-1">OO타운</h4>
-        <p class="text-xs text-slate-400 mb-4 line-clamp-1">울산광역시 남구 삼산로 77</p>
-        <div class="flex justify-between items-center text-[11px] font-bold">
-          <span class="text-slate-600">264세대 4동</span>
-          <span class="text-primary">공고 5</span>
-        </div>
-      </div>
-    </div>
-    <!-- Card 8 -->
-    <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
-      <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
-        <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
-        <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">대구</span>
-      </div>
-      <div class="p-5">
-        <h4 class="font-bold text-primary mb-1">□□센트럴</h4>
-        <p class="text-xs text-slate-400 mb-4 line-clamp-1">대구광역시 수성구 범어로 14</p>
-        <div class="flex justify-between items-center text-[11px] font-bold">
-          <span class="text-slate-600">510세대 9동</span>
-          <span class="text-primary">공고 11</span>
-        </div>
-      </div>
-    </div>
+      </c:forEach>
+      </c:otherwise>
+    </c:choose>
   </div>
   <!-- Pagination -->
   <div class="flex justify-center items-center gap-2 mb-16">
@@ -301,7 +250,7 @@
     </button>
   </div>
   <!-- Detail Info Section (Selected Complex) -->
-  <section class="bg-white rounded-3xl border border-[#eef2eb] overflow-hidden shadow-sm">
+<%--  <section class="bg-white rounded-3xl border border-[#eef2eb] overflow-hidden shadow-sm">
     <div class="bg-primary px-8 py-4 flex justify-between items-center">
       <h3 class="text-white font-bold flex items-center gap-2">
         <span class="material-symbols-outlined" data-icon="info">info</span>
@@ -352,7 +301,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section>--%>
 </main>
 
 </body>

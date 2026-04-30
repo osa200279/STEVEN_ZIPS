@@ -1,0 +1,11 @@
+package kr.or.ddit.domain.ztest.service;
+
+import kr.or.ddit.domain.apt.vo.AptComplexVO;
+
+import java.util.List;
+
+public interface ICentralAptComplexService {
+
+    // 아파트 단지 목록 조회
+    public List<AptComplexVO> selectAptComplexList(String initial);
+}
