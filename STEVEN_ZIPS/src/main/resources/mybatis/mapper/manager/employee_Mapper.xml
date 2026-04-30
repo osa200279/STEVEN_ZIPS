@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.or.ddit.domain.apt.manager.mapper.IEmployeeMapper">
+<mapper namespace="kr.or.ddit.domain.member.manager.mapper.IEmployeeMapper">
 
     <!-- ════════════════════════════════════════════
          ResultMap
     ════════════════════════════════════════════ -->
 
-    <resultMap id="managerMap" type="kr.or.ddit.domain.apt.manager.vo.ManagerVO">
+    <resultMap id="managerMap" type="kr.or.ddit.domain.member.manager.vo.ManagerVO">
         <result property="userNo"      column="USER_NO"/>
         <result property="mgmtOfcNo"   column="MGMT_OFC_NO"/>
         <result property="mngrDutyCd"  column="MNGR_DUTY_CD"/>
@@ -21,7 +21,7 @@
         <result property="aptCmplexNm" column="APT_CMPLEX_NM"/>
     </resultMap>
 
-    <resultMap id="mngrRqstMap" type="kr.or.ddit.domain.apt.manager.vo.MngrRqstVO">
+    <resultMap id="mngrRqstMap" type="kr.or.ddit.domain.member.manager.vo.MngrRqstVO">
         <result property="rqstNo"      column="RQST_NO"/>
         <result property="rqstLoginId" column="RQST_LOGIN_ID"/>
         <result property="rqstMngrNm"  column="RQST_MNGR_NM"/>
@@ -38,7 +38,7 @@
         <result property="aptCmplexNm" column="APT_CMPLEX_NM"/>
     </resultMap>
 
-    <resultMap id="memberSearchMap" type="kr.or.ddit.domain.apt.manager.vo.MemberSearchVO">
+    <resultMap id="memberSearchMap" type="kr.or.ddit.domain.member.manager.vo.MemberSearchVO">
         <result property="userNo"    column="USER_NO"/>
         <result property="userId"    column="USER_ID"/>
         <result property="userNm"    column="USER_NM"/>
@@ -71,7 +71,7 @@
         ORDER BY m.USER_NM
     </select>
 
-    <update id="updateManagerDuty" parameterType="kr.or.ddit.domain.apt.manager.vo.ManagerVO">
+    <update id="updateManagerDuty" parameterType="kr.or.ddit.domain.member.manager.vo.ManagerVO">
         UPDATE MANAGER
         SET MNGR_DUTY_CD = #{mngrDutyCd}
         WHERE USER_NO = #{userNo}
@@ -113,7 +113,7 @@
         ORDER BY mr.RQST_DT DESC
     </select>
 
-    <insert id="insertRequest" parameterType="kr.or.ddit.domain.apt.manager.vo.MngrRqstVO">
+    <insert id="insertRequest" parameterType="kr.or.ddit.domain.member.manager.vo.MngrRqstVO">
         <selectKey keyProperty="rqstNo" resultType="String" order="BEFORE">
             SELECT TO_CHAR(SEQ_MANAGER_RQST.NEXTVAL) FROM DUAL
         </selectKey>
@@ -138,7 +138,7 @@
         )
     </insert>
 
-    <update id="updateRequest" parameterType="kr.or.ddit.domain.apt.manager.vo.MngrRqstVO">
+    <update id="updateRequest" parameterType="kr.or.ddit.domain.member.manager.vo.MngrRqstVO">
         UPDATE MNGR_RQST
         SET RQST_DUTY_CD = #{rqstDutyCd},
             RMRK_CN      = #{rmrkCn}
@@ -146,7 +146,7 @@
           AND RQST_STTS_CD = 'WAIT'
     </update>
 
-    <update id="cancelRequest" parameterType="kr.or.ddit.domain.apt.manager.vo.MngrRqstVO">
+    <update id="cancelRequest" parameterType="kr.or.ddit.domain.member.manager.vo.MngrRqstVO">
         UPDATE MNGR_RQST
         SET RQST_STTS_CD = 'CNL',
             RMRK_CN      = #{rmrkCn}
