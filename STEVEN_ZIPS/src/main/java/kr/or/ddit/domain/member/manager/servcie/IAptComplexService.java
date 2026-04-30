@@ -1,0 +1,13 @@
+package kr.or.ddit.domain.member.manager.servcie;
+
+import kr.or.ddit.domain.apt.vo.AptComplexVO;
+
+public interface IAptComplexService {
+   public AptComplexVO selectAptComplex(String aptCmplexNo);
+
+/*   public AptComplexVO selectAptDetailList(String aptCmplexNo);*/
+
+   public String selectManagerAptCmplexNo(String userNo);
+
+   public int updateAptComplex(AptComplexVO aptComplexVO);
+}
