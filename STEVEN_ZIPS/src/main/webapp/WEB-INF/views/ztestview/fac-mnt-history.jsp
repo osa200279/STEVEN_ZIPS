@@ -176,7 +176,7 @@
             </thead>
             <tbody class="divide-y divide-outline-variant/10">
             <tr class="hover:bg-surface-container-low/30 transition-colors group cursor-pointer"
-                onclick="location.href='/apt/facilityHistoryDetail.do?id=1'">
+                onclick="location.href='/fac/facilityHistoryDetail.do?id=1'">
 
                 <td class="px-6 py-5">
                     <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">유지보수</span>
