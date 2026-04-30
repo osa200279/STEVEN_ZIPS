@@ -3,6 +3,7 @@ package kr.or.ddit.domain.apt.apiApartment.service;
 import kr.or.ddit.domain.apt.apiApartment.mapper.IApiMemberMapper;
 import kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper;
 import kr.or.ddit.domain.apt.apiApartment.vo.*;
+import kr.or.ddit.domain.member.manager.vo.ManagerVO;
 import kr.or.ddit.domain.apt.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.vo.AptUnitVO;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;

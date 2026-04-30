@@ -4,6 +4,7 @@ package kr.or.ddit.domain.apt.apiApartment.mapper;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptInfraEntity;
 import kr.or.ddit.domain.apt.apiApartment.vo.MgmtOfficeEntity;
+import kr.or.ddit.domain.member.manager.vo.ManagerVO;
 import kr.or.ddit.domain.apt.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.vo.AptUnitVO;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;

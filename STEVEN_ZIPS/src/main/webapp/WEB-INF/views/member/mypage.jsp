@@ -134,7 +134,7 @@
 <body class="bg-gray-50">
 
 <%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-<div class="max-w-[1500px] p-10 pt-24 ml-64">
+<div class="ml-64 min-h-screen px-10 pt-28 pb-10">
     <!-- 상단 -->
     <div class="flex justify-between items-center mb-8">
         <div>
