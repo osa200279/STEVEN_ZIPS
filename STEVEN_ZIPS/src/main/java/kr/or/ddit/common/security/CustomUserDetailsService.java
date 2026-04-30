@@ -1,6 +1,6 @@
 package kr.or.ddit.common.security;
 
-import kr.or.ddit.common.util.member.resident.InOutCd;
+import kr.or.ddit.common.util.member.resident.InoutCd;
 import kr.or.ddit.domain.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.admin.AdminVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
@@ -44,7 +44,7 @@ public class CustomUserDetailsService implements UserDetailsService{
 		if("ROLE_RESIDENT".equals(auth)){
 			ResidentVO resident = residentMapper.getResidentInfo(member.getUserNo());
 
-			if(resident != null && InOutCd.LIVE == resident.getInoutCd()){	// LIVE(입주중) 상태이면 입주민으로 판단
+			if(resident != null && InoutCd.LIVE == resident.getInoutCd()){	// LIVE(입주중) 상태이면 입주민으로 판단
 				// BeanUtils.copyProperties(source, target) source와 target의 공통된 필드를 매핑해서 target에 복사(같은 이름 필드끼리 자동맵핑)
 				BeanUtils.copyProperties(member, resident);
 				member = resident;	// 다형성 이용
