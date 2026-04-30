@@ -43,6 +43,20 @@
     .process-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:14px;} .process-step {padding:18px 14px;border-radius:14px;border:1px solid var(--border);background:#fff;text-align:center;} .process-step.active {background:#eef8f0;border-color:#b8d9c0;}
     @media (max-width:1200px){.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid{grid-template-columns:repeat(2,1fr)} .grid-2,.grid-2.equal,.chat-layout{grid-template-columns:1fr} .label-grid{grid-template-columns:140px 1fr}}
     @media (max-width:900px){.main-shell{flex-direction:column}.content-area{padding:24px 18px 48px}.page-content-wrap{max-width:100%}.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid,.seat-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:120px 1fr}.label-grid{grid-template-columns:120px 1fr}}
+    .message-stream {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .page-desc-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-desc {
+      margin: 0;
+    }
   </style>
 
 </head>
@@ -52,6 +66,7 @@
     <%@ include file="/WEB-INF/views/include/sidebarLayout.jsp" %>
     <main class="content-area">
       <div class="page-content-wrap">
+
         <div class="breadcrumb">
           <a href="${pageContext.request.contextPath}/">HOME</a>
           <span>›</span>
@@ -59,8 +74,18 @@
           <span>›</span>
           <span class="cur">그룹채팅방</span>
         </div>
+
         <h1 class="page-title">그룹채팅방</h1>
-        <p class="page-desc">채팅방 목록 검색, 실시간 1:N 대화, 텍스트 및 이미지 전송 영역을 포함한 그룹채팅방 화면입니다.</p>
+
+        <div class="page-desc-wrap">
+          <p class="page-desc">
+            채팅방 목록 검색, 실시간 채팅을 지원합니다.
+          </p>
+
+          <button class="btn-sub" onclick="openDiscover()" style="margin-bottom: 5px">
+            오픈채팅 찾기
+          </button>
+        </div>
 
         <section class="chat-layout">
           <div class="chat-list">
@@ -68,36 +93,33 @@
               <h3>채팅방 목록</h3>
               <span>검색 가능</span>
             </div>
+
+
             <div class="search-row">
               <input class="fake-input" value="독서실" />
             </div>
-            <div class="chat-room-item active">
+            <div class="chat-room-item active" onclick="openMyRoom('${room.chatRoomNo}', this)">
               <strong>독서실 이용자 모임</strong>
               <div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 24명</div>
             </div>
-            <div class="chat-room-item">
-            <strong>주차 정보 공유방</strong>
-              <div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 31명</div>
-            </div>
-            <div class="chat-room-item"><strong>러닝 동호회</strong>
-              <div style="font-size:12px;color:var(--text-light);margin-top:4px;">참여자 18명</div>
-            </div>
+
+
           </div>
-          <div class="chat-box">
+
+          <div class="chat-box" id="chat-content">
             <div class="section-hd">
-              <h3>독서실 이용자 모임</h3>
-              <span>실시간 1:N</span>
+              <h3>오픈채팅방</h3>
             </div>
-            <div class="message-stream">
-              <div class="message other">오늘 저녁 독서실 자리 여유 있나요?</div>
-              <div class="message me">A열은 조금 남아 있는 것 같아요.</div>
-              <div class="message other">감사합니다! 바로 예약해볼게요.</div>
+            <div class="search-row">
+              <input class="fake-input" placeholder="채팅방 검색" />
             </div>
-            <div class="search-row" style="margin-top:18px;">
-              <input class="fake-input" style="flex:1;max-width:none;" value="메시지를 입력하세요." />
-              <button class="btn-sub">이미지 전송</button>
-              <button class="btn-main">전송</button>
+
+
+            <div class="room-grid">
+              <div class="room-box available" onclick="enterRoom('1')">운동 모임</div>
             </div>
+
+
           </div>
         </section>
 
@@ -106,4 +128,141 @@
   </div>
   <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 </body>
+<script>
+
+window.onload = function () {
+  loadMyRooms();
+};
+
+  currentView = "discover";  // 기본값
+
+  let currentRoomId = null;
+
+  function openMyRoom(roomId,el) {
+
+    if (el) setActiveRoom(el);
+
+    fetch('/chat/messages?chatRoomNo=' + roomId)
+            .then(res => res.json())
+            .then(list => {
+
+              let html = `
+                <div class="section-hd">
+                    <h3>\${roomId}</h3>
+                </div>
+                <div class="message-stream">
+            `;
+
+              list.forEach(msg => {
+
+                const isM
+                e = msg.chatMemberId === "내아이디"; // 나중에 세션
+
+                html += `
+                          <div class="message \${isMe ? 'me' : 'other'}">
+                            \${msg.msgCn}
+                          </div>
+                        `;
+              });
+
+              html += `</div>
+                <div class="search-row">
+                    <input id="msg" class="fake-input"/>
+                    <button onclick="sendMessage('\${roomId}')">전송</button>
+                </div>
+            `;
+
+              document.getElementById("chat-content").innerHTML = html;
+            });
+  }
+
+  function openDiscover() {
+    currentView = "discover";
+
+    document.getElementById("chat-content").innerHTML = `
+        <div class="section-hd">
+            <h3>오픈채팅방</h3>
+        </div>
+
+        <div class="search-row">
+            <input class="fake-input" placeholder="채팅방 검색" />
+        </div>
+
+        <div class="room-grid">
+            <div class="room-box available" onclick="enterRoom('1')">운동 모임</div>
+            <div class="room-box available" onclick="enterRoom('2')">독서 모임</div>
+            <div class="room-box available" onclick="enterRoom('3')">게임 모임</div>
+        </div>
+    `;
+  }
+
+  function enterRoom(roomId) {
+
+    fetch('/chat/enter?chatRoomNo=' + roomId, {
+      method: 'POST'
+    }).then(() => {
+      openMyRoom(roomId);
+      loadMyRooms(); // 리스트 갱신
+    });
+  }
+
+  function closeChat() {
+    openDiscover();
+  }
+
+  function setActiveRoom(el) {
+    document.querySelectorAll(".chat-room-item").forEach(item => {
+      item.classList.remove("active");
+    });
+    el.classList.add("active");
+  }
+
+  function loadMyRooms() {
+    fetch('/chat/myRooms')
+            .then(res => res.json())
+            .then(list => {
+              let html = '';
+
+              list.forEach(room => {
+                html += `
+                    <div class="chat-room-item"
+                         onclick="openMyRoom('\${room.chatRoomNo}')">
+                        \${room.chatRoomNm}
+                    </div>
+                `;
+              });
+
+              const listContainer = document.querySelector('.chat-list');
+
+              const header = `
+                                <div class="section-hd">
+                                  <h3>채팅방 목록</h3>
+                                  <span>검색 가능</span>
+                                </div>
+                                <div class="search-row">
+                                  <input class="fake-input" placeholder="검색"/>
+                                </div>
+                              `;
+
+              listContainer.innerHTML = header + html;
+            });
+  }
+
+  function sendMessage(roomId) {
+
+    const content = document.getElementById("msg").value;
+
+    fetch('/chat/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chatRoomNo: roomId,
+        msgCn: content
+      })
+    }).then(() => {
+      document.getElementById("msg").value = "";
+      openMyRoom(roomId); // 다시 조회
+    });
+  }
+</script>
 </html>

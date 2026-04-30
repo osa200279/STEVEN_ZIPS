@@ -115,6 +115,7 @@ public class ResidentMainController {
         return "member/resident/service/service_moving";
     }
 
+
     @GetMapping("/service/car")
     public String serviceCar(@AuthenticationPrincipal CustomUser user, Model model) {
 

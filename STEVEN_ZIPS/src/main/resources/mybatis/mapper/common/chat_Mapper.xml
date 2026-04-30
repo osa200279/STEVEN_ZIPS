@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.common.webSocket.chat.mapper.IChatMapper">
+
+    <select id="selectMyRooms" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
+        SELECT r.CHAT_ROOM_NO, r.CHAT_ROOM_NM
+        FROM CHAT_ROOM r
+        INNER JOIN CHAT_ROOM_MEMBER m
+            ON (r.CHAT_ROOM_NO = m.CHAT_ROOM_NO)
+        WHERE m.USER_NO = #{userNo}
+          AND m.LEFT_DTTM IS NULL
+    </select>
+
+    <select id="selectMessages" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO">
+        SELECT *
+        FROM CHAT_MESSAGE
+        WHERE CHAT_ROOM_NO = #{chatRoomNo}
+        ORDER BY REG_DTTM ASC
+    </select>
+
+    <insert id="insertMessage">
+        INSERT INTO CHAT_MESSAGE (
+            CHAT_MSG_NO,
+            CHAT_ROOM_NO,
+            MSG_CN,
+            MSG_TY_CD,
+            CHAT_MEMBER_ID
+        )
+        VALUES (
+                   SEQ_CHAT_MESSAGE.nextval,
+                   #{chatRoomNo},
+                   #{msgCn},
+                   'TEXT',
+                   #{chatMemberId}
+               )
+    </insert>
+
+    <select id="selectMemberId" resultType="string">
+        SELECT  CHAT_MEMBER_ID
+        FROM    CHAT_ROOM_MEMBER
+        WHERE   CHAT_ROOM_NO = #{chatRoomNo}
+          AND   USER_NO = #{userNo}
+          AND   LEFT_DTTM IS NULL
+    </select>
+
+    <insert id="insertMember">
+        INSERT INTO CHAT_ROOM_MEMBER (
+            CHAT_MEMBER_ID,
+            CHAT_ROOM_NO,
+            USER_NO
+        )
+        VALUES (
+           #{chatMemberId},
+           #{chatRoomNo},
+           #{userNo}
+       )
+    </insert>
+
+
+</mapper>
