@@ -1,3 +1,5 @@
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 
 <html class="light" lang="ko"><head>
@@ -85,7 +87,9 @@
 </head>
 <body class="bg-surface text-on-surface flex flex-col min-h-screen">
 
-
+<%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
+<%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
+<%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
 <!-- TopNavBar -->
 
 <main class="flex-grow pt-32 pb-20 ml-80 bg-[#f8f7f4]">
