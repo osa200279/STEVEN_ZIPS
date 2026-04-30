@@ -90,7 +90,7 @@
         CASE R.RQST_STTS_CD
         WHEN 'WAIT'   THEN '승인대기'
         WHEN 'OK'     THEN '승인완료'
-        WHEN 'REJECT' THEN '반려'
+        WHEN 'RJCT' THEN '반려'
         WHEN 'CNL'    THEN '신청취소'
         END AS STTS_NM
 
@@ -191,7 +191,7 @@
             CASE R.RQST_STTS_CD
                 WHEN 'WAIT'   THEN '승인대기'
                 WHEN 'OK'     THEN '승인완료'
-                WHEN 'REJECT' THEN '반려'
+                WHEN 'RJCT' THEN '반려'
                 WHEN 'CNL'    THEN '신청취소'
                 ELSE R.RQST_STTS_CD
                 END AS STTS_NM
@@ -398,7 +398,7 @@
     <!-- 반려 처리 -->
     <update id="rejectRequest">
         UPDATE MNGR_RQST
-        SET RQST_STTS_CD = 'REJECT',
+        SET RQST_STTS_CD = 'RJCT',
             APRV_DT = SYSDATE,
             APRV_ID = #{aprvId},
             RJCT_RSN_CN = #{rjctRsnCn},

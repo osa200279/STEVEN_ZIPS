@@ -143,9 +143,6 @@ function renderRequestTable() {
 
         /*
             상태 CSS 클래스 매핑
-            왜 필요?
-            → DB 상태값은 WAIT, OK, REJECT, CNL처럼 대문자 코드이고,
-              CSS 클래스는 wait, ok, reject, cancel처럼 소문자로 만들었기 때문.
         */
         let statusClass = "wait";
         let statusName = "승인대기";
@@ -153,7 +150,7 @@ function renderRequestTable() {
         if (status === "OK") {
             statusClass = "ok";
             statusName = "승인완료";
-        } else if (status === "REJECT") {
+        } else if (status === "RJCT") {
             statusClass = "reject";
             statusName = "반려";
         } else if (status === "CNL") {
@@ -168,11 +165,11 @@ function renderRequestTable() {
             actionHtml =
                 '<button type="button" class="icon-btn-sm" onclick="openApprovalModal(this)" title="승인">' +
                 '<span class="material-symbols-rounded">check</span></button>' +
-                '<button type="button" class="icon-btn-sm danger" onclick="openRejectModal(this)" title="반려">' +
+                '<button type="button" class="icon-btn-sm danger" onclick="openRJCTModal(this)" title="반려">' +
                 '<span class="material-symbols-rounded">close</span></button>';
-        } else if (status === "REJECT") {
+        } else if (status === "RJCT") {
             actionHtml =
-                '<button type="button" class="icon-btn-sm danger" onclick="showRejectReason(this)" title="반려사유">' +
+                '<button type="button" class="icon-btn-sm danger" onclick="showRJCTReason(this)" title="반려사유">' +
                 '<span class="material-symbols-rounded">visibility</span></button>';
         } else if (status === "OK") {
             /*
@@ -224,7 +221,7 @@ function updateRequestCount() {
     const cancel = requestRows.filter(r => String(r.rqstSttsCd || "").toUpperCase() === "CNL").length;
     const wait = requestRows.filter(r => String(r.rqstSttsCd || "").toUpperCase() === "WAIT").length;
     const ok = requestRows.filter(r => String(r.rqstSttsCd || "").toUpperCase() === "OK").length;
-    const reject = requestRows.filter(r => String(r.rqstSttsCd || "").toUpperCase() === "REJECT").length;
+    const reject = requestRows.filter(r => String(r.rqstSttsCd || "").toUpperCase() === "RJCT").length;
 
     const summary = document.getElementById("rqstSummary");
     if (summary) {
