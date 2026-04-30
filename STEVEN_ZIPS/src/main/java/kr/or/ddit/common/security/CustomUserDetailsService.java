@@ -17,6 +17,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author 이용로
+ */
 @Slf4j
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
@@ -33,10 +36,9 @@ public class CustomUserDetailsService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		log.info("## CustomUserDetailsService.loadUserByUsername() 실행...!");
-		log.info("## username : " + username);
 
 		MemberVO member = memberMapper.readByUserInfo(username);
-		log.info("## member : " + member);
+		log.info("## 확인된 회원정보 : " + member);
 
 		String auth = member.getAuthList().get(0).getAuth();
 
@@ -44,7 +46,7 @@ public class CustomUserDetailsService implements UserDetailsService{
 			ResidentVO resident = residentMapper.getResidentInfo(member.getUserNo());
 
 			if(resident != null && InoutCd.LIVE == resident.getInoutCd()){	// LIVE(입주중) 상태이면 입주민으로 판단
-				log.info("입주중인 회원으로 확인됨! : {}", resident);
+				log.info("##입주중인 회원으로 확인됨! : {}", resident);
 				// BeanUtils.copyProperties(source, target) source와 target의 공통된 필드를 매핑해서 target에 복사(같은 이름 필드끼리 자동맵핑)
 				BeanUtils.copyProperties(member, resident);
 				member = resident;	// 다형성 이용

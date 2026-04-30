@@ -75,10 +75,10 @@ public class GoogleDriveService {
     /**
      * 파일 업로드 메서드
      * @author 이용로
-     * @param file  저장할 파일vo 객체
-     * @param path  파일을 저장할 *폴더*의 전체 경로 (ex. member/prof_img/파일.txt면 member/prof_img까지 마자막 '/'와 파일명은 제거한다)
+     * @param file 저장할 파일vo 객체
+     * @param path 파일을 저장할 *폴더*의 전체 경로 (ex. member/prof_img/파일.txt면 member/prof_img까지 마자막 '/'와 파일명은 제거한다)
      * @param savedFileName uuid_name 형식의 저장 될 파일명 (*주의 uuid는 '-'를 제거)
-     * @return googleId : 구글 드라이브에서 업로드 한 파일에 발급한 식별코드
+     * @return googleId 구글 드라이브에서 업로드 한 파일에 발급한 식별코드
      * @throws IOException
      */
     public String uploadFile(MultipartFile file, String path, String savedFileName) throws IOException {
@@ -114,14 +114,14 @@ public class GoogleDriveService {
     /**
      * mkdirs() 처럼 동작하는 폴더(경로) 탐색 메서드
      * @author 이용로
-     * @param service - 사용할 google drive 서비스 객체
-     * @param rootId  - 탐색을 시작할 최상위 폴더 이름
-     * @param path    - 파일을 저장할 경로
-     * @return currentParentId - 최종 생성된 폴더명
+     * @param service 사용할 google drive 서비스 객체
+     * @param rootId 탐색을 시작할 최초(최상위) 폴더 이름
+     * @param path 파일을 저장할 경로
+     * @return currentParentId 최종 생성된 폴더명
      * @throws IOException
-     * @query name = '' :: 찾고자 하는 콘텐츠 명
-     * @query mimeType = '' :: 데이터 타입 'application/vnd.google-apps.folder', 'image/jpeg'
-     * @query '' in parents :: ''컬렉션(폴더) 내 파일 (ex. myFolder 내 파일 => 'myFolder' in parents)
+     * @query name 찾고자 하는 콘텐츠 명
+     * @query mimeType 데이터 타입 'application/vnd.google-apps.folder', 'image/jpeg'
+     * @query 'folder' in parents 'folder'컬렉션(폴더) 내 파일 (ex. myFolder 내 파일 => 'myFolder' in parents)
      */
     private String getOrCreateFolders(Drive service, String rootId, String path) throws IOException {
         String[] folderNames = path.split("/"); // '/'로 구분된 각 경로 분리
@@ -164,7 +164,7 @@ public class GoogleDriveService {
      * 전체 경로를 통해 타겟 파일 찾기
      * @author 이용로
      * @param service
-     * @param rootId
+     * @param rootId 탐색을 시작할 최초(최상위) 폴더 이름
      * @param fullPath 파일명까지 포함한 전체 경로(attach_file테이블의 file_path)
      * @return googleId 구글 파일 아이디 값
      * @throws IOException
