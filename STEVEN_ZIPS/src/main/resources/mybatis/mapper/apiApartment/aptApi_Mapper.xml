@@ -97,7 +97,7 @@
         INSERT ALL
         <foreach collection="list" item="item">
             INTO APT_UNIT(
-            DONG_NO, DONG_NM, MAX_FLOOR, UNIT_CNT, APT_CMPLEX_NO
+            DONG_NO, DONG_NM, FLOOR, UNIT_CNT, APT_CMPLEX_NO
             ) VALUES (
             #{item.dongNo},
             #{item.dongNm},
@@ -113,7 +113,7 @@
         INSERT ALL
         <foreach collection="list" item="item">
             INTO APT_DETAIL(
-            HO_NO, MAX_FLOOR, EXCLUSIVE_SIZE, DONG_NO, HO
+            HO_NO, FLOOR, EXCLUSIVE_SIZE, DONG_NO, HO
             ) VALUES (
             #{item.hoNo},
             #{item.floor},
@@ -198,7 +198,7 @@
         SELECT
         D.HO_NO,
         D.HO,
-        D.MAX_FLOOR,
+        D.FLOOR,
         U.DONG_NO,
         U.APT_CMPLEX_NO
         FROM APT_DETAIL D
