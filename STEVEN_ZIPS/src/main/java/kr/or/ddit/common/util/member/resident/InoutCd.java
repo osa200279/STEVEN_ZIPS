@@ -1,6 +1,6 @@
 package kr.or.ddit.common.util.member.resident;
 
-public enum InOutCd {
+public enum InoutCd {
     WAIT,  // 입주대기
     LIVE,  // 입주중
     OUT,   // 퇴거
