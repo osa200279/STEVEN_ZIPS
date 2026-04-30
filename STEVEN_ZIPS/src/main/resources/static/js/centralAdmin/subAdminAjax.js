@@ -120,7 +120,7 @@ function renderRequestTable() {
 
     tbody.innerHTML = requestRows.map(row => {
         const status = row.rqstSttsCd || "WAIT";
-        const statusClass = status === "ok" ? "ok" : status === "REJECT" ? "REJECT" : status === "CNL" ? "CANCEL" : "WAIT";
+        const statusClass = status === "OK" ? "OK" : status === "REJECT" ? "REJECT" : status === "CNL" ? "CANCEL is not defined" : "WAIT";
         // const statusName = row.sttsNm || (status === "OK" ? "승인완료" : status === "REJECT" ? "반려" : "승인대기");
         let statusName = "";
 
@@ -128,7 +128,7 @@ function renderRequestTable() {
             상태 코드 매핑
 
             왜 필요?
-            → DB에는 코드값(cnl, wait, ok...)으로 저장하고
+            → DB에는 코드값(CNL, WAIT, OK...)으로 저장하고
               화면에서는 사람이 읽을 수 있는 값으로 보여주기 위해
         */
         if (status === "OK") {
@@ -171,7 +171,7 @@ function renderRequestTable() {
 
         return `
             <tr data-rqst-no="${esc(row.rqstNo)}" data-status="${esc(status)}" data-reject-reason="${esc(row.rjctRsnCn || "")}">
-                <td><input type="checkbox" class="rqst-check row-check" ${status !== "wait" ? "disabled" : ""}></td>
+                <td><input type="checkbox" class="rqst-check row-check" ${status !== "WAIT" ? "disabled" : ""}></td>
                 <td>
                     <div class="user-cell">
                         <div class="user-avatar" style="background:#dbeafe;color:#1d4ed8">${esc(firstChar)}</div>
@@ -200,7 +200,7 @@ function updateRequestCount() {
     const reject = requestRows.filter(r => r.rqstSttsCd === "REJECT").length;
 
     const summary = document.getElementById("rqstSummary");
-    if (summary) summary.textContent = `총 ${total}건 / 신청취소 ${CANCEL}건 / 승인대기 ${WAIT}건 / 승인완료 ${OK}건 / 반려 ${REJECT}건`;
+    if (summary) summary.textContent = `총 ${total}건 / 신청취소 ${cancel}건 / 승인대기 ${wait}건 / 승인완료 ${ok}건 / 반려 ${reject}건`;
 
     const footerTotal = document.getElementById("rqstFooterTotal");
     if (footerTotal) footerTotal.innerHTML = `총 <strong>${total}</strong>건 표시 중`;

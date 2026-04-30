@@ -57,7 +57,7 @@
         R.RQST_DUTY_CD,
         R.RQST_DT,
         R.APRV_DT,
-        LOWER(R.RQST_STTS_CD) AS RQST_STTS_CD,
+        R.RQST_STTS_CD AS RQST_STTS_CD,
         R.APRV_ID,
         R.RJCT_RSN_CN,
         R.RMRK_CN,
@@ -81,11 +81,11 @@
         ELSE R.RQST_DUTY_CD
         END AS DUTY_NM,
 
-        CASE LOWER(R.RQST_STTS_CD)
-        WHEN 'wait'   THEN '승인대기'
-        WHEN 'ok'     THEN '승인완료'
-        WHEN 'reject' THEN '반려'
-        ELSE R.RQST_STTS_CD
+        CASE R.RQST_STTS_CD
+        WHEN 'WAIT'   THEN '승인대기'
+        WHEN 'OK'     THEN '승인완료'
+        WHEN 'REJECT' THEN '반려'
+        WHEN 'CNL'    THEN '신청취소'
         END AS STTS_NM
 
         FROM MNGR_RQST R
@@ -164,7 +164,7 @@
             R.RQST_DUTY_CD,
             R.RQST_DT,
             R.APRV_DT,
-            LOWER(R.RQST_STTS_CD) AS RQST_STTS_CD,
+            R.RQST_STTS_CD AS RQST_STTS_CD,
             R.APRV_ID,
             R.RJCT_RSN_CN,
             R.RMRK_CN,
@@ -188,11 +188,11 @@
                 ELSE R.RQST_DUTY_CD
                 END AS DUTY_NM,
 
-            CASE LOWER(R.RQST_STTS_CD)
-                WHEN 'wait'   THEN '승인대기'
-                WHEN 'ok'     THEN '승인완료'
-                WHEN 'reject' THEN '반려'
-                ELSE R.RQST_STTS_CD
+            CASE R.RQST_STTS_CD
+                WHEN 'WAIT'   THEN '승인대기'
+                WHEN 'OK'     THEN '승인완료'
+                WHEN 'REJECT' THEN '반려'
+                WHEN 'CNL'    THEN '신청취소'
                 END AS STTS_NM
 
         FROM MNGR_RQST R
@@ -400,7 +400,7 @@
     <!-- 승인 처리 -->
     <update id="approveRequest">
         UPDATE MNGR_RQST
-        SET RQST_STTS_CD = 'ok',
+        SET RQST_STTS_CD = 'OK',
             APRV_DT = SYSDATE,
             APRV_ID = #{aprvId},
             USER_NO = #{userNo},
@@ -413,7 +413,7 @@
     <!-- 반려 처리 -->
     <update id="rejectRequest">
         UPDATE MNGR_RQST
-        SET RQST_STTS_CD = 'reject',
+        SET RQST_STTS_CD = 'REJECT',
             APRV_DT = SYSDATE,
             APRV_ID = #{aprvId},
             RJCT_RSN_CN = #{rjctRsnCn},
