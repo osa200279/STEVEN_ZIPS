@@ -28,7 +28,12 @@
 
 
 
-
+    <select id="selectNoticeDetail"
+            resultType="kr.or.ddit.domain.central.board.vo.NoticeVO">
+        SELECT *
+        FROM NOTICE
+        WHERE ANN_NO = #{annNo}
+    </select>
 
 
 

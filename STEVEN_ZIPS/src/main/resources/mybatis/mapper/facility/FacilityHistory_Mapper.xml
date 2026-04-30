@@ -33,6 +33,8 @@
             parameterType="string"
             resultType="kr.or.ddit.domain.ztest.vo.FacilityHistoryVO">
 
+
+
         SELECT
             fch.fac_chk_hstry_no AS facChkHstryNo,
             fch.facility_no AS facilityNo,
