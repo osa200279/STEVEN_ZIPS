@@ -56,6 +56,15 @@ public interface ISubAdminMapper {
 
     // 중복 MANAGER 체크용
     int countManagerByUserNo(String userNo);
-
     String selectMgmtOfcNoByApt(String aptCmplexNo);
+
+    /*
+    신청 데이터를 아래 계정 목록으로 이동 처리
+
+    ACNT_DSPLY_YN = 'N'으로 변경하여
+    신청 목록에서 숨기기 위한 메서드
+    */
+    int updateAccountDsplyYn(@Param("rqstNo") String rqstNo);
+
+
 }

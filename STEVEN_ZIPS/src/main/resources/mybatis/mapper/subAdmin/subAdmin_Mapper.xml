@@ -42,6 +42,11 @@
         <result property="sttsNm" column="stts_nm"/>
         <result property="lastLoginDt" column="last_login_dt"/>
         <result property="lastLoginTm" column="last_login_tm"/>
+        <!--
+            ACNT_DSPLY_YN
+            → 신청 목록에 표시할지 여부 (Y: 보임 / N: 숨김)
+        -->
+        <result property="acntDsplyYn" column="acnt_dsply_yn"/>
     </resultMap>
 
 
@@ -62,11 +67,12 @@
         R.RJCT_RSN_CN,
         R.RMRK_CN,
         R.USER_NO,
+        R.ACNT_DSPLY_YN,
 
         G.MGMT_OFC_NO,
         G.MNGR_DUTY_CD,
 
-        RR.APT_CMPLEX_NO,
+        O.APT_CMPLEX_NO,
         A.APT_CMPLEX_NM,
 
         CASE R.RQST_DUTY_CD
@@ -94,24 +100,24 @@
         ON R.USER_NO = G.USER_NO
 
         <!--
-            핵심 수정:
-            RESIDENT_RQST.USER_NO = 입주민 사용자 번호
-            RESIDENT_RQST.MNG_NO  = 담당 관리자 번호
+        신청 목록의 소속 단지 조회 흐름
 
-            따라서 관리자 기준 단지를 찾을 때는
-            RR.MNG_NO = G.USER_NO 로 연결해야 함.
-        -->
-        LEFT JOIN (
-        SELECT
-        MNG_NO,
-        MAX(APT_CMPLEX_NO) AS APT_CMPLEX_NO
-        FROM RESIDENT_RQST
-        GROUP BY MNG_NO
-        ) RR
-        ON RR.MNG_NO = G.USER_NO
+        MNGR_RQST.USER_NO
+        → MANAGER.USER_NO
+        → MANAGER.MGMT_OFC_NO
+        → MGMT_OFFICE.MGMT_OFC_NO
+        → MGMT_OFFICE.APT_CMPLEX_NO
+        → APT_COMPLEX.APT_CMPLEX_NO
+
+        왜 RESIDENT_RQST와 조인하지 않나?
+        → ROLE_MNGR이 항상 입주민 신청 담당자는 아니기 때문.
+        → RESIDENT_RQST는 입주민 입주/퇴거 신청 흐름에서 사용하는 테이블이다.
+    -->
+        LEFT JOIN MGMT_OFFICE O
+        ON G.MGMT_OFC_NO = O.MGMT_OFC_NO
 
         LEFT JOIN APT_COMPLEX A
-        ON RR.APT_CMPLEX_NO = A.APT_CMPLEX_NO
+        ON O.APT_CMPLEX_NO = A.APT_CMPLEX_NO
 
         <where>
             <if test="keyword != null and keyword != ''">
@@ -132,20 +138,14 @@
                 OR G.MNGR_DUTY_CD = #{role}
                 )
             </if>
-
             <!--
-                승인완료 후 실제 계정 목록에 등록된 신청 건은
-                신청 목록에서 숨긴다.
-
-                EXISTS란?
-                → 특정 조건의 데이터가 존재하는지 확인하는 SQL 조건.
+                신청 목록 표시
+                ACNT_DSPLY_YN 기준:
+                Y → 신청 목록에 보임
+                N → 아래 계정 목록으로 내려갔으므로 숨김
             -->
-            AND NOT EXISTS (
-            SELECT 1
-            FROM AUTH AU
-            WHERE AU.USER_NO = R.USER_NO
-            AND AU.USER_ROLE_CD = 'ROLE_MNGR'
-            )
+            AND NVL(R.ACNT_DSPLY_YN, 'Y') = 'Y'
+
 
         </where>
 
@@ -156,7 +156,6 @@
 
     <!-- 신청 계정 단건 조회 -->
     <select id="selectRequest" parameterType="string" resultMap="subAdminMap">
-
         SELECT
             R.RQST_NO,
             R.RQST_LOGIN_ID,
@@ -170,11 +169,12 @@
             R.RMRK_CN,
             R.USER_NO,
 
-            G.MGMT_OFC_NO,
-            G.MNGR_DUTY_CD,
+            /*
+                신청 단건 조회는 승인 처리용이다.
 
-            RR.APT_CMPLEX_NO,
-            A.APT_CMPLEX_NM,
+                → 승인 처리에는 RQST_NO, USER_NO, RQST_STTS_CD만 있으면 된다.
+                → 모든 ROLE_MNGR이 입주민은 아니므로 RESIDENT_RQST와 연결하면 업무 흐름이 꼬일 수 있다.
+            */
 
             CASE R.RQST_DUTY_CD
                 WHEN 'DUTY_HEAD'  THEN '관리소장'
@@ -193,25 +193,10 @@
                 WHEN 'OK'     THEN '승인완료'
                 WHEN 'REJECT' THEN '반려'
                 WHEN 'CNL'    THEN '신청취소'
+                ELSE R.RQST_STTS_CD
                 END AS STTS_NM
 
         FROM MNGR_RQST R
-
-                 LEFT JOIN MANAGER G
-                           ON R.USER_NO = G.USER_NO
-
-                 LEFT JOIN (
-            SELECT
-                MNG_NO,
-                MAX(APT_CMPLEX_NO) AS APT_CMPLEX_NO
-            FROM RESIDENT_RQST
-            GROUP BY MNG_NO
-        ) RR
-                           ON RR.MNG_NO = G.USER_NO
-
-                 LEFT JOIN APT_COMPLEX A
-                           ON RR.APT_CMPLEX_NO = A.APT_CMPLEX_NO
-
         WHERE R.RQST_NO = #{rqstNo}
     </select>
 
@@ -534,5 +519,17 @@
           AND USE_YN = 'Y'
           AND ROWNUM = 1
     </select>
+
+    <!--
+    아래 계정 목록으로 이동 처리
+
+    ACNT_DSPLY_YN = 'N'
+    → 신청 목록에서 안 보이게 처리
+    -->
+    <update id="updateAccountDsplyYn">
+        UPDATE MNGR_RQST
+        SET ACNT_DSPLY_YN = 'N'
+        WHERE RQST_NO = #{rqstNo}
+    </update>
 
 </mapper>

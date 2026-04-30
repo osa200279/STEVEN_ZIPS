@@ -22,6 +22,7 @@ public interface ISubAdminService {
     int updateRequest(SubAdminVO vo);
     int deleteRequest(String rqstNo);
 
+
     int approveRequest(String rqstNo, String aprvId);
     int rejectRequest(String rqstNo, String aprvId, String rjctRsnCn);
 

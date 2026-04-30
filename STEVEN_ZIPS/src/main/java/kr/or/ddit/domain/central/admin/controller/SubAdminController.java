@@ -105,6 +105,7 @@ public class SubAdminController {
         return result(service.deleteRequest(rqstNo));
     }
 
+
     /** 계정 사용/미사용 변경 */
     @PutMapping("/accounts/{userNo}/use")
     @ResponseBody

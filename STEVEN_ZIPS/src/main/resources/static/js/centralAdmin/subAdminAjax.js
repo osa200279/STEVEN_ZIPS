@@ -10,10 +10,30 @@ const API_BASE = window.APP_CTX + "/centralAdmin/subAdmin";
 const PAGE_SIZE = 10;
 
 const ROLES = [
-    { key: "HEAD", name: "관리소장", color: "blue", icon: "shield_person", level: "HEAD" },
-    { key: "ACNT", name: "회계", color: "yellow", icon: "account_balance", level: "ACNT" },
-    { key: "ADM", name: "행정", color: "green", icon: "edit_document", level: "ADM" },
-    { key: "FAC", name: "시설", color: "orange", icon: "handyman", level: "FAC" }
+    { key: "HEAD", name: "관리소장", color: "blue", icon: "shield_person", level: "HEAD",
+      desc: `
+              <span>단지 전체 관리</span><br>
+              <span>계정/권한 승인 가능</span><br>
+              <span class="caveat">모든 기능 접근 가능</span>
+            `},
+    { key: "ACNT", name: "회계", color: "yellow", icon: "account_balance", level: "ACNT",
+      desc: `
+              <span>관리비, 예산, 납부 관리</span><br>
+              <span>재무 관련 기능만 사용</span><br>
+              <span class="caveat">권한 승인, 행정·시설 관리 불가</span>
+            `},
+    { key: "ADM", name: "행정", color: "green", icon: "edit_document", level: "ADM",
+      desc: `
+              <span>공지사항, 민원, 입주민 관리</span><br>
+              <span>운영/행정 업무 담당</span><br>
+              <span class="caveat">권한 승인, 회계·시설 관리 불가</span>
+            `},
+    { key: "FAC", name: "시설", color: "orange", icon: "handyman", level: "FAC",
+      desc: `
+              <span>시설 점검, 공사, 유지보수 관리</span><br>
+              <span>시설 관련 업무 담당</span><br>
+              <span class="caveat">권한 승인, 행정·회계 관리 불가</span>
+            `}
 ];
 
 const ROLE_BG = { blue: "var(--blue-bg, #dbeafe)", yellow: "var(--yellow-bg, #fef3c7)", green: "var(--green-bg, #dcfce7)", orange: "#fed7aa" };
@@ -24,7 +44,7 @@ let accountRows = [];
 let accountPage = 1;
 let currentAccountId = null;
 
-const requestSearch = { keyword: "", status: "all" };
+const requestSearch = { keyword: "", status: "WAIT" };
 const accountSearch = { keyword: "", status: "", role: "" };
 
 function esc(value) {
@@ -119,26 +139,26 @@ function renderRequestTable() {
     }
 
     tbody.innerHTML = requestRows.map(row => {
-        const status = row.rqstSttsCd || "WAIT";
-        const statusClass = status === "OK" ? "OK" : status === "REJECT" ? "REJECT" : status === "CNL" ? "CANCEL is not defined" : "WAIT";
-        // const statusName = row.sttsNm || (status === "OK" ? "승인완료" : status === "REJECT" ? "반려" : "승인대기");
-        let statusName = "";
+        const status = (row.rqstSttsCd || "WAIT").toUpperCase();
 
         /*
-            상태 코드 매핑
-
+            상태 CSS 클래스 매핑
             왜 필요?
-            → DB에는 코드값(CNL, WAIT, OK...)으로 저장하고
-              화면에서는 사람이 읽을 수 있는 값으로 보여주기 위해
+            → DB 상태값은 WAIT, OK, REJECT, CNL처럼 대문자 코드이고,
+              CSS 클래스는 wait, ok, reject, cancel처럼 소문자로 만들었기 때문.
         */
+        let statusClass = "wait";
+        let statusName = "승인대기";
+
         if (status === "OK") {
+            statusClass = "ok";
             statusName = "승인완료";
         } else if (status === "REJECT") {
+            statusClass = "reject";
             statusName = "반려";
         } else if (status === "CNL") {
+            statusClass = "cancel";
             statusName = "신청취소";
-        } else {
-            statusName = "승인대기";
         }
 
         const firstChar = (row.rqstMngrNm || "?").substring(0, 1);
@@ -193,17 +213,29 @@ function renderRequestTable() {
 }
 
 function updateRequestCount() {
+    /*
+        화면 상단 건수 계산
+
+        주의:
+        DB 값이 OK, WAIT처럼 대문자일 수도 있고
+        ok, wait처럼 소문자일 수도 있어서 toUpperCase()로 통일한다.
+    */
     const total = requestRows.length;
-    const cancel = requestRows.filter(r => r.rqstSttsCd === "CNL").length;
-    const wait = requestRows.filter(r => r.rqstSttsCd === "WAIT").length;
-    const ok = requestRows.filter(r => r.rqstSttsCd === "OK").length;
-    const reject = requestRows.filter(r => r.rqstSttsCd === "REJECT").length;
+    const cancel = requestRows.filter(r => String(r.rqstSttsCd || "").toUpperCase() === "CNL").length;
+    const wait = requestRows.filter(r => String(r.rqstSttsCd || "").toUpperCase() === "WAIT").length;
+    const ok = requestRows.filter(r => String(r.rqstSttsCd || "").toUpperCase() === "OK").length;
+    const reject = requestRows.filter(r => String(r.rqstSttsCd || "").toUpperCase() === "REJECT").length;
 
     const summary = document.getElementById("rqstSummary");
-    if (summary) summary.textContent = `총 ${total}건 / 신청취소 ${cancel}건 / 승인대기 ${wait}건 / 승인완료 ${ok}건 / 반려 ${reject}건`;
+    if (summary) {
+        summary.textContent =
+            `총 ${total}건 / 신청취소 ${cancel}건 / 승인대기 ${wait}건 / 승인완료 ${ok}건 / 반려 ${reject}건`;
+    }
 
     const footerTotal = document.getElementById("rqstFooterTotal");
-    if (footerTotal) footerTotal.innerHTML = `총 <strong>${total}</strong>건 표시 중`;
+    if (footerTotal) {
+        footerTotal.innerHTML = `총 <strong>${total}</strong>건 표시 중`;
+    }
 }
 
 function renderAccounts() {
@@ -547,7 +579,7 @@ function renderRoleGuide() {
                     <span class="role-card__lv" style="background:${ROLE_BG[color]};color:${ROLE_FG[color]}">${role.level}</span>
                 </div>
                 <div class="role-card__title">${role.name}</div>
-                <div class="role-card__desc">단지 관리자 업무 권한</div>
+                <div class="role-card__desc">${role.desc}</div>
             </div>`;
     }).join("");
 }

@@ -46,4 +46,5 @@ public class SubAdminVO {
     private String sttsNm;
     private String lastLoginDt;
     private String lastLoginTm;
+    private String acntDsplyYn;
 }

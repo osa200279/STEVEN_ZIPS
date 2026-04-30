@@ -51,12 +51,19 @@ public class SubAdminServiceImpl implements ISubAdminService {
     @Override
     @Transactional
     public int approveRequest(String rqstNo, String aprvId) {
-    /*
-        승인 처리 흐름
+     /*
+        승인 처리용 로직
 
-        → 기존 신청 조회
-        → AUTH 권한만 ROLE_MNGR로 UPDATE
-        → MNGR_RQST 상태 UPDATE
+        중요:
+        여기서는 AUTH를 ROLE_MNGR로 바꾸지 않는다.
+         → AUTH를 바로 ROLE_MNGR로 바꾸면 아래 '단지 관리자 계정 목록'에 즉시 나타난다.
+         다운로드 아이콘을 눌렀을 때만 아래 목록으로 이동해야 함.
+
+        현재 프로세스:
+        - MANAGER 테이블에는 이미 관리소장/관리자 정보가 존재한다.
+        - MNGR_RQST.USER_NO는 MANAGER.USER_NO를 FK로 참조한다.
+        - 따라서 승인 시 관리사무소를 새로 찾거나 MANAGER에 INSERT하지 않는다.
+        - 승인 시 해야 할 일은 AUTH 권한 변경 + MNGR_RQST 상태 변경이다.
     */
 
         SubAdminVO rqst = mapper.selectRequest(rqstNo);
@@ -66,24 +73,16 @@ public class SubAdminServiceImpl implements ISubAdminService {
         }
 
         if (!StringUtils.hasText(rqst.getUserNo())) {
-            throw new IllegalStateException("신청 정보에 USER_NO가 없습니다. MNGR_RQST.USER_NO를 먼저 연결해야 합니다.");
+            throw new IllegalStateException("단지관리자 생성요청(MNGR_RQST)테이블에 USER_NO가 없습니다.");
         }
 
-        if ("ok".equalsIgnoreCase(rqst.getRqstSttsCd())) {
+        if ("OK".equalsIgnoreCase(rqst.getRqstSttsCd())) {
             throw new IllegalStateException("이미 승인완료된 신청입니다.");
         }
 
-        String mgmtOfcNo = mapper.selectMgmtOfcNoByApt(rqst.getAptCmplexNo());
-
-        if (!StringUtils.hasText(mgmtOfcNo)) {
-            throw new IllegalStateException("해당 단지에 연결된 관리사무소가 없습니다.");
-        }
-
-        rqst.setMgmtOfcNo(mgmtOfcNo);
-
-        // AUTH는 INSERT가 아니라 UPDATE
-        mapper.updateAuthToManager(rqst.getUserNo());
-
+    /*
+        MNGR_RQST 상태만 OK로 변경
+    */
         return mapper.approveRequest(
                 rqstNo,
                 aprvId,
@@ -95,14 +94,36 @@ public class SubAdminServiceImpl implements ISubAdminService {
     @Override
     @Transactional
     public int addApprovedAccount(String rqstNo) {
-    /*
-        addApprovedAccount는 approveRequest와 기능이 겹친다.
+     /*
+        다운로드 아이콘 클릭 처리
 
-        실무적으로는 승인 버튼 하나에서
-        AUTH UPDATE + MANAGER INSERT + MNGR_RQST UPDATE를 끝내는 것이 맞다.
+        역할:
+        → 승인완료된 신청 건만 실제 ROLE_MNGR 권한으로 변경한다.
+        → 이때부터 아래 '단지 관리자 계정 목록 및 상태'에 표시된다.
     */
-        return approveRequest(rqstNo, "central_admin");
+        SubAdminVO rqst = mapper.selectRequest(rqstNo);
+
+        if (rqst == null) {
+            throw new IllegalStateException("신청 정보를 찾을 수 없습니다.");
+        }
+
+        if (!"OK".equalsIgnoreCase(rqst.getRqstSttsCd())) {
+            throw new IllegalStateException("승인완료 상태인 신청만 계정 목록에 추가할 수 있습니다.");
+        }
+
+        if (!StringUtils.hasText(rqst.getUserNo())) {
+            throw new IllegalStateException("USER_NO가 없습니다.");
+        }
+        /*
+        AUTH란?
+        → 사용자 권한 저장 테이블.
+        여기서 ROLE_MNGR로 바뀌면 아래 계정 목록 조회 조건에 포함된다.
+         */
+        mapper.updateAuthToManager(rqst.getUserNo());
+
+        return mapper.updateAccountDsplyYn(rqstNo);
     }
+
 
     @Override
     @Transactional
