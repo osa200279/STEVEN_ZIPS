@@ -36,7 +36,7 @@
         <result property="userYn" column="user_yn"/>
         <result property="mngrDutyCd" column="mngr_duty_cd"/>
         <result property="regDt" column="reg_dt"/>
-        <result property="mdfcnDt" column="mdfcn_dt"/>
+        <result property="mdfDt" column="mdf_dt"/>
 
         <result property="dutyNm" column="duty_nm"/>
         <result property="sttsNm" column="stts_nm"/>
@@ -214,7 +214,7 @@
         M.USER_EML,
         M.USER_YN,
         M.REG_DT,
-        M.MDFCN_DT,
+        M.MDF_DT,
 
         G.MGMT_OFC_NO,
         G.MNGR_DUTY_CD,
@@ -241,8 +241,8 @@
         ELSE G.MNGR_DUTY_CD
         END AS DUTY_NM,
 
-        TO_CHAR(NVL(M.MDFCN_DT, M.REG_DT), 'YYYY-MM-DD') AS LAST_LOGIN_DT,
-        TO_CHAR(NVL(M.MDFCN_DT, M.REG_DT), 'HH24:MI') AS LAST_LOGIN_TM
+        TO_CHAR(NVL(M.MDF_DT, M.REG_DT), 'YYYY-MM-DD') AS LAST_LOGIN_DT,
+        TO_CHAR(NVL(M.MDF_DT, M.REG_DT), 'HH24:MI') AS LAST_LOGIN_TM
 
         FROM MEMBER M
 
@@ -312,7 +312,7 @@
             M.USER_EML,
             M.USER_YN,
             M.REG_DT,
-            M.MDFCN_DT,
+            M.MDF_DT,
 
             G.MGMT_OFC_NO,
             G.MNGR_DUTY_CD,
@@ -332,8 +332,8 @@
                 ELSE G.MNGR_DUTY_CD
                 END AS DUTY_NM,
 
-            TO_CHAR(NVL(M.MDFCN_DT, M.REG_DT), 'YYYY-MM-DD') AS LAST_LOGIN_DT,
-            TO_CHAR(NVL(M.MDFCN_DT, M.REG_DT), 'HH24:MI') AS LAST_LOGIN_TM
+            TO_CHAR(NVL(M.MDF_DT, M.REG_DT), 'YYYY-MM-DD') AS LAST_LOGIN_DT,
+            TO_CHAR(NVL(M.MDF_DT, M.REG_DT), 'HH24:MI') AS LAST_LOGIN_TM
 
         FROM MEMBER M
 
@@ -423,7 +423,7 @@
     <update id="deleteRequest">
         UPDATE MEMBER
         SET USER_YN = #{userYn},
-            MDFCN_DT = SYSDATE
+            MDF_DT = SYSDATE
         WHERE USER_NO = #{userNo}
     </update>
 
@@ -499,7 +499,7 @@
     <update id="updateAccountUseYn">
         UPDATE MEMBER
         SET USER_YN = #{userYn},
-            MDFCN_DT = SYSDATE
+            MDF_DT = SYSDATE
         WHERE USER_NO = #{userNo}
     </update>
 
