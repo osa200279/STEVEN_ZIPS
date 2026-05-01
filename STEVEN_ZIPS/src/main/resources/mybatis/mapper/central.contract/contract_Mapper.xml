@@ -89,6 +89,7 @@
         #{frmNo}, #{aptCmplexNo}, #{frmNm}, #{rentTypeCd}, sysdate, sysdate, #{fileNo}
         )
     </insert>
+
     <delete id="contractFormDelete" parameterType="string">
         delete from CNTRCT_FRM
         where FRM_NO = #{frmNo}
@@ -148,7 +149,7 @@
         )
         WHERE rn BETWEEN #{startRow} AND #{endRow}
     </select>
-    <select id="selectContractDetail" resultType="kr.or.ddit.domain.central.admin.vo.ContractVO" parameterType="string">
+    <select id="selectOneContract" resultType="kr.or.ddit.domain.central.admin.vo.ContractVO" parameterType="string">
         select rc.RENT_CTRT_NO as rentCtrtNo,
                rc.RENT_LSTG_NO as rentLstgNo,
                m.USER_ID as userId,
@@ -224,7 +225,7 @@
             )
         where rn between #{startRow} and #{endRow}
     </select>
-    <select id="contractFormDetail" resultType="kr.or.ddit.domain.central.admin.vo.ContractFormVO" parameterType="string">
+    <select id="selectOneContractForm" resultType="kr.or.ddit.domain.central.admin.vo.ContractFormVO" parameterType="string">
             SELECT
                 cf.FRM_NO        AS frmNo,
                 cf.FRM_NM        AS frmNm,
@@ -297,5 +298,6 @@
             APT_CMPLEX_NO = #{aptCmplexNo}
         where FRM_NO = #{frmNo}
     </update>
+
 
 </mapper>
