@@ -11,7 +11,7 @@
         <result property="userTelno" column="user_telno" />
         <result property="userEml" column="user_eml" />
         <result property="regDt" column="reg_dt" />
-        <result property="mdfcnDt" column="mdfcn_dt" />
+        <result property="mdfDt" column="mdf_dt" />
         <result property="userYn" column="user_yn" />
         <result property="smsRcvYn" column="sms_rcv_yn" />
         <result property="smsNtcRcvYn" column="sms_ntc_rcv_yn" />
@@ -37,7 +37,7 @@
                USER_TELNO,
                USER_EML,
                REG_DT,
-               MDFCN_DT,
+               mdf_DT,
                USER_YN,
                SMS_RCV_YN,
                SMS_NTC_RCV_YN,
@@ -58,7 +58,7 @@
         </selectKey>
         insert into member(
             user_no, user_id, user_pw, user_nm, user_rrno, user_telno, user_eml,
-            reg_dt, mdfcn_dt,
+            reg_dt, mdf_dt,
             user_yn,
             sms_rcv_yn, sms_ntc_rcv_yn, sms_ctrt_rcv_yn,
             eml_rcv_yn, eml_ntc_rcv_yn, eml_ctrt_rcv_yn,
@@ -104,7 +104,7 @@
                 prof_file_id = #{profFileId},
             </if>
 
-            mdfcn_dt = sysdate
+            mdf_dt = sysdate
 
         </set>
         where user_no = #{userNo}
@@ -118,7 +118,7 @@
                USER_TELNO,
                USER_EML,
                REG_DT,
-               MDFCN_DT,
+               mdf_DT,
                USER_YN,
                SMS_RCV_YN,
                SMS_NTC_RCV_YN,
@@ -145,7 +145,7 @@
             sms_rcv_yn = #{smsRcvYn},
             sms_ntc_rcv_yn = #{smsNtcRcvYn},
             sms_ctrt_rcv_yn = #{smsCtrtRcvYn},
-            mdfcn_dt = sysdate
+            mdf_dt = sysdate
         where user_no = #{userNo}
     </update>
 
