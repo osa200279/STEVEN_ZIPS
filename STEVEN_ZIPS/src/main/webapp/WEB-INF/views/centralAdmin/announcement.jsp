@@ -191,15 +191,22 @@
             <div class="c-card__header">
               <div>
                 <div class="c-card__title" id="form-title">입주자 모집 공고 등록</div>
-                <div class="c-card__sub">필수 항목(<span style="color: var(--red)">*</span>)을 모두 입력해주세요.</div>
+                <div class="c-card__sub">
+                  필수 항목(<span style="color: var(--red)">*</span>)을 모두 입력해주세요.
+                </div>
               </div>
             </div>
+
             <div class="c-card__body">
+
+              <!-- 공고 제목 -->
               <div class="c-field">
                 <label class="c-label">공고 제목 <span style="color: var(--red)">*</span></label>
-                <input type="text" id="f-ftitle" class="c-input" placeholder="공고 제목을 입력하세요" />
+                <input type="text" id="f-ftitle" class="c-input" placeholder="예: 2026년 한강 리버뷰 입주자 모집 공고" />
                 <div class="err-msg" id="e-ftitle"></div>
               </div>
+
+              <!-- 단지 -->
               <div class="c-field">
                 <label class="c-label">단지 <span style="color: var(--red)">*</span></label>
                 <select id="f-fsite" class="c-select">
@@ -210,6 +217,21 @@
                 </select>
                 <div class="err-msg" id="e-fsite"></div>
               </div>
+
+              <!-- 공고 게시 기간 -->
+              <div class="c-field">
+                <label class="c-label">공고 게시 기간</label>
+                <div style="display: flex; gap: 8px; align-items: center">
+                  <input type="date" id="f-pblanc-start" class="c-input" style="flex: 1" />
+                  <span style="color: var(--text-tertiary)">~</span>
+                  <input type="date" id="f-pblanc-end" class="c-input" style="flex: 1" />
+                </div>
+                <!-- 공고 게시 기간이란?
+                     화면에 공고를 노출할 기간.
+                     모집 기간과 다르게, 사용자가 공고를 볼 수 있는 기간을 의미한다. -->
+              </div>
+
+              <!-- 모집 기간 -->
               <div class="c-field">
                 <label class="c-label">모집 기간 <span style="color: var(--red)">*</span></label>
                 <div style="display: flex; gap: 8px; align-items: center">
@@ -219,25 +241,70 @@
                 </div>
                 <div class="err-msg" id="e-fdate"></div>
               </div>
+
+              <!-- 공급 세대수 -->
               <div class="c-field">
                 <label class="c-label">공급 세대수 <span style="color: var(--red)">*</span></label>
-                <input type="number" id="f-funit" class="c-input" placeholder="세대수 입력" style="width: 200px" min="1" />
+                <input type="number" id="f-funit" class="c-input" placeholder="예: 120" style="width: 200px" min="1" />
                 <div class="err-msg" id="e-funit"></div>
               </div>
+
+              <!-- 공고 내용 -->
               <div class="c-field">
-                <label class="c-label">제출 서류</label>
+                <label class="c-label">공고 내용 <span style="color: var(--red)">*</span></label>
+                <textarea id="f-content" class="c-input" rows="5" placeholder="공고 주요 내용을 입력하세요."></textarea>
+                <div class="err-msg" id="e-content"></div>
+                <!-- textarea란?
+                     여러 줄의 긴 내용을 입력받는 HTML 입력 요소.
+                     왜 사용?
+                     공고 내용, 안내문처럼 긴 문장을 입력할 때 사용한다. -->
+              </div>
+
+              <!-- 모집 절차 안내 -->
+              <div class="c-field">
+                <label class="c-label">모집 절차 안내</label>
+                <textarea id="f-process" class="c-input" rows="4"
+                          placeholder="예: 1. 공고 확인&#10;2. 신청 접수&#10;3. 서류 심사&#10;4. 당첨자 발표"></textarea>
+              </div>
+
+              <!-- 제출 서류 -->
+              <div class="c-field">
+                <label class="c-label">제출 서류 목록</label>
                 <div class="cb-group">
                   <label><input type="checkbox" name="docs" value="신분증 사본" /> 신분증 사본</label>
                   <label><input type="checkbox" name="docs" value="주민등록등본" /> 주민등록등본</label>
                   <label><input type="checkbox" name="docs" value="가족관계증명서" /> 가족관계증명서</label>
                   <label><input type="checkbox" name="docs" value="소득증명서" /> 소득증명서</label>
-                  <label><input type="checkbox" name="docs" value="근로소득원천징수영수증" /> 근로소득원천징수영수증</label>
+                  <label><input type="checkbox" name="docs" value="계약서" /> 계약서</label>
+                  <label><input type="checkbox" name="docs" value="금융정보제공동의서" /> 금융정보제공동의서</label>
                 </div>
               </div>
+
+              <!-- 제출 서류 상세 안내 -->
+              <div class="c-field">
+                <label class="c-label">제출 서류 상세 안내</label>
+                <textarea id="f-doc-guide" class="c-input" rows="4"
+                          placeholder="예: 모든 서류는 공고일 이후 발급분만 인정됩니다."></textarea>
+              </div>
+
+              <!-- 첨부파일 -->
+              <div class="c-field">
+                <label class="c-label">첨부파일</label>
+                <input type="file" id="f-file" class="c-input" />
+                <!-- file input이란?
+                     사용자가 PDF, 이미지, 한글파일 등을 첨부할 때 사용하는 입력 요소.
+                     나중에 Spring Controller에서 MultipartFile로 받을 수 있다. -->
+              </div>
+
             </div>
+
             <div class="c-card__footer">
-              <button class="c-btn c-btn--ghost" onclick="switchTab(0, document.querySelectorAll('.c-tab-btn')[0])">취소</button>
-              <button class="c-btn c-btn--primary" id="form-submit-btn" onclick="submitForm()"><span class="material-symbols-rounded">check</span>등록</button>
+              <button class="c-btn c-btn--ghost" onclick="switchTab(0, document.querySelectorAll('.c-tab-btn')[0])">
+                취소
+              </button>
+              <button class="c-btn c-btn--primary" id="form-submit-btn" onclick="submitForm()">
+                <span class="material-symbols-rounded">check</span>등록
+              </button>
             </div>
           </div>
         </div>
@@ -498,14 +565,36 @@
 
         if (editId) {
           const p = posts.find((x) => x.id === editId);
-          Object.assign(p, { title, site, start, end, units: +units, docs });
+          Object.assign(p, { title, site, start, end, units: +units, docs,
+            content,
+            process,
+            docGuide,
+            pblancStart,
+            pblancEnd });
         } else {
-          posts.unshift({ id: nextId++, title, site, start, end, units: +units, docs });
+          posts.unshift({ id: nextId++, title, site, start, end, units: +units, docs,
+            content,
+            process,
+            docGuide,
+            pblancStart,
+            pblancEnd});
         }
         filtered = posts.slice();
         currentPage = 1;
         renderList();
         switchTab(0, document.querySelectorAll(".c-tab-btn")[0]);
+
+        // 추가된 항목
+        const content = document.getElementById("f-content").value.trim();
+        const process = document.getElementById("f-process").value.trim();
+        const docGuide = document.getElementById("f-doc-guide").value.trim();
+        const pblancStart = document.getElementById("f-pblanc-start").value;
+        const pblancEnd = document.getElementById("f-pblanc-end").value;
+
+        content
+                ? clearErr("f-content", "e-content")
+                : setErr("f-content", "e-content", "공고 내용을 입력하세요.");
+
       }
 
       function switchTab(idx, btn) {
