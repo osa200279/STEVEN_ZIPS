@@ -10,7 +10,7 @@ public class ContractDocVO {
     private String sbmsnDocSttsCd;
     private String rjctRsnCn;
     private String regDt;
-    private String mdfcnDt;
+    private String mdfDt;
     private String atchFileId;
     private String rentCtrtNo;
     private String rentTypeCd;
