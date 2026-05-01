@@ -39,7 +39,7 @@ public class SubAdminVO {
     private String userYn;
     private String mngrDutyCd;
     private Date regDt;
-    private Date mdfcnDt;
+    private Date mdfDt;
 
     /* 화면 표시용 */
     private String dutyNm;
