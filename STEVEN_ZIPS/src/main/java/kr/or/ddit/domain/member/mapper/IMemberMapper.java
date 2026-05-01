@@ -22,10 +22,6 @@ public interface IMemberMapper {
 
     void addAuth(String userNo);
 
-    void updatePassword(String userNo, String encodedPw);
-
-    void deleteMember(String userNo);
-
     MemberVO getMemberByUserNo(String userNo);
 
     void updateAlarm(Map<String, Object> param);

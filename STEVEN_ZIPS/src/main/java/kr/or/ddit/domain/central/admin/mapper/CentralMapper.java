@@ -23,6 +23,7 @@ public interface CentralMapper {
     void contractModifyStatus(@Param("rentCtrtNo") String rentCtrtNo, @Param("status") String status);
 
     void contractFormInsert(ContractFormVO contractFormVO);
+
     void contractFormDelete(@Param("frmNo") String frmNo);
 
     List<ContractAptVO> contractForm(Model model);

@@ -119,7 +119,7 @@ public class MemberController {
      * @param customUser
      * @return
      */
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('MEMBER')")
     @PostMapping("/updateSimple")
     public String updateMember(MemberVO member,
                                @RequestParam(value="profileImage", required=false) MultipartFile profileImage,
@@ -148,7 +148,7 @@ public class MemberController {
         return "redirect:/member/myPage.do";
     }
 
-    @PreAuthorize("hasRole('ROLE_MEMBER')")
+    @PreAuthorize("hasRole('MEMBER')")
     @PostMapping("/alarm/update")
     @ResponseBody
     public String updateAlarm(

@@ -14,10 +14,6 @@ public interface IMemberService {
 
     ServiceResult updateMember(MemberVO member);
 
-    void deleteMember(String userNo);
-
-    void updatePassword(String userNo, String newPw);
-
     MemberVO getMemberByUserNo(String userNo);
 
     void updateAlarm(Map<String, Object> param);

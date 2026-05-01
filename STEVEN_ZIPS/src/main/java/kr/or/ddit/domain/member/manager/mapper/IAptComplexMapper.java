@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.member.manager.mapper;
 
-import kr.or.ddit.domain.apt.dto.AptMainDTO;
+import kr.or.ddit.domain.apt.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.vo.AptComplexVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -14,5 +14,5 @@ public interface IAptComplexMapper {
 
     String selectManagerAptCmplexNo(String userId);
 
-    AptMainDTO selectAptMainDTO(String aptCmplexNo);
+    AptMainPageDTO selectAptMainDTO(String aptCmplexNo);
 }

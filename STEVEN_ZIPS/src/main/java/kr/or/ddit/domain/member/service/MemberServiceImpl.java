@@ -134,21 +134,6 @@ public class MemberServiceImpl implements IMemberService {
     }
 
     @Override
-    public void deleteMember(String userNo) {
-        memberMapper.deleteMember(userNo);
-    }
-
-    @Override
-    public void updatePassword(String userNo, String newPw) {
-
-        // 1. 비밀번호 암호화
-        String encodedPw = pe.encode(newPw);
-
-        // 2. DB 업데이트
-        memberMapper.updatePassword(userNo, encodedPw);
-    }
-
-    @Override
     public MemberVO getMemberByUserNo(String userNo) {
         return memberMapper.getMemberByUserNo(userNo);
     }

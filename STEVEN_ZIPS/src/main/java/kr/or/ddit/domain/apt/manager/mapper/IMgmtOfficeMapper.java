@@ -7,4 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface IMgmtOfficeMapper {
 
     public MgmtOfficeVO selectMgmtOfficeByManagerUserNo(String userNo);
+
+    MgmtOfficeVO selectOneMgmtOffice(String aptCmplexNo);
 }

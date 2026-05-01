@@ -1,18 +1,31 @@
 package kr.or.ddit.domain.member.manager.servcie;
 
-import kr.or.ddit.domain.apt.dto.AptMainDTO;
+import kr.or.ddit.domain.apt.board.ann.mapper.IAptAnnBoardPostMapper;
+import kr.or.ddit.domain.apt.board.ann.vo.AptAnnBoardPostVO;
+import kr.or.ddit.domain.apt.dto.AptMainPageDTO;
+import kr.or.ddit.domain.apt.manager.mapper.IMgmtOfficeMapper;
+import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.member.manager.mapper.IAptComplexMapper;
 import kr.or.ddit.domain.apt.vo.AptComplexVO;
-import kr.or.ddit.domain.member.manager.servcie.IAptComplexService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AptComplexServiceImpl implements IAptComplexService {
 
     @Autowired
     private IAptComplexMapper aptComplexMapper;
+
+    @Autowired
+    private IMgmtOfficeMapper imgmtOfficeMapper;
+
+    @Autowired
+    private IAptAnnBoardPostMapper aptAnnBoardPostMapper;
 
     @Override
     public AptComplexVO selectAptComplex(String aptCmplexNo) {
@@ -36,12 +49,42 @@ public class AptComplexServiceImpl implements IAptComplexService {
     }
 
     /**
-     * 아파트 메인페이지 단지 정보 가져오기
+     * 아파트 메인페이지 DTO 셀렉트
+     * @author 이용로
      * @param aptCmplexNo 아파트 단지 코드
-     * @return AptMainDTO
+     * @return AptMainPageDTO.ResponseDto 아파트 메인페이지 DTO
      */
     @Override
-    public AptMainDTO selectAptMainDTO(String aptCmplexNo) {
-        return aptComplexMapper.selectAptMainDTO(aptCmplexNo);
+    public AptMainPageDTO.ResponseDto selectAptMainDTO(String aptCmplexNo) {
+        AptMainPageDTO.ResponseDto resp = new AptMainPageDTO.ResponseDto();
+
+        // 아파트 정보 세팅
+        AptComplexVO aptComplexVO = aptComplexMapper.selectAptComplex(aptCmplexNo);
+        AptMainPageDTO.AptComplexInfo aptComplexInfo;
+        if(aptComplexVO != null){
+            aptComplexInfo = new AptMainPageDTO.AptComplexInfo();
+            BeanUtils.copyProperties(aptComplexVO, aptComplexInfo);
+        }
+
+        // 관리사무소 정보 세팅
+        MgmtOfficeVO mgmtOfficeVO = imgmtOfficeMapper.selectOneMgmtOffice(aptCmplexNo);
+        AptMainPageDTO.MgmtOfficeInfo mgmtOfficeInfo;
+        if(mgmtOfficeVO != null){
+            mgmtOfficeInfo = new AptMainPageDTO.MgmtOfficeInfo();
+            BeanUtils.copyProperties(mgmtOfficeVO, mgmtOfficeInfo);
+        }
+
+        // 공지 게시판 글 세팅
+        List<AptAnnBoardPostVO> annBoardPostVOList =  aptAnnBoardPostMapper.selectLatest(aptCmplexNo, 3);
+        List<AptMainPageDTO.AnnBoardPostInfo> annBoardPostInfoList = new ArrayList<>();
+        if(annBoardPostVOList != null){
+            for(AptAnnBoardPostVO board : annBoardPostVOList){
+                AptMainPageDTO.AnnBoardPostInfo temp = new AptMainPageDTO.AnnBoardPostInfo();
+                BeanUtils.copyProperties(board, temp);
+                annBoardPostInfoList.add(temp);
+            }
+        }
+
+        return resp;
     }
 }

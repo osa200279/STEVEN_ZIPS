@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.member.manager.mapper.IAptComplexMapper">
+
     <select id="selectAptComplex" parameterType="string" resultType="kr.or.ddit.domain.apt.vo.AptComplexVO">
         select
             apt_cmplex_no, apt_cmplex_nm, bjd_cd, sido_nm, sigungu_nm, emd_nm, lat_val, lon_val, unit_cnt,
@@ -45,7 +46,7 @@
 
     </select>
 
-    <select id="selectAptMainDTO" resultType="kr.or.ddit.domain.apt.dto.AptMainDTO">
-
+    <select id="selectAptMainDTO" resultType="kr.or.ddit.domain.apt.dto.AptMainPageDTO">
+        select
     </select>
 </mapper>

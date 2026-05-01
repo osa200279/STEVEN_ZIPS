@@ -1,10 +1,8 @@
 package kr.or.ddit.domain.apt.cotnroller;
 
-import kr.or.ddit.domain.apt.dto.AptMainDTO;
-import kr.or.ddit.domain.apt.vo.AptComplexVO;
+import kr.or.ddit.domain.apt.dto.AptMainPageDTO;
 import kr.or.ddit.domain.member.manager.servcie.IAptComplexService;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,7 +29,7 @@ public class AptController {
     public String aptMain(@RequestParam String aptCmplexNo, Model model) {
         log.info("aptMain() 실행 \n아파트 코드 : {}} ", aptCmplexNo);
 
-        AptMainDTO aptMainDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
+        AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
 
 
 		/*

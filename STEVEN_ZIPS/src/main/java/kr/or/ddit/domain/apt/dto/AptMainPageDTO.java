@@ -1,6 +1,5 @@
 package kr.or.ddit.domain.apt.dto;
 
-import kr.or.ddit.domain.apt.board.ann.vo.AnnBoardPostVO;
 import lombok.Data;
 
 import java.util.Date;
@@ -9,7 +8,7 @@ import java.util.List;
 /**
  * @Author 이용로
  */
-public class AptMainDTO {
+public class AptMainPageDTO {
 
     // 메인페이지 전체 DTO
     @Data

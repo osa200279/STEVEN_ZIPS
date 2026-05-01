@@ -80,7 +80,7 @@
     <update id="deactivateMember">
         UPDATE MEMBER
         SET USER_YN  = 'N',
-            MDFCN_DT = SYSDATE
+            MDF_DT = SYSDATE
         WHERE USER_NO = #{userNo}
     </update>
 

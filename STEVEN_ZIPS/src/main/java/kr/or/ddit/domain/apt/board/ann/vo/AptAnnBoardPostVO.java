@@ -8,7 +8,7 @@ import java.util.Date;
  * @author 이용로
  */
 @Data
-public class AnnBoardPostVO {
+public class AptAnnBoardPostVO {
     private String boardNo; // 게시판 번호
     private String annNo;   // 공지 번호
     private String ttl;     // 제목

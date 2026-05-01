@@ -35,4 +35,9 @@
           AND MO.USE_YN = 'Y'
 
     </select>
+    <select id="selectOneMgmtOffice" resultType="kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO" parameterType="string">
+        select *
+        from mgmt_office
+        where apt_cmplex_no = #{aptCmplexNo}
+    </select>
 </mapper>

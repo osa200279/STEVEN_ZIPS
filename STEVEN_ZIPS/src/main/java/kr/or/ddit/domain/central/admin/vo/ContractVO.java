@@ -33,5 +33,4 @@ public class ContractVO {
     private String ctrtSttsNm;
     private String mgrNm;
 
-
 }
