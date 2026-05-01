@@ -3,6 +3,12 @@
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <header class="site-header">
+
+    <!-- 헤더 부터 푸터까지 사용할 수 있도록 스코프 지정 -->
+    <c:set var="apt" value="${aptInfo.aptComplexInfo}" scope="request"/>
+    <c:set var="office" value="${aptInfo.mgmtOfficeInfo}" scope="request"/>
+    <c:set var="board" value="${aptInfo.annBoardPostInfoList}" scope="request"/>
+
     <div class="header-top">
         <a href="/apt-main" class="logo">
             <%-- 로고 아이콘 --%>
@@ -12,8 +18,8 @@
                 <path d="M9 21V12h6v9"/>
             </svg>
             <div class="logo-text">
-                <span class="ko">${office.aptCmplexNm}</span>
-                <span class="en">${office.aptCmplexNm} APARTMENT</span>
+                <span class="ko">${apt.aptCmplexNm}</span>
+                <span class="en">MY HOME MAPPING</span>
             </div>
         </a>
 
@@ -124,7 +130,7 @@
 <div class="all-menu-overlay" id="allMenuOverlay" role="dialog" aria-modal="true">
     <div class="all-menu-panel">
         <div class="all-menu-header">
-            <div class="all-menu-title">${office.aptCmplexNm} 전체메뉴</div>
+            <div class="all-menu-title">${apt.aptCmplexNm} 전체메뉴</div>
             <button class="all-menu-close" id="allMenuClose" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                     <line x1="18" y1="6" x2="6" y2="18"/>

@@ -348,9 +348,10 @@ img { display: block; width: 100%; }
   </div>
 </section>
 
-<c:set var="apt" value="${aptInfo.aptComplexInfo}" />
+<%-- headerLayout.jsp에 아래 선언 --%>
+<%--<c:set var="apt" value="${aptInfo.aptComplexInfo}" />
 <c:set var="office" value="${aptInfo.mgmtOfficeInfo}" />
-<c:set var="board" value="${aptInfo.annBoardPostInfoList}" />
+<c:set var="board" value="${aptInfo.annBoardPostInfoList}" />--%>
 
 <%-- ══════════════ 상담 + 퀵메뉴 ══════════════ --%>
 <div class="quick-bar fade-up">
@@ -489,14 +490,14 @@ img { display: block; width: 100%; }
 <section class="banner-section">
   <div class="banner-inner">
     <div class="banner-text">
-      <h2>지금 바로 상담 신청하세요</h2>
-      <p>대덕아파트 전문 상담사가 친절하게 안내해 드립니다.<br>평일 09:00 – 18:00 운영</p>
-    </div>
-    <a href="${pageContext.request.contextPath}/resident/complaint/apply" class="banner-btn">
-      상담 신청하기
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-  </div>
+      <h2>지금 바로 입주 문의하세요</h2>
+      <p>전문 상담사가 친절하게 안내해 드립니다.<br>평일 09:00 – 18:00 운영</p>
+<%--    </div>--%>
+<%--    <a href="${pageContext.request.contextPath}/resident/complaint/apply" class="banner-btn">--%>
+<%--      상담 신청하기--%>
+<%--      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>--%>
+<%--    </a>--%>
+<%--  </div>--%>
 </section>
 
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
@@ -505,11 +506,11 @@ img { display: block; width: 100%; }
 (function () {
 
   /* ── 히어로 슬라이더 ── */
-  var slides    = document.querySelectorAll('.hero-slide');
-  var dots      = document.querySelectorAll('.hero-dot');
-  var slidesWrap = document.getElementById('heroSlides');
-  var current   = 0;
-  var timer;
+  let slides    = document.querySelectorAll('.hero-slide');
+  let dots      = document.querySelectorAll('.hero-dot');
+  let slidesWrap = document.getElementById('heroSlides');
+  let current   = 0;
+  let timer;
 
   function goTo(idx) {
     slides[current].classList.remove('active');

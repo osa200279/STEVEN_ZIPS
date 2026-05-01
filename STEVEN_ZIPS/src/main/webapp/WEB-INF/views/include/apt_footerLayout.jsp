@@ -9,13 +9,13 @@
             <path d="M9 21V12h6v9"/>
           </svg>
           <div>
-            <div class="ko">대덕아파트</div>
-            <div class="en">DAEDEOK APARTMENT</div>
+            <div class="ko">${apt.aptCmplexNm}</div>
+            <div class="en">MY HOME MAPPING</div>
           </div>
         </div>
         <div style="margin-top:14px; font-size:12px; color:rgba(255,255,255,.35); line-height:1.9;">
-          대전시 대덕구 대덕대로 123 대덕아파트 관리사무소<br>
-          사업자번호: 000-00-00000 | 등록번호: 제0000호
+          ${office.mgmtOfcNm}<br>
+          <%--사업자번호: 000-00-00000 | 등록번호: 제0000호--%>
         </div>
       </div>
       <nav class="footer-nav" style="align-self:flex-start; margin-top:8px;">
@@ -28,18 +28,61 @@
       </nav>
       <div class="footer-contact">
         <div class="label">Contact Us</div>
-        <div class="phone">042-000-0000</div>
+        <div class="phone">
+           <c:choose>
+      <c:when test="${not empty office.mgmtOfcTelno}">
+          <div>
+              Tel.&nbsp;
+              <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, '-', '')}" />
+              <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, ' ', '')}" />
+              <c:set var="telLength" value="${fn:length(telNo)}" />
+              <%-- 전화번호 '-' 처리 방법! 앞자리가 02일때와 아닐때로 나눔. 작성자 : 이윤진 --%>
+              <span class="phone">
+              <c:choose>
+                  <%-- case1) 서울 02 + 가운데 3자리 + 뒤 4자리 : 02-375-0332 --%>
+                  <c:when test="${fn:startsWith(telNo, '02') and telLength == 9}">
+                      ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 5)}-${fn:substring(telNo, 5, 9)}
+                  </c:when>
+                  <%-- case2) 서울 02 + 가운데 4자리 + 뒤 4자리 : 02-1234-5678 --%>
+                  <c:when test="${fn:startsWith(telNo, '02') and telLength == 10}">
+                      ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 6)}-${fn:substring(telNo, 6, 10)}
+                  </c:when>
+                  <%-- case3) 서울 제외 지역번호/휴대폰 3자리 + 가운데 3자리 + 뒤 4자리 : 031-123-4567 --%>
+                  <c:when test="${not fn:startsWith(telNo, '02') and telLength == 10}">
+                      ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 6)}-${fn:substring(telNo, 6, 10)}
+                  </c:when>
+                  <%-- case4) 서울 제외 지역번호/휴대폰 3자리 + 가운데 4자리 + 뒤 4자리 : 010-1234-5678 --%>
+                  <c:when test="${not fn:startsWith(telNo, '02') and telLength == 11}">
+                      ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 7)}-${fn:substring(telNo, 7, 11)}
+                  </c:when>
+                  <%-- 전화번호 양식에 하나도 안맞을때는 값 그대로 출력 --%>
+                  <c:otherwise>
+                      ${office.mgmtOfcTelno}
+                  </c:otherwise>
+              </c:choose>
+          </div>
+      </c:when>
+      <c:otherwise>
+          <div class="quick-consult">
+              <span class="label">관리사무소</span>
+              <span class="phone">정보 없음</span>
+              <span class="address">로그인 후 관리사무소 정보를 확인할 수 있습니다.</span>
+          </div>
+      </c:otherwise>
+    </c:choose>
+        </div>
         <div class="detail">
-          Fax. 042-000-0001<br>
-          E-mail. info@daedeokapt.co.kr
+          <c:if test="${not empty office.mgmtOfcEml}">
+            E-mail. ${office.mgmtOfcEml}
+          </c:if>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
       <div class="footer-info">
-        고객센터: 042-000-0000 | 팩스: 042-000-0001 | 이메일: info@daedeokapt.co.kr
+        고객센터: 042-000-0000 | 이메일: Steven_zips@ddit.or.kr
       </div>
-      <div class="footer-copy">© 2024 대덕아파트. All rights reserved.</div>
+      <div class="footer-copy">© 2026 Steven.Zips All rights reserved.</div>
     </div>
   </div>
 </footer>
