@@ -66,7 +66,6 @@
           <div class="quick-consult">
               <span class="label">관리사무소</span>
               <span class="phone">정보 없음</span>
-              <span class="address">로그인 후 관리사무소 정보를 확인할 수 있습니다.</span>
           </div>
       </c:otherwise>
     </c:choose>

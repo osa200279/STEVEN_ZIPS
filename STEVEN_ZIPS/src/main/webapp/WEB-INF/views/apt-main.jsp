@@ -490,14 +490,14 @@ img { display: block; width: 100%; }
 <section class="banner-section">
   <div class="banner-inner">
     <div class="banner-text">
-      <h2>지금 바로 입주 문의하세요</h2>
+      <h2>지금 바로 입주 문의하세요.</h2>
       <p>전문 상담사가 친절하게 안내해 드립니다.<br>평일 09:00 – 18:00 운영</p>
-<%--    </div>--%>
-<%--    <a href="${pageContext.request.contextPath}/resident/complaint/apply" class="banner-btn">--%>
-<%--      상담 신청하기--%>
-<%--      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>--%>
-<%--    </a>--%>
-<%--  </div>--%>
+    </div>
+    <a href="/sales" class="banner-btn">
+      입주 문의하기
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
 </section>
 
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
