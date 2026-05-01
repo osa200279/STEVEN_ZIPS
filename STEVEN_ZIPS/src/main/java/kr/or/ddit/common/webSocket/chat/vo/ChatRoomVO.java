@@ -13,4 +13,10 @@ public class ChatRoomVO {
     private Date regDt;
     private String useYn;
     private String rgtrId;
+
+    /*참여한 멤버 수, 안읽은 메시지 내용(작은화면에 보여줄거), 마지막시간, 안읽은 메시지 수 */
+    private int memberCnt;
+    private String lastMsg;
+    private Date lastTime;
+    private int unreadCnt;
 }

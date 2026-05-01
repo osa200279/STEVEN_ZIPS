@@ -19,7 +19,7 @@ import java.util.List;
 public interface IAptApiMapper {
 
 
-    List<String> selectMapoLawdCdList();
+    List<String> selectLawdCdList(String sido, String sigungu, String emd);
 
     void insertAptBatch(List<AptComplexEntity> list);
 

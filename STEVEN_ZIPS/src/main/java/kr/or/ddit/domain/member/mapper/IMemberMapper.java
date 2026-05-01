@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.member.mapper;
 
-import kr.or.ddit.domain.member.resident.vo.RsidVhclEntity;
+import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -26,5 +26,5 @@ public interface IMemberMapper {
 
     void updateAlarm(Map<String, Object> param);
 
-    List<RsidVhclEntity> getVhclList(String userNo);
+    List<RsidVhclVO> getVhclList(String userNo);
 }

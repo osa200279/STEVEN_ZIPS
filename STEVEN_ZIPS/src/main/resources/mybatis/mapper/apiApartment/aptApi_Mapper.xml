@@ -2,10 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper">
 
-    <select id="selectMapoLawdCdList" resultType="string">
+    <select id="selectLawdCdList" resultType="string">
         SELECT LAWD_CD
-        from LAW_DONG
-        where SIGUNGU_NM = '강북구'
+        FROM LAW_DONG
+        WHERE 1=1
+        <if test="sido != null and sido != ''">
+            AND SIDO_NM = #{sido}
+        </if>
+        <if test="sigungu != null and sigungu != ''">
+            AND SIGUNGU_NM = #{sigungu}
+        </if>
+        <if test="emd != null and emd != ''">
+            AND DONG_NM = #{emd}
+        </if>
     </select>
 
     <insert id="insertAptBatch">

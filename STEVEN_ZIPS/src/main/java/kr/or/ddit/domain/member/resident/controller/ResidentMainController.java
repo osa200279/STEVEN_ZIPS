@@ -2,9 +2,9 @@ package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
-import kr.or.ddit.domain.member.mapper.IMemberMapper;
+import kr.or.ddit.domain.member.resident.service.IResidentMainService;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
-import kr.or.ddit.domain.member.resident.vo.RsidVhclEntity;
+import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -25,7 +26,7 @@ import java.util.List;
 public class ResidentMainController {
 
     @Autowired
-    private IMemberMapper memberMapper;
+    private IResidentMainService residentMainService;
 
     @Autowired
     private IMgmtOfficeService mgmtOfficeService;
@@ -124,18 +125,14 @@ public class ResidentMainController {
 
 
     @GetMapping("/service/car")
-    public String serviceCar(@AuthenticationPrincipal CustomUser user, Model model) {
+    @PreAuthorize("hasRole('RESIDENT')")
+    public String serviceCar(@AuthenticationPrincipal CustomUser principal, Model model) {
 
-        MemberVO memberVO = user.getMember();
-
-        // 현재는 호 정보 없이 userNo 로 전부 가져옴, 추후 호 정보가 생기면 추가할 것!
-        List<RsidVhclEntity> vhclList = memberMapper.getVhclList(memberVO.getUserNo());
-
-        model.addAttribute("user", memberVO);
-        model.addAttribute("vhclList", vhclList);
+        model.addAttribute("userNo", principal.getMember().getUserNo());
 
         return "member/resident/service_car";
     }
+
     @GetMapping("/service/visitor")
     public String serviceVisitor() {
         return "member/resident/service/service_visitor";
@@ -265,6 +262,7 @@ public class ResidentMainController {
         return "member/resident/board/board_free_detail";
     }
 
+    @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/board/chat")
     public String boardChat() {
         return "member/resident/board/board_chat";

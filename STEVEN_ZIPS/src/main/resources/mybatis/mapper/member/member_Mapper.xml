@@ -133,7 +133,7 @@
         where m.user_no = #{userNo}
     </select>
 
-    <select id="getVhclList" resultType="kr.or.ddit.domain.member.resident.vo.RsidVhclEntity">
+    <select id="getVhclList" resultType="kr.or.ddit.domain.member.resident.vo.RsidVhclVO">
         SELECT *
         FROM RSID_VHCL
         WHERE USER_NO = #{userNo}

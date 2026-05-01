@@ -26,10 +26,13 @@ public class AptApiController {
 
     @PostMapping("/apt/collect")
     @ResponseBody
-    public String collectMapoApt() {
-        log.info("collectMapoApt() 실행됨...!");
+    public String collectApt(@RequestBody Map<String, String> param) {
 
-        aptService.collectMapoApt();
+        String sido = param.get("sido");
+        String sigungu = param.get("sigungu");
+        String emd = param.get("emd");
+
+        aptService.collectApt(sido, sigungu, emd);
 
         return "OK";
     }

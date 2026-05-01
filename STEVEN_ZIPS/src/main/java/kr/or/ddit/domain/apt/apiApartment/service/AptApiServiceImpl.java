@@ -42,10 +42,10 @@ public class AptApiServiceImpl implements IAptApiService {
 
     @Override
     @Transactional
-    public void collectMapoApt() {
+    public void collectApt(String sido, String sigungu, String emd) {
         log.info("collectMapoApt() 실행됨2...!");
 
-        List<String> lawdCdList = aptMapper.selectMapoLawdCdList();
+        List<String> lawdCdList = aptMapper.selectLawdCdList(sido, sigungu, emd);
 
         List<AptListItem> AptItemList = new ArrayList<>();
 
@@ -639,6 +639,8 @@ public class AptApiServiceImpl implements IAptApiService {
         }
     }
 
+
+    
     @Override
     public void assignResidents(List<String> aptList, int count) {
 

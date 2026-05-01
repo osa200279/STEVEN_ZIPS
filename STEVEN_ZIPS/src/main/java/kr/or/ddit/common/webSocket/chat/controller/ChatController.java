@@ -1,14 +1,11 @@
 package kr.or.ddit.common.webSocket.chat.controller;
 
-import jakarta.servlet.http.HttpSession;
 import kr.or.ddit.common.webSocket.chat.service.IChatService;
 import kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO;
 import kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 

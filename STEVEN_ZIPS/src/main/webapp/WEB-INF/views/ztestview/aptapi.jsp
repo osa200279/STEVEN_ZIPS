@@ -254,8 +254,21 @@
 
 
     async function collect() {
+
+        const sido = $("#sido").val();
+        const sigungu = $("#sigungu").val();
+        const emd = $("#emd").val();
+
         const res = await fetch('/api/apt/collect', {
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                sido: sido,
+                sigungu: sigungu,
+                emd: emd
+            })
         });
 
         const text = await res.text();
