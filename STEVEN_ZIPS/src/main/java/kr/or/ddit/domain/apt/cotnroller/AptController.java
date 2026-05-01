@@ -27,24 +27,12 @@ public class AptController {
      */
     @GetMapping("/main")
     public String aptMain(@RequestParam String aptCmplexNo, Model model) {
-        log.info("aptMain() 실행 \n아파트 코드 : {}} ", aptCmplexNo);
+        log.info("aptMain() 실행 \n아파트 코드 : {}", aptCmplexNo);
 
+        // 아파트 메인페이지 DTO정보 가져오기
         AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
 
-
-		/*
-		if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-			log.info("apt-main 비로그인 접근");
-
-			// JSP에서 office가 null일 때 기본 문구 처리하도록 넘김
-			model.addAttribute("office", null);
-			return "apt-main";
-		}
-
-		String userId = authentication.getName();
-		MgmtOfficeVO office = mgmtOfficeService.selectMgmtOfficeByManagerUserNo(userId);
-		model.addAttribute("office", office);
-		*/
+        model.addAttribute("aptInfo", aptMainPageDTO);
 
         return "apt-main";
     }

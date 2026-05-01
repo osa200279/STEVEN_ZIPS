@@ -348,6 +348,10 @@ img { display: block; width: 100%; }
   </div>
 </section>
 
+<c:set var="apt" value="${aptInfo.aptComplexInfo}" />
+<c:set var="office" value="${aptInfo.mgmtOfficeInfo}" />
+<c:set var="board" value="${aptInfo.annBoardPostInfoList}" />
+
 <%-- ══════════════ 상담 + 퀵메뉴 ══════════════ --%>
 <div class="quick-bar fade-up">
   <div class="quick-consult">
@@ -356,7 +360,7 @@ img { display: block; width: 100%; }
           <div class="quick-consult">
               <span class="label">관리사무소</span>
               <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, '-', '')}" />
-              <c:set var="telNo" value="${fn:replace(telNo, ' ', '')}" />
+              <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, ' ', '')}" />
               <c:set var="telLength" value="${fn:length(telNo)}" />
               <%-- 전화번호 '-' 처리 방법! 앞자리가 02일때와 아닐때로 나눔. 작성자 : 이윤진 --%>
               <span class="phone">
@@ -383,7 +387,7 @@ img { display: block; width: 100%; }
                   </c:otherwise>
               </c:choose>
               </span>
-              <span class="address">${office.dorojuso}<br>${office.mgmtOfcNm}</span>
+              <span class="address">${apt.dorojuso}<br>${office.mgmtOfcNm}</span>
           </div>
       </c:when>
       <c:otherwise>
@@ -461,21 +465,21 @@ img { display: block; width: 100%; }
     <div class="news-grid">
       <div class="news-card">
         <span class="news-card-tag">공지사항</span>
-        <h4>사이닝에서 인원을 채용합니다.</h4>
-        <p>사이닝에서 안정된 인재를 모집하오니 많은 지원 부탁드립니다.</p>
-        <div class="news-card-date">2024. 08. 24</div>
+        <h4>${board[0].ttl}</h4>
+        <p>${board[0].cn}</p>
+        <div class="news-card-date">${board[0].regDttm}</div>
       </div>
       <div class="news-card">
         <span class="news-card-tag">공지사항</span>
-        <h4>새롭게 홈페이지를 오픈하였습니다!</h4>
-        <p>저희 make24에서 양질의 서비스와 발전하는 기업이 되기위해 새로이 홈페이지를 오픈하였습니다.</p>
-        <div class="news-card-date">2024. 08. 24</div>
+        <h4>${board[1].ttl}</h4>
+        <p>${board[1].cn}</p>
+        <div class="news-card-date">${board[1].regDttm}</div>
       </div>
       <div class="news-card">
-        <span class="news-card-tag">안내</span>
-        <h4>2024년 하반기 시설 점검 안내</h4>
-        <p>공용 시설물 정기 점검이 진행될 예정이오니 입주민 여러분의 양해를 부탁드립니다.</p>
-        <div class="news-card-date">2024. 08. 10</div>
+        <span class="news-card-tag">공지사항</span>
+        <h4>${board[2].ttl}</h4>
+        <p>${board[2].cn}</p>
+        <div class="news-card-date">${board[2].regDttm}</div>
       </div>
     </div>
   </div>

@@ -32,8 +32,8 @@ public class AptMainPageDTO {
     // 아파트 관리사무소 정보
     @Data
     public static class MgmtOfficeInfo {
-        private String mgtOfcNo;        // 관리사무소 번호
-        private String mgtOfcNm;        // 관리사무소 이름
+        private String mgmtOfcNo;        // 관리사무소 번호
+        private String mgmtOfcNm;        // 관리사무소 이름
         private String mgmtOfcTelno;
         private String mgmtOfcEml;
 

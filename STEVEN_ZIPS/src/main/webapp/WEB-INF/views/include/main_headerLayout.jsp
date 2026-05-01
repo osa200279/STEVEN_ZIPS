@@ -1,6 +1,6 @@
 <%--
   Created by IntelliJ IDEA.
-  User: lyr52
+  User: 이용로
   Date: 2026-04-29
   Time: 오전 1:21
   To change this template use File | Settings | File Templates.
@@ -129,29 +129,61 @@
                     <sec:csrfInput/>
                 </form>
             </sec:authorize>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const myAptBtn = document.getElementById("myAptBtn");
+                    if (myAptBtn) {
+                        myAptBtn.addEventListener("click", openAptSelection);
+                    }
+                });
+
+                // 팝업창을 중앙에 띄우는 함수
+                function openAptSelection() {
+                    const width = 600;
+                    const height = 400;
+                    const left = (window.screen.width / 2) + 100;
+                    const top = (window.screen.height / 2) - height;
+
+                    const url = "${pageContext.request.contextPath}/resident/myApt";
+                    const features = "width=" + width +
+                     ",height=" + height +
+                     ",left=" + left +
+                     ",top=" + top +
+                     ",resizable=yes,scrollbars=yes";
+
+                    // 'aptSelectionPopup'이라는 이름의 팝업창을 엽니다.
+                    window.open(url, "aptSelectionPopup", features);
+                }
+            </script>
+
         </div>
     </nav>
     <script src="${pageContext.request.contextPath}/js/common/conn.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </header>
 
-<script type="module">
-    const myAptBtn = document.getElementById("myAptBtn");
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const myAptBtn = document.getElementById("myAptBtn");
 
-    if (myAptBtn) {
-        myAptBtn.addEventListener("click", () => {
-            const width = 700;
-            const height = 400;
+        if (myAptBtn) {
+            myAptBtn.addEventListener("click", openAptSelection);
+        }
 
-            // 1. 현재 브라우저 창의 왼쪽 좌표 + 현재 창의 너비 - 팝업 너비
-            // 이렇게 하면 브라우저가 어느 모니터에 있든 그 창의 오른쪽 끝에 뜹니다.
-            const left = window.screenLeft + window.outerWidth - width - 100;
-            const top = window.screenTop + (window.outerHeight / 2) - (height) + 60;
 
-            const specs = "width=" + width + ",height=" + height + ",top=" + top + ",left=" + left + ",scrollbars=yes,resizable=no";
+    });
 
-            // 'myAptPopup' 이름을 매번 다르게 주면 설정값이 초기화되어 확실히 위치가 바뀝니다.
-            window.open('/resident/myApt', 'myAptPopup_' + Date.now(), specs);
-        });
+    function selectApt(aptCmplexNo) {
+        // 1. 나를 열어준 부모창(opener)의 주소를 이동시킴
+        // 팁: 부모창이 이미 메인이라면 이동하고, 아니면 메인으로 보냅니다.
+        if (window.opener && !window.opener.closed) {
+            window.opener.location.href = "${pageContext.request.contextPath}/main?aptCmplexNo=" + aptCmplexNo;
+
+            // 2. 팝업은 임무 완료 후 퇴장
+            window.close();
+        } else {
+            alert("부모 창을 찾을 수 없습니다. 메인 페이지를 새로고침 해주세요.");
+        }
     }
-
 </script>

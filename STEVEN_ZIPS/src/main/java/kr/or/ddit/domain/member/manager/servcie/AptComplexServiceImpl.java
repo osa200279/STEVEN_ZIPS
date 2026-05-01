@@ -60,18 +60,18 @@ public class AptComplexServiceImpl implements IAptComplexService {
 
         // 아파트 정보 세팅
         AptComplexVO aptComplexVO = aptComplexMapper.selectAptComplex(aptCmplexNo);
-        AptMainPageDTO.AptComplexInfo aptComplexInfo;
         if(aptComplexVO != null){
-            aptComplexInfo = new AptMainPageDTO.AptComplexInfo();
+            AptMainPageDTO.AptComplexInfo aptComplexInfo = new AptMainPageDTO.AptComplexInfo();
             BeanUtils.copyProperties(aptComplexVO, aptComplexInfo);
+            resp.setAptComplexInfo(aptComplexInfo);
         }
 
         // 관리사무소 정보 세팅
         MgmtOfficeVO mgmtOfficeVO = imgmtOfficeMapper.selectOneMgmtOffice(aptCmplexNo);
-        AptMainPageDTO.MgmtOfficeInfo mgmtOfficeInfo;
         if(mgmtOfficeVO != null){
-            mgmtOfficeInfo = new AptMainPageDTO.MgmtOfficeInfo();
+            AptMainPageDTO.MgmtOfficeInfo mgmtOfficeInfo = new AptMainPageDTO.MgmtOfficeInfo();
             BeanUtils.copyProperties(mgmtOfficeVO, mgmtOfficeInfo);
+            resp.setMgmtOfficeInfo(mgmtOfficeInfo);
         }
 
         // 공지 게시판 글 세팅
@@ -83,6 +83,7 @@ public class AptComplexServiceImpl implements IAptComplexService {
                 BeanUtils.copyProperties(board, temp);
                 annBoardPostInfoList.add(temp);
             }
+            resp.setAnnBoardPostInfoList(annBoardPostInfoList);
         }
 
         return resp;
