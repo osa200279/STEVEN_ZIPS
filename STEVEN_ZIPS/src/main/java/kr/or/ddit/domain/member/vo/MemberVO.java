@@ -15,7 +15,7 @@ public class MemberVO {
     private String userTelno;
     private String userEml;
     private Date regDt;
-    private Date mdfcnDt;
+    private Date mdfDt;
     private char userYn;
     private char smsRcvYn;
     private char smsNtcRcvYn;
