@@ -12,7 +12,7 @@
   boolean isCivilCom = _uri != null && _uri.startsWith("/centralAdmin/civilCom");
   boolean isAi = _uri != null && _uri.startsWith("/centralAdmin/ai");
   boolean isAnnouncement = _uri != null && _uri.startsWith("/centralAdmin/announcement");
-  boolean isNotice = _uri != null && _uri.startsWith("/centralAdmin/notice");
+  boolean isNotice = _uri != null && _uri.startsWith("/centralAdmin/ann");
   boolean isFacility = _uri != null && _uri.startsWith("/centralAdmin/facility");
   boolean isProHistory = _uri != null && _uri.startsWith("/centralAdmin/proHistory");
   boolean isSubAdmin = _uri != null && _uri.startsWith("/centralAdmin/subAdmin");

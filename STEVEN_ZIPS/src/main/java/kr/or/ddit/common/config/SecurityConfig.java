@@ -49,7 +49,7 @@ public class SecurityConfig {
             "/api/react/checkId.do",
             "/api/react/signup.do",
             "/api/react/signin.do",
-            "/api/react/notice/list"
+            "/api/react/ann/list"
     };
 
     // 테스트용 URL 모음

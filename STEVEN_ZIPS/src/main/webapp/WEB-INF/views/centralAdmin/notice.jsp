@@ -341,7 +341,7 @@
 
         // 필터/버튼 토글
         const inqOnly = document.querySelector(".inq-only");
-        const boardOnly = document.querySelector(".board-only");
+        const boardOnly = document.querySelector(".apt-only");
         const btnWrite = document.getElementById("btn-write");
         if (currentTab === "문의") {
           inqOnly.style.display = "";

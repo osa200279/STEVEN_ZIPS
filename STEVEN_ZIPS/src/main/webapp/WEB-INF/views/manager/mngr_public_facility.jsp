@@ -299,7 +299,7 @@
                       : '<span class="badge badge-gray">N</span>';
 
               var amt = row.cmnFacilityAmt === 0
-                      ? '<span class="td-free">무료</span>'
+                      ? '<span class="td-apt">무료</span>'
                       : row.cmnFacilityAmt.toLocaleString() + '원';
 
               return '<tr>'

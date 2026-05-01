@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Data
 public class ResidentVO extends MemberVO {
-    // 필드
+    // resident table 기본 컬럼 필드
     private InoutCd inoutCd;         // 입퇴거 코드(여부)
     private Date moveInDt;          // 입주일
     private Date moveOutDt;         // 퇴거일

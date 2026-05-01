@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.member.manager.servcie;
 
+import kr.or.ddit.domain.apt.dto.AptMainDTO;
 import kr.or.ddit.domain.member.manager.mapper.IAptComplexMapper;
 import kr.or.ddit.domain.apt.vo.AptComplexVO;
 import kr.or.ddit.domain.member.manager.servcie.IAptComplexService;
@@ -35,12 +36,12 @@ public class AptComplexServiceImpl implements IAptComplexService {
     }
 
     /**
-     * 단지 정보 가져오기
+     * 아파트 메인페이지 단지 정보 가져오기
      * @param aptCmplexNo 아파트 단지 코드
-     * @return AptComplexVO
+     * @return AptMainDTO
      */
     @Override
-    public AptComplexVO getAptCmplexInfo(String aptCmplexNo) {
-        return aptComplexMapper.getAptCmplexInfo(aptCmplexNo);
+    public AptMainDTO selectAptMainDTO(String aptCmplexNo) {
+        return aptComplexMapper.selectAptMainDTO(aptCmplexNo);
     }
 }

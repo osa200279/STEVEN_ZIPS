@@ -44,7 +44,8 @@
            AND MO.USE_YN = 'Y'
 
     </select>
-    <select id="getAptCmplexInfo" resultType="kr.or.ddit.domain.apt.vo.AptComplexVO">
+
+    <select id="selectAptMainDTO" resultType="kr.or.ddit.domain.apt.dto.AptMainDTO">
 
     </select>
 </mapper>
