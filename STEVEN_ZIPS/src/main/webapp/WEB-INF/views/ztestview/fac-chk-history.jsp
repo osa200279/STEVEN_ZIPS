@@ -92,7 +92,7 @@
 <%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
 <!-- TopNavBar -->
 
-<main class="flex-grow pt-32 pb-20 ml-80 bg-[#f8f7f4]">
+<main class="ml-64 p-10 pt-28 bg-[#f8f7f4]">
 
     <div class="w-full px-10">
 
