@@ -118,6 +118,7 @@ public class CentralController {
         return "centralAdmin/contractDoc";
     }
 
+
     @GetMapping("/contractList.do")
     public String contractList(
             @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage,

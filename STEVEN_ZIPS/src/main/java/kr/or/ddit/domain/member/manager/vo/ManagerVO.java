@@ -19,8 +19,6 @@ public class ManagerVO {
     // MGMT_OFFICE / APT_COMPLEX
     private String mgmtOfcNm;
     private String aptCmplexNm;
-
-
 }
 
 /*

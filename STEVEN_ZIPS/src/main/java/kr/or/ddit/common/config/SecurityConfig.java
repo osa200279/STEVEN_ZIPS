@@ -15,13 +15,15 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- *  스프링 시큐리티 설정
- *  @author 이용로
+ * 스프링 시큐리티 설정
+ *
+ * @author 이용로
  */
 @Slf4j
 @Configuration
@@ -72,11 +74,25 @@ public class SecurityConfig {
     public WebSecurityCustomizer configurer() {
         return (web -> web.ignoring()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-                                // requestMatchers() :: 괄호 안의 조건을 만족하는 요청을 찾아라
-                                // toStaticResources() :: 정적 리소스 범주
-                                // atCommonsLocations() :: 스프링이 정한(약속된) 공통(정적) 자원 위치
+                // requestMatchers() :: 괄호 안의 조건을 만족하는 요청을 찾아라
+                // toStaticResources() :: 정적 리소스 범주
+                // atCommonsLocations() :: 스프링이 정한(약속된) 공통(정적) 자원 위치
                 .requestMatchers("/resources/**")); // 중에서 /resources/ 경로에 있는 파일과 모든 깊이의 하위파일들까지 선정
     }
+
+//    @Order(value = 1)
+//    @Bean
+//    protected SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
+//        http.csrf(csrf -> csrf.disable());
+//        http.formLogin(login -> login.disable());
+//        http.httpBasic(basic -> basic.disable());
+//        http.headers(config -> config.frameOptions(fOpt -> fOpt.sameOrigin())); // 동일 출처 사이트 내에서만 프레임으로 로딩 가능
+//        http.sessionManagement(
+//                management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//        );
+//
+//        return http.build();
+//    }
 
     // 스프링 진영의 세션 기반으로 동작할 모든 요청에 대해서 처리할 필터 체인
     @Order(value = 2)
@@ -128,7 +144,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    protected PasswordEncoder passwordEncoder(){
+    protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
