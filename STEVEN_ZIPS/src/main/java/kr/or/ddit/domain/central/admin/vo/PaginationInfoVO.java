@@ -144,7 +144,7 @@ public class PaginationInfoVO<T> {
 
 	public String getPagingHTML() {
 		StringBuffer html = new StringBuffer();
-		html.append("<ul class='pagination pagination-sm m-0 float-right'>");
+		html.append("<ul class='pagination pagination-sm m-0'>");
 
 		// prev 1 2 3 4 5 next
 		// 'Prev' 버튼은 현재 페이지가 blockSize(현재 5)를 넘었을 때 나타나야 합니다
