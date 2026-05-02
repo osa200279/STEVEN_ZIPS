@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
@@ -25,8 +25,8 @@ public class AptController {
      * @param model
      * @return apt-main.jsp
      */
-    @GetMapping("/main")
-    public String aptMain(@RequestParam String aptCmplexNo, Model model) {
+    @GetMapping("/main/{aptCmpexNo}")
+    public String aptMain(@PathVariable String aptCmplexNo, Model model) {
         log.info("aptMain() 실행 \n아파트 코드 : {}", aptCmplexNo);
 
         // 아파트 메인페이지 DTO정보 가져오기
