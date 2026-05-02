@@ -31,4 +31,8 @@ public class UserContractController {
         return "ztestview/notice";
     }
 
+    @GetMapping("/history.do")
+    public String contractHistory() {
+        return "ztestview/contractAList";
+    }
 }
