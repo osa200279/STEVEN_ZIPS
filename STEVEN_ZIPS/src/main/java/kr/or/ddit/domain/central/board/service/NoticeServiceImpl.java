@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.board.service;
 
+import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
 import kr.or.ddit.domain.central.board.mapper.INoticeMapper;
 import kr.or.ddit.domain.central.board.vo.NoticeVO;
 import lombok.extern.slf4j.Slf4j;
@@ -15,14 +16,20 @@ public class NoticeServiceImpl  implements INoticeService {
     @Autowired
     private INoticeMapper noticeMapper;
 
-    @Override
-    public List<NoticeVO> getNoticeList() {
 
-        return noticeMapper.selectNoticeList();
-    }
 
     @Override
     public NoticeVO getNoticeDetail(String annNo) {
         return noticeMapper.selectNoticeDetail(annNo);
+    }
+
+    @Override
+    public int getTotalCount() {
+        return noticeMapper.getTotalCount();
+    }
+
+    @Override
+    public List<NoticeVO> getNoticeList(PaginationInfoVO<NoticeVO> pagingVO) {
+        return noticeMapper.selectNoticeListPaging(pagingVO);
     }
 }

@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.board.mapper;
 
+import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
 import kr.or.ddit.domain.central.board.vo.NoticeVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -9,8 +10,11 @@ import java.util.List;
 public interface INoticeMapper {
 
 
-    List<NoticeVO> selectNoticeList();
 
     NoticeVO selectNoticeDetail(String annNo);
+
+    int getTotalCount();
+
+    List<NoticeVO> selectNoticeListPaging(PaginationInfoVO<NoticeVO> pagingVO);
 }
 

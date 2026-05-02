@@ -37,6 +37,44 @@
 
 
 
+    <select id="selectNoticeListPaging"
+            parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO"
+            resultType="kr.or.ddit.domain.central.board.vo.NoticeVO">
 
+        SELECT *
+        FROM (
+                 SELECT ROWNUM rnum, A.*
+                 FROM (
+                          SELECT
+                              ANN_NO,
+                              BOARD_NO,
+                              TTL,
+                              CN,
+                              WRTR_ID,
+                              TOP_FXD_YN,
+                              PBLANC_BGNG_DT,
+                              PBLANC_END_DT,
+                              RCRT_BGNG_DT,
+                              RCRT_END_DT,
+                              REG_DTTM,
+                              MDF_DTTM,
+                              INQ_CNT,
+                              DEL_YN,
+                              ATCH_FILE_ID
+                          FROM NOTICE
+                          WHERE DEL_YN = 'N'
+                          ORDER BY REG_DTTM DESC
+                      ) A
+                 WHERE ROWNUM <![CDATA[ <= ]]> #{endRow}
+             )
+        WHERE rnum <![CDATA[ >= ]]> #{startRow}
+
+    </select>
+
+    <select id="getTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM NOTICE
+        WHERE DEL_YN = 'N'
+    </select>
 
 </mapper>

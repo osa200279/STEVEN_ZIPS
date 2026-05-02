@@ -65,6 +65,30 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #999;
         }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .pagination li {
+            display: inline-block;
+        }
+
+        .pagination .page-link {
+            padding: 6px 10px;
+            background: #f1f1f1;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .pagination .active .page-link {
+            background: #6F7F3F;
+            color: white;
+        }
+
     </style>
     <!-- END: Custom Styles -->
 </head>
@@ -121,14 +145,13 @@
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                <c:forEach var="notice" items="${noticeList}" varStatus="status">
+                <c:forEach var="notice" items="${pagingVO.dataList}" varStatus="status">
                     <tr class="notice-row" onclick="location.href='detail.do?annNo=${notice.annNo}'">
 
-                        <!-- 번호 -->
-                        <td class="px-6 py-5 text-sm text-gray-400 text-center">
-                                 ${status.index + 1}
-                        </td>
-
+                            <!-- 번호 -->
+                             <td class="px-6 py-5 text-sm text-gray-400 text-center">
+                         ${pagingVO.totalRecord - ((pagingVO.currentPage - 1) * pagingVO.screenSize + status.index)}
+                                                            </td>
 
                         <!-- 제목 -->
                         <td class="px-6 py-5">
@@ -155,44 +178,32 @@
     </div>
     <!-- END: NoticeList -->
     <!-- BEGIN: Pagination -->
-    <div class="mt-8 flex justify-center" data-purpose="pagination-section">
-        <nav class="flex items-center gap-1">
-            <!-- Previous Button -->
-            <button class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 transition-colors">
-                <svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                          fill-rule="evenodd"></path>
-                </svg>
-            </button>
-            <!-- Page Numbers -->
-            <button class="w-10 h-10 rounded-full bg-[#6F7F3F] text-white">
-                1
-            </button>
-            <button class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-sm font-medium transition-colors">
-                2
-            </button>
-            <button class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-sm font-medium transition-colors">
-                3
-            </button>
-            <button class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-sm font-medium transition-colors">
-                4
-            </button>
-            <button class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-sm font-medium transition-colors">
-                5
-            </button>
-            <!-- Next Button -->
-            <button class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 transition-colors">
-                <svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          fill-rule="evenodd"></path>
-                </svg>
-            </button>
-        </nav>
+    <div class="mt-8 flex justify-center gap-2">
+        ${pagingVO.pagingHTML}
     </div>
+
+    <style>
+        .page-link {
+            display: inline-block !important;
+        }
+
+        .mt-8 > * {
+            display: inline-block !important;
+        }
+    </style>
     <!-- END: Pagination -->
 </main>
 <!-- END: MainContentArea -->
 </body>
+<script>
+    document.addEventListener("click", function(e) {
+        const link = e.target.closest(".page-link");
+
+        if (link) {
+            e.preventDefault();
+            const page = link.dataset.page;
+            location.href = "?page=" + page;
+        }
+    });
+</script>
 </html>
