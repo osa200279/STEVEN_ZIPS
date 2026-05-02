@@ -95,7 +95,7 @@
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
            href="${pageContext.request.contextPath}/notice/list.do">공지사항</a>
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
-           href="${pageContext.request.contextPath}/qna/list.do">문의게시판</a>
+           href="${pageContext.request.contextPath}/member/qna/list.do">문의게시판</a>
       </div>
     </details>
   </nav>

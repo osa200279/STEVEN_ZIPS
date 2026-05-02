@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 
 <html lang="ko"><head>
@@ -79,7 +80,7 @@
   <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div class="text-sm text-gray-500">
-        총 <strong class="text-black">4</strong>건
+        총 <strong class="text-black">${fn:length(list)}</strong>건
       </div>
       <div class="flex items-center gap-3">
         <div class="relative w-64">
@@ -92,7 +93,7 @@
             </svg>
           </div>
         </div>
-        <button onclick="location.href='${pageContext.request.contextPath}/qna/writeForm.do'"
+        <button onclick="location.href='${pageContext.request.contextPath}/member/qna/writeForm.do'"
                 class="px-5 py-2 rounded-full bg-[#6F7F3F] text-white text-sm font-medium hover:bg-[#5f6e35]">
           + 새 문의
         </button>
@@ -103,125 +104,77 @@
   <!-- ✅ 카드형 아코디언 목록 (샘플 데이터 하드코딩) -->
   <div class="space-y-3">
 
-    <!-- 항목 1: 처리완료 + 답변 있음 -->
-    <div class="forest-card" onclick="toggleDetail(this)">
-      <div class="flex justify-between items-center">
-        <div class="flex-1 min-w-0 pr-4">
-          <div class="text-xs text-gray-400 mb-1">NO.128</div>
-          <div class="text-base font-semibold text-gray-900">단지 내 가로등 점검 요청</div>
-        </div>
-        <div class="flex items-center gap-3 flex-shrink-0">
-          <div class="flex flex-col items-end gap-1">
-            <span class="status-pill bg-[#dfe5cb] text-[#3f4c15]">처리완료</span>
-            <div class="text-xs text-gray-400">2023.10.24</div>
-          </div>
-          <span class="material-symbols-outlined chevron text-gray-400">expand_more</span>
-        </div>
-      </div>
-      <div class="detail mt-5 border-t border-gray-100 pt-5">
-        <div class="flex gap-4 mb-5">
-          <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-sm">👤</div>
-          <p class="text-sm text-gray-700 leading-relaxed pt-1">
-            104동 앞 산책로 가로등이 어제저녁부터 깜빡거립니다. 밤에 아이들이 다니기에 조금 어두운 것 같아 빠른 점검 부탁드립니다.
-          </p>
-        </div>
-        <div class="bg-[#f6f4eb] border border-[#e2e2e0] rounded-xl p-5">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="text-sm font-semibold text-[#3f4c15]">관리실 답변</span>
-            <span class="text-xs text-gray-400">2023.10.25 09:30</span>
-          </div>
-          <p class="text-sm text-gray-700 leading-relaxed">
-            안녕하십니까, 입주민님. 시설관리팀입니다. 요청하신 104동 앞 산책로 가로등은 오늘 오전 전구 교체 및 회로 점검을 완료하였습니다. 불편을 드려 죄송하며, 항상 쾌적한 단지 환경을 위해 노력하겠습니다.
-          </p>
-        </div>
-      </div>
-    </div>
 
-    <!-- 항목 2: 처리중 + 답변 없음 -->
+ <c:if test="${empty list}">
+    <div class="text-center text-gray-400 py-20">
+      등록된 문의가 없습니다.
+    </div>
+  </c:if>
+
+  <c:forEach var="qna" items="${list}">
+
     <div class="forest-card" onclick="toggleDetail(this)">
+
       <div class="flex justify-between items-center">
         <div class="flex-1 min-w-0 pr-4">
-          <div class="text-xs text-gray-400 mb-1">NO.127</div>
-          <div class="text-base font-semibold text-gray-900">커뮤니티 센터 요가 클래스 증설 문의</div>
+          <div class="text-xs text-gray-400 mb-1">
+            NO.${qna.cvplNo}
+          </div>
+          <div class="text-base font-semibold text-gray-900">
+            ${qna.cvplTtl}
+          </div>
         </div>
+
         <div class="flex items-center gap-3 flex-shrink-0">
           <div class="flex flex-col items-end gap-1">
-            <span class="status-pill bg-yellow-100 text-yellow-700">처리중</span>
-            <div class="text-xs text-gray-400">2023.10.22</div>
+
+            <c:choose>
+
+              <c:when test="${qna.cvplSttsCd eq '접수'}">
+                <span class="status-pill bg-yellow-100 text-yellow-700">접수</span>
+              </c:when>
+              <c:when test="${qna.cvplSttsCd eq '처리중'}">
+                <span class="status-pill bg-yellow-100 text-yellow-700">처리중</span>
+              </c:when>
+              <c:otherwise>
+                <span class="status-pill bg-[#dfe5cb] text-[#3f4c15]">처리완료</span>
+              </c:otherwise>
+            </c:choose>
+
+            <div class="text-xs text-gray-400">
+              <fmt:formatDate value="${qna.cvplRegDt}" pattern="yyyy.MM.dd"/>
+            </div>
+
+          <c:if test="${qna.userNo eq sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member.userNo}">
+            <button onclick="deleteQna('${qna.cvplNo}')"
+                    class="text-xs text-red-500 hover:underline">
+              삭제
+            </button>
+          </c:if>
+
+
           </div>
+
           <span class="material-symbols-outlined chevron text-gray-400">expand_more</span>
         </div>
       </div>
+
       <div class="detail mt-5 border-t border-gray-100 pt-5">
         <div class="flex gap-4">
-          <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-sm">👤</div>
+          <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">👤</div>
           <p class="text-sm text-gray-700 leading-relaxed pt-1">
-            현재 요가 클래스가 주 2회인데, 수요가 많아 자리가 부족합니다. 클래스 횟수를 늘려주실 수 있을까요?
+            ${qna.cvplCn}
           </p>
         </div>
-        <p class="text-xs text-gray-400 mt-4 ml-13">아직 답변이 등록되지 않았습니다.</p>
       </div>
+
     </div>
 
-    <!-- 항목 3: 처리완료 -->
-    <div class="forest-card" onclick="toggleDetail(this)">
-      <div class="flex justify-between items-center">
-        <div class="flex-1 min-w-0 pr-4">
-          <div class="text-xs text-gray-400 mb-1">NO.126</div>
-          <div class="text-base font-semibold text-gray-900">지하주차장 B2 구역 환기 시설 소음</div>
-        </div>
-        <div class="flex items-center gap-3 flex-shrink-0">
-          <div class="flex flex-col items-end gap-1">
-            <span class="status-pill bg-[#dfe5cb] text-[#3f4c15]">처리완료</span>
-            <div class="text-xs text-gray-400">2023.10.20</div>
-          </div>
-          <span class="material-symbols-outlined chevron text-gray-400">expand_more</span>
-        </div>
-      </div>
-      <div class="detail mt-5 border-t border-gray-100 pt-5">
-        <div class="flex gap-4 mb-5">
-          <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-sm">👤</div>
-          <p class="text-sm text-gray-700 leading-relaxed pt-1">
-            B2 구역 환기 팬에서 며칠째 소음이 납니다. 새벽에 특히 심한 것 같습니다.
-          </p>
-        </div>
-        <div class="bg-[#f6f4eb] border border-[#e2e2e0] rounded-xl p-5">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="text-sm font-semibold text-[#3f4c15]">관리실 답변</span>
-            <span class="text-xs text-gray-400">2023.10.21 14:00</span>
-          </div>
-          <p class="text-sm text-gray-700 leading-relaxed">
-            확인 결과 팬 베어링 마모로 인한 소음이었습니다. 부품 교체 완료하였습니다. 감사합니다.
-          </p>
-        </div>
-      </div>
-    </div>
+  </c:forEach>
 
-    <!-- 항목 4: 처리중 -->
-    <div class="forest-card" onclick="toggleDetail(this)">
-      <div class="flex justify-between items-center">
-        <div class="flex-1 min-w-0 pr-4">
-          <div class="text-xs text-gray-400 mb-1">NO.125</div>
-          <div class="text-base font-semibold text-gray-900">재활용 수거함 위치 변경 제안</div>
-        </div>
-        <div class="flex items-center gap-3 flex-shrink-0">
-          <div class="flex flex-col items-end gap-1">
-            <span class="status-pill bg-yellow-100 text-yellow-700">처리중</span>
-            <div class="text-xs text-gray-400">2023.10.18</div>
-          </div>
-          <span class="material-symbols-outlined chevron text-gray-400">expand_more</span>
-        </div>
-      </div>
-      <div class="detail mt-5 border-t border-gray-100 pt-5">
-        <div class="flex gap-4">
-          <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-sm">👤</div>
-          <p class="text-sm text-gray-700 leading-relaxed pt-1">
-            현재 수거함 위치가 어린이 놀이터 바로 옆이라 냄새가 납니다. 다른 위치로 옮겨주시면 좋겠습니다.
-          </p>
-        </div>
-        <p class="text-xs text-gray-400 mt-4">아직 답변이 등록되지 않았습니다.</p>
-      </div>
-    </div>
+
+
+
 
   </div>
   <%-- 실제 서버 데이터 쓸 때는 위 하드코딩 대신 아래 c:forEach 사용
@@ -260,6 +213,11 @@
       detail.classList.add('open');
       card.classList.add('open');
     }
+  }
+
+  function deleteQna(cvplNo) {
+    if (!confirm("삭제하시겠습니까?")) return;
+    location.href = '${pageContext.request.contextPath}/member/qna/delete.do?cvplNo=' + cvplNo;
   }
 </script>
 </html>
