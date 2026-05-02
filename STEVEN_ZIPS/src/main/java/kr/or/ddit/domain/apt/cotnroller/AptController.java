@@ -25,7 +25,7 @@ public class AptController {
      * @param model
      * @return apt-main.jsp
      */
-    @GetMapping("/main/{aptCmpexNo}")
+    @GetMapping("/main/{aptCmplexNo}")
     public String aptMain(@PathVariable String aptCmplexNo, Model model) {
         log.info("aptMain() 실행 \n아파트 코드 : {}", aptCmplexNo);
 
