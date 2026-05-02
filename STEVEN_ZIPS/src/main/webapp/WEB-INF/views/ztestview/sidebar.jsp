@@ -5,6 +5,8 @@
     우리집맵핑🏠
   </div>
 
+
+
   <nav class="flex flex-col gap-1 px-3 mt-6 pb-10" id="sidebar-nav">
 
     <details class="nav-item group">
@@ -45,7 +47,10 @@
       <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
            href="${pageContext.request.contextPath}/contract/apply.do">계약 신청</a>
-        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="#">계약 조회</a>
+        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
+           href="${pageContext.request.contextPath}/contract/history.do">
+          계약 조회
+        </a>
       </div>
     </details>
 
