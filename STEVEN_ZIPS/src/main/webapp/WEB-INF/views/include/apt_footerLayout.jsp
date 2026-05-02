@@ -39,35 +39,35 @@
                                 <c:set var="telLength" value="${fn:length(telNo)}"/>
                                     <%-- 전화번호 '-' 처리 방법! 앞자리가 02일때와 아닐때로 나눔. 작성자 : 이윤진 --%>
                                 <span class="phone">
-                        <c:choose>
-                            <%-- case1) 서울 02 + 가운데 3자리 + 뒤 4자리 : 02-375-0332 --%>
-                            <c:when test="${fn:startsWith(telNo, '02') and telLength == 9}">
-                              ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 5)}-${fn:substring(telNo, 5, 9)}
-                            </c:when>
-                            <%-- case2) 서울 02 + 가운데 4자리 + 뒤 4자리 : 02-1234-5678 --%>
-                            <c:when test="${fn:startsWith(telNo, '02') and telLength == 10}">
-                                ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 6)}-${fn:substring(telNo, 6, 10)}
-                            </c:when>
-                            <%-- case3) 서울 제외 지역번호/휴대폰 3자리 + 가운데 3자리 + 뒤 4자리 : 031-123-4567 --%>
-                            <c:when test="${not fn:startsWith(telNo, '02') and telLength == 10}">
-                                ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 6)}-${fn:substring(telNo, 6, 10)}
-                            </c:when>
-                            <%-- case4) 서울 제외 지역번호/휴대폰 3자리 + 가운데 4자리 + 뒤 4자리 : 010-1234-5678 --%>
-                            <c:when test="${not fn:startsWith(telNo, '02') and telLength == 11}">
-                                ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 7)}-${fn:substring(telNo, 7, 11)}
-                            </c:when>
-                            <%-- 전화번호 양식에 하나도 안맞을때는 값 그대로 출력 --%>
-                            <c:otherwise>
-                                ${office.mgmtOfcTelno}
-                            </c:otherwise>
-                        </c:choose>
+                                <c:choose>
+                                    <%-- case1) 서울 02 + 가운데 3자리 + 뒤 4자리 : 02-375-0332 --%>
+                                    <c:when test="${fn:startsWith(telNo, '02') and telLength == 9}">
+                                      ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 5)}-${fn:substring(telNo, 5, 9)}
+                                    </c:when>
+                                    <%-- case2) 서울 02 + 가운데 4자리 + 뒤 4자리 : 02-1234-5678 --%>
+                                    <c:when test="${fn:startsWith(telNo, '02') and telLength == 10}">
+                                        ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 6)}-${fn:substring(telNo, 6, 10)}
+                                    </c:when>
+                                    <%-- case3) 서울 제외 지역번호/휴대폰 3자리 + 가운데 3자리 + 뒤 4자리 : 031-123-4567 --%>
+                                    <c:when test="${not fn:startsWith(telNo, '02') and telLength == 10}">
+                                        ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 6)}-${fn:substring(telNo, 6, 10)}
+                                    </c:when>
+                                    <%-- case4) 서울 제외 지역번호/휴대폰 3자리 + 가운데 4자리 + 뒤 4자리 : 010-1234-5678 --%>
+                                    <c:when test="${not fn:startsWith(telNo, '02') and telLength == 11}">
+                                        ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 7)}-${fn:substring(telNo, 7, 11)}
+                                    </c:when>
+                                    <%-- 전화번호 양식에 하나도 안맞을때는 값 그대로 출력 --%>
+                                    <c:otherwise>
+                                        ${office.mgmtOfcTelno}
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </c:when>
-                        <c:otherwise>
-                            <div>
-                                <span class="label">관리사무소</span>
-                            </div>
-                        </c:otherwise>
+                            <c:otherwise>
+                                <div>
+                                    <span class="label">관리사무소</span>
+                                </div>
+                            </c:otherwise>
                     </c:choose>
                 </div>
                 <div class="detail">
