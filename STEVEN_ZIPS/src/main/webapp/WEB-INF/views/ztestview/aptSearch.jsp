@@ -100,12 +100,7 @@
     <p class="text-on-surface-variant max-w-lg mx-auto">거주하시는 아파트 단지를 검색하여 우리집의 다양한 시설 정보를 확인해보세요.</p>
   </header>
   <!-- Tab Menu -->
-  <div class="flex justify-center mb-10">
-    <div class="inline-flex p-1 bg-surface-container-high rounded-full overflow-hidden">
-      <button class="px-8 py-3 bg-white text-primary font-bold rounded-full shadow-sm">아파트 이름으로 찾기</button>
-      <button class="px-8 py-3 text-on-surface-variant font-medium hover:text-primary transition-colors">납부자 번호로 찾기</button>
-    </div>
-  </div>
+
   <section class="space-y-16">
     <!-- Address Selection Title -->
     <div class="text-center">
