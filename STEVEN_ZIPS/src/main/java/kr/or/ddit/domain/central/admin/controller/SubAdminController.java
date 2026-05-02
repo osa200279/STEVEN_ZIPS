@@ -46,7 +46,7 @@ public class SubAdminController {
      *
      * 이유:
      * ContractController#subAdminForm()이 이미
-     * GET /centralAdmin/subAdmin 주소를 사용하고 있기 때문이다.
+     * GET /central/subAdmin 주소를 사용하고 있기 때문이다.
      */
 
     /** 신청 계정 목록 조회 */

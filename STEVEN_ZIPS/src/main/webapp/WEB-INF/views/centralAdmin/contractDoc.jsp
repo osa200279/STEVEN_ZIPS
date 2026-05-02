@@ -503,8 +503,8 @@
     if (file) formData.append('docFile', file);
 
     const url = isEdit
-            ? '/centralAdmin/contractDoc/update'
-            : '/centralAdmin/contractDoc/save';
+            ? '/central/contractDoc/update'
+            : '/central/contractDoc/save';
 
     fetch(url, { method: 'POST', body: formData })
             .then(res => {

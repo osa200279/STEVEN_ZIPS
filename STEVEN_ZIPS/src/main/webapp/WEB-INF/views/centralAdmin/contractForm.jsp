@@ -576,7 +576,7 @@ function openDocModalForEdit(data){
   document.getElementById('docModalTitle').textContent = '서식 수정';
   document.getElementById('docSubmitBtn').innerHTML = '<span class="material-symbols-rounded">check</span>수정 저장';
 
-  document.getElementById('docForm').action = '/centralAdmin/contractFormUpdate.do';
+  document.getElementById('docForm').action = '/central/contractFormUpdate.do';
 
   document.getElementById('d-name').value = data.frmNm || '';
   document.getElementById('d-cat').value  = data.rentTypeCd || '';

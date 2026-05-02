@@ -3,19 +3,19 @@
   String _uri = request.getRequestURI();
   String _ctx = request.getContextPath();
   if (_uri != null && _ctx != null && !_ctx.isEmpty() && _uri.startsWith(_ctx)) _uri = _uri.substring(_ctx.length());
-  boolean isDashboard = _uri != null && (_uri.equals("/") || _uri.startsWith("/centralAdmin/main"));
-  boolean isBuildSearch = _uri != null && _uri.startsWith("/centralAdmin/buildSearch");
-  boolean isBuildRegister = _uri != null && _uri.startsWith("/centralAdmin/buildRegister");
-  boolean isResidentList = _uri != null && (_uri.startsWith("/centralAdmin/residentList") || _uri.startsWith("/centralAdmin/residentStatus") || _uri.startsWith("/centralAdmin/resident"));
-  boolean isContract = _uri != null && (_uri.startsWith("/centralAdmin/contractList") || _uri.startsWith("/centralAdmin/conManagement") || _uri.startsWith("/centralAdmin/contract"));
-  boolean isStatistics = _uri != null && _uri.startsWith("/centralAdmin/statistics");
-  boolean isCivilCom = _uri != null && _uri.startsWith("/centralAdmin/civilCom");
-  boolean isAi = _uri != null && _uri.startsWith("/centralAdmin/ai");
-  boolean isAnnouncement = _uri != null && _uri.startsWith("/centralAdmin/announcement");
-  boolean isNotice = _uri != null && _uri.startsWith("/centralAdmin/ann");
-  boolean isFacility = _uri != null && _uri.startsWith("/centralAdmin/facility");
-  boolean isProHistory = _uri != null && _uri.startsWith("/centralAdmin/proHistory");
-  boolean isSubAdmin = _uri != null && _uri.startsWith("/centralAdmin/subAdmin");
+  boolean isDashboard = _uri != null && (_uri.equals("/") || _uri.startsWith("/central/main"));
+  boolean isBuildSearch = _uri != null && _uri.startsWith("/central/buildSearch");
+  boolean isBuildRegister = _uri != null && _uri.startsWith("/central/buildRegister");
+  boolean isResidentList = _uri != null && (_uri.startsWith("/central/residentList") || _uri.startsWith("/central/residentStatus") || _uri.startsWith("/central/resident"));
+  boolean isContract = _uri != null && (_uri.startsWith("/central/contractList") || _uri.startsWith("/central/conManagement") || _uri.startsWith("/central/contract"));
+  boolean isStatistics = _uri != null && _uri.startsWith("/central/statistics");
+  boolean isCivilCom = _uri != null && _uri.startsWith("/central/civilCom");
+  boolean isAi = _uri != null && _uri.startsWith("/central/ai");
+  boolean isAnnouncement = _uri != null && _uri.startsWith("/central/announcement");
+  boolean isNotice = _uri != null && _uri.startsWith("/central/ann");
+  boolean isFacility = _uri != null && _uri.startsWith("/central/facility");
+  boolean isProHistory = _uri != null && _uri.startsWith("/central/proHistory");
+  boolean isSubAdmin = _uri != null && _uri.startsWith("/central/subAdmin");
 %>
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">

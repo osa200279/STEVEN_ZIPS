@@ -504,7 +504,7 @@
   function excelDownload() {
     var form = document.getElementById('filterForm');
     var origin = form.action;
-    form.action = '/centralAdmin/contractExcel.do';
+    form.action = '/central/contractExcel.do';
     form.target = '_blank';
     form.submit();
     form.action = origin;
@@ -516,7 +516,7 @@
   ================================================================ */
   function resetRegisterFormForInsert() {
     var form = document.getElementById('registerForm');
-    form.action = '/centralAdmin/contractInsert.do';
+    form.action = '/central/contractInsert.do';
     document.getElementById('registerModalTitle').textContent = '등록';
     document.getElementById('registerSubmitBtn').innerHTML =
             '<span class="material-symbols-rounded">check</span>등록';
@@ -583,7 +583,7 @@
               });
               document.querySelectorAll('#registerForm input[type="file"]').forEach(function(inp) { inp.value = ''; });
               var form = document.getElementById('registerForm');
-              form.action = '/centralAdmin/contractUpdate.do';
+              form.action = '/central/contractUpdate.do';
               document.getElementById('registerModalTitle').textContent = '계약 수정';
               document.getElementById('registerSubmitBtn').innerHTML =
                       '<span class="material-symbols-rounded">check</span>수정 저장';
@@ -770,7 +770,7 @@
      파일 보기 — TODO: URL 수정
   ================================================================ */
   function viewFile(atchFileId) {
-    window.open('/centralAdmin/fileDownload.do?atchFileId=' + encodeURIComponent(atchFileId), '_blank');
+    window.open('/central/fileDownload.do?atchFileId=' + encodeURIComponent(atchFileId), '_blank');
   }
 
   /* ================================================================

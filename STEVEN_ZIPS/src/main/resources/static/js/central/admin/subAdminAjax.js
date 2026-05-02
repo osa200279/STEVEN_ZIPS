@@ -1,6 +1,6 @@
 /* =========================================================
    subAdminAjax.js
-   단지 관리자 계정 관리 JSP DB 연동 스크립트
+   중앙관리자에서 -> 단지관리자 직원계정 관리 JSP DB 연동 스크립트
    - fetch API로 Controller와 통신한다.
    - fetch란? 브라우저에서 서버 URL로 데이터를 요청하는 JavaScript 기능.
    - 왜 사용? JSP 새로고침 없이 목록/승인/반려/상태 처리를 하기 위해 사용한다.
@@ -291,16 +291,35 @@ function renderAccounts() {
 function renderPagination(total, current, last) {
     const el = document.getElementById("acctPagination");
     if (!el) return;
+
     if (last <= 1) {
         el.innerHTML = "";
         return;
     }
 
-    let html = `<button class="c-pagination__btn ${current === 1 ? "is-disabled" : ""}" onclick="goPage(${current - 1})">‹</button>`;
-    for (let i = 1; i <= last; i++) {
+    /*
+        페이지 블록이란?
+        → 페이지 번호를 한 번에 전부 보여주지 않고,
+          1~10, 11~20처럼 끊어서 보여주는 방식.
+        왜 사용?
+        → 데이터가 많을 때 페이지 버튼이 너무 길어지는 것을 막기 위해 사용.
+    */
+    const BLOCK_SIZE = 10;
+
+    const currentBlock = Math.ceil(current / BLOCK_SIZE);
+    const startPage = (currentBlock - 1) * BLOCK_SIZE + 1;
+    const endPage = Math.min(startPage + BLOCK_SIZE - 1, last);
+
+    let html = "";
+
+    html += `<button class="c-pagination__btn ${current === 1 ? "is-disabled" : ""}" onclick="goPage(${current - 1})">‹</button>`;
+
+    for (let i = startPage; i <= endPage; i++) {
         html += `<button class="c-pagination__btn ${i === current ? "is-active" : ""}" onclick="goPage(${i})">${i}</button>`;
     }
+
     html += `<button class="c-pagination__btn ${current === last ? "is-disabled" : ""}" onclick="goPage(${current + 1})">›</button>`;
+
     el.innerHTML = html;
 }
 
