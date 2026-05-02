@@ -2,11 +2,14 @@ package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.domain.member.resident.service.IResidentMainService;
 import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
+import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -31,12 +34,12 @@ public class ResidentVhclController {
      * @return 사용자가 등록한 차량 LIST
      */
     @PreAuthorize("hasRole('RESIDENT')")
-    @GetMapping("/myVhcl")
+    @GetMapping("/myVhcl/{aptCmplexNo}")
     @ResponseBody
-    public List<RsidVhclVO> selectMyVhclList(Principal principal, String aptCmplexNo) {
+    public List<RsidVhclVO> selectMyVhclList(@PathVariable String aptCmplexNo, @AuthenticationPrincipal CustomUser principal) {
 
-        String userId = principal.getName();
+        String userNo = principal.getMember().getUserNo();
 
-        return residentService.selectMyVhclList(userId, aptCmplexNo);
+        return residentService.selectMyVhclList(userNo, aptCmplexNo);
     }
 }

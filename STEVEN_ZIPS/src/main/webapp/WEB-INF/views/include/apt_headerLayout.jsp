@@ -71,8 +71,8 @@
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
                 <a href="${pageContext.request.contextPath}/resident/service/moving">전입/전출신고</a>
-                <a href="${pageContext.request.contextPath}/resident/service/car">차량등록</a>
-                <a href="${pageContext.request.contextPath}/resident/service/visitor">방문차량등록</a>
+                <a href="${pageContext.request.contextPath}/resident/service/car/${aptCmplexNo}">차량등록</a>
+                <a href="${pageContext.request.contextPath}/resident/service/visitor/${aptCmplexNo}">방문차량등록</a>
                 <a href="${pageContext.request.contextPath}/resident/service/facility">공용시설예약</a>
             </div>
         </div>
@@ -103,7 +103,7 @@
             <div class="slim-drop">
                 <a href="${pageContext.request.contextPath}/resident/board/notice">공지사항</a>
                 <a href="${pageContext.request.contextPath}/resident/board/free">자유게시판</a>
-                <a href="${pageContext.request.contextPath}/resident/board/chat">그룹채팅방</a>
+                <a href="${pageContext.request.contextPath}/resident/board/chat/${aptCmplexNo}">그룹채팅방</a>
             </div>
         </div>
 

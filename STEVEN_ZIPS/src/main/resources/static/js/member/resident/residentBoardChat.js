@@ -2,16 +2,20 @@ window.onload = function () {
     loadMyRooms();
 };
 
-currentView = "discover";  // 기본값
+let currentRoomNo = null;
+let currentRoomNm = null;
 
-let currentRoomId = null;
 
-function openMyRoom(roomId,roomNm,el) {
+/* 내 채팅방 목록에서 눌렀을때 실행됨 */
+function openMyRoom(roomNo,roomNm,el) {
+
+    currentRoomNo = roomNo;
+    currentRoomNm = roomNm;
 
     if (el) setActiveRoom(el);
 
     /* 채팅방 메시지 가져오는 메서드! */
-    fetch(contextPath + '/residentChat/messages?chatRoomNo=' + roomId)
+    fetch(contextPath + '/residentChat/messages?chatRoomNo=' + roomNo)
         .then(res => res.json())
         .then(list => {
 
@@ -24,7 +28,7 @@ function openMyRoom(roomId,roomNm,el) {
 
             list.forEach(msg => {
 
-                const isMe = String(msg.userNo) === String(userNo); // 나중에 세션
+                const isMe = String(msg.userNo) === String(userNo);
 
                 html += `
                           <div class="message ${isMe ? 'me' : 'other'}">
@@ -36,7 +40,7 @@ function openMyRoom(roomId,roomNm,el) {
             html += `</div>
                 <div class="search-row">
                     <input id="msg" class="fake-input"/>
-                    <button onclick="sendMessage('${roomId}')">전송</button>
+                    <button onclick="sendMessage()">전송</button>
                 </div>
             `;
 
@@ -44,33 +48,45 @@ function openMyRoom(roomId,roomNm,el) {
         });
 }
 
+/* 오픈채팅방 리스트를 가져옴*/
 function openDiscover() {
-    currentView = "discover";
 
-    document.getElementById("chat-content").innerHTML = `
-        <div class="section-hd">
-            <h3>오픈채팅방</h3>
-        </div>
+    fetch(contextPath + '/residentChat/openRooms')
+        .then(res => res.json())
+        .then(list => {
 
-        <div class="search-row">
-            <input class="fake-input" placeholder="채팅방 검색" />
-        </div>
+            let html = `
+                <div class="section-hd">
+                    <h3>오픈채팅방</h3>
+                </div>
+                <div class="search-row">
+                    <input class="fake-input" placeholder="채팅방 검색" />
+                </div>
+                <div class="room-grid">
+            `;
 
-        <div class="room-grid">
-            <div class="room-box available" onclick="enterRoom('1')">운동 모임</div>
-            <div class="room-box available" onclick="enterRoom('2')">독서 모임</div>
-            <div class="room-box available" onclick="enterRoom('3')">게임 모임</div>
-        </div>
-    `;
+            list.forEach(room => {
+                html += `
+                    <div class="room-box available"
+                         onclick="enterRoom('${room.chatRoomNo}')">
+                        ${room.chatRoomNm}
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+
+            document.getElementById("chat-content").innerHTML = html;
+        });
 }
 
-function enterRoom(roomId) {
+function enterRoom(roomNo) {
 
-    fetch(contextPath + '/residentChat/enter?chatRoomNo=' + roomId, {
+    fetch(contextPath + '/residentChat/enter?chatRoomNo=' + roomNo, {
         method: 'POST'
     }).then(() => {
-        openMyRoom(roomId);
-        loadMyRooms(); // 리스트 갱신
+        openMyRoom(roomNo, "");
+        loadMyRooms();
     });
 }
 
@@ -91,14 +107,17 @@ function loadMyRooms() {
         .then(list => {
 
             let html = `
-        <div class="section-hd">
-          <h3>채팅방 목록</h3>
-          <span>검색 가능</span>
-        </div>
-        <div class="search-row">
-          <input class="fake-input" placeholder="검색"/>
-        </div>
-      `;
+                <div class="section-hd">
+                  <h3>채팅방 목록</h3>
+                  <button onclick="openCreateRoom()" 
+                          style="background:#2b674e;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">
+                    +
+                  </button>
+                </div>
+                <div class="search-row">
+                  <input class="fake-input" placeholder="검색"/>
+                </div>
+            `;
 
             list.forEach(room => {
                 html += `
@@ -130,19 +149,45 @@ function loadMyRooms() {
         });
 }
 
-function sendMessage(roomId) {
+function sendMessage() {
 
     const content = document.getElementById("msg").value;
 
     fetch(contextPath + '/residentChat/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            chatRoomNo: roomId,
+        body: JSON.stringify(   {
+            chatRoomNo: currentRoomNo,
             msgCn: content
         })
     }).then(() => {
         document.getElementById("msg").value = "";
-        openMyRoom(roomId); // 다시 조회
+        openMyRoom(currentRoomNo, currentRoomNm);
     });
+}
+
+
+function openCreateRoom() {
+    const roomName = prompt("채팅방 이름 입력");
+
+    if (!roomName) return;
+
+    createRoom(roomName);
+}
+
+function createRoom(roomName) {
+
+    fetch(contextPath + '/residentChat/createRoom', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            chatRoomNm: roomName
+        })
+    })
+        .then(res => res.json())
+        .then(room => {
+
+            openMyRoom(room.chatRoomNo, room.chatRoomNm, this);
+            loadMyRooms();
+        });
 }

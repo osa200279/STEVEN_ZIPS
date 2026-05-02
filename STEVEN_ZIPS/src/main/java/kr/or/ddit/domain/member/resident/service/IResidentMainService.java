@@ -9,4 +9,6 @@ public interface IResidentMainService {
     List<RsidVhclVO> selectMyVhclList(String userNo, String aptCmplexNo);
 
     List<ChatRoomVO> selectMyRoomList(String userNo, String aptNo);
+
+    ChatRoomVO createRoom(ChatRoomVO vo, String userNo);
 }

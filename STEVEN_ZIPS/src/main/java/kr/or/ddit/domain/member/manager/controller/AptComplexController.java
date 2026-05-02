@@ -84,7 +84,6 @@ public class AptComplexController {
                 return result;
             }
 
-            // 클라이언트 hidden 값을 믿지 않고 서버에서 강제 세팅
             aptComplexVO.setAptCmplexNo(aptCmplexNo);
 
             int updateCnt = aptComplexService.updateAptComplex(aptComplexVO);

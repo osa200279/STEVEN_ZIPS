@@ -8,9 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -41,10 +40,22 @@ public class ResidentChatController {
     @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/myRooms")
     @ResponseBody
-    public List<ChatRoomVO> selectMyRoomList(@AuthenticationPrincipal CustomUser principal, String aptCmplexNo) {
+    public List<ChatRoomVO> selectMyRoomList(@AuthenticationPrincipal CustomUser principal, String aptCmplexNo, Model model) {
 
         String userNo = principal.getMember().getUserNo();
 
         return residentService.selectMyRoomList(userNo, aptCmplexNo);
     }
+
+    @PreAuthorize("hasRole('RESIDENT')")
+    @PostMapping("/createRoom")
+    @ResponseBody
+    public ChatRoomVO createRoom(@AuthenticationPrincipal CustomUser principal,
+                                 @RequestBody ChatRoomVO vo) {
+
+        String userNo = principal.getMember().getUserNo();
+
+        return residentService.createRoom(vo, userNo);
+    }
+
 }

@@ -1,7 +1,9 @@
 package kr.or.ddit.domain.member.resident.controller;
 
+import kr.or.ddit.domain.apt.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
+import kr.or.ddit.domain.member.manager.servcie.IAptComplexService;
 import kr.or.ddit.domain.member.resident.service.IResidentMainService;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -14,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
@@ -120,11 +123,13 @@ public class ResidentMainController {
     }
 
 
-    @GetMapping("/service/car")
+    @GetMapping("/service/car/{aptCmplexNo}")
     @PreAuthorize("hasRole('RESIDENT')")
-    public String serviceCar(@AuthenticationPrincipal CustomUser principal, Model model) {
+    public String serviceCar(@AuthenticationPrincipal CustomUser principal, @PathVariable String aptCmplexNo, Model model) {
 
         model.addAttribute("userNo", principal.getMember().getUserNo());
+
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
 
         return "member/resident/service_car";
     }

@@ -26,4 +26,18 @@ public class ResidentMainServiceImpl implements IResidentMainService{
         return residentMapper.selectMyRoomList(userNo, aptCmplexNo);
     }
 
+    @Override
+    public ChatRoomVO createRoom(ChatRoomVO vo, String userNo) {
+
+/*        채팅방 생성 메서드
+        residentMapper.insertChatRoom(vo);
+
+        본인 방장으로 참여시킴
+        residentMapper.insertChatRoomMember(vo.getChatRoomNo(), userNo);
+
+        생성된 방 객체 리턴
+        return residentMapper.selectChatRoom(vo.getChatRoomNo());*/
+        return null;
+    }
+
 }

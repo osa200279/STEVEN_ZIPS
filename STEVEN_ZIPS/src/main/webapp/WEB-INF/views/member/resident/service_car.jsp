@@ -778,30 +778,16 @@
                     <div class="section-hd"><h3>등록한 차량 목록</h3><span>최근 등록</span></div>
                     <table class="data-table">
                         <thead>
-                        <tr>
-                            <th>차량번호</th>
-                            <th>차종</th>
-                            <th>등록일</th>
-                            <th>상태</th>
-                        </tr>
+                            <tr>
+                                <th>동_호</th>
+                                <th>차량번호</th>
+                                <th>차종</th>
+                                <th>등록일</th>
+                                <th>상태</th>
+                            </tr>
                         </thead>
+
                         <tbody>
-                            <c:forEach var="car" items="${vhclList}">
-                                <tr>
-                                    <td>${car.rsidVhclNo}</td>
-                                    <td>${car.vhclNm}</td>
-                                    <td>${car.regDt}</td>
-                                    <td>
-                                        <span class="badge
-                                            ${car.vhclSttsCd eq 'APRV' ? 'ok' :
-                                              car.vhclSttsCd eq 'WAIT' ? 'wait' : 'danger'}">
-                                            ${car.vhclSttsCd eq 'APRV' ? '승인' :
-                                              car.vhclSttsCd eq 'WAIT' ? '승인대기' :
-                                              '반려'}
-                                        </span>
-                                    </td>
-                                </tr>
-                            </c:forEach>
                         </tbody>
                     </table>
                 </div>
@@ -814,6 +800,14 @@
 </div>
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 <script !src="">
+
+    window.onload = function () {
+        loadMyVhcl();
+    };
+
+    const aptCmplexNo = ${aptCmplexNo};
+    const userNo = ${userNo};
+
     const uploadBox = document.getElementById("uploadBox");
     const fileInput = document.getElementById("fileInput");
     const previewCard = document.getElementById("previewCard");
@@ -911,14 +905,13 @@
     };
 
     const formData = new FormData();
-    const userNo = src
 
-    formData.append("vhclNm", document.querySelector("input").value);
-    formData.append("vhclNo", document.querySelector("input").value);
-    formData.append("userNo", )
+    formData.append("vhclNm", document.getElementById("vhclNmData").value);
+    formData.append("vhclNo", document.getElementById("vhclNoData").value);
+    formData.append("userNo", userNo);
     formData.append("file", fileInput.files[0]);
 
-    fetch("/api/car/register", {
+    fetch("/api/car/register/"+aptCmplexNo, {
         method: "POST",
         body: formData
     })  .then(res => res.text())
@@ -926,6 +919,45 @@
             console.log(data);
 
         });
+
+    function loadMyVhcl() {
+
+        fetch(`/vhcl/myVhcl/`+aptCmplexNo)
+            .then(res => res.json())
+            .then(list => {
+
+                let html = "";
+
+                list.forEach(car => {
+
+                    let badgeClass = "";
+                    let statusText = "";
+
+                    if (car.vhclSttsCd === 'APRV') {
+                        badgeClass = "ok";
+                        statusText = "승인";
+                    } else if (car.vhclSttsCd === 'WAIT') {
+                        badgeClass = "wait";
+                        statusText = "승인대기";
+                    } else {
+                        badgeClass = "danger";
+                        statusText = "반려";
+                    }
+
+                    html += `
+                    <tr>
+                        <td>"동_호"</td>
+                        <td>\${car.vhclNo}</td>
+                        <td>\${car.vhclNm}</td>
+                        <td>\${car.regDt ?? ''}</td>
+                        <td><span class="badge \${badgeClass}">\${statusText}</span></td>
+                    </tr>
+                `;
+                });
+
+                document.querySelector(".data-table tbody").innerHTML = html;
+            });
+    }
 
 
 </script>

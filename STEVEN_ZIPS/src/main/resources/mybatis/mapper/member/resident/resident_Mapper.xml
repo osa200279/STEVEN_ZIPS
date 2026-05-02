@@ -29,22 +29,22 @@
     </resultMap>
 
     <select id="getResidentInfo" parameterType="string" resultMap="residentMap">
-        select m.user_no,
-               resi.ho_no,
-               resi.inout_cd,
-               resi.move_in_dt,
-               resi.move_out_dt,
-               resi.head_yn,
-               ho.dong_no,
-               ho.ho,
-               ho.floor,
-               dong.dong_nm,
-               dong.APT_CMPLEX_NO,
-               apt.apt_cmplex_nm,
-               apt.sido_nm,
-               apt.sigungu_nm,
-               apt.emd_nm,
-               apt.dorojuso
+        select m.user_no
+               ,resi.ho_no
+               ,resi.inout_cd
+               ,resi.move_in_dt
+               ,resi.move_out_dt
+               ,resi.head_yn
+               ,ho.dong_no
+               ,ho.ho
+               ,ho.floor
+               ,dong.dong_nm
+               ,dong.APT_CMPLEX_NO
+               ,apt.apt_cmplex_nm
+               ,apt.sido_nm
+               ,apt.sigungu_nm
+               ,apt.emd_nm
+               ,apt.dorojuso
         from member m
                  inner join hshld_head resi on(m.user_no = resi.user_no)
                  inner join apt_detail ho on(resi.ho_no = ho.ho_no)
