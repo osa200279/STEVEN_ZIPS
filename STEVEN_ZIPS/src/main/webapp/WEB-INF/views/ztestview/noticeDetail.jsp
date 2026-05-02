@@ -43,7 +43,7 @@
 
     <!-- 버튼 영역 -->
     <div class="flex justify-between">
-        <button onclick="location.href='/ann/list.do'"
+        <button onclick="location.href='${pageContext.request.contextPath}/notice/list.do'"
                 class="px-6 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition">
             목록
         </button>
