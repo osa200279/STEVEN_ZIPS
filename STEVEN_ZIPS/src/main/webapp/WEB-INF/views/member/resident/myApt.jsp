@@ -88,7 +88,7 @@
         if (window.opener && !window.opener.closed) {
 
             // 2. 부모창의 주소를 변경
-            const url = "/apt/main?aptCmplexNo=" + aptCmplexNo;
+            const url = `/apt/main/\${aptCmplexNo}`;
             window.opener.location.href = url;
 
             // 3. 팝업창 닫기
