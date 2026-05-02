@@ -10,14 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/contract")
 public class UserContractController {
 
-
-
         @GetMapping("/list.do")
         public String contractList() {
 
             return "ztestview/contractList";
         }
-
 
         @GetMapping("/notice.do")
         public String contractNotice() {
@@ -29,13 +26,9 @@ public class UserContractController {
             return "ztestview/contractApply";
         }
 
-    @GetMapping("/noticeList.do")
-    public String noticeList() {
+        @GetMapping("/noticeList.do")
+        public String noticeList() {
         return "ztestview/notice";
     }
-
-
-
-
 
 }

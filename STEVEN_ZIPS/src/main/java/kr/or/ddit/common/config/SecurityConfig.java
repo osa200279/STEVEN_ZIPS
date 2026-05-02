@@ -33,6 +33,7 @@ public class SecurityConfig {
     private static final String[] PASS_URL = {
             "/index.html",
             "/",
+            "/apt/main",
             "/login",
             "/error",
             "/login.do",
@@ -41,7 +42,6 @@ public class SecurityConfig {
             "/member/join",
             "/member/update",
             "/member/idCheck",
-            "/apt/main",
             "/.well-known/**"
     };
 

@@ -388,7 +388,11 @@ img { display: block; width: 100%; }
                   </c:otherwise>
               </c:choose>
               </span>
-              <span class="address">${apt.dorojuso}<br>${office.mgmtOfcNm}</span>
+              <span class="address">
+                 ${apt.dorojuso}<br>
+                 ${office.mgmtOfcNm}<br>
+                 운영시간 : ${office.oprStTm} ~ ${office.oprEdTm}
+              </span>
           </div>
       </c:when>
       <c:otherwise>

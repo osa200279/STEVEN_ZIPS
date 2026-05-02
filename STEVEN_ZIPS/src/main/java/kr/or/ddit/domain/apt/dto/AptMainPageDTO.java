@@ -39,7 +39,7 @@ public class AptMainPageDTO {
 
         // MGMT_OPR_TM 테이블
         private String oprStTm;     // 관리사무소 운영 시작 시간
-        private String oprEdTm;     // 관리사무소 운영 시작 시간
+        private String oprEdTm;     // 관리사무소 운영 종료 시간
     }
 
     @Data

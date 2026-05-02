@@ -37,10 +37,8 @@ public class FileDisplayController {
     IAttachFileService attachFileService;
 
     /**
-     * 구글드라이브 파일 스트리밍 컨트롤러
+     * 구글드라이브 파일 화면 출력 컨트롤러
      * @author 이용로
-     * @param googleId
-     * @return 스트림 통로 객체
      */
     @ResponseBody
     @GetMapping("/display/{googleId}")
@@ -48,12 +46,23 @@ public class FileDisplayController {
         return serveFile("inline", googleId);
     }
 
+    /**
+     * 구글드라이브 파일 다운로드 컨트롤러
+     * @author 이용로
+     */
     @ResponseBody
     @GetMapping("/download/{googleId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String googleId) {
         return serveFile("attachment", googleId);
     }
 
+
+    /**
+     * 구글드라이브 파일 스트리밍 메서드
+     * @author 이용로
+     * @param googleId
+     * @return 스트림 통로 객체
+     */
     private ResponseEntity<Resource> serveFile(String disposition, @PathVariable String googleId) {
         log.info("serveFile() 실행");
         try {
