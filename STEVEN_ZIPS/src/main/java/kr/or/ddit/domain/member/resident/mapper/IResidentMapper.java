@@ -14,5 +14,5 @@ public interface IResidentMapper {
 
     List<RsidVhclVO> selectMyVhclList(String userNo, String aptCmplexNo);
 
-    List<ChatRoomVO> slectMyRoomList(String userId, String aptCmplexNo);
+    List<ChatRoomVO> selectMyRoomList(String userNo, String aptCmplexNo);
 }

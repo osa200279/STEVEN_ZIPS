@@ -4,7 +4,6 @@ import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.member.resident.service.IResidentMainService;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
-import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.security.Principal;
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -264,7 +260,10 @@ public class ResidentMainController {
 
     @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/board/chat")
-    public String boardChat() {
+    public String boardChat(@AuthenticationPrincipal CustomUser principal, Model model) {
+
+        model.addAttribute("userNo", principal.getMember().getUserNo());
+
         return "member/resident/board/board_chat";
     }
 

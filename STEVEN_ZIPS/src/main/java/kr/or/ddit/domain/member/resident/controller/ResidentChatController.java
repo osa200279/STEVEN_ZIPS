@@ -2,9 +2,11 @@ package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO;
 import kr.or.ddit.domain.member.resident.service.IResidentMainService;
+import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,10 +41,10 @@ public class ResidentChatController {
     @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/myRooms")
     @ResponseBody
-    public List<ChatRoomVO> slectMyRoomList(Principal principal, String aptCmplexNo) {
+    public List<ChatRoomVO> selectMyRoomList(@AuthenticationPrincipal CustomUser principal, String aptCmplexNo) {
 
-        String userId = principal.getName();
+        String userNo = principal.getMember().getUserNo();
 
-        return residentService.slectMyRoomList(userId, aptCmplexNo);
+        return residentService.selectMyRoomList(userNo, aptCmplexNo);
     }
 }

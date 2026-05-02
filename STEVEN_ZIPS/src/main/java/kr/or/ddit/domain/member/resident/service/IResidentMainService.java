@@ -8,5 +8,5 @@ import java.util.List;
 public interface IResidentMainService {
     List<RsidVhclVO> selectMyVhclList(String userNo, String aptCmplexNo);
 
-    List<ChatRoomVO> slectMyRoomList(String userId, String aptNo);
+    List<ChatRoomVO> selectMyRoomList(String userNo, String aptNo);
 }

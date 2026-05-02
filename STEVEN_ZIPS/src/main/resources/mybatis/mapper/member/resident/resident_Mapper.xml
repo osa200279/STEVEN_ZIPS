@@ -62,7 +62,7 @@
           AND   HO_NO LIKE #{aptCmplexNo}||'%'
     </select>
 
-    <select id="getMyRoom" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
+    <select id="selectMyRoomList" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
         SELECT CR.CHAT_ROOM_NO,
                CR.CHAT_ROOM_NM,
                CM.MSG_CN   AS LAST_MSG,

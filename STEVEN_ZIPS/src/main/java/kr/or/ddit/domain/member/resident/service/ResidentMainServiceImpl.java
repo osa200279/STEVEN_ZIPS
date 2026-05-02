@@ -21,9 +21,9 @@ public class ResidentMainServiceImpl implements IResidentMainService{
     }
 
     @Override
-    public List<ChatRoomVO> slectMyRoomList(String userId, String aptCmplexNo) {
+    public List<ChatRoomVO> selectMyRoomList(String userNo, String aptCmplexNo) {
 
-        return residentMapper.slectMyRoomList(userId, aptCmplexNo);
+        return residentMapper.selectMyRoomList(userNo, aptCmplexNo);
     }
 
 }
