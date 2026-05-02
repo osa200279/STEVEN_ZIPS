@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @Controller
-@PreAuthorize("hasAnyRole('ROLE_MANAGER', 'ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('MNGR')")
 @RequestMapping("/manager/employee")
 public class EmployeeController {
 
