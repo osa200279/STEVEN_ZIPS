@@ -504,27 +504,6 @@
     </update>
 
 
-    <!--
-        계정 삭제 순서 주의:
-        MANAGER, AUTH가 MEMBER를 참조할 수 있으므로
-        자식 테이블을 먼저 삭제하고 MEMBER를 삭제해야 FK 오류가 안 남.
-    -->
-<!--    <delete id="deleteManager" parameterType="string">-->
-<!--        DELETE FROM MANAGER-->
-<!--        WHERE USER_NO = #{userNo}-->
-<!--    </delete>-->
-
-<!--    <delete id="deleteAuth" parameterType="string">-->
-<!--        DELETE FROM AUTH-->
-<!--        WHERE USER_NO = #{userNo}-->
-<!--    </delete>-->
-
-<!--    <delete id="deleteMember" parameterType="string">-->
-<!--        DELETE FROM MEMBER-->
-<!--        WHERE USER_NO = #{userNo}-->
-<!--    </delete>-->
-
-
     <!-- 단지번호로 관리사무소 번호 찾기 -->
     <select id="selectMgmtOfcNoByApt" parameterType="string" resultType="string">
         SELECT MGMT_OFC_NO
