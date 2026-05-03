@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.domain.member.resident.service.IResidentMainService;
+import kr.or.ddit.domain.member.resident.service.IResidentVhclService;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -21,7 +22,7 @@ import java.util.List;
 public class ResidentVhclController {
 
     @Autowired
-    private IResidentMainService residentService;
+    private IResidentVhclService residentService;
 
 
 
@@ -107,7 +108,7 @@ public class ResidentVhclController {
             throw new RuntimeException("동/호 불일치");
         }
 
-        String hoNo = aptCmplexNo + "_" + dong + ho;
+        String hoNo = aptCmplexNo + "_" + dong + "_" + ho;
 
         RsidVhclVO vo = new RsidVhclVO();
         vo.setVhclNm(vhclNm);

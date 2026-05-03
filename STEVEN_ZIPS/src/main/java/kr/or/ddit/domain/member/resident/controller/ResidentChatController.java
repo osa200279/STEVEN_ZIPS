@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO;
+import kr.or.ddit.domain.member.resident.service.IResidentChatService;
 import kr.or.ddit.domain.member.resident.service.IResidentMainService;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ import java.util.List;
 public class ResidentChatController {
 
     @Autowired
-    private IResidentMainService residentService;
+    private IResidentChatService residentService;
 
     /**
      * 로그인한 사용자의 채팅방 목록 조회
