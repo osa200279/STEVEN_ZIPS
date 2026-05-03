@@ -52,8 +52,9 @@
 
     </insert>
 
-    <select id="getResidentInfo" parameterType="string" resultMap="residentMap">
-        select m.user_no
+    <!-- 시큐리티용 입주민 정보 -->
+    <select id="selectOneResidentInfo" parameterType="string" resultMap="residentMap">
+        select m.user_no /*kr.or.ddit.domain.member.resident.mapper.IResidentMapper.selectOneResidentInfo*/
                ,resi.ho_no
                ,resi.inout_cd
                ,resi.move_in_dt
