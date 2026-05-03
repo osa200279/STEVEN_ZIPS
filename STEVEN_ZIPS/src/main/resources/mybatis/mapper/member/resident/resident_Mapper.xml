@@ -28,6 +28,30 @@
         <result property="dorojuso" column="dorojuso"/>
     </resultMap>
 
+    <insert id="insertVhcl">
+        INSERT INTO RSID_VHCL (
+              RSID_VHCL_NO
+            , VHCL_NM
+            , VHCL_NO
+            , USER_NO
+            , HO_NO
+            , VHCL_STTS_CD
+            , REG_DT
+            , VHCL_FILE_NO
+        )VALUES (
+              SEQ_RSID_VHCL.NEXTVAL
+            , #{vhclNm}
+            , #{vhclNo}
+            , #{userNo}
+            , #{hoNo}
+            , #{vhclSttsCd}
+            , SYSDATE
+            , #{vhclFileNo}
+        )
+
+
+    </insert>
+
     <select id="getResidentInfo" parameterType="string" resultMap="residentMap">
         select m.user_no
                ,resi.ho_no
@@ -112,6 +136,15 @@
           AND CR.USE_YN = 'Y'
 
         ORDER BY CM.REG_DTTM DESC
+    </select>
+
+    <select id="existsVhclNo" resultType="java.lang.Integer">
+        SELECT
+            rsid_vhcl_no
+        FROM
+            rsid_vhcl
+        WHERE
+            vhcl_no = #{vhclNo}
     </select>
 
 </mapper>

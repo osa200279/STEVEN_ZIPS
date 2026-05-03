@@ -771,7 +771,7 @@
                         </div>
                     </div>
                     <div class="btn-row">
-                        <button class="btn-main">차량 등록</button>
+                        <button class="btn-main" id="registerBtn">차량 등록</button>
                     </div>
                 </div>
                 <div class="panel">
@@ -805,6 +805,7 @@
         loadMyVhcl();
     };
 
+    const registerBtn = document.querySelector("#registerBtn");
     const aptCmplexNo = ${aptCmplexNo};
     const userNo = ${userNo};
 
@@ -814,6 +815,8 @@
     const previewImg = document.getElementById("previewImg");
     const removeBtn = document.getElementById("removeBtn");
     const uploadContent = document.querySelector(".upload-content");
+    const dong = document.getElementById("dongData").value;
+    const ho = document.getElementById("hoData").value;
 
     // 클릭 → 파일 선택
     uploadBox.addEventListener("click", () => {
@@ -904,21 +907,45 @@
         }
     };
 
-    const formData = new FormData();
+    registerBtn.addEventListener("click",function(){
+        const formData = new FormData();
 
-    formData.append("vhclNm", document.getElementById("vhclNmData").value);
-    formData.append("vhclNo", document.getElementById("vhclNoData").value);
-    formData.append("userNo", userNo);
-    formData.append("file", fileInput.files[0]);
+        formData.append("vhclNm", document.getElementById("vhclNmData").value);
+        formData.append("vhclNo", document.getElementById("vhclNoData").value);
+        formData.append("userNo", userNo);
+        formData.append("file", fileInput.files[0]);
+        formData.append("dong", dong);
+        formData.append("ho", ho);fetch("/vhcl/register/" + aptCmplexNo, {
+            method: "POST",
+            body: formData
+        })
+            .then(res => {
+                if (!res.ok) return res.text().then(err => Promise.reject(err));
+                return res.text();
+            })
+            .then(() => {
+                alert("등록 완료");
+            })
+            .catch(err => {
 
-    fetch("/api/car/register/"+aptCmplexNo, {
-        method: "POST",
-        body: formData
-    })  .then(res => res.text())
-        .then(data => {
-            console.log(data);
+                if (err === "VHCL_LIMIT_EXCEEDED") {
 
-        });
+                    if (confirm(`추가 차량 등록은 10,000원의 비용이 발생합니다.
+
+                    신청 후 관리사무소 승인 및 결제 완료 시 이용 가능합니다.
+                    신청하시겠습니까?`)) {
+
+                        // 👉 신청 API 호출
+                        requestExtraVhcl();
+                    }
+
+                } else {
+                    alert(err);
+                }
+            });
+    })
+
+
 
     function loadMyVhcl() {
 
@@ -958,6 +985,32 @@
                 document.querySelector(".data-table tbody").innerHTML = html;
             });
     }
+
+    function requestExtraVhcl() {
+
+        const formData = new FormData();
+
+        formData.append("vhclNm", document.getElementById("vhclNmData").value);
+        formData.append("vhclNo", document.getElementById("vhclNoData").value);
+        formData.append("dong", document.getElementById("dongData").value);
+        formData.append("ho", document.getElementById("hoData").value);
+        formData.append("file", fileInput.files[0]);
+
+        fetch("/vhcl/requestExtra/" + aptCmplexNo, {
+            method: "POST",
+            body: formData
+        })
+            .then(res => res.text())
+            .then(data => {
+                alert("추가 차량 신청이 완료되었습니다.\n관리사무소 승인 후 이용 가능합니다.");
+                loadMyVhcl();
+            })
+            .catch(err => {
+                alert("신청 실패");
+                console.error(err);
+            });
+    }
+
 
 
 </script>
