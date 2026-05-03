@@ -2,24 +2,59 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.common.file.mapper.IAttachFileMapper">
 
+    <!-- 파일 업로드 정보 인서트  -->
     <insert id="insertAttachFile" parameterType="kr.or.ddit.common.file.vo.AttachFileVO">
-        insert into attach_file (
-            FILE_GROUP_NO, FILE_SAVE_UUID, CAT, FILE_OG_NAME,
-            FILE_PATH, FILE_EXT, FILE_SIZE, MIME_TYPE, REG_DT, MDF_DT,
-            FILE_SORT_ORDER, DOWN_CNT, GOOGLE_ID
+        insert into attach_file ( /* kr.or.ddit.common.file.mapper.IAttachFileMapper.insertAttachFile */
+             FILE_GROUP_NO
+            , FILE_SAVE_UUID
+            , CAT
+            , FILE_OG_NAME
+            , FILE_PATH
+            , FILE_EXT
+            , FILE_SIZE
+            , MIME_TYPE
+            , REG_DT
+            , MDF_DT
+            , FILE_SORT_ORDER
+            , DOWN_CNT
+            , GOOGLE_ID
         ) values (
-                  #{fileGroupNo}, #{fileSaveUuid}, #{cat}, #{fileOgName},
-                             #{filePath}, #{fileExt}, #{fileSize}, #{mimeType},
-                  sysdate, default, #{fileSortOrder}, default, #{googleId}
-                  )
+                  #{fileGroupNo}
+                 , #{fileSaveUuid}
+                 , #{cat}
+                 , #{fileOgName}
+                 , #{filePath}
+                 , #{fileExt}
+                 , #{fileSize}
+                 , #{mimeType}
+                 , sysdate
+                 , default
+                 , #{fileSortOrder}
+                 , default
+                 , #{googleId}
+                 )
     </insert>
 
     <select id="getSeqFileGroupNo" resultType="long">
         select seq_attach_file_group_no.nextval from dual
     </select>
 
+    <!-- 파일 그룹코드 + uuid파일명 (복합키)로 파일 메타데이터 가져오기 -->
     <select id="getAttachFile" parameterType="string" resultType="kr.or.ddit.common.file.vo.AttachFileVO">
-        select * from attach_file
+        select FILE_GROUP_NO    /* kr.or.ddit.common.file.mapper.IAttachFileMapper.getAttachFile */
+               , FILE_OG_NAME
+               , FILE_SAVE_UUID
+               , FILE_PATH
+               , FILE_EXT
+               , FILE_SIZE
+               , MIME_TYPE
+               , REG_DT
+               , MDF_DT
+               , FILE_SORT_ORDER
+               , DOWN_CNT
+               , GOOGLE_ID
+               , CAT
+            from attach_file
         where file_group_no = to_number(#{fileGroupNo}) and file_save_uuid = #{fileSaveUuid}
     </select>
 

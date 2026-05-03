@@ -54,29 +54,28 @@
 
     <!-- 시큐리티용 입주민 정보 -->
     <select id="selectOneResidentInfo" parameterType="string" resultMap="residentMap">
-        select m.user_no /*kr.or.ddit.domain.member.resident.mapper.IResidentMapper.selectOneResidentInfo*/
-               ,resi.ho_no
-               ,resi.inout_cd
-               ,resi.move_in_dt
-               ,resi.move_out_dt
-               ,resi.head_yn
-               ,ho.dong_no
-               ,ho.ho
-               ,ho.floor
-               ,dong.dong_nm
-               ,dong.APT_CMPLEX_NO
-               ,apt.apt_cmplex_nm
-               ,apt.sido_nm
-               ,apt.sigungu_nm
-               ,apt.emd_nm
-               ,apt.dorojuso
-        from member m
-                 inner join hshld_head resi on(m.user_no = resi.user_no)
-                 inner join apt_detail ho on(resi.ho_no = ho.ho_no)
-                 inner join apt_unit dong on(ho.dong_no = dong.dong_no)
-                 inner join apt_complex apt on(dong.apt_cmplex_no = apt.apt_cmplex_no)
-        where m.user_no = #{user_no}
-
+        select M.USER_NO /*kr.or.ddit.domain.member.resident.mapper.IResidentMapper.selectOneResidentInfo*/
+               ,RESI.HO_NO
+               ,RESI.INOUT_CD
+               ,RESI.MOVE_IN_DT
+               ,RESI.MOVE_OUT_DT
+               ,RESI.HEAD_YN
+               ,HO.DONG_NO
+               ,HO.HO
+               ,HO.FLOOR
+               ,DONG.DONG_NM
+               ,DONG.APT_CMPLEX_NO
+               ,APT.APT_CMPLEX_NM
+               ,APT.SIDO_NM
+               ,APT.SIGUNGU_NM
+               ,APT.EMD_NM
+               ,APT.DOROJUSO
+        from MEMBER M
+                 inner join HSHLD_HEAD RESI on(M.USER_NO = RESI.USER_NO)
+                 inner join APT_DETAIL HO on(RESI.HO_NO = HO.HO_NO)
+                 inner join APT_UNIT DONG on(HO.DONG_NO = DONG.DONG_NO)
+                 inner join APT_COMPLEX APT on(DONG.APT_CMPLEX_NO = APT.APT_CMPLEX_NO)
+        where M.USER_NO = #{user_no}
     </select>
 
 

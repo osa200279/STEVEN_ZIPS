@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface IResidentMapper {
 
-    ResidentVO getResidentInfo(String userNo);
+    ResidentVO selectOneResidentInfo(String userNo);
 
     List<RsidVhclVO> selectMyVhclList(String userNo, String aptCmplexNo);
 

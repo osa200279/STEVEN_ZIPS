@@ -1,7 +1,9 @@
 package kr.or.ddit.common.security;
 
 import kr.or.ddit.common.util.member.resident.InoutCd;
-import kr.or.ddit.domain.member.admin.AdminVO;
+import kr.or.ddit.domain.member.admin.mapper.IAdmMapper;
+import kr.or.ddit.domain.member.admin.vo.AdmVO;
+import kr.or.ddit.domain.member.manager.mapper.IMngrMapper;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
 import kr.or.ddit.domain.member.resident.mapper.IResidentMapper;
@@ -31,6 +33,12 @@ public class CustomUserDetailsService implements UserDetailsService{
 	private IResidentMapper residentMapper;
 
 	@Autowired
+	private IMngrMapper mngrMapper;
+
+	@Autowired
+	private IAdmMapper admMapper;
+
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Override
@@ -43,19 +51,29 @@ public class CustomUserDetailsService implements UserDetailsService{
 		String auth = member.getAuthList().get(0).getAuth();
 
 		if("ROLE_RESIDENT".equals(auth)){
-			ResidentVO resident = residentMapper.getResidentInfo(member.getUserNo());
+			ResidentVO resident = residentMapper.selectOneResidentInfo(member.getUserNo());
 
 			if(resident != null && InoutCd.LIVE == resident.getInoutCd()){	// LIVE(입주중) 상태이면 입주민으로 판단
 				log.info("##입주중인 회원으로 확인됨! : {}", resident);
 				// BeanUtils.copyProperties(source, target) source와 target의 공통된 필드를 매핑해서 target에 복사(같은 이름 필드끼리 자동맵핑)
 				BeanUtils.copyProperties(member, resident);
-				member = resident;	// 다형성 이용
+				member = resident;	// 다형성 이용 (업캐스팅)
 			}
 		}else if("ROLE_MNGR".equals(auth)){
-			MngrVO mngrVO;
+			MngrVO mngr = mngrMapper.selectOneMngrInfo(member.getUserNo());
+			if(mngr != null){
+				log.info("##단지관리자로 확인됨 : {}", mngr);
+				BeanUtils.copyProperties(member, mngr);
+				member = mngr;
+			}
 
 		}else if("ROLE_ADMIN".equals(auth)){
-			AdminVO adminVO;
+			AdmVO adm = admMapper.selectOneAdmInfo(member.getUserNo()) ;
+			if(adm != null){
+				log.info("##중앙관리자로 확인됨 : {}", adm);
+				BeanUtils.copyProperties(member, adm);
+				member = adm;
+			}
 
 		}
 
