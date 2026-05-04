@@ -94,31 +94,7 @@
 <!-- SideNavBar Shell -->
 
 <!-- TopNavBar -->
-<header class="fixed top-0 right-0 left-80 h-20 z-40 bg-white/80 backdrop-blur-xl border-b border-outline-variant/10 flex justify-between items-center px-12">
-    <div class="flex items-center gap-4">
-        <h2 class="text-xl font-headline font-bold text-on-surface tracking-tight">안녕하세요, <span class="text-primary">홍길동님!</span></h2>
-        <span class="px-4 py-1 bg-secondary-container/30 text-on-secondary-container text-[10px] font-black rounded-full uppercase tracking-widest">Gold Member</span>
-    </div>
-    <div class="flex items-center gap-6">
-        <div class="flex items-center gap-2">
-            <button class="p-2.5 text-on-surface-variant hover:bg-primary/5 rounded-full transition-all relative">
-                <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-                <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
-            </button>
-            <button class="p-2.5 text-on-surface-variant hover:bg-primary/5 rounded-full transition-all">
-                <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
-            </button>
-        </div>
-        <div class="h-8 w-px bg-outline-variant/30"></div>
-        <div class="flex items-center gap-3 cursor-pointer group">
-            <div class="text-right">
-                <p class="text-sm font-bold text-on-surface group-hover:text-primary transition-colors">홍길동</p>
-                <p class="text-[10px] text-on-surface-variant/70 font-medium">관리자 계정</p>
-            </div>
-            <img alt="User profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-primary/5 group-hover:ring-primary/20 transition-all" data-alt="Portrait of a smiling professional man in a business setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe51melCzAlPIuwqxTzsKWO3G1QOqXK3bMPFmnFUvVnryGZeskiV9unBRRiaapdOJRUwiuNHgk66Ln7IE3I8VLzWKVC1dTIykTvpHqOQTNAhf40PZzmO_w7NvTdbiW7Ux1YuHnziAyCFQmwXrkaOAq_idX-CDK0kiKGY4MCHklzWfpaOQHMyKLs5zfdDHvEGhTkKZP6N0e5nFbBGWzvsflY9OwgYQ37MwDprhevlfaQ7fyFhXWhEC8OCkSAuwAKsHGjUhiPebQYCw"/>
-        </div>
-    </div>
-</header>
+
 <main class="flex-grow pt-32 pb-20 px-8 ml-80">
     <!-- Page Title & Intro -->
     <div class="mb-12">
