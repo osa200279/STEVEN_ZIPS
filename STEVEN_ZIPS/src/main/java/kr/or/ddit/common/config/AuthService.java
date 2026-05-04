@@ -20,12 +20,15 @@ public class AuthService {
      * @return boolean 접근 허용 여부 true : 허용, false : 불허
      */
     public boolean hasAptAccess(Object principal, String target){      // 캐스팅 안정성 때문에 customUser가 아닌 principal사용
-        CustomUser user = (CustomUser)principal;
-        MemberVO member = user.getMember();
 
-        if(member == null || "anonymousUser".equals(member)){ // anonymousUser : 시큐리티 내부에서 사용하는 비로그인 사용자 명
-            return false;
-        }
+        if(!(principal instanceof CustomUser)) return false;   // 익명 사용자 거르기
+
+        CustomUser user = (CustomUser)principal;    // 익명 사용자 방어코드
+        if(user == null) return false;
+
+        MemberVO member = user.getMember();
+        if(member == null) return false;    // null 방어 코드
+
 
         // 다운캐스팅
         if(member instanceof ResidentVO){
