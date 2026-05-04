@@ -5,8 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO;
-import kr.or.ddit.domain.central.admin.vo.SubAdminVO;
+import kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO;
 
 /**
  * Mapper란?
@@ -15,18 +14,18 @@ import kr.or.ddit.domain.central.admin.vo.SubAdminVO;
  * → Service에서 SQL을 직접 작성하지 않고 DB 작업을 분리하기 위해 사용한다.
  */
 @Mapper
-public interface ISubAdminMapper {
+public interface IMngrRqstAprvMapper {
 
-    List<SubAdminVO> selectRequestList(SubAdminSearchVO searchVO);
-    List<SubAdminVO> selectAccountList(SubAdminSearchVO searchVO);
+    List<MngrRqstAprvDTO> selectRequestList(MngrRqstAprvDTO aprvDTO);
+    List<MngrRqstAprvDTO> selectAccountList(MngrRqstAprvDTO aprvDTO);
 
-    SubAdminVO selectRequest(String rqstNo);
-    SubAdminVO selectAccount(String userNo);
+    MngrRqstAprvDTO selectRequest(String rqstNo);
+    MngrRqstAprvDTO selectAccount(String userNo);
 
     int countMemberByUserId(String userId);
 
-    int insertRequest(SubAdminVO vo);
-    int updateRequest(SubAdminVO vo);
+    int insertRequest(MngrRqstAprvDTO vo);
+    int updateRequest(MngrRqstAprvDTO vo);
 
     /* 승인, 반려 */
     int approveRequest(
@@ -44,9 +43,9 @@ public interface ISubAdminMapper {
 
     int deleteRequest(String rqstNo);
 
-    int insertMemberForManager(SubAdminVO vo);
+    int insertMemberForManager(MngrRqstAprvDTO vo);
     int updateAuthToManager(String userNo);
-    int insertManager(SubAdminVO vo);
+    int insertManager(MngrRqstAprvDTO vo);
 
     int updateAccountUseYn(@Param("userNo") String userNo, @Param("userYn") String userYn);
 

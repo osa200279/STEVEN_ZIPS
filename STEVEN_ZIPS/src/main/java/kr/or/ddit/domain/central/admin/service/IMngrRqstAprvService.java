@@ -2,10 +2,7 @@ package kr.or.ddit.domain.central.admin.service;
 
 import java.util.List;
 
-import kr.or.ddit.domain.central.admin.mapper.ISubAdminMapper;
-import kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO;
-import kr.or.ddit.domain.central.admin.vo.SubAdminVO;
-import org.springframework.transaction.annotation.Transactional;
+import kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO;
 
 /**
  * Service란?
@@ -13,13 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
  * 왜 사용?
  * → 승인 시 MEMBER/AUTH/MANAGER를 동시에 생성하는 작업처럼 여러 DB 작업을 하나의 업무로 묶기 위해 사용한다.
  */
-public interface ISubAdminService {
+public interface IMngrRqstAprvService {
 
-    List<SubAdminVO> getRequestList(SubAdminSearchVO searchVO);
-    List<SubAdminVO> getAccountList(SubAdminSearchVO searchVO);
-    SubAdminVO getAccount(String userNo);
+    List<MngrRqstAprvDTO> getRequestList(MngrRqstAprvDTO aprvDTO);
+    List<MngrRqstAprvDTO> getAccountList(MngrRqstAprvDTO aprvDTO);
+    MngrRqstAprvDTO getAccount(String userNo);
 
-    int updateRequest(SubAdminVO vo);
+    int updateRequest(MngrRqstAprvDTO vo);
     int deleteRequest(String rqstNo);
 
 

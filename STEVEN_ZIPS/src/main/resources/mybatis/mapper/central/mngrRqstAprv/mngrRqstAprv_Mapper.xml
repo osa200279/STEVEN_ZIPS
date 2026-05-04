@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.or.ddit.domain.central.admin.mapper.ISubAdminMapper">
+<mapper namespace="kr.or.ddit.domain.central.admin.mapper.IMngrRqstAprvMapper">
 
     <!--
         resultMap이란?
@@ -11,7 +11,7 @@
         → Oracle 컬럼명은 USER_NO처럼 스네이크 표기,
           Java 필드는 userNo처럼 카멜 표기를 사용하기 때문.
     -->
-    <resultMap id="subAdminMap" type="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
+    <resultMap id="mngrRqstAprvMap" type="kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO">
         <id property="rqstNo" column="rqst_no"/>
 
         <result property="rqstLoginId" column="rqst_login_id"/>
@@ -52,8 +52,8 @@
 
     <!-- 신청 계정 목록 조회 -->
     <select id="selectRequestList"
-            parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO"
-            resultMap="subAdminMap">
+            parameterType="kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO"
+            resultMap="mngrRqstAprvMap">
 
         SELECT
         R.RQST_NO,
@@ -155,7 +155,7 @@
 
 
     <!-- 신청 계정 단건 조회 -->
-    <select id="selectRequest" parameterType="string" resultMap="subAdminMap">
+    <select id="selectRequest" parameterType="string" resultMap="mngrRqstAprvMap">
         SELECT
             R.RQST_NO,
             R.RQST_LOGIN_ID,
@@ -203,8 +203,8 @@
 
     <!-- 승인 완료된 실제 관리자 계정 목록 조회 -->
     <select id="selectAccountList"
-            parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO"
-            resultMap="subAdminMap">
+            parameterType="kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO"
+            resultMap="mngrRqstAprvMap">
 
         SELECT
         M.USER_NO,
@@ -302,7 +302,7 @@
 
 
     <!-- 계정 상세 조회 -->
-    <select id="selectAccount" parameterType="string" resultMap="subAdminMap">
+    <select id="selectAccount" parameterType="string" resultMap="mngrRqstAprvMap">
 
         SELECT
             M.USER_NO,
@@ -363,7 +363,7 @@
 
 
     <!-- 신청 수정 -->
-    <update id="updateRequest" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">
+    <update id="updateRequest" parameterType="kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO">
         UPDATE MNGR_RQST
         <set>
             <if test="rqstLoginId != null and rqstLoginId != ''">
@@ -427,48 +427,6 @@
         WHERE USER_NO = #{userNo}
     </update>
 
-
-    <!-- 승인 시 MEMBER 생성 -->
-<!--    <insert id="insertMemberForManager" parameterType="kr.or.ddit.domain.central.admin.vo.SubAdminVO">-->
-<!--        <selectKey keyProperty="userNo" resultType="string" order="BEFORE">-->
-<!--            SELECT 'USR' || LPAD(seq_member.NEXTVAL, 12, '0')-->
-<!--            FROM DUAL-->
-<!--        </selectKey>-->
-
-<!--        INSERT INTO MEMBER (-->
-<!--        USER_NO,-->
-<!--        USER_ID,-->
-<!--        USER_PW,-->
-<!--        USER_NM,-->
-<!--        USER_RRNO,-->
-<!--        USER_TELNO,-->
-<!--        USER_EML,-->
-<!--        REG_DT,-->
-<!--        USER_YN,-->
-<!--        SMS_RCV_YN,-->
-<!--        SMS_NTC_RCV_YN,-->
-<!--        SMS_CTRT_RCV_YN,-->
-<!--        EML_RCV_YN,-->
-<!--        EML_NTC_RCV_YN,-->
-<!--        EML_CTRT_RCV_YN-->
-<!--        ) VALUES (-->
-<!--        #{userNo},-->
-<!--        #{rqstLoginId},-->
-<!--        '{noop}1234',-->
-<!--        #{rqstMngrNm},-->
-<!--        '값없음',-->
-<!--        '값없음',-->
-<!--        NULL,-->
-<!--        SYSDATE,-->
-<!--        'Y',-->
-<!--        'N',-->
-<!--        'N',-->
-<!--        'N',-->
-<!--        'N',-->
-<!--        'N',-->
-<!--        'N'-->
-<!--        )-->
-<!--    </insert>-->
 
     <!--
     일반 회원 권한을 단지관리자 권한으로 변경

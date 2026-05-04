@@ -190,7 +190,7 @@
 <script>
     window.APP_CTX = '<%= request.getContextPath() %>';
 </script>
-<script src="<%= request.getContextPath() %>/js/central/admin/subAdminAjax.js"></script>
+<script src="<%= request.getContextPath() %>/js/central/admin/mngrRqstAprv.js"></script>
 </body>
 </html>
 

@@ -1,12 +1,12 @@
 /* =========================================================
-   subAdminAjax.js
+   mngrRqstAprv.js
    중앙관리자에서 -> 단지관리자 직원계정 관리 JSP DB 연동 스크립트
    - fetch API로 Controller와 통신한다.
    - fetch란? 브라우저에서 서버 URL로 데이터를 요청하는 JavaScript 기능.
    - 왜 사용? JSP 새로고침 없이 목록/승인/반려/상태 처리를 하기 위해 사용한다.
 ========================================================= */
 
-const API_BASE = window.APP_CTX + "/centralAdmin/subAdmin";
+const API_BASE = window.APP_CTX + "/centralAdmin/mngrRqstAprv";
 const PAGE_SIZE = 10;
 
 const ROLES = [

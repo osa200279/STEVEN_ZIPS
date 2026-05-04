@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import kr.or.ddit.domain.central.admin.service.ISubAdminService;
-import kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO;
-import kr.or.ddit.domain.central.admin.vo.SubAdminVO;
+import kr.or.ddit.domain.central.admin.service.IMngrRqstAprvService;
+import kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -32,10 +30,10 @@ import lombok.RequiredArgsConstructor;
  */
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/centralAdmin/subAdmin")
-public class SubAdminController {
+@RequestMapping("/centralAdmin/mngrRqstAprv")
+public class mngrRqstAprvController {
 
-    private final ISubAdminService service;
+    private final IMngrRqstAprvService service;
 
 
     /*
@@ -52,21 +50,21 @@ public class SubAdminController {
     /** 신청 계정 목록 조회 */
     @GetMapping("/requests")
     @ResponseBody
-    public List<SubAdminVO> requestList(@ModelAttribute SubAdminSearchVO searchVO) {
-        return service.getRequestList(searchVO);
+    public List<MngrRqstAprvDTO> requestList(@ModelAttribute MngrRqstAprvDTO aprvDTO) {
+        return service.getRequestList(aprvDTO);
     }
 
     /** 승인 완료 후 실제 계정 목록 조회 */
     @GetMapping("/accounts")
     @ResponseBody
-    public List<SubAdminVO> accountList(@ModelAttribute SubAdminSearchVO searchVO) {
-        return service.getAccountList(searchVO);
+    public List<MngrRqstAprvDTO> accountList(@ModelAttribute MngrRqstAprvDTO aprvDTO) {
+        return service.getAccountList(aprvDTO);
     }
 
     /** 계정 상세 조회 */
     @GetMapping("/accounts/{userNo}")
     @ResponseBody
-    public SubAdminVO accountDetail(@PathVariable String userNo) {
+    public MngrRqstAprvDTO accountDetail(@PathVariable String userNo) {
         return service.getAccount(userNo);
     }
 
@@ -74,7 +72,7 @@ public class SubAdminController {
     /** 신청 계정 수정 */
     @PutMapping("/requests/{rqstNo}")
     @ResponseBody
-    public Map<String, Object> updateRequest(@PathVariable String rqstNo, @RequestBody SubAdminVO vo) {
+    public Map<String, Object> updateRequest(@PathVariable String rqstNo, @RequestBody MngrRqstAprvDTO vo) {
         vo.setRqstNo(rqstNo);
         return result(service.updateRequest(vo));
     }
@@ -94,7 +92,7 @@ public class SubAdminController {
     /** 신청 계정 반려 */
     @PostMapping("/requests/{rqstNo}/reject")
     @ResponseBody
-    public Map<String, Object> reject(@PathVariable String rqstNo, @RequestBody SubAdminVO vo) {
+    public Map<String, Object> reject(@PathVariable String rqstNo, @RequestBody MngrRqstAprvDTO vo) {
         String aprvId = "central_admin";
         return result(service.rejectRequest(rqstNo, aprvId, vo.getRjctRsnCn()));
     }
@@ -110,7 +108,7 @@ public class SubAdminController {
     /** 계정 사용/미사용 변경 */
     @PutMapping("/accounts/{userNo}/use")
     @ResponseBody
-    public Map<String, Object> updateUseYn(@PathVariable String userNo, @RequestBody SubAdminVO vo) {
+    public Map<String, Object> updateUseYn(@PathVariable String userNo, @RequestBody MngrRqstAprvDTO vo) {
         return result(service.updateAccountUseYn(userNo, vo.getUserYn()));
     }
 

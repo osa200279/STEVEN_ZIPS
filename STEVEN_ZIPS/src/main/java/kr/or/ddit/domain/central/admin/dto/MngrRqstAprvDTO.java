@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.central.admin.vo;
+package kr.or.ddit.domain.central.admin.dto;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ import lombok.Data;
  * → MNGR_RQST, MEMBER, MANAGER, MGMT_OFFICE, APT_COMPLEX 데이터를 한 화면에서 같이 보여주기 위해 사용한다.
  */
 @Data
-public class SubAdminVO {
+public class MngrRqstAprvDTO {
 
     /* MNGR_RQST: 단지 관리자 신청 정보 */
     private String rqstNo;
@@ -47,4 +47,10 @@ public class SubAdminVO {
     private String lastLoginDt;
     private String lastLoginTm;
     private String acntDsplyYn;
+
+    /* 단지관리자 직원계정 요청 */
+    private String keyword; // 이름, 아이디, 단지명 통합 검색어
+    private String status;  // WAIT	승인대기 / OK	승인완료 / RJCT 반려 / CNL 신청취소
+    private String role;    // HEAD	관리소장 / ACNT 회계담당 / ADM 행정담당 / FAC 시설담당
+
 }

@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import kr.or.ddit.domain.central.admin.mapper.ISubAdminMapper;
-import kr.or.ddit.domain.central.admin.vo.SubAdminSearchVO;
-import kr.or.ddit.domain.central.admin.vo.SubAdminVO;
+import kr.or.ddit.domain.central.admin.mapper.IMngrRqstAprvMapper;
+import kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -19,27 +18,27 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
-public class SubAdminServiceImpl implements ISubAdminService {
+public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
 
-    private final ISubAdminMapper mapper;
+    private final IMngrRqstAprvMapper mapper;
 
     @Override
-    public List<SubAdminVO> getRequestList(SubAdminSearchVO searchVO) {
-        return mapper.selectRequestList(searchVO);
+    public List<MngrRqstAprvDTO> getRequestList(MngrRqstAprvDTO aprvDTO) {
+        return mapper.selectRequestList(aprvDTO);
     }
 
     @Override
-    public List<SubAdminVO> getAccountList(SubAdminSearchVO searchVO) {
-        return mapper.selectAccountList(searchVO);
+    public List<MngrRqstAprvDTO> getAccountList(MngrRqstAprvDTO aprvDTO) {
+        return mapper.selectAccountList(aprvDTO);
     }
 
     @Override
-    public SubAdminVO getAccount(String userNo) {
+    public MngrRqstAprvDTO getAccount(String userNo) {
         return mapper.selectAccount(userNo);
     }
 
     @Override
-    public int updateRequest(SubAdminVO vo) {
+    public int updateRequest(MngrRqstAprvDTO vo) {
         return mapper.updateRequest(vo);
     }
 
@@ -66,7 +65,7 @@ public class SubAdminServiceImpl implements ISubAdminService {
         - 승인 시 해야 할 일은 AUTH 권한 변경 + MNGR_RQST 상태 변경이다.
     */
 
-        SubAdminVO rqst = mapper.selectRequest(rqstNo);
+        MngrRqstAprvDTO rqst = mapper.selectRequest(rqstNo);
 
         if (rqst == null) {
             throw new IllegalStateException("신청 정보를 찾을 수 없습니다.");
@@ -101,7 +100,7 @@ public class SubAdminServiceImpl implements ISubAdminService {
         → 승인완료된 신청 건만 실제 ROLE_MNGR 권한으로 변경한다.
         → 이때부터 아래 '단지 관리자 계정 목록 및 상태'에 표시된다.
     */
-        SubAdminVO rqst = mapper.selectRequest(rqstNo);
+        MngrRqstAprvDTO rqst = mapper.selectRequest(rqstNo);
 
         if (rqst == null) {
             throw new IllegalStateException("신청 정보를 찾을 수 없습니다.");
