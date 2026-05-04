@@ -204,7 +204,7 @@
 
             </div>
             <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <form action="${pageContext.request.contextPath}/member/updateSimple" method="post" class="space-y-6">
+                <form id="updateForm" action="${pageContext.request.contextPath}/member/updateSimple" method="post" class="space-y-6">
 
                     <!-- 🔥 반드시 필요 -->
 
@@ -393,6 +393,14 @@
         <meta name="_csrf_header" content="${_csrf.headerName}"/>
     </div>
 </div>
+<c:if test="${msg eq 'success'}">
+   <div id="toastMsg"
+     class="fixed top-20 left-1/2 -translate-x-1/2 bg-[#6F7F3F] text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 z-50 opacity-0 translate-y-[-20px] transition-all duration-500">
+        <span class="font-semibold">회원정보가 수정되었습니다.</span>
+    </div>
+
+
+</c:if>
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -401,6 +409,26 @@
         const emlParent = document.getElementById("emlRcv");
         const smsChildren = document.querySelectorAll(".sms-child");
         const emlChildren = document.querySelectorAll(".eml-child");
+
+
+
+        const toast = document.getElementById("toastMsg");
+        if (toast) {
+            toast.classList.remove("opacity-0", "translate-y-[-20px]");
+
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-y-[-20px]");
+            }, 3000);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3500);
+        }
+
+
+
+
+
 
         /* ── localStorage 키 ── */
         const LS_KEY = "alarmSettings";

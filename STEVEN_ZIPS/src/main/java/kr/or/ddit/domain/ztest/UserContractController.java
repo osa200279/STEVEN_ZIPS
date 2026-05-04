@@ -1,7 +1,11 @@
 package kr.or.ddit.domain.ztest;
 
+import kr.or.ddit.domain.central.board.service.INoticeService;
+import kr.or.ddit.domain.central.board.vo.NoticeVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -9,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/contract")
 public class UserContractController {
+
+
+    @Autowired
+    private INoticeService noticeService;
 
         @GetMapping("/list.do")
         public String contractList() {
@@ -34,5 +42,15 @@ public class UserContractController {
     @GetMapping("/history.do")
     public String contractHistory() {
         return "ztestview/contractAList";
+    }
+
+    @GetMapping("/detail.do")
+    public String contractDetail(String annNo, Model model) {
+
+        NoticeVO notice = noticeService.getNoticeDetail(annNo);
+        model.addAttribute("notice", notice);
+
+
+        return "ztestview/contractNoticeDetail"; // 상세 JSP
     }
 }

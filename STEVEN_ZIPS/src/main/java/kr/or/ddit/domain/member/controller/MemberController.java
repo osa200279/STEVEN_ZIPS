@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -123,7 +124,8 @@ public class MemberController {
     @PostMapping("/updateSimple")
     public String updateMember(MemberVO member,
                                @RequestParam(value="profileImage", required=false) MultipartFile profileImage,
-                               @AuthenticationPrincipal CustomUser customUser) {
+                               @AuthenticationPrincipal CustomUser customUser,
+                               RedirectAttributes ra) {
 
         if (customUser != null && customUser.getMember() != null) {
             String userNo = customUser.getMember().getUserNo();
@@ -140,6 +142,7 @@ public class MemberController {
         if (result == ServiceResult.OK) {
             MemberVO updated = service.getMemberByUserNo(member.getUserNo());
             customUser.setMember(updated);
+            ra.addFlashAttribute("msg", "success");
         } else {
             log.error("❌ 회원 수정 실패");
         }

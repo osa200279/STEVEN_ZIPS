@@ -214,7 +214,12 @@
         <tr class="hover:bg-[#f8faf6] transition-colors group">
           <td class="px-6 py-5 text-sm text-slate-400">85</td>
           <td class="px-6 py-5"><span class="text-xs font-bold bg-[#eef2eb] text-[#004830] px-2 py-1 rounded">용역</span></td>
-          <td class="px-6 py-5 text-sm font-semibold text-[#004830] group-hover:underline cursor-pointer">서초그랑자이 단지 내 조경관리 용역업체 선정 공고</td>
+          <td class="px-6 py-5 text-sm font-semibold text-[#004830]">
+            <a href="/contract/detail.do?annNo=ANN001"
+               class="group-hover:underline cursor-pointer">
+              서초그랑자이 단지 내 조경관리 용역업체 선정 공고
+            </a>
+          </td>
           <td class="px-6 py-5 text-sm text-slate-600">서울 서초구</td>
           <td class="px-6 py-5 text-center"><span class="material-symbols-outlined text-slate-300 text-[20px]" data-icon="attachment">attachment</span></td>
           <td class="px-6 py-5 text-sm text-slate-500">2024.05.20</td>
