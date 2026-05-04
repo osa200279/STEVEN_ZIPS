@@ -18,5 +18,11 @@ public interface IResidentMapper {
 
     int existsVhclNo(String vhclNo);
 
-    void insertVhcl(RsidVhclVO vo);
+    void insertVhcl(RsidVhclVO vhcl);
+
+    List<String> selectMyHoList(String userNo);
+
+    int countVhclByHoList(List<String> hoList);
+
+    int countMyVhcl(String userNo, String hoNo);
 }

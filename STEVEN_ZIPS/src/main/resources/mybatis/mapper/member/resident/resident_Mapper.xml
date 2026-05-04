@@ -87,13 +87,13 @@
     </select>
 
     <select id="selectMyRoomList" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
-        SELECT CR.CHAT_ROOM_NO,
-               CR.CHAT_ROOM_NM,
-               CM.MSG_CN   AS LAST_MSG,
-               CM.REG_DTTM AS LAST_TIME,
-               NVL(MC.MEMBER_CNT, 0) AS MEMBER_CNT,
+        SELECT CR.CHAT_ROOM_NO
+               ,CR.CHAT_ROOM_NM
+               ,CM.MSG_CN   AS LAST_MSG
+               ,CM.REG_DTTM AS LAST_TIME
+               ,NVL(MC.MEMBER_CNT, 0) AS MEMBER_CNT
 
-               NVL((
+               ,NVL((
                        SELECT COUNT(*)
                        FROM CHAT_MESSAGE M
                        WHERE M.CHAT_ROOM_NO = CR.CHAT_ROOM_NO
@@ -138,13 +138,37 @@
         ORDER BY CM.REG_DTTM DESC
     </select>
 
-    <select id="existsVhclNo" resultType="java.lang.Integer">
-        SELECT
-            rsid_vhcl_no
-        FROM
-            rsid_vhcl
-        WHERE
-            vhcl_no = #{vhclNo}
+    <select id="existsVhclNo" resultType="int">
+        SELECT COUNT(*)
+        FROM RSID_VHCL
+        WHERE VHCL_NO = #{vhclNo}
     </select>
+
+    <select id="countMyVhcl" resultType="int">
+        SELECT COUNT(*)
+        FROM rsid_vhcl
+        WHERE user_no = #{userNo}
+    </select>
+
+    <select id="selectMyHoList" resultType="java.lang.String">
+        SELECT
+            HO_NO
+        FROM
+            HSHLD_HEAD
+        WHERE
+            USER_NO = #{userNo}
+        AND
+            INOUT_CD NOT IN ('OUT', 'MID')
+    </select>
+
+    <select id="countVhclByHoList" parameterType="list" resultType="int">
+        SELECT COUNT(*)
+        FROM RSID_VHCL
+        WHERE HO_NO IN
+        <foreach collection="hoList" item="ho" open="(" separator="," close=")">
+            #{ho}
+        </foreach>
+    </select>
+
 
 </mapper>

@@ -5,8 +5,10 @@ import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.member.resident.mapper.IResidentMapper;
 import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
+@Slf4j
 public class ResidentVhclServiceImpl implements IResidentVhclService {
 
     @Autowired
@@ -32,53 +36,90 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
         return residentMapper.selectMyVhclList(userNo,aptCmplexNo);
     }
 
-    /*첫번째 자동차는 승인없이 바로, 두번째는 승인대기*/
-    @Override
-    public void registerVhcl(RsidVhclVO vo, MultipartFile file) {
+    public int countMyVhcl(String userNo, String hoNo) {
+        return residentMapper.countMyVhcl(userNo, hoNo);
+    }
 
-        String path = "resident/myVhcl/"+"userNo_"+vo.getUserNo();
-        String savedFileName = UUID.randomUUID().toString().replace("-","")+"_"+file.getOriginalFilename();
+    @Transactional
+    public void registerVhcl(
+            String userNo,
+            String aptCmplexNo,
+            String vhclNm,
+            String vhclNo,
+            String dong,
+            String ho,
+            boolean isExtra,
+            MultipartFile file
+    ) throws IOException {
 
-        /* 차량번호 중복 체크하는 메서드 */
-        int exists = residentMapper.existsVhclNo(vo.getVhclNo());
-        if (exists > 0) {
-            throw new RuntimeException("이미 등록된 차량번호");
+        long start = System.currentTimeMillis();
+
+        log.info("===== 차량 등록 시작 =====");
+        log.info("userNo: {}", userNo);
+
+        // 1️⃣ HO_NO 조합
+        String hoNo = aptCmplexNo + "_" + dong + "_" + ho;
+
+        // 2️⃣ 차량번호 중복 체크
+        long t1 = System.currentTimeMillis();
+        if (residentMapper.existsVhclNo(vhclNo) > 0) {
+            throw new RuntimeException("이미 등록된 차량번호입니다.");
         }
+        log.info("중복 체크 시간: {} ms", (System.currentTimeMillis() - t1));
 
-        long seq = attachFileMapper.getSeqFileGroupNo();
+        // 3️⃣ 상태 결정
+        String status = isExtra ? "WAIT" : "APRV";
 
-        vo.setVhclFileNo(String.valueOf(seq));
+        // 4️⃣ 파일 처리
+        Long fileGroupNo = null;
 
         if (file != null && !file.isEmpty()) {
 
-            try {
+            long t2 = System.currentTimeMillis();
 
-                String googleId = googleDriveService.uploadFile(file, path, savedFileName);
+            fileGroupNo = attachFileMapper.getSeqFileGroupNo();
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            String path = "resident/vhcl/" + userNo;
+            String savedFileName = uuid + "_" + file.getOriginalFilename();
 
-                AttachFileVO attachFile = AttachFileVO.fileSettings(
-                        file, seq, "vhcl", savedFileName, googleId, path, 1
-                );
+            String googleId = googleDriveService.uploadFile(file, path, savedFileName);
 
-                attachFileMapper.insertAttachFile(attachFile);
+            log.info("구글 업로드 시간: {} ms", (System.currentTimeMillis() - t2));
 
-            } catch (IOException e) {
-                /*  파일 삭제하는 로직!
-                if (googleId != null) {
-                    googleDriveService.deleteFile(googleId);
-                }
-                */
-                throw new RuntimeException(e);
-            }
+            long t3 = System.currentTimeMillis();
+
+            AttachFileVO fileVO = AttachFileVO.fileSettings(
+                    file,
+                    fileGroupNo,
+                    "vhcl",
+                    savedFileName,
+                    googleId,
+                    path,
+                    1
+            );
+
+            attachFileMapper.insertAttachFile(fileVO);
+
+            log.info("파일 DB 저장 시간: {} ms", (System.currentTimeMillis() - t3));
         }
-        vo.setVhclSttsCd("APRV");
 
-        residentMapper.insertVhcl(vo);
+        // 5️⃣ 차량 VO
+        RsidVhclVO vhcl = new RsidVhclVO();
+        vhcl.setUserNo(userNo);
+        vhcl.setVhclNm(vhclNm);
+        vhcl.setVhclNo(vhclNo);
+        vhcl.setHoNo(hoNo);
+        vhcl.setVhclSttsCd(status);
+
+        if (fileGroupNo != null) {
+            vhcl.setVhclFileNo(String.valueOf(fileGroupNo));
+        }
+
+        // 6️⃣ 차량 insert
+        long t4 = System.currentTimeMillis();
+        residentMapper.insertVhcl(vhcl);
+        log.info("차량 insert 시간: {} ms", (System.currentTimeMillis() - t4));
+
+        log.info("===== 총 처리 시간: {} ms =====", (System.currentTimeMillis() - start));
     }
-
-
-    @Override
-    public void requestExtraVhcl(RsidVhclVO vo, MultipartFile file) {
-
-    }
-
 }

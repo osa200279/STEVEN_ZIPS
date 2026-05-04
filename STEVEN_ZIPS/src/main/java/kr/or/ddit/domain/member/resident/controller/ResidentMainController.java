@@ -5,6 +5,8 @@ import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.member.manager.servcie.IAptComplexService;
 import kr.or.ddit.domain.member.resident.service.IResidentMainService;
+import kr.or.ddit.domain.member.resident.service.IResidentVhclService;
+import kr.or.ddit.domain.member.resident.vo.MyAptVO;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequestMapping("/resident")
@@ -26,6 +30,9 @@ public class ResidentMainController {
 
     @Autowired
     private IResidentMainService residentMainService;
+
+    @Autowired
+    private IResidentVhclService residentVhclService;
 
     @Autowired
     private IMgmtOfficeService mgmtOfficeService;
@@ -123,16 +130,27 @@ public class ResidentMainController {
     }
 
 
+    @PreAuthorize("@authService.hasAptAccess(principal, #aptCmplexNo)")
     @GetMapping("/service/car/{aptCmplexNo}")
-    @PreAuthorize("hasRole('RESIDENT')")
-    public String serviceCar(@AuthenticationPrincipal CustomUser principal, @PathVariable String aptCmplexNo, Model model) {
+    public String serviceCar(
+            @AuthenticationPrincipal CustomUser principal,
+            @PathVariable String aptCmplexNo,
+            Model model) {
 
-        model.addAttribute("userNo", principal.getMember().getUserNo());
+        ResidentVO resident = (ResidentVO) principal.getMember();
+        String userNo = resident.getUserNo();
 
+        List<MyAptVO> aptList = resident.getMyAptList().stream()
+                .filter(apt -> apt.getAptCmplexNo().equals(aptCmplexNo))
+                .toList();
+
+        model.addAttribute("userNo", userNo);
         model.addAttribute("aptCmplexNo", aptCmplexNo);
+        model.addAttribute("aptList", aptList);
 
         return "member/resident/service_car";
     }
+
 
     @GetMapping("/service/visitor")
     public String serviceVisitor() {

@@ -38,8 +38,8 @@ public class ResidentChatController {
      * @param aptCmplexNo 아파트 단지 번호 (채팅방 필터링용)
      * @return 사용자가 속한 채팅방 목록
      */
-    @PreAuthorize("hasRole('RESIDENT')")
-    @GetMapping("/myRooms")
+    @PreAuthorize("hasRole('RESIDENT') and principal.member.aptCmplexNo == #aptCmplexNo")
+@GetMapping("/myRooms")
     @ResponseBody
     public List<ChatRoomVO> selectMyRoomList(@AuthenticationPrincipal CustomUser principal, String aptCmplexNo, Model model) {
 

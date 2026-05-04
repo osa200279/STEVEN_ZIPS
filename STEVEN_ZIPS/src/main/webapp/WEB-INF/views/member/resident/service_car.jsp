@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
     <title>차량등록 – 대덕아파트</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
@@ -745,11 +747,13 @@
                         <div class="td"><input id="vhclNoData" class="fake-input" placeholder="ex)123가 4567"/></div>
                         <div class="th">동 / 호수</div>
                         <div class="td">
-                            <div class="inline-fields"><input id="dongData" class="fake-input" style="max-width:120px"
-                                                              placeholder="ex)101동"/><input id="hoData" class="fake-input"
-                                                                                            style="max-width:120px"
-                                                                                            placeholder="ex)1203호"/>
-                            </div>
+                        <select id="hoSelect" class="fake-select">
+                            <c:forEach var="apt" items="${aptList}">
+                                <option value="${apt.ho}" data-dong="${apt.dongNm}">
+                                    ${apt.dongNm}동 ${apt.ho}호
+                                </option>
+                            </c:forEach>
+                        </select>
                         </div>
                         <div class="th">차량등록증</div>
                         <div class="td">
@@ -779,7 +783,6 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>동_호</th>
                                 <th>차량번호</th>
                                 <th>차종</th>
                                 <th>등록일</th>
@@ -793,8 +796,6 @@
                 </div>
             </section>
 
-
-
         </div>
     </main>
 </div>
@@ -805,9 +806,12 @@
         loadMyVhcl();
     };
 
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
     const registerBtn = document.querySelector("#registerBtn");
-    const aptCmplexNo = ${aptCmplexNo};
-    const userNo = ${userNo};
+    const aptCmplexNo = "${aptCmplexNo}";
+    const userNo = "${userNo}";
 
     const uploadBox = document.getElementById("uploadBox");
     const fileInput = document.getElementById("fileInput");
@@ -815,8 +819,6 @@
     const previewImg = document.getElementById("previewImg");
     const removeBtn = document.getElementById("removeBtn");
     const uploadContent = document.querySelector(".upload-content");
-    const dong = document.getElementById("dongData").value;
-    const ho = document.getElementById("hoData").value;
 
     // 클릭 → 파일 선택
     uploadBox.addEventListener("click", () => {
@@ -879,7 +881,6 @@
         if (!validateFile(file)) return;
 
         fileInput.files = e.dataTransfer.files;
-        fileName.textContent = file.name;
         imgPreview(fileInput, document.getElementById("uploadBox"));
 
     });
@@ -907,55 +908,63 @@
         }
     };
 
-    registerBtn.addEventListener("click",function(){
-        const formData = new FormData();
+    registerBtn.addEventListener("click", function () {
 
-        formData.append("vhclNm", document.getElementById("vhclNmData").value);
-        formData.append("vhclNo", document.getElementById("vhclNoData").value);
-        formData.append("userNo", userNo);
-        formData.append("file", fileInput.files[0]);
-        formData.append("dong", dong);
-        formData.append("ho", ho);fetch("/vhcl/register/" + aptCmplexNo, {
+        const hoSelect = document.getElementById("hoSelect");
+        const ho = hoSelect.value;
+
+        const formData = new FormData();
+        const selectedOption = hoSelect.options[hoSelect.selectedIndex];
+
+        formData.append("ho", hoSelect.value);
+        formData.append("dong", selectedOption.dataset.dong);
+
+        fetch("/vhcl/check/" + aptCmplexNo, {
             method: "POST",
+            headers: {
+                [csrfHeader]: csrfToken
+            },
             body: formData
         })
-            .then(res => {
-                if (!res.ok) return res.text().then(err => Promise.reject(err));
-                return res.text();
-            })
-            .then(() => {
-                alert("등록 완료");
-            })
-            .catch(err => {
+            .then(res => res.text())
+            .then(result => {
 
-                if (err === "VHCL_LIMIT_EXCEEDED") {
+                if (result === "EXTRA_REQUIRED") {
 
-                    if (confirm(`추가 차량 등록은 10,000원의 비용이 발생합니다.
+                    if (!confirm(`추가 차량 등록은 10,000원의 비용이 발생합니다.
 
                     신청 후 관리사무소 승인 및 결제 완료 시 이용 가능합니다.
                     신청하시겠습니까?`)) {
-
-                        requestExtraVhcl();
+                        return;
                     }
 
+                    submitVhcl(true);
+
                 } else {
-                    alert(err);
+                    submitVhcl(false);
                 }
             });
-    })
-
+    });
 
 
     function loadMyVhcl() {
 
-        fetch(`/vhcl/myVhcl/`+aptCmplexNo)
-            .then(res => res.json())
+        fetch(`/vhcl/myVhcl/` + aptCmplexNo, {
+            method: "GET",
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("서버 오류: " + res.status);
+                }
+                return res.json();
+            })
             .then(list => {
-
                 let html = "";
 
                 list.forEach(car => {
-
                     let badgeClass = "";
                     let statusText = "";
 
@@ -971,48 +980,52 @@
                     }
 
                     html += `
-                    <tr>
-                        <td>"동_호"</td>
-                        <td>\${car.vhclNo}</td>
-                        <td>\${car.vhclNm}</td>
-                        <td>\${car.regDt ?? ''}</td>
-                        <td><span class="badge \${badgeClass}">\${statusText}</span></td>
-                    </tr>
-                `;
+                <tr>
+                    <td>\${car.vhclNo}</td>
+                    <td>\${car.vhclNm}</td>
+                    <td>\${car.regDt ?? ''}</td>
+                    <td><span class="badge \${badgeClass}">\${statusText}</span></td>
+                </tr>
+            `;
                 });
 
                 document.querySelector(".data-table tbody").innerHTML = html;
+            })
+            .catch(err => {
+                console.error(err);
+                alert("차량 목록 불러오기 실패");
             });
     }
 
-    function requestExtraVhcl() {
+    function submitVhcl(isExtra) {
 
         const formData = new FormData();
 
         formData.append("vhclNm", document.getElementById("vhclNmData").value);
         formData.append("vhclNo", document.getElementById("vhclNoData").value);
-        formData.append("dong", document.getElementById("dongData").value);
-        formData.append("ho", document.getElementById("hoData").value);
-        formData.append("file", fileInput.files[0]);
+        const hoSelect = document.getElementById("hoSelect");
 
-        fetch("/vhcl/requestExtra/" + aptCmplexNo, {
+        const selectedOption = hoSelect.options[hoSelect.selectedIndex];
+
+        formData.append("dong", selectedOption.dataset.dong);
+        formData.append("ho", hoSelect.value);
+        formData.append("isExtra", isExtra);
+        if (fileInput.files[0]) {
+            formData.append("file", fileInput.files[0]);
+        }
+
+        fetch("/vhcl/register/" + aptCmplexNo, {
             method: "POST",
+            headers: {
+                [csrfHeader]: csrfToken
+            },
             body: formData
         })
-            .then(res => res.text())
-            .then(data => {
-                alert("추가 차량 신청이 완료되었습니다.\n관리사무소 승인 후 이용 가능합니다.");
+            .then(() => {
+                alert("등록 완료");
                 loadMyVhcl();
-            })
-            .catch(err => {
-                alert("신청 실패");
-                console.error(err);
             });
     }
-
-
-
 </script>
-
 </body>
 </html>
