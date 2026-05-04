@@ -107,28 +107,17 @@
     <div class="flex justify-between items-end">
       <div class="space-y-2">
 
-        <div class="flex items-center gap-2 text-xs text-slate-400">
-          <span>Home</span>
-          <span>›</span>
-          <span>공지사항</span>
-          <span>›</span>
-          <span class="text-primary-container font-semibold">계약공고</span>
-        </div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">계약공고</h1>
 
-        <h1 class="text-5xl font-bold tracking-tight text-on-surface mt-4 mb-2">
-          계약공고
-        </h1>
 
-        <p class="text-gray-500">
-          문의사항을 등록하고 답변을 확인할 수 있습니다.
+        <p class="text-gray-500 text-sm ">
+          진행 중인 계약 공고를 확인하고 참여할 수 있습니다.
         </p>
+
 
       </div>
       <div class="flex gap-2">
-        <button class="px-4 py-2 bg-white border border-[#eef2eb] rounded-lg text-sm font-medium hover:bg-[#f8faf6] transition-colors">내보내기</button>
-        <button class="px-4 py-2 bg-primary-container text-white rounded-lg text-sm font-medium hover:bg-[#003825] transition-colors flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm" data-icon="add">add</span> 공고 등록
-        </button>
+
       </div>
     </div>
     <!-- Filter Section -->
@@ -143,7 +132,7 @@
               <option>공사</option>
               <option>물품</option>
             </select>
-            <span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="expand_more">expand_more</span>
+
           </div>
         </div>
         <div class="space-y-2">
@@ -155,7 +144,7 @@
               <option>인천</option>
               <option>강원</option>
             </select>
-            <span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="location_on">location_on</span>
+
           </div>
         </div>
         <div class="space-y-2">
@@ -166,31 +155,34 @@
               <option>마감</option>
               <option>취소</option>
             </select>
-            <span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="timer">timer</span>
+
           </div>
         </div>
         <div class="space-y-2">
           <label class="text-xs font-bold text-slate-500 ml-1">공고일자</label>
           <div class="relative">
-            <input class="w-full bg-[#f1f3ef] border-none rounded-lg py-3 px-4 text-sm focus:ring-2 focus:ring-primary-container" placeholder="mm/dd/yyyy" type="text"/>
-            <span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none" data-icon="calendar_month">calendar_month</span>
+            <input type="date"
+                   class="w-full bg-[#f1f3ef] border-none rounded-lg py-3 px-4 text-sm focus:ring-2 focus:ring-primary-container"/>
+
           </div>
         </div>
       </div>
       <div class="flex gap-3">
         <div class="relative flex-1">
           <input class="w-full bg-[#f1f3ef] border-none rounded-lg py-4 px-12 text-sm focus:ring-2 focus:ring-primary-container" placeholder="공고명 또는 아파트명을 입력하세요" type="text"/>
-          <span class="material-symbols-outlined absolute left-4 top-4 text-slate-400" data-icon="search">search</span>
+
         </div>
-        <button class="bg-primary-container text-white px-10 py-4 rounded-lg font-bold hover:shadow-lg transition-all active:scale-95">검색</button>
+        <button class="bg-[#6F7F3F] text-white px-10 py-4 rounded-lg font-bold hover:bg-[#5f6e35] transition-all active:scale-95">
+          검색
+        </button>
       </div>
     </section>
     <!-- List Section Header -->
     <div class="flex justify-between items-center">
-      <p class="text-sm text-slate-600">전체 <span class="font-bold text-primary-container">85</span>건 | <span class="text-slate-400">1/2페이지</span></p>
+
       <div class="flex bg-white border border-[#eef2eb] p-1 rounded-lg">
-        <button class="p-2 bg-[#eef2eb] text-primary-container rounded-md"><span class="material-symbols-outlined text-[20px]" data-icon="list">list</span></button>
-        <button class="p-2 text-slate-400 hover:text-primary-container"><span class="material-symbols-outlined text-[20px]" data-icon="grid_view">grid_view</span></button>
+
+
       </div>
     </div>
     <!-- Data Table -->
