@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.member.resident.mapper.IResidentBoardMapper">
+
+    <insert id="insertBoardFree" parameterType="kr.or.ddit.domain.member.resident.vo.RsidBoardVO">
+        <selectKey keyProperty="annNo" resultType="string" order="BEFORE">
+            select seq_ann_board_post.nextval
+            from dual
+        </selectKey>
+        INSERT INTO apt_ann_board_post (    /*kr.or.ddit.domain.member.resident.mapper.IResidentBoardMapper.insertBoardFree*/
+            ann_no
+            ,ttl
+            ,cn
+            ,wrtr_id
+            ,top_fix_yn
+            ,pblanc_bgng_dt
+            ,pblanc_end_dt
+            ,reg_dttm
+            ,mdf_dttm
+            ,inq_cnt
+            ,del_yn
+            ,atch_file_id
+            ,board_no
+        ) VALUES (
+            #{annNo}
+            ,#{ttl}
+            ,#{cn}
+            ,#{wrtrId}
+            ,NVL(#{topFixYn}, 'N')
+            ,#{pblancBgngDt}
+            ,#{pblancEndDt}
+            ,SYSDATE
+            ,SYSDATE
+            ,0
+            ,'N'
+            ,#{atchFileId}
+            ,#{boardNo}
+        )
+    </insert>
+    <select id="boardFreeList" resultType="kr.or.ddit.domain.member.resident.vo.RsidBoardVO">
+
+    </select>
+
+
+</mapper>
