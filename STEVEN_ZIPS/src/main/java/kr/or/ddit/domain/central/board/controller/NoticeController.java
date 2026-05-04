@@ -28,9 +28,11 @@ public class NoticeController {
 
         PaginationInfoVO<NoticeVO> pagingVO = new PaginationInfoVO<>();
 
+        pagingVO.setScreenSize(6);
+
         pagingVO.setCurrentPage(page);
 
-        pagingVO.setScreenSize(3);
+
 
         int totalRecord = noticeService.getTotalCount();
         pagingVO.setTotalRecord(totalRecord);
