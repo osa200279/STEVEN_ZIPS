@@ -93,7 +93,7 @@ public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
                 rqstNo,
                 aprvId,
                 userNo,
-                "단지 관리자 권한 승인 처리"
+                "단지관리자직원 권한신청 승인 처리"
         );
     }
 
@@ -142,7 +142,7 @@ public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
                 rqstNo,
                 aprvId,
                 rjctRsnCn,
-                "단지 관리자 권한 신청 반려 처리"
+                "단지관리자직원 권한신청 반려 처리"
         );
     }
 

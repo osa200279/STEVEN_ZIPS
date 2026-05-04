@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,16 +22,12 @@ import kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 단지 관리자 계정 관리 Controller
- *
- * Controller란?
- * → 브라우저 요청 URL을 받아서 Service를 호출하고, JSP 화면 또는 JSON 데이터를 응답하는 계층.
- * 왜 사용?
- * → 화면 이동과 업무 처리를 분리해서 유지보수하기 쉽게 만들기 위해 사용한다.
+ * 중앙관리자의 단지관리자 직원계정 승인 Controller
  */
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/centralAdmin/mngrRqstAprv")
+@PreAuthorize("hasRole('ADMIN')")  /* 중앙관리자만 허용 */
 public class MngrRqstAprvController {
 
     private final IMngrRqstAprvService service;

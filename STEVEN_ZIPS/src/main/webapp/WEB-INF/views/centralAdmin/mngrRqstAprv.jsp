@@ -1,10 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="true"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <!doctype html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>우리집맵핑 · 단지 관리자 계정</title>
+
+    <%-- CSRF 보안 처리를 위해 JSP에 심어주는 메타 정보
+         ${_csrf.headerName} -> 토큰 보낼 때, 어떤 HTTP 헤더 이름으로 보낼지 '키' 정해줌
+         ${_csrf.token} -> 서버가 만들어준 CSRF 토큰 '값'
+    --%>
+    <meta name="_csrf_header" content="${_csrf.headerName}">
+    <meta name="_csrf" content="${_csrf.token}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

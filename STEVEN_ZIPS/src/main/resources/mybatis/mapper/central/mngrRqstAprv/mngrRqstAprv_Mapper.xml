@@ -272,7 +272,6 @@
           기본 목록에서는 USER_YN = 'Y'인 계정만 조회한다.
           즉, 실제 DELETE는 하지 않고 화면 목록에서만 숨긴다.
         -->
-        AND M.USER_YN = 'Y'
 
         <if test="keyword != null and keyword != ''">
             AND (
@@ -421,7 +420,7 @@
     <update id="deleteRequest" parameterType="string">
         UPDATE MNGR_RQST
         SET RQST_STTS_CD = 'CNL',
-            RMRK_CN = '단지 관리자 신청 취소 처리'
+            RMRK_CN = '단지관리자직원 권한신청 취소 처리'
         WHERE RQST_NO = #{rqstNo}
     </update>
 

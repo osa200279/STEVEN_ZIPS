@@ -9,6 +9,10 @@
 const API_BASE = window.APP_CTX + "/centralAdmin/mngrRqstAprv";
 const PAGE_SIZE = 10;
 
+// CSRF 토큰 가져오기
+const CSRF_TOKEN = document.querySelector('meta[name="_csrf"]')?.content;
+const CSRF_HEADER = document.querySelector('meta[name="_csrf_header"]')?.content;
+
 const ROLES = [
     { key: "HEAD", name: "관리소장", color: "blue", icon: "shield_person", level: "HEAD",
       desc: `
@@ -92,7 +96,14 @@ async function checkResponse(response) {
 }
 
 function getJson(url) {
-    return fetch(url, { headers: { "Accept": "application/json" } }).then(checkResponse);
+    return fetch(url, {
+        headers: {
+            "Accept": "application/json",
+
+            //CSRF 토큰 추가
+            [CSRF_HEADER]: CSRF_TOKEN
+        }
+    }).then(checkResponse);
 }
 
 function sendJson(url, method, body) {
@@ -100,7 +111,10 @@ function sendJson(url, method, body) {
         method: method,
         headers: {
             "Content-Type": "application/json; charset=UTF-8",
-            "Accept": "application/json"
+            "Accept": "application/json",
+
+            // CSRF 토큰 추가
+            [CSRF_HEADER]: CSRF_TOKEN
         },
         body: body ? JSON.stringify(body) : null
     }).then(checkResponse);
