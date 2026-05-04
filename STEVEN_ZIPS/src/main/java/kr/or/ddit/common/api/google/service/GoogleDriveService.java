@@ -12,7 +12,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList; // 추가됨
+import com.google.api.services.drive.model.FileList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -223,4 +223,17 @@ public class GoogleDriveService {
 
         return null;    // 최종적으로 파일이 없으면 null 반환
     }
+
+    /**
+     * 파일 구글아이디로 업로드 파일 삭제 (휴지통 이동)
+     * @author 이용로
+     * @param service
+     * @param googleId
+     */
+    public void moveToTrash(Drive service, String googleId) throws IOException {
+        File target = new File();
+        target.setTrashed(true);
+        service.files().update(googleId, target).execute();   // 영구삭제 update()=>delete(googleId)
+    }
+
 }
