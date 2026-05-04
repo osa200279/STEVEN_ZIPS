@@ -66,7 +66,6 @@ public class CustomUserDetailsService implements UserDetailsService{
 				BeanUtils.copyProperties(member, mngr);
 				member = mngr;
 			}
-
 		}else if("ROLE_ADMIN".equals(auth)){
 			AdmVO adm = admMapper.selectOneAdmInfo(member.getUserNo()) ;
 			if(adm != null){
@@ -74,7 +73,6 @@ public class CustomUserDetailsService implements UserDetailsService{
 				BeanUtils.copyProperties(member, adm);
 				member = adm;
 			}
-
 		}
 
 		// 넘겨받은 member가 null인 경우라면 UsernameNotFoundException 에러에 의해 회원정보가 존재하지 않는다는

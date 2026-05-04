@@ -19,6 +19,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * 스프링 시큐리티 설정
@@ -47,7 +48,7 @@ public class SecurityConfig {
             "/.well-known/**"
     };
 
-    private static final String[] REDIRECT_PASS_URL = {
+    private static final String[] REACT_PASS_URL = {
             "/api/react/checkId.do",
             "/api/react/signup.do",
             "/api/react/signin.do",
@@ -80,19 +81,25 @@ public class SecurityConfig {
                 .requestMatchers("/resources/**")); // 중에서 /resources/ 경로에 있는 파일과 모든 깊이의 하위파일들까지 선정
     }
 
-//    @Order(value = 1)
-//    @Bean
-//    protected SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf(csrf -> csrf.disable());
-//        http.formLogin(login -> login.disable());
-//        http.httpBasic(basic -> basic.disable());
-//        http.headers(config -> config.frameOptions(fOpt -> fOpt.sameOrigin())); // 동일 출처 사이트 내에서만 프레임으로 로딩 가능
-//        http.sessionManagement(
-//                management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//        );
-//
-//        return http.build();
-//    }
+    @Order(value = 1)
+    @Bean
+    protected SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable());
+        http.formLogin(login -> login.disable());
+        http.httpBasic(basic -> basic.disable());
+        http.headers(config -> config.frameOptions(fOpt -> fOpt.sameOrigin())); // 동일 출처 사이트 내에서만 프레임으로 로딩 가능
+        http.sessionManagement(
+                management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );  // 세션 사용 비활성화
+        http.securityMatcher("/api/react/**")
+                .authorizeHttpRequests(
+                        authorize -> authorize.requestMatchers(REACT_PASS_URL).permitAll()
+                );  // REACT_PASS_URL 프리패스
+
+//        http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
 
     // 스프링 진영의 세션 기반으로 동작할 모든 요청에 대해서 처리할 필터 체인
     @Order(value = 2)
