@@ -50,20 +50,14 @@ public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
     @Override
     @Transactional
     public int approveRequest(String rqstNo, String aprvId) {
-     /*
-        승인 처리용 로직
-
-        중요:
-        여기서는 AUTH를 ROLE_MNGR로 바꾸지 않는다.
-         → AUTH를 바로 ROLE_MNGR로 바꾸면 아래 '단지 관리자 계정 목록'에 즉시 나타난다.
-         다운로드 아이콘을 눌렀을 때만 아래 목록으로 이동해야 함.
-
-        현재 프로세스:
-        - MANAGER 테이블에는 이미 관리소장/관리자 정보가 존재한다.
-        - MNGR_RQST.USER_NO는 MANAGER.USER_NO를 FK로 참조한다.
-        - 따라서 승인 시 관리사무소를 새로 찾거나 MANAGER에 INSERT하지 않는다.
-        - 승인 시 해야 할 일은 AUTH 권한 변경 + MNGR_RQST 상태 변경이다.
-    */
+        /*
+         * 승인 처리 흐름
+         *
+         * 1. 신청 정보 조회
+         * 2. RQST_LOGIN_ID로 MEMBER.USER_NO 찾기
+         * 3. MANAGER에 있으면 UPDATE, 없으면 INSERT
+         * 4. MNGR_RQST 상태 WAIT → OK 변경
+         */
 
         MngrRqstAprvDTO rqst = mapper.selectRequest(rqstNo);
 
@@ -71,21 +65,34 @@ public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
             throw new IllegalStateException("신청 정보를 찾을 수 없습니다.");
         }
 
-        if (!StringUtils.hasText(rqst.getUserNo())) {
-            throw new IllegalStateException("단지관리자 생성요청(MNGR_RQST)테이블에 USER_NO가 없습니다.");
+        if (!"WAIT".equalsIgnoreCase(rqst.getRqstSttsCd())) {
+            throw new IllegalStateException("승인대기 상태만 승인할 수 있습니다.");
         }
 
-        if ("OK".equalsIgnoreCase(rqst.getRqstSttsCd())) {
-            throw new IllegalStateException("이미 승인완료된 신청입니다.");
+        String userNo = mapper.selectUserNoByLoginId(rqst.getRqstLoginId());
+
+        if (!StringUtils.hasText(userNo)) {
+            throw new IllegalStateException("MEMBER 테이블에서 신청 로그인 아이디와 일치하는 회원을 찾을 수 없습니다.");
         }
 
-    /*
-        MNGR_RQST 상태만 OK로 변경
-    */
+        rqst.setUserNo(userNo);
+
+        if (!StringUtils.hasText(rqst.getMgmtOfcNo())) {
+            throw new IllegalStateException("관리사무소 번호(MGMT_OFC_NO)가 없습니다.");
+        }
+
+        /*
+         * upsert란?
+         * → 있으면 update, 없으면 insert.
+         * 왜 사용?
+         * → MANAGER.USER_NO는 PK라서 중복 INSERT를 막기 위해 사용.
+         */
+        mapper.upsertManager(rqst);
+
         return mapper.approveRequest(
                 rqstNo,
                 aprvId,
-                rqst.getUserNo(),
+                userNo,
                 "단지 관리자 권한 승인 처리"
         );
     }

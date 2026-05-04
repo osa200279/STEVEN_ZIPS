@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/centralAdmin/mngrRqstAprv")
-public class mngrRqstAprvController {
+public class MngrRqstAprvController {
 
     private final IMngrRqstAprvService service;
 

@@ -393,13 +393,15 @@
     <!-- 승인 처리 -->
     <update id="approveRequest">
         UPDATE MNGR_RQST
-        SET RQST_STTS_CD = 'OK',
-            APRV_DT = SYSDATE,
+        SET APRV_DT = SYSDATE,
+            RQST_STTS_CD = 'OK',
             APRV_ID = #{aprvId},
-            USER_NO = #{userNo},
             RJCT_RSN_CN = NULL,
-            RMRK_CN = #{rmrkCn}
+            RMRK_CN = #{rmrkCn},
+            USER_NO = #{userNo},
+            ACNT_DSPLY_YN = 'Y'
         WHERE RQST_NO = #{rqstNo}
+          AND RQST_STTS_CD = 'WAIT'
     </update>
 
 
@@ -415,16 +417,12 @@
     </update>
 
 
-    <!-- 신청 삭제 -->
-<!--    <delete id="deleteRequest" parameterType="string">-->
-<!--        DELETE FROM MNGR_RQST-->
-<!--        WHERE RQST_NO = #{rqstNo}-->
-<!--    </delete>-->
-    <update id="deleteRequest">
-        UPDATE MEMBER
-        SET USER_YN = #{userYn},
-            MDF_DT = SYSDATE
-        WHERE USER_NO = #{userNo}
+    <!-- 신청 삭제 대신 신청취소 처리 -->
+    <update id="deleteRequest" parameterType="string">
+        UPDATE MNGR_RQST
+        SET RQST_STTS_CD = 'CNL',
+            RMRK_CN = '단지 관리자 신청 취소 처리'
+        WHERE RQST_NO = #{rqstNo}
     </update>
 
 
@@ -482,5 +480,52 @@
         SET ACNT_DSPLY_YN = 'N'
         WHERE RQST_NO = #{rqstNo}
     </update>
+
+    <!--
+    RQST_LOGIN_ID = MEMBER.USER_ID
+    신청 로그인 아이디로 실제 회원 USER_NO를 찾는다.
+-->
+    <select id="selectUserNoByLoginId" parameterType="string" resultType="string">
+        SELECT USER_NO
+        FROM MEMBER
+        WHERE USER_ID = #{rqstLoginId}
+    </select>
+
+    <!--
+        MERGE란?
+        → Oracle에서 있으면 UPDATE, 없으면 INSERT 하는 문법.
+
+        왜 사용?
+        → MANAGER 테이블에 이미 USER_NO가 있으면 PK 중복 오류가 나기 때문.
+    -->
+    <insert id="upsertManager"
+            parameterType="kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO">
+        MERGE INTO MANAGER G
+        USING (
+            SELECT
+                #{userNo} AS USER_NO,
+                #{mgmtOfcNo} AS MGMT_OFC_NO,
+                #{rqstDutyCd} AS MNGR_DUTY_CD
+            FROM DUAL
+        ) S
+        ON (G.USER_NO = S.USER_NO)
+        WHEN MATCHED THEN
+            UPDATE SET
+                       G.MGMT_OFC_NO = S.MGMT_OFC_NO,
+                       G.MNGR_DUTY_CD = S.MNGR_DUTY_CD
+        WHEN NOT MATCHED THEN
+            INSERT (
+                USER_NO,
+                MGMT_OFC_NO,
+                MNGR_DUTY_CD
+            )
+            VALUES (
+                       S.USER_NO,
+                       S.MGMT_OFC_NO,
+                       S.MNGR_DUTY_CD
+                   )
+    </insert>
+
+
 
 </mapper>

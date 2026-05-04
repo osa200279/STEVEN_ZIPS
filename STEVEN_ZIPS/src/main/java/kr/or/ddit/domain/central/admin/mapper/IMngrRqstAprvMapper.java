@@ -65,5 +65,11 @@ public interface IMngrRqstAprvMapper {
     */
     int updateAccountDsplyYn(@Param("rqstNo") String rqstNo);
 
+    // RQST_LOGIN_ID로 MEMBER.USER_NO 찾기
+    String selectUserNoByLoginId(String rqstLoginId);
+
+    // MANAGER가 있으면 UPDATE, 없으면 INSERT
+    int upsertManager(MngrRqstAprvDTO vo);
+
 
 }
