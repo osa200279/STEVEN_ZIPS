@@ -36,7 +36,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             log.info("## 접속자 ID : [{}] / 권한 : [{}]", username, userLevel);
         }
 
-        String prevPage = request.getParameter("Referer");  // HttpServletRequest의 헤더에 기본적으로 Referer가 담겨서 옴
+        String prevPage = request.getHeader("Referer");  // HttpServletRequest의 헤더에 기본적으로 Referer가 담겨서 옴
         if(prevPage == null || prevPage.isEmpty()){
             prevPage = "/"; // 이전페이지가 없으면 메인페이지로
         }
@@ -46,10 +46,9 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         String encodedPrevPage = UriUtils.encode(prevPage, StandardCharsets.UTF_8);
 
         log.info("## AccessDenied: {} -> /accessError", prevPage);
-
-        response.sendRedirect("/accessError?msg=" + encodedMsg + "&prevPage=" + encodedPrevPage);
-
         log.info(accessDeniedException.getMessage());
-        response.sendRedirect("/accessError");
+
+        // "/accessError"로 감 msg 와 이전페이지 주소 달고
+        response.sendRedirect("/accessError?msg=" + encodedMsg + "&prevPage=" + encodedPrevPage);
     }
 }

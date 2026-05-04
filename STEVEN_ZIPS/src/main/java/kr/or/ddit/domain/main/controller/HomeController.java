@@ -28,4 +28,16 @@ public class HomeController {
 		return "main";
 	}
 
+	// 접근 거부 핸들러에서 오는 컨트롤러
+	@GetMapping("/accessError")
+	public String accessError(
+			@RequestParam(required = false) String msg,
+			@RequestParam(required = false) String prevPage ,Model model) {
+
+		model.addAttribute("msg", msg);
+		model.addAttribute("prevPage", prevPage);
+
+		return "accessError";
+	}
+
 }
