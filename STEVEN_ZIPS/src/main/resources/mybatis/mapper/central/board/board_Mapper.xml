@@ -23,7 +23,7 @@
             ATCH_FILE_ID
         FROM NOTICE
         WHERE DEL_YN = 'N'
-        ORDER BY REG_DTTM DESC
+        ORDER BY TO_NUMBER(SUBSTR(ANN_NO,4)) ASC
     </select>
 
 
@@ -63,7 +63,7 @@
                               ATCH_FILE_ID
                           FROM NOTICE
                           WHERE DEL_YN = 'N'
-                          ORDER BY REG_DTTM DESC
+                          ORDER BY TO_NUMBER(SUBSTR(ANN_NO,4)) ASC
                       ) A
                  WHERE ROWNUM <![CDATA[ <= ]]> #{endRow}
              )
