@@ -15,13 +15,6 @@
     <%--<script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
     <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>--%>
     <style id="page-style">
-      /*
-        announcement.jsp 전용 스타일 (정리 완료 버전)
-
-        ✔ 중복 제거 (doc-item 2번 선언 제거)
-        ✔ 초록 배경 제거 → 회색 카드 스타일로 통일
-        ✔ 절차 박스(c-step-item)와 디자인 통일
-      */
 
       /* ================= 제출 서류 목록 ================= */
 
@@ -39,23 +32,19 @@
         padding: 14px 16px;
         border-radius: 12px;
 
-        background: #f3f4f6;        /* 절차 박스와 동일 */
-        border: 1px solid #e5e7eb;  /* 외곽 테두리 */
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
 
         font-size: 14px;
         font-weight: 700;
         color: var(--text-primary);
 
-        /* 살짝 떠있는 느낌 */
         box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-
-        transition: all 0.15s ease;
       }
 
-      /* 아이콘 */
       .doc-icon {
         font-size: 18px;
-        color: #10b981; /* 아이콘만 초록 포인트 */
+        color: #10b981;
       }
 
       /* ================= 체크박스 그룹 ================= */
@@ -72,6 +61,120 @@
         gap: 6px;
         font-size: 13px;
         cursor: pointer;
+      }
+
+      /* ===================================================== */
+      /* 스크롤 없는 꽉 채우기 모달 */
+      /* ===================================================== */
+
+      .c-modal--notice-form {
+        width: 860px;
+        max-width: 95vw;
+
+        height: 90vh;              /* 핵심: 화면 높이 기준 고정 */
+        display: flex;
+        flex-direction: column;    /* header/body/footer 분리 */
+
+        overflow: hidden;          /* 전체 스크롤 제거 */
+      }
+
+      /* header */
+      .c-modal__header--compact {
+        padding: 16px 20px 10px;
+        flex-shrink: 0; /* 줄어들지 않게 */
+      }
+
+      /* footer */
+      .c-modal__footer--compact {
+        padding: 10px 20px 14px;
+        flex-shrink: 0;
+      }
+
+      /* body */
+      .c-modal__body--compact {
+        padding: 10px 20px;
+
+        flex: 1;                   /* 남은 공간 전부 차지 */
+        overflow: hidden;          /* 스크롤 완전 제거 */
+
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* ================= 2열 레이아웃 ================= */
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 14px;
+      }
+
+      /* ================= 필드 압축 ================= */
+
+      .c-modal--notice-form .c-field {
+        margin-bottom: 6px;
+      }
+
+      .c-modal--notice-form .c-label {
+        margin-bottom: 4px;
+        font-size: 13px;
+      }
+
+      /* input 높이 줄이기 */
+      .c-modal--notice-form .c-input,
+      .c-modal--notice-form .c-select {
+        height: 34px;
+        font-size: 13px;
+      }
+
+      /* textarea 최소화 */
+      .c-modal--notice-form textarea.c-input {
+        min-height: 60px;
+        max-height: 80px;
+        resize: none; /* 드래그 금지 (높이 고정) */
+      }
+
+      /* 날짜 */
+      .date-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .date-row input {
+        flex: 1;
+      }
+
+      /* 체크박스 3열 */
+      .cb-group--compact {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px 10px;
+        font-size: 12px;
+      }
+
+      /* 에러 메시지 최소화 */
+      .c-modal--notice-form .err-msg {
+        min-height: 12px;
+        font-size: 11px;
+        margin-top: 2px;
+      }
+
+      /* ================= 반응형 ================= */
+
+      @media (max-width: 768px) {
+        .c-modal--notice-form {
+          height: 95vh;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .cb-group--compact {
+          grid-template-columns: 1fr 1fr;
+        }
       }
 
     </style>
@@ -339,110 +442,112 @@
 
         </div>
 
-    <!-- 공고 등록/수정 모달 -->
-    <div class="c-modal-overlay is-hidden" id="form-modal" onclick="closeFormOutside(event)">
-      <div class="c-modal" style="width: 760px; max-width: 95vw; max-height: 90vh; overflow-y: auto;">
+        <!-- 공고 등록/수정 모달 -->
+        <div class="c-modal-overlay is-hidden" id="form-modal" onclick="closeFormOutside(event)">
+          <div class="c-modal c-modal--notice-form">
 
-        <div class="c-modal__header">
-          <div>
-            <h4 class="c-modal__title" id="form-title">입주자 모집 공고 등록</h4>
-            <div class="c-card__sub">
-              필수 항목(<span style="color: var(--red)">*</span>)을 모두 입력해주세요.
+            <div class="c-modal__header c-modal__header--compact">
+              <div>
+                <h4 class="c-modal__title" id="form-title">입주자 모집 공고 등록</h4>
+                <div class="c-card__sub">
+                  필수 항목(<span style="color: var(--red)">*</span>)을 모두 입력해주세요.
+                </div>
+              </div>
+
+              <button class="c-modal__close" onclick="closeFormModal()" aria-label="닫기">
+                <span class="material-symbols-rounded">close</span>
+              </button>
+            </div>
+
+            <div class="c-modal__body c-modal__body--compact">
+
+              <div class="form-grid">
+                <div class="c-field">
+                  <label class="c-label">공고 제목 <span style="color: var(--red)">*</span></label>
+                  <input type="text" id="f-ftitle" class="c-input" placeholder="예: 2026년 한강 리버뷰 입주자 모집 공고" />
+                  <div class="err-msg" id="e-ftitle"></div>
+                </div>
+
+                <div class="c-field">
+                  <label class="c-label">단지 <span style="color: var(--red)">*</span></label>
+                  <select id="f-fsite" class="c-select">
+                    <option value="">단지 선택</option>
+                    <option>강남 센트럴</option>
+                    <option>한강 리버뷰</option>
+                    <option>자이 아파트</option>
+                  </select>
+                  <div class="err-msg" id="e-fsite"></div>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="c-field">
+                  <label class="c-label">공고 게시 기간</label>
+                  <div class="date-row">
+                    <input type="date" id="f-pblanc-start" class="c-input" />
+                    <span>~</span>
+                    <input type="date" id="f-pblanc-end" class="c-input" />
+                  </div>
+                </div>
+
+                <div class="c-field">
+                  <label class="c-label">모집 기간 <span style="color: var(--red)">*</span></label>
+                  <div class="date-row">
+                    <input type="date" id="f-fstart" class="c-input" />
+                    <span>~</span>
+                    <input type="date" id="f-fend" class="c-input" />
+                  </div>
+                  <div class="err-msg" id="e-fdate"></div>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="c-field">
+                  <label class="c-label">공급 세대수 <span style="color: var(--red)">*</span></label>
+                  <input type="number" id="f-funit" class="c-input" placeholder="예: 120" min="1" />
+                  <div class="err-msg" id="e-funit"></div>
+                </div>
+
+                <div class="c-field">
+                  <label class="c-label">첨부파일</label>
+                  <input type="file" id="f-file" class="c-input" />
+                </div>
+              </div>
+
+              <div class="c-field">
+                <label class="c-label">공고 내용 <span style="color: var(--red)">*</span></label>
+                <textarea id="f-content" class="c-input" rows="3" placeholder="공고 주요 내용을 입력하세요."></textarea>
+                <div class="err-msg" id="e-content"></div>
+              </div>
+
+              <div class="c-field">
+                <label class="c-label">제출 서류 목록</label>
+                <div class="cb-group cb-group--compact">
+                  <label><input type="checkbox" name="docs" value="신분증 사본" /> 신분증 사본</label>
+                  <label><input type="checkbox" name="docs" value="주민등록등본" /> 주민등록등본</label>
+                  <label><input type="checkbox" name="docs" value="가족관계증명서" /> 가족관계증명서</label>
+                  <label><input type="checkbox" name="docs" value="소득증명서" /> 소득증명서</label>
+                  <label><input type="checkbox" name="docs" value="계약서" /> 계약서</label>
+                  <label><input type="checkbox" name="docs" value="금융정보제공동의서" /> 금융정보제공동의서</label>
+                </div>
+              </div>
+
+              <div class="c-field">
+                <label class="c-label">제출 서류 상세 안내</label>
+                <textarea id="f-doc-guide" class="c-input" rows="2"
+                          placeholder="예: 모든 서류는 공고일 이후 발급분만 인정됩니다."></textarea>
+              </div>
+            </div>
+
+            <div class="c-modal__footer c-modal__footer--compact">
+              <button class="c-btn c-btn--ghost" onclick="closeFormModal()">취소</button>
+              <button class="c-btn c-btn--primary" id="form-submit-btn" onclick="submitForm()">
+                <span class="material-symbols-rounded">check</span>등록
+              </button>
             </div>
           </div>
-          <button class="c-modal__close" onclick="closeFormModal()" aria-label="닫기">
-            <span class="material-symbols-rounded">close</span>
-          </button>
         </div>
 
-        <div class="c-modal__body">
-
-          <div class="c-field">
-            <label class="c-label">공고 제목 <span style="color: var(--red)">*</span></label>
-            <input type="text" id="f-ftitle" class="c-input" placeholder="예: 2026년 한강 리버뷰 입주자 모집 공고" />
-            <div class="err-msg" id="e-ftitle"></div>
-          </div>
-
-          <div class="c-field">
-            <label class="c-label">단지 <span style="color: var(--red)">*</span></label>
-            <select id="f-fsite" class="c-select">
-              <option value="">단지 선택</option>
-              <option>강남 센트럴</option>
-              <option>한강 리버뷰</option>
-              <option>자이 아파트</option>
-            </select>
-            <div class="err-msg" id="e-fsite"></div>
-          </div>
-
-          <div class="c-field">
-            <label class="c-label">공고 게시 기간</label>
-            <div style="display: flex; gap: 8px; align-items: center">
-              <input type="date" id="f-pblanc-start" class="c-input" style="flex: 1" />
-              <span style="color: var(--text-tertiary)">~</span>
-              <input type="date" id="f-pblanc-end" class="c-input" style="flex: 1" />
-            </div>
-          </div>
-
-          <div class="c-field">
-            <label class="c-label">모집 기간 <span style="color: var(--red)">*</span></label>
-            <div style="display: flex; gap: 8px; align-items: center">
-              <input type="date" id="f-fstart" class="c-input" style="flex: 1" />
-              <span style="color: var(--text-tertiary)">~</span>
-              <input type="date" id="f-fend" class="c-input" style="flex: 1" />
-            </div>
-            <div class="err-msg" id="e-fdate"></div>
-          </div>
-
-          <div class="c-field">
-            <label class="c-label">공급 세대수 <span style="color: var(--red)">*</span></label>
-            <input type="number" id="f-funit" class="c-input" placeholder="예: 120" style="width: 200px" min="1" />
-            <div class="err-msg" id="e-funit"></div>
-          </div>
-
-          <div class="c-field">
-            <label class="c-label">공고 내용 <span style="color: var(--red)">*</span></label>
-            <textarea id="f-content" class="c-input" rows="4" placeholder="공고 주요 내용을 입력하세요."></textarea>
-            <div class="err-msg" id="e-content"></div>
-          </div>
-
-          <div class="c-field">
-            <label class="c-label">모집 절차 안내</label>
-            <textarea id="f-process" class="c-input" rows="4"
-                      placeholder="예: 1. 공고 확인&#10;2. 신청 접수&#10;3. 서류 심사&#10;4. 당첨자 발표"></textarea>
-          </div>
-
-          <div class="c-field">
-            <label class="c-label">제출 서류 목록</label>
-            <div class="cb-group">
-              <label><input type="checkbox" name="docs" value="신분증 사본" /> 신분증 사본</label>
-              <label><input type="checkbox" name="docs" value="주민등록등본" /> 주민등록등본</label>
-              <label><input type="checkbox" name="docs" value="가족관계증명서" /> 가족관계증명서</label>
-              <label><input type="checkbox" name="docs" value="소득증명서" /> 소득증명서</label>
-              <label><input type="checkbox" name="docs" value="계약서" /> 계약서</label>
-              <label><input type="checkbox" name="docs" value="금융정보제공동의서" /> 금융정보제공동의서</label>
-            </div>
-          </div>
-
-          <div class="c-field">
-            <label class="c-label">제출 서류 상세 안내</label>
-            <textarea id="f-doc-guide" class="c-input" rows="3"
-                      placeholder="예: 모든 서류는 공고일 이후 발급분만 인정됩니다."></textarea>
-          </div>
-
-          <div class="c-field">
-            <label class="c-label">첨부파일</label>
-            <input type="file" id="f-file" class="c-input" />
-          </div>
-        </div>
-
-        <div class="c-modal__footer">
-          <button class="c-btn c-btn--ghost" onclick="closeFormModal()">취소</button>
-          <button class="c-btn c-btn--primary" id="form-submit-btn" onclick="submitForm()">
-            <span class="material-symbols-rounded">check</span>등록
-          </button>
-        </div>
-      </div>
-    </div>
 
     <!-- 상세 모달 -->
     <div class="c-modal-overlay is-hidden" id="detail-modal" onclick="closeOutside(event)">
@@ -459,432 +564,8 @@
         </div>
       </div>
     </div>
-
-    <script id="page-script">
-      /*
-        공고 관리 화면 JS 정리본
-
-        주요 수정 내용
-        1. 공고 등록 버튼 클릭 시 화면 이동이 아니라 모달창으로 열리도록 수정
-        2. submitForm() 완료 후 switchTab(0)이 아니라 closeFormModal() 실행
-        3. 사용하지 않는 switchTab() 함수 제거
-        4. 등록/수정/삭제/검색/상세보기 기능이 모두 동작하도록 정리
-
-        모달이란?
-        → 현재 화면 위에 뜨는 작은 창.
-        왜 사용?
-        → 목록 화면을 유지하면서 등록/수정 입력창만 띄우기 위해 사용.
-      */
-
-      const TODAY = new Date("2026-04-22");
-
-      function calcStatus(start, end) {
-        const s = new Date(start);
-        const e = new Date(end);
-
-        if (TODAY < s) return "예정";
-        if (TODAY > e) return "마감";
-        return "진행중";
-      }
-
-      function badgeHtml(status) {
-        const map = {
-          진행중: "c-badge--active",
-          마감: "c-badge--neutral",
-          예정: "c-badge--pending"
-        };
-
-        return '<span class="c-badge ' + (map[status] || "") + '">' + status + '</span>';
-      }
-
-      let posts = [];
-      const sites = ["강남 센트럴", "한강 리버뷰", "자이 아파트"];
-
-      for (let i = 1; i <= 24; i++) {
-        const m = ((i * 2) % 6) + 1;
-        const d = ((i * 5) % 25) + 1;
-
-        const start = "2026-0" + m + "-" + String(d).padStart(2, "0");
-        const endM = m + (i % 2);
-        const end = "2026-0" + endM + "-" + String(((d + 14) % 28) + 1).padStart(2, "0");
-
-        posts.push({
-          id: i,
-          title: ["입주자 모집 공고", "특별 공급 공고", "재모집 공고", "신규 분양 공고"][i % 4] + " #" + i,
-          site: sites[i % sites.length],
-          start: start,
-          end: end,
-          units: 50 + (i * 17) % 200,
-          docs: ["신분증 사본·주민등록등본", "소득증명서·주민등록등본", "계약서·신분증 사본"][i % 3],
-          content: "입주자 모집 공고 상세 내용입니다.",
-          process: "1. 공고 확인\n2. 신청 접수\n3. 서류 심사\n4. 결과 발표",
-          docGuide: "제출 서류는 공고일 이후 발급분만 인정됩니다.",
-          pblancStart: start,
-          pblancEnd: end
-        });
-      }
-
-      let nextId = posts.length + 1;
-      let editId = null;
-      let openedId = null;
-
-      const PAGE_SIZE = 10;
-      let currentPage = 1;
-      let filtered = posts.slice();
-
-      function renderList() {
-        const tbody = document.getElementById("list-body");
-        const start = (currentPage - 1) * PAGE_SIZE;
-        const slice = filtered.slice(start, start + PAGE_SIZE);
-
-        if (slice.length === 0) {
-          tbody.innerHTML =
-                  '<tr>' +
-                  '<td colspan="6">' +
-                  '<div class="c-empty">' +
-                  '<div class="c-empty__title">조회된 공고가 없습니다</div>' +
-                  '<div class="c-empty__sub">다른 조건으로 검색해보세요.</div>' +
-                  '</div>' +
-                  '</td>' +
-                  '</tr>';
-        } else {
-          tbody.innerHTML = slice.map(function (p) {
-            const st = calcStatus(p.start, p.end);
-
-            return '' +
-                    '<tr style="cursor:pointer" onclick="openDetail(' + p.id + ')">' +
-                    '<td style="font-weight:600">' + p.title + '</td>' +
-                    '<td>' + p.site + '</td>' +
-                    '<td style="color:var(--text-secondary)">' + p.start + ' ~ ' + p.end + '</td>' +
-                    '<td>' + p.units + '세대</td>' +
-                    '<td style="color:var(--text-secondary); font-size:12px">' + p.docs + '</td>' +
-                    '<td>' + badgeHtml(st) + '</td>' +
-                    '</tr>';
-          }).join("");
-        }
-
-        document.getElementById("list-count").textContent = filtered.length;
-        renderPagination();
-      }
-
-      function renderPagination() {
-        const el = document.getElementById("pagination");
-        const last = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-
-        if (last <= 1) {
-          el.innerHTML = "";
-          return;
-        }
-
-        function btn(label, page, opts) {
-          const cls = ["c-pagination__btn"];
-
-          if (opts && opts.active) cls.push("is-active");
-          if (opts && opts.disabled) cls.push("is-disabled");
-
-          return '<button class="' + cls.join(" ") + '" data-page="' + page + '">' + label + '</button>';
-        }
-
-        let html = "";
-        html += btn('<span class="material-symbols-rounded">chevron_left</span>', currentPage - 1, { disabled: currentPage === 1 });
-
-        for (let i = 1; i <= last; i++) {
-          html += btn(i, i, { active: i === currentPage });
-        }
-
-        html += btn('<span class="material-symbols-rounded">chevron_right</span>', currentPage + 1, { disabled: currentPage === last });
-
-        el.innerHTML = html;
-
-        el.querySelectorAll(".c-pagination__btn").forEach(function (b) {
-          b.addEventListener("click", function () {
-            if (b.classList.contains("is-disabled") || b.classList.contains("is-active")) return;
-
-            currentPage = Number(b.dataset.page);
-            renderList();
-          });
-        });
-      }
-
-      function doFilter() {
-        const title = document.getElementById("f-title").value.trim().toLowerCase();
-        const site = document.getElementById("f-site").value;
-        const from = document.getElementById("f-from").value;
-        const to = document.getElementById("f-to").value;
-        const stat = document.getElementById("f-status").value;
-
-        filtered = posts.filter(function (p) {
-          if (title && !p.title.toLowerCase().includes(title)) return false;
-          if (site && p.site !== site) return false;
-          if (from && p.start < from) return false;
-          if (to && p.end > to) return false;
-          if (stat && calcStatus(p.start, p.end) !== stat) return false;
-
-          return true;
-        });
-
-        currentPage = 1;
-        renderList();
-      }
-
-      function resetFilter() {
-        ["f-title", "f-from", "f-to"].forEach(function (id) {
-          document.getElementById(id).value = "";
-        });
-
-        ["f-site", "f-status"].forEach(function (id) {
-          document.getElementById(id).value = "";
-        });
-
-        filtered = posts.slice();
-        currentPage = 1;
-        renderList();
-      }
-
-      function openRegister() {
-        editId = null;
-        clearForm();
-
-        document.getElementById("form-title").textContent = "입주자 모집 공고 등록";
-        document.getElementById("form-submit-btn").innerHTML =
-                '<span class="material-symbols-rounded">check</span>등록';
-
-        document.getElementById("form-modal").classList.remove("is-hidden");
-      }
-
-      function closeFormModal() {
-        document.getElementById("form-modal").classList.add("is-hidden");
-      }
-
-      function closeFormOutside(e) {
-        if (e.target === document.getElementById("form-modal")) {
-          closeFormModal();
-        }
-      }
-
-      function openEdit(id) {
-        const p = posts.find(function (x) {
-          return x.id === id;
-        });
-
-        if (!p) return;
-
-        editId = id;
-        clearForm();
-
-        document.getElementById("f-ftitle").value = p.title;
-        document.getElementById("f-fsite").value = p.site;
-        document.getElementById("f-pblanc-start").value = p.pblancStart || "";
-        document.getElementById("f-pblanc-end").value = p.pblancEnd || "";
-        document.getElementById("f-fstart").value = p.start;
-        document.getElementById("f-fend").value = p.end;
-        document.getElementById("f-funit").value = p.units;
-        document.getElementById("f-content").value = p.content || "";
-        document.getElementById("f-process").value = p.process || "";
-        document.getElementById("f-doc-guide").value = p.docGuide || "";
-
-        const rawDocs = p.docs.split("·");
-
-        document.querySelectorAll("input[name='docs']").forEach(function (cb) {
-          cb.checked = rawDocs.includes(cb.value);
-        });
-
-        document.getElementById("form-title").textContent = "입주자 모집 공고 수정";
-        document.getElementById("form-submit-btn").innerHTML =
-                '<span class="material-symbols-rounded">check</span>수정';
-
-        document.getElementById("form-modal").classList.remove("is-hidden");
-      }
-
-      function clearForm() {
-        [
-          "f-ftitle",
-          "f-fsite",
-          "f-pblanc-start",
-          "f-pblanc-end",
-          "f-fstart",
-          "f-fend",
-          "f-funit",
-          "f-content",
-          "f-process",
-          "f-doc-guide"
-        ].forEach(function (id) {
-          const el = document.getElementById(id);
-          if (el) el.value = "";
-        });
-
-        document.querySelectorAll("input[name='docs']").forEach(function (cb) {
-          cb.checked = false;
-        });
-
-        ["e-ftitle", "e-fsite", "e-fdate", "e-funit", "e-content"].forEach(function (id) {
-          const el = document.getElementById(id);
-          if (el) el.textContent = "";
-        });
-
-        ["f-ftitle", "f-fsite", "f-fstart", "f-fend", "f-funit", "f-content"].forEach(function (id) {
-          const el = document.getElementById(id);
-          if (el) el.classList.remove("is-error");
-        });
-      }
-
-      function submitForm() {
-        let valid = true;
-
-        const title = document.getElementById("f-ftitle").value.trim();
-        const site = document.getElementById("f-fsite").value;
-        const pblancStart = document.getElementById("f-pblanc-start").value;
-        const pblancEnd = document.getElementById("f-pblanc-end").value;
-        const start = document.getElementById("f-fstart").value;
-        const end = document.getElementById("f-fend").value;
-        const units = document.getElementById("f-funit").value;
-        const content = document.getElementById("f-content").value.trim();
-        const process = document.getElementById("f-process").value.trim();
-        const docGuide = document.getElementById("f-doc-guide").value.trim();
-
-        const docs =
-                Array.from(document.querySelectorAll("input[name='docs']:checked"))
-                        .map(function (c) {
-                          return c.value;
-                        })
-                        .join("·") || "—";
-
-        function setErr(field, msgEl, msg) {
-          document.getElementById(field).classList.add("is-error");
-          document.getElementById(msgEl).textContent = msg;
-          valid = false;
-        }
-
-        function clearErr(field, msgEl) {
-          document.getElementById(field).classList.remove("is-error");
-          document.getElementById(msgEl).textContent = "";
-        }
-
-        title ? clearErr("f-ftitle", "e-ftitle") : setErr("f-ftitle", "e-ftitle", "공고 제목을 입력하세요.");
-        site ? clearErr("f-fsite", "e-fsite") : setErr("f-fsite", "e-fsite", "단지를 선택하세요.");
-        units && Number(units) >= 1 ? clearErr("f-funit", "e-funit") : setErr("f-funit", "e-funit", "공급 세대수를 입력하세요.");
-        content ? clearErr("f-content", "e-content") : setErr("f-content", "e-content", "공고 내용을 입력하세요.");
-
-        if (!start || !end) {
-          document.getElementById("e-fdate").textContent = "모집 기간을 모두 입력하세요.";
-          valid = false;
-        } else if (end < start) {
-          document.getElementById("e-fdate").textContent = "종료일은 시작일 이후여야 합니다.";
-          valid = false;
-        } else {
-          document.getElementById("e-fdate").textContent = "";
-        }
-
-        if (pblancStart && pblancEnd && pblancEnd < pblancStart) {
-          alert("공고 게시 종료일은 게시 시작일 이후여야 합니다.");
-          valid = false;
-        }
-
-        if (!valid) return;
-
-        const formData = {
-          title: title,
-          site: site,
-          pblancStart: pblancStart,
-          pblancEnd: pblancEnd,
-          start: start,
-          end: end,
-          units: Number(units),
-          docs: docs,
-          content: content,
-          process: process,
-          docGuide: docGuide
-        };
-
-        if (editId) {
-          const p = posts.find(function (x) {
-            return x.id === editId;
-          });
-
-          Object.assign(p, formData);
-        } else {
-          posts.unshift(Object.assign({ id: nextId++ }, formData));
-        }
-
-        filtered = posts.slice();
-        currentPage = 1;
-        renderList();
-
-        /*
-          기존 switchTab(0) 삭제.
-          이유:
-          현재 등록 화면은 탭이 아니라 모달창이기 때문.
-        */
-        closeFormModal();
-      }
-
-      function openDetail(id) {
-        openedId = id;
-
-        const p = posts.find(function (x) {
-          return x.id === id;
-        });
-
-        if (!p) return;
-
-        const st = calcStatus(p.start, p.end);
-
-        document.getElementById("modal-content").innerHTML =
-                '<div style="display:grid; grid-template-columns:120px 1fr; gap:10px 14px; font-size:13px">' +
-                '<div style="font-weight:700;color:var(--text-secondary)">공고 제목</div><div>' + p.title + '</div>' +
-                '<div style="font-weight:700;color:var(--text-secondary)">단지</div><div>' + p.site + '</div>' +
-                '<div style="font-weight:700;color:var(--text-secondary)">게시 기간</div><div>' + (p.pblancStart || "-") + ' ~ ' + (p.pblancEnd || "-") + '</div>' +
-                '<div style="font-weight:700;color:var(--text-secondary)">모집 기간</div><div>' + p.start + ' ~ ' + p.end + '</div>' +
-                '<div style="font-weight:700;color:var(--text-secondary)">공급 세대수</div><div>' + p.units + '세대</div>' +
-                '<div style="font-weight:700;color:var(--text-secondary)">제출 서류</div><div>' + p.docs + '</div>' +
-                '<div style="font-weight:700;color:var(--text-secondary)">상태</div><div>' + badgeHtml(st) + '</div>' +
-                '<div style="font-weight:700;color:var(--text-secondary)">공고 내용</div><div style="white-space:pre-line">' + (p.content || "-") + '</div>' +
-                '<div style="font-weight:700;color:var(--text-secondary)">모집 절차</div><div style="white-space:pre-line">' + (p.process || "-") + '</div>' +
-                '<div style="font-weight:700;color:var(--text-secondary)">서류 안내</div><div style="white-space:pre-line">' + (p.docGuide || "-") + '</div>' +
-                '</div>';
-
-        document.getElementById("detail-modal").classList.remove("is-hidden");
-      }
-
-      function closeModal() {
-        document.getElementById("detail-modal").classList.add("is-hidden");
-        openedId = null;
-      }
-
-      function closeOutside(e) {
-        if (e.target === document.getElementById("detail-modal")) {
-          closeModal();
-        }
-      }
-
-      function deletePost(id) {
-        if (!confirm("해당 공고를 삭제하시겠습니까?")) return;
-
-        posts = posts.filter(function (p) {
-          return p.id !== id;
-        });
-
-        doFilter();
-      }
-
-      function deleteFromModal() {
-        if (openedId !== null) {
-          const id = openedId;
-          closeModal();
-          deletePost(id);
-        }
-      }
-
-      function editFromModal() {
-        if (openedId !== null) {
-          const id = openedId;
-          closeModal();
-          openEdit(id);
-        }
-      }
-
-      renderList();
-    </script>
+  </div> <!-- main-content -->
+</div> <!-- main-wrap -->
 
 
     <script>
@@ -892,5 +573,9 @@
       var logoIcon=document.getElementById("logoIcon");
       if(logoIcon){logoIcon.onclick=function(){var s=document.getElementById("sidebar");if(s&&s.classList.contains("collapsed"))toggleSidebar();};}
     </script>
+
+    <!-- js연결 -->
+    <script src="<%= request.getContextPath() %>/js/central/admin/announcement.js"></script>
+
   </body>
 </html>
