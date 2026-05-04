@@ -12,17 +12,4 @@ public interface IResidentMapper {
 
     ResidentVO selectOneResidentInfo(String userNo);
 
-    List<RsidVhclVO> selectMyVhclList(String userNo, String aptCmplexNo);
-
-    List<ChatRoomVO> selectMyRoomList(String userNo, String aptCmplexNo);
-
-    int existsVhclNo(String vhclNo);
-
-    void insertVhcl(RsidVhclVO vhcl);
-
-    List<String> selectMyHoList(String userNo);
-
-    int countVhclByHoList(List<String> hoList);
-
-    int countMyVhcl(String userNo, String hoNo);
 }

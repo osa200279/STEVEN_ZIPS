@@ -744,7 +744,12 @@
                         <div class="th">차종</div>
                         <div class="td"><input id="vhclNmData" class="fake-input" placeholder="ex)현대 아반떼"/></div>
                         <div class="th">차량번호</div>
-                        <div class="td"><input id="vhclNoData" class="fake-input" placeholder="ex)123가 4567"/></div>
+                        <div class="td">
+                            <div style="display:flex; gap:8px;">
+                                <input id="vhclNoFront" class="fake-input" style="width:120px;" placeholder="ex)12가"/>
+                                <input id="vhclNoBack" class="fake-input" style="width:140px;" placeholder="ex)1234"/>
+                            </div>
+                        </div>
                         <div class="th">동 / 호수</div>
                         <div class="td">
                         <select id="hoSelect" class="fake-select">
@@ -806,6 +811,8 @@
         loadMyVhcl();
     };
 
+    let isSubmitting = false;
+
     const csrfToken = document.querySelector('meta[name="_csrf"]').content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
@@ -819,6 +826,27 @@
     const previewImg = document.getElementById("previewImg");
     const removeBtn = document.getElementById("removeBtn");
     const uploadContent = document.querySelector(".upload-content");
+
+
+    /* 유효성 체킁*/
+    function validateVhclNo(front, back) {
+
+        const frontRegex = /^[0-9]{2,3}[가-힣]$/;   // 12가 / 123가
+        const backRegex = /^[0-9]{4}$/;            // 1234
+
+        if (!frontRegex.test(front)) {
+            alert("차량번호 앞자리를 확인하세요 (예: 12가)");
+            return false;
+        }
+
+        if (!backRegex.test(back)) {
+            alert("차량번호 뒷자리는 숫자 4자리입니다");
+            return false;
+        }
+
+        return true;
+    }
+
 
     // 클릭 → 파일 선택
     uploadBox.addEventListener("click", () => {
@@ -906,16 +934,20 @@
             };
             reader.readAsDataURL(file.files[0]);
         }
-    };
+    }
 
     registerBtn.addEventListener("click", function () {
 
-        const hoSelect = document.getElementById("hoSelect");
-        const ho = hoSelect.value;
+        if (isSubmitting) return; // 🔥 중복 클릭 방지
 
-        const formData = new FormData();
+        isSubmitting = true;
+        registerBtn.disabled = true;
+        registerBtn.innerText = "등록 중...";
+
+        const hoSelect = document.getElementById("hoSelect");
         const selectedOption = hoSelect.options[hoSelect.selectedIndex];
 
+        const formData = new FormData();
         formData.append("ho", hoSelect.value);
         formData.append("dong", selectedOption.dataset.dong);
 
@@ -931,10 +963,8 @@
 
                 if (result === "EXTRA_REQUIRED") {
 
-                    if (!confirm(`추가 차량 등록은 10,000원의 비용이 발생합니다.
-
-                    신청 후 관리사무소 승인 및 결제 완료 시 이용 가능합니다.
-                    신청하시겠습니까?`)) {
+                    if (!confirm("추가 차량 등록은 비용이 발생합니다. 진행하시겠습니까?")) {
+                        resetButton();
                         return;
                     }
 
@@ -943,7 +973,8 @@
                 } else {
                     submitVhcl(false);
                 }
-            });
+            })
+            .catch(() => resetButton());
     });
 
 
@@ -1002,14 +1033,23 @@
         const formData = new FormData();
 
         formData.append("vhclNm", document.getElementById("vhclNmData").value);
-        formData.append("vhclNo", document.getElementById("vhclNoData").value);
-        const hoSelect = document.getElementById("hoSelect");
+        const front = document.getElementById("vhclNoFront").value.trim();
+        const back = document.getElementById("vhclNoBack").value.trim();
+        if (!validateVhclNo(front, back)) {
+            resetButton();
+            return;
+        }
 
+        const vhclNo = front + back;
+        formData.append("vhclNo", vhclNo);
+
+        const hoSelect = document.getElementById("hoSelect");
         const selectedOption = hoSelect.options[hoSelect.selectedIndex];
 
         formData.append("dong", selectedOption.dataset.dong);
         formData.append("ho", hoSelect.value);
         formData.append("isExtra", isExtra);
+
         if (fileInput.files[0]) {
             formData.append("file", fileInput.files[0]);
         }
@@ -1021,10 +1061,48 @@
             },
             body: formData
         })
+            .then(res => {
+                if (!res.ok) throw new Error("등록 실패");
+                return res.text();
+            })
             .then(() => {
                 alert("등록 완료");
+                resetForm();
                 loadMyVhcl();
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+            .finally(() => {
+                resetButton();
             });
+    }
+
+    function resetForm() {
+
+        // 입력값 초기화
+        document.getElementById("vhclNmData").value = "";
+        document.getElementById("vhclNoFront").value = "";
+        document.getElementById("vhclNoBack").value = "";
+
+        // select 초기화
+        const hoSelect = document.getElementById("hoSelect");
+        hoSelect.selectedIndex = 0;
+
+        // 파일 초기화
+        fileInput.value = "";
+        previewImg.src = "";
+
+        // UI 복구
+        previewCard.style.display = "none";
+        uploadContent.style.display = "block";
+    }
+
+
+    function resetButton() {
+        isSubmitting = false;
+        registerBtn.disabled = false;
+        registerBtn.innerText = "차량 등록";
     }
 </script>
 </body>

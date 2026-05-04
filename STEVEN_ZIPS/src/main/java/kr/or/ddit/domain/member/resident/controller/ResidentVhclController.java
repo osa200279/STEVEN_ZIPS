@@ -45,21 +45,17 @@ public class ResidentVhclController {
     public String checkVhcl(
             @AuthenticationPrincipal CustomUser principal,
             @PathVariable String aptCmplexNo,
-            @RequestParam String ho,
-            @RequestParam String dong
+            @RequestParam String dong,
+            @RequestParam String ho
     ) {
 
         String userNo = principal.getMember().getUserNo();
 
         String hoNo = aptCmplexNo + "_" + dong + "_" + ho;
 
-        int count = residentVhclService.countMyVhcl(userNo, hoNo);
+        boolean isExtra = residentVhclService.isExtraRequired(userNo, aptCmplexNo, hoNo);
 
-        if (count >= 1) {
-            return "EXTRA_REQUIRED";
-        }
-
-        return "OK";
+        return isExtra ? "EXTRA_REQUIRED" : "OK";
     }
 
 
@@ -76,8 +72,6 @@ public class ResidentVhclController {
             @RequestParam boolean isExtra,
             @RequestPart(required = false) MultipartFile file
     ) throws IOException {
-
-        log.info("insert 메서드 실행****");
 
         String userNo = principal.getMember().getUserNo();
 
