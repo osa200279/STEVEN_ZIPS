@@ -435,11 +435,7 @@
               <span class="text-slate-400 text-xs flex-shrink-0">유형</span>
               <span class="text-xs font-bold bg-[#eef2eb] text-[#004830] px-2 py-0.5 rounded">용역</span>
             </div>
-            <div class="border-t border-[#f1f3ef]"></div>
-            <div class="flex items-start justify-between gap-2">
-              <span class="text-slate-400 text-xs flex-shrink-0">예정금액</span>
-              <span class="font-bold text-[#004830] text-xs text-right">4,800,000원/월</span>
-            </div>
+
             <div class="border-t border-[#f1f3ef]"></div>
             <div class="flex items-start justify-between gap-2">
               <span class="text-slate-400 text-xs flex-shrink-0">계약기간</span>
@@ -453,83 +449,8 @@
           </div>
         </div>
 
-        <!-- Attachment Files -->
-        <div class="bg-white rounded-lg border border-[#eef2eb] p-5 space-y-3">
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[15px]">attach_file</span> 첨부파일
-          </p>
-          <div class="space-y-1.5">
-            <div class="file-row flex items-center gap-2.5 p-2.5 rounded-lg cursor-pointer transition-colors">
-              <div class="w-7 h-7 bg-[#eef2eb] rounded flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-[#226046] text-[14px]">description</span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-xs font-semibold text-[#004830] truncate">입찰공고문_서초그랑자이.pdf</p>
-                <p class="text-[10px] text-slate-400">245 KB</p>
-              </div>
-              <span class="material-symbols-outlined text-slate-300 text-[16px]">download</span>
-            </div>
-            <div class="file-row flex items-center gap-2.5 p-2.5 rounded-lg cursor-pointer transition-colors">
-              <div class="w-7 h-7 bg-[#eef2eb] rounded flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-[#226046] text-[14px]">table_chart</span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-xs font-semibold text-[#004830] truncate">입찰참가신청서_양식.xlsx</p>
-                <p class="text-[10px] text-slate-400">38 KB</p>
-              </div>
-              <span class="material-symbols-outlined text-slate-300 text-[16px]">download</span>
-            </div>
-            <div class="file-row flex items-center gap-2.5 p-2.5 rounded-lg cursor-pointer transition-colors">
-              <div class="w-7 h-7 bg-[#eef2eb] rounded flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-[#226046] text-[14px]">description</span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-xs font-semibold text-[#004830] truncate">견적서_제출양식.hwp</p>
-                <p class="text-[10px] text-slate-400">52 KB</p>
-              </div>
-              <span class="material-symbols-outlined text-slate-300 text-[16px]">download</span>
-            </div>
-          </div>
-          <button class="w-full text-xs text-center text-slate-400 hover:text-[#226046] transition-colors pt-1 flex items-center justify-center gap-1">
-            <span class="material-symbols-outlined text-[13px]">download</span> 전체 다운로드
-          </button>
-        </div>
 
-        <!-- Action Buttons -->
-        <div class="space-y-2 no-print">
-          <button class="w-full bg-primary-container text-white py-3.5 rounded-lg font-bold text-sm hover:bg-[#003825] transition-all active:scale-95 flex items-center justify-center gap-2 shadow-sm">
-            <span class="material-symbols-outlined text-[18px]">how_to_reg</span> 입찰 참가 신청
-          </button>
-          <div class="grid grid-cols-2 gap-2">
-            <button class="w-full bg-white border border-[#eef2eb] py-3 rounded-lg font-medium text-sm text-slate-600 hover:bg-[#f8faf6] transition-colors flex items-center justify-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">print</span> 인쇄
-            </button>
-            <button class="w-full bg-white border border-[#eef2eb] py-3 rounded-lg font-medium text-sm text-slate-600 hover:bg-[#f8faf6] transition-colors flex items-center justify-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">share</span> 공유
-            </button>
-          </div>
-        </div>
 
-      </div>
-    </div>
-
-    <!-- Prev / Next Navigation -->
-    <div class="grid grid-cols-2 gap-4 no-print">
-      <div class="bg-white rounded-lg border border-[#eef2eb] p-4 flex items-center gap-4 hover:bg-[#f8faf6] cursor-pointer transition-colors group">
-        <span class="material-symbols-outlined text-slate-300 group-hover:text-[#226046] transition-colors">chevron_left</span>
-        <div class="flex-1 min-w-0">
-          <p class="text-[10px] text-slate-400 font-bold mb-0.5">이전글</p>
-          <p class="text-sm font-semibold text-slate-600 truncate group-hover:text-[#004830] transition-colors">반포자이 커뮤니티 센터 지하주차장 LED 교체 공사</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-lg border border-[#eef2eb] p-4 flex items-center gap-4 hover:bg-[#f8faf6] cursor-pointer transition-colors group justify-end text-right">
-        <div class="flex-1 min-w-0">
-          <p class="text-[10px] text-slate-400 font-bold mb-0.5">다음글</p>
-          <p class="text-sm font-semibold text-slate-600 truncate group-hover:text-[#004830] transition-colors">갤러리아 포레 통합 보안 및 경비 시스템 위탁 업체 입찰</p>
-        </div>
-        <span class="material-symbols-outlined text-slate-300 group-hover:text-[#226046] transition-colors flex-shrink-0">chevron_right</span>
-      </div>
-    </div>
 
     <!-- Back to List Button (Bottom) -->
     <div class="flex justify-center pb-4 no-print">
