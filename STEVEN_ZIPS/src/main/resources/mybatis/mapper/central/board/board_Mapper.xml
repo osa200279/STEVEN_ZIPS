@@ -77,4 +77,10 @@
         WHERE DEL_YN = 'N'
     </select>
 
+    <update id="incrementInqCnt">
+        UPDATE NOTICE
+        SET INQ_CNT = INQ_CNT + 1
+        WHERE ANN_NO = #{annNo}
+    </update>
+
 </mapper>

@@ -32,4 +32,9 @@ public class NoticeServiceImpl  implements INoticeService {
     public List<NoticeVO> getNoticeList(PaginationInfoVO<NoticeVO> pagingVO) {
         return noticeMapper.selectNoticeListPaging(pagingVO);
     }
+
+    @Override
+    public void incrementInqCnt(String annNo) {
+        noticeMapper.incrementInqCnt(annNo);
+    }
 }

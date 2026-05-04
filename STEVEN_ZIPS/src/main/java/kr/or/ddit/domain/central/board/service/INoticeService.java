@@ -13,4 +13,6 @@ public interface INoticeService {
     int getTotalCount();
 
     List<NoticeVO> getNoticeList(PaginationInfoVO<NoticeVO> pagingVO);
+
+    void incrementInqCnt(String annNo);
 }

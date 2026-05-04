@@ -16,5 +16,7 @@ public interface INoticeMapper {
     int getTotalCount();
 
     List<NoticeVO> selectNoticeListPaging(PaginationInfoVO<NoticeVO> pagingVO);
+
+    void incrementInqCnt(String annNo);
 }
 
