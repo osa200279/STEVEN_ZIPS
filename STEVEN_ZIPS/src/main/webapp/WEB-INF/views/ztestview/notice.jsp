@@ -149,10 +149,9 @@
                     <tr class="notice-row" onclick="location.href='detail.do?annNo=${notice.annNo}'">
 
                             <!-- 번호 -->
-                             <td class="px-6 py-5 text-sm text-gray-400 text-center">
-                         ${pagingVO.totalRecord - ((pagingVO.currentPage - 1) * pagingVO.screenSize + status.index)}
-                                                            </td>
-
+                            <td class="px-6 py-5 text-sm text-gray-400 text-center">
+    ${(pagingVO.currentPage - 1) * pagingVO.screenSize + status.index + 1}
+</td>
                         <!-- 제목 -->
                         <td class="px-6 py-5">
             <span class="text-sm font-medium text-gray-900">
