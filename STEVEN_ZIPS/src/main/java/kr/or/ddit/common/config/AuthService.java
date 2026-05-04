@@ -3,6 +3,8 @@ package kr.or.ddit.common.config;
 import kr.or.ddit.domain.member.admin.vo.AdmVO;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
+import kr.or.ddit.domain.member.vo.CustomUser;
+import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +20,16 @@ public class AuthService {
      * @return boolean 접근 허용 여부 true : 허용, false : 불허
      */
     public boolean hasAptAccess(Object principal, String target){      // 캐스팅 안정성 때문에 customUser가 아닌 principal사용
-        
-        if(principal == null || "anonymousUser".equals(principal)){ // anonymousUser : 시큐리티 내부에서 사용하는 비로그인 사용자 명
+        CustomUser user = (CustomUser)principal;
+        MemberVO member = user.getMember();
+
+        if(member == null || "anonymousUser".equals(member)){ // anonymousUser : 시큐리티 내부에서 사용하는 비로그인 사용자 명
             return false;
         }
 
         // 다운캐스팅
-        if(principal instanceof ResidentVO){
-            ResidentVO resident = (ResidentVO) principal;
+        if(member instanceof ResidentVO){
+            ResidentVO resident = (ResidentVO) member;
 
             boolean isOwner = resident.getMyAptList().stream()
                     .anyMatch(apt -> apt.getAptCmplexNo().equals(target));
@@ -34,8 +38,8 @@ public class AuthService {
                 log.info("권한 없는 단지 접근 시도 유저 : {}", resident.getUserId());
             }
             return isOwner;
-        }else if(principal instanceof MngrVO){
-            MngrVO mngr = (MngrVO) principal;
+        }else if(member instanceof MngrVO){
+            MngrVO mngr = (MngrVO) member;
 
             boolean isManager = mngr.getAptCmplexNo().equals(target);
 
@@ -43,7 +47,7 @@ public class AuthService {
                 log.info("권한 없는 단지 접근 시도 유저 : {}", mngr.getUserId());
             }
             return isManager;
-        }else if(principal instanceof AdmVO){
+        }else if(member instanceof AdmVO){
             return true;
         }
         return false;
