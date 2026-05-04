@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>접근 거부</title>
+    <title>접근 거부 임시페이지</title>
 </head>
 <body>
     <h1>${msg}</h1>
