@@ -46,6 +46,9 @@ public class NoticeController {
     @GetMapping("/notice/detail.do")
     public String noticeDetail(String annNo, Model model) {
 
+
+        noticeService.incrementInqCnt(annNo);
+
         NoticeVO notice = noticeService.getNoticeDetail(annNo);
 
         model.addAttribute("notice", notice);
