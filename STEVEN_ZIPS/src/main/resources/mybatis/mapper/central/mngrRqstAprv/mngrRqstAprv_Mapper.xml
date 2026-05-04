@@ -167,39 +167,64 @@
             R.APRV_ID,
             R.RJCT_RSN_CN,
             R.RMRK_CN,
-            R.USER_NO,
 
             /*
-                신청 단건 조회는 승인 처리용이다.
-
-                → 승인 처리에는 RQST_NO, USER_NO, RQST_STTS_CD만 있으면 된다.
-                → 모든 ROLE_MNGR이 입주민은 아니므로 RESIDENT_RQST와 연결하면 업무 흐름이 꼬일 수 있다.
+                승인 대상자의 USER_NO
+                RQST_LOGIN_ID = MEMBER.USER_ID 기준으로 가져온다.
             */
+            M.USER_NO AS USER_NO,
+
+            /*
+                관리사무소 번호
+                신청 목록에서 보이는 단지/관리사무소 기준을 만들기 위해 필요하다.
+            */
+            G.MGMT_OFC_NO AS MGMT_OFC_NO,
+
+            G.MNGR_DUTY_CD,
+            O.APT_CMPLEX_NO,
+            A.APT_CMPLEX_NM,
 
             CASE R.RQST_DUTY_CD
-                WHEN 'DUTY_HEAD'  THEN '관리소장'
-                WHEN 'DUTY_ACC'   THEN '회계'
-                WHEN 'DUTY_ADMIN' THEN '행정'
-                WHEN 'DUTY_FAC'   THEN '시설'
-                WHEN 'HEAD'       THEN '관리소장'
-                WHEN 'ACNT'       THEN '회계'
-                WHEN 'ADM'        THEN '행정'
-                WHEN 'FAC'        THEN '시설'
+                WHEN 'HEAD' THEN '관리소장'
+                WHEN 'ACNT' THEN '회계'
+                WHEN 'ADM'  THEN '행정'
+                WHEN 'FAC'  THEN '시설'
                 ELSE R.RQST_DUTY_CD
                 END AS DUTY_NM,
 
             CASE R.RQST_STTS_CD
-                WHEN 'WAIT'   THEN '승인대기'
-                WHEN 'OK'     THEN '승인완료'
+                WHEN 'WAIT' THEN '승인대기'
+                WHEN 'OK'   THEN '승인완료'
                 WHEN 'RJCT' THEN '반려'
-                WHEN 'CNL'    THEN '신청취소'
+                WHEN 'CNL'  THEN '신청취소'
                 ELSE R.RQST_STTS_CD
                 END AS STTS_NM
 
         FROM MNGR_RQST R
+
+                 /*
+                     신청자 MEMBER 찾기
+                     RQST_LOGIN_ID = MEMBER.USER_ID
+                 */
+                 LEFT JOIN MEMBER M
+                           ON R.RQST_LOGIN_ID = M.USER_ID
+
+            /*
+                핵심:
+                R.USER_NO는 "요청한 관리소장"이라고 쓰고 있다면,
+                이 USER_NO로 기존 MANAGER를 찾아서 MGMT_OFC_NO를 가져와야 한다.
+            */
+                 LEFT JOIN MANAGER G
+                           ON R.USER_NO = G.USER_NO
+
+                 LEFT JOIN MGMT_OFFICE O
+                           ON G.MGMT_OFC_NO = O.MGMT_OFC_NO
+
+                 LEFT JOIN APT_COMPLEX A
+                           ON O.APT_CMPLEX_NO = A.APT_CMPLEX_NO
+
         WHERE R.RQST_NO = #{rqstNo}
     </select>
-
 
     <!-- 승인 완료된 실제 관리자 계정 목록 조회 -->
     <select id="selectAccountList"
@@ -397,7 +422,6 @@
             APRV_ID = #{aprvId},
             RJCT_RSN_CN = NULL,
             RMRK_CN = #{rmrkCn},
-            USER_NO = #{userNo},
             ACNT_DSPLY_YN = 'Y'
         WHERE RQST_NO = #{rqstNo}
           AND RQST_STTS_CD = 'WAIT'
