@@ -98,15 +98,10 @@ public class CentralController {
         return "centralAdmin/facility";
     }
 
-    @GetMapping("/subAdmin")
-    public String subAdminForm() {
-        return "centralAdmin/subAdmin";
-    }
-
-    /* 합친 후 삭제예정 */
-    @GetMapping("/adminSubMgmt")
-    public String subAdminForm2() {
-        return "centralAdmin/adminSubMgmt";
+    /* 중앙관리자 직원계정요청 승인 */
+    @GetMapping("/mngrRqstAprv")
+    public String mngrRqstAprvForm() {
+        return "centralAdmin/mngrRqstAprv";
     }
 
     @GetMapping("/contractForm.do")

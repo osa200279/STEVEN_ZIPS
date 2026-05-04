@@ -98,7 +98,7 @@
                 <span class="material-symbols-rounded nav-icon">warning</span>
                 <span class="nav-text">비정상 세대 관리</span>
             </a>
-            <a href="<%= request.getContextPath() %>/centralAdmin/subAdmin" class="nav-item <%= isSubAdmin ? "active" : "" %>" data-page="단지관리자 계정" data-parent="시설·시스템">
+            <a href="<%= request.getContextPath() %>/centralAdmin/mngrRqstAprv" class="nav-item <%= isSubAdmin ? "active" : "" %>" data-page="단지관리자 계정" data-parent="시설·시스템">
                 <span class="material-symbols-rounded nav-icon">manage_accounts</span>
                 <span class="nav-text">단지관리자 계정</span>
             </a>
