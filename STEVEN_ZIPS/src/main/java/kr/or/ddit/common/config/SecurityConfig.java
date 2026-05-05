@@ -1,16 +1,25 @@
 package kr.or.ddit.common.config;
 
 import jakarta.servlet.DispatcherType;
+import kr.or.ddit.common.filter.TokenAuthenticationFilter;
 import kr.or.ddit.common.security.CustomAccessDeniedHandler;
 import kr.or.ddit.common.security.CustomLoginFailureHandler;
 import kr.or.ddit.common.security.CustomLoginSuccessHandler;
+import kr.or.ddit.common.security.CustomUserDetailsService;
+import kr.or.ddit.common.util.JwtProperties;
+import kr.or.ddit.common.util.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,6 +40,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
+    private TokenProvider tokenProvider;
 
     // 인증객체 없어도(모두가) 접근할 수 있는 URL => JSP페이지
     private static final String[] PASS_URL = {
@@ -96,7 +111,7 @@ public class SecurityConfig {
                         authorize -> authorize.requestMatchers(REACT_PASS_URL).permitAll()
                 );  // REACT_PASS_URL 프리패스
 
-//        http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -146,6 +161,14 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
 
         return http.build();
+    }
+
+    @Bean
+    protected AuthenticationManager authenticationManager(
+            BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationConfiguration authenticationConfiguration){
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(customUserDetailsService);
+        authProvider.setPasswordEncoder(bCryptPasswordEncoder);
+        return new ProviderManager(authProvider);
     }
 
     @Bean
