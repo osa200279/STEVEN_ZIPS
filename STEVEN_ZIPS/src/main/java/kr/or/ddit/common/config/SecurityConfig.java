@@ -47,6 +47,7 @@ public class SecurityConfig {
     @Autowired
     private TokenProvider tokenProvider;
 
+
     // 인증객체 없어도(모두가) 접근할 수 있는 URL => JSP페이지
     private static final String[] PASS_URL = {
             "/index.html",
@@ -99,6 +100,7 @@ public class SecurityConfig {
     @Order(value = 1)
     @Bean
     protected SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource())); // security config에 등록한 cors정책
         http.csrf(csrf -> csrf.disable());
         http.formLogin(login -> login.disable());
         http.httpBasic(basic -> basic.disable());
@@ -120,6 +122,7 @@ public class SecurityConfig {
     @Order(value = 2)
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource())); // security config에 등록한 cors정책
         http.securityMatcher("/**")
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
@@ -164,11 +167,40 @@ public class SecurityConfig {
     }
 
     @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
+
+        // 1. 리액트 서버의 로컬 및 외부 IP 주소를 모두 허용
+        config.setAllowedOrigins(java.util.List.of(
+                "http://localhost:7777",
+                "http://183.107.218.47:7777"
+        ));
+
+        // 2. 허용할 HTTP 메서드 설정
+        config.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // 3. 모든 헤더 허용 (Authorization 헤더 등을 받기 위해 필요)
+        config.setAllowedHeaders(java.util.List.of("*"));
+
+        // 4. 내보낼 헤더 설정 (클라이언트가 토큰을 읽을 수 있게 하려면 필요할 수 있음)
+        config.setExposedHeaders(java.util.List.of("Authorization"));
+
+        // 5. 자격 증명 허용 (쿠키 등을 주고받을 때 필수)
+        config.setAllowCredentials(true);
+
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 위 설정 적용
+        return source;
+    }
+
+
+    // Jwt 시큐리티 인증 시스템 구축의 최종 단계
+    @Bean
     protected AuthenticationManager authenticationManager(
             BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationConfiguration authenticationConfiguration){
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(customUserDetailsService);
-        authProvider.setPasswordEncoder(bCryptPasswordEncoder);
-        return new ProviderManager(authProvider);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(customUserDetailsService);   // DB에서 정보를가져와서 인증 처리
+        authProvider.setPasswordEncoder(bCryptPasswordEncoder); // 암호 해독기 설정(DB의 비밀번호는 암호화 되어있기 때문에 필요)
+        return new ProviderManager(authProvider);   // 위 설정을 마친 객체(authProvider)를 authenticationManager로 사용
     }
 
     @Bean
