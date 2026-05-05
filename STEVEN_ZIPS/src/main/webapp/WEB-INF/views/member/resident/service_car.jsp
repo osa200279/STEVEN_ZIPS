@@ -716,6 +716,20 @@
             align-items: center;
             justify-content: center;
         }
+        .delete-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: none;
+            background: #e0e0e0;
+            color: #444;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #cfcfcf;
+        }
     </style>
 
 </head>
@@ -788,13 +802,13 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>동/호</th>
                                 <th>차량번호</th>
                                 <th>차종</th>
                                 <th>등록일</th>
                                 <th>상태</th>
                             </tr>
                         </thead>
-
                         <tbody>
                         </tbody>
                     </table>
@@ -938,7 +952,7 @@
 
     registerBtn.addEventListener("click", function () {
 
-        if (isSubmitting) return; // 🔥 중복 클릭 방지
+        if (isSubmitting) return;
 
         isSubmitting = true;
         registerBtn.disabled = true;
@@ -1012,6 +1026,7 @@
 
                     html += `
                 <tr>
+                    <td>${car.dong}동 ${car.ho}호</td>
                     <td>\${car.vhclNo}</td>
                     <td>\${car.vhclNm}</td>
                     <td>\${car.regDt ?? ''}</td>
@@ -1103,6 +1118,38 @@
         isSubmitting = false;
         registerBtn.disabled = false;
         registerBtn.innerText = "차량 등록";
+    }
+
+    document.querySelector(".data-table tbody").addEventListener("click", function(e) {
+        if (e.target.classList.contains("delete-btn")) {
+
+            const vhclNo = e.target.dataset.vhclNo;
+
+            if (!confirm("삭제하시겠습니까?")) return;
+
+            deleteVhcl(vhclNo);
+        }
+    });
+
+    function deleteVhcl(vhclNo) {
+
+        fetch(`/vhcl/delete/${aptCmplexNo}/${vhclNo}`, {
+            method: "DELETE",
+            headers: {
+                [csrfHeader]: csrfToken
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("삭제 실패");
+                return res.text();
+            })
+            .then(() => {
+                alert("삭제 완료");
+                loadMyVhcl(); // 다시 로드
+            })
+            .catch(err => {
+                alert(err.message);
+            });
     }
 </script>
 </body>
