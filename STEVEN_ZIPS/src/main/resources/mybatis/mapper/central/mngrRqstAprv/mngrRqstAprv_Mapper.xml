@@ -57,22 +57,22 @@
             resultMap="mngrRqstAprvMap">
         /* kr.or.ddit.domain.central.admin.mapper.IMngrRqstAprvMapper.selectRequestList */
         SELECT
-        r.rqst_no                                                    AS rqst_no          /** 신청번호 */
-        , r.rqst_login_id                                              AS rqst_login_id    /** 신청로그인아이디 */
-        , r.rqst_mngr_nm                                               AS rqst_mngr_nm     /** 신청관리자명 */
-        , r.rqst_duty_cd                                               AS rqst_duty_cd     /** 신청직무코드 */
-        , r.rqst_dt                                                    AS rqst_dt          /** 신청일자 */
-        , r.aprv_dt                                                    AS aprv_dt          /** 승인일자 */
-        , r.rqst_stts_cd                                               AS rqst_stts_cd     /** 신청상태코드 */
-        , r.aprv_id                                                    AS aprv_id          /** 승인자아이디 */
-        , r.rjct_rsn_cn                                                AS rjct_rsn_cn      /** 반려사유내용 */
-        , r.rmrk_cn                                                    AS rmrk_cn          /** 비고내용 */
-        , r.user_no                                                    AS user_no          /** 사용자번호 */
-        , r.acnt_dsply_yn                                              AS acnt_dsply_yn    /** 계정화면표시여부 */
-        , g.mgmt_ofc_no                                                AS mgmt_ofc_no      /** 관리사무소번호 */
-        , g.mngr_duty_cd                                               AS mngr_duty_cd     /** 관리자직무코드 */
-        , o.apt_cmplex_no                                              AS apt_cmplex_no    /** 단지번호 */
-        , a.apt_cmplex_nm                                              AS apt_cmplex_nm    /** 단지명 */
+        r.rqst_no                                                    /** 신청번호 */
+        , r.rqst_login_id                                              /** 신청로그인아이디 */
+        , r.rqst_mngr_nm                                               /** 신청관리자명 */
+        , r.rqst_duty_cd                                               /** 신청직무코드 */
+        , r.rqst_dt                                                    /** 신청일자 */
+        , r.aprv_dt                                                    /** 승인일자 */
+        , r.rqst_stts_cd                                               /** 신청상태코드 */
+        , r.aprv_id                                                    /** 승인자아이디 */
+        , r.rjct_rsn_cn                                                /** 반려사유내용 */
+        , r.rmrk_cn                                                    /** 비고내용 */
+        , r.user_no                                                    /** 사용자번호 */
+        , r.acnt_dsply_yn                                              /** 계정화면표시여부 */
+        , g.mgmt_ofc_no                                                /** 관리사무소번호 */
+        , g.mngr_duty_cd                                               /** 관리자직무코드 */
+        , o.apt_cmplex_no                                              /** 단지번호 */
+        , a.apt_cmplex_nm                                              /** 단지명 */
         , CASE r.rqst_duty_cd
         WHEN 'DUTY_HEAD'  THEN '관리소장'
         WHEN 'DUTY_ACC'   THEN '회계'
@@ -112,7 +112,7 @@
         <!--
             신청상태 검색 조건
         -->
-        <if test="status != null and status != '' and !status.equals('all')">
+        <if test='status != null and status != "" and !status.equals("all")'>
             AND LOWER(r.rqst_stts_cd) = LOWER(#{status})
         </if>
 
@@ -134,21 +134,21 @@
             resultMap="mngrRqstAprvMap">
         /* kr.or.ddit.domain.central.admin.mapper.IMngrRqstAprvMapper.selectRequest */
         SELECT
-        r.rqst_no                                                    AS rqst_no          /** 신청번호 */
-        , r.rqst_login_id                                              AS rqst_login_id    /** 신청로그인아이디 */
-        , r.rqst_mngr_nm                                               AS rqst_mngr_nm     /** 신청관리자명 */
-        , r.rqst_duty_cd                                               AS rqst_duty_cd     /** 신청직무코드 */
-        , r.rqst_dt                                                    AS rqst_dt          /** 신청일자 */
-        , r.aprv_dt                                                    AS aprv_dt          /** 승인일자 */
-        , r.rqst_stts_cd                                               AS rqst_stts_cd     /** 신청상태코드 */
-        , r.aprv_id                                                    AS aprv_id          /** 승인자아이디 */
-        , r.rjct_rsn_cn                                                AS rjct_rsn_cn      /** 반려사유내용 */
-        , r.rmrk_cn                                                    AS rmrk_cn          /** 비고내용 */
-        , m.user_no                                                    AS user_no          /** 실제회원사용자번호 */
-        , g.mgmt_ofc_no                                                AS mgmt_ofc_no      /** 관리사무소번호 */
-        , g.mngr_duty_cd                                               AS mngr_duty_cd     /** 관리자직무코드 */
-        , o.apt_cmplex_no                                              AS apt_cmplex_no    /** 단지번호 */
-        , a.apt_cmplex_nm                                              AS apt_cmplex_nm    /** 단지명 */
+        r.rqst_no                                                    /** 신청번호 */
+        , r.rqst_login_id                                              /** 신청로그인아이디 */
+        , r.rqst_mngr_nm                                               /** 신청관리자명 */
+        , r.rqst_duty_cd                                               /** 신청직무코드 */
+        , r.rqst_dt                                                    /** 신청일자 */
+        , r.aprv_dt                                                    /** 승인일자 */
+        , r.rqst_stts_cd                                               /** 신청상태코드 */
+        , r.aprv_id                                                    /** 승인자아이디 */
+        , r.rjct_rsn_cn                                                /** 반려사유내용 */
+        , r.rmrk_cn                                                    /** 비고내용 */
+        , m.user_no                                                    /** 실제회원사용자번호 */
+        , g.mgmt_ofc_no                                                /** 관리사무소번호 */
+        , g.mngr_duty_cd                                               /** 관리자직무코드 */
+        , o.apt_cmplex_no                                              /** 단지번호 */
+        , a.apt_cmplex_nm                                              /** 단지명 */
         , CASE r.rqst_duty_cd
         WHEN 'DUTY_HEAD'  THEN '관리소장'
         WHEN 'DUTY_ACC'   THEN '회계'
@@ -187,18 +187,18 @@
             resultMap="mngrRqstAprvMap">
         /* kr.or.ddit.domain.central.admin.mapper.IMngrRqstAprvMapper.selectAccountList */
         SELECT
-        m.user_no                                                    AS user_no          /** 사용자번호 */
-        , m.user_id                                                    AS user_id          /** 사용자아이디 */
-        , m.user_nm                                                    AS user_nm          /** 사용자명 */
-        , m.user_telno                                                 AS user_telno       /** 사용자전화번호 */
-        , m.user_eml                                                   AS user_eml         /** 사용자이메일 */
-        , m.user_yn                                                    AS user_yn          /** 사용자사용여부 */
-        , m.reg_dt                                                     AS reg_dt           /** 등록일자 */
-        , m.mdf_dt                                                     AS mdf_dt           /** 수정일자 */
-        , g.mgmt_ofc_no                                                AS mgmt_ofc_no      /** 관리사무소번호 */
-        , g.mngr_duty_cd                                               AS mngr_duty_cd     /** 관리자직무코드 */
-        , o.apt_cmplex_no                                              AS apt_cmplex_no    /** 단지번호 */
-        , a.apt_cmplex_nm                                              AS apt_cmplex_nm    /** 단지명 */
+        m.user_no                                                    /** 사용자번호 */
+        , m.user_id                                                    /** 사용자아이디 */
+        , m.user_nm                                                    /** 사용자명 */
+        , m.user_telno                                                 /** 사용자전화번호 */
+        , m.user_eml                                                   /** 사용자이메일 */
+        , m.user_yn                                                    /** 사용자사용여부 */
+        , m.reg_dt                                                     /** 등록일자 */
+        , m.mdf_dt                                                     /** 수정일자 */
+        , g.mgmt_ofc_no                                                /** 관리사무소번호 */
+        , g.mngr_duty_cd                                               /** 관리자직무코드 */
+        , o.apt_cmplex_no                                              /** 단지번호 */
+        , a.apt_cmplex_nm                                              /** 단지명 */
         , CASE g.mngr_duty_cd
         WHEN 'DUTY_HEAD'  THEN '관리소장'
         WHEN 'DUTY_ACC'   THEN '회계'
@@ -239,12 +239,12 @@
             inactive : 미사용 계정
             all      : 전체
         -->
-        <if test="status != null and status != '' and !status.equals('all')">
+        <if test='status != null and status != "" and !status.equals("all")'>
             <choose>
-                <when test="status.equals('active')">
+                <when test='status.equals("active")'>
                     AND m.user_yn = 'Y'
                 </when>
-                <when test="status.equals('inactive')">
+                <when test='status.equals("inactive")'>
                     AND m.user_yn = 'N'
                 </when>
             </choose>
@@ -265,18 +265,18 @@
             resultMap="mngrRqstAprvMap">
         /* kr.or.ddit.domain.central.admin.mapper.IMngrRqstAprvMapper.selectAccount */
         SELECT
-        m.user_no                                                    AS user_no          /** 사용자번호 */
-        , m.user_id                                                    AS user_id          /** 사용자아이디 */
-        , m.user_nm                                                    AS user_nm          /** 사용자명 */
-        , m.user_telno                                                 AS user_telno       /** 사용자전화번호 */
-        , m.user_eml                                                   AS user_eml         /** 사용자이메일 */
-        , m.user_yn                                                    AS user_yn          /** 사용자사용여부 */
-        , m.reg_dt                                                     AS reg_dt           /** 등록일자 */
-        , m.mdf_dt                                                     AS mdf_dt           /** 수정일자 */
-        , g.mgmt_ofc_no                                                AS mgmt_ofc_no      /** 관리사무소번호 */
-        , g.mngr_duty_cd                                               AS mngr_duty_cd     /** 관리자직무코드 */
-        , o.apt_cmplex_no                                              AS apt_cmplex_no    /** 단지번호 */
-        , a.apt_cmplex_nm                                              AS apt_cmplex_nm    /** 단지명 */
+        m.user_no                                                    /** 사용자번호 */
+        , m.user_id                                                    /** 사용자아이디 */
+        , m.user_nm                                                    /** 사용자명 */
+        , m.user_telno                                                 /** 사용자전화번호 */
+        , m.user_eml                                                   /** 사용자이메일 */
+        , m.user_yn                                                    /** 사용자사용여부 */
+        , m.reg_dt                                                     /** 등록일자 */
+        , m.mdf_dt                                                     /** 수정일자 */
+        , g.mgmt_ofc_no                                                /** 관리사무소번호 */
+        , g.mngr_duty_cd                                               /** 관리자직무코드 */
+        , o.apt_cmplex_no                                              /** 단지번호 */
+        , a.apt_cmplex_nm                                              /** 단지명 */
         , CASE g.mngr_duty_cd
         WHEN 'DUTY_HEAD'  THEN '관리소장'
         WHEN 'DUTY_ACC'   THEN '회계'
@@ -439,7 +439,7 @@
             resultType="string">
         /* kr.or.ddit.domain.central.admin.mapper.IMngrRqstAprvMapper.selectMgmtOfcNoByApt */
         SELECT
-        o.mgmt_ofc_no                         AS mgmt_ofc_no      /** 관리사무소번호 */
+        o.mgmt_ofc_no                         /** 관리사무소번호 */
         FROM mgmt_office o
         WHERE 1 = 1
         AND o.apt_cmplex_no = #{aptCmplexNo}
@@ -466,7 +466,7 @@
             resultType="string">
         /* kr.or.ddit.domain.central.admin.mapper.IMngrRqstAprvMapper.selectUserNoByLoginId */
         SELECT
-        m.user_no                              AS user_no          /** 사용자번호 */
+        m.user_no                              /** 사용자번호 */
         FROM member m
         WHERE 1 = 1
         AND m.user_id = #{rqstLoginId}
