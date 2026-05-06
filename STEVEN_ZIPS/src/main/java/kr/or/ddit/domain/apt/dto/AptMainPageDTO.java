@@ -34,8 +34,8 @@ public class AptMainPageDTO {
     public static class MgmtOfficeInfo {
         private String mgmtOfcNo;        // 관리사무소 번호
         private String mgmtOfcNm;        // 관리사무소 이름
-        private String mgmtOfcTelno;
-        private String mgmtOfcEml;
+        private String mgmtOfcTelno;     // 관리사무소 전화번호
+        private String mgmtOfcEml;       // 관리사무소 메일
 
         // MGMT_OPR_TM 테이블
         private String oprStTm;     // 관리사무소 운영 시작 시간

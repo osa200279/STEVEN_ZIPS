@@ -320,7 +320,7 @@ img { display: block; width: 100%; }
       <div class="hero-overlay"></div>
       <div class="hero-content">
         <h1>도심 속에서<br><em>자연을 누리다</em></h1>
-        <p>쾌적한 환경과 풍요로운 생활<br>대덕아파트가 함께합니다.</p>
+        <p>쾌적한 환경과 풍요로운 생활<br>아파트가 함께합니다.</p>
       </div>
     </div>
 
@@ -389,7 +389,7 @@ img { display: block; width: 100%; }
               </c:choose>
               </span>
               <span class="address">
-                 ${apt.dorojuso}<br>
+                 ${office.dorojuso}<br>
                  ${office.mgmtOfcNm}<br>
                  운영시간 : ${office.oprStTm} ~ ${office.oprEdTm}
               </span>

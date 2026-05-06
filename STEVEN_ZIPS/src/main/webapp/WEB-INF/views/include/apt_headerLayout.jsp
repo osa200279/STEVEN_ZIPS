@@ -6,11 +6,11 @@
 
     <!-- 헤더 부터 푸터까지 사용할 수 있도록 스코프 지정 -->
     <c:set var="apt" value="${aptInfo.aptComplexInfo}" scope="request"/>
-    <c:set var="office" value="${aptInfo.mgmtOfficeInfo}" scope="request"/>
+    <c:set var="mgmtOffice" value="${aptInfo.mgmtOfficeInfo}" scope="request"/>
     <c:set var="board" value="${aptInfo.annBoardPostInfoList}" scope="request"/>
 
     <div class="header-top">
-        <a href="/apt-main" class="logo">
+        <a href="${pageContext.request.contextPath}/apt/main/${apt.aptCmplexNo}" class="logo">
             <%-- 로고 아이콘 --%>
             <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                  stroke-linecap="round" stroke-linejoin="round">

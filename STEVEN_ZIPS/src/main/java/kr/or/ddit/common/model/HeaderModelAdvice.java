@@ -1,7 +1,9 @@
 package kr.or.ddit.common.model;
 
+import kr.or.ddit.domain.apt.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
+import kr.or.ddit.domain.member.manager.service.IAptComplexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -21,6 +23,9 @@ public class HeaderModelAdvice {
 
     @Autowired
     private IMgmtOfficeService mgmtOfficeService;
+
+    @Autowired
+    private IAptComplexService aptComplexService;
 
     /*
      * 모든 Controller가 JSP로 이동하기 전에
@@ -72,6 +77,53 @@ public class HeaderModelAdvice {
             return null;
         }
 
+    }
+
+    @ModelAttribute("aptInfo")
+    public AptMainPageDTO.ResponseDto addAptInfo(Authentication authentication) {
+
+        // 비로그인 상태
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+
+        // 인증은 되었지만 anonymousUser인 경우 방어
+        if (!authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            return null;
+        }
+
+        // 관리소장 권한인지 확인
+        boolean isManager = authentication.getAuthorities()
+                .stream()
+                .anyMatch(auth -> "ROLE_MNGR".equals(auth.getAuthority()));
+
+        if (!isManager) {
+            return null;
+        }
+
+        String userId = authentication.getName();
+
+        try {
+            // 1. 로그인한 관리소장 기준으로 관리사무소 조회
+            MgmtOfficeVO office = mgmtOfficeService.selectMgmtOfficeByManagerUserNo(userId);
+
+            if (office == null || office.getAptCmplexNo() == null) {
+                return null;
+            }
+
+            // 2. 관리사무소에 연결된 아파트 번호로 aptInfo 조회
+            AptMainPageDTO.ResponseDto aptInfo =
+                    aptComplexService.selectAptMainDTO(office.getAptCmplexNo());
+
+            log.info("공통 aptInfo 조회 userId = {}, aptCmplexNo = {}, aptInfo = {}",
+                    userId, office.getAptCmplexNo(), aptInfo);
+
+            return aptInfo;
+
+        } catch (Exception e) {
+            log.error("공통 aptInfo 조회 중 오류 userId = {}", userId, e);
+            return null;
+        }
     }
 }
 

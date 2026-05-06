@@ -447,7 +447,7 @@
             </div>
             <div class="office-tags">
               <span class="office-tag">${office.unitCnt}세대</span>
-              <span class="office-tag">${office.dongCnt}동</span>
+              <span class="office-tag">${office.dongCnt}개 동</span>
               <span class="office-tag">
                 <c:choose>
                     <c:when test="${not empty office.bldYr and fn:length(office.bldYr) == 8}">
@@ -509,8 +509,8 @@
               <th>이메일</th>
               <td>
                 <c:choose>
-                  <c:when test="${not empty office.mgmtOfcEmail}">
-                    ${office.mgmtOfcEmail}
+                  <c:when test="${not empty office.mgmtOfcEml}">
+                    ${office.mgmtOfcEml}
                   </c:when>
                   <c:otherwise>-</c:otherwise>
                 </c:choose>

@@ -9,7 +9,7 @@
             MO.APT_CMPLEX_NO,
             MO.MGMT_OFC_NM,
             MO.MGMT_OFC_TELNO,
-            MO.MGMT_OFC_EMAIL,
+            MO.MGMT_OFC_EML,
             MO.MGMT_OFC_BANK_CD,
             MO.MGMT_OFC_ACNT_HLDR_NM,
             MO.MGMT_OFC_ACNT_NO,
