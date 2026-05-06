@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper">
+
+    <select id="selectAnnouncementList"
+            parameterType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO"
+            resultType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
+        /* AnnouncementMapper.selectAnnouncementList */
+        SELECT
+        cap.ann_no
+        , cap.board_no
+        , cbi.board_nm
+        , cbi.board_ty_cd
+        , cap.ttl
+        , cap.cn
+        , cap.wrtr_id
+        , cap.top_fix_yn
+        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD') AS pblanc_bgng_dt
+        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD') AS pblanc_end_dt
+        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD') AS rcrt_bgng_dt
+        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD') AS rcrt_end_dt
+        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD') AS reg_dttm
+        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD') AS mdf_dttm
+        , cap.inq_cnt
+        , cap.del_yn
+        , cap.atch_file_id
+        , cap.opn_yn
+        FROM center_ann_board_post cap
+        LEFT JOIN center_board_instance cbi
+        ON cap.board_no = cbi.board_no
+        WHERE NVL(cap.del_yn, 'N') = 'N'
+
+        <if test="searchTtl != null and searchTtl != ''">
+            AND LOWER(cap.ttl) LIKE '%' || LOWER(#{searchTtl}) || '%'
+        </if>
+
+        <if test="searchFrom != null and searchFrom != ''">
+            AND cap.rcrt_bgng_dt <![CDATA[>=]]> TO_DATE(#{searchFrom}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="searchTo != null and searchTo != ''">
+            AND cap.rcrt_end_dt <![CDATA[<=]]> TO_DATE(#{searchTo}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="searchStatus != null and searchStatus != ''">
+            AND (
+            (#{searchStatus} = '예정'
+            AND TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt))
+            OR
+            (#{searchStatus} = '진행중'
+            AND TRUNC(SYSDATE) BETWEEN TRUNC(cap.rcrt_bgng_dt) AND TRUNC(cap.rcrt_end_dt))
+            OR
+            (#{searchStatus} = '마감'
+            AND TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt))
+            )
+        </if>
+
+        ORDER BY cap.reg_dttm DESC
+    </select>
+
+    <select id="selectAnnouncement"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
+        /* AnnouncementMapper.selectAnnouncement */
+        SELECT
+        cap.ann_no
+        , cap.board_no
+        , cbi.board_nm
+        , cbi.board_ty_cd
+        , cap.ttl
+        , cap.cn
+        , cap.wrtr_id
+        , cap.top_fix_yn
+        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD') AS pblanc_bgng_dt
+        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD') AS pblanc_end_dt
+        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD') AS rcrt_bgng_dt
+        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD') AS rcrt_end_dt
+        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD') AS reg_dttm
+        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD') AS mdf_dttm
+        , cap.inq_cnt
+        , cap.del_yn
+        , cap.atch_file_id
+        , cap.opn_yn
+        FROM center_ann_board_post cap
+        LEFT JOIN center_board_instance cbi
+        ON cap.board_no = cbi.board_no
+        WHERE cap.ann_no = #{annNo}
+        AND NVL(cap.del_yn, 'N') = 'N'
+    </select>
+
+    <insert id="insertAnnouncement"
+            parameterType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
+        /* AnnouncementMapper.insertAnnouncement */
+        INSERT INTO center_ann_board_post (
+        ann_no
+        , board_no
+        , ttl
+        , cn
+        , wrtr_id
+        , top_fix_yn
+        , pblanc_bgng_dt
+        , pblanc_end_dt
+        , rcrt_bgng_dt
+        , rcrt_end_dt
+        , reg_dttm
+        , inq_cnt
+        , del_yn
+        , atch_file_id
+        , opn_yn
+        ) VALUES (
+        'ANN' || LPAD((
+        SELECT NVL(MAX(TO_NUMBER(SUBSTR(ann_no, 4))), 0) + 1
+        FROM center_ann_board_post
+        WHERE ann_no LIKE 'ANN%'
+        ), 12, '0')
+        , (
+        SELECT MIN(board_no)
+        FROM center_board_instance
+        WHERE NVL(use_yn, 'Y') = 'Y'
+        )
+        , #{ttl}
+        , #{cn}
+        , #{wrtrId}
+        , NVL(#{topFixYn}, 'N')
+        , TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')
+        , TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')
+        , TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')
+        , TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')
+        , SYSDATE
+        , 0
+        , 'N'
+        , #{atchFileId}
+        , 'Y'
+        )
+    </insert>
+
+    <update id="updateAnnouncement"
+            parameterType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
+        /* AnnouncementMapper.updateAnnouncement */
+        UPDATE center_ann_board_post
+        SET
+        ttl = #{ttl}
+        , cn = #{cn}
+        , top_fix_yn = NVL(#{topFixYn}, 'N')
+        , pblanc_bgng_dt = TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')
+        , pblanc_end_dt = TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')
+        , rcrt_bgng_dt = TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')
+        , rcrt_end_dt = TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')
+        , atch_file_id = #{atchFileId}
+        , opn_yn = NVL(#{opnYn}, 'Y')
+        , mdf_dttm = SYSDATE
+        WHERE ann_no = #{annNo}
+    </update>
+
+    <update id="deleteAnnouncement"
+            parameterType="string">
+        /* AnnouncementMapper.deleteAnnouncement */
+        UPDATE center_ann_board_post
+        SET
+        del_yn = 'Y'
+        , mdf_dttm = SYSDATE
+        WHERE ann_no = #{annNo}
+    </update>
+
+</mapper>

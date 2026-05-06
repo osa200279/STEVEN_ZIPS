@@ -68,10 +68,10 @@ public class CentralController {
         return "centralAdmin/civilCom";
     }
 
-    @GetMapping("/announcement")
+   /* @GetMapping("/announcement")
     public String announcementForm() {
         return "centralAdmin/announcement";
-    }
+    }*/
 
     @GetMapping("/notice")
     public String noticeForm() {
