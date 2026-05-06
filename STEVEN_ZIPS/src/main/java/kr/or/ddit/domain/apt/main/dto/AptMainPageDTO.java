@@ -42,6 +42,7 @@ public class AptMainPageDTO {
         private String oprEdTm;     // 관리사무소 운영 종료 시간
     }
 
+    // 입주민 게시판 정보
     @Data
     public static class AnnBoardPostInfo {
         private String annNo;   // 게시글 번호

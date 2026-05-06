@@ -7,7 +7,7 @@ public interface IAptComplexService {
 
    AptComplexVO selectAptComplex(String aptCmplexNo);
 
-    /* public AptComplexVO selectAptDetailList(String aptCmplexNo);*/
+   /* public AptComplexVO selectAptDetailList(String aptCmplexNo);*/
 
    String selectManagerAptCmplexNo(String userNo);
 
@@ -18,4 +18,5 @@ public interface IAptComplexService {
 
    // 아파트 메인페이지 DTO 셀렉트
    AptMainPageDTO.ResponseDto selectAptMainDTO(String aptCmplexNo);
+
 }
