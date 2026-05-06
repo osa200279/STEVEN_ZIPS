@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if(loginBtn && loginForm){  // 로그인 버튼과 폼이 있을 때
         loginBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            let username = loginForm.querySelector("input[name=username]");
-            let password = loginForm.querySelector("input[name=password]");
+            let username = loginForm.querySelector("input[name=username]").value.trim();
+            let password = loginForm.querySelector("input[name=password]").value.trim();
 
             if(!username){
                 alert("아이디를 입력하세요");

@@ -12,4 +12,6 @@ public interface IResidentVhclService {
     void registerVhcl(String userNo, String aptCmplexNo, String vhclNm, String vhclNo, String dong, String ho, boolean isExtra, MultipartFile file) throws IOException;
 
     boolean isExtraRequired(String userNo, String aptCmplexNo, String hoNo);
+
+    void deleteVhcl(String rsidVhclNo, String userNo);
 }

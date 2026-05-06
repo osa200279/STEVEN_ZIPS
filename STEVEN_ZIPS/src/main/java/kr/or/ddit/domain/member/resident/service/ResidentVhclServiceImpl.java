@@ -21,7 +21,7 @@ import java.util.UUID;
 public class ResidentVhclServiceImpl implements IResidentVhclService {
 
     @Autowired
-    IVhclMapper residentMapper;
+    IVhclMapper vhclMapper;
 
     @Autowired
     GoogleDriveService googleDriveService;
@@ -33,16 +33,21 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
     @Override
     public List<RsidVhclVO> selectMyVhclList(String userNo, String aptCmplexNo) {
 
-        return residentMapper.selectMyVhclList(userNo,aptCmplexNo);
+        return vhclMapper.selectMyVhclList(userNo,aptCmplexNo);
     }
 
     public boolean isExtraRequired(String userNo, String aptCmplexNo, String hoNo) {
 
-        int freeCnt = residentMapper.selectFreePkgCnt(aptCmplexNo);
+        int freeCnt = vhclMapper.selectFreePkgCnt(aptCmplexNo);
 
-        int currentCnt = residentMapper.countMyVhcl(userNo, hoNo);
+        int currentCnt = vhclMapper.countMyVhcl(userNo, hoNo);
 
         return currentCnt >= freeCnt;
+    }
+
+    public void deleteVhcl(String rsidVhclNo, String userNo) {
+
+        vhclMapper.deleteVhcl(rsidVhclNo,userNo);
     }
 
     @Transactional
@@ -61,7 +66,7 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
         String hoNo = aptCmplexNo + "_" + dong + "_" + ho;
 
         //차량번호 중복 체크
-        if (residentMapper.existsVhclNo(vhclNo)>0) {
+        if (vhclMapper.existsVhclNo(vhclNo)>0) {
             throw new RuntimeException("이미 등록된 차량번호입니다.");
         }
 
@@ -105,7 +110,7 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
             vhcl.setVhclFileNo(String.valueOf(fileGroupNo));
         }
         //insert 진행!
-        residentMapper.insertVhcl(vhcl);
+        vhclMapper.insertVhcl(vhcl);
     }
 
 }

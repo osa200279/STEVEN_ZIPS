@@ -22,4 +22,8 @@ public interface IVhclMapper {
     int countMyVhcl(String userNo, String hoNo);
 
     int selectFreePkgCnt(String aptCmplexNo);
+
+    RsidVhclVO selectByVhclNo(String vhclNo);
+
+    void deleteVhcl(String rsidVhclNo,String userNo);
 }

@@ -91,7 +91,7 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="loginBtn" id="loginBtn">로그인</button>
+                            <button type="submit" class="loginBtn" id="loginBtn">로그인</button>
                             <sec:csrfInput/>
                         </form>
 

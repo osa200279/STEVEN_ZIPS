@@ -664,6 +664,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+
+            cursor: pointer;
         }
 
         /* 기본 + 상태 */
@@ -716,19 +718,16 @@
             align-items: center;
             justify-content: center;
         }
-        .delete-btn {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            border: none;
-            background: #e0e0e0;
-            color: #444;
-            font-size: 14px;
+        .delete-text {
+            color: #e57373;          /* 연한 빨강 */
+            font-size: 12px;
             cursor: pointer;
+            font-weight: 600;
         }
 
-        .delete-btn:hover {
-            background: #cfcfcf;
+        .delete-text:hover {
+            color: #d32f2f;          /* hover 시 진하게 */
+            text-decoration: underline;
         }
     </style>
 
@@ -1013,6 +1012,12 @@
                     let badgeClass = "";
                     let statusText = "";
 
+                    let hoNo = car.hoNo;
+                    let parts = hoNo.split("_");
+
+                    let dong = parts[1];
+                    let ho = parts[2];
+
                     if (car.vhclSttsCd === 'APRV') {
                         badgeClass = "ok";
                         statusText = "승인";
@@ -1025,14 +1030,17 @@
                     }
 
                     html += `
-                <tr>
-                    <td>${car.dong}동 ${car.ho}호</td>
-                    <td>\${car.vhclNo}</td>
-                    <td>\${car.vhclNm}</td>
-                    <td>\${car.regDt ?? ''}</td>
-                    <td><span class="badge \${badgeClass}">\${statusText}</span></td>
-                </tr>
-            `;
+                            <tr>
+                                <td>\${dong}동 \${ho}호</td>
+                                <td>\${car.vhclNo}</td>
+                                <td>\${car.vhclNm}</td>
+                                <td>\${car.regDt ? car.regDt.substring(0,10) : ''}</td>
+                                <td>
+                                    <span class="badge \${badgeClass}">\${statusText}</span>
+                                    <span class="delete-text" data-vhcl-id="\${car.rsidVhclNo}">삭제</span>
+                                </td>
+                            </tr>
+                            `;
                 });
 
                 document.querySelector(".data-table tbody").innerHTML = html;
@@ -1121,19 +1129,20 @@
     }
 
     document.querySelector(".data-table tbody").addEventListener("click", function(e) {
-        if (e.target.classList.contains("delete-btn")) {
+        if (e.target.classList.contains("delete-text")) {
 
-            const vhclNo = e.target.dataset.vhclNo;
+            const rsidVhclNo = e.target.dataset.vhclId;
 
             if (!confirm("삭제하시겠습니까?")) return;
 
-            deleteVhcl(vhclNo);
+            deleteVhcl(rsidVhclNo);
         }
     });
 
-    function deleteVhcl(vhclNo) {
+    function deleteVhcl(rsidVhclNo) {
+        console.log(rsidVhclNo)
 
-        fetch(`/vhcl/delete/${aptCmplexNo}/${vhclNo}`, {
+        fetch(`/vhcl/delete/\${rsidVhclNo}`, {
             method: "DELETE",
             headers: {
                 [csrfHeader]: csrfToken
