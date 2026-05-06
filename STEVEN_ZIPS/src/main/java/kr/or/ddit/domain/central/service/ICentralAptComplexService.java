@@ -1,13 +1,17 @@
 package kr.or.ddit.domain.central.service;
 
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
+import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
 
 import java.util.List;
 
 public interface ICentralAptComplexService {
 
-    // 아파트 단지 목록 조회
-    public List<AptComplexVO> selectAptComplexList(String initial);
+    List<AptComplexVO> selectAptComplexList(
+            PaginationInfoVO<AptComplexVO> pagingVO
+    );
 
     List<AptComplexVO> searchApt(String keyword);
+
+    int selectAptComplexCount(String initial);
 }

@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.central.controller;
 
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
+import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
 import kr.or.ddit.domain.central.service.ICentralAptComplexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,28 @@ public class AptRetrieveController {
     private ICentralAptComplexService aptComplexService;
 
     @GetMapping("/list.do")
-    public String list(@RequestParam(value = "initial", required = false) String initial,
-                       @RequestParam(value = "page", required = false, defaultValue = "1") int currentPage,
-                       Model model) {
-        List<AptComplexVO> aptList = aptComplexService.selectAptComplexList(initial);
+    public String list(
+            @RequestParam(value = "initial", required = false) String initial,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int currentPage,
+            Model model
+    ) {
 
-        model.addAttribute("aptList", aptList);
+        PaginationInfoVO<AptComplexVO> pagingVO = new PaginationInfoVO<>();
+        pagingVO.setScreenSize(12);
+
+        pagingVO.setCurrentPage(currentPage);
+        pagingVO.setSearchWord(initial);
+
+        // 총 개수
+        int totalRecord = aptComplexService.selectAptComplexCount(initial);
+        pagingVO.setTotalRecord(totalRecord);
+
+        // 페이징 목록 조회
+        pagingVO.setDataList(
+                aptComplexService.selectAptComplexList(pagingVO)
+        );
+
+        model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("selectedInitial", initial);
 
         return "central/aptList";

@@ -1,108 +1,209 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.central.mapper.ICentralAptComplexMapper">
+
+
     <select id="selectAptComplexList"
             resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
 
+        SELECT *
+        FROM (
         SELECT
-            APT_CMPLEX_NO
-             , APT_CMPLEX_NM
-             , BJD_CD
-             , SIDO_NM
-             , SIGUNGU_NM
-             , EMD_NM
-             , LAT_VAL
-             , LON_VAL
-             , UNIT_CNT
-             , BLD_YR
-             , CNSCO_NM
-             , IMG_FILE_NO
-             , RPRSNT_IMG_FILE_NO
-             , HEAT_TY
-             , PKG_CNT
-             , MAX_FLOOR
-             , FREE_PKG_CNT
-             , DONG_CNT
-             , DOROJUSO
-             , CC_CNT
+        ROWNUM rnum,
+        A.*
+        FROM (
+
+        SELECT
+        APT_CMPLEX_NO
+        , APT_CMPLEX_NM
+        , BJD_CD
+        , SIDO_NM
+        , SIGUNGU_NM
+        , EMD_NM
+        , LAT_VAL
+        , LON_VAL
+        , UNIT_CNT
+        , BLD_YR
+        , CNSCO_NM
+        , IMG_FILE_NO
+        , RPRSNT_IMG_FILE_NO
+        , HEAT_TY
+        , PKG_CNT
+        , MAX_FLOOR
+        , FREE_PKG_CNT
+        , DONG_CNT
+        , DOROJUSO
+        , CC_CNT
         FROM APT_COMPLEX
         WHERE 1 = 1
 
         <choose>
-            <when test='initial == "ㄱ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '가'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '나'
+
+            <when test='searchWord == "ㄱ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '가'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '나'
             </when>
 
-            <when test='initial == "ㄴ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '나'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '다'
+            <when test='searchWord == "ㄴ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '나'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '다'
             </when>
 
-            <when test='initial == "ㄷ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '다'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '라'
+            <when test='searchWord == "ㄷ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '다'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '라'
             </when>
 
-            <when test='initial == "ㄹ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '라'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '마'
+            <when test='searchWord == "ㄹ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '라'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '마'
             </when>
 
-            <when test='initial == "ㅁ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '마'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '바'
+            <when test='searchWord == "ㅁ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '마'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '바'
             </when>
 
-            <when test='initial == "ㅂ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '바'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '사'
+            <when test='searchWord == "ㅂ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '바'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '사'
             </when>
 
-            <when test='initial == "ㅅ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '사'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '아'
+            <when test='searchWord == "ㅅ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '사'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '아'
             </when>
 
-            <when test='initial == "ㅇ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '아'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '자'
+            <when test='searchWord == "ㅇ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '아'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '자'
             </when>
 
-            <when test='initial == "ㅈ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '자'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '차'
+            <when test='searchWord == "ㅈ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '자'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '차'
             </when>
 
-            <when test='initial == "ㅊ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '차'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '카'
+            <when test='searchWord == "ㅊ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '차'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '카'
             </when>
 
-            <when test='initial == "ㅋ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '카'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '타'
+            <when test='searchWord == "ㅋ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '카'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '타'
             </when>
 
-            <when test='initial == "ㅌ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '타'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '파'
+            <when test='searchWord == "ㅌ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '타'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '파'
             </when>
 
-            <when test='initial == "ㅍ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '파'
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;  '하'
+            <when test='searchWord == "ㅍ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '파'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '하'
             </when>
 
-            <when test='initial == "ㅎ"'>
-                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &gt;= '하'
+            <when test='searchWord == "ㅎ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '하'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;= '힣'
             </when>
+
         </choose>
 
         ORDER BY APT_CMPLEX_NM ASC
 
+        ) A
+        WHERE ROWNUM &lt;= #{endRow}
+        )
+        WHERE rnum &gt;= #{startRow}
+
     </select>
+
+
+    <select id="selectAptComplexCount"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM APT_COMPLEX
+        WHERE 1 = 1
+
+        <choose>
+
+            <when test='initial == "ㄱ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '가'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '나'
+            </when>
+
+            <when test='initial == "ㄴ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '나'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '다'
+            </when>
+
+            <when test='initial == "ㄷ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '다'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '라'
+            </when>
+
+            <when test='initial == "ㄹ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '라'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '마'
+            </when>
+
+            <when test='initial == "ㅁ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '마'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '바'
+            </when>
+
+            <when test='initial == "ㅂ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '바'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '사'
+            </when>
+
+            <when test='initial == "ㅅ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '사'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '아'
+            </when>
+
+            <when test='initial == "ㅇ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '아'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '자'
+            </when>
+
+            <when test='initial == "ㅈ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '자'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '차'
+            </when>
+
+            <when test='initial == "ㅊ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '차'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '카'
+            </when>
+
+            <when test='initial == "ㅋ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '카'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '타'
+            </when>
+
+            <when test='initial == "ㅌ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '타'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '파'
+            </when>
+
+            <when test='initial == "ㅍ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '파'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '하'
+            </when>
+
+            <when test='initial == "ㅎ"'>
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '하'
+                AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;= '힣'
+            </when>
+
+        </choose>
+
+    </select>
+
 
     <select id="searchApt"
             parameterType="string"

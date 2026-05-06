@@ -84,6 +84,53 @@
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
+
+    .pagination{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .pagination .page-item{
+      list-style:none;
+    }
+
+    .pagination .page-link{
+      width:40px;
+      height:40px;
+      border-radius:9999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#ffffff;
+      border:1px solid #e5e7eb;
+      color:#94a3b8;
+      font-size:14px;
+      font-weight:700;
+      transition:all .2s ease;
+      text-decoration:none;
+      box-shadow:0 1px 2px rgba(0,0,0,.03);
+    }
+
+    .pagination .page-link:hover{
+      background:#f8fafc;
+      border-color:#cbd5e1;
+      color:#475569;
+      transform:translateY(-1px);
+    }
+
+    .pagination .active .page-link{
+      background:#065f46;
+      border-color:#065f46;
+      color:white;
+      box-shadow:0 6px 14px rgba(6,95,70,.18);
+    }
+
+    .pagination .page-link[data-page]{
+      cursor:pointer;
+    }
+
+
   </style>
 </head>
 <body class="bg-surface text-on-surface flex flex-col min-h-screen">
@@ -178,7 +225,7 @@
   <!-- Summary Info & Toggle -->
   <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-2">
-      <span class="text-primary font-bold">총 ${fn:length(aptList)}개 단지</span>
+      <span class="text-primary font-bold">총 ${pagingVO.totalRecord}개 단지</span>
     </div>
     <div class="flex bg-[#f1f3ef] p-1 rounded-full">
       <button class="bg-primary text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1">
@@ -194,14 +241,14 @@
   <!-- Complex Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
     <c:choose>
-      <c:when test="${empty aptList}">
+     <c:when test="${empty pagingVO.dataList}">
       <div class="col-span-full bg-white rounded-2xl border border-[#eef2eb] p-10 text-center text-slate-400">
         조회된 단지가 없습니다.
       </div>
       </c:when>
 
       <c:otherwise>
-      <c:forEach var="apt" items="${aptList}">
+      <c:forEach var="apt" items="${pagingVO.dataList}">
       <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
 
         <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
@@ -238,73 +285,30 @@
     </c:choose>
   </div>
   <!-- Pagination -->
-  <div class="flex justify-center items-center gap-2 mb-16">
-    <button class="p-2 text-slate-400 hover:text-primary transition-colors">
-      <span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
-    </button>
-    <button class="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold">1</button>
-    <button class="w-8 h-8 rounded-full text-slate-400 text-sm font-bold hover:bg-slate-100 transition-all">2</button>
-    <button class="w-8 h-8 rounded-full text-slate-400 text-sm font-bold hover:bg-slate-100 transition-all">3</button>
-    <button class="p-2 text-slate-400 hover:text-primary transition-colors">
-      <span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
-    </button>
-  </div>
-  <!-- Detail Info Section (Selected Complex) -->
-<%--  <section class="bg-white rounded-3xl border border-[#eef2eb] overflow-hidden shadow-sm">
-    <div class="bg-primary px-8 py-4 flex justify-between items-center">
-      <h3 class="text-white font-bold flex items-center gap-2">
-        <span class="material-symbols-outlined" data-icon="info">info</span>
-        단지 상세 정보
-      </h3>
-      <button class="text-white/60 hover:text-white">
-        <span class="material-symbols-outlined" data-icon="close">close</span>
-      </button>
-    </div>
-    <div class="p-8 flex flex-col md:flex-row gap-8">
-      <div class="w-full md:w-64 h-48 bg-[#e8f0eb] rounded-2xl flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-primary/20 text-8xl" data-icon="apartment">apartment</span>
-      </div>
-      <div class="flex-1">
-        <div class="flex items-center gap-3 mb-4">
-          <h4 class="text-2xl font-black text-primary">OO아파트</h4>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-12 text-sm">
-          <div class="flex justify-between border-b border-slate-100 pb-2">
-            <span class="text-slate-400">주소</span>
-            <span class="text-primary font-medium">서울시 강남구 테헤란로 123</span>
-          </div>
-          <div class="flex justify-between border-b border-slate-100 pb-2">
-            <span class="text-slate-400">세대수</span>
-            <span class="text-primary font-medium">248세대</span>
-          </div>
-          <div class="flex justify-between border-b border-slate-100 pb-2">
-            <span class="text-slate-400">동수</span>
-            <span class="text-primary font-medium">4개동</span>
-          </div>
-          <div class="flex justify-between border-b border-slate-100 pb-2">
-            <span class="text-slate-400">준공연도</span>
-            <span class="text-primary font-medium">2008년</span>
-          </div>
-          <div class="flex justify-between border-b border-slate-100 pb-2">
-            <span class="text-slate-400">관리사무소</span>
-            <span class="text-primary font-medium">02-1234-5678</span>
-          </div>
-          <div class="flex justify-between border-b border-slate-100 pb-2">
-            <span class="text-slate-400">계약공고</span>
-            <span class="text-primary font-medium">진행 중 12건</span>
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-2 mt-8">
-          <button class="bg-primary text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-opacity-90 transition-all">계약공고 보기</button>
-          <button class="bg-white border border-slate-200 text-slate-600 px-6 py-2 rounded-full text-sm font-bold hover:bg-slate-50 transition-colors">시설이력 보기</button>
-          <button class="bg-white border border-slate-200 text-slate-600 px-6 py-2 rounded-full text-sm font-bold hover:bg-slate-50 transition-colors">통계 보기</button>
-        </div>
-      </div>
-    </div>
-  </section>--%>
+<div class="flex justify-center mt-10 mb-16">
+    <c:out value="${pagingVO.pagingHTML}" escapeXml="false"/>
+</div>
 </main>
 
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+  $(document).on("click", ".page-link", function(e){
+
+    e.preventDefault();
+
+    const page = $(this).data("page");
+
+    if(!page){
+      return;
+    }
+
+    const url = new URL(window.location.href);
+
+    url.searchParams.set("page", page);
+
+    location.href = url.toString();
+  });
+</script>
 </body>
-
-
 </html>
