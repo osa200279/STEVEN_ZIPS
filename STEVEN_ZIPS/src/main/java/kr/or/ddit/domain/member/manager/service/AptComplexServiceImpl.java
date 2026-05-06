@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.member.manager.servcie;
+package kr.or.ddit.domain.member.manager.service;
 
 import kr.or.ddit.domain.apt.board.ann.mapper.IAptAnnBoardPostMapper;
 import kr.or.ddit.domain.apt.board.ann.vo.AptAnnBoardPostVO;

@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.member.manager.servcie;
+package kr.or.ddit.domain.member.manager.service;
 
 import kr.or.ddit.domain.apt.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.vo.AptComplexVO;

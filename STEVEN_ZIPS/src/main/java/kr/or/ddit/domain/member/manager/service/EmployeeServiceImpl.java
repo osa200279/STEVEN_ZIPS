@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.member.manager.servcie;
+package kr.or.ddit.domain.member.manager.service;
 
 import java.util.List;
 
@@ -6,7 +6,6 @@ import kr.or.ddit.domain.member.manager.mapper.IEmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import kr.or.ddit.domain.member.manager.mapper.IEmployeeMapper;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
 import kr.or.ddit.domain.member.manager.vo.MngrRqstVO;
 import lombok.extern.slf4j.Slf4j;

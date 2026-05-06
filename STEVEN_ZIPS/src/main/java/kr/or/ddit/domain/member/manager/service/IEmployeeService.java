@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.member.manager.servcie;
+package kr.or.ddit.domain.member.manager.service;
 
 import java.util.List;
 
