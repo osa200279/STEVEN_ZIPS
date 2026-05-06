@@ -15,6 +15,9 @@ public interface IAttachFileMapper {
 
     AttachFileVO getAttachFile(@Param("fileGroupNo") String fileGroupNo, @Param("fileSaveUuid") String fileSaveUuid);
 
-    List<AttachFileVO> selecAttachFileList(@Param("fileGroupNo") String fileGroupNo);
+    void deleteByFileGroupNo(String fileGroupNo);
 
+    void deleteOne(String fileGroupNo, String fileSaveUuid);
+
+    List<AttachFileVO> selecAttachFileList(String fileId);
 }

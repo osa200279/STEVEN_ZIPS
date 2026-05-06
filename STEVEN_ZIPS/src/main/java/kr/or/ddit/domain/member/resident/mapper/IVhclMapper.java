@@ -23,7 +23,7 @@ public interface IVhclMapper {
 
     int selectFreePkgCnt(String aptCmplexNo);
 
-    RsidVhclVO selectByVhclNo(String vhclNo);
-
     void deleteVhcl(String rsidVhclNo,String userNo);
+
+    RsidVhclVO selectVhcl(String rsidVhclNo);
 }

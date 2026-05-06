@@ -38,25 +38,28 @@ public class ResidentChatController {
      * @param aptCmplexNo 아파트 단지 번호 (채팅방 필터링용)
      * @return 사용자가 속한 채팅방 목록
      */
-    @PreAuthorize("hasRole('RESIDENT') and principal.member.aptCmplexNo == #aptCmplexNo")
-@GetMapping("/myRooms")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/myRooms/{aptCmplexNo}")
     @ResponseBody
-    public List<ChatRoomVO> selectMyRoomList(@AuthenticationPrincipal CustomUser principal, String aptCmplexNo, Model model) {
+    public List<ChatRoomVO> selectMyRoomList(
+            @AuthenticationPrincipal CustomUser principal
+            ,@PathVariable String aptCmplexNo
+            ,Model model) {
 
         String userNo = principal.getMember().getUserNo();
 
         return residentService.selectMyRoomList(userNo, aptCmplexNo);
     }
 
-    @PreAuthorize("hasRole('RESIDENT')")
-    @PostMapping("/createRoom")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @PostMapping("/createRoom/{aptCmplexNo}")
     @ResponseBody
-    public ChatRoomVO createRoom(@AuthenticationPrincipal CustomUser principal,
-                                 @RequestBody ChatRoomVO vo) {
+    public ChatRoomVO createRoom(@AuthenticationPrincipal CustomUser principal
+                                 ,@PathVariable String aptCmplexNo
+                                 ,@RequestBody ChatRoomVO vo) {
 
         String userNo = principal.getMember().getUserNo();
 
         return residentService.createRoom(vo, userNo);
     }
-
 }

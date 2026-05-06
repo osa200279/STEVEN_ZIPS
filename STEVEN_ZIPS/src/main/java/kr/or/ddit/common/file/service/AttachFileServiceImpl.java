@@ -1,5 +1,6 @@
 package kr.or.ddit.common.file.service;
 
+import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,9 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
     @Autowired
     private IAttachFileMapper attachFileMapper;
+
+    @Autowired
+    private GoogleDriveService googleDriveService;
 
     /**
      * 타겟 파일 메타데이터 세팅 구버전 setFileMetaData 쓸 것 권장
@@ -72,6 +76,81 @@ public class AttachFileServiceImpl implements IAttachFileService {
             log.info("찾은 파일 갯수 : {}", fileList.size());
             return (fileList == null || fileList.isEmpty()) ? null : fileList;
         }
+    }
+
+
+    /**
+     * fileGroupNo 가 같은 첨부파일 테이블 데이터 전부 삭제!
+     * @author 도선호
+     * @param fileGroupNo 첨부파일 테이블에 적혀있는 fileGroupNo 를 적을것!
+     */
+    @Override
+    public void deleteAllByGroupNo(String fileGroupNo) {
+
+        List<AttachFileVO> fileList = setFileMetaData(fileGroupNo);
+
+        try {
+            var drive = googleDriveService.getDriveService();
+
+            for (AttachFileVO file : fileList) {
+                if (file.getGoogleId() != null) {
+                    googleDriveService.moveToTrash(drive, file.getGoogleId());
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("구글 파일 삭제 실패", e);
+        }
+
+        attachFileMapper.deleteByFileGroupNo(fileGroupNo);
+
+    }
+
+
+    /**
+     * fileGroupNo 중에 여러 파일이 있을 경우 선택한 파일 삭제!
+     * @author 도선호
+     * @param fileGroupNo 첨부파일 테이블에 적혀있는 fileGroupNo 를 적을것!
+     * @param fileSaveUuid
+     */
+    @Override
+    public void deleteOne(String fileGroupNo, String fileSaveUuid) {
+
+        AttachFileVO file = attachFileMapper.getAttachFile(fileGroupNo, fileSaveUuid);
+
+        if (file == null) return;
+
+        try {
+            var drive = googleDriveService.getDriveService();
+
+            if (file.getGoogleId() != null) {
+                googleDriveService.moveToTrash(drive, file.getGoogleId());
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("구글 파일 삭제 실패", e);
+        }
+
+        attachFileMapper.deleteOne(fileGroupNo, fileSaveUuid);
+    }
+
+    /**
+     * attachFileGroupNo 얻는 메서드
+     * @author 도선호
+     * @return
+     */
+    @Override
+    public long getSeqFileGroupNo() {
+        return attachFileMapper.getSeqFileGroupNo();
+    }
+
+    /**
+     * 첨부파일정보 db에 insert 하는 메서드
+     * @author 도선호
+     * @param fileVO
+     */
+    @Override
+    public int insertAttachFile(AttachFileVO fileVO) {
+        return attachFileMapper.insertAttachFile(fileVO);
     }
 
 }

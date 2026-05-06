@@ -288,5 +288,11 @@
             <artifactId>spring-ai-starter-vector-store-chroma</artifactId>
         </dependency>-->
 
+        <!--웹소켓 디펜던시 start by 도선호-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <!--웹소켓 디펜던시 end-->
     </dependencies>
 </project>

@@ -1,7 +1,7 @@
 package kr.or.ddit.domain.member.resident.service;
 
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
-import kr.or.ddit.common.file.mapper.IAttachFileMapper;
+import kr.or.ddit.common.file.service.IAttachFileService;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.member.resident.mapper.IVhclMapper;
 import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
@@ -27,7 +27,7 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
     GoogleDriveService googleDriveService;
 
     @Autowired
-    IAttachFileMapper attachFileMapper;
+    IAttachFileService attachFileService;
 
 
     @Override
@@ -45,9 +45,54 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
         return currentCnt >= freeCnt;
     }
 
+    @Override
+    @Transactional
     public void deleteVhcl(String rsidVhclNo, String userNo) {
 
-        vhclMapper.deleteVhcl(rsidVhclNo,userNo);
+        //차량 조회
+        RsidVhclVO vhcl = vhclMapper.selectVhcl(rsidVhclNo);
+
+        if (vhcl == null) {
+            throw new RuntimeException("차량 없음");
+        }
+
+        if (!vhcl.getUserNo().equals(userNo)) {
+            throw new RuntimeException("삭제 권한 없음");
+        }
+
+        String fileId = vhcl.getVhclFileNo();
+
+        //파일 존재하면 처리
+        if (fileId != null && !fileId.isBlank()) {
+
+            //groupNo 추출
+            String fileGroupNo = fileId.split("_")[0];
+
+            //attach_file 조회
+            List<AttachFileVO> fileList =
+                    attachFileService.setFileMetaData(fileGroupNo);
+
+            try {
+                var drive = googleDriveService.getDriveService();
+
+                //구글 파일 삭제
+                for (AttachFileVO file : fileList) {
+                    if (file.getGoogleId() != null) {
+                        googleDriveService.moveToTrash(drive, file.getGoogleId());
+                    }
+                }
+
+            } catch (Exception e) {
+                throw new RuntimeException("구글 파일 삭제 실패", e);
+            }
+
+
+            attachFileService.deleteAllByGroupNo(fileGroupNo);
+
+        }
+
+        //차량 삭제
+        vhclMapper.deleteVhcl(rsidVhclNo, userNo);
     }
 
     @Transactional
@@ -71,18 +116,21 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
         }
 
         //상태 결정
-        String status = isExtra ? "WAIT" : "APRV";
+        String status = "WAIT";
 
         //파일 처리
         Long fileGroupNo = null;
-
+        String fileId = null;
 
         if (file != null && !file.isEmpty()) {
 
-            fileGroupNo = attachFileMapper.getSeqFileGroupNo();
+            fileGroupNo = attachFileService.getSeqFileGroupNo();
+
             String uuid = UUID.randomUUID().toString().replace("-","");
             String path = "resident/vhcl/"+userNo;
             String savedFileName = uuid + "_" + file.getOriginalFilename();
+
+            fileId = fileGroupNo + "_"+ savedFileName;
 
             String googleId = googleDriveService.uploadFile(file,path,savedFileName);
 
@@ -97,7 +145,7 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
                     ,1
             );
 
-            attachFileMapper.insertAttachFile(fileVO);
+            attachFileService.insertAttachFile(fileVO);
         }
 
         // 차량 VO
@@ -107,8 +155,8 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
         vhcl.setVhclNo(vhclNo);
         vhcl.setHoNo(hoNo);
         vhcl.setVhclSttsCd(status);
-        if(fileGroupNo != null) {
-            vhcl.setVhclFileNo(String.valueOf(fileGroupNo));
+        if(fileId != null) {
+            vhcl.setVhclFileNo(fileId);
         }
         //insert 진행!
         vhclMapper.insertVhcl(vhcl);

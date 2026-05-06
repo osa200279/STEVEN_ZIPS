@@ -2,7 +2,6 @@ package kr.or.ddit.domain.member.resident.service;
 
 import kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO;
 import kr.or.ddit.domain.member.resident.mapper.IResidentChatMapper;
-import kr.or.ddit.domain.member.resident.mapper.IResidentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

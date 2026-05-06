@@ -3,6 +3,7 @@ package kr.or.ddit.domain.member.resident.controller;
 import kr.or.ddit.domain.member.resident.service.IResidentVhclService;
 import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
+import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -89,11 +90,11 @@ public class ResidentVhclController {
     @ResponseBody
     public ResponseEntity<String> deleteVhcl(
             @PathVariable String rsidVhclNo,
-            Authentication authentication
+            @AuthenticationPrincipal CustomUser customUser
     ) {
 
-        CustomUser user = (CustomUser) authentication.getPrincipal();
-        String userNo = user.getMember().getUserNo();
+        MemberVO user = customUser.getMember();
+        String userNo = user.getUserNo();
 
         residentVhclService.deleteVhcl(rsidVhclNo, userNo);
 

@@ -35,6 +35,17 @@
                  )
     </insert>
 
+    <delete id="deleteByFileGroupNo">
+        DELETE FROM attach_file /* kr.or.ddit.common.file.mapper.IAttachFileMapper.deleteByFileGroupNo */
+        WHERE file_group_no = #{fileGroupNo}
+    </delete>
+
+    <delete id="deleteOne">
+        DELETE FROM attach_file /* kr.or.ddit.common.file.mapper.IAttachFileMapper.deleteOne */
+        WHERE file_group_no = #{fileGroupNo}
+          AND file_save_uuid = #{fileSaveUuid}
+    </delete>
+
     <select id="getSeqFileGroupNo" resultType="long">
         select seq_attach_file_group_no.nextval from dual
     </select>

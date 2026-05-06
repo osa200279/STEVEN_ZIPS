@@ -289,11 +289,15 @@ public class ResidentMainController {
         return "member/resident/board/board_free_detail";
     }
 
-    @PreAuthorize("hasRole('RESIDENT')")
-    @GetMapping("/board/chat")
-    public String boardChat(@AuthenticationPrincipal CustomUser principal, Model model) {
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/board/chat/{aptCmplexNo}")
+    public String boardChat(@AuthenticationPrincipal CustomUser principal
+            ,@PathVariable String aptCmplexNo
+            ,Model model
+            ) {
 
         model.addAttribute("userNo", principal.getMember().getUserNo());
+        model.addAttribute("aptCmplexNo",aptCmplexNo);
 
         return "member/resident/board/board_chat";
     }

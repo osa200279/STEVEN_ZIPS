@@ -15,7 +15,7 @@ function openMyRoom(roomNo,roomNm,el) {
     if (el) setActiveRoom(el);
 
     /* 채팅방 메시지 가져오는 메서드! */
-    fetch(contextPath + '/residentChat/messages?chatRoomNo=' + roomNo)
+    fetch(contextPath + '/residentChat/messages/' + aptCmplexNo + '?chatRoomNo=' + roomNo)
         .then(res => res.json())
         .then(list => {
 
@@ -51,7 +51,7 @@ function openMyRoom(roomNo,roomNm,el) {
 /* 오픈채팅방 리스트를 가져옴*/
 function openDiscover() {
 
-    fetch(contextPath + '/residentChat/openRooms')
+    fetch(contextPath + '/residentChat/openRooms/' + aptCmplexNo)
         .then(res => res.json())
         .then(list => {
 
@@ -82,7 +82,7 @@ function openDiscover() {
 
 function enterRoom(roomNo) {
 
-    fetch(contextPath + '/residentChat/enter?chatRoomNo=' + roomNo, {
+    fetch(contextPath + '/residentChat/enter/' + aptCmplexNo + '?chatRoomNo=' + roomNo, {
         method: 'POST'
     }).then(() => {
         openMyRoom(roomNo, "");
@@ -102,7 +102,7 @@ function setActiveRoom(el) {
 }
 
 function loadMyRooms() {
-    fetch(contextPath + '/residentChat/myRooms')
+    fetch(contextPath + '/residentChat/myRooms/' +aptCmplexNo)
         .then(res => res.json())
         .then(list => {
 
@@ -153,7 +153,7 @@ function sendMessage() {
 
     const content = document.getElementById("msg").value;
 
-    fetch(contextPath + '/residentChat/send', {
+    fetch(contextPath + '/residentChat/send/' + aptCmplexNo, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(   {
@@ -177,7 +177,7 @@ function openCreateRoom() {
 
 function createRoom(roomName) {
 
-    fetch(contextPath + '/residentChat/createRoom', {
+    fetch(contextPath + '/residentChat/createRoom/' + aptCmplexNo, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

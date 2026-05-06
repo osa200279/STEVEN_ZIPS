@@ -687,9 +687,8 @@
 
 <script>
     const userNo = '${userNo}';
-</script>
-<script>
     const contextPath = '${pageContext.request.contextPath}';
+    const aptCmplexNo = '${aptCmplexNo}';
 </script>
 <script src="${pageContext.request.contextPath}/js/member/resident/residentBoardChat.js"></script>
 

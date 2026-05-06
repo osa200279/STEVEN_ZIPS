@@ -729,6 +729,25 @@
             color: #d32f2f;          /* hover 시 진하게 */
             text-decoration: underline;
         }
+
+        @keyframes errorFlash {
+            0% {
+                border-color: #e53935;
+                background-color: #fff5f5;
+            }
+            50% {
+                border-color: #e53935;
+                background-color: #ffecec;
+            }
+            100% {
+                border-color: #d8ddd4;
+                background-color: #fff;
+            }
+        }
+
+        .input-error {
+            animation: errorFlash 0.8s ease;
+        }
     </style>
 
 </head>
@@ -844,22 +863,47 @@
     /* 유효성 체킁*/
     function validateVhclNo(front, back) {
 
-        const frontRegex = /^[0-9]{2,3}[가-힣]$/;   // 12가 / 123가
-        const backRegex = /^[0-9]{4}$/;            // 1234
+        const frontRegex = /^[0-9]{2,3}[가-힣]$/;
+        const backRegex = /^[0-9]{4}$/;
+
+        const frontInput = document.getElementById("vhclNoFront");
+        const backInput = document.getElementById("vhclNoBack");
+
+        let isValid = true;
 
         if (!frontRegex.test(front)) {
-            alert("차량번호 앞자리를 확인하세요 (예: 12가)");
-            return false;
+            isValid = false;
         }
 
         if (!backRegex.test(back)) {
-            alert("차량번호 뒷자리는 숫자 4자리입니다");
+            isValid = false;
+        }
+
+        if (!isValid) {
+            alert("차량번호 형식을 확인하세요 (예: 12가 1234)");
+
+            if (!frontRegex.test(front)) {
+                highlightError(frontInput);
+            }
+
+            if (!backRegex.test(back)) {
+                highlightError(backInput);
+            }
+
             return false;
         }
 
         return true;
     }
 
+    // 틀렸을시 강조해주는 함수
+    function highlightError(el) {
+        el.classList.add("input-error");
+
+        setTimeout(() => {
+            el.classList.remove("input-error");
+        }, 800);
+    }
 
     // 클릭 → 파일 선택
     uploadBox.addEventListener("click", () => {
@@ -1054,11 +1098,33 @@
     function submitVhcl(isExtra) {
 
         const formData = new FormData();
+        const vhclNm = document.getElementById("vhclNmData").value.trim();
 
-        formData.append("vhclNm", document.getElementById("vhclNmData").value);
+        if (!vhclNm) {
+            alert("차종을 입력해주세요.");
+
+            const input = document.getElementById("vhclNmData");
+            input.focus();
+            highlightError(input);
+
+            resetButton();
+            return;
+        }
+
+        formData.append("vhclNm", vhclNm);
+
         const front = document.getElementById("vhclNoFront").value.trim();
         const back = document.getElementById("vhclNoBack").value.trim();
         if (!validateVhclNo(front, back)) {
+            resetButton();
+            return;
+        }
+
+        if (!fileInput.files[0]) {
+            alert("차량등록증을 등록해주세요.");
+
+            highlightError(uploadBox);
+
             resetButton();
             return;
         }
@@ -1160,6 +1226,8 @@
                 alert(err.message);
             });
     }
+
+
 </script>
 </body>
 </html>

@@ -138,5 +138,14 @@
             vhcl_no = #{vhclNo}
     </select>
 
+    <select id="selectVhcl" resultType="kr.or.ddit.domain.member.resident.vo.RsidVhclVO">
+        SELECT
+            VHCL_FILE_NO
+            ,USER_NO
+        FROM
+            rsid_vhcl
+        WHERE
+            rsid_vhcl_no = #{rsidVhclNo}
+    </select>
 
 </mapper>

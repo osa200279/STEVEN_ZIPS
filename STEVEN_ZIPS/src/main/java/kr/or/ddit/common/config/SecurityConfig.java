@@ -195,7 +195,7 @@ public class SecurityConfig {
     // Jwt 시큐리티 인증 시스템 구축의 최종 단계
     @Bean
     protected AuthenticationManager authenticationManager(
-            BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationConfiguration authenticationConfiguration){
+        BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationConfiguration authenticationConfiguration){
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(customUserDetailsService);   // DB에서 정보를가져와서 인증 처리
         authProvider.setPasswordEncoder(bCryptPasswordEncoder); // 암호 해독기 설정(DB의 비밀번호는 암호화 되어있기 때문에 필요)
         return new ProviderManager(authProvider);   // 위 설정을 마친 객체(authProvider)를 authenticationManager로 사용
