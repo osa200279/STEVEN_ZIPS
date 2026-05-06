@@ -138,11 +138,11 @@
         INSERT ALL
         <foreach collection="list" item="item">
             INTO AUTH(
-                USER_NO,
-                USER_ROLE_CD
+            USER_NO,
+            USER_ROLE_CD
             ) VALUES (
-               #{userNo},
-                #{auth}
+            #{item.userNo},
+            #{item.auth}
             )
         </foreach>
         SELECT 1 FROM DUAL
@@ -199,8 +199,8 @@
             APT_CMPLEX_NO,
             DOROJUSO
         FROM APT_COMPLEX
-        WHERE LAT_VAL IS NULL
-           OR LON_VAL IS NULL
+        WHERE LAT_VAL = 0
+           OR LON_VAL = 0
     </select>
 
     <select id="selectAvailableUnits" resultType="kr.or.ddit.domain.apt.main.vo.AptDetailVO">

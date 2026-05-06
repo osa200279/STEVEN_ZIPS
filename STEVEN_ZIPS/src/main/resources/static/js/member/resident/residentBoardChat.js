@@ -1,20 +1,47 @@
 window.onload = function () {
     loadMyRooms();
+    connectSocket();
 };
+
+let stomp = null;
+let subscription = null;
 
 let currentRoomNo = null;
 let currentRoomNm = null;
 
+/* 웹소켓 연결함수 */
+function connectSocket() {
+
+    const socket = new SockJS('/ws-chat');
+    stomp = Stomp.over(socket);
+
+    stomp.connect({}, function () {
+        console.log("웹소켓 연결됨");
+    });
+}
 
 /* 내 채팅방 목록에서 눌렀을때 실행됨 */
-function openMyRoom(roomNo,roomNm,el) {
+function openMyRoom(roomNo, roomNm, el) {
 
     currentRoomNo = roomNo;
     currentRoomNm = roomNm;
 
     if (el) setActiveRoom(el);
 
-    /* 채팅방 메시지 가져오는 메서드! */
+    //기존 구독 끊기
+    if (subscription) {
+        subscription.unsubscribe();
+    }
+
+    //새 채팅방 구독
+    subscription = stomp.subscribe('/sub/chat/room/' + roomNo, function(msg) {
+
+        const data = JSON.parse(msg.body);
+
+        appendMessage(data);  //새 메시지만 추가
+    });
+
+    // 기존 메시지 로딩
     fetch(contextPath + '/residentChat/messages/' + aptCmplexNo + '?chatRoomNo=' + roomNo)
         .then(res => res.json())
         .then(list => {
@@ -23,18 +50,11 @@ function openMyRoom(roomNo,roomNm,el) {
                 <div class="section-hd">
                     <h3>${roomNm}</h3>
                 </div>
-                <div class="message-stream">
+                <div class="message-stream" id="message-area">
             `;
 
             list.forEach(msg => {
-
-                const isMe = String(msg.userNo) === String(userNo);
-
-                html += `
-                          <div class="message ${isMe ? 'me' : 'other'}">
-                            ${msg.msgCn}
-                          </div>
-                        `;
+                html += renderMessage(msg);
             });
 
             html += `</div>
@@ -47,6 +67,7 @@ function openMyRoom(roomNo,roomNm,el) {
             document.getElementById("chat-content").innerHTML = html;
         });
 }
+
 
 /* 오픈채팅방 리스트를 가져옴*/
 function openDiscover() {
@@ -153,19 +174,15 @@ function sendMessage() {
 
     const content = document.getElementById("msg").value;
 
-    fetch(contextPath + '/residentChat/send/' + aptCmplexNo, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(   {
-            chatRoomNo: currentRoomNo,
-            msgCn: content
-        })
-    }).then(() => {
-        document.getElementById("msg").value = "";
-        openMyRoom(currentRoomNo, currentRoomNm);
-    });
-}
+    stomp.send("/pub/chat/send", {}, JSON.stringify({
+        chatRoomNo: currentRoomNo,
+        msgCn: content,
+        msgTyCd: "TEXT",
+        senderTy: "USER",
+    }));
 
+    document.getElementById("msg").value = "";
+}
 
 function openCreateRoom() {
     const roomName = prompt("채팅방 이름 입력");
@@ -190,4 +207,30 @@ function createRoom(roomName) {
             openMyRoom(room.chatRoomNo, room.chatRoomNm, this);
             loadMyRooms();
         });
+}
+
+function appendMessage(msg) {
+
+    const isMe = String(msg.userNo) === String(userNo);
+
+    const html = `
+        <div class="message ${isMe ? 'me' : 'other'}">
+            ${msg.msgCn}
+        </div>
+    `;
+
+    const area = document.getElementById("message-area");
+    area.insertAdjacentHTML('beforeend', html);
+
+    area.scrollTop = area.scrollHeight; // 자동 스크롤
+}
+
+function renderMessage(msg) {
+    const isMe = String(msg.userNo) === String(userNo);
+
+    return `
+        <div class="message ${isMe ? 'me' : 'other'}">
+            ${msg.msgCn}
+        </div>
+    `;
 }

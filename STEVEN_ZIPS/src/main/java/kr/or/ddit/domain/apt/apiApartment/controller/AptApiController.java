@@ -2,6 +2,7 @@ package kr.or.ddit.domain.apt.apiApartment.controller;
 
 import kr.or.ddit.domain.apt.apiApartment.service.IAptApiService;
 import kr.or.ddit.domain.apt.apiApartment.service.IAptMemberApiService;
+import kr.or.ddit.domain.apt.apiApartment.vo.AptBass;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +104,19 @@ public class AptApiController {
         aptService.assignResidents(aptList, count);
 
         return count + "명 입주 완료";
+    }
+
+    @PostMapping("/apt/checkBaseInfo")
+    @ResponseBody
+    public List<AptBass> checkBaseInfo(@RequestBody Map<String, String> param){
+
+        log.info("search Start");
+
+        String sido = param.get("sido");
+        String sigungu = param.get("sigungu");
+        String emd = param.get("emd");
+
+        return aptService.checkBaseInfo(sido, sigungu, emd);
     }
 
 }

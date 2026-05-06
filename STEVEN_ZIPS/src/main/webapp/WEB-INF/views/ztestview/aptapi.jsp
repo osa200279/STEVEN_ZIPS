@@ -62,6 +62,7 @@
 <select id="emd"></select>
 
 <button id="searchBtn">검색</button>
+<button id="publicSearchBtn">공공데이터 조회</button>
 
 <div>
     <label>
@@ -327,10 +328,80 @@
         })
             .then(res => res.text())
             .then(msg => alert(msg));
-z
         $("#assignCount").val("");
 
         loadNotAssignedUserCount();
+    });
+
+
+    $("#publicSearchBtn").on("click", async function(){
+
+        const sido = $("#sido").val();
+        const sigungu = $("#sigungu").val();
+        const emd = $("#emd").val();
+
+        if (!sido) {
+            alert("시/도를 선택하세요");
+            return;
+        }
+
+        try {
+
+            const response = await fetch("/api/apt/checkBaseInfo", {
+                method : "POST",
+                headers : {
+                    "Content-Type" : "application/json"
+                },
+                body : JSON.stringify({
+                    sido : sido,
+                    sigungu : sigungu,
+                    emd : emd
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("status : " + response.status);
+            }
+
+            const result = await response.json();
+
+            let html = "";
+
+            if (!result || result.length === 0) {
+
+                html = "<div>조회 결과 없음</div>";
+
+            } else {
+
+                result.forEach(apt => {
+
+                    html += `
+                    <div class="apt-row">
+                        <div>
+                            <strong>\${apt.kaptName}</strong>
+                        </div>
+
+                        <div>
+                            주소 : \${apt.doroJuso ?? '-'}
+                        </div>
+
+                        <div>
+                            세대수 : \${apt.kaptdaCnt ?? '-'}
+                        </div>
+
+                        <hr>
+                    </div>
+                `;
+                });
+            }
+
+            $("#aptList").html(html);
+
+        } catch (e) {
+
+            console.error(e);
+            alert("조회 실패");
+        }
     });
 
 </script>

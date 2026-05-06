@@ -44,7 +44,7 @@ public class ResidentChatController {
     public List<ChatRoomVO> selectMyRoomList(
             @AuthenticationPrincipal CustomUser principal
             ,@PathVariable String aptCmplexNo
-            ,Model model) {
+            ) {
 
         String userNo = principal.getMember().getUserNo();
 

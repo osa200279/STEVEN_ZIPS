@@ -149,6 +149,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
     }
 
     /**
+     * mapper에는 있는데 service에는 없어서 추가했어요
      * attachFileGroupNo 얻는 메서드
      * @author 도선호
      * @return
@@ -159,6 +160,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
     }
 
     /**
+     * mapper에는 있는데 service에는 없어서 추가했어요
      * 첨부파일정보 db에 insert 하는 메서드
      * @author 도선호
      * @param fileVO

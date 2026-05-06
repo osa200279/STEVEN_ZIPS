@@ -3,7 +3,6 @@ package kr.or.ddit.domain.apt.apiApartment.service;
 import kr.or.ddit.domain.apt.apiApartment.mapper.IApiMemberMapper;
 import kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper;
 import kr.or.ddit.domain.apt.apiApartment.vo.*;
-import kr.or.ddit.domain.member.manager.vo.ManagerVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.main.vo.AptUnitVO;
 import kr.or.ddit.domain.member.vo.AuthVO;
@@ -696,6 +695,116 @@ public class AptApiServiceImpl implements IAptApiService {
                 userIndex++;
             }
         }
+    }
+
+    @Override
+    public List<AptBass> checkBaseInfo(String sido, String sigungu, String emd) {
+
+        log.info("===== checkBaseInfo 시작 =====");
+        log.info("조회 조건 sido={}, sigungu={}, emd={}", sido, sigungu, emd);
+
+        List<String> lawdCdList =
+                aptMapper.selectLawdCdList(sido, sigungu, emd);
+
+        log.info("조회된 법정동 코드 수 : {}", lawdCdList.size());
+
+        List<AptBass> result = new ArrayList<>();
+
+        for (String bjdCode : lawdCdList) {
+
+            log.info("========== 법정동 시작 ==========");
+            log.info("bjdCode={}", bjdCode);
+
+            int pageNo = 1;
+
+            while (true) {
+
+                log.info("페이지 조회 시작 pageNo={}", pageNo);
+
+                String listUrl =
+                        "https://apis.data.go.kr/1613000/AptListService3/getLegaldongAptList3"
+                                + "?serviceKey=" + serviceKey
+                                + "&pageNo=" + pageNo
+                                + "&numOfRows=100"
+                                + "&bjdCode=" + bjdCode;
+
+                ResponseEntity<AptListResponse> listResponse =
+                        rt.getForEntity(listUrl, AptListResponse.class);
+
+                AptListResponse dto = listResponse.getBody();
+
+                if (dto == null
+                        || dto.getResponse() == null
+                        || dto.getResponse().getBody() == null) {
+
+                    log.warn("목록 API 응답 없음");
+                    break;
+                }
+
+                List<AptListItem> items =
+                        listResponse.getBody()
+                                .getResponse()
+                                .getBody()
+                                .getItems();
+
+                if (items == null || items.isEmpty()) {
+
+                    log.info("현재 법정동 조회 결과 없음");
+                    break;
+                }
+
+                log.info("현재 페이지 아파트 수 : {}", items.size());
+
+                for (AptListItem item : items) {
+
+                    try {
+
+                        log.info("[page {}] 상세조회 시작 : {}",
+                                pageNo,
+                                item.getKaptName());
+
+                        String detailUrl =
+                                "https://apis.data.go.kr/1613000/AptBasisInfoServiceV4/getAphusBassInfoV4"
+                                        + "?serviceKey=" + serviceKey
+                                        + "&kaptCode=" + item.getKaptCode();
+
+                        ResponseEntity<AptBassResponse> response =
+                                rt.getForEntity(detailUrl, AptBassResponse.class);
+
+                        Thread.sleep(100);
+
+                        AptBassResponse bassDto = response.getBody();
+
+                        if (bassDto == null
+                                || bassDto.getResponse() == null
+                                || bassDto.getResponse().getBody() == null
+                                || bassDto.getResponse().getBody().getItem() == null) {
+
+                            continue;
+                        }
+
+                        result.add(
+                                bassDto.getResponse().getBody().getItem()
+                        );
+
+                        log.info("[page {}] 조회 성공 : {}",
+                                pageNo,
+                                item.getKaptName());
+
+                    } catch (Exception e) {
+
+                        log.error("조회 실패 : {}", item.getKaptCode(), e);
+                    }
+                }
+
+                pageNo++;
+            }
+        }
+
+        log.info("===== checkBaseInfo 종료 =====");
+        log.info("최종 결과 수 : {}", result.size());
+
+        return result;
     }
 
 }
