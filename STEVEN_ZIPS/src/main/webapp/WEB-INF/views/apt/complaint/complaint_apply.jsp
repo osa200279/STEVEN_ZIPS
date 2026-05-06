@@ -17,14 +17,14 @@
     <main class="content-area">
         <div class="page-content-wrap">
             <div class="breadcrumb">
-                <a href="${pageContext.request.contextPath}/">HOME</a>
+                <a href="/apt/main/${apt.aptCmplexNo}">HOME</a>
                 <span>›</span>
                 <a href="javascript:void(0);">민원접수</a>
                 <span>›</span>
                 <span class="cur">민원신청</span>
             </div>
             <h1 class="page-title">민원신청</h1>
-            <p class="page-desc">민원 카테고리 선택, 제목/내용/증빙파일 입력, 최근 접수 내역 확인과 1:1 채팅 이동 버튼을 포함한 민원신청 화면입니다.</p>
+            <p class="page-desc">민원 카테고리 선택, 제목/내용/증빙파일 입력, 최근 접수 내역 확인 화면입니다.</p>
 
             <section class="grid-2">
                 <div class="panel">
@@ -32,37 +32,39 @@
                         <h3>민원 접수 작성</h3>
                         <span>신청 폼</span>
                     </div>
-                    <div class="form-grid">
-                        <div class="th">카테고리</div>
-                        <div class="td">
-                            <select class="fake-select">
-                                <option>시설</option>
-                                <option>소음</option>
-                                <option>주차</option>
-                                <option>청소</option>
-                                <option>기타</option>
-                            </select>
+                    <form name="cvplApplyForm" id="cvplApplyForm" method="post" enctype="multipart/form-data">
+                        <div class="form-grid">
+                            <div class="th">카테고리</div>
+                            <div class="td">
+                                <select name="cvplTyCd" class="select">
+                                    <option value="FAC">시설/하자</option>
+                                    <option value="SEC">보안/안전</option>
+                                    <option value="ACC">회계/관리비</option>
+                                    <option value="ENV">환경/위생</option>
+                                    <option value="ETC">기타</option>
+                                </select>
+                            </div>
+                            <div class="th">제목</div>
+                            <div class="td">
+                                <input class="fake-input" value="지하주차장 조명 점검 요청"/>
+                            </div>
+                            <div class="th">발생장소</div>
+                            <div class="td">
+                                <input class="fake-input" value="지하 1층 B구역"/>
+                            </div>
+                            <div class="th">증빙파일</div>
+                            <div class="td">
+                                <input class="fake-input" value="parking_issue.jpg"/>
+                            </div>
+                            <div class="th">설명</div>
+                            <div class="td">
+                                <textarea class="fake-textarea">일부 구간 조명이 어두워 야간 이동 시 불편합니다.</textarea>
+                            </div>
                         </div>
-                        <div class="th">제목</div>
-                        <div class="td">
-                            <input class="fake-input" value="지하주차장 조명 점검 요청"/>
+                        <div class="btn-row">
+                            <button class="btn-main">민원 접수</button>
                         </div>
-                        <div class="th">발생장소</div>
-                        <div class="td">
-                            <input class="fake-input" value="지하 1층 B구역"/>
-                        </div>
-                        <div class="th">증빙파일</div>
-                        <div class="td">
-                            <input class="fake-input" value="parking_issue.jpg"/>
-                        </div>
-                        <div class="th">설명</div>
-                        <div class="td">
-                            <textarea class="fake-textarea">일부 구간 조명이 어두워 야간 이동 시 불편합니다.</textarea>
-                        </div>
-                    </div>
-                    <div class="btn-row">
-                        <button class="btn-main">민원 접수</button>
-                    </div>
+                    </form>
                 </div>
                 <div class="panel">
                     <div class="section-hd">
@@ -97,7 +99,6 @@
                     </table>
                 </div>
             </section>
-
         </div>
     </main>
 </div>
