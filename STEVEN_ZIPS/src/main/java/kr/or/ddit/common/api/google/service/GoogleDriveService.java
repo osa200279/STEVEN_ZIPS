@@ -123,7 +123,7 @@ public class GoogleDriveService {
      * @query mimeType 데이터 타입 'application/vnd.google-apps.folder', 'image/jpeg'
      * @query 'folder' in parents 'folder'컬렉션(폴더) 내 파일 (ex. myFolder 내 파일 => 'myFolder' in parents)
      */
-    private String getOrCreateFolders(Drive service, String rootId, String path) throws IOException {
+    private synchronized String getOrCreateFolders(Drive service, String rootId, String path) throws IOException {
         String[] folderNames = path.split("/"); // '/'로 구분된 각 경로 분리
         String currentParentId = rootId;
         String targetType = "application/vnd.google-apps.folder";
