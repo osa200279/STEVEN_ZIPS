@@ -101,7 +101,7 @@ public class MemberController {
 
         if(profFileId != null && !profFileId.isBlank()){
             // 파일 데이터 세팅
-            AttachFileVO file = attachFileService.setFileMetaData(profFileId);
+            AttachFileVO file = attachFileService.setOnlyOneFileMetaData(profFileId);
 
             if(file != null){
                 model.addAttribute("file", file);   // 파일 정보 전체

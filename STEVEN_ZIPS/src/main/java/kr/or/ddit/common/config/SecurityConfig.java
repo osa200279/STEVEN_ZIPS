@@ -49,25 +49,23 @@ public class SecurityConfig {
 
     // 인증객체 없어도(모두가) 접근할 수 있는 URL => JSP페이지
     private static final String[] PASS_URL = {
-            "/index.html",
-            "/",
-            "/apt/main",
-            "/login",
-            "/accessError",
-            "/login.do",
-            "/logout.do",
-            "/member/join.do",
-            "/member/join",
-            "/member/update",
-            "/member/idCheck",
-            "/.well-known/**"
+            "/index.html"
+            , "/"
+            , "/apt/main"
+            , "/login"
+            , "/accessError"
+            , "/login.do"
+            , "/logout.do"
+            , "/member/join.do"
+            , "/member/join"
+            , "/member/update"
+            , "/member/idCheck"
+            , "/.well-known/**"
     };
 
     private static final String[] REACT_PASS_URL = {
-            "/api/react/checkId.do",
-            "/api/react/signup.do",
-            "/api/react/signin.do",
-            "/api/react/ann/list"
+            "/react/test"
+            ,
     };
 
     // 테스트용 URL 모음
