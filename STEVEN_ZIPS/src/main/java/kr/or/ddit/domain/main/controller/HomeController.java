@@ -36,4 +36,14 @@ public class HomeController {
 		return "accessError";
 	}
 
+	@GetMapping("/error")
+	public String error(
+			@RequestParam(required = false) String msg,
+			@RequestParam(required = false) String prevPage ,Model model) {
+
+		model.addAttribute("msg", msg);
+		model.addAttribute("prevPage", prevPage);
+
+		return "accessError";
+	}
 }
