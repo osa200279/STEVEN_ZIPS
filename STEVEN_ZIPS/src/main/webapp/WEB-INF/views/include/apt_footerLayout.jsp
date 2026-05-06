@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div style="margin-top:14px; font-size:12px; color:rgba(255,255,255,.35); line-height:1.9;">
-                    ${office.mgmtOfcNm}<br>
+                    ${mgmtOffice.mgmtOfcNm}<br>
                     <%--사업자번호: 000-00-00000 | 등록번호: 제0000호--%>
                 </div>
             </div>
@@ -31,11 +31,11 @@
                 <div class="label">Contact Us</div>
                 <div class="phone">
                     <c:choose>
-                        <c:when test="${not empty office.mgmtOfcTelno}">
+                        <c:when test="${not empty mgmtOffice.mgmtOfcTelno}">
                             <div>
                                 Tel.&nbsp;
-                                <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, '-', '')}"/>
-                                <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, ' ', '')}"/>
+                                <c:set var="telNo" value="${fn:replace(mgmtOffice.mgmtOfcTelno, '-', '')}"/>
+                                <c:set var="telNo" value="${fn:replace(mgmtOffice.mgmtOfcTelno, ' ', '')}"/>
                                 <c:set var="telLength" value="${fn:length(telNo)}"/>
                                     <%-- 전화번호 '-' 처리 방법! 앞자리가 02일때와 아닐때로 나눔. 작성자 : 이윤진 --%>
                                 <span class="phone">
@@ -58,7 +58,7 @@
                                     </c:when>
                                     <%-- 전화번호 양식에 하나도 안맞을때는 값 그대로 출력 --%>
                                     <c:otherwise>
-                                        ${office.mgmtOfcTelno}
+                                        ${mgmtOffice.mgmtOfcTelno}
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -71,8 +71,8 @@
                     </c:choose>
                 </div>
                 <div class="detail">
-                    <c:if test="${not empty office.mgmtOfcEml}">
-                        E-mail. ${office.mgmtOfcEml}
+                    <c:if test="${not empty mgmtOffice.mgmtOfcEml}">
+                        E-mail. ${mgmtOffice.mgmtOfcEml}
                     </c:if>
                 </div>
             </div>
