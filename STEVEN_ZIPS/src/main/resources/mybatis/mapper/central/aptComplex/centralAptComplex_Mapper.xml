@@ -103,4 +103,20 @@
         ORDER BY APT_CMPLEX_NM ASC
 
     </select>
+
+    <select id="searchApt"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.vo.AptComplexVO">
+
+        SELECT
+            APT_CMPLEX_NO
+             , APT_CMPLEX_NM
+             , DOROJUSO
+        FROM APT_COMPLEX
+        WHERE APT_CMPLEX_NM LIKE '%' || #{keyword} || '%'
+        ORDER BY APT_CMPLEX_NM ASC
+
+    </select>
+
+
 </mapper>

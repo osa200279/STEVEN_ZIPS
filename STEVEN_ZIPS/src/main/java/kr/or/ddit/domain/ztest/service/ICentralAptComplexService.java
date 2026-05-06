@@ -8,4 +8,6 @@ public interface ICentralAptComplexService {
 
     // 아파트 단지 목록 조회
     public List<AptComplexVO> selectAptComplexList(String initial);
+
+    List<AptComplexVO> searchApt(String keyword);
 }

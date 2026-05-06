@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 
 <html class="light" lang="ko"><head>
@@ -234,14 +235,67 @@ transition-all">
   <!-- Search Bar Section -->
   <section class="mt-20 max-w-2xl mx-auto bg-primary-container/10 p-8 rounded-3xl text-center">
     <h3 class="text-lg font-bold text-on-primary-container mb-4">직접 아파트 이름으로 검색</h3>
-    <div class="relative max-w-md mx-auto">
-      <input class="w-full pl-12 pr-6 py-4 rounded-full border-none bg-white shadow-sm focus:ring-2 focus:ring-primary text-sm font-medium" placeholder="검색하실 아파트 명을 입력하세요" type="text"/>
-      <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">search</span>
-    </div>
-    <div class="mt-6">
-      <button class="bg-primary text-on-primary px-10 py-4 rounded-full font-bold shadow-md hover:shadow-lg transition-all active:scale-95">단지 검색하기</button>
-    </div>
+    <form action="${pageContext.request.contextPath}/apt/search.do"
+          method="get"
+          class="max-w-md mx-auto">
+
+      <div class="relative">
+
+        <input
+                name="keyword"
+                value="${param.keyword}"
+                class="w-full pl-12 pr-6 py-4 rounded-full border-none bg-white shadow-sm focus:ring-2 focus:ring-primary text-sm font-medium"
+                placeholder="검색하실 아파트 명을 입력하세요"
+                type="text"/>
+
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">
+      search
+    </span>
+
+      </div>
+
+      <div class="mt-6">
+        <button type="submit"
+                class="bg-primary text-on-primary px-10 py-4 rounded-full font-bold shadow-md hover:shadow-lg transition-all active:scale-95">
+
+          단지 검색하기
+
+        </button>
+      </div>
+
+    </form>
   </section>
+  <c:if test="${not empty aptList}">
+
+  <div class="mt-10 max-w-4xl mx-auto">
+
+    <h3 class="text-2xl font-bold text-primary mb-6">
+      검색 결과
+    </h3>
+
+    <div class="space-y-4">
+
+      <c:forEach var="apt" items="${aptList}">
+
+        <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+
+          <div class="text-lg font-bold text-gray-900">
+            ${apt.aptCmplexNm}
+          </div>
+
+          <div class="text-sm text-gray-500 mt-2">
+            ${apt.dorojuso}
+          </div>
+
+        </div>
+
+      </c:forEach>
+
+    </div>
+
+  </div>
+
+</c:if>
 </main>
 
 

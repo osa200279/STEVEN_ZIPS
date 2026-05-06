@@ -17,4 +17,9 @@ public class CentralAptComplexServiceImpl implements ICentralAptComplexService {
     public List<AptComplexVO> selectAptComplexList(String initial) {
         return aptComplexMapper.selectAptComplexList(initial);
     }
+
+    @Override
+    public List<AptComplexVO> searchApt(String keyword) {
+        return aptComplexMapper.searchApt(keyword);
+    }
 }

@@ -34,9 +34,20 @@ public class APTController {
     }
 
     @GetMapping("/search.do")
-    public String search() {
+    public String search(
+            @RequestParam(required = false) String keyword,
+            Model model
+    ) {
+
+        List<AptComplexVO> aptList = aptComplexService.searchApt(keyword);
+
+        model.addAttribute("aptList", aptList);
+
         return "ztestview/aptSearch";
     }
+
+
+
 
     @GetMapping("/dashboard.do")
     public String dashboard() {
