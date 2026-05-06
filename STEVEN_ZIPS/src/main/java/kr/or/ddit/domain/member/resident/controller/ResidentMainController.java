@@ -1,7 +1,9 @@
 package kr.or.ddit.domain.member.resident.controller;
 
+import kr.or.ddit.domain.apt.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
+import kr.or.ddit.domain.member.manager.service.IAptComplexService;
 import kr.or.ddit.domain.member.resident.service.IResidentMainService;
 import kr.or.ddit.domain.member.resident.service.IResidentVhclService;
 import kr.or.ddit.domain.member.resident.vo.MyAptVO;
@@ -34,6 +36,9 @@ public class ResidentMainController {
 
     @Autowired
     private IMgmtOfficeService mgmtOfficeService;
+
+    @Autowired
+    private IAptComplexService aptComplexService;
 
     /**
      * 내 아파트 목록 조회 컨트롤러
@@ -77,7 +82,12 @@ public class ResidentMainController {
             return "manager/mngr_office_error";
         }
 
-        model.addAttribute("office", office);
+        // 아파트 소개페이지 DTO정보 가져오기
+        String aptCmplexNo = office.getAptCmplexNo();
+        AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
+
+        //model.addAttribute("office", office);
+        model.addAttribute("aptInfo", aptMainPageDTO);
         return "member/resident/manage_intro";
     }
 
