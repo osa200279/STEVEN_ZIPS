@@ -1,5 +1,6 @@
 package kr.or.ddit.common.file.service;
 
+import com.google.api.services.drive.Drive;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
@@ -51,16 +52,16 @@ public class AttachFileServiceImpl implements IAttachFileService {
      * 타겟 파일(or 파일리스트) 메타데이터 세팅
      * 단일 파일도 List(.of())로 넘김
      * @author 이용로
-     * @param fileId
+     * @param fileNo
      * @return List<AttachFileVO>
      */
     @Override
-    public List<AttachFileVO> setFileMetaData(String fileId) {
-        if (fileId == null || fileId.isBlank()) return null;
+    public List<AttachFileVO> setFileMetaData(String fileNo) {
+        if (fileNo == null || fileNo.isBlank()) return null;
 
-        if (fileId.contains("_")) {
+        if (fileNo.contains("_")) {
             // '_'가 맨앞에 있는 경우 방어
-            String[] parts = fileId.split("_", 2);
+            String[] parts = fileNo.split("_", 2);
             if (parts.length < 2) return null;
 
             String fileGroupNo = parts[0];
@@ -71,8 +72,8 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
             return (file != null) ? List.of(file) : null;
         } else {
-            log.info("** 찾을 파일그룹번호 : {}", fileId);
-            List<AttachFileVO> fileList = attachFileMapper.selecAttachFileList(fileId);
+            log.info("** 찾을 파일그룹번호 : {}", fileNo);
+            List<AttachFileVO> fileList = attachFileMapper.selecAttachFileList(fileNo);
             log.info("찾은 파일 갯수 : {}", fileList.size());
             return (fileList == null || fileList.isEmpty()) ? null : fileList;
         }
@@ -90,7 +91,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
         List<AttachFileVO> fileList = setFileMetaData(fileGroupNo);
 
         try {
-            var drive = googleDriveService.getDriveService();
+            Drive drive = googleDriveService.getDriveService();
 
             for (AttachFileVO file : fileList) {
                 if (file.getGoogleId() != null) {
@@ -102,7 +103,6 @@ public class AttachFileServiceImpl implements IAttachFileService {
         }
 
         attachFileMapper.deleteByFileGroupNo(fileGroupNo);
-
     }
 
 
@@ -120,7 +120,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
         if (file == null) return;
 
         try {
-            var drive = googleDriveService.getDriveService();
+            Drive drive = googleDriveService.getDriveService();
 
             if (file.getGoogleId() != null) {
                 googleDriveService.moveToTrash(drive, file.getGoogleId());
