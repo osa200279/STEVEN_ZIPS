@@ -249,37 +249,39 @@
 
       <c:otherwise>
       <c:forEach var="apt" items="${pagingVO.dataList}">
-      <div class="complex-card bg-white rounded-2xl border border-[#eef2eb] overflow-hidden">
+        <c:url var="aptMainUrl" value="/apt/main/${apt.aptCmplexNo}" />
+        <a href="${aptMainUrl}"
+           class="complex-card block bg-white rounded-2xl border border-[#eef2eb] overflow-hidden
+                  hover:-translate-y-1 hover:shadow-xl transition-all duration-200 cursor-pointer">
 
-        <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
-          <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
+          <div class="h-40 bg-[#e8f0eb] relative flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary/20 text-6xl" data-icon="apartment">apartment</span>
 
-          <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">
-                ${apt.sidoNm} ${apt.sigunguNm}
-              </span>
-        </div>
-
-        <div class="p-5">
-          <h4 class="font-bold text-primary mb-1">
-              ${apt.aptCmplexNm}
-          </h4>
-
-          <p class="text-xs text-slate-400 mb-4 line-clamp-1">
-              ${apt.dorojuso}
-          </p>
-
-          <div class="flex justify-between items-center text-[11px] font-bold">
-                <span class="text-slate-600">
-                  ${apt.unitCnt}세대 ${apt.dongCnt}동
-                </span>
-
-            <span class="text-primary">
-                  ${apt.bldYr} 준공
+            <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold">
+                  ${apt.sidoNm} ${apt.sigunguNm}
                 </span>
           </div>
-        </div>
 
-      </div>
+          <div class="p-5">
+            <h4 class="font-bold text-primary mb-1">
+                ${apt.aptCmplexNm}
+            </h4>
+
+            <p class="text-xs text-slate-400 mb-4 line-clamp-1">
+                ${apt.dorojuso}
+            </p>
+
+            <div class="flex justify-between items-center text-[11px] font-bold">
+                  <span class="text-slate-600">
+                    ${apt.unitCnt}세대 ${apt.dongCnt}동
+                  </span>
+
+              <span class="text-primary">
+                    ${apt.bldYr} 준공
+                  </span>
+            </div>
+          </div>
+        </a>
       </c:forEach>
       </c:otherwise>
     </c:choose>

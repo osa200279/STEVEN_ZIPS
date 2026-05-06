@@ -93,11 +93,11 @@
     <!-- END: Custom Styles -->
 </head>
 
-<%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 
 <body class="bg-[#f8faf6]">
 <%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-<%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
+<%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
 
 <main class="ml-80 p-10 pt-28">
     <!-- BEGIN: PageHeader -->

@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!-- 사이드바 스타일 -->
-<%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 
 <body class="bg-[#f8faf6]">
 
@@ -11,7 +11,7 @@
 <%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
 
 <!-- 사이드바 -->
-<%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
+<%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
 
 
 <main class="ml-80 p-10 pt-28">

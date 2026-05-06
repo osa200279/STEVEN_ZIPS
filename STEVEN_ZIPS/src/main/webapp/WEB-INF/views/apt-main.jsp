@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -357,11 +358,11 @@ img { display: block; width: 100%; }
 <div class="quick-bar fade-up">
   <div class="quick-consult">
     <c:choose>
-      <c:when test="${not empty office}">
+      <c:when test="${not empty mgmtOffice}">
           <div class="quick-consult">
-              <span class="label">관리사무소</span>
-              <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, '-', '')}" />
-              <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, ' ', '')}" />
+              <span class="label">${apt.aptCmplexNm} 관리사무소</span>
+              <c:set var="telNo" value="${fn:replace(mgmtOffice.mgmtOfcTelno, '-', '')}" />
+              <c:set var="telNo" value="${fn:replace(mgmtOffice.mgmtOfcTelno, ' ', '')}" />
               <c:set var="telLength" value="${fn:length(telNo)}" />
               <%-- 전화번호 '-' 처리 방법! 앞자리가 02일때와 아닐때로 나눔. 작성자 : 이윤진 --%>
               <span class="phone">
@@ -384,14 +385,14 @@ img { display: block; width: 100%; }
                   </c:when>
                   <%-- 전화번호 양식에 하나도 안맞을때는 값 그대로 출력 --%>
                   <c:otherwise>
-                      ${office.mgmtOfcTelno}
+                      ${mgmtOffice.mgmtOfcTelno}
                   </c:otherwise>
               </c:choose>
               </span>
               <span class="address">
-                 ${office.dorojuso}<br>
-                 ${office.mgmtOfcNm}<br>
-                 운영시간 : ${office.oprStTm} ~ ${office.oprEdTm}
+                 ${apt.dorojuso}<br>
+                 ${mgmtOffice.mgmtOfcNm}<br>
+                 운영시간 : ${mgmtOffice.oprStTm} ~ ${mgmtOffice.oprEdTm}
               </span>
           </div>
       </c:when>

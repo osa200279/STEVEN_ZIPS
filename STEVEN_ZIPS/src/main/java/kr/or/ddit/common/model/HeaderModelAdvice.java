@@ -92,31 +92,62 @@ public class HeaderModelAdvice {
             return null;
         }
 
-        // 관리소장 권한인지 확인
+        // 관리소장 및 사용자 권한 확인
         boolean isManager = authentication.getAuthorities()
                 .stream()
                 .anyMatch(auth -> "ROLE_MNGR".equals(auth.getAuthority()));
 
-        if (!isManager) {
+        boolean isMember = authentication.getAuthorities()
+                .stream()
+                .anyMatch(auth -> "ROLE_MEMBER".equals(auth.getAuthority()));
+
+        if (!isManager && !isMember) {
             return null;
         }
 
         String userId = authentication.getName();
 
         try {
-            // 1. 로그인한 관리소장 기준으로 관리사무소 조회
-            MgmtOfficeVO office = mgmtOfficeService.selectMgmtOfficeByManagerUserNo(userId);
+            String aptCmplexNo = null;
 
-            if (office == null || office.getAptCmplexNo() == null) {
+            // 1. 관리소장인 경우
+            if (isManager) {
+                MgmtOfficeVO office = mgmtOfficeService.selectMgmtOfficeByManagerUserNo(userId);
+
+                if (office != null) {
+                    aptCmplexNo = office.getAptCmplexNo();
+                }
+            }
+
+            // 2. 일반 회원/입주민인 경우
+            if (isMember) {
+                /*
+                 * 여기서 회원이 속한 아파트 단지번호를 구해야 함.
+                 * 이미 로그인 principal 안에 ResidentVO / myAptList가 들어있다면 그걸 쓰는 게 가장 빠름.
+                 */
+                Object principal = authentication.getPrincipal();
+
+                if (principal instanceof kr.or.ddit.domain.member.vo.CustomUser customUser) {
+                    Object member = customUser.getMember();
+
+                    if (member instanceof kr.or.ddit.domain.member.resident.vo.ResidentVO resident) {
+                        if (resident.getMyAptList() != null && !resident.getMyAptList().isEmpty()) {
+                            aptCmplexNo = resident.getMyAptList().get(0).getAptCmplexNo();
+                        }
+                    }
+                }
+            }
+
+            if (aptCmplexNo == null || aptCmplexNo.isBlank()) {
+                log.info("공통 aptInfo 조회 불가 userId = {}, aptCmplexNo 없음", userId);
                 return null;
             }
 
-            // 2. 관리사무소에 연결된 아파트 번호로 aptInfo 조회
             AptMainPageDTO.ResponseDto aptInfo =
-                    aptComplexService.selectAptMainDTO(office.getAptCmplexNo());
+                    aptComplexService.selectAptMainDTO(aptCmplexNo);
 
             log.info("공통 aptInfo 조회 userId = {}, aptCmplexNo = {}, aptInfo = {}",
-                    userId, office.getAptCmplexNo(), aptInfo);
+                    userId, aptCmplexNo, aptInfo);
 
             return aptInfo;
 
