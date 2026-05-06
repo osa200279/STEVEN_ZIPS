@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 /**
  * 공고 관리 Service 구현체
  *
- * Service란?
- * → Controller와 Mapper 사이에서 업무 로직을 처리하는 계층.
  */
 @Service
 @RequiredArgsConstructor

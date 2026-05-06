@@ -24,26 +24,39 @@ public class AnnouncementController {
 
     private final IAnnouncementService announcementService;
 
+    /**
+     * 공고 관리 JSP 화면 이동
+     */
     @GetMapping
     public String announcementPage() {
         return "centralAdmin/announcement";
     }
 
+    /**
+     * 공고 목록 조회 API
+     */
     @ResponseBody
     @GetMapping("/list")
     public ResponseEntity<?> list(AnnouncementVO searchVO) {
         return ResponseEntity.ok(announcementService.selectAnnouncementList(searchVO));
     }
 
+    /**
+     * 공고 상세 조회 API
+     */
     @ResponseBody
     @GetMapping("/{annNo}")
     public ResponseEntity<?> detail(@PathVariable String annNo) {
         return ResponseEntity.ok(announcementService.selectAnnouncement(annNo));
     }
 
+    /**
+     * 공고 등록 API
+     */
     @ResponseBody
     @PostMapping
     public ResponseEntity<?> insert(@RequestBody AnnouncementVO announcementVO) {
+
         announcementVO.setWrtrId("admin");
         announcementVO.setTopFixYn("N");
         announcementVO.setDelYn("N");
@@ -51,11 +64,15 @@ public class AnnouncementController {
 
         int result = announcementService.insertAnnouncement(announcementVO);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("success", result > 0);
-        return ResponseEntity.ok(map);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", result > 0);
+
+        return ResponseEntity.ok(resultMap);
     }
 
+    /**
+     * 공고 수정 API
+     */
     @ResponseBody
     @PutMapping("/{annNo}")
     public ResponseEntity<?> update(
@@ -66,18 +83,24 @@ public class AnnouncementController {
 
         int result = announcementService.updateAnnouncement(announcementVO);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("success", result > 0);
-        return ResponseEntity.ok(map);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", result > 0);
+
+        return ResponseEntity.ok(resultMap);
     }
 
+    /**
+     * 공고 삭제 API
+     */
     @ResponseBody
     @DeleteMapping("/{annNo}")
     public ResponseEntity<?> delete(@PathVariable String annNo) {
+
         int result = announcementService.deleteAnnouncement(annNo);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("success", result > 0);
-        return ResponseEntity.ok(map);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", result > 0);
+
+        return ResponseEntity.ok(resultMap);
     }
 }

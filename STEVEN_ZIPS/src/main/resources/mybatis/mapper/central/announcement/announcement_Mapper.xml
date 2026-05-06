@@ -8,30 +8,39 @@
     <select id="selectAnnouncementList"
             parameterType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO"
             resultType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
-        /* AnnouncementMapper.selectAnnouncementList */
+        /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.selectAnnouncementList */
         SELECT
-        cap.ann_no
-        , cap.board_no
-        , cbi.board_nm
-        , cbi.board_ty_cd
-        , cap.ttl
-        , cap.cn
-        , cap.wrtr_id
-        , cap.top_fix_yn
-        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD') AS pblanc_bgng_dt
-        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD') AS pblanc_end_dt
-        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD') AS rcrt_bgng_dt
-        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD') AS rcrt_end_dt
-        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD') AS reg_dttm
-        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD') AS mdf_dttm
-        , cap.inq_cnt
-        , cap.del_yn
-        , cap.atch_file_id
-        , cap.opn_yn
+        cap.ann_no                                               AS ann_no             /** 공고번호 */
+        , cap.board_no                                             AS board_no           /** 게시판번호 */
+        , cbi.board_nm                                             AS board_nm           /** 게시판명 */
+        , cbi.board_ty_cd                                          AS board_ty_cd        /** 게시판유형코드 */
+        , cap.ttl                                                  AS ttl                /** 제목 */
+        , cap.cn                                                   AS cn                 /** 내용 */
+        , cap.wrtr_id                                              AS wrtr_id            /** 작성자아이디 */
+        , cap.top_fix_yn                                           AS top_fix_yn         /** 상단고정여부 */
+        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD')                AS pblanc_bgng_dt     /** 공고게시시작일 */
+        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD')                 AS pblanc_end_dt      /** 공고게시종료일 */
+        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD')                  AS rcrt_bgng_dt       /** 모집시작일 */
+        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD')                   AS rcrt_end_dt        /** 모집종료일 */
+        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD')                      AS reg_dttm           /** 등록일시 */
+        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD')                      AS mdf_dttm           /** 수정일시 */
+        , cap.inq_cnt                                              AS inq_cnt            /** 조회수 */
+        , cap.del_yn                                               AS del_yn             /** 삭제여부 */
+        , cap.atch_file_id                                         AS atch_file_id       /** 첨부파일ID */
+        , cap.opn_yn                                               AS opn_yn             /** 공개여부 */
+        , CASE
+        WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
+        THEN '예정'
+        WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
+        THEN '마감'
+        ELSE '진행중'
+        END                                                      AS status_nm          /** 진행상태명 */
         FROM center_ann_board_post cap
         LEFT JOIN center_board_instance cbi
         ON cap.board_no = cbi.board_no
-        WHERE NVL(cap.del_yn, 'N') = 'N'
+        WHERE 1 = 1
+        AND NVL(cap.del_yn, 'N') = 'N'
+        AND NVL(cap.opn_yn, 'Y') = 'Y'
 
         <if test="searchTtl != null and searchTtl != ''">
             AND LOWER(cap.ttl) LIKE '%' || LOWER(#{searchTtl}) || '%'
@@ -46,16 +55,13 @@
         </if>
 
         <if test="searchStatus != null and searchStatus != ''">
-            AND (
-            (#{searchStatus} = '예정'
-            AND TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt))
-            OR
-            (#{searchStatus} = '진행중'
-            AND TRUNC(SYSDATE) BETWEEN TRUNC(cap.rcrt_bgng_dt) AND TRUNC(cap.rcrt_end_dt))
-            OR
-            (#{searchStatus} = '마감'
-            AND TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt))
-            )
+            AND CASE
+            WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
+            THEN '예정'
+            WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
+            THEN '마감'
+            ELSE '진행중'
+            END = #{searchStatus}
         </if>
 
         ORDER BY cap.reg_dttm DESC
@@ -64,62 +70,72 @@
     <select id="selectAnnouncement"
             parameterType="string"
             resultType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
-        /* AnnouncementMapper.selectAnnouncement */
+        /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.selectAnnouncement */
         SELECT
-        cap.ann_no
-        , cap.board_no
-        , cbi.board_nm
-        , cbi.board_ty_cd
-        , cap.ttl
-        , cap.cn
-        , cap.wrtr_id
-        , cap.top_fix_yn
-        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD') AS pblanc_bgng_dt
-        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD') AS pblanc_end_dt
-        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD') AS rcrt_bgng_dt
-        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD') AS rcrt_end_dt
-        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD') AS reg_dttm
-        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD') AS mdf_dttm
-        , cap.inq_cnt
-        , cap.del_yn
-        , cap.atch_file_id
-        , cap.opn_yn
+        cap.ann_no                                               AS ann_no             /** 공고번호 */
+        , cap.board_no                                             AS board_no           /** 게시판번호 */
+        , cbi.board_nm                                             AS board_nm           /** 게시판명 */
+        , cbi.board_ty_cd                                          AS board_ty_cd        /** 게시판유형코드 */
+        , cap.ttl                                                  AS ttl                /** 제목 */
+        , cap.cn                                                   AS cn                 /** 내용 */
+        , cap.wrtr_id                                              AS wrtr_id            /** 작성자아이디 */
+        , cap.top_fix_yn                                           AS top_fix_yn         /** 상단고정여부 */
+        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD')                AS pblanc_bgng_dt     /** 공고게시시작일 */
+        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD')                 AS pblanc_end_dt      /** 공고게시종료일 */
+        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD')                  AS rcrt_bgng_dt       /** 모집시작일 */
+        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD')                   AS rcrt_end_dt        /** 모집종료일 */
+        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD')                      AS reg_dttm           /** 등록일시 */
+        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD')                      AS mdf_dttm           /** 수정일시 */
+        , cap.inq_cnt                                              AS inq_cnt            /** 조회수 */
+        , cap.del_yn                                               AS del_yn             /** 삭제여부 */
+        , cap.atch_file_id                                         AS atch_file_id       /** 첨부파일ID */
+        , cap.opn_yn                                               AS opn_yn             /** 공개여부 */
+        , CASE
+        WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
+        THEN '예정'
+        WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
+        THEN '마감'
+        ELSE '진행중'
+        END                                                      AS status_nm          /** 진행상태명 */
         FROM center_ann_board_post cap
         LEFT JOIN center_board_instance cbi
         ON cap.board_no = cbi.board_no
-        WHERE cap.ann_no = #{annNo}
+        WHERE 1 = 1
+        AND cap.ann_no = #{annNo}
         AND NVL(cap.del_yn, 'N') = 'N'
     </select>
 
     <insert id="insertAnnouncement"
             parameterType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
-        /* AnnouncementMapper.insertAnnouncement */
+        /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.insertAnnouncement */
         INSERT INTO center_ann_board_post (
-        ann_no
-        , board_no
-        , ttl
-        , cn
-        , wrtr_id
-        , top_fix_yn
-        , pblanc_bgng_dt
-        , pblanc_end_dt
-        , rcrt_bgng_dt
-        , rcrt_end_dt
-        , reg_dttm
-        , inq_cnt
-        , del_yn
-        , atch_file_id
-        , opn_yn
+        ann_no              /** 공고번호 */
+        , board_no            /** 게시판번호 */
+        , ttl                 /** 제목 */
+        , cn                  /** 내용 */
+        , wrtr_id             /** 작성자아이디 */
+        , top_fix_yn          /** 상단고정여부 */
+        , pblanc_bgng_dt      /** 공고게시시작일 */
+        , pblanc_end_dt       /** 공고게시종료일 */
+        , rcrt_bgng_dt        /** 모집시작일 */
+        , rcrt_end_dt         /** 모집종료일 */
+        , reg_dttm            /** 등록일시 */
+        , inq_cnt             /** 조회수 */
+        , del_yn              /** 삭제여부 */
+        , atch_file_id        /** 첨부파일ID */
+        , opn_yn              /** 공개여부 */
         ) VALUES (
         'ANN' || LPAD((
-        SELECT NVL(MAX(TO_NUMBER(SUBSTR(ann_no, 4))), 0) + 1
-        FROM center_ann_board_post
-        WHERE ann_no LIKE 'ANN%'
+        SELECT NVL(MAX(TO_NUMBER(SUBSTR(cap2.ann_no, 4))), 0) + 1
+        FROM center_ann_board_post cap2
+        WHERE 1 = 1
+        AND REGEXP_LIKE(cap2.ann_no, '^ANN[0-9]+$')
         ), 12, '0')
         , (
-        SELECT MIN(board_no)
-        FROM center_board_instance
-        WHERE NVL(use_yn, 'Y') = 'Y'
+        SELECT MIN(cbi2.board_no)
+        FROM center_board_instance cbi2
+        WHERE 1 = 1
+        AND NVL(cbi2.use_yn, 'Y') = 'Y'
         )
         , #{ttl}
         , #{cn}
@@ -139,30 +155,32 @@
 
     <update id="updateAnnouncement"
             parameterType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
-        /* AnnouncementMapper.updateAnnouncement */
-        UPDATE center_ann_board_post
+        /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.updateAnnouncement */
+        UPDATE center_ann_board_post cap
         SET
-        ttl = #{ttl}
-        , cn = #{cn}
-        , top_fix_yn = NVL(#{topFixYn}, 'N')
-        , pblanc_bgng_dt = TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')
-        , pblanc_end_dt = TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')
-        , rcrt_bgng_dt = TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')
-        , rcrt_end_dt = TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')
-        , atch_file_id = #{atchFileId}
-        , opn_yn = NVL(#{opnYn}, 'Y')
-        , mdf_dttm = SYSDATE
-        WHERE ann_no = #{annNo}
+        cap.ttl = #{ttl}                                                   /** 제목 */
+        , cap.cn = #{cn}                                                     /** 내용 */
+        , cap.top_fix_yn = NVL(#{topFixYn}, 'N')                             /** 상단고정여부 */
+        , cap.pblanc_bgng_dt = TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')        /** 공고게시시작일 */
+        , cap.pblanc_end_dt = TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')          /** 공고게시종료일 */
+        , cap.rcrt_bgng_dt = TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')            /** 모집시작일 */
+        , cap.rcrt_end_dt = TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')              /** 모집종료일 */
+        , cap.atch_file_id = #{atchFileId}                                   /** 첨부파일ID */
+        , cap.opn_yn = NVL(#{opnYn}, 'Y')                                    /** 공개여부 */
+        , cap.mdf_dttm = SYSDATE                                             /** 수정일시 */
+        WHERE 1 = 1
+        AND cap.ann_no = #{annNo}
     </update>
 
     <update id="deleteAnnouncement"
             parameterType="string">
-        /* AnnouncementMapper.deleteAnnouncement */
-        UPDATE center_ann_board_post
+        /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.deleteAnnouncement */
+        UPDATE center_ann_board_post cap
         SET
-        del_yn = 'Y'
-        , mdf_dttm = SYSDATE
-        WHERE ann_no = #{annNo}
+        cap.del_yn = 'Y'           /** 삭제여부 */
+        , cap.mdf_dttm = SYSDATE     /** 수정일시 */
+        WHERE 1 = 1
+        AND cap.ann_no = #{annNo}
     </update>
 
 </mapper>
