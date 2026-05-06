@@ -3,8 +3,12 @@ package kr.or.ddit.common.util;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.Principal;
 import java.sql.Time;
 import java.util.Base64;
+
+import kr.or.ddit.domain.member.vo.CustomUser;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 /**

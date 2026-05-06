@@ -9,13 +9,16 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%--websocket 때문에 추가했습니다 by도선호--%>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
-
+<c:set var="loginUser" value="${sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member}" />
+<body data-user-no="${loginUser.userNo}">
 <script src="/js/common/websocket.js"></script>
 <script>
     connectWebSocket();
 </script>
+<%--websocket end--%>
 
 <!-- TopNavBar -->
 <header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.04)]">

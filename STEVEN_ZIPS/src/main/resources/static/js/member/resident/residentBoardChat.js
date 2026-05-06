@@ -1,6 +1,5 @@
 window.onload = function () {
     loadMyRooms();
-    connectSocket();
 };
 
 
@@ -38,12 +37,7 @@ function openMyRoom(roomNo, roomNm, el) {
     }
 
     //새 채팅방 구독
-    subscription = stomp.subscribe('/sub/chat/room/' + roomNo, function(msg) {
-
-        const data = JSON.parse(msg.body);
-
-        appendMessage(data);  //새 메시지만 추가
-    });
+    subscribeRoom(roomNo);
 
     // 기존 메시지 로딩
     fetch(contextPath + '/residentChat/messages/' + aptCmplexNo + '?chatRoomNo=' + roomNo)
