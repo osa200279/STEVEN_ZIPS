@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.apt.dto;
+package kr.or.ddit.domain.apt.main.dto;
 
 import lombok.Data;
 
