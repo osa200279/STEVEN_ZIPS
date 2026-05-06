@@ -59,6 +59,44 @@
 
     .chevron { transition: transform 0.25s; }
     .forest-card.open .chevron { transform: rotate(180deg); }
+
+    .pagination{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .pagination .page-item{
+      list-style:none;
+    }
+
+    .pagination .page-link{
+      width:38px;
+      height:38px;
+      border-radius:9999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:white;
+      border:1px solid #e5e7eb;
+      color:#6b7280;
+      font-size:14px;
+      font-weight:600;
+      transition:.2s;
+      text-decoration:none;
+    }
+
+    .pagination .page-link:hover{
+      background:#f9fafb;
+    }
+
+    .pagination .active .page-link{
+      background:#6F7F3F;
+      color:white;
+      border-color:#6F7F3F;
+    }
+
+
   </style>
 </head>
 
@@ -80,7 +118,7 @@
   <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div class="text-sm text-gray-500">
-        총 <strong class="text-black">${fn:length(list)}</strong>건
+        총 <strong class="text-black">${pagingVO.totalRecord}</strong>건
       </div>
       <div class="flex items-center gap-3">
         <div class="relative w-64">
@@ -105,13 +143,13 @@
   <div class="space-y-3">
 
 
- <c:if test="${empty list}">
+<c:if test="${empty pagingVO.dataList}">
     <div class="text-center text-gray-400 py-20">
       등록된 문의가 없습니다.
     </div>
   </c:if>
 
-  <c:forEach var="qna" items="${list}">
+  <c:forEach var="qna" items="${pagingVO.dataList}">
 
     <div class="forest-card" onclick="toggleDetail(this)">
 
@@ -184,19 +222,13 @@
   --%>
 
   <!-- 페이징 -->
-  <div class="mt-8 flex justify-center">
-    <nav class="flex items-center gap-1">
-      <button class="w-10 h-10 flex items-center justify-center rounded-lg border text-gray-400">&lt;</button>
-      <button class="w-10 h-10 rounded-full bg-[#6F7F3F] text-white font-semibold">1</button>
-      <button class="w-10 h-10 text-gray-600">2</button>
-      <button class="w-10 h-10 text-gray-600">3</button>
-      <button class="w-10 h-10 flex items-center justify-center rounded-lg border text-gray-400">&gt;</button>
-    </nav>
-  </div>
+<div class="mt-10 flex justify-center">
+    <c:out value="${pagingVO.pagingHTML}" escapeXml="false"/>
+</div>
 
 </main>
-</body>
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
   function toggleDetail(card) {
     const detail = card.querySelector('.detail');
@@ -219,5 +251,25 @@
     if (!confirm("삭제하시겠습니까?")) return;
     location.href = '${pageContext.request.contextPath}/member/qna/delete.do?cvplNo=' + cvplNo;
   }
+
+  $(document).on("click", ".page-link", function(e){
+
+    e.preventDefault();
+
+    const page = $(this).data("page");
+
+    if(!page){
+      return;
+    }
+
+    location.href =
+            '${pageContext.request.contextPath}/member/qna/list.do?page=' + page;
+  });
+
+
+
+
+
 </script>
+</body>
 </html>

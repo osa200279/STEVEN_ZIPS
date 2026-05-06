@@ -17,10 +17,19 @@ public class QnaServiceImpl  implements  IQnaService{
     private IQnaMapper qnaMapper;
 
 
+
+
     @Override
-    public List<CvplVO> getList(String userNo) {
-        List<CvplVO> list = qnaMapper.getList(userNo);
-        return list;
+    public List<CvplVO> getList(
+            String userNo,
+            int startRow,
+            int endRow
+    ) {
+        return qnaMapper.getList(
+                userNo,
+                startRow,
+                endRow
+        );
     }
 
     @Override
@@ -39,5 +48,10 @@ public class QnaServiceImpl  implements  IQnaService{
     @Override
     public void deleteQna(String cvplNo, String userNo) {
         qnaMapper.deleteQna(cvplNo, userNo);
+    }
+
+    @Override
+    public int getTotalCount(String userNo) {
+        return qnaMapper.getTotalCount(userNo);
     }
 }

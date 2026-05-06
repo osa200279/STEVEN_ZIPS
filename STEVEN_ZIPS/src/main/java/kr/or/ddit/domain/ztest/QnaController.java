@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.ztest;
 
+import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import kr.or.ddit.domain.ztest.service.IQnaService;
@@ -28,17 +29,48 @@ public class QnaController {
     private IQnaService qnaService;
 
     @GetMapping("/list.do")
-    public String qnaList(Model model, Authentication auth) {
+    public String qnaList(
+            @RequestParam(value = "page", defaultValue = "1") int currentPage,
+            Model model,
+            Authentication auth
+    ) {
 
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         MemberVO user = customUser.getMember();
 
-        List<CvplVO> list = qnaService.getList(user.getUserNo());
+        PaginationInfoVO<CvplVO> pagingVO = new PaginationInfoVO<>();
+        // 페이지당 개수
+        pagingVO.setScreenSize(2);
+        // 현재 페이지
+        pagingVO.setCurrentPage(currentPage);
 
-        model.addAttribute("list", list);
+
+
+
+        // 전체 개수
+        int totalRecord =
+                qnaService.getTotalCount(user.getUserNo());
+
+        pagingVO.setTotalRecord(totalRecord);
+
+        // 목록 조회
+        List<CvplVO> list =
+                qnaService.getList(
+                        user.getUserNo(),
+                        pagingVO.getStartRow(),
+                        pagingVO.getEndRow()
+                );
+
+        pagingVO.setDataList(list);
+
+        model.addAttribute("pagingVO", pagingVO);
 
         return "ztestview/qnaList";
     }
+
+
+
+
     @GetMapping("/writeForm.do")
     public String writeForm() {
         return "ztestview/qnaListDetail";
