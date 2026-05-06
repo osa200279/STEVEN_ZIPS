@@ -47,14 +47,13 @@ public class SecurityConfig {
     @Autowired
     private TokenProvider tokenProvider;
 
-
     // 인증객체 없어도(모두가) 접근할 수 있는 URL => JSP페이지
     private static final String[] PASS_URL = {
             "/index.html",
             "/",
             "/apt/main",
             "/login",
-            "/error",
+            "/accessError",
             "/login.do",
             "/logout.do",
             "/member/join.do",
@@ -166,6 +165,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // cors(크로스오리진) 정책 설정
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
