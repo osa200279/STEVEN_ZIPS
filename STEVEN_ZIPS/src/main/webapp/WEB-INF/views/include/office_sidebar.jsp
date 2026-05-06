@@ -1,7 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 <c:set var="uri" value="${pageContext.request.requestURI}" />
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:set var="mgmtPath" value="${not empty mgmtOfcNo ? '/' : ''}${mgmtOfcNo}" />
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
@@ -10,8 +14,13 @@
                 <span class="material-symbols-rounded">home_work</span>
             </div>
             <div class="logo-text">
-                <h1>관리사무소</h1>
-                <p>동기 화면 전환</p>
+                <h1>
+                    <c:choose>
+                        <c:when test="${not empty office.aptCmplexNm}">${office.aptCmplexNm}</c:when>
+                        <c:otherwise>관리사무소</c:otherwise>
+                    </c:choose>
+                </h1>
+                <p>관리사무소</p>
             </div>
         </div>
         <button type="button" class="collapse-btn" id="sidebarToggleBtn" title="사이드바 접기">
@@ -20,8 +29,7 @@
     </div>
 
     <nav class="sidebar-nav">
-        <!-- 대시보드: 최상단 단독 메뉴 -->
-        <a href="${pageContext.request.contextPath}/manager/main"
+        <a href="${ctx}/manager/main${mgmtPath}"
            class="nav-item nav-dashboard ${fn:contains(uri, '/manager/main') ? 'active' : ''}">
             <span class="material-symbols-rounded nav-icon">dashboard</span>
             <span class="nav-text">대시보드</span>
@@ -38,11 +46,15 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">직원 관리</span>
-                    <a href="${pageContext.request.contextPath}/manager/employee/account" class="nav-item ${fn:contains(uri, '/manager/employee/account') ? 'active' : ''}">
+
+                    <a href="${ctx}/manager/employee/account${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/employee/account') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">직원 계정 관리</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/vacation" class="nav-item ${fn:contains(uri, '/manager/vacation') ? 'active' : ''}">
+
+                    <a href="${ctx}/manager/vacation${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/vacation') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">휴가 일정</span>
                     </a>
@@ -60,23 +72,23 @@
             </summary>
             <div class="submenu-wrap">
                 <div class="submenu-inner">
-                    <a href="${pageContext.request.contextPath}/manager/resident/list" class="nav-item ${fn:contains(uri, '/manager/resident/list') ? 'active' : ''}">
+                    <a href="${ctx}/manager/resident/list${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/resident/list') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">입주민 목록</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/resident/auth" class="nav-item ${fn:contains(uri, '/manager/resident/auth') ? 'active' : ''}">
+                    <a href="${ctx}/manager/resident/auth${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/resident/auth') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">회원 권한 변경</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/resident/moveList" class="nav-item ${fn:contains(uri, '/manager/resident/moveList') ? 'active' : ''}">
+                    <a href="${ctx}/manager/resident/moveList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/resident/moveList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">입주/퇴거 관리</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/resident/auto" class="nav-item ${fn:contains(uri, '/manager/resident/auto') ? 'active' : ''}">
+                    <a href="${ctx}/manager/resident/auto${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/resident/auto') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">입주민 차량 관리</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/visit/auto" class="nav-item ${fn:contains(uri, '/manager/visit/auto') ? 'active' : ''}">
+                    <a href="${ctx}/manager/visit/auto${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/visit/auto') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">방문 차량 관리</span>
                     </a>
@@ -95,29 +107,29 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">시설 관리</span>
-                    <a href="${pageContext.request.contextPath}/manager/facilityList" class="nav-item ${fn:contains(uri, '/manager/facilityList') ? 'active' : ''}">
+                    <a href="${ctx}/manager/facilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">시설 목록</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/publicFacilityList" class="nav-item ${fn:contains(uri, '/manager/publicFacilityList') ? 'active' : ''}">
+                    <a href="${ctx}/manager/publicFacilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">공용 시설 관리</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/meterReading" class="nav-item ${fn:contains(uri, '/manager/meterReading') ? 'active' : ''}">
+                    <a href="${ctx}/manager/meterReading${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/meterReading') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">검침 기록 관리</span>
                     </a>
                     <span class="sub-group-label">공사·점검</span>
-                    <a href="${pageContext.request.contextPath}/manager/checkHistory" class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">
+                    <a href="${ctx}/manager/checkHistory${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">유지보수·점검 이력</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/facility/workCalendar" class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">
+                    <a href="${ctx}/manager/facility/workCalendar${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">공사·점검 일정</span>
                     </a>
                     <span class="sub-group-label">협력업체</span>
-                    <a href="${pageContext.request.contextPath}/manager/facility/partnerList" class="nav-item ${fn:contains(uri, '/manager/facility/partnerList') ? 'active' : ''}">
+                    <a href="${ctx}/manager/facility/partnerList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facility/partnerList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">협력업체 관리</span>
                     </a>
@@ -136,22 +148,23 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">관리비</span>
-                    <a href="${pageContext.request.contextPath}/manager/bill/item-summary" class="nav-item ${fn:contains(uri, '/manager/bill/item-summary') ? 'active' : ''}">
+                    <a href="${ctx}/manager/bill/item-summary${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/item-summary') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">관리비 항목·집계</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/bill/charge" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
+                    <a href="${ctx}/manager/bill/charge${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">고지서 등록</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/bill/issue" class="nav-item ${fn:contains(uri, '/manager/bill/issue') ? 'active' : ''}">
+                    <a href="${ctx}/manager/bill/issue${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/issue') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">관리비 부과·연체</span>
                     </a>
-                    <a href="${pageContext.request.contextPath}/manager/account/arrears" class="nav-item ${fn:contains(uri, '/manager/account/arrears') ? 'active' : ''}">
+                    <a href="${ctx}/manager/account/arrears${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/account/arrears') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">연체 내역 관리</span>
                     </a>
+
                     <span class="sub-group-label">지출·예산</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
@@ -184,10 +197,12 @@
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">민원 처리</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">고위험 민원 알림</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">1:1 채팅 문의</span></a>
+
                     <span class="sub-group-label">게시판</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">공지사항 관리</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">생활안내·운영정보</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">긴급 SMS 발송</span></a>
+
                     <span class="sub-group-label">투표·설문</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">투표 등록·관리</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">설문 등록·관리</span></a>
@@ -206,19 +221,20 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">단지정보</span>
+                    <a href="${ctx}/manager/complex/edit${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/complex/edit') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">단지 정보 수정</span>
+                    </a>
 
-                        <a href="${pageContext.request.contextPath}/manager/complex/edit"
-                           class="nav-item ${fn:contains(uri, '/manager/complex/edit') ? 'active' : ''}">
-                            <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                            <span class="nav-text">단지 정보 수정</span>
-                        </a>
-
-                        <span class="sub-group-label">일정</span>
+                    <span class="sub-group-label">일정</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">단지 일정 캘린더</span></a>
+
                     <span class="sub-group-label">대여시설</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">대여시설 목록</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">예약 접수·확인</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">시설 이용 내역</span></a>
+
                     <span class="sub-group-label">차량</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">등록 차량 목록</span></a>
                 </div>
@@ -231,10 +247,16 @@
             <span class="material-symbols-rounded" style="color:#fff; font-size:16px;">person</span>
         </div>
         <div class="admin-info">
-            <p>관리사무소</p>
-            <span>동기 화면 전환</span>
+            <p><sec:authentication property="principal.member.userNm"/></p>
+            <span>
+                <c:choose>
+                    <c:when test="${not empty office.mgmtOfcNm}">${office.mgmtOfcNm}</c:when>
+                    <c:when test="${not empty office.aptCmplexNm}">${office.aptCmplexNm}</c:when>
+                    <c:otherwise>관리사무소</c:otherwise>
+                </c:choose>
+            </span>
         </div>
-        <a href="${pageContext.request.contextPath}/manager/main" class="icon-btn" title="메인">
+        <a href="${ctx}/manager/main${mgmtPath}" class="icon-btn" title="메인">
             <span class="material-symbols-rounded">home</span>
         </a>
     </div>

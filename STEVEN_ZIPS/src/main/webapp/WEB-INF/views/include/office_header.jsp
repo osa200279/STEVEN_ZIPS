@@ -1,9 +1,100 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<c:set var="uri" value="${pageContext.request.requestURI}" />
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:set var="mgmtPath" value="${not empty mgmtOfcNo ? '/' : ''}${mgmtOfcNo}" />
+
+<c:set var="bcParent" value="관리사무소" />
+<c:set var="bcCurrent" value="대시보드" />
+
+<c:choose>
+    <c:when test="${fn:contains(uri, '/manager/employee/account')}">
+        <c:set var="bcParent" value="직원관리" />
+        <c:set var="bcCurrent" value="직원계정관리" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/vacation')}">
+        <c:set var="bcParent" value="직원관리" />
+        <c:set var="bcCurrent" value="휴가일정" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/resident/list')}">
+        <c:set var="bcParent" value="입주민관리" />
+        <c:set var="bcCurrent" value="입주민목록" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/resident/auth')}">
+        <c:set var="bcParent" value="입주민관리" />
+        <c:set var="bcCurrent" value="회원권한변경" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/resident/moveList')}">
+        <c:set var="bcParent" value="입주민관리" />
+        <c:set var="bcCurrent" value="입주/퇴거관리" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/resident/auto')}">
+        <c:set var="bcParent" value="입주민관리" />
+        <c:set var="bcCurrent" value="입주민차량관리" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/visit/auto')}">
+        <c:set var="bcParent" value="입주민관리" />
+        <c:set var="bcCurrent" value="방문차량관리" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/facilityList')}">
+        <c:set var="bcParent" value="시설관리" />
+        <c:set var="bcCurrent" value="시설목록" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/publicFacilityList')}">
+        <c:set var="bcParent" value="시설관리" />
+        <c:set var="bcCurrent" value="공용시설관리" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/meterReading')}">
+        <c:set var="bcParent" value="시설관리" />
+        <c:set var="bcCurrent" value="검침기록관리" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/checkHistory')}">
+        <c:set var="bcParent" value="시설관리" />
+        <c:set var="bcCurrent" value="유지보수점검이력" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/facility/workCalendar')}">
+        <c:set var="bcParent" value="시설관리" />
+        <c:set var="bcCurrent" value="공사점검일정" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/facility/partnerList')}">
+        <c:set var="bcParent" value="시설관리" />
+        <c:set var="bcCurrent" value="협력업체관리" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/bill/item-summary')}">
+        <c:set var="bcParent" value="회계운영관리" />
+        <c:set var="bcCurrent" value="관리비항목집계" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/bill/charge')}">
+        <c:set var="bcParent" value="회계운영관리" />
+        <c:set var="bcCurrent" value="고지서등록" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/bill/issue')}">
+        <c:set var="bcParent" value="회계운영관리" />
+        <c:set var="bcCurrent" value="관리비부과" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/account/arrears')}">
+        <c:set var="bcParent" value="회계운영관리" />
+        <c:set var="bcCurrent" value="연체내역관리" />
+    </c:when>
+    <c:when test="${fn:contains(uri, '/manager/complex/edit')}">
+        <c:set var="bcParent" value="단지운영관리" />
+        <c:set var="bcCurrent" value="단지정보수정" />
+    </c:when>
+</c:choose>
 
 <header class="topbar">
     <div class="breadcrumb">
-        <span class="material-symbols-rounded" style="font-size:14px;">dashboard</span>
-        <span class="bc-current" style="margin-left:8px;">관리사무소</span>
+        <a href="${ctx}/manager/main${mgmtPath}" class="breadcrumb-home">
+            <span class="material-symbols-rounded" style="font-size:14px;">home</span>
+            <span>홈</span>
+        </a>
+        <span style="margin: 0 4px">/</span>
+        <span id="officeBcParent">${bcParent}</span>
+        <span style="margin: 0 4px">/</span>
+        <span class="bc-current" id="officeBcCurrent">${bcCurrent}</span>
     </div>
 
     <div class="topbar-actions">
@@ -14,19 +105,29 @@
             <span class="dot"></span>
         </button>
 
-        <button type="button" class="topbar-icon-btn" title="설정">
-            <span class="material-symbols-rounded">settings</span>
+        <button type="button" class="topbar-icon-btn" id="logoutBtn" title="로그아웃">
+            <span class="material-symbols-rounded">logout</span>
         </button>
 
-        <div class="topbar-user">
+        <a href="${ctx}/member/myPage.do" class="topbar-user" title="마이페이지">
             <div class="topbar-user-avatar">
                 <span class="material-symbols-rounded">person</span>
             </div>
             <div class="topbar-user-info">
-                <p>관리사무소</p>
-                <span>업무 화면</span>
+                <p><sec:authentication property="principal.member.userId"/></p>
+                <span>
+                    <c:choose>
+                        <c:when test="${not empty office.mgmtOfcNm}">${office.mgmtOfcNm}</c:when>
+                        <c:when test="${not empty office.aptCmplexNm}">${office.aptCmplexNm}</c:when>
+                        <c:otherwise>관리사무소</c:otherwise>
+                    </c:choose>
+                </span>
             </div>
-        </div>
+        </a>
+
+        <form id="logoutForm" action="${ctx}/logout" method="post" style="display:none;">
+            <sec:csrfInput/>
+        </form>
     </div>
 </header>
 
@@ -51,5 +152,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
     renderClock();
     setInterval(renderClock, 60000);
+
+    function getCleanText(element) {
+        return element ? element.textContent.replace(/\s+/g, " ").trim() : "";
+    }
+
+    function updateBreadcrumbFromSidebar() {
+        var activeItem = document.querySelector(".sidebar .nav-item.active:not([aria-disabled='true'])");
+        var parentTarget = document.getElementById("officeBcParent");
+        var currentTarget = document.getElementById("officeBcCurrent");
+
+        if (!activeItem || !parentTarget || !currentTarget) {
+            return;
+        }
+
+        var currentText = getCleanText(activeItem.querySelector(".nav-text"));
+        var parentText = "관리사무소";
+        var group = activeItem.closest(".nav-group");
+
+        if (group) {
+            parentText = getCleanText(group.querySelector(".cat-label")) || parentText;
+        }
+
+        if (activeItem.classList.contains("nav-dashboard")) {
+            parentText = "관리사무소";
+        }
+
+        if (currentText) {
+            parentTarget.textContent = parentText;
+            currentTarget.textContent = currentText;
+        }
+    }
+
+    updateBreadcrumbFromSidebar();
+
+    document.querySelectorAll(".sidebar .nav-item").forEach(function (item) {
+        item.addEventListener("click", function () {
+            window.setTimeout(updateBreadcrumbFromSidebar, 0);
+        });
+    });
+
+    var logoutBtn = document.getElementById("logoutBtn");
+    var logoutForm = document.getElementById("logoutForm");
+
+    if (logoutBtn && logoutForm) {
+        logoutBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            if (confirm("로그아웃 하시겠습니까?")) {
+                logoutForm.submit();
+            }
+        });
+    }
 });
 </script>
