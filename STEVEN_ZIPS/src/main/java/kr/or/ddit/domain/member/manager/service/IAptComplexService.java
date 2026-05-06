@@ -13,6 +13,9 @@ public interface IAptComplexService {
 
    int updateAptComplex(AptComplexVO aptComplexVO);
 
+   // 헤더, 푸터 용 DTO 셀렉트
+   AptMainPageDTO.ResponseDto selectAptCommonDTO(String aptCmplexNo);
+
    // 아파트 메인페이지 DTO 셀렉트
    AptMainPageDTO.ResponseDto selectAptMainDTO(String aptCmplexNo);
 }

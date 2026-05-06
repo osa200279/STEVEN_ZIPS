@@ -152,6 +152,9 @@ public class ResidentMainController {
                 .filter(apt -> apt.getAptCmplexNo().equals(aptCmplexNo))
                 .toList();
 
+        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
+        model.addAttribute("aptInfo", aptCommonDTO);
+
         model.addAttribute("userNo", userNo);
         model.addAttribute("aptCmplexNo", aptCmplexNo);
         model.addAttribute("aptList", aptList);

@@ -49,13 +49,13 @@ public class AptComplexServiceImpl implements IAptComplexService {
     }
 
     /**
-     * 아파트 메인페이지 DTO 셀렉트
-     * @author 이용로
-     * @param aptCmplexNo 아파트 단지 코드
-     * @return AptMainPageDTO.ResponseDto 아파트 메인페이지 DTO
+     * 아파트 페이지 공통부분(헤더,푸터) DTO
+     * @Author 이용로
+     * @param aptCmplexNo
+     * @return AptMainPageDTO.ResponseDTO (아파트, 관리사무소만 데이터 초기화)
      */
     @Override
-    public AptMainPageDTO.ResponseDto selectAptMainDTO(String aptCmplexNo) {
+    public AptMainPageDTO.ResponseDto selectAptCommonDTO(String aptCmplexNo) {
         AptMainPageDTO.ResponseDto resp = new AptMainPageDTO.ResponseDto();
 
         // 아파트 정보 세팅
@@ -73,6 +73,18 @@ public class AptComplexServiceImpl implements IAptComplexService {
             BeanUtils.copyProperties(mgmtOfficeVO, mgmtOfficeInfo);
             resp.setMgmtOfficeInfo(mgmtOfficeInfo);
         }
+        return resp;
+    }
+
+    /**
+     * 아파트 메인페이지 DTO 셀렉트
+     * @author 이용로
+     * @param aptCmplexNo 아파트 단지 코드
+     * @return AptMainPageDTO.ResponseDto 아파트 메인페이지 DTO
+     */
+    @Override
+    public AptMainPageDTO.ResponseDto selectAptMainDTO(String aptCmplexNo) {
+        AptMainPageDTO.ResponseDto resp = this.selectAptCommonDTO(aptCmplexNo);
 
         // 공지 게시판 글 세팅
         List<AptAnnBoardPostVO> annBoardPostVOList =  aptAnnBoardPostMapper.selectLatest(aptCmplexNo, 3);
@@ -88,4 +100,5 @@ public class AptComplexServiceImpl implements IAptComplexService {
 
         return resp;
     }
+
 }
