@@ -53,6 +53,7 @@ public class SecurityConfig {
             , "/"
             , "/apt/main"
             , "/login"
+            , "/error"
             , "/accessError"
             , "/login.do"
             , "/logout.do"
@@ -91,7 +92,9 @@ public class SecurityConfig {
                 // requestMatchers() :: 괄호 안의 조건을 만족하는 요청을 찾아라
                 // toStaticResources() :: 정적 리소스 범주
                 // atCommonsLocations() :: 스프링이 정한(약속된) 공통(정적) 자원 위치
-                .requestMatchers("/resources/**")); // 중에서 /resources/ 경로에 있는 파일과 모든 깊이의 하위파일들까지 선정
+                .requestMatchers("/resources/**") // 중에서 /resources/ 경로에 있는 파일과 모든 깊이의 하위파일들까지 선정
+                .requestMatchers("/ws-chat/**") // 웹소켓 관련 요청 시큐리티 패스
+        );
     }
 
     @Order(value = 1)
