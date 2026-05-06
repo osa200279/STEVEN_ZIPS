@@ -1,8 +1,7 @@
-package kr.or.ddit.domain.ztest;
-
+package kr.or.ddit.domain.central.controller;
 
 import kr.or.ddit.domain.apt.vo.AptComplexVO;
-import kr.or.ddit.domain.ztest.service.ICentralAptComplexService;
+import kr.or.ddit.domain.central.service.ICentralAptComplexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,7 +15,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/apt")
-public class APTController {
+public class AptRetrieveController {
 
     @Autowired
     private ICentralAptComplexService aptComplexService;
@@ -30,7 +29,7 @@ public class APTController {
         model.addAttribute("aptList", aptList);
         model.addAttribute("selectedInitial", initial);
 
-        return "ztestview/aptList";
+        return "central/aptList";
     }
 
     @GetMapping("/search.do")
@@ -43,20 +42,16 @@ public class APTController {
 
         model.addAttribute("aptList", aptList);
 
-        return "ztestview/aptSearch";
+        return "central/aptSearch";
     }
-
-
-
 
     @GetMapping("/dashboard.do")
     public String dashboard() {
-        return "ztestview/aptDashboard";
+        return "central/aptDashboard";
     }
 
     @GetMapping("/intro.do")
     public String intro() {
-        return "ztestview/service";
+        return "central/service";
     }
-
 }

@@ -28,7 +28,7 @@
                 </a>
                 <a class="text-slate-600 hover:text-primary cursor-pointer transition-colors">계약
                     신청 및 조회</a>
-                <a class="text-slate-600 hover:text-primary cursor-pointer transition-colors">아파트 찾기</a>
+                <a class="text-slate-600 hover:text-primary cursor-pointer transition-colors">공공주택 정보</a>
                 <a class="text-slate-600 hover:text-primary cursor-pointer transition-colors">시설이력조회</a>
                 <a class="text-slate-600 hover:text-primary cursor-pointer transition-colors">공지사항</a>
             </div>
@@ -62,13 +62,13 @@
                         </div>
                     </div>
                     <div class="space-y-4">
-                        <h4 class="font-bold text-base border-b border-white/20 pb-2">아파트 찾기</h4>
+                        <h4 class="font-bold text-base border-b border-white/20 pb-2">공공주택 정보</h4>
                         <div class="flex flex-col gap-2 opacity-80">
                             <p class="hover:text-white hover:underline cursor-pointer transition-all">
-                                아파트 목록
+                                단지 목록
                             </p>
                             <p class="hover:text-white hover:underline cursor-pointer transition-all">
-                                아파트 검색
+                                단지 검색
                             </p>
                         </div>
                     </div>

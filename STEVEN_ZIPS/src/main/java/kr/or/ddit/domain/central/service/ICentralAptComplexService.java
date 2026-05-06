@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.ztest.service;
+package kr.or.ddit.domain.central.service;
 
 import kr.or.ddit.domain.apt.vo.AptComplexVO;
 

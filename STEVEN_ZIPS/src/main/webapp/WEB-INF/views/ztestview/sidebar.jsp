@@ -26,25 +26,13 @@
       <summary class="flex items-center justify-between px-3 py-3 rounded-full cursor-pointer hover:bg-white/50 transition-colors">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-[#226046] text-xl">home_work</span>
-          <span class="font-bold text-sm text-gray-700 whitespace-nowrap">계약공고</span>
+          <span class="font-bold text-sm text-gray-700 whitespace-nowrap">계약 관리</span>
         </div>
         <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
            href="${pageContext.request.contextPath}/contract/notice.do">계약 공고</a>
-      </div>
-    </details>
-
-    <details class="nav-item group">
-      <summary class="flex items-center justify-between px-3 py-3 rounded-full cursor-pointer hover:bg-white/50 transition-colors">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#226046] text-xl">history_edu</span>
-          <span class="font-bold text-sm text-gray-700 whitespace-nowrap">계약 신청 및 조회</span>
-        </div>
-        <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
-      </summary>
-      <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
            href="${pageContext.request.contextPath}/contract/apply.do">계약 신청</a>
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"

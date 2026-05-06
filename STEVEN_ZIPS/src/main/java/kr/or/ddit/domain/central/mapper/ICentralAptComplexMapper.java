@@ -1,10 +1,8 @@
-package kr.or.ddit.domain.ztest.mapper;
+package kr.or.ddit.domain.central.mapper;
 
 import kr.or.ddit.domain.apt.vo.AptComplexVO;
-import kr.or.ddit.domain.ztest.service.ICentralAptComplexService;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 

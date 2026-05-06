@@ -45,8 +45,11 @@
 
     <nav class="header-nav">
         <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/manage') ? 'active' : ''}">
-            <span>관리사무소<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
-                    d="M6 9l6 6 6-6"/></svg></span>
+            <span>관리사무소
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 9l6 6 6-6"/>
+            </svg>
+            </span>
             <div class="slim-drop">
                 <a href="${pageContext.request.contextPath}/resident/manage/intro">관리사무소 소개</a>
                 <a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>
@@ -97,7 +100,7 @@
             </div>
         </div>
 
-        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/apt') ? 'active' : ''}">
+        <div class="nav-item ${fn:contains(pageContext.request.requestURI, '/resident/board') ? 'active' : ''}">
             <span>입주민게시판<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
