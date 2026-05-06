@@ -5,9 +5,8 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class MessageReadVO {
-    private String readNo;
-    private String chatMsgNo;
+public class ChatRoomReadVO {
+    private String chatRoomNo;
     private String chatMemberId;
-    private Date readDttm;
+    private String lastReadMsgNo;
 }

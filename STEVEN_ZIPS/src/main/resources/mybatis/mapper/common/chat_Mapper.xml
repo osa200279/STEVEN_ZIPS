@@ -2,37 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.common.webSocket.chat.mapper.IChatMapper">
     <update id="updateLastRead">
-        UPDATE CHAT_ROOM_READ
-        SET LAST_READ_MSG_NO = #{chatMsgNo}
-        WHERE CHAT_ROOM_NO = #{chatRoomNo}
-          AND CHAT_MEMBER_ID = #{chatMemberId}
+        UPDATE chat_room_read   /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.updateLastRead*/
+        SET last_read_msg_no = #{chatMsgNo}
+        WHERE chat_room_no = #{chatRoomNo}
+          AND chat_member_id = #{chatMemberId}
     </update>
 
     <select id="selectMyRooms" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
-        SELECT r.CHAT_ROOM_NO, r.CHAT_ROOM_NM
-        FROM CHAT_ROOM r
-        INNER JOIN CHAT_ROOM_MEMBER m
-            ON (r.CHAT_ROOM_NO = m.CHAT_ROOM_NO)
+        SELECT r.chat_room_no   /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.selectMyRooms*/
+               ,r.chat_room_nm
+        FROM chat_room r
+        INNER JOIN chat_room_member m
+            ON (r.chat_room_no = m.chat_room_no)
         WHERE m.USER_NO = #{userNo}
           AND m.LEFT_DTTM IS NULL
     </select>
 
     <select id="selectMessages" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO">
-        SELECT
-            m.CHAT_MSG_NO,
-            m.CHAT_ROOM_NO,
-            m.MSG_TY_CD,
-            m.MSG_CN,
-            m.ATCH_FILE_ID,
-            m.REG_DTTM,
-            m.SENDER_TY,
-            m.CHAT_MEMBER_ID,
-            rm.USER_NO
+        SELECT  /*kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO.selectMessages*/
+            m.CHAT_MSG_NO
+            ,m.CHAT_ROOM_NO
+            ,m.MSG_TY_CD
+            ,m.MSG_CN
+            ,m.ATCH_FILE_ID
+            ,m.REG_DTTM
+            ,m.SENDER_TY
+            ,m.CHAT_MEMBER_ID
+            ,rm.USER_NO AS SENDER_USER_NO
         FROM CHAT_MESSAGE m
                  JOIN CHAT_ROOM_MEMBER rm
                       ON m.CHAT_MEMBER_ID = rm.CHAT_MEMBER_ID
         WHERE m.CHAT_ROOM_NO = #{chatRoomNo}
         ORDER BY m.REG_DTTM ASC
+
     </select>
 
     <insert id="insertMessage" parameterType="kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO">
@@ -41,26 +43,26 @@
             SELECT SEQ_CHAT_MESSAGE.NEXTVAL FROM DUAL
         </selectKey>
 
-        INSERT INTO CHAT_MESSAGE (
-        CHAT_MSG_NO,
-        CHAT_ROOM_NO,
-        MSG_TY_CD,
-        MSG_CN,
-        CHAT_MEMBER_ID,
-        REG_DTTM
+        INSERT INTO CHAT_MESSAGE (  /*kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO.insertMessage*/
+        CHAT_MSG_NO
+        ,CHAT_ROOM_NO
+        ,MSG_TY_CD
+        ,MSG_CN
+        ,CHAT_MEMBER_ID
+        ,REG_DTTM
         )
         VALUES (
-        #{chatMsgNo},
-        #{chatRoomNo},
-        #{msgTyCd},
-        #{msgCn},
-        #{chatMemberId},
-        SYSDATE
+        #{chatMsgNo}
+        ,#{chatRoomNo}
+        ,#{msgTyCd}
+        ,#{msgCn}
+        ,#{chatMemberId}
+        ,SYSDATE
         )
     </insert>
 
     <select id="selectMemberId" resultType="string">
-        SELECT  CHAT_MEMBER_ID
+        SELECT  CHAT_MEMBER_ID  /*kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO.selectMemberId*/
         FROM    CHAT_ROOM_MEMBER
         WHERE   CHAT_ROOM_NO = #{chatRoomNo}
           AND   USER_NO = #{userNo}
@@ -68,15 +70,15 @@
     </select>
 
     <insert id="insertMember">
-        INSERT INTO CHAT_ROOM_MEMBER (
-            CHAT_MEMBER_ID,
-            CHAT_ROOM_NO,
-            USER_NO
+        INSERT INTO CHAT_ROOM_MEMBER (  /*kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO.insertMember*/
+            CHAT_MEMBER_ID
+            ,CHAT_ROOM_NO
+            ,USER_NO
         )
         VALUES (
-           #{chatMemberId},
-           #{chatRoomNo},
-           #{userNo}
+           #{chatMemberId}
+           ,#{chatRoomNo}
+           ,#{userNo}
        )
     </insert>
 

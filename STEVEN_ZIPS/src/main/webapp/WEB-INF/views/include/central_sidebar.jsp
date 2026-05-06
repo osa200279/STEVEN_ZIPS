@@ -1,15 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%--websocket 때문에 추가했습니다 by도선호--%>
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
-<c:set var="loginUser" value="${sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member}" />
-<body data-user-no="${loginUser.userNo}">
-<script src="/js/common/websocket.js"></script>
-<script>
-    connectWebSocket();
-</script>
-<%--websocket end--%>
-
 
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -195,3 +184,4 @@
     });
   });
 </script>
+<jsp:include page="/WEB-INF/views/include/websocket.jsp"/>

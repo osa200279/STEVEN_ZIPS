@@ -46,7 +46,8 @@
     </delete>
 
     <select id="getSeqFileGroupNo" resultType="long">
-        select seq_attach_file_group_no.nextval from dual
+        SELECT seq_attach_file_group_no.nextval /* kr.or.ddit.common.file.mapper.IAttachFileMapper.getSeqFileGroupNo */
+        FROM dual
     </select>
 
     <!-- 파일 그룹코드 + uuid파일명 (복합키)로 파일 메타데이터 가져오기 -->

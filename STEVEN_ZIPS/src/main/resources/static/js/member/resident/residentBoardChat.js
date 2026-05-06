@@ -1,7 +1,6 @@
-window.onload = function () {
+document.addEventListener("DOMContentLoaded", function () {
     loadMyRooms();
-};
-
+});
 
 let subscription = null;
 
@@ -208,7 +207,7 @@ function createRoom(roomName) {
 
 function appendMessage(msg) {
 
-    const isMe = String(msg.userNo) === String(userNo);
+    const isMe = String(msg.senderUserNo) === String(userNo);
 
     const html = `
         <div class="message ${isMe ? 'me' : 'other'}">
@@ -223,7 +222,7 @@ function appendMessage(msg) {
 }
 
 function renderMessage(msg) {
-    const isMe = String(msg.userNo) === String(userNo);
+    const isMe = String(msg.senderUserNo) === String(userNo);
 
     return `
         <div class="message ${isMe ? 'me' : 'other'}">

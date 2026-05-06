@@ -13,7 +13,7 @@ public class ChatMessageVO {
     private String chatMemberId;
     private Date regDttm;
 
-    private String userNo;
+    private String senderUserNo;
 
     private String senderTy;
     private String atchFileId;

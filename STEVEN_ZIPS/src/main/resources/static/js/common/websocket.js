@@ -1,4 +1,5 @@
 let stomp = null;
+let notificationSubscription = null;
 
 function connectWebSocket() {
 
@@ -7,8 +8,11 @@ function connectWebSocket() {
         return;
     }
 
-    const socket = new SockJS('/ws-chat');
+    const contextPath = document.body.dataset.contextPath || "";
+    const socket = new SockJS(contextPath + '/ws-chat');
+
     stomp = Stomp.over(socket);
+    stomp.debug = null;
 
     stomp.connect(
         {},
@@ -18,6 +22,10 @@ function connectWebSocket() {
         },
         (error) => {
             console.error("웹소켓 연결 실패", error);
+
+            setTimeout(() => {
+                connectWebSocket();
+            }, 3000);
         }
     );
 }
@@ -31,8 +39,12 @@ function subscribeNotification() {
         return;
     }
 
-    stomp.subscribe('/sub/notification/' + userNo, (msg) => {
+    if (notificationSubscription) {
+        notificationSubscription.unsubscribe();
+    }
 
+    notificationSubscription =
+        stomp.subscribe('/sub/notification/' + userNo, (msg) => {
         const data = JSON.parse(msg.body);
 
         console.log("알림:", data);

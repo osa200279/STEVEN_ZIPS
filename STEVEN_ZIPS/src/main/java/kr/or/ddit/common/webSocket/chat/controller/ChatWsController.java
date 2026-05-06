@@ -28,7 +28,7 @@ public class ChatWsController {
 
         String userNo = user.getMember().getUserNo();
 
-        message.setChatMemberId(userNo);
+        message.setSenderUserNo(userNo);
         message.setSenderTy("USER");
         message.setMsgTyCd("TEXT");
 

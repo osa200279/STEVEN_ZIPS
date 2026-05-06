@@ -830,9 +830,9 @@
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 <script !src="">
 
-    window.onload = function () {
+    document.addEventListener("DOMContentLoaded", function () {
         loadMyVhcl();
-    };
+    });
 
     let isSubmitting = false;
 
