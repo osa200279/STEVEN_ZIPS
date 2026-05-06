@@ -28,7 +28,7 @@ public class ResidentVhclController {
      * 내 차량 조회
      */
     @GetMapping("/myVhcl/{aptCmplexNo}")
-    @PreAuthorize("@authService.hasAptAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @ResponseBody
     public List<RsidVhclVO> selectMyVhclList(
             @PathVariable String aptCmplexNo,
@@ -43,7 +43,7 @@ public class ResidentVhclController {
 
     @PostMapping("/check/{aptCmplexNo}")
     @ResponseBody
-    @PreAuthorize("@authService.hasAptAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     public String checkVhcl(
             @AuthenticationPrincipal CustomUser principal,
             @PathVariable String aptCmplexNo,
@@ -63,7 +63,7 @@ public class ResidentVhclController {
 
     @PostMapping("/register/{aptCmplexNo}")
     @ResponseBody
-    @PreAuthorize("@authService.hasAptAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     public String registerVhcl(
             @AuthenticationPrincipal CustomUser principal,
             @PathVariable String aptCmplexNo,

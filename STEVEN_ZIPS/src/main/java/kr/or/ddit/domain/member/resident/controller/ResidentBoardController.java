@@ -21,7 +21,7 @@ public class ResidentBoardController {
 
     private final IResidentBoardService service;
 
-    @PreAuthorize("@authService.hasAptAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @PostMapping("/boardFreeWrite.do")
     public String boardFreeWrite(
             RsidBoardVO rsidBoardVO,
@@ -35,7 +35,7 @@ public class ResidentBoardController {
         return "redirect:/resident/boardFreeList.do";
     }
 
-    @PreAuthorize("@authService.hasAptAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/boardFreeList.do")
     public String boardFreeList(RsidBoardVO rsidBoardVO,
                                 Model model){

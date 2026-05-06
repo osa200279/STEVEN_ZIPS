@@ -19,7 +19,7 @@ public class AuthService {
      * @param target
      * @return boolean 접근 허용 여부 true : 허용, false : 불허
      */
-    public boolean hasAptAccess(Object principal, String target){   // 캐스팅 안정성 때문에 customUser가 아닌 principal사용
+    public boolean hasAccess(Object principal, String target){   // 캐스팅 안정성 때문에 customUser가 아닌 principal사용
 
         if(!(principal instanceof CustomUser)) return false;   // 익명 사용자 거르기
 
@@ -42,7 +42,7 @@ public class AuthService {
         }else if(member instanceof MngrVO){
             MngrVO mngr = (MngrVO) member;
 
-            boolean isManager = mngr.getAptCmplexNo().equals(target);
+            boolean isManager = mngr.getMgmtOfcNo().equals(target);
 
             if(!isManager) log.info("권한 없는 단지 접근 시도 유저 : {}", mngr.getUserId());
 
