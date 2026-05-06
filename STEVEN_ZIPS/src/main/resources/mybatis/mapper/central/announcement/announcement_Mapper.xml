@@ -5,182 +5,349 @@
 
 <mapper namespace="kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper">
 
+    <!-- ===================================================== -->
+    <!-- 단지 목록 조회 -->
+    <!-- ===================================================== -->
+    <select id="selectAptComplexList"
+            resultType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
+
+        /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.selectAptComplexList */
+
+        SELECT
+        ac.apt_cmplex_no AS apt_cmplex_no   /** 아파트단지번호 */
+        , ac.apt_cmplex_nm AS apt_cmplex_nm   /** 아파트단지명 */
+        FROM apt_complex ac
+        ORDER BY ac.apt_cmplex_nm
+
+    </select>
+
+    <!-- ===================================================== -->
+    <!-- 공고 목록 조회 -->
+    <!-- ===================================================== -->
     <select id="selectAnnouncementList"
             parameterType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO"
             resultType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
+
         /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.selectAnnouncementList */
+
         SELECT
-        cap.ann_no                                               AS ann_no             /** 공고번호 */
-        , cap.board_no                                             AS board_no           /** 게시판번호 */
-        , cbi.board_nm                                             AS board_nm           /** 게시판명 */
-        , cbi.board_ty_cd                                          AS board_ty_cd        /** 게시판유형코드 */
-        , cap.ttl                                                  AS ttl                /** 제목 */
-        , cap.cn                                                   AS cn                 /** 내용 */
-        , cap.wrtr_id                                              AS wrtr_id            /** 작성자아이디 */
-        , cap.top_fix_yn                                           AS top_fix_yn         /** 상단고정여부 */
-        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD')                AS pblanc_bgng_dt     /** 공고게시시작일 */
-        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD')                 AS pblanc_end_dt      /** 공고게시종료일 */
-        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD')                  AS rcrt_bgng_dt       /** 모집시작일 */
-        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD')                   AS rcrt_end_dt        /** 모집종료일 */
-        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD')                      AS reg_dttm           /** 등록일시 */
-        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD')                      AS mdf_dttm           /** 수정일시 */
-        , cap.inq_cnt                                              AS inq_cnt            /** 조회수 */
-        , cap.del_yn                                               AS del_yn             /** 삭제여부 */
-        , cap.atch_file_id                                         AS atch_file_id       /** 첨부파일ID */
-        , cap.opn_yn                                               AS opn_yn             /** 공개여부 */
+        cap.ann_no                                       AS ann_no                  /** 공고번호 */
+        , cap.board_no                                     AS board_no                /** 게시판번호 */
+
+        , cbi.board_nm                                     AS board_nm                /** 게시판명 */
+        , cbi.board_ty_cd                                  AS board_ty_cd             /** 게시판유형코드 */
+
+        , cap.apt_cmplex_no                                AS apt_cmplex_no           /** 아파트단지번호 */
+        , ac.apt_cmplex_nm                                 AS apt_cmplex_nm           /** 아파트단지명 */
+
+        , cap.ttl                                          AS ttl                     /** 제목 */
+        , cap.cn                                           AS cn                      /** 내용 */
+
+        , cap.wrtr_id                                      AS wrtr_id                 /** 작성자아이디 */
+        , cap.top_fix_yn                                   AS top_fix_yn              /** 상단고정여부 */
+
+        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD')        AS pblanc_bgng_dt          /** 공고게시시작일 */
+        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD')         AS pblanc_end_dt           /** 공고게시종료일 */
+
+        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD')          AS rcrt_bgng_dt            /** 모집시작일 */
+        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD')           AS rcrt_end_dt             /** 모집종료일 */
+
+        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD')              AS reg_dttm                /** 등록일시 */
+        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD')              AS mdf_dttm                /** 수정일시 */
+
+        , cap.inq_cnt                                      AS inq_cnt                 /** 조회수 */
+        , cap.del_yn                                       AS del_yn                  /** 삭제여부 */
+
+        , cap.atch_file_id                                 AS atch_file_id            /** 첨부파일ID */
+
+        , cap.suply_hshld_cnt                              AS suply_hshld_cnt         /** 공급세대수 */
+        , cap.sbmsn_doc_cn                                 AS sbmsn_doc_cn            /** 제출서류내용 */
+        , cap.sbmsn_doc_guide_cn                           AS sbmsn_doc_guide_cn      /** 제출서류안내내용 */
+
         , CASE
         WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
         THEN '예정'
+
         WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
         THEN '마감'
+
         ELSE '진행중'
-        END                                                      AS status_nm          /** 진행상태명 */
+        END                                              AS status_nm               /** 진행상태명 */
+
         FROM center_ann_board_post cap
+
         LEFT JOIN center_board_instance cbi
         ON cap.board_no = cbi.board_no
+
+        LEFT JOIN apt_complex ac
+        ON cap.apt_cmplex_no = ac.apt_cmplex_no
+
         WHERE 1 = 1
+
+        /*
+        DEL_YN
+        → 삭제여부 컬럼
+
+        N = 정상 공고
+        Y = 삭제 처리 공고
+
+        실제 DELETE 대신 화면에서만 숨기는 방식.
+        */
         AND NVL(cap.del_yn, 'N') = 'N'
-        AND NVL(cap.opn_yn, 'Y') = 'Y'
 
+        <!-- 제목 검색 -->
         <if test="searchTtl != null and searchTtl != ''">
-            AND LOWER(cap.ttl) LIKE '%' || LOWER(#{searchTtl}) || '%'
+
+            AND LOWER(cap.ttl)
+            LIKE '%' || LOWER(#{searchTtl}) || '%'
+
         </if>
 
+        <!-- 단지 검색 -->
+        <if test="searchAptCmplexNo != null and searchAptCmplexNo != ''">
+
+            AND cap.apt_cmplex_no = #{searchAptCmplexNo}
+
+        </if>
+
+        <!-- 모집 시작일 검색 -->
         <if test="searchFrom != null and searchFrom != ''">
-            AND cap.rcrt_bgng_dt <![CDATA[>=]]> TO_DATE(#{searchFrom}, 'YYYY-MM-DD')
+
+            AND cap.rcrt_bgng_dt <![CDATA[>=]]>
+            TO_DATE(#{searchFrom}, 'YYYY-MM-DD')
+
         </if>
 
+        <!-- 모집 종료일 검색 -->
         <if test="searchTo != null and searchTo != ''">
-            AND cap.rcrt_end_dt <![CDATA[<=]]> TO_DATE(#{searchTo}, 'YYYY-MM-DD')
+
+            AND cap.rcrt_end_dt <![CDATA[<=]]>
+            TO_DATE(#{searchTo}, 'YYYY-MM-DD')
+
         </if>
 
+        <!-- 상태 검색 -->
         <if test="searchStatus != null and searchStatus != ''">
+
             AND CASE
             WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
             THEN '예정'
+
             WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
             THEN '마감'
+
             ELSE '진행중'
             END = #{searchStatus}
+
         </if>
 
         ORDER BY cap.reg_dttm DESC
+
     </select>
 
+    <!-- ===================================================== -->
+    <!-- 공고 상세 조회 -->
+    <!-- ===================================================== -->
     <select id="selectAnnouncement"
             parameterType="string"
             resultType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
+
         /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.selectAnnouncement */
+
         SELECT
-        cap.ann_no                                               AS ann_no             /** 공고번호 */
-        , cap.board_no                                             AS board_no           /** 게시판번호 */
-        , cbi.board_nm                                             AS board_nm           /** 게시판명 */
-        , cbi.board_ty_cd                                          AS board_ty_cd        /** 게시판유형코드 */
-        , cap.ttl                                                  AS ttl                /** 제목 */
-        , cap.cn                                                   AS cn                 /** 내용 */
-        , cap.wrtr_id                                              AS wrtr_id            /** 작성자아이디 */
-        , cap.top_fix_yn                                           AS top_fix_yn         /** 상단고정여부 */
-        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD')                AS pblanc_bgng_dt     /** 공고게시시작일 */
-        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD')                 AS pblanc_end_dt      /** 공고게시종료일 */
-        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD')                  AS rcrt_bgng_dt       /** 모집시작일 */
-        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD')                   AS rcrt_end_dt        /** 모집종료일 */
-        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD')                      AS reg_dttm           /** 등록일시 */
-        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD')                      AS mdf_dttm           /** 수정일시 */
-        , cap.inq_cnt                                              AS inq_cnt            /** 조회수 */
-        , cap.del_yn                                               AS del_yn             /** 삭제여부 */
-        , cap.atch_file_id                                         AS atch_file_id       /** 첨부파일ID */
-        , cap.opn_yn                                               AS opn_yn             /** 공개여부 */
+        cap.ann_no                                       AS ann_no                  /** 공고번호 */
+        , cap.board_no                                     AS board_no                /** 게시판번호 */
+
+        , cbi.board_nm                                     AS board_nm                /** 게시판명 */
+        , cbi.board_ty_cd                                  AS board_ty_cd             /** 게시판유형코드 */
+
+        , cap.apt_cmplex_no                                AS apt_cmplex_no           /** 아파트단지번호 */
+        , ac.apt_cmplex_nm                                 AS apt_cmplex_nm           /** 아파트단지명 */
+
+        , cap.ttl                                          AS ttl                     /** 제목 */
+        , cap.cn                                           AS cn                      /** 내용 */
+
+        , cap.wrtr_id                                      AS wrtr_id                 /** 작성자아이디 */
+        , cap.top_fix_yn                                   AS top_fix_yn              /** 상단고정여부 */
+
+        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD')        AS pblanc_bgng_dt          /** 공고게시시작일 */
+        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD')         AS pblanc_end_dt           /** 공고게시종료일 */
+
+        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD')          AS rcrt_bgng_dt            /** 모집시작일 */
+        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD')           AS rcrt_end_dt             /** 모집종료일 */
+
+        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD')              AS reg_dttm                /** 등록일시 */
+        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD')              AS mdf_dttm                /** 수정일시 */
+
+        , cap.inq_cnt                                      AS inq_cnt                 /** 조회수 */
+        , cap.del_yn                                       AS del_yn                  /** 삭제여부 */
+
+        , cap.atch_file_id                                 AS atch_file_id            /** 첨부파일ID */
+
+        , cap.suply_hshld_cnt                              AS suply_hshld_cnt         /** 공급세대수 */
+        , cap.sbmsn_doc_cn                                 AS sbmsn_doc_cn            /** 제출서류내용 */
+        , cap.sbmsn_doc_guide_cn                           AS sbmsn_doc_guide_cn      /** 제출서류안내내용 */
+
         , CASE
         WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
         THEN '예정'
+
         WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
         THEN '마감'
+
         ELSE '진행중'
-        END                                                      AS status_nm          /** 진행상태명 */
+        END                                              AS status_nm               /** 진행상태명 */
+
         FROM center_ann_board_post cap
+
         LEFT JOIN center_board_instance cbi
         ON cap.board_no = cbi.board_no
+
+        LEFT JOIN apt_complex ac
+        ON cap.apt_cmplex_no = ac.apt_cmplex_no
+
         WHERE 1 = 1
         AND cap.ann_no = #{annNo}
+
         AND NVL(cap.del_yn, 'N') = 'N'
+
     </select>
 
+    <!-- ===================================================== -->
+    <!-- 공고 등록 -->
+    <!-- ===================================================== -->
     <insert id="insertAnnouncement"
             parameterType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
+
         /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.insertAnnouncement */
+
         INSERT INTO center_ann_board_post (
-        ann_no              /** 공고번호 */
-        , board_no            /** 게시판번호 */
-        , ttl                 /** 제목 */
-        , cn                  /** 내용 */
-        , wrtr_id             /** 작성자아이디 */
-        , top_fix_yn          /** 상단고정여부 */
-        , pblanc_bgng_dt      /** 공고게시시작일 */
-        , pblanc_end_dt       /** 공고게시종료일 */
-        , rcrt_bgng_dt        /** 모집시작일 */
-        , rcrt_end_dt         /** 모집종료일 */
-        , reg_dttm            /** 등록일시 */
-        , inq_cnt             /** 조회수 */
-        , del_yn              /** 삭제여부 */
-        , atch_file_id        /** 첨부파일ID */
-        , opn_yn              /** 공개여부 */
+
+        ann_no                 /** 공고번호 */
+        , board_no               /** 게시판번호 */
+
+        , apt_cmplex_no          /** 아파트단지번호 */
+
+        , ttl                    /** 제목 */
+        , cn                     /** 내용 */
+
+        , wrtr_id                /** 작성자아이디 */
+        , top_fix_yn             /** 상단고정여부 */
+
+        , pblanc_bgng_dt         /** 공고게시시작일 */
+        , pblanc_end_dt          /** 공고게시종료일 */
+
+        , rcrt_bgng_dt           /** 모집시작일 */
+        , rcrt_end_dt            /** 모집종료일 */
+
+        , reg_dttm               /** 등록일시 */
+
+        , inq_cnt                /** 조회수 */
+        , del_yn                 /** 삭제여부 */
+
+        , atch_file_id           /** 첨부파일ID */
+
+        , suply_hshld_cnt        /** 공급세대수 */
+        , sbmsn_doc_cn           /** 제출서류내용 */
+        , sbmsn_doc_guide_cn     /** 제출서류안내내용 */
+
         ) VALUES (
+
         'ANN' || LPAD((
         SELECT NVL(MAX(TO_NUMBER(SUBSTR(cap2.ann_no, 4))), 0) + 1
         FROM center_ann_board_post cap2
-        WHERE 1 = 1
-        AND REGEXP_LIKE(cap2.ann_no, '^ANN[0-9]+$')
+        WHERE REGEXP_LIKE(cap2.ann_no, '^ANN[0-9]+$')
         ), 12, '0')
+
         , (
         SELECT MIN(cbi2.board_no)
         FROM center_board_instance cbi2
-        WHERE 1 = 1
-        AND NVL(cbi2.use_yn, 'Y') = 'Y'
+        WHERE NVL(cbi2.use_yn, 'Y') = 'Y'
         )
+
+        , #{aptCmplexNo}
+
         , #{ttl}
         , #{cn}
+
         , #{wrtrId}
         , NVL(#{topFixYn}, 'N')
+
         , TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')
         , TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')
+
         , TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')
         , TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')
+
         , SYSDATE
+
         , 0
         , 'N'
+
         , #{atchFileId}
-        , 'Y'
+
+        , #{suplyHshldCnt}
+        , #{sbmsnDocCn}
+        , #{sbmsnDocGuideCn}
+
         )
+
     </insert>
 
+    <!-- ===================================================== -->
+    <!-- 공고 수정 -->
+    <!-- ===================================================== -->
     <update id="updateAnnouncement"
             parameterType="kr.or.ddit.domain.central.admin.vo.AnnouncementVO">
+
         /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.updateAnnouncement */
+
         UPDATE center_ann_board_post cap
         SET
-        cap.ttl = #{ttl}                                                   /** 제목 */
-        , cap.cn = #{cn}                                                     /** 내용 */
-        , cap.top_fix_yn = NVL(#{topFixYn}, 'N')                             /** 상단고정여부 */
-        , cap.pblanc_bgng_dt = TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')        /** 공고게시시작일 */
-        , cap.pblanc_end_dt = TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')          /** 공고게시종료일 */
-        , cap.rcrt_bgng_dt = TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')            /** 모집시작일 */
-        , cap.rcrt_end_dt = TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')              /** 모집종료일 */
-        , cap.atch_file_id = #{atchFileId}                                   /** 첨부파일ID */
-        , cap.opn_yn = NVL(#{opnYn}, 'Y')                                    /** 공개여부 */
-        , cap.mdf_dttm = SYSDATE                                             /** 수정일시 */
+
+        cap.apt_cmplex_no = #{aptCmplexNo}                                /** 아파트단지번호 */
+
+        , cap.ttl = #{ttl}                                                  /** 제목 */
+        , cap.cn = #{cn}                                                    /** 내용 */
+
+        , cap.top_fix_yn = NVL(#{topFixYn}, 'N')                            /** 상단고정여부 */
+
+        , cap.pblanc_bgng_dt = TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')      /** 공고게시시작일 */
+        , cap.pblanc_end_dt = TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')        /** 공고게시종료일 */
+
+        , cap.rcrt_bgng_dt = TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')          /** 모집시작일 */
+        , cap.rcrt_end_dt = TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')            /** 모집종료일 */
+
+        , cap.atch_file_id = #{atchFileId}                                  /** 첨부파일ID */
+
+        , cap.suply_hshld_cnt = #{suplyHshldCnt}                            /** 공급세대수 */
+        , cap.sbmsn_doc_cn = #{sbmsnDocCn}                                  /** 제출서류내용 */
+        , cap.sbmsn_doc_guide_cn = #{sbmsnDocGuideCn}                       /** 제출서류안내내용 */
+
+        , cap.mdf_dttm = SYSDATE                                            /** 수정일시 */
+
         WHERE 1 = 1
         AND cap.ann_no = #{annNo}
+
     </update>
 
+    <!-- ===================================================== -->
+    <!-- 공고 삭제 -->
+    <!-- ===================================================== -->
     <update id="deleteAnnouncement"
             parameterType="string">
+
         /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.deleteAnnouncement */
+
         UPDATE center_ann_board_post cap
         SET
-        cap.del_yn = 'Y'           /** 삭제여부 */
-        , cap.mdf_dttm = SYSDATE     /** 수정일시 */
+
+        cap.del_yn = 'Y'         /** 삭제여부 */
+        , cap.mdf_dttm = SYSDATE   /** 수정일시 */
+
         WHERE 1 = 1
         AND cap.ann_no = #{annNo}
+
     </update>
 
 </mapper>
