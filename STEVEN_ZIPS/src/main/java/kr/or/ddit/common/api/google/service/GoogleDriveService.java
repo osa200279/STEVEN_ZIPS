@@ -1,18 +1,14 @@
 package kr.or.ddit.common.api.google.service;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.GoogleCredentials;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -20,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
@@ -40,32 +35,24 @@ public class GoogleDriveService {
 
     /**
      * google drive service 객체 생성 및 반환 메서드
-     * @author 이용로
      * @return Drive 객체
      * @throws IOException
      * @throws GeneralSecurityException
+     * @author 이용로
      */
     public Drive getDriveService() throws IOException, GeneralSecurityException {
-        InputStream in = new ClassPathResource("client_secrets.json").getInputStream();
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
-                GsonFactory.getDefaultInstance(), new InputStreamReader(in));
+        // 1. resources 폴더에 저장한 서비스 계정 JSON 키 파일 읽어오기
+        InputStream in = new ClassPathResource("google-drive-key.json").getInputStream();
 
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                GsonFactory.getDefaultInstance(),
-                clientSecrets,
-                Collections.singleton(DriveScopes.DRIVE))   // 전체 접근 권한
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File("tokens")))
-                .setAccessType("offline")
-                .build();
+        // 2. 서비스 계정 기반 인증 객체 생성
+        GoogleCredentials credentials = GoogleCredentials.fromStream(in)
+                .createScoped(Collections.singleton(DriveScopes.DRIVE));
 
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(-1).build();   // setPort(-1) 랜덤으로 포트 설정
-        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-
+        // 3. Drive 서비스 객체 반환 (HttpCredentialsAdapter 사용)
         Drive drive = new Drive.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
                 GsonFactory.getDefaultInstance(),
-                credential)
+                new HttpCredentialsAdapter(credentials))
                 .setApplicationName("StevenZips")
                 .build();
 
@@ -74,12 +61,13 @@ public class GoogleDriveService {
 
     /**
      * 파일 업로드 메서드
-     * @author 이용로
-     * @param file 저장할 파일vo 객체
-     * @param path 파일을 저장할 *폴더*의 전체 경로 (ex. member/prof_img/파일.txt면 member/prof_img까지 마자막 '/'와 파일명은 제거한다)
+     *
+     * @param file          저장할 파일vo 객체
+     * @param path          파일을 저장할 *폴더*의 전체 경로 (ex. member/prof_img/파일.txt면 member/prof_img까지 마자막 '/'와 파일명은 제거한다)
      * @param savedFileName uuid_name 형식의 저장 될 파일명 (*주의 uuid는 '-'를 제거)
      * @return googleId 구글 드라이브에서 업로드 한 파일에 발급한 식별코드
      * @throws IOException
+     * @author 이용로
      */
     public String uploadFile(MultipartFile file, String path, String savedFileName) throws IOException {
         try {
@@ -113,12 +101,13 @@ public class GoogleDriveService {
 
     /**
      * mkdirs() 처럼 동작하는 폴더(경로) 탐색 메서드
-     * @author 이용로
+     *
      * @param service 사용할 google drive 서비스 객체
-     * @param rootId 탐색을 시작할 최초(최상위) 폴더 이름
-     * @param path 파일을 저장할 경로
+     * @param rootId  탐색을 시작할 최초(최상위) 폴더 이름
+     * @param path    파일을 저장할 경로
      * @return currentParentId 최종 생성된 폴더명
      * @throws IOException
+     * @author 이용로
      * @query name 찾고자 하는 콘텐츠 명
      * @query mimeType 데이터 타입 'application/vnd.google-apps.folder', 'image/jpeg'
      * @query 'folder' in parents 'folder'컬렉션(폴더) 내 파일 (ex. myFolder 내 파일 => 'myFolder' in parents)
@@ -162,12 +151,13 @@ public class GoogleDriveService {
 
     /**
      * 전체 경로를 통해 타겟 파일 찾기 (googleId를 모를때)
-     * @author 이용로
-     * @param service 사용할 google drive 서비스 객체
-     * @param rootId 탐색을 시작할 최초(최상위) 폴더 이름
+     *
+     * @param service  사용할 google drive 서비스 객체
+     * @param rootId   탐색을 시작할 최초(최상위) 폴더 이름
      * @param fullPath 파일명까지 포함한 전체 경로(attach_file테이블의 file_path)
      * @return googleId 구글 파일 아이디 값
      * @throws IOException
+     * @author 이용로
      */
     public String getFileIdByPath(Drive service, String rootId, String fullPath) throws IOException {
         int lastSlash = fullPath.lastIndexOf("/");
@@ -226,9 +216,10 @@ public class GoogleDriveService {
 
     /**
      * 파일 구글아이디로 업로드 파일 삭제 (휴지통 이동)
-     * @author 이용로
+     *
      * @param service
      * @param googleId
+     * @author 이용로
      */
     public void moveToTrash(Drive service, String googleId) throws IOException {
         File target = new File();
