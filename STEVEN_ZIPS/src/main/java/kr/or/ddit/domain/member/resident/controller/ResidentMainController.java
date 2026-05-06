@@ -198,10 +198,6 @@ public class ResidentMainController {
     /* =========================
      * 민원접수
      * ========================= */
-    @GetMapping("/complaint/apply")
-    public String complaintApply() {
-        return "member/resident/complaint/complaint_apply";
-    }
 
     @GetMapping("/complaint/live")
     public String complaintLive() {

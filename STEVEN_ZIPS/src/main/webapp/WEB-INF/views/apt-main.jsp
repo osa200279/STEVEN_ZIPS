@@ -77,7 +77,7 @@ img { display: block; width: 100%; }
 /* 슬라이더 컨트롤 */
 .hero-dots {
   position:absolute; bottom:22px; left:50%; transform:translateX(-50%);
-  display:flex; gap:8px; z-index:10;
+  display:flex; gape:8px; z-index:10;
 }
 .hero-dot {
   width:8px; height:8px; border-radius:50%;

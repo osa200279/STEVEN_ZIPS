@@ -84,7 +84,7 @@
             <span>민원접수<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/resident/complaint/apply">민원신청</a>
+                <a href="/apt/complaint/apply.do/${apt.aptCmplexNo}">민원신청</a>
                 <a href="${pageContext.request.contextPath}/resident/complaint/live">실시간문의</a>
                 <a href="${pageContext.request.contextPath}/resident/complaint/chatbot">챗봇민원접수</a>
                 <a href="${pageContext.request.contextPath}/resident/complaint/status">민원접수현황</a>
@@ -176,7 +176,7 @@
             <div class="all-menu-section">
                 <div class="all-menu-section-title">민원접수</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/resident/complaint/apply">민원신청</a></li>
+                    <li><a href="/apt/complaint/apply.do/${apt.aptCmplexNo}">민원신청</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/complaint/live">실시간문의</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/complaint/chatbot">챗봇민원접수</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/complaint/status">민원접수현황</a></li>
