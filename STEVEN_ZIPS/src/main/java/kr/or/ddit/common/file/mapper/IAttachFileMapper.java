@@ -17,7 +17,7 @@ public interface IAttachFileMapper {
 
     void deleteByFileGroupNo(String fileGroupNo);
 
-    void deleteOne(String fileGroupNo, String fileSaveUuid);
+    void deleteOne(String googleId);
 
     List<AttachFileVO> selecAttachFileList(String fileId);
 }

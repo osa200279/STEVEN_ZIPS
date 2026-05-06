@@ -16,7 +16,7 @@ public interface IAttachFileService {
     void deleteAllByGroupNo(String fileGroupNo);
 
     // 첨부파일 테이블에서 묶음 파일 중 선택 삭제 by도선호
-    void deleteOne(String fileGroupNo, String fileSaveUuid);
+    void deleteOne(String googleId);
 
     // 첨부파일 seq 얻는 메서드 by도선호
     long getSeqFileGroupNo();

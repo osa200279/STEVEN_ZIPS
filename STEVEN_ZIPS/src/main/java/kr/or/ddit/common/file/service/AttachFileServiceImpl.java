@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -83,25 +82,48 @@ public class AttachFileServiceImpl implements IAttachFileService {
     /**
      * fileGroupNo 가 같은 첨부파일 테이블 데이터 전부 삭제!
      * @author 도선호
-     * @param fileGroupNo 첨부파일 테이블에 적혀있는 fileGroupNo 를 적을것!
+     * @param fileNo 각 테이블에 적혀있는 fileNo를 적을것!
      */
     @Override
-    public void deleteAllByGroupNo(String fileGroupNo) {
+    public void deleteAllByGroupNo(String fileNo) {
+        String fileGroupNo = fileNo;
 
-        List<AttachFileVO> fileList = setFileMetaData(fileGroupNo);
+        if (fileNo == null || fileNo.isBlank()) return;
+
+        if (fileNo.contains("_")) {
+            // '_'가 맨앞에 있는 경우 방어
+            String[] parts = fileNo.split("_", 2);
+            if (parts.length < 2) return;
+
+            fileGroupNo = parts[0];
+            String fileSaveUuid = parts[1];   // limit 총 몇개로 나눌지
+            AttachFileVO file = attachFileMapper.getAttachFile(fileGroupNo, fileSaveUuid);
 
         try {
             Drive drive = googleDriveService.getDriveService();
 
-            for (AttachFileVO file : fileList) {
-                if (file.getGoogleId() != null) {
-                    googleDriveService.moveToTrash(drive, file.getGoogleId());
-                }
+                    if (file.getGoogleId() != null) {
+                        googleDriveService.moveToTrash(drive, file.getGoogleId());
+                    }
+            } catch (Exception e) {
+                throw new RuntimeException("구글 파일 삭제 실패", e);
             }
-        } catch (Exception e) {
-            throw new RuntimeException("구글 파일 삭제 실패", e);
-        }
 
+        } else {
+            List<AttachFileVO> fileList = attachFileMapper.selecAttachFileList(fileNo);
+
+            try {
+                var drive = googleDriveService.getDriveService();
+
+                for (AttachFileVO file : fileList) {
+                    if (file.getGoogleId() != null) {
+                        googleDriveService.moveToTrash(drive, file.getGoogleId());
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("구글 파일 삭제 실패", e);
+            }
+        }
         attachFileMapper.deleteByFileGroupNo(fileGroupNo);
     }
 
@@ -109,28 +131,21 @@ public class AttachFileServiceImpl implements IAttachFileService {
     /**
      * fileGroupNo 중에 여러 파일이 있을 경우 선택한 파일 삭제!
      * @author 도선호
-     * @param fileGroupNo 첨부파일 테이블에 적혀있는 fileGroupNo 를 적을것!
-     * @param fileSaveUuid
+     * @param googleId
      */
     @Override
-    public void deleteOne(String fileGroupNo, String fileSaveUuid) {
-
-        AttachFileVO file = attachFileMapper.getAttachFile(fileGroupNo, fileSaveUuid);
-
-        if (file == null) return;
+    public void deleteOne(String googleId) {
 
         try {
             Drive drive = googleDriveService.getDriveService();
 
-            if (file.getGoogleId() != null) {
-                googleDriveService.moveToTrash(drive, file.getGoogleId());
-            }
+            googleDriveService.moveToTrash(drive, googleId);
 
         } catch (Exception e) {
             throw new RuntimeException("구글 파일 삭제 실패", e);
         }
 
-        attachFileMapper.deleteOne(fileGroupNo, fileSaveUuid);
+        attachFileMapper.deleteOne(googleId);
     }
 
     /**
