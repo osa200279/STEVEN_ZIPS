@@ -392,7 +392,13 @@ img { display: block; width: 100%; }
               <span class="address">
                  ${apt.dorojuso}<br>
                  ${mgmtOffice.mgmtOfcNm}<br>
-                 운영시간 : ${mgmtOffice.oprStTm} ~ ${mgmtOffice.oprEdTm}
+                 <c:choose>
+                    <c:when test="${not empty mgmtOffice.oprStTm}">
+                        운영시간 : ${mgmtOffice.oprStTm} ~ ${mgmtOffice.oprEdTm}
+                    </c:when>
+                    <c:otherwise>
+                    </c:otherwise>
+                 </c:choose>
               </span>
           </div>
       </c:when>

@@ -25,6 +25,7 @@ public class CvplController {
     public String complaintApplyForm(@PathVariable String aptCmplexNo, Model model) {
         log.info("complaintApplyForm() 실행");
 
+        // 헤더, 푸터 DTO
         AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
         model.addAttribute("aptInfo", aptCommonDTO);
 
