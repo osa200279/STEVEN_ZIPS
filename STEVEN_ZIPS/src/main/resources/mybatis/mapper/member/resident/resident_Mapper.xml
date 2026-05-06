@@ -31,7 +31,7 @@
 
     <!-- 시큐리티용 입주민 정보 -->
     <select id="selectOneResidentInfo" parameterType="string" resultMap="residentMap">
-        select M.USER_NO /*kr.or.ddit.domain.member.resident.mapper.IResidentMapper.selectOneResidentInfo*/
+        SELECT M.USER_NO /* kr.or.ddit.domain.member.resident.mapper.iresidentmapper.selectoneresidentinfo */
                ,RESI.HO_NO
                ,RESI.INOUT_CD
                ,RESI.MOVE_IN_DT

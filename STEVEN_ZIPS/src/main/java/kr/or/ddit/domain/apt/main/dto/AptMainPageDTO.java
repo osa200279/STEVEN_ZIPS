@@ -49,5 +49,4 @@ public class AptMainPageDTO {
         private String cn;      // 내용
         private Date regDttm;   // 등록일시
     }
-
 }

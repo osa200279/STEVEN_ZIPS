@@ -2,11 +2,11 @@ package kr.or.ddit.domain.member.manager.service;
 
 import kr.or.ddit.domain.apt.board.ann.mapper.IAptAnnBoardPostMapper;
 import kr.or.ddit.domain.apt.board.ann.vo.AptAnnBoardPostVO;
-import kr.or.ddit.domain.apt.dto.AptMainPageDTO;
+import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.manager.mapper.IMgmtOfficeMapper;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.member.manager.mapper.IAptComplexMapper;
-import kr.or.ddit.domain.apt.vo.AptComplexVO;
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

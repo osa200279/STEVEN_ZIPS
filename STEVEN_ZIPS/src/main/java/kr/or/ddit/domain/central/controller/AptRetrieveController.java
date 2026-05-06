@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.central.controller;
 
-import kr.or.ddit.domain.apt.vo.AptComplexVO;
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.central.service.ICentralAptComplexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

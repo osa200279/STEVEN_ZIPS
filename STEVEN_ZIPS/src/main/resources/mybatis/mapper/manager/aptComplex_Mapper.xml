@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.member.manager.mapper.IAptComplexMapper">
 
-    <select id="selectAptComplex" parameterType="string" resultType="kr.or.ddit.domain.apt.vo.AptComplexVO">
+    <select id="selectAptComplex" parameterType="string" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
         select
             apt_cmplex_no, apt_cmplex_nm, bjd_cd, sido_nm, sigungu_nm, emd_nm, lat_val, lon_val, unit_cnt,
             bld_yr, cnsco_nm, img_file_no, rprsnt_img_file_no, heat_ty, pkg_cnt, max_floor, free_pkg_cnt, dong_cnt, dorojuso, cc_cnt
@@ -10,7 +10,7 @@
         where apt_cmplex_no = #{aptCmplexNo}
     </select>
 
-    <update id="updateAptComplex" parameterType="kr.or.ddit.domain.apt.vo.AptComplexVO">
+    <update id="updateAptComplex" parameterType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
 
         UPDATE APT_COMPLEX
         SET BJD_CD             = #{bjdCd},
@@ -46,7 +46,7 @@
 
     </select>
 
-    <select id="selectAptMainDTO" resultType="kr.or.ddit.domain.apt.dto.AptMainPageDTO">
+    <select id="selectAptMainDTO" resultType="kr.or.ddit.domain.apt.main.dto.AptMainPageDTO">
         select
     </select>
 </mapper>

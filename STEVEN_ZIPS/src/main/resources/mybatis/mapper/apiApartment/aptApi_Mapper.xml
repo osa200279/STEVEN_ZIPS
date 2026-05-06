@@ -203,7 +203,7 @@
            OR LON_VAL IS NULL
     </select>
 
-    <select id="selectAvailableUnits" resultType="kr.or.ddit.domain.apt.vo.AptDetailVO">
+    <select id="selectAvailableUnits" resultType="kr.or.ddit.domain.apt.main.vo.AptDetailVO">
         SELECT
         D.HO_NO,
         D.HO,

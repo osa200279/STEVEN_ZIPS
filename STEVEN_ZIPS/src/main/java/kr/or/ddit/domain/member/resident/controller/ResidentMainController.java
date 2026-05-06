@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.member.resident.controller;
 
-import kr.or.ddit.domain.apt.dto.AptMainPageDTO;
+import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
 import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.member.manager.service.IAptComplexService;

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.central.mapper.ICentralAptComplexMapper">
     <select id="selectAptComplexList"
-            resultType="kr.or.ddit.domain.apt.vo.AptComplexVO">
+            resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
 
         SELECT
             APT_CMPLEX_NO
@@ -106,7 +106,7 @@
 
     <select id="searchApt"
             parameterType="string"
-            resultType="kr.or.ddit.domain.apt.vo.AptComplexVO">
+            resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
 
         SELECT
             APT_CMPLEX_NO

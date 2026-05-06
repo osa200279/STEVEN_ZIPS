@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.central.mapper;
 
-import kr.or.ddit.domain.apt.vo.AptComplexVO;
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
