@@ -21,17 +21,10 @@ public class ZTestController {
     @Autowired
     IAttachFileService attachFileService;
 
-    @GetMapping("/mainn")
-    public String mainn() {
-        return  "ztestview/mainn";
+    @GetMapping("/react")
+    public String react(){
+        return "ztestview/react_link";
     }
-
-    /*
-    @GetMapping("/introduce")
-    public String introduce(){
-        return "member/resident/manage_intro";
-    }
-    */
 
     @GetMapping("/aptapi")
     public String aptapi(){
