@@ -1,7 +1,7 @@
 package kr.or.ddit.domain.member.manager.controller;
 
 import kr.or.ddit.domain.apt.vo.AptComplexVO;
-import kr.or.ddit.domain.member.manager.servcie.IAptComplexService;
+import kr.or.ddit.domain.member.manager.service.IAptComplexService;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;

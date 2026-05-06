@@ -13,6 +13,5 @@ public interface IResidentVhclService {
 
     boolean isExtraRequired(String userNo, String aptCmplexNo, String hoNo);
 
-
     void deleteVhcl(String rsidVhclNo, String userNo);
 }

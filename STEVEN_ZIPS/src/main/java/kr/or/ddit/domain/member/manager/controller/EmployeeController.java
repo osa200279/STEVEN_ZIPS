@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.member.manager.controller;
 
-import kr.or.ddit.domain.member.manager.servcie.IEmployeeService;
+import kr.or.ddit.domain.member.manager.service.IEmployeeService;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
 import kr.or.ddit.domain.member.manager.vo.MngrRqstVO;
 import kr.or.ddit.domain.member.vo.CustomUser;

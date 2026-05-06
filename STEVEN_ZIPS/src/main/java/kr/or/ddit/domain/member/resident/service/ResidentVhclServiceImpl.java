@@ -76,6 +76,7 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
         //파일 처리
         Long fileGroupNo = null;
 
+
         if (file != null && !file.isEmpty()) {
 
             fileGroupNo = attachFileMapper.getSeqFileGroupNo();
