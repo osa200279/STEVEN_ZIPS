@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.member.service;
 
-import kr.or.ddit.common.ServiceResult;
+import kr.or.ddit.common.enums.ServiceResult;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.springframework.web.multipart.MultipartFile;
 

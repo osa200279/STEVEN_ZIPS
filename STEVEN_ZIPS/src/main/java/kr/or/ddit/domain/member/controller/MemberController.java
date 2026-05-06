@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.member.controller;
 
-import kr.or.ddit.common.ServiceResult;
+import kr.or.ddit.common.enums.ServiceResult;
 import kr.or.ddit.common.file.service.IAttachFileService;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.member.service.IMemberService;
