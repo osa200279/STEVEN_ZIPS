@@ -17,4 +17,6 @@ public interface IChatMapper {
     void insertMessage(ChatMessageVO vo);
 
     void insertMember(String chatRoomNo, String userNo);
+
+    int updateLastRead(ChatMessageVO vo);
 }

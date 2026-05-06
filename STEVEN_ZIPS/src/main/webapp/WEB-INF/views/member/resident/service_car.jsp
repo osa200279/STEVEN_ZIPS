@@ -13,14 +13,14 @@
 
     <style>
         body {
-            font-family: 'Noto Sans KR', sans-serif !important;
+            font-family: 'Noto Sans KR', sans-serif;
             background: var(--bg);
             color: var(--text-dark);
             margin: 0;
         }
 
         .material-symbols-outlined {
-            font-family: 'Material Symbols Outlined' !important;
+            font-family: 'Material Symbols Outlined';
         }
 
         .main-shell {
@@ -36,12 +36,6 @@
             flex: 1;
             min-width: 0;
             padding: 32px 40px 64px;
-        }
-
-        .page-content-wrap {
-            max-width: 1080px;
-            width: 100%;
-            margin: 0 auto;
         }
 
         .breadcrumb {
@@ -609,10 +603,6 @@
                 padding: 24px 18px 48px
             }
 
-            .page-content-wrap {
-                max-width: 100%
-            }
-
             .stats-grid, .menu-grid, .grid-3, .room-grid, .process-grid, .seat-grid {
                 grid-template-columns:1fr
             }
@@ -749,6 +739,7 @@
             animation: errorFlash 0.8s ease;
         }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/apt/apt.css">
 
 </head>
 <body>

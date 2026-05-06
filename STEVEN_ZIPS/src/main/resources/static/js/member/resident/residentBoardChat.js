@@ -3,20 +3,24 @@ window.onload = function () {
     connectSocket();
 };
 
-let stomp = null;
+
 let subscription = null;
 
 let currentRoomNo = null;
 let currentRoomNm = null;
 
-/* 웹소켓 연결함수 */
-function connectSocket() {
+/* websocket 구독하는 함수 */
+function subscribeRoom(roomId) {
 
-    const socket = new SockJS('/ws-chat');
-    stomp = Stomp.over(socket);
+    if (subscription) {
+        subscription.unsubscribe();
+    }
 
-    stomp.connect({}, function () {
-        console.log("웹소켓 연결됨");
+    subscription = stomp.subscribe('/sub/chat/room/' + roomId, function(msg) {
+
+        const data = JSON.parse(msg.body);
+
+        appendMessage(data);
     });
 }
 
@@ -177,8 +181,7 @@ function sendMessage() {
     stomp.send("/pub/chat/send", {}, JSON.stringify({
         chatRoomNo: currentRoomNo,
         msgCn: content,
-        msgTyCd: "TEXT",
-        senderTy: "USER",
+        msgTyCd: "TEXT"
     }));
 
     document.getElementById("msg").value = "";

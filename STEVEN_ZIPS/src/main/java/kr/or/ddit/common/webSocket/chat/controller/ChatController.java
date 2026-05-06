@@ -34,16 +34,6 @@ public class ChatController {
         return service.getMessages(chatRoomNo);
     }
 
-    // 메시지 전송
-    @PostMapping("/send")
-    @ResponseBody
-    public String send(@RequestBody ChatMessageVO vo,
-                       @AuthenticationPrincipal CustomUser user) {
-
-        service.sendMessage(vo, user.getMember().getUserNo());
-        return "ok";
-    }
-
     // 입장
     @PostMapping("/enter")
     @ResponseBody

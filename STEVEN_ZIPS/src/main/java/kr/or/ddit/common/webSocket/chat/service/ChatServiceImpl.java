@@ -6,12 +6,13 @@ import kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @Slf4j
-public class ChatServiceImpl implements IChatService{
+public class ChatServiceImpl implements IChatService {
 
     @Autowired
     private IChatMapper mapper;
@@ -27,20 +28,23 @@ public class ChatServiceImpl implements IChatService{
     }
 
     @Override
+    @Transactional
     public void sendMessage(ChatMessageVO vo, String userNo) {
 
-        // 1️⃣ memberId 찾기
+        // memberId 찾기
         String memberId = mapper.selectMemberId(vo.getChatRoomNo(), userNo);
 
         vo.setChatMemberId(memberId);
 
-        // 2️⃣ 메시지 저장
+        // 메시지 저장
         mapper.insertMessage(vo);
 
-        // 3️⃣ 읽음 처리까지 넣어도 좋음 (옵션)
+        // 읽음 처리
+        mapper.updateLastRead(vo);
     }
 
     @Override
+    @Transactional
     public void enterRoom(String chatRoomNo, String userNo) {
 
         String memberId = mapper.selectMemberId(chatRoomNo, userNo);

@@ -13,4 +13,6 @@ public interface IChatService {
     void sendMessage(ChatMessageVO vo, String userNo);
 
     void enterRoom(String roomId, String userNo);
+
+
 }

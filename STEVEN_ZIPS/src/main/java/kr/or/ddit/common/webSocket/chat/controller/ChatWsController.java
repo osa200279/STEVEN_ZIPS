@@ -32,9 +32,7 @@ public class ChatWsController {
         message.setSenderTy("USER");
         message.setMsgTyCd("TEXT");
 
-/*
-        chatService.saveMessage(message);
-*/
+        chatService.sendMessage(message, userNo);
 
         messagingTemplate.convertAndSend(
                 "/sub/chat/room/" + message.getChatRoomNo(),

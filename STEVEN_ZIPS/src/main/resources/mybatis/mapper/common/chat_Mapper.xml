@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.common.webSocket.chat.mapper.IChatMapper">
+    <update id="updateLastRead">
+        UPDATE CHAT_ROOM_READ
+        SET LAST_READ_MSG_NO = #{chatMsgNo}
+        WHERE CHAT_ROOM_NO = #{chatRoomNo}
+          AND CHAT_MEMBER_ID = #{chatMemberId}
+    </update>
 
     <select id="selectMyRooms" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
         SELECT r.CHAT_ROOM_NO, r.CHAT_ROOM_NM
@@ -12,27 +18,45 @@
     </select>
 
     <select id="selectMessages" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO">
-        SELECT *
-        FROM CHAT_MESSAGE
-        WHERE CHAT_ROOM_NO = #{chatRoomNo}
-        ORDER BY REG_DTTM ASC
+        SELECT
+            m.CHAT_MSG_NO,
+            m.CHAT_ROOM_NO,
+            m.MSG_TY_CD,
+            m.MSG_CN,
+            m.ATCH_FILE_ID,
+            m.REG_DTTM,
+            m.SENDER_TY,
+            m.CHAT_MEMBER_ID,
+            rm.USER_NO
+        FROM CHAT_MESSAGE m
+                 JOIN CHAT_ROOM_MEMBER rm
+                      ON m.CHAT_MEMBER_ID = rm.CHAT_MEMBER_ID
+        WHERE m.CHAT_ROOM_NO = #{chatRoomNo}
+        ORDER BY m.REG_DTTM ASC
     </select>
 
-    <insert id="insertMessage">
+    <insert id="insertMessage" parameterType="kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO">
+
+        <selectKey keyProperty="chatMsgNo" resultType="string" order="BEFORE">
+            SELECT SEQ_CHAT_MESSAGE.NEXTVAL FROM DUAL
+        </selectKey>
+
         INSERT INTO CHAT_MESSAGE (
-            CHAT_MSG_NO,
-            CHAT_ROOM_NO,
-            MSG_CN,
-            MSG_TY_CD,
-            CHAT_MEMBER_ID
+        CHAT_MSG_NO,
+        CHAT_ROOM_NO,
+        MSG_TY_CD,
+        MSG_CN,
+        CHAT_MEMBER_ID,
+        REG_DTTM
         )
         VALUES (
-                   SEQ_CHAT_MESSAGE.nextval,
-                   #{chatRoomNo},
-                   #{msgCn},
-                   'TEXT',
-                   #{chatMemberId}
-               )
+        #{chatMsgNo},
+        #{chatRoomNo},
+        #{msgTyCd},
+        #{msgCn},
+        #{chatMemberId},
+        SYSDATE
+        )
     </insert>
 
     <select id="selectMemberId" resultType="string">
