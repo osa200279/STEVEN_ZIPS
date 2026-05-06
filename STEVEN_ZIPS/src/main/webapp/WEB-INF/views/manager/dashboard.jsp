@@ -195,7 +195,7 @@
     </div>
 
 </div>
-
+<%@ include file="/WEB-INF/views/manager/admin_mgmt_ofc_select_modal.jsp" %>
 <script>
     (function() {
         var page = document.getElementById("dashboardPage");
