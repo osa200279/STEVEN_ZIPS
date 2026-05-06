@@ -29,6 +29,13 @@ const SecurityTestPage = () => {
         >
           JSP 마이페이지로 돌아가기
         </button>
+
+        <button 
+          onClick={() => window.location.href = 'http://localhost:8080/apt/main/A10023118'}
+          style={{ padding: '10px 20px', backgroundColor: '#f0f0f0' }}
+        >
+          공덕동 행복시티로 돌아가기
+        </button>
       </div>
     </div>
   );
