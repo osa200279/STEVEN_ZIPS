@@ -38,9 +38,6 @@ public class CustomUserDetailsService implements UserDetailsService{
 	@Autowired
 	private IAdmMapper admMapper;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		log.info("## CustomUserDetailsService.loadUserByUsername() 실행...!");
