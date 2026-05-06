@@ -1,0 +1,37 @@
+import axios from 'axios';
+
+const SecurityTestPage = () => {
+  const checkAuth = async () => {
+    try {
+      // 8080 포트의 백엔드 API 호출 (이전 답변에서 만든 컨트롤러 경로)
+      const res = await axios.get('http://localhost:8080/react/test', {
+        withCredentials: true 
+      });
+      alert(`성공: ${res.data}`);
+    } catch (err) {
+      alert(`실패: ${err.response?.status || '연결 오류'}`);
+    }
+  };
+
+  return (
+    <div style={{ border: '2px solid #444', padding: '20px', borderRadius: '10px' }}>
+      <h2>🔐 중앙관리자 보안 테스트 섹션</h2>
+      <p>JSP 세션이 리액트 API 요청까지 유지되는지 확인합니다.</p>
+      
+      <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+        <button onClick={checkAuth} style={{ padding: '10px 20px', cursor: 'pointer' }}>
+          권한 체크 API 호출 (@PreAuthorize)
+        </button>
+        
+        <button 
+          onClick={() => window.location.href = 'http://localhost:8080/member/myPage.do'}
+          style={{ padding: '10px 20px', backgroundColor: '#f0f0f0' }}
+        >
+          JSP 마이페이지로 돌아가기
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default SecurityTestPage;
