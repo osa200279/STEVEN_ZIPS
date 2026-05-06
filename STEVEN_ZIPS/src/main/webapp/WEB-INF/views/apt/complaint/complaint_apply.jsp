@@ -9,6 +9,40 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/apt/apt.css">
+    <style>
+        .select {
+            width: 100%;
+            border: 1px solid #d8ddd4;
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-dark);
+            box-sizing: border-box;
+
+            /* 화살표 커스텀 설정 */
+            appearance: none;
+            -webkit-appearance: none;
+            /* 오른쪽에서 13px 띄움 */
+            background: #fff url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E') no-repeat right 13px center;
+            background-size: 10px; /* 화살표 크기 조절 */
+            /* 화살표와 텍스트가 겹치지 않게 여백 추가 */
+            padding: 11px 30px 11px 13px;
+        }
+
+        input.a-input, .a-textarea {
+            width: 100%;
+            border: 1px solid #d8ddd4;
+            background: #fff;
+            border-radius: 10px;
+            padding: 11px 13px;
+            font-size: 13px;
+            color: var(--text-dark);
+            box-sizing: border-box;
+        }
+
+        .a-textarea {
+            height: 240px;
+        }
+    </style>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
@@ -46,23 +80,28 @@
                             </div>
                             <div class="th">제목</div>
                             <div class="td">
-                                <input class="fake-input" value="지하주차장 조명 점검 요청"/>
+                                <input type="text" name="cvplTtl" class="a-input"
+                                       placeholder="제목을 입력하세요(ex. 승강기 멈춤)"/>
                             </div>
                             <div class="th">발생장소</div>
                             <div class="td">
-                                <input class="fake-input" value="지하 1층 B구역"/>
+                                <input type="text" name="cvplLoc" class="a-input"
+                                       placeholder="구체적인 장소를 입력해주세요(ex.101동 지하 1층 주차장 B구역)"/>
                             </div>
                             <div class="th">증빙파일</div>
                             <div class="td">
-                                <input class="fake-input" value="parking_issue.jpg"/>
+                                <input type="file" name="attachFile" class="a-input" multiple/>
                             </div>
                             <div class="th">설명</div>
                             <div class="td">
-                                <textarea class="fake-textarea">일부 구간 조명이 어두워 야간 이동 시 불편합니다.</textarea>
+                                <textarea name="cvplCn" class="a-textarea"></textarea>
+                            </div>
+                            <div>
+                                <input type="text" name="aptCmplexNo" hidden/>
                             </div>
                         </div>
                         <div class="btn-row">
-                            <button class="btn-main">민원 접수</button>
+                            <button id="submitBtn" class="btn-main">민원 접수</button>
                         </div>
                     </form>
                 </div>
@@ -103,5 +142,40 @@
     </main>
 </div>
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // 민원 접수 버튼 클릭 이벤트
+        const submitBtn = document.querySelector("#submitBtn");
+        submitBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            const form = document.querySelector('#cvplApplyForm');
+            const formData = new FormData(form);
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+            const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+
+            try {
+                const resp = await fetch(`/apt/complaint/apply/\${apt.aptCmplexNo}`,{
+                        method: 'POST',
+                        headers: {
+                            [csrfHeader] : csrfToken
+                        },
+                        body: formData
+                });
+
+                const result = await resp.json();
+                if(resp.ok){
+                    alert(result.message);
+                }else{
+                    alert("접수 실해 : " + result.message);
+                }
+            } catch (error) {
+                console.log(error);
+                alert("서버와 통신 중 문제가 발생했습니다.")
+            }
+        });
+    });
+</script>
 </body>
 </html>

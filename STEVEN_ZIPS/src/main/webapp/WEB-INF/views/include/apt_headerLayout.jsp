@@ -3,9 +3,12 @@
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
+<meta name="_csrf_header" content="${_csrf.headerName}"/>
+<%-- 서버가 정해준 이름(편지봉투) --%>
+<meta name="_csrf" content="${_csrf.token}"/>
+<%-- 실제 1회용 암호 값(편지) --%>
 
 <header class="site-header">
-
     <!-- 헤더 부터 푸터까지 사용할 수 있도록 스코프 지정 -->
     <c:set var="apt" value="${aptInfo.aptComplexInfo}" scope="request"/>
     <c:set var="mgmtOffice" value="${aptInfo.mgmtOfficeInfo}" scope="request"/>

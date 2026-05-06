@@ -279,7 +279,7 @@ body {
     font-weight: 700;
 }
 
-.fake-input, .select, .fake-textarea {
+input.fake-input, input.a-input, .select, .fake-textarea, a-texarea {
     width: 100%;
     border: 1px solid #d8ddd4;
     background: #fff;
