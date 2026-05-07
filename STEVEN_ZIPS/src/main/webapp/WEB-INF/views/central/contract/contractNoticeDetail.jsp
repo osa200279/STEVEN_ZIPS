@@ -134,7 +134,8 @@
         <a href="#" class="hover:text-primary-container transition-colors">계약공고</a><span>›</span>
         <span class="text-primary-container font-semibold">상세보기</span>
       </div>
-      <a href="#" class="no-print flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary-container transition-colors font-medium">
+      <a href="${pageContext.request.contextPath}/contract/notice.do"
+         class="no-print flex items-center gap-1.5 text-sm text-slate-500 hover:text-primary-container transition-colors font-medium">
         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
         목록으로
       </a>
@@ -452,8 +453,10 @@
 
     <!-- Back to List Button (Bottom) -->
     <div class="flex justify-center pb-4 no-print">
-      <a href="#" class="px-8 py-3 bg-white border border-[#eef2eb] rounded-lg text-sm font-medium text-slate-600 hover:bg-[#f8faf6] transition-colors flex items-center gap-2">
-        <span class="material-symbols-outlined text-[16px]">list</span> 목록으로
+      <a href="${pageContext.request.contextPath}/contract/notice.do"
+         class="px-8 py-3 bg-white border border-[#eef2eb] rounded-lg text-sm font-medium text-slate-600 hover:bg-[#f8faf6] transition-colors flex items-center gap-2">
+        <span class="material-symbols-outlined text-[16px]">list</span>
+        목록으로
       </a>
     </div>
   </main>
