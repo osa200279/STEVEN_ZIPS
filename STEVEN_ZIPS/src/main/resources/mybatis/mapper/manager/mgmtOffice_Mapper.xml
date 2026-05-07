@@ -3,7 +3,7 @@
 <mapper namespace="kr.or.ddit.domain.apt.manager.mapper.IMgmtOfficeMapper">
 
     <select id="selectMgmtOfficeByManagerUserNo" parameterType="string"
-            resultType="kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO">
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO">
         SELECT
             MO.MGMT_OFC_NO,
             MO.APT_CMPLEX_NO,
@@ -37,7 +37,7 @@
     </select>
 
     <select id="selectMgmtOfficeByMgmtOfcNo" parameterType="string"
-            resultType="kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO">
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO">
         SELECT
             MO.MGMT_OFC_NO,
             MO.APT_CMPLEX_NO,
@@ -65,13 +65,13 @@
           AND MO.USE_YN = 'Y'
     </select>
 
-    <select id="selectOneMgmtOffice" resultType="kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO" parameterType="string">
+    <select id="selectOneMgmtOffice" resultType="kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO" parameterType="string">
         select *
         from mgmt_office
         where apt_cmplex_no = #{aptCmplexNo}
     </select>
 
-<!--    <select id="selectAllMgmtOffice" resultType="kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO">
+<!--    <select id="selectAllMgmtOffice" resultType="kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO">
         SELECT
             MO.MGMT_OFC_NO,
             MO.MGMT_OFC_NM,
@@ -111,7 +111,7 @@
     <!-- ADMIN 관리사무소 모달 현재 페이지 목록 조회 -->
     <select id="selectAdminMgmtOfficeList"
             parameterType="kr.or.ddit.domain.member.manager.vo.ManagerPaginationVO"
-            resultType="kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO">
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO">
         SELECT *
         FROM (
         SELECT ROWNUM rn
