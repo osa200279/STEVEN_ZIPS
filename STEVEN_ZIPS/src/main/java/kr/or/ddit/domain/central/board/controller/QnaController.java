@@ -79,6 +79,9 @@ public class QnaController {
 
         vo.setUserNo(user.getUserNo());
         vo.setHoNo("101-101");
+        vo.setAptCmplexNo(user.getAptCmplexNo());
+
+        System.out.println("apt = " + user.getAptCmplexNo());
 
         qnaService.insertQna(vo);
 
