@@ -1,9 +1,11 @@
 package kr.or.ddit.common.webSocket.chat.service;
 
 import kr.or.ddit.common.webSocket.chat.mapper.IChatMapper;
+import kr.or.ddit.common.webSocket.chat.vo.ChatMemberVO;
 import kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO;
 import kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +20,8 @@ public class ChatServiceImpl implements IChatService {
     private IChatMapper mapper;
 
     @Override
-    public List<ChatRoomVO> getMyRooms(String userNo) {
-        return mapper.selectMyRooms(userNo);
+    public List<ChatRoomVO> selectMyRoomList(String userNo, String aptCmplexNo) {
+        return mapper.selectMyRoomList(userNo, aptCmplexNo);
     }
 
     @Override
@@ -50,8 +52,45 @@ public class ChatServiceImpl implements IChatService {
         String memberId = mapper.selectMemberId(chatRoomNo, userNo);
 
         if (memberId == null) {
-            mapper.insertMember(chatRoomNo, userNo);
+            ChatMemberVO memberVO = new ChatMemberVO();
+
+            memberVO.setChatRoomNo(chatRoomNo);
+            memberVO.setUserNo(userNo);
+            memberVO.setChatroleCd("MEMBER");
+
+            mapper.insertRoomMember(memberVO);
         }
     }
 
+    @Override
+    public int insertRoomMember(ChatMemberVO memberVO) {
+        return mapper.insertRoomMember(memberVO);
+    }
+
+    @Override
+    @Transactional
+    public ChatRoomVO createRoom(ChatRoomVO roomVO, String userNo) {
+
+        String roomNo = mapper.getRoomNoSeq();
+
+        String joinKey = RandomStringUtils
+                .randomAlphanumeric(6)
+                .toUpperCase();
+
+        roomVO.setChatRoomNo(roomNo);
+        roomVO.setChatJoinKey(joinKey);
+        roomVO.setRgtrId(userNo);
+
+        mapper.insertChatRoom(roomVO);
+
+        ChatMemberVO memberVO = new ChatMemberVO();
+
+        memberVO.setChatRoomNo(roomNo);
+        memberVO.setUserNo(userNo);
+        memberVO.setChatroleCd("OWNER");
+
+        mapper.insertRoomMember(memberVO);
+
+        return roomVO;
+    }
 }

@@ -93,7 +93,7 @@ public class SecurityConfig {
                 // toStaticResources() :: 정적 리소스 범주
                 // atCommonsLocations() :: 스프링이 정한(약속된) 공통(정적) 자원 위치
                 .requestMatchers("/resources/**") // 중에서 /resources/ 경로에 있는 파일과 모든 깊이의 하위파일들까지 선정
-                .requestMatchers("/ws-chat/**") // 웹소켓 관련 요청 시큐리티 패스
+                .requestMatchers("/ws/**") // 웹소켓 관련 요청 시큐리티 패스
         );
     }
 

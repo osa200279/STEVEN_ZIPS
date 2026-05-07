@@ -9,7 +9,7 @@ function connectWebSocket() {
     }
 
     const contextPath = document.body.dataset.contextPath || "";
-    const socket = new SockJS(contextPath + '/ws-chat');
+    const socket = new SockJS(contextPath + '/ws');
 
     stomp = Stomp.over(socket);
     stomp.debug = null;

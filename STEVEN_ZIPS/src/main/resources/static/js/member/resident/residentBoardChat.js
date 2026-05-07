@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 let subscription = null;
-
 let currentRoomNo = null;
 let currentRoomNm = null;
 
@@ -102,10 +101,16 @@ function enterRoom(roomNo) {
 
     fetch(contextPath + '/residentChat/enter/' + aptCmplexNo + '?chatRoomNo=' + roomNo, {
         method: 'POST'
-    }).then(() => {
-        openMyRoom(roomNo, "");
-        loadMyRooms();
-    });
+    })  .then(room => room.json())
+        .then(room => {
+
+            loadMyRooms();
+
+            openMyRoom(
+                room.chatRoomNo,
+                room.chatRoomNm
+            );
+        });
 }
 
 function closeChat() {
@@ -181,27 +186,49 @@ function sendMessage() {
 }
 
 function openCreateRoom() {
-    const roomName = prompt("채팅방 이름 입력");
 
-    if (!roomName) return;
-
-    createRoom(roomName);
+    document.getElementById('create-room-modal').style.display = 'flex';
 }
 
-function createRoom(roomName) {
+function submitCreateRoom() {
+
+    const roomName =
+        document.getElementById('create-room-name').value.trim();
+
+    const roomType =
+        document.querySelector(
+            'input[name="room-type"]:checked'
+        ).value;
+
+    if (!roomName) {
+        alert('채팅방 이름을 입력하세요.');
+        return;
+    }
+
+    createRoom(roomName, roomType);
+}
+
+function createRoom(roomName, roomType) {
 
     fetch(contextPath + '/residentChat/createRoom/' + aptCmplexNo, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+
         body: JSON.stringify({
-            chatRoomNm: roomName
+            chatRoomNm: roomName,
+            chatRoomTyCd: roomType
         })
     })
         .then(res => res.json())
         .then(room => {
 
-            openMyRoom(room.chatRoomNo, room.chatRoomNm, this);
+            closeCreateRoomModal();
+
             loadMyRooms();
+
+            setTimeout(() => {
+                openMyRoom(room.chatRoomNo, room.chatRoomNm);
+            }, 100);
         });
 }
 
@@ -229,4 +256,22 @@ function renderMessage(msg) {
             ${msg.msgCn}
         </div>
     `;
+}
+
+function closeCreateRoomModal() {
+
+    document.getElementById('create-room-modal').style.display = 'none';
+
+    document.getElementById('create-room-name').value = '';
+
+    document.querySelector(
+        'input[name="room-type"][value="OPEN"]'
+    ).checked = true;
+}
+
+function outsideClose(e) {
+
+    if (e.target.id === 'create-room-modal') {
+        closeCreateRoomModal();
+    }
 }

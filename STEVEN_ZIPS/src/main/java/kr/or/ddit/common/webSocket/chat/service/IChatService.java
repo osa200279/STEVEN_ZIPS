@@ -1,12 +1,13 @@
 package kr.or.ddit.common.webSocket.chat.service;
 
+import kr.or.ddit.common.webSocket.chat.vo.ChatMemberVO;
 import kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO;
 import kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO;
 
 import java.util.List;
 
 public interface IChatService {
-    List<ChatRoomVO> getMyRooms(String userNo);
+    List<ChatRoomVO> selectMyRoomList(String userNo, String aptCmplexNo);
 
     List<ChatMessageVO> getMessages(String roomId);
 
@@ -14,5 +15,7 @@ public interface IChatService {
 
     void enterRoom(String roomId, String userNo);
 
+    int insertRoomMember(ChatMemberVO memberVO);
 
+    ChatRoomVO createRoom(ChatRoomVO roomVO, String userNo);
 }
