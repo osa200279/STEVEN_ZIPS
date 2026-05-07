@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/centralAdmin/announcement")
+@PreAuthorize("hasRole('ADMIN')")  /* 중앙관리자만 허용 */
 public class AnnouncementController {
 
     private final IAnnouncementService announcementService;

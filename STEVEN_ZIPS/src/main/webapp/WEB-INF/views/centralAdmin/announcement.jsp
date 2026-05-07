@@ -198,8 +198,6 @@
 
       /*
         파일 선택 버튼
-
-        margin 제거가 핵심.
       */
       #f-file::file-selector-button {
         margin: 0;               /* 버튼 왼쪽 뜨는 여백 제거 */
