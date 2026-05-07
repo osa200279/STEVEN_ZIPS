@@ -1,7 +1,7 @@
 package kr.or.ddit.domain.main.controller;
 
 import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
-import kr.or.ddit.domain.member.manager.service.IAptComplexService;
+import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -168,10 +168,10 @@
                 if(resp.ok){
                     alert(result.message);
                 }else{
-                    alert("접수 실해 : " + result.message);
+                    alert("접수 실패 : " + result.message);
                 }
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 alert("서버와 통신 중 문제가 발생했습니다.")
             }
         });
