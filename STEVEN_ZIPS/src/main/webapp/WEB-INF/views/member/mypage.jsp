@@ -135,7 +135,7 @@
 <body class="bg-gray-50">
 
 <%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
-<div class="ml-64 min-h-screen px-10 pt-28 pb-10">
+<div class="ml-64 min-h-screen px-20 pt-28 pb-10">
     <!-- 상단 -->
     <div class="flex justify-between items-center mb-8">
         <div>
@@ -151,7 +151,6 @@
     <div class="grid grid-cols-2 gap-6">
 
         <div class="col-span-1">
-            <%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
         </div>
 
         <div class="col-span-3 grid grid-cols-[1.2fr_1.5fr_1.3fr] gap-6">
@@ -198,7 +197,7 @@
                 <!-- 🔥 계약신청내역조회 버튼 -->
                 <div class="mt-6">
                     <button onclick="openContractPage()"
-                            class="w-full bg-[#6F7F3F] text-white py-4 rounded-full font-bold hover:bg-[#5f6e35] transition">
+                            class="w-full bg-[#226046] text-white py-4 rounded-full font-bold hover:bg-[#226046] transition">
                         계약신청내역조회
                     </button>
                 </div>
@@ -264,7 +263,7 @@
                     <!-- 버튼 -->
                     <div class="pt-4">
                         <button type="submit"
-                                class="w-full bg-[#6F7F3F] text-white py-4 rounded-full font-bold hover:bg-[#5f6e35] transition">
+                                class="w-full bg-[#226046] text-white py-4 rounded-full font-bold hover:bg-[#226046] transition">
                             수정 완료
                         </button>
                     </div>
