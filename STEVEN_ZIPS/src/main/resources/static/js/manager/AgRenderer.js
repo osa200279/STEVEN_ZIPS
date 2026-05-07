@@ -325,8 +325,8 @@ var AgRenderer = (function () {
         '반려': { action: 'reject',   cls: 'btn-delete' },
         '등록': { action: 'register', cls: 'btn-edit'   }
     };
-
-    function actions(btns) {
+    // 수정 - 필드의 키값 들어갈 버튼 설정
+    function actions(btns, keyField) {
         var resolved = btns.map(function (b) {
             if (typeof b === 'string') {
                 var def = _ACTION_MAP[b] || { action: b, cls: 'btn-detail' };
@@ -334,11 +334,21 @@ var AgRenderer = (function () {
             }
             return b;
         });
-        return function () {
+
+        return function (params) {
+            var d = params.data || {};
+            var rowKey = keyField ? d[keyField] : params.value;
+
             return '<div class="grid-actions">'
                 + resolved.map(function (b) {
-                    return '<button type="button" class="btn btn-xs ' + b.cls
-                        + '" data-action="' + b.action + '">' + b.label + '</button>';
+                    var disabled = typeof b.disabledWhen === 'function' && b.disabledWhen(d);
+                    var disabledClass = disabled ? ' is-disabled' : '';
+
+                    return '<button type="button" class="btn btn-xs ' + b.cls + disabledClass
+                        + '" data-action="' + b.action + '"'
+                        + ' data-row-key="' + _escape(rowKey) + '">'
+                        + _escape(b.label)
+                        + '</button>';
                 }).join('')
                 + '</div>';
         };
