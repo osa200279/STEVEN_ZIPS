@@ -43,7 +43,8 @@ public class ContractUserController {
     @PostMapping("/apply.do")
     public String applyContract(
             @RequestParam("uploadFiles") MultipartFile[] uploadFiles,
-            @RequestParam("docTypeList") List<String> docTypeList
+            @RequestParam("docTypeList") List<String> docTypeList,
+            Model model
     ) {
 
         log.info("파일 개수 : {}", uploadFiles.length);
@@ -57,11 +58,27 @@ public class ContractUserController {
             log.info("파일명 : {}", file.getOriginalFilename());
             log.info("파일크기 : {}", file.getSize());
 
+            String docType = docTypeList.get(i);
+
+            if ("RESIDENT".equals(docType)) {
+                model.addAttribute("residentFile",
+                        file.getOriginalFilename());
+            }
+
+            if ("FAMILY".equals(docType)) {
+                model.addAttribute("familyFile",
+                        file.getOriginalFilename());
+            }
+
+            if ("FINANCE".equals(docType)) {
+                model.addAttribute("financeFile",
+                        file.getOriginalFilename());
+            }
+
         }
 
-        return "central/contract/contractApply";
+        return "central/contract/contractAList";
     }
-
 
 
 

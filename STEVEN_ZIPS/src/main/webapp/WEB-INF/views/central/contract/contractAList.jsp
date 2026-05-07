@@ -1,5 +1,6 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
 <html class="light" lang="ko"><head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -127,18 +128,63 @@
     <div class="space-y-3">
 
       <div class="flex justify-between items-center border-b pb-3">
-        <span>주민등록등본</span>
-        <span class="text-green-600 text-sm">제출 완료</span>
+       <span>${residentFile}</span>
+
+<c:choose>
+
+    <c:when test="${not empty residentFile}">
+        <span class="text-green-600 text-sm">
+            제출 완료
+        </span>
+    </c:when>
+
+    <c:otherwise>
+        <span class="text-gray-400 text-sm">
+            미제출
+        </span>
+    </c:otherwise>
+
+</c:choose>
       </div>
 
       <div class="flex justify-between items-center border-b pb-3">
-        <span>가족관계증명서</span>
-        <span class="text-green-600 text-sm">제출 완료</span>
+      <span>${familyFile}</span>
+
+<c:choose>
+
+    <c:when test="${not empty familyFile}">
+        <span class="text-green-600 text-sm">
+            제출 완료
+        </span>
+    </c:when>
+
+    <c:otherwise>
+        <span class="text-gray-400 text-sm">
+            미제출
+        </span>
+    </c:otherwise>
+
+</c:choose>
       </div>
 
       <div class="flex justify-between items-center">
-        <span>금융정보 동의서</span>
-        <span class="text-gray-400 text-sm">미제출</span>
+      <span>${financeFile}</span>
+
+<c:choose>
+
+    <c:when test="${not empty financeFile}">
+        <span class="text-green-600 text-sm">
+            제출 완료
+        </span>
+    </c:when>
+
+    <c:otherwise>
+        <span class="text-gray-400 text-sm">
+            미제출
+        </span>
+    </c:otherwise>
+
+</c:choose>
       </div>
 
     </div>
@@ -160,7 +206,9 @@
   <!-- 버튼 -->
   <div class="flex justify-end gap-3">
 
-    <button class="px-5 py-2 bg-gray-200 rounded-full text-sm">
+    <button type="button"
+            onclick="location.href='${pageContext.request.contextPath}/contract/apply.do'"
+            class="px-5 py-2 bg-gray-200 rounded-full text-sm">
       수정
     </button>
 
