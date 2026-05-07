@@ -6,7 +6,6 @@ import kr.or.ddit.domain.member.resident.vo.RsidBoardCommentVO;
 import kr.or.ddit.domain.member.resident.vo.RsidBoardVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -59,6 +58,5 @@ public class ResidentBoardServiceImpl implements IResidentBoardService {
     public int selectBoardFreeCount(PaginationInfoVO<RsidBoardVO> pagingVO) {
         return mapper.selectBoardFreeCount(pagingVO);
     }
-
 
 }

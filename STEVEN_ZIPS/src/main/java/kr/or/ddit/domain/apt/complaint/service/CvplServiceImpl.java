@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-//@Transactional(rollbackFor = Exception.class)
+@Transactional(rollbackFor = Exception.class)
 @Service
 public class CvplServiceImpl implements ICvplService {
 
