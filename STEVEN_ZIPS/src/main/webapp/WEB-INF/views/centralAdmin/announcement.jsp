@@ -265,8 +265,17 @@
 
       .detail-readonly-box--content{
         min-height:120px;
+
         line-height:1.7;
         white-space:pre-wrap;
+
+        text-align:left;      /* 왼쪽 정렬 */
+
+        display:flex;
+        align-items:flex-start; /* 위쪽 정렬 */
+        justify-content:flex-start;
+
+        padding-top:14px;
       }
 
       .detail-full{
