@@ -72,7 +72,7 @@
   }
 </script>
 <aside class="min-h-screen w-64 fixed left-0 top-0 bg-white border-r border-gray-200 flex flex-col z-40 overflow-y-auto">
-  <div class="text-xl font-bold text-[#226046] px-6 h-20 flex items-center bg-[#e6f4ee] border-b border-[#d0e8dd]/30 shrink-0">
+  <div class="text-xl font-bold text-[#226046] px-6 h-20 flex items-center bg-white border-b border-[#d0e8dd]/30 shrink-0">
     우리집맵핑🏠
   </div>
 

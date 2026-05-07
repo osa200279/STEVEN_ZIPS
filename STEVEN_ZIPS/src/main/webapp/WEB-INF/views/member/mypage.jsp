@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -129,11 +129,12 @@
         }
 
     </style>
-    <%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
+    <%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
 </head>
 <body class="bg-gray-50">
 
-<%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
+<%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
 <div class="ml-64 min-h-screen px-10 pt-28 pb-10">
     <!-- 상단 -->
     <div class="flex justify-between items-center mb-8">
@@ -402,6 +403,7 @@
 
 </c:if>
 </body>
+<%@ include file="/WEB-INF/views/include/main_footerLayout.jsp" %>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
