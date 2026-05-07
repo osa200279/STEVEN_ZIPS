@@ -17,6 +17,11 @@ public class ResidentBoardServiceImpl implements IResidentBoardService {
     private final IResidentBoardMapper mapper;
 
     @Override
+    public int insertBoardComment(RsidBoardCommentVO rsidBoardCommentVO) {
+        return mapper.insertBoardComment(rsidBoardCommentVO);
+    }
+
+    @Override
     public int deleteBoardFree(String annNo) {
         return mapper.deleteBoardFree(annNo);
     }
