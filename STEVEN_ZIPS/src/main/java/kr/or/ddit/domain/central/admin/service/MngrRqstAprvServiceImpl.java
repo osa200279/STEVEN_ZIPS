@@ -50,13 +50,16 @@ public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
     @Override
     @Transactional
     public int approveRequest(String rqstNo, String aprvId) {
+
         /*
          * 승인 처리 흐름
          *
          * 1. 신청 정보 조회
-         * 2. RQST_LOGIN_ID로 MEMBER.USER_NO 찾기
-         * 3. MANAGER에 있으면 UPDATE, 없으면 INSERT
-         * 4. MNGR_RQST 상태 WAIT → OK 변경
+         * 2. 신청 로그인 아이디로 MEMBER.USER_NO 조회
+         * 3. 관리사무소번호 없으면 단지번호로 MGMT_OFC_NO 조회
+         * 4. MANAGER 테이블 INSERT 또는 UPDATE
+         * 5. AUTH 권한 ROLE_MNGR로 변경
+         * 6. MNGR_RQST 상태 WAIT → OK 변경
          */
 
         MngrRqstAprvDTO rqst = mapper.selectRequest(rqstNo);
@@ -69,6 +72,9 @@ public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
             throw new IllegalStateException("승인대기 상태만 승인할 수 있습니다.");
         }
 
+        /*
+         * 신청 로그인 아이디로 실제 회원 USER_NO 조회
+         */
         String userNo = mapper.selectUserNoByLoginId(rqst.getRqstLoginId());
 
         if (!StringUtils.hasText(userNo)) {
@@ -76,25 +82,49 @@ public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
         }
 
         rqst.setUserNo(userNo);
+        rqst.setAprvId(aprvId);
 
+        /*
+         * 관리사무소번호가 없으면 단지번호로 다시 조회
+         *
+         * 왜 필요?
+         * → MANAGER.MGMT_OFC_NO는 NOT NULL이라서
+         *   값이 없으면 INSERT 실패함.
+         */
         if (!StringUtils.hasText(rqst.getMgmtOfcNo())) {
-            throw new IllegalStateException("관리사무소 번호(MGMT_OFC_NO)가 없습니다.");
+
+            if (!StringUtils.hasText(rqst.getAptCmplexNo())) {
+                throw new IllegalStateException("단지번호(APT_CMPLEX_NO)가 없어 관리사무소를 찾을 수 없습니다.");
+            }
+
+            String mgmtOfcNo = mapper.selectMgmtOfcNoByApt(rqst.getAptCmplexNo());
+
+            if (!StringUtils.hasText(mgmtOfcNo)) {
+                throw new IllegalStateException("해당 단지의 사용 가능한 관리사무소 정보가 없습니다.");
+            }
+
+            rqst.setMgmtOfcNo(mgmtOfcNo);
         }
 
         /*
+         * MANAGER 등록 또는 수정
+         *
          * upsert란?
-         * → 있으면 update, 없으면 insert.
-         * 왜 사용?
-         * → MANAGER.USER_NO는 PK라서 중복 INSERT를 막기 위해 사용.
+         * → 있으면 UPDATE, 없으면 INSERT.
          */
         mapper.upsertManager(rqst);
 
-        return mapper.approveRequest(
-                rqstNo,
-                aprvId,
-                userNo,
-                null
-        );
+        /*
+         * AUTH 권한 변경
+         *
+         * ROLE_MNGR이 되어야 아래 계정 목록 조회에 표시됨.
+         */
+        mapper.updateAuthToManager(userNo);
+
+        /*
+         * 신청 상태 승인완료 처리
+         */
+        return mapper.approveRequest(rqst);
     }
 
     @Override
@@ -134,10 +164,10 @@ public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
     @Override
     @Transactional
     public int rejectRequest(String rqstNo, String aprvId, String rjctRsnCn) {
-    /*
-        반려는 계정을 만들지 않는다.
-        MNGR_RQST 상태만 reject로 변경한다.
-    */
+        /*
+         * 반려는 계정을 만들지 않는다.
+         * MNGR_RQST 상태만 RJCT로 변경한다.
+         */
         return mapper.rejectRequest(
                 rqstNo,
                 aprvId,

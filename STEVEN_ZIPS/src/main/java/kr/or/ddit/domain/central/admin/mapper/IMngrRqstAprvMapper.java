@@ -28,12 +28,7 @@ public interface IMngrRqstAprvMapper {
     int updateRequest(MngrRqstAprvDTO vo);
 
     /* 승인, 반려 */
-    int approveRequest(
-            @Param("rqstNo") String rqstNo,
-            @Param("aprvId") String aprvId,
-            @Param("userNo") String userNo,
-            @Param("rmrkCn") String rmrkCn
-    );
+    int approveRequest(MngrRqstAprvDTO aprvDTO);
     int rejectRequest(
             @Param("rqstNo") String rqstNo,
             @Param("aprvId") String aprvId,
