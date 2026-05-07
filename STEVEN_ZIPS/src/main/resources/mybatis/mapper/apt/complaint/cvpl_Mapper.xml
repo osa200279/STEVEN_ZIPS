@@ -16,8 +16,10 @@
                          , cvpl_file_no
                          , cvpl_ttl
                          , user_no
+                         , ho_no
                          , aptCmplexNo)
-        VALUES (#{cvplNo}
+        VALUES (
+                #{cvplNo}
                , #{cvplTyCd}
                , #{cvplLoc}
                , #{cvplCn}
@@ -30,6 +32,7 @@
                , #{cvplFileNo}
                , #{cvplTtl}
                , #{userNo}
+               , #{hoNo}
                , #{aptCmplexNo}
                )
     </insert>

@@ -5,6 +5,9 @@ import kr.or.ddit.domain.apt.complaint.service.ICvplService;
 import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
+import kr.or.ddit.domain.member.resident.mapper.IResidentMapper;
+import kr.or.ddit.domain.member.resident.vo.MyAptVO;
+import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,9 @@ public class CvplController {
     @Autowired
     private ICvplService cvplService;
 
+    @Autowired
+    private IResidentMapper residentMapper;
+
     // 민원 신청 폼 컨트롤러
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/apply.do/{aptCmplexNo}")
@@ -62,6 +68,13 @@ public class CvplController {
         log.info("complaintApply() 실행");
 
         MemberVO member = customUser.getMember();
+        ResidentVO resident = (ResidentVO)member;
+
+        for(MyAptVO apt : resident.getMyAptList()){
+            if(apt.getAptCmplexNo().equals(aptCmplexNo)){
+
+            }
+        }
 
         cvplVO.setUserNo(member.getUserNo());
         cvplVO.setAptCmplexNo(aptCmplexNo);

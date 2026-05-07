@@ -12,6 +12,7 @@ public class MyAptVO {
     private String dongNm;         // 동
     private String floor;          // 층수
     private String ho;             // 호수
+    private String hoNo;           // 호번호
     private String sidoNm;         // 시,도 명
     private String sigunguNm;      // 시,군,구 명
     private String emdNm;          // 읍,면,동 명

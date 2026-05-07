@@ -39,6 +39,7 @@
                ,RESI.HEAD_YN
                ,HO.DONG_NO
                ,HO.HO
+               ,HO.HO_NO
                ,HO.FLOOR
                ,DONG.DONG_NM
                ,DONG.APT_CMPLEX_NO
