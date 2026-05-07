@@ -21,6 +21,5 @@ public class CvplVO {
     private String cvplTtl;       // 제목
     private String userNo;        // 작성자 유저 번호
     private String hoNo;          // 세대번호
-
     private String aptCmplexNo;   // 아파트 코드
 }

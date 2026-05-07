@@ -57,15 +57,19 @@ public class CvplController {
     public ResponseEntity<Map<String, String>> complaintApply(
             @AuthenticationPrincipal CustomUser customUser
             , @PathVariable String aptCmplexNo
-            , CvplVO cvplVO , MultipartFile[] attachFile) {
+            , @RequestParam(required = false) MultipartFile[] attachFiles
+            , CvplVO cvplVO) {
         log.info("complaintApply() 실행");
-        log.info("민원 내용 : {}", cvplVO.toString());
 
         MemberVO member = customUser.getMember();
-        Map<String, String> resp = new HashMap<>();
 
+        cvplVO.setUserNo(member.getUserNo());
+        cvplVO.setAptCmplexNo(aptCmplexNo);
+
+        // 응답용 해시맵
+        Map<String, String> resp = new HashMap<>();
         try{
-            ServiceResult result = cvplService.applyCvpl(member.getUserNo(), aptCmplexNo, cvplVO);
+            ServiceResult result = cvplService.applyCvpl(cvplVO, attachFiles);
 
             if(ServiceResult.OK.equals(result)){
                 resp.put("message", "민원이 접수되었습니다.");

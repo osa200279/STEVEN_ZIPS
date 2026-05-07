@@ -90,7 +90,7 @@
                             </div>
                             <div class="th">증빙파일</div>
                             <div class="td">
-                                <input type="file" name="attachFile" class="a-input" multiple/>
+                                <input type="file" name="attachFiles" class="a-input" multiple/>
                             </div>
                             <div class="th">설명</div>
                             <div class="td">

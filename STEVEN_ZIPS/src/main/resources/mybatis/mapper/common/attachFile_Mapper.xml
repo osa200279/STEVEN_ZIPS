@@ -83,8 +83,8 @@
              , DOWN_CNT
              , GOOGLE_ID
              , CAT
-        from attach_file
-        where file_group_no = to_number(#{fileGroupNo})
+        from ATTACH_FILE
+        where FILE_GROUP_NO = to_number(#{fileGroupNo})
     </select>
 
 </mapper>
