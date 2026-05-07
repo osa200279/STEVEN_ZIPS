@@ -62,13 +62,4 @@ public class AptRetrieveController {
         return "central/aptSearch";
     }
 
-    @GetMapping("/dashboard.do")
-    public String dashboard() {
-        return "central/aptDashboard";
-    }
-
-    @GetMapping("/intro.do")
-    public String intro() {
-        return "central/service";
-    }
 }

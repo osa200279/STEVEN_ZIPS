@@ -42,7 +42,7 @@ public class NoticeController {
 
         model.addAttribute("pagingVO", pagingVO);
 
-        return "ztestview/notice";
+        return "central/board/notice/notice";
     }
 
     @GetMapping("/notice/detail.do")
@@ -55,7 +55,7 @@ public class NoticeController {
 
         model.addAttribute("notice", notice);
 
-        return "ztestview/noticeDetail";
+        return "central/board/notice/noticeDetail";
     }
 
 }

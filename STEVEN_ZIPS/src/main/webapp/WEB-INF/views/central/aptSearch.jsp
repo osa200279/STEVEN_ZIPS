@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 
 <html class="light" lang="ko"><head>
@@ -87,12 +87,9 @@
 </head>
 <body class="bg-surface text-on-surface flex flex-col min-h-screen">
 
-<!-- SideNavBar Shell -->
-<%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-<%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
-<%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
-
-
+<%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 
 <main class="flex-grow pt-28 pb-20 px-6 max-w-7xl mx-auto w-full">
   <!-- Header Section -->

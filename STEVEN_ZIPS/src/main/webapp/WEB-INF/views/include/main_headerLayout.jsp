@@ -261,32 +261,32 @@
                     <div class="nav-grid">
 
                         <div class="mega-cell">
-                            <span>서비스 소개</span>
+                            <span><a href="${pageContext.request.contextPath}/main/intro.do">서비스 소개</a></span>
                         </div>
 
                         <div class="mega-cell">
-                            <span>계약 공고</span>
+                            <span><a href="${pageContext.request.contextPath}/">계약 공고</a></span>
                         </div>
 
                         <div class="mega-cell">
-                            <span>계약 신청하기</span>
-                            <span>계약 조회</span>
+                            <span><a href="${pageContext.request.contextPath}/">계약 신청</a></span>
+                            <span><a href="${pageContext.request.contextPath}/">계약 조회</a></span>
                         </div>
 
                         <div class="mega-cell">
-                            <span>단지 목록</span>
-                            <span>단지 검색</span>
+                            <span><a href="${pageContext.request.contextPath}/apt/list.do">단지 목록</a></span>
+                            <span><a href="${pageContext.request.contextPath}/apt/search.do">단지 검색</a></span>
                         </div>
 
                         <div class="mega-cell">
-                            <span>시설 유지보수 이력</span>
-                            <span>시설 하자보수 이력</span>
-                            <span>시설 점검 기록 확인</span>
+                            <span><a href="${pageContext.request.contextPath}/">시설 유지보수 이력</a></span>
+                            <span><a href="${pageContext.request.contextPath}/">시설 하자보수 이력</a></span>
+                            <span><a href="${pageContext.request.contextPath}/">시설 점검 기록 확인</a></span>
                         </div>
 
                         <div class="mega-cell">
-                            <span>공지사항</span>
-                            <span>문의게시판</span>
+                            <span><a href="${pageContext.request.contextPath}/notice/list.do">공지사항</a></span>
+                            <span><a href="${pageContext.request.contextPath}/notice/">문의게시판</a></span>
                         </div>
 
                     </div>
