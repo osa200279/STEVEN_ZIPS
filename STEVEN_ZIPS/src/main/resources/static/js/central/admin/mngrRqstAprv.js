@@ -474,8 +474,27 @@ function openRejectModal(btn) {
 }
 
 function showRejectReason(btn) {
+    /*
+        반려사유 모달 열기
+
+        dataset.rejectReason이란?
+        → tr 태그에 넣어둔 data-reject-reason 값을 JS에서 꺼내는 방식.
+        왜 사용?
+        → 목록 조회 때 이미 받은 반려사유를 다시 서버 요청 없이 보여주기 위해.
+    */
     const row = btn.closest("tr");
-    alert("반려 사유: " + (row?.dataset.rejectReason || "등록된 반려 사유가 없습니다."));
+    const reason = row?.dataset.rejectReason || "등록된 반려 사유가 없습니다.";
+
+    document.getElementById("rejectReasonContent").textContent = reason;
+    document.getElementById("rejectReasonOverlay").classList.remove("is-hidden");
+}
+
+function closeRejectReasonModal() {
+    /*
+        classList.add("is-hidden")이란?
+        → 모달에 숨김 클래스를 붙여서 화면에서 안 보이게 하는 방식.
+    */
+    document.getElementById("rejectReasonOverlay").classList.add("is-hidden");
 }
 
 function toggleRemarkRow(btn) {

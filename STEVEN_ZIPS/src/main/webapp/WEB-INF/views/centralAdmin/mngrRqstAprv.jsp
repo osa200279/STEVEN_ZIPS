@@ -35,42 +35,41 @@
         .toggle-wrap{position:relative;display:inline-block;width:36px;height:20px;cursor:pointer}.toggle-wrap input{opacity:0;width:0;height:0}.toggle-track{position:absolute;inset:0;background:#e2e5ea;border-radius:99px;transition:.18s}.toggle-thumb{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.15)}.toggle-wrap input:checked~.toggle-track{background:#16a34a}.toggle-wrap input:checked~.toggle-thumb{left:19px}.c-pagination{display:flex;justify-content:center;gap:6px;padding:14px}.c-pagination__btn{min-width:30px;height:30px;border:1px solid #e5e7eb;background:#fff;border-radius:7px;cursor:pointer}.c-pagination__btn.is-active{background:#2563eb;color:#fff;border-color:#2563eb}.c-pagination__btn.is-disabled{opacity:.4;pointer-events:none}
         .c-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;z-index:1000}.c-modal-overlay.is-hidden{display:none}.c-modal{width:520px;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}.c-modal__header,.c-modal__footer{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e5e7eb}.c-modal__footer{border-top:1px solid #e5e7eb;border-bottom:0;justify-content:flex-end;gap:8px}.c-modal__body{padding:20px}.c-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.c-info-block{background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px}.c-label{font-size:11px;color:#94a3b8;font-weight:700}.c-value{font-size:13px;color:#111827;font-weight:700;margin-top:4px}
 
-        .remark-row td {
-            padding: 0;
-            background: #f8fafc;
+        /*
+            비고 펼침 영역
+        */
+        .remark-row{
+            background:#f8fafc;
         }
 
-        .remark-box {
-            margin: 0 18px 16px 54px;
-            padding: 18px 22px;
-
-            border: 1px solid #dbeafe;
-            border-radius: 14px;
-
-            background: #ffffff;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        .remark-row td{
+            padding:0 12px 8px 12px; /* 아래 여백 줄임 */
+            border-bottom:1px solid #e5e7eb;
         }
 
-        .remark-box__title {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-
-            margin-bottom: 10px;
-
-            font-size: 14px;
-            font-weight: 800;
-            color: #1e3a8a;
+        .remark-box{
+            padding:8px 14px;        /* 내부 여백 줄임 */
+            background:#f8fafc;
+            border-left:3px solid #2563eb;
+            border-radius:0 0 8px 8px;
+            box-shadow:none;
         }
 
-        .remark-box__content {
-            min-height: 60px;
+        .remark-box__title{
+            display:flex;
+            align-items:center;
+            gap:5px;
+            margin-bottom:4px;      /* 제목과 내용 사이 간격 줄임 */
+            font-size:12px;
+            font-weight:700;
+            color:#1e3a8a;
+        }
 
-            font-size: 14px;
-            line-height: 1.7;
-            color: #334155;
-
-            white-space: pre-wrap;
+        .remark-box__content{
+            font-size:12px;
+            line-height:1.4;        /* 줄간격 줄임 */
+            color:#475569;
+            white-space:pre-wrap;
         }
 
         /* 관리 컬럼 오른쪽 여백 */
@@ -81,6 +80,22 @@
 
         .data-table .row-actions{
             justify-content:flex-end;
+        }
+
+        .reject-reason-modal{
+            width:360px; /* 모달창 너비 */
+        }
+
+        .reject-reason-content{
+            padding:14px 16px;
+            border-radius:10px;
+            background:#f8fafc;
+            border:1px solid #e5e7eb;
+
+            font-size:13px;
+            line-height:1.6;
+            color:#334155;
+            white-space:pre-wrap;
         }
 
     </style>
@@ -249,6 +264,28 @@
     window.APP_CTX = '<%= request.getContextPath() %>';
 </script>
 <script src="<%= request.getContextPath() %>/js/central/admin/mngrRqstAprv.js"></script>
+
+<!-- 반려사유 확인 모달 -->
+<div class="c-modal-overlay is-hidden" id="rejectReasonOverlay" onclick="if(event.target===this)closeRejectReasonModal()">
+    <div class="c-modal reject-reason-modal">
+        <div class="c-modal__header">
+            <strong>반려 사유</strong>
+            <button type="button" class="icon-btn-sm" onclick="closeRejectReasonModal()">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+
+        <div class="c-modal__body">
+            <div id="rejectReasonContent" class="reject-reason-content">
+                등록된 반려 사유가 없습니다.
+            </div>
+        </div>
+
+        <div class="c-modal__footer">
+            <button class="c-btn" type="button" onclick="closeRejectReasonModal()">확인</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
 
