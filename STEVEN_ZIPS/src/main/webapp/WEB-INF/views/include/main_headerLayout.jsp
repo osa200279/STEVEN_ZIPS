@@ -317,15 +317,22 @@
         });
     });
 
+    // 팝업창을 중앙에 띄우는 함수
     function openAptSelection() {
-        const width = 600, height = 400;
-        const left  = (window.screen.width  / 2) + 100;
-        const top   = (window.screen.height / 2) - height;
-        window.open(
-            "${pageContext.request.contextPath}/resident/myApt",
-            "aptSelectionPopup",
-            `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
-        );
+        const width = 600;
+        const height = 400;
+        const left = (window.screen.width / 2) + 100;
+        const top = (window.screen.height / 2) - height;
+
+        const url = "${pageContext.request.contextPath}/resident/myApt";
+        const features = "width=" + width +
+            ",height=" + height +
+            ",left=" + left +
+            ",top=" + top +
+            ",resizable=yes,scrollbars=yes";
+
+        // 'aptSelectionPopup'이라는 이름의 팝업창을 엽니다.
+        window.open(url, "aptSelectionPopup", features);
     }
 
     function selectApt(aptCmplexNo) {
