@@ -53,13 +53,16 @@ public class ChatController {
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @PostMapping("/enter/{aptCmplexNo}")
     @ResponseBody
-    public String enter(
+    public ChatRoomVO enter(
                         @PathVariable String aptCmplexNo
                         ,@RequestParam String chatRoomNo
                         ,@AuthenticationPrincipal CustomUser user) {
 
-        service.enterRoom(chatRoomNo, user.getMember().getUserNo());
-        return "ok";
+        String userNo = user.getMember().getUserNo();
+
+        service.enterRoom(chatRoomNo, userNo);
+
+        return service.selectRoom(chatRoomNo);
     }
 
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
@@ -75,4 +78,33 @@ public class ChatController {
         roomVO.setAptCmplexNo(aptCmplexNo);
         return service.createRoom(roomVO, userNo);
     }
+
+    @GetMapping("/openRooms/{aptCmplexNo}")
+    @ResponseBody
+    public List<ChatRoomVO> openRooms(
+            @PathVariable String aptCmplexNo,
+            @AuthenticationPrincipal CustomUser user
+    ) {
+
+        String userNo = user.getMember().getUserNo();
+
+        return service.selectOpenRooms(aptCmplexNo,userNo);
+    }
+
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @PostMapping("/leave/{aptCmplexNo}")
+    @ResponseBody
+    public String leaveRoom(
+            @PathVariable String aptCmplexNo,
+            @RequestParam String chatRoomNo,
+            @AuthenticationPrincipal CustomUser user
+    ) {
+
+        String userNo = user.getMember().getUserNo();
+
+        service.leaveRoom(chatRoomNo, userNo);
+
+        return "OK";
+    }
+
 }

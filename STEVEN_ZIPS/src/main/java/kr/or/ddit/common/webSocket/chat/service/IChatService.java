@@ -18,4 +18,10 @@ public interface IChatService {
     int insertRoomMember(ChatMemberVO memberVO);
 
     ChatRoomVO createRoom(ChatRoomVO roomVO, String userNo);
+
+    ChatRoomVO selectRoom(String chatRoomNo);
+
+    List<ChatRoomVO> selectOpenRooms(String aptCmplexNo, String userNo);
+
+    int leaveRoom(String chatRoomNo, String userNo);
 }

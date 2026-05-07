@@ -58,15 +58,32 @@ public class ChatServiceImpl implements IChatService {
             memberVO.setUserNo(userNo);
             memberVO.setChatroleCd("MEMBER");
 
-            mapper.insertRoomMember(memberVO);
+            insertRoomMember(memberVO);
         }
     }
 
     @Override
+    @Transactional
     public int insertRoomMember(ChatMemberVO memberVO) {
-        return mapper.insertRoomMember(memberVO);
+
+        String chatMemberId = mapper.getRoomMemberSeq();
+        String chatRoomNo = memberVO.getChatRoomNo();
+
+        memberVO.setChatMemberId(chatMemberId);
+        int res = mapper.insertRoomMember(memberVO);
+
+        mapper.insertChatRoomRead(chatRoomNo,chatMemberId);
+
+        return res;
     }
 
+
+    /**
+     * 방생성 매서드
+     * @param roomVO jsp form 에서 보내준 정보로 어느정도 완성된 roomVO를 컨트롤러에서 받음
+     * @param userNo 시큐리티에서 꺼낸 userNo 를 컨트롤러에서 넣어줌
+     * @return 룸객체 반환
+     */
     @Override
     @Transactional
     public ChatRoomVO createRoom(ChatRoomVO roomVO, String userNo) {
@@ -89,8 +106,24 @@ public class ChatServiceImpl implements IChatService {
         memberVO.setUserNo(userNo);
         memberVO.setChatroleCd("OWNER");
 
-        mapper.insertRoomMember(memberVO);
+        insertRoomMember(memberVO);
 
         return roomVO;
+    }
+
+    @Override
+    public ChatRoomVO selectRoom(String chatRoomNo) {
+        return mapper.selectRoom(chatRoomNo);
+    }
+
+    @Override
+    public List<ChatRoomVO> selectOpenRooms(String aptCmplexNo, String userNo) {
+        return mapper.selectOpenRooms(aptCmplexNo,userNo);
+    }
+
+    @Override
+    @Transactional
+    public int leaveRoom(String chatRoomNo, String userNo) {
+        return mapper.leaveRoom(chatRoomNo, userNo);
     }
 }

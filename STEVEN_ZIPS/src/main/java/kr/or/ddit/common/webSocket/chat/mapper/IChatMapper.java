@@ -24,4 +24,14 @@ public interface IChatMapper {
     void insertChatRoom(ChatRoomVO roomVO);
 
     int insertRoomMember(ChatMemberVO memberVO);
+
+    void insertChatRoomRead(String chatRoomNo, String chatMemberId);
+
+    ChatRoomVO selectRoom(String chatRoomNo);
+
+    String getRoomMemberSeq();
+
+    List<ChatRoomVO> selectOpenRooms(String aptCmplexNo, String userNo);
+
+    int leaveRoom(String chatRoomNo, String userNo);
 }

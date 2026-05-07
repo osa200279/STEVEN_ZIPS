@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     loadMyRooms();
+    openDiscover();
 });
 
 let subscription = null;
@@ -45,6 +46,20 @@ function openMyRoom(roomNo, roomNm, el) {
             let html = `
                 <div class="section-hd">
                     <h3>${roomNm}</h3>
+                    
+                    <button
+                        onclick="leaveRoom()"
+                        style="
+                            border:none;
+                            background:#ef4444;
+                            color:white;
+                            padding:6px 12px;
+                            border-radius:8px;
+                            cursor:pointer;
+                            font-size:12px;
+                        ">
+                        방 나가기
+                    </button>
                 </div>
                 <div class="message-stream" id="message-area">
             `;
@@ -225,10 +240,7 @@ function createRoom(roomName, roomType) {
             closeCreateRoomModal();
 
             loadMyRooms();
-
-            setTimeout(() => {
-                openMyRoom(room.chatRoomNo, room.chatRoomNm);
-            }, 100);
+            openMyRoom(room.chatRoomNo, room.chatRoomNm);
         });
 }
 
@@ -274,4 +286,44 @@ function outsideClose(e) {
     if (e.target.id === 'create-room-modal') {
         closeCreateRoomModal();
     }
+}
+
+function leaveRoom() {
+
+    if (!currentRoomNo) {
+        return;
+    }
+
+    if (!confirm('채팅방을 나가시겠습니까?')) {
+        return;
+    }
+
+    fetch(
+        contextPath +
+        '/residentChat/leave/' +
+        aptCmplexNo +
+        '?chatRoomNo=' +
+        currentRoomNo,
+        {
+            method: 'POST'
+        }
+    )
+        .then(res => res.text())
+        .then(() => {
+
+            // 구독 끊기
+            if (subscription) {
+                subscription.unsubscribe();
+                subscription = null;
+            }
+
+            currentRoomNo = null;
+            currentRoomNm = null;
+
+            // 기본 화면 복귀
+            openDiscover();
+
+            // 목록 새로고침
+            loadMyRooms();
+        });
 }

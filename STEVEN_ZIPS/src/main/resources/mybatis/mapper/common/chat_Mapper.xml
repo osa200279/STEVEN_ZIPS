@@ -8,8 +8,18 @@
           AND chat_member_id = #{chatMemberId}
     </update>
 
+    <update id="leaveRoom">
+
+        UPDATE CHAT_ROOM_MEMBER /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.leaveRoom*/
+        SET LEFT_DTTM = SYSDATE
+        WHERE CHAT_ROOM_NO = #{chatRoomNo}
+          AND USER_NO = #{userNo}
+          AND LEFT_DTTM IS NULL
+
+    </update>
+
     <select id="selectMyRoomList" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
-        SELECT CR.CHAT_ROOM_NO
+        SELECT CR.CHAT_ROOM_NO  /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.selectMyRoomList*/
              ,CR.CHAT_ROOM_NM
              ,CM.MSG_CN   AS LAST_MSG
              ,CM.REG_DTTM AS LAST_TIME
@@ -112,13 +122,88 @@
     </select>
 
     <select id="getRoomNoSeq" resultType="java.lang.String">
-        SELECT  SEQ_CHAT_ROOM.nextval
+        SELECT  SEQ_CHAT_ROOM.nextval /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.getRoomNoSeq*/
         FROM    dual
+    </select>
+
+    <select id="getRoomMemberSeq" resultType="java.lang.String">
+        SELECT  SEQ_CHAT_ROOM_MEMBER.nextval /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.getRoomNoSeq*/
+        FROM    dual
+    </select>
+
+    <select id="selectRoom"
+            resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
+
+        SELECT  /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.selectMyRoom*/
+            cr.chat_room_no
+             , cr.chat_room_nm
+             , cr.chat_room_ty_cd
+             , cr.reg_dt
+             , cr.use_yn
+             , cr.rgtr_id
+             , cr.chat_joinkey
+             , cr.apt_cmplex_no
+
+             , nvl(mc.member_cnt, 0) AS member_cnt
+
+        FROM chat_room cr
+
+                 LEFT JOIN (
+            SELECT chat_room_no,
+                   count(*) AS member_cnt
+            FROM chat_room_member
+            WHERE left_dttm IS NULL
+            GROUP BY chat_room_no
+        ) mc
+                           ON cr.chat_room_no = mc.chat_room_no
+
+        WHERE cr.chat_room_no = #{chatRoomNo}
+
+    </select>
+
+    <select id="selectOpenRooms"
+            resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
+
+        SELECT  /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.selectOpenRooms*/
+            CR.CHAT_ROOM_NO
+             , CR.CHAT_ROOM_NM
+             , CR.CHAT_ROOM_TY_CD
+             , CR.REG_DT
+             , CR.RGTR_ID
+             , CR.CHAT_JOINKEY
+             , CR.APT_CMPLEX_NO
+
+             , NVL(MC.MEMBER_CNT, 0) AS MEMBER_CNT
+
+        FROM CHAT_ROOM CR
+
+                 LEFT JOIN (
+            SELECT CHAT_ROOM_NO,
+                   COUNT(*) AS MEMBER_CNT
+            FROM CHAT_ROOM_MEMBER
+            WHERE LEFT_DTTM IS NULL
+            GROUP BY CHAT_ROOM_NO
+        ) MC
+                           ON CR.CHAT_ROOM_NO = MC.CHAT_ROOM_NO
+
+        WHERE CR.CHAT_ROOM_TY_CD = 'OPEN'
+          AND CR.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND CR.USE_YN = 'Y'
+
+          AND NOT EXISTS (
+            SELECT 1
+            FROM CHAT_ROOM_MEMBER CRM
+            WHERE CRM.CHAT_ROOM_NO = CR.CHAT_ROOM_NO
+              AND CRM.USER_NO = #{userNo}
+              AND CRM.LEFT_DTTM IS NULL
+        )
+
+        ORDER BY CR.REG_DT DESC
     </select>
 
     <insert id="insertRoomMember">
 
-        INSERT INTO CHAT_ROOM_MEMBER (
+        INSERT INTO CHAT_ROOM_MEMBER ( /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.insertRoomMember*/
             CHAT_MEMBER_ID
             ,CHAT_ROOM_NO
             ,USER_NO
@@ -126,7 +211,7 @@
             ,JOIN_DTTM
         )
         VALUES (
-           SEQ_CHAT_ROOM_MEMBER.NEXTVAL
+            #{chatMemberId}
            ,#{chatRoomNo}
            ,#{userNo}
            ,#{chatroleCd}
@@ -136,7 +221,7 @@
     </insert>
 
     <insert id="insertChatRoom">
-        INSERT INTO CHAT_ROOM (
+        INSERT INTO CHAT_ROOM ( /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.insertChatRoom*/
             chat_room_no
           , chat_room_nm
           , chat_room_ty_cd
@@ -155,6 +240,16 @@
             , #{chatJoinKey}
             , #{aptCmplexNo}
         )
+    </insert>
+
+    <insert id="insertChatRoomRead">
+        INSERT INTO chat_room_read (  /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.insertChatRoomRead*/
+             chat_room_no
+           , chat_member_id
+        ) VALUES (
+           #{chatRoomNo}
+           , #{chatMemberId}
+         )
     </insert>
 
 </mapper>

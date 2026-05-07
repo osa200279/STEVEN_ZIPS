@@ -18,7 +18,12 @@ function connectWebSocket() {
         {},
         () => {
             console.log("웹소켓 연결됨");
+
             subscribeNotification();
+
+            if (currentRoomNo) {
+                subscribeRoom(currentRoomNo);
+            }
         },
         (error) => {
             console.error("웹소켓 연결 실패", error);
