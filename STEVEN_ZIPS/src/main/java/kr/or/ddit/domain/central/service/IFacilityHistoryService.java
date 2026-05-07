@@ -1,6 +1,6 @@
-package kr.or.ddit.domain.ztest.service;
+package kr.or.ddit.domain.central.service;
 
-import kr.or.ddit.domain.ztest.vo.FacilityHistoryVO;
+import kr.or.ddit.domain.central.vo.FacilityHistoryVO;
 
 import java.util.List;
 

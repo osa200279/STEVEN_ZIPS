@@ -1,6 +1,6 @@
-package kr.or.ddit.domain.ztest.mapper;
+package kr.or.ddit.domain.central.mapper;
 
-import kr.or.ddit.domain.ztest.vo.FacilityHistoryVO;
+import kr.or.ddit.domain.central.vo.FacilityHistoryVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

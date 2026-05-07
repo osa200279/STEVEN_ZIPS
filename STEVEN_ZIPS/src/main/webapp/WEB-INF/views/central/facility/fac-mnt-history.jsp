@@ -88,9 +88,9 @@
     </style>
 </head>
 <body class="bg-surface text-on-surface flex flex-col min-h-screen">
-<%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-<%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
-<%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
+<%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 <!-- SideNavBar Shell -->
 
 <!-- TopNavBar -->

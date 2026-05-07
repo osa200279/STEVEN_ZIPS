@@ -85,6 +85,10 @@
     }
   </style>
 </head>
+<%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
+
 <body class="bg-surface text-on-surface flex flex-col min-h-screen">
 <main class="flex-grow pt-12 pb-20 px-8">
   <div class="mb-8 flex items-center gap-4">

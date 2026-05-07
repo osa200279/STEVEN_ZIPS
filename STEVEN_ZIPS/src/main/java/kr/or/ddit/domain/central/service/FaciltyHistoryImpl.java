@@ -1,7 +1,7 @@
-package kr.or.ddit.domain.ztest.service;
+package kr.or.ddit.domain.central.service;
 
-import kr.or.ddit.domain.ztest.mapper.IFacilityHistoryMapper;
-import kr.or.ddit.domain.ztest.vo.FacilityHistoryVO;
+import kr.or.ddit.domain.central.mapper.IFacilityHistoryMapper;
+import kr.or.ddit.domain.central.vo.FacilityHistoryVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class FaciltyHistoryImpl implements  IFacilityHistoryService{
+public class FaciltyHistoryImpl implements IFacilityHistoryService {
 
     @Autowired
     private IFacilityHistoryMapper mapper;

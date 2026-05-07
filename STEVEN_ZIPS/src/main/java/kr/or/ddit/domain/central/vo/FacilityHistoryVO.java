@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.ztest.vo;
+package kr.or.ddit.domain.central.vo;
 
 import lombok.Data;
 
