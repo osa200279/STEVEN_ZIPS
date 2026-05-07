@@ -90,7 +90,7 @@
 <%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 
-<main class="ml-64 p-10 pt-28 bg-[#f8f7f4]">
+<main class="ml-80 p-8 pt-28 max-w-8xl">
 
   <!-- 제목 -->
   <div class="mb-8">

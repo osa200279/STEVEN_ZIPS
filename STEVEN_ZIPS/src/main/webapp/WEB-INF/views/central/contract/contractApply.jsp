@@ -97,7 +97,8 @@
 
 <!-- TopNavBar -->
 
-<main class="ml-64 p-10 pt-28 bg-[#f8f7f4]">
+<main class="ml-80 p-8 pt-28 max-w-8xl">
+
 
   <form id="submitForm"
         action="${pageContext.request.contextPath}/contract/apply.do"
@@ -109,12 +110,14 @@
              value="${_csrf.token}" />
   <!-- 제목 -->
   <div class="mb-8">
-    <h1 class="text-4xl font-bold tracking-tight text-on-surface mb-2">
-      청약신청서 제출
-    </h1>
-    <p class="text-gray-500 mb-6">
-      신청을 위해 필요한 서류를 확인하고 업로드해주세요.
-    </p>
+
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">계약신청서 제출</h1>
+
+
+      <p class="text-gray-500 text-sm ">
+          신청을 위해 필요한 서류를 확인하고 업로드해주세요.
+      </p>
+
   </div>
 
   <!-- 첨부서류 -->
