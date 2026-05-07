@@ -20,8 +20,23 @@
         #adminMgmtOfcModalOverlay .ofc-icon.selected-icon { background: #2e5c38; color: #fff; }
         #adminMgmtOfcModalOverlay .ofc-nm { font-size: 13px; font-weight: 700; }
         #adminMgmtOfcModalOverlay .ofc-sub { font-size: 11px; color: var(--text-tertiary); }
+        #adminMgmtOfcModalOverlay .ofc-address {
+            max-width: 430px; margin-top: 2px;
+            font-size: 11px; color: var(--text-tertiary);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
         #adminMgmtOfcModalOverlay .ofc-empty { text-align: center; padding: 24px; font-size: 13px; color: var(--text-tertiary); }
-        #adminMgmtOfcModalOverlay .ofc-list { max-height: 320px; overflow-y: auto; margin-top: 10px; }
+        #adminMgmtOfcModalOverlay .ofc-list { height: 350px; overflow-y: auto; margin-top: 10px; }
+        #adminMgmtOfcModalOverlay .ofc-search-row { display:flex; gap:8px; margin-bottom:4px; align-items:center; }
+        /* 검색창이 지역 필터보다 과하게 길어지지 않도록 모달 안에서만 폭 제한 */
+        #adminMgmtOfcModalOverlay .ofc-search-wrap { flex: 1; max-width: 190px; }
+        /* 검색 버튼 실행 후 전체 조회 건수를 작게 표시 */
+        #adminMgmtOfcModalOverlay .ofc-result-summary {
+            margin-top: 8px; font-size: 12px; color: var(--text-tertiary);
+        }
+        #adminMgmtOfcModalOverlay .ofc-result-summary strong {
+            color: #2e5c38; font-weight: 800;
+        }
         #adminMgmtOfcModalOverlay .paging-wrap { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 10px; flex-wrap: wrap; }
         #adminMgmtOfcModalOverlay .paging-wrap ul { display: flex; gap: 4px; padding: 0; margin: 0; list-style: none; }
         #adminMgmtOfcModalOverlay .page-link {
@@ -34,12 +49,18 @@
         }
         #adminMgmtOfcModalOverlay .page-link:hover { background: #f0f7f2; border-color: #2e5c38; }
         #adminMgmtOfcModalOverlay .page-item.active .page-link { background: #2e5c38; color: #fff; border-color: #2e5c38; }
+        /* 선택 전후 높이가 바뀌지 않도록 항상 같은 영역을 유지 */
         #adminMgmtOfcModalOverlay .selected-info {
             margin-top: 10px; padding: 10px 14px; border-radius: 8px;
-            background: #f0f7f2; border: 1px solid #b7d4bb;
-            font-size: 13px; display: none;
+            background: #f7f8f9; border: 1px solid var(--border);
+            font-size: 12px; color: var(--text-secondary);
+            min-height: 42px; display: flex; align-items: center;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
-        #adminMgmtOfcModalOverlay .selected-info.visible { display: block; }
+        #adminMgmtOfcModalOverlay .selected-info.visible {
+            background: #f0f7f2; border-color: #b7d4bb; color: var(--text-primary);
+        }
+        #adminMgmtOfcModalOverlay .selected-info strong { color: #2e5c38; font-weight: 800; }
     </style>
 
     <div class="modal-overlay" id="adminMgmtOfcModalOverlay" style="display:none;">
@@ -53,20 +74,26 @@
                     <h4 class="form-section-title">조회할 관리사무소를 선택해 주세요.</h4>
 
                         <%-- 검색창 --%>
-                    <div style="display:flex; gap:8px; margin-bottom:4px;">
-                        <select class="form-select" id="adminOfcSidoFilter" style="width:140px;">
+                    <div class="ofc-search-row">
+                        <select class="form-select" id="adminOfcSidoFilter" style="width:125px;">
                             <option value="">전체 시도</option>
                         </select>
 
-                        <select class="form-select" id="adminOfcSigunguFilter" style="width:150px;">
+                        <select class="form-select" id="adminOfcSigunguFilter" style="width:135px;">
                             <option value="">전체 시군구</option>
                         </select>
 
-                        <div class="search-wrap" style="flex:1;">
+                        <div class="search-wrap ofc-search-wrap">
                             <span class="material-symbols-rounded">search</span>
-                            <input type="text" class="form-input" id="adminOfcSearchInput" placeholder="관리사무소명, 단지명, 주소 검색">
+                            <input type="text" class="form-input" id="adminOfcSearchInput" placeholder="관리사무소명, 단지명 검색">
                         </div>
+                        <button type="button" class="btn btn-primary" id="btnSearchAdminMgmtOfc">
+                            검색
+                        </button>
                     </div>
+
+                    <%-- 현재 검색/지역 조건 기준 전체 조회 건수 --%>
+                    <div class="ofc-result-summary" id="adminOfcResultSummary">전체 <strong>0</strong>건</div>
 
                         <%-- 목록 --%>
                     <div class="ofc-list" id="adminOfcList">
@@ -76,8 +103,8 @@
                         <%-- 페이징 --%>
                     <div class="paging-wrap" id="adminOfcPaging"></div>
 
-                        <%-- 선택된 항목 표시 --%>
-                    <div class="selected-info" id="adminOfcSelectedInfo"></div>
+                        <%-- 선택 전에도 영역을 유지해서 모달 높이 흔들림을 방지 --%>
+                    <div class="selected-info" id="adminOfcSelectedInfo">조회할 관리사무소를 선택해 주세요.</div>
 
                     <p class="form-help" style="margin-top:10px;">
                         중앙관리자는 선택한 관리사무소 기준으로 관리사무소 화면을 조회합니다.
@@ -114,11 +141,12 @@
 
             function bindEvents() {
                 var searchInput = document.getElementById('adminOfcSearchInput');
+                var searchBtn = document.getElementById('btnSearchAdminMgmtOfc');
                 var saveBtn = document.getElementById('btnSaveAdminMgmtOfc');
                 /*
                  * 지역 필터 요소
-                 * - 시도/시군구 select 변경 시 목록을 바로 다시 조회
-                 * - 검색 버튼 없이 필터 선택만으로 목록 갱신
+                 * - 필터 값을 바꾼 뒤 검색 버튼 또는 Enter로 목록 조회
+                 * - 시도 변경 시 시군구 목록만 갱신해서 목록 높이 흔들림을 줄임
                  */
                 var sidoFilter = document.getElementById('adminOfcSidoFilter');
                 var sigunguFilter = document.getElementById('adminOfcSigunguFilter');
@@ -126,21 +154,17 @@
                 if (sidoFilter) {
                     sidoFilter.addEventListener('change', function () {
                         loadSigunguFilter(this.value);
+                    });
+                }
+
+                // 검색 버튼 또는 Enter 입력 시 1페이지부터 서버 재조회
+                if (searchBtn) {
+                    searchBtn.addEventListener('click', function () {
                         loadAdminOfcList(1);
                     });
                 }
 
-                if (sigunguFilter) {
-                    sigunguFilter.addEventListener('change', function () {
-                        loadAdminOfcList(1);
-                    });
-                }
-                // 검색어 변경 시 1페이지부터 서버 재조회
                 if (searchInput) {
-                    searchInput.addEventListener('input', function () {
-                        loadAdminOfcList(1);
-                    });
-
                     searchInput.addEventListener('keydown', function (e) {
                         if (e.key === 'Enter') {
                             e.preventDefault();
@@ -210,13 +234,23 @@
                     .then(function (r) { return r.json(); })
                     .then(function (data) {
                         adminOfcPageList = data.list || [];
+                        renderResultSummary(data.totalRecord || 0);
                         renderOfcList();
                         renderPaging(data.pagingHTML || '');
                     })
                     .catch(function () {
+                        renderResultSummary(0);
                         document.getElementById('adminOfcList').innerHTML = '<div class="ofc-empty">목록을 불러오지 못했습니다.</div>';
                         document.getElementById('adminOfcPaging').innerHTML = '';
                     });
+            }
+
+            // 검색 결과 건수 출력: 페이징 전체 건수(totalRecord)를 표시
+            function renderResultSummary(totalRecord) {
+                var summaryEl = document.getElementById('adminOfcResultSummary');
+                if (!summaryEl) return;
+
+                summaryEl.innerHTML = '조회 결과 <strong>' + totalRecord + '</strong>건';
             }
 
             // 현재 페이지 목록 출력
@@ -236,6 +270,7 @@
                         + '<div>'
                         + '<div class="ofc-nm">' + (o.mgmtOfcNm || '') + '</div>'
                         + '<div class="ofc-sub">' + (o.aptCmplexNm || '') + '</div>'
+                        + '<div class="ofc-address">' + (o.dorojuso || '') + '</div>'
                         + '</div>'
                         + '</div>';
                 }).join('');
@@ -269,19 +304,20 @@
                 });
             }
 
-            // 선택한 관리사무소 표시
+            // 선택한 관리사무소 표시: 기존 영역의 문구만 바꿔 모달 높이를 고정
             function updateSelectedInfo() {
                 var infoEl = document.getElementById('adminOfcSelectedInfo');
                 var saveBtn = document.getElementById('btnSaveAdminMgmtOfc');
 
                 if (!adminOfcSelectedItem) {
                     infoEl.classList.remove('visible');
+                    infoEl.innerHTML = '조회할 관리사무소를 선택해 주세요.';
                     if (saveBtn) saveBtn.disabled = true;
                     return;
                 }
 
-                infoEl.innerHTML = '✅ <strong>' + (adminOfcSelectedItem.mgmtOfcNm || '') + '</strong> / '
-                    + (adminOfcSelectedItem.aptCmplexNm || '') + ' 선택됨';
+                infoEl.innerHTML = '조회 기준&nbsp;&nbsp;<strong>' + (adminOfcSelectedItem.mgmtOfcNm || '') + '</strong>'
+                    + '&nbsp;·&nbsp;' + (adminOfcSelectedItem.aptCmplexNm || '');
 
                 infoEl.classList.add('visible');
                 if (saveBtn) saveBtn.disabled = false;
