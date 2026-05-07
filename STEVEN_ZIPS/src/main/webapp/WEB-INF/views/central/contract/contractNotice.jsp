@@ -91,9 +91,9 @@
 <!-- SideNavBar -->
 <body class="bg-background text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
 
-<%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-
-<%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
+<%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 <!-- Main Wrapper -->
 
 

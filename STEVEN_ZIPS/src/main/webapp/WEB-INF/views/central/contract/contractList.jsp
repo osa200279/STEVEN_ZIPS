@@ -7,7 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-[#F3F6EC] p-8">
-
+<%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 <div class="max-w-4xl mx-auto space-y-6">
 
   <!-- 1. 제목 -->

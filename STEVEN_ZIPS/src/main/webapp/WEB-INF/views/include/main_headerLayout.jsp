@@ -265,12 +265,12 @@
                         </div>
 
                         <div class="mega-cell">
-                            <span><a href="${pageContext.request.contextPath}/">계약 공고</a></span>
+                            <span><a href="${pageContext.request.contextPath}/contract/notice.do">계약 공고</a></span>
                         </div>
 
                         <div class="mega-cell">
-                            <span><a href="${pageContext.request.contextPath}/">계약 신청</a></span>
-                            <span><a href="${pageContext.request.contextPath}/">계약 조회</a></span>
+                            <span><a href="${pageContext.request.contextPath}/contract/apply.do">계약 신청</a></span>
+                            <span><a href="${pageContext.request.contextPath}/contract/history.do">계약 조회</a></span>
                         </div>
 
                         <div class="mega-cell">

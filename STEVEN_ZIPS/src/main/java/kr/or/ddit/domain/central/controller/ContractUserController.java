@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.ztest;
+package kr.or.ddit.domain.central.controller;
 
 import kr.or.ddit.domain.central.board.service.INoticeService;
 import kr.or.ddit.domain.central.board.vo.NoticeVO;
@@ -12,36 +12,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 @Controller
 @RequestMapping("/contract")
-public class UserContractController {
-
+public class ContractUserController {
 
     @Autowired
     private INoticeService noticeService;
 
-        @GetMapping("/list.do")
-        public String contractList() {
+    @GetMapping("/list.do")
+    public String contractList() {
 
-            return "ztestview/contractList";
-        }
+        return "central/contract/contractList";
+    }
 
-        @GetMapping("/notice.do")
-        public String contractNotice() {
-            return "ztestview/contractNotice"; // JSP 이름
-        }
+    @GetMapping("/notice.do")
+    public String contractNotice() {
+        return "central/contract/contractNotice"; // JSP 이름
+    }
 
-        @GetMapping("/apply.do")
-        public String contractApply() {
-            return "ztestview/contractApply";
-        }
+    @GetMapping("/apply.do")
+    public String contractApply() {
+        return "central/contract/contractApply";
+    }
 
-        @GetMapping("/noticeList.do")
-        public String noticeList() {
-        return "ztestview/notice";
+    @GetMapping("/noticeList.do")
+    public String noticeList() {
+        return "central/contract/notice";
     }
 
     @GetMapping("/history.do")
     public String contractHistory() {
-        return "ztestview/contractAList";
+        return "central/contract/contractAList";
     }
 
     @GetMapping("/detail.do")
@@ -51,6 +50,6 @@ public class UserContractController {
         model.addAttribute("notice", notice);
 
 
-        return "ztestview/contractNoticeDetail"; // 상세 JSP
+        return "central/contract/contractNoticeDetail"; // 상세 JSP
     }
 }

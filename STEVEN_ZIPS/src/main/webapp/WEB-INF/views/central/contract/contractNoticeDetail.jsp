@@ -119,8 +119,9 @@
 
 <body class="bg-background text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
 
-<%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-<%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
+<%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 
 <div class="ml-80 min-h-screen flex flex-col">
   <main class="flex-1 p-8 pt-28 space-y-6">
@@ -449,16 +450,12 @@
           </div>
         </div>
 
-
-
-
     <!-- Back to List Button (Bottom) -->
     <div class="flex justify-center pb-4 no-print">
       <a href="#" class="px-8 py-3 bg-white border border-[#eef2eb] rounded-lg text-sm font-medium text-slate-600 hover:bg-[#f8faf6] transition-colors flex items-center gap-2">
         <span class="material-symbols-outlined text-[16px]">list</span> 목록으로
       </a>
     </div>
-
   </main>
 </div>
 

@@ -63,10 +63,10 @@
                         </div>
 
                         <div class="flex flex-col items-center space-y-3">
-                            <a href="${pageContext.request.contextPath}/complex/list"
+                            <a href="${pageContext.request.contextPath}/apt/list.do"
                                class="text-sm text-gray-500 hover:text-[#226046] hover:font-bold whitespace-nowrap">단지
                                 목록</a>
-                            <a href="${pageContext.request.contextPath}/complex/search"
+                            <a href="${pageContext.request.contextPath}/apt/search.do"
                                class="text-sm text-gray-500 hover:text-[#226046] hover:font-bold whitespace-nowrap">단지
                                 검색</a>
                         </div>
