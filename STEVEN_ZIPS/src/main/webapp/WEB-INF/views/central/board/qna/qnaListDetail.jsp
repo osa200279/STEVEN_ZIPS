@@ -212,7 +212,7 @@
     </div>
   </div>
 
-  <form action="/member/qna/writeProc.do" method="post" enctype="multipart/form-data" id="inquiryForm">
+  <form action="/board/qna/writeProc.do" method="post" enctype="multipart/form-data" id="inquiryForm">
 
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 

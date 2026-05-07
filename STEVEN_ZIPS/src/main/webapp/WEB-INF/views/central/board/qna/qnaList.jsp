@@ -130,7 +130,7 @@
             </svg>
           </div>
         </div>
-        <button onclick="location.href='${pageContext.request.contextPath}/member/qna/writeForm.do'"
+        <button onclick="location.href='${pageContext.request.contextPath}/board/qna/writeForm.do'"
                 class="px-5 py-2 rounded-full bg-[#6F7F3F] text-white text-sm font-medium hover:bg-[#5f6e35]">
           + 새 문의
         </button>
