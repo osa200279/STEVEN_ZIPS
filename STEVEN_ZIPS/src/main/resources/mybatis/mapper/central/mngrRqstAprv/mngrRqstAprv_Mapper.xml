@@ -48,6 +48,11 @@
         <result property="lastLoginDt" column="last_login_dt"/>
         <result property="lastLoginTm" column="last_login_tm"/>
 
+        <result property="sidoNm" column="sido_nm"/>
+        <result property="sigunguNm" column="sigungu_nm"/>
+        <result property="emdNm" column="emd_nm"/>
+        <result property="detailAddr" column="detail_addr"/>
+
     </resultMap>
 
 
@@ -73,6 +78,16 @@
         , g.mngr_duty_cd                                               /** 관리자직무코드 */
         , o.apt_cmplex_no                                              /** 단지번호 */
         , a.apt_cmplex_nm                                              /** 단지명 */
+        , a.sido_nm                                                    /** 시도명 */
+        , a.sigungu_nm                                                 /** 시군구명 */
+        , a.emd_nm                                                     /** 읍면동명 */
+        , TRIM(
+        NVL(a.sido_nm, '')
+        || ' '
+        || NVL(a.sigungu_nm, '')
+        || ' '
+        || NVL(a.emd_nm, '')
+        )                                                            AS detail_addr      /** 상세주소 */
         , CASE r.rqst_duty_cd
         WHEN 'DUTY_HEAD'  THEN '관리소장'
         WHEN 'DUTY_ACC'   THEN '회계'
@@ -199,6 +214,16 @@
         , g.mngr_duty_cd                                               /** 관리자직무코드 */
         , o.apt_cmplex_no                                              /** 단지번호 */
         , a.apt_cmplex_nm                                              /** 단지명 */
+        , a.sido_nm                                                    /** 시도명 */
+        , a.sigungu_nm                                                 /** 시군구명 */
+        , a.emd_nm                                                     /** 읍면동명 */
+        , TRIM(
+        NVL(a.sido_nm, '')
+        || ' '
+        || NVL(a.sigungu_nm, '')
+        || ' '
+        || NVL(a.emd_nm, '')
+        )                                                            AS detail_addr      /** 상세주소 */
         , CASE g.mngr_duty_cd
         WHEN 'DUTY_HEAD'  THEN '관리소장'
         WHEN 'DUTY_ACC'   THEN '회계'
@@ -277,6 +302,16 @@
         , g.mngr_duty_cd                                               /** 관리자직무코드 */
         , o.apt_cmplex_no                                              /** 단지번호 */
         , a.apt_cmplex_nm                                              /** 단지명 */
+        , a.sido_nm                                                    /** 시도명 */
+        , a.sigungu_nm                                                 /** 시군구명 */
+        , a.emd_nm                                                     /** 읍면동명 */
+        , TRIM(
+        NVL(a.sido_nm, '')
+        || ' '
+        || NVL(a.sigungu_nm, '')
+        || ' '
+        || NVL(a.emd_nm, '')
+        )                                                            AS detail_addr      /** 상세주소 */
         , CASE g.mngr_duty_cd
         WHEN 'DUTY_HEAD'  THEN '관리소장'
         WHEN 'DUTY_ACC'   THEN '회계'
@@ -340,7 +375,7 @@
                 , r.rjct_rsn_cn = #{rjctRsnCn}          /** 반려사유내용 */
             </if>
             <if test="rmrkCn != null">
-                , r.rmrk_cn = #{rmrkCn}                 /** 비고내용 */
+                , r.rmrk_cn = NULL                 /** 비고내용 */
             </if>
         </set>
         WHERE 1 = 1
@@ -358,7 +393,7 @@
         , r.rqst_stts_cd = 'OK'                 /** 신청상태코드 */
         , r.aprv_id = #{aprvId}                 /** 승인자아이디 */
         , r.rjct_rsn_cn = NULL                  /** 반려사유내용 */
-        , r.rmrk_cn = #{rmrkCn}                 /** 비고내용 */
+        , r.rmrk_cn = NULL                /** 비고내용 */
         , r.acnt_dsply_yn = 'Y'                 /** 계정화면표시여부 */
         WHERE 1 = 1
         AND r.rqst_no = #{rqstNo}
@@ -376,7 +411,7 @@
         , r.aprv_dt = SYSDATE                   /** 승인일자 */
         , r.aprv_id = #{aprvId}                 /** 승인자아이디 */
         , r.rjct_rsn_cn = #{rjctRsnCn}          /** 반려사유내용 */
-        , r.rmrk_cn = #{rmrkCn}                 /** 비고내용 */
+        , r.rmrk_cn = NULL                 /** 비고내용 */
         WHERE 1 = 1
         AND r.rqst_no = #{rqstNo}
     </update>
@@ -389,7 +424,7 @@
         UPDATE mngr_rqst r
         SET
         r.rqst_stts_cd = 'CNL'                         /** 신청상태코드 */
-        , r.rmrk_cn = '단지관리자직원 권한신청 취소 처리' /** 비고내용 */
+        , r.rmrk_cn = NULL /** 비고내용 */
         WHERE 1 = 1
         AND r.rqst_no = #{rqstNo}
     </update>

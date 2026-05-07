@@ -34,6 +34,55 @@
         .user-cell{display:flex;align-items:center;gap:10px}.user-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}.user-name{font-size:13px;font-weight:700;color:#111827}.user-id{font-size:11px;color:#94a3b8;margin-top:1px}.badge,.c-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}.badge.info{background:#eef2ff;color:#4338ca}.badge.cancel{background:#e5e7eb;color:#374151}.badge.wait{background:#fef3c7;color:#92400e}.badge.ok{background:#dcfce7;color:#166534}.badge.reject{background:#fee2e2;color:#991b1b}.row-actions{display:flex;justify-content:flex-end;gap:6px}.icon-btn-sm{width:28px;height:28px;border:1px solid #e5e7eb;border-radius:7px;background:#fff;cursor:pointer}.icon-btn-sm.danger{color:#be123c}.rqst-check{width:15px;height:15px;accent-color:#2563eb;cursor:pointer}.table-footer{display:flex;justify-content:space-between;padding:12px 20px;font-size:12px;color:#64748b}
         .toggle-wrap{position:relative;display:inline-block;width:36px;height:20px;cursor:pointer}.toggle-wrap input{opacity:0;width:0;height:0}.toggle-track{position:absolute;inset:0;background:#e2e5ea;border-radius:99px;transition:.18s}.toggle-thumb{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.15)}.toggle-wrap input:checked~.toggle-track{background:#16a34a}.toggle-wrap input:checked~.toggle-thumb{left:19px}.c-pagination{display:flex;justify-content:center;gap:6px;padding:14px}.c-pagination__btn{min-width:30px;height:30px;border:1px solid #e5e7eb;background:#fff;border-radius:7px;cursor:pointer}.c-pagination__btn.is-active{background:#2563eb;color:#fff;border-color:#2563eb}.c-pagination__btn.is-disabled{opacity:.4;pointer-events:none}
         .c-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;z-index:1000}.c-modal-overlay.is-hidden{display:none}.c-modal{width:520px;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}.c-modal__header,.c-modal__footer{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e5e7eb}.c-modal__footer{border-top:1px solid #e5e7eb;border-bottom:0;justify-content:flex-end;gap:8px}.c-modal__body{padding:20px}.c-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.c-info-block{background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:12px}.c-label{font-size:11px;color:#94a3b8;font-weight:700}.c-value{font-size:13px;color:#111827;font-weight:700;margin-top:4px}
+
+        .remark-row td {
+            padding: 0;
+            background: #f8fafc;
+        }
+
+        .remark-box {
+            margin: 0 18px 16px 54px;
+            padding: 18px 22px;
+
+            border: 1px solid #dbeafe;
+            border-radius: 14px;
+
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        }
+
+        .remark-box__title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            margin-bottom: 10px;
+
+            font-size: 14px;
+            font-weight: 800;
+            color: #1e3a8a;
+        }
+
+        .remark-box__content {
+            min-height: 60px;
+
+            font-size: 14px;
+            line-height: 1.7;
+            color: #334155;
+
+            white-space: pre-wrap;
+        }
+
+        /* 관리 컬럼 오른쪽 여백 */
+        .data-table th:last-child,
+        .data-table td:last-child{
+            padding-right:28px;
+        }
+
+        .data-table .row-actions{
+            justify-content:flex-end;
+        }
+
     </style>
 </head>
 <body>
@@ -118,10 +167,11 @@
                         <th style="width:44px"><input type="checkbox" class="rqst-check" onclick="toggleAll('rqstTable', this)"></th>
                         <th>신청자 정보</th>
                         <th>소속 단지</th>
+                        <th style="width:220px">상세주소</th>
                         <th>신청 직무</th>
                         <th>신청일자</th>
                         <th>처리상태</th>
-                        <th style="text-align:right">관리</th>
+                        <th style="width:90px;text-align:right;padding-right:28px">관리</th>
                     </tr>
                     </thead>
                     <tbody></tbody>
@@ -163,8 +213,9 @@
                     <table class="c-table">
                         <thead>
                         <tr>
-                            <th>관리자 정보</th>
+                            <th style="width:320px">관리자 정보</th>
                             <th style="width:180px">소속 단지</th>
+                            <th style="width:220px">상세주소</th>
                             <th style="width:130px">권한 레벨</th>
                             <th style="width:150px">최근 접속</th>
                             <th style="width:110px">상태</th>

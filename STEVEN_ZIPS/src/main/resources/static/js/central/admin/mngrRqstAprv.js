@@ -147,7 +147,7 @@ function renderRequestTable() {
     if (!tbody) return;
 
     if (requestRows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#94a3b8;">조회된 신청 계정이 없습니다.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">조회된 신청 계정이 없습니다.</td></tr>';
         updateRequestCount();
         return;
     }
@@ -199,9 +199,22 @@ function renderRequestTable() {
         } else {
             actionHtml = '<span style="font-size:11px;color:#94a3b8;">-</span>';
         }
+        /*
+            비고(RMRK_CN)가 있으면
+            메모 확인 아이콘 표시
+        */
+        if (row.rmrkCn) {
+            actionHtml +=
+                '<button type="button" class="icon-btn-sm" onclick="toggleRemarkRow(this)" title="비고 확인">' +
+                '<span class="material-symbols-rounded">notes</span>' +
+                '</button>';
+        }
 
         return `
-            <tr data-rqst-no="${esc(row.rqstNo)}" data-status="${esc(status)}" data-reject-reason="${esc(row.rjctRsnCn || "")}">
+                <tr data-rqst-no="${esc(row.rqstNo)}"
+                    data-status="${esc(status)}"
+                    data-reject-reason="${esc(row.rjctRsnCn || "")}"
+                    data-remark="${esc(row.rmrkCn || "")}">
                 <td><input type="checkbox" class="rqst-check row-check" ${status !== "WAIT" ? "disabled" : ""}></td>
                 <td>
                     <div class="user-cell">
@@ -213,10 +226,25 @@ function renderRequestTable() {
                     </div>
                 </td>
                 <td>${esc(row.aptCmplexNm || row.aptCmplexNo || "-")}</td>
+                <td class="muted">${esc(row.detailAddr || "-")}</td>
                 <td><span class="badge info">${esc(row.dutyNm || roleName(row.rqstDutyCd))}</span></td>
                 <td>${esc(dateText(row.rqstDt))}</td>
                 <td><span class="badge ${statusClass}">${esc(statusName)}</span></td>
                 <td><div class="row-actions">${actionHtml}</div></td>
+            </tr>
+            
+            <tr class="remark-row" style="display:none;">
+                <td colspan="8">
+                    <div class="remark-box">
+                        <div class="remark-box__title">
+                            <span class="material-symbols-rounded">notes</span>
+                            비고
+                        </div>
+                        <div class="remark-box__content">
+                            ${esc(row.rmrkCn || "등록된 비고가 없습니다.")}
+                        </div>
+                    </div>
+                </td>
             </tr>`;
     }).join("");
 
@@ -261,7 +289,7 @@ function renderAccounts() {
     const rows = accountRows.slice(start, start + PAGE_SIZE);
 
     if (rows.length === 0) {
-        tbody.innerHTML = '<tr class="c-table__empty"><td colspan="5">조회된 계정이 없습니다.</td></tr>';
+        tbody.innerHTML = '<tr class="c-table__empty"><td colspan="6">조회된 계정이 없습니다.</td></tr>';
     } else {
         tbody.innerHTML = rows.map(row => {
             const active = row.userYn !== "N";
@@ -280,6 +308,7 @@ function renderAccounts() {
                         </div>
                     </td>
                     <td class="muted">${esc(row.aptCmplexNm || "-")}</td>
+                    <td class="muted">${esc(row.detailAddr || "-")}</td>
                     <td><span class="c-badge" style="background:${ROLE_BG[color]};color:${ROLE_FG[color]}">${esc(row.dutyNm || roleName(row.mngrDutyCd))}</span></td>
                     <td class="muted">${esc(row.lastLoginDt || dateText(row.regDt))} <span style="color:#d1d5db;font-size:11px">${esc(row.lastLoginTm || "")}</span></td>
                     <td onclick="event.stopPropagation()">
@@ -449,6 +478,39 @@ function showRejectReason(btn) {
     alert("반려 사유: " + (row?.dataset.rejectReason || "등록된 반려 사유가 없습니다."));
 }
 
+function toggleRemarkRow(btn) {
+    /*
+        비고 펼침/접힘 기능
+
+        btn.closest("tr")
+        → 클릭한 버튼이 들어있는 신청자 행을 찾는다.
+
+        nextElementSibling
+        → 신청자 행 바로 아래에 있는 비고 행을 찾는다.
+    */
+    const row = btn.closest("tr");
+    const remarkRow = row?.nextElementSibling;
+
+    if (!remarkRow || !remarkRow.classList.contains("remark-row")) {
+        return;
+    }
+
+    const isOpen = remarkRow.style.display === "table-row";
+
+    /*
+        다른 비고 영역은 먼저 닫기
+        → 여러 개가 동시에 열려서 화면이 복잡해지는 것을 방지한다.
+    */
+    document.querySelectorAll("#rqstTable tbody .remark-row").forEach(el => {
+        if (el !== remarkRow) {
+            el.style.display = "none";
+        }
+    });
+
+    remarkRow.style.display = isOpen ? "none" : "table-row";
+}
+
+
 function addApprovedAccountToList(btn) {
     /*
         btn.closest("tr")란?
@@ -520,12 +582,16 @@ function openAccountDetail(userNo) {
         .then(row => {
             document.getElementById("detailAcctTitle").textContent = (row.userNm || "-") + " — 계정 상세";
             document.getElementById("detailAcctContent").innerHTML = [
-                ["관리자 이름", row.userNm],
-                ["아이디", row.userId],
-                ["소속 단지", row.aptCmplexNm],
-                ["권한", row.dutyNm || roleName(row.mngrDutyCd)],
-                ["최근 접속", (row.lastLoginDt || "-") + " " + (row.lastLoginTm || "")],
-                ["상태", row.userYn === "N" ? "미사용" : "사용"]
+                    ["관리자 이름", row.userNm],
+                    ["아이디", row.userId],
+                    ["전화번호", row.userTelno],
+                    ["이메일", row.userEml],
+                    ["소속 단지", row.aptCmplexNm],
+                    ["상세주소", row.detailAddr],
+                    ["관리사무소 번호", row.mgmtOfcNo],
+                    ["권한", row.dutyNm || roleName(row.mngrDutyCd)],
+                    ["최근 접속", (row.lastLoginDt || "-") + " " + (row.lastLoginTm || "")],
+                    ["상태", row.userYn === "N" ? "미사용" : "사용"]
             ].map(([label, value]) => `
                 <div class="c-info-block">
                     <div class="c-label">${esc(label)}</div>
@@ -632,3 +698,4 @@ document.addEventListener("DOMContentLoaded", function () {
     renderRoleGuide();
     loadAll();
 });
+
