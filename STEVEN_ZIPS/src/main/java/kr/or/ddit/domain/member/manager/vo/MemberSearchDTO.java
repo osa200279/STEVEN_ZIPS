@@ -13,4 +13,5 @@ public class MemberSearchDTO {
     private String userTelno;    // 연락처
     private String userEml;      // 이메일
     private String birthDate;    // 주민번호 앞 6자리 표시용
+    private String rqstSttsCd;   // 회원 검색 결과 표시용: 기존 직원 계정 요청 상태(RJCT 등)
 }
