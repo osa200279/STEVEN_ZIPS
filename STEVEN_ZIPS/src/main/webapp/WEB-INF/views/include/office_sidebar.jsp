@@ -98,7 +98,10 @@
 
         <div class="section-divider"></div>
 
-        <details class="nav-group" ${fn:contains(uri, '/manager/facility') or fn:contains(uri, '/manager/publicFacilityList') or fn:contains(uri, '/manager/meterReading') or fn:contains(uri, '/manager/checkHistory') ? 'open="open"' : ''}>
+        <%-- ═══════════════════════════════════════════════════════
+             시설·공사 관리
+        ════════════════════════════════════════════════════════ --%>
+        <details class="nav-group" ${fn:contains(uri, '/manager/facility') or fn:contains(uri, '/manager/publicFacilityList') or fn:contains(uri, '/manager/checkHistory') or fn:contains(uri, '/manager/contract') ? 'open="open"' : ''}>
             <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">apartment</span>
                 <span class="cat-label">시설·공사 관리</span>
@@ -106,6 +109,7 @@
             </summary>
             <div class="submenu-wrap">
                 <div class="submenu-inner">
+
                     <span class="sub-group-label">시설 관리</span>
                     <a href="${ctx}/manager/facilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
@@ -115,11 +119,14 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">공용 시설 관리</span>
                     </a>
-                    <a href="${ctx}/manager/meterReading${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/meterReading') ? 'active' : ''}">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">검침 기록 관리</span>
-                    </a>
+
+                    <%-- 공사·점검 --%>
                     <span class="sub-group-label">공사·점검</span>
+                    <%--
+                        checkHistory : 탭1 시설점검이력(FACILITY_CHECK_HSTRY)
+                                       탭2 검침기록(METER_HSTRY) 포함
+                        기존 meterReading 메뉴는 이 페이지 탭2로 흡수
+                    --%>
                     <a href="${ctx}/manager/checkHistory${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">유지보수·점검 이력</span>
@@ -128,11 +135,14 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">공사·점검 일정</span>
                     </a>
+
+                    <%-- 협력업체 --%>
                     <span class="sub-group-label">협력업체</span>
                     <a href="${ctx}/manager/facility/partnerList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facility/partnerList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">협력업체 관리</span>
                     </a>
+
                 </div>
             </div>
         </details>
@@ -159,10 +169,6 @@
                     <a href="${ctx}/manager/bill/issue${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/issue') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">관리비 부과·연체</span>
-                    </a>
-                    <a href="${ctx}/manager/account/arrears${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/account/arrears') ? 'active' : ''}">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">연체 내역 관리</span>
                     </a>
 
                     <span class="sub-group-label">지출·예산</span>

@@ -107,14 +107,11 @@
 
         <%-- ADMIN은 헤더에서 조회 기준 관리사무소를 다시 선택할 수 있도록 기존 선택 모달 진입 화면으로 이동한다. --%>
         <c:if test="${isAdmin}">
-            <a href="${ctx}/manager/main" class="topbar-icon-btn" title="관리사무소 변경">
+            <a href="${ctx}/manager/main" class="topbar-action-btn" title="관리사무소 변경">
                 <span class="material-symbols-rounded">domain</span>
+                <span>관리사무소 변경</span>
             </a>
         </c:if>
-
-        <button type="button" class="topbar-icon-btn" id="logoutBtn" title="로그아웃">
-            <span class="material-symbols-rounded">logout</span>
-        </button>
 
         <a href="${ctx}/member/myPage.do" class="topbar-user" title="마이페이지">
             <div class="topbar-user-avatar">
@@ -131,6 +128,11 @@
                 </span>
             </div>
         </a>
+
+        <%-- 로그아웃은 사용자 정보 오른쪽에 배치해 계정 관련 동작끼리 묶는다. --%>
+        <button type="button" class="topbar-icon-btn" id="logoutBtn" title="로그아웃">
+            <span class="material-symbols-rounded">logout</span>
+        </button>
 
         <form id="logoutForm" action="${ctx}/logout" method="post" style="display:none;">
             <sec:csrfInput/>
