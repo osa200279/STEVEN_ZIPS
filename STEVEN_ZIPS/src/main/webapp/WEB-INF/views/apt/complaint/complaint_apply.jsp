@@ -155,19 +155,21 @@
             const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
             const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 
+            const aptCmplexNo = "${apt.aptCmplexNo}";
+
             try {
-                const resp = await fetch(`/apt/complaint/apply/\${apt.aptCmplexNo}`,{
-                        method: 'POST',
-                        headers: {
-                            [csrfHeader] : csrfToken
-                        },
-                        body: formData
+                const resp = await fetch(`/apt/complaint/apply/${aptCmplexNo}`, {
+                    method: 'POST',
+                    headers: {
+                        [csrfHeader]: csrfToken
+                    },
+                    body: formData
                 });
 
                 const result = await resp.json();
-                if(resp.ok){
+                if (resp.ok) {
                     alert(result.message);
-                }else{
+                } else {
                     alert("접수 실패 : " + result.message);
                 }
             } catch (error) {
