@@ -46,5 +46,41 @@ public class AuthService {
 
             return isManager;
         }else return member instanceof AdmVO;
+
+    }
+    /**
+     * 관리사무소 계정 여부 확인
+     *
+     * ADMIN은 RoleHierarchy 때문에 hasRole('MNGR')를 통과할 수 있으므로,
+     * 실제 처리성 기능(등록/수정/삭제/취소)은 Member 타입이 MngrVO인 경우만 허용한다.
+     *
+     * @param principal 로그인 사용자 principal
+     * @return true: 관리사무소 계정, false: 그 외 사용자
+     */
+    public boolean isManagerOnly(Object principal) {
+        if (!(principal instanceof CustomUser)) return false;
+
+        CustomUser user = (CustomUser) principal;
+        MemberVO member = user.getMember();
+
+        // canMgmtCrud() 내부에서 ADMIN을 제외하기 위한 보조 검사.
+        // RoleHierarchy 때문에 ADMIN도 hasRole('MNGR')를 통과할 수 있으므로,
+        // 실제 Member 타입이 MngrVO인 관리사무소 계정만 처리성 기능을 허용한다.
+        return member instanceof MngrVO;
+    }
+
+    /**
+     * 관리사무소 CUD 처리 권한 확인
+     *
+     * 관리사무소 등록/수정/삭제/취소 같은 CUD성 API에서 사용한다.
+     * ADMIN은 조회만 가능하므로 제외하고,
+     * 실제 MngrVO이면서 본인 소속 관리사무소인 경우만 허용한다.
+     *
+     * @param principal 로그인 사용자 principal
+     * @param mgmtOfcNo 요청 URL의 관리사무소 번호
+     * @return true: 처리 허용, false: 처리 불허
+     */
+    public boolean canMgmtCrud(Object principal, String mgmtOfcNo) {
+        return isManagerOnly(principal) && hasAccess(principal, mgmtOfcNo);
     }
 }
