@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>민원신청 – ${apt.aptCmlexNm}</title>
+    <title>민원신청 ${apt.aptCmplexNm}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
@@ -52,7 +52,7 @@
     <main class="content-area">
         <div class="page-content-wrap">
             <div class="breadcrumb">
-                <a href="/apt/main/${apt.aptCmplexNo}">HOME</a>
+                <a href="/apt/main/${apt.aptCmplexNo}">${apt.aptCmplexNm}</a>
                 <span>›</span>
                 <a href="javascript:void(0);">민원접수</a>
                 <span>›</span>
@@ -183,6 +183,8 @@
                 const result = await resp.json();
                 if (resp.ok) {
                     alert(result.message);
+                    // 민원 등록 후 폼 리셋
+                    form.reset();
                 } else {
                     alert("접수 실패 : " + result.message);
                 }
