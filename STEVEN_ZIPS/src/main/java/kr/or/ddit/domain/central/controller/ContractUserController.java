@@ -59,8 +59,11 @@ public class ContractUserController {
 
         }
 
-        return "redirect:/contract/apply.do";
+        return "central/contract/contractApply";
     }
+
+
+
 
 
 

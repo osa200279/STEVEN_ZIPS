@@ -83,6 +83,9 @@
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
   </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body class="bg-surface text-on-surface flex flex-col min-h-screen">
 <%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
@@ -101,6 +104,9 @@
         method="post"
         enctype="multipart/form-data">
 
+      <input type="hidden"
+             name="${_csrf.parameterName}"
+             value="${_csrf.token}" />
   <!-- 제목 -->
   <div class="mb-8">
     <h1 class="text-4xl font-bold tracking-tight text-on-surface mb-2">
@@ -136,6 +142,8 @@
           <span class="text-sm text-gray-400 file-name">
     파일 없음
   </span>
+
+
 
           <!-- 문서 타입 -->
           <input type="hidden"
@@ -234,7 +242,8 @@
     <button class="px-5 py-2 bg-gray-200 rounded-full text-sm">
       취소
     </button>
-    <button type="submit"
+      <button type="button"
+              id="submitBtn"
             class="px-6 py-2 bg-[#5c6b2f] text-white rounded-full text-sm">
       신청서 제출
     </button>
@@ -262,6 +271,7 @@
     });
 
   });
+  //파일 업로드
   document.querySelectorAll(".file-input").forEach(input => {
 
     input.addEventListener("change", function () {
@@ -286,6 +296,27 @@
     });
 
   });
+    //신청서 제출
+  document.getElementById("submitBtn")
+      .addEventListener("click", function () {
+
+          Swal.fire({
+              icon: "success",
+              title: "제출 완료",
+              text: "신청서가 제출되었습니다.",
+              confirmButtonColor: "#5c6b2f",
+              confirmButtonText: "확인"
+          }).then((result) => {
+
+              if (result.isConfirmed) {
+
+                  document.getElementById("submitForm").submit();
+
+              }
+
+          });
+
+      });
 
 </script>
 
