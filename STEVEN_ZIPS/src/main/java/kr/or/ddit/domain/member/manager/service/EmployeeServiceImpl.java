@@ -1,73 +1,85 @@
 package kr.or.ddit.domain.member.manager.service;
 
-import java.util.List;
-
+import kr.or.ddit.common.enums.member.mngr.MngrRqstStatusCd;
 import kr.or.ddit.domain.member.manager.mapper.IEmployeeMapper;
+import kr.or.ddit.domain.member.manager.vo.ManagerVO;
+import kr.or.ddit.domain.member.manager.vo.MemberSearchDTO;
+import kr.or.ddit.domain.member.manager.vo.MngrRqstVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import kr.or.ddit.domain.member.manager.vo.ManagerVO;
-import kr.or.ddit.domain.member.manager.vo.MngrRqstVO;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Map;
 
-@Slf4j
 @Service
 public class EmployeeServiceImpl implements IEmployeeService {
 
     @Autowired
     private IEmployeeMapper employeeMapper;
 
-    // 재직 직원 목록
+    // 재직 직원 목록 조회
     @Override
-    public List<ManagerVO> getManagerList(String mgmtOfcNo) {
-        return employeeMapper.selectManagerList(mgmtOfcNo);
+    public List<ManagerVO> selectEmployeeList(Map<String, Object> paramMap) {
+        return employeeMapper.selectEmployeeList(paramMap);
+    }
+
+    // 재직 직원 상세 조회
+    @Override
+    public ManagerVO selectEmployeeDetail(String userNo, String mgmtOfcNo) {
+        return employeeMapper.selectEmployeeDetail(userNo, mgmtOfcNo);
     }
 
     // 재직 직원 직무 수정
     @Override
-    public boolean updateManagerDuty(ManagerVO vo) {
-        return employeeMapper.updateManagerDuty(vo) > 0;
+    public boolean updateEmployeeDuty(ManagerVO vo) {
+        int result = employeeMapper.updateEmployeeDuty(vo);
+        return result > 0;
     }
 
-    // 재직 직원 비활성화
+    // 직원 계정 요청 목록 조회
     @Override
-    public boolean deactivateMember(String userNo) {
-        return employeeMapper.deactivateMember(userNo) > 0;
+    public List<MngrRqstVO> selectRequestList(Map<String, Object> paramMap) {
+        return employeeMapper.selectRequestList(paramMap);
     }
 
-    // 요청 목록
+    // 직원 계정 요청 상세 조회
     @Override
-    public List<MngrRqstVO> getRequestList(String mgmtOfcNo) {
-        return employeeMapper.selectRequestList(mgmtOfcNo);
+    public MngrRqstVO selectRequestDetail(String rqstNo, String mgmtOfcNo) {
+        return employeeMapper.selectRequestDetail(rqstNo, mgmtOfcNo);
     }
 
-    // 요청 등록
+    // 직원 계정 요청 등록
     @Override
-    public boolean insertRequest(MngrRqstVO vo) {
-        return employeeMapper.insertRequest(vo) > 0;
+    public boolean insertRequest(MngrRqstVO vo, String mgmtOfcNo) {
+        vo.setMgmtOfcNo(mgmtOfcNo);
+        vo.setRqstSttsCd(MngrRqstStatusCd.WAIT.name());
+
+        int result = employeeMapper.insertRequest(vo);
+        return result > 0;
     }
 
-    // 요청 수정
+    // 직원 계정 요청 수정
     @Override
-    public boolean updateRequest(MngrRqstVO vo) {
-        return employeeMapper.updateRequest(vo) > 0;
+    public boolean updateRequest(MngrRqstVO vo, String mgmtOfcNo) {
+        vo.setMgmtOfcNo(mgmtOfcNo);
+
+        int result = employeeMapper.updateRequest(vo);
+        return result > 0;
     }
 
-    // 요청 취소
+    // 직원 계정 요청 취소
     @Override
-    public boolean cancelRequest(MngrRqstVO vo) {
-        return employeeMapper.cancelRequest(vo) > 0;
+    public boolean cancelRequest(MngrRqstVO vo, String mgmtOfcNo) {
+        vo.setMgmtOfcNo(mgmtOfcNo);
+        vo.setRqstSttsCd(MngrRqstStatusCd.CNL.name());
+
+        int result = employeeMapper.cancelRequest(vo);
+        return result > 0;
     }
 
-    /*// 회원 검색
+    // 직원 등록용 회원 검색
     @Override
-    public List<MemberSearchVO> searchMember(String keyword) {
-        return employeeMapper.searchMember(keyword);
-    }*/
-
-    // 로그인 소장 정보
-    @Override
-    public ManagerVO getLoginManagerInfo(String userNo) {
-        return employeeMapper.selectLoginManagerInfo(userNo);
+    public List<MemberSearchDTO> selectMemberSearchList(String keyword, String mgmtOfcNo) {
+        return employeeMapper.selectMemberSearchList(keyword, mgmtOfcNo);
     }
 }
