@@ -71,7 +71,8 @@
         width: 860px;
         max-width: 95vw;
 
-        height: 90vh;              /* 핵심: 화면 높이 기준 고정 */
+        height: auto;              /* 내용 높이만큼만 창 높이 사용 */
+        max-height: 90vh;          /* 화면보다 너무 커지면 최대 90%까지만 */
         display: flex;
         flex-direction: column;    /* header/body/footer 분리 */
 
@@ -86,7 +87,7 @@
 
       /* footer */
       .c-modal__footer--compact {
-        padding: 10px 20px 14px;
+        padding: 8px 20px 10px;
         flex-shrink: 0;
       }
 
@@ -94,7 +95,7 @@
       .c-modal__body--compact {
         padding: 10px 20px;
 
-        flex: 1;                   /* 남은 공간 전부 차지 */
+        flex: 0 0 auto;            /* 남은 공간을 억지로 채우지 않음 */
         overflow: hidden;          /* 스크롤 완전 제거 */
 
         display: flex;
@@ -128,11 +129,11 @@
         font-size: 13px;
       }
 
-      /* textarea 최소화 */
+      /* 공고 내용 textarea 높이 증가 */
       .c-modal--notice-form textarea.c-input {
-        min-height: 60px;
-        max-height: 80px;
-        resize: none; /* 드래그 금지 (높이 고정) */
+        min-height: 140px;   /* 최소 높이 증가 */
+        max-height: 220px;   /* 최대 높이 증가 */
+        resize: vertical;    /* 세로 드래그 가능 */
       }
 
       /* 날짜 */
@@ -327,6 +328,7 @@
 
                 <!-- 안내문 위치 이동 -->
                 <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 12px;">
+                  ※ 모든 서류는 공고일 이후 발급분만 인정됩니다. <br/>
                   ※ 제출 서류는 단지별 공고 조건에 따라 달라질 수 있습니다.
                 </div>
 
@@ -513,25 +515,6 @@
                 <textarea id="f-content" class="c-input" rows="3" placeholder="공고 주요 내용을 입력하세요."></textarea>
                 <div class="err-msg" id="e-content"></div>
               </div>
-
-              <div class="c-field">
-                <label class="c-label">제출 서류 목록</label>
-                <div class="cb-group cb-group--compact">
-                  <label><input type="checkbox" name="docs" value="신분증 사본" /> 신분증 사본</label>
-                  <label><input type="checkbox" name="docs" value="주민등록등본" /> 주민등록등본</label>
-                  <label><input type="checkbox" name="docs" value="가족관계증명서" /> 가족관계증명서</label>
-                  <label><input type="checkbox" name="docs" value="소득증명서" /> 소득증명서</label>
-                  <label><input type="checkbox" name="docs" value="계약서" /> 계약서</label>
-                  <label><input type="checkbox" name="docs" value="금융정보제공동의서" /> 금융정보제공동의서</label>
-                </div>
-              </div>
-
-              <div class="c-field">
-                <label class="c-label">제출 서류 상세 안내</label>
-                <textarea id="f-doc-guide" class="c-input" rows="2"
-                          placeholder="예: 모든 서류는 공고일 이후 발급분만 인정됩니다."></textarea>
-              </div>
-            </div>
 
             <div class="c-modal__footer c-modal__footer--compact">
               <button class="c-btn c-btn--ghost" onclick="closeFormModal()">취소</button>

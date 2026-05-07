@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
 import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
+import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -53,45 +53,30 @@ public class AnnouncementController {
 
     /**
      * 공고 등록 API
-     *
-     * 동작 순서
-     * 1. 브라우저에서 JSON으로 공고 정보를 보냄
-     * 2. Controller가 기본값을 세팅함
-     * 3. Service → Mapper → XML → DB INSERT 순서로 저장함
      */
     @ResponseBody
     @PostMapping
     public ResponseEntity<?> insert(@RequestBody AnnouncementDTO announcementDTO) {
 
-    /*
-      WRTR_ID란?
-      → 작성자 아이디.
-      왜 세팅?
-      → DB의 WRTR_ID가 NOT NULL이면 값이 없을 때 INSERT 오류가 나기 때문.
-      나중에는 "admin" 고정값 말고 로그인 사용자 ID로 바꾸는 게 실무 방식.
-    */
+        /*
+          임시 작성자 ID
+          → 나중에는 로그인한 중앙관리자 ID로 교체하는 것이 실무 방식.
+        */
         announcementDTO.setWrtrId("admin");
 
-    /*
-      TOP_FIX_YN이란?
-      → 상단 고정 여부.
-      N: 일반 공고
-      Y: 상단 고정 공고
-    */
+        /*
+          기본값 세팅
+          → DB NOT NULL 또는 기본 상태 처리를 위해 사용.
+        */
         announcementDTO.setTopFixYn("N");
-
-    /*
-      DEL_YN이란?
-      → 삭제 여부.
-      N: 정상 공고
-      Y: 삭제 처리된 공고
-    */
         announcementDTO.setDelYn("N");
+        announcementDTO.setOpnYn("Y");
 
         int result = announcementService.insertAnnouncement(announcementDTO);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", result > 0);
+        resultMap.put("annNo", announcementDTO.getAnnNo());
 
         return ResponseEntity.ok(resultMap);
     }
@@ -117,6 +102,8 @@ public class AnnouncementController {
 
     /**
      * 공고 삭제 API
+     *
+     * 실제 DELETE가 아니라 DEL_YN = 'Y'로 변경한다.
      */
     @ResponseBody
     @DeleteMapping("/{annNo}")
@@ -130,16 +117,12 @@ public class AnnouncementController {
         return ResponseEntity.ok(resultMap);
     }
 
-    /*
-      단지 목록 조회
-
-      사용 이유
-      → 공고 등록/검색 화면의 단지 select box 데이터 조회.
-    */
+    /**
+     * 단지 목록 조회 API
+     */
     @ResponseBody
     @GetMapping("/aptComplexList")
     public List<AnnouncementDTO> aptComplexList() {
-
         return announcementService.selectAptComplexList();
     }
 }

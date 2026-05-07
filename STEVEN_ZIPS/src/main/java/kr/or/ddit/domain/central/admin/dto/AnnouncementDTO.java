@@ -3,7 +3,7 @@ package kr.or.ddit.domain.central.admin.dto;
 import lombok.Data;
 
 /**
- * 중앙관리자 공고 관리 VO
+ * 중앙관리자 공고 관리 DTO
  *
  */
 @Data
@@ -26,6 +26,7 @@ public class AnnouncementDTO {
     private String mdfDttm;        // 수정일시
     private Integer inqCnt;        // 조회수
     private String delYn;          // 삭제여부
+    private String opnYn;          // 공개여부
     private String atchFileId;     // 첨부파일ID
 
     /* CENTER_BOARD_INSTANCE 조인 컬럼 */
@@ -36,28 +37,21 @@ public class AnnouncementDTO {
     private String aptCmplexNo;    // 아파트단지번호
     private String aptCmplexNm;    // 아파트단지명
 
-    /*
-      공급세대수
-
-      DB 저장 위치
-      → CENTER_ANN_BOARD_POST에 저장하지 않음.
-
-      조회 방식
-      → APT_UNIT.UNIT_CNT 합계 또는 APT_COMPLEX.UNIT_CNT 값으로 화면에 표시.
-    */
+    /* APT_UNIT / APT_COMPLEX 조회 컬럼 */
     private Integer unitCnt;       // 공급세대수
 
     /*
       제출서류명
 
-      현재 구조
-      → CENTER_ANN_BOARD_POST.ATCH_FILE_ID
-      → ATTACH_FILE.FILE_GROUP_ID 와 연결해서 첨부파일명을 표시.
+      중요
+      → 현재 CENTER_ANN_BOARD_POST 테이블에는 제출서류 목록 저장 컬럼이 없음.
+      → 그래서 목록 조회에서는 ATTACH_FILE 기준 파일명을 표시하고,
+        첨부파일이 없으면 화면에서 입력한 체크박스 값은 DB에 저장되지 않는다.
     */
-    private String sbmsnDocNm;     // 제출서류명
+    private String sbmsnDocNm;         // 제출서류명
 
     /* 화면 표시용 */
-    private String statusNm;       // 진행상태명: 예정, 진행중, 마감
+    private String statusNm;       // 진행상태명
 
     /* 검색 조건 */
     private String searchTtl;          // 검색 제목

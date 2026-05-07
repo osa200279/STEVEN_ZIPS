@@ -1,9 +1,5 @@
 /*
   중앙관리자 : 공고 관리 JS
-
-  1. 조회 결과가 0건이면 alert를 띄우지 않고 목록 영역에 "조회된 공고가 없습니다." 출력
-  2. alert는 서버 오류, URL 오류, XML 오류처럼 fetch 자체가 실패했을 때만 실행
-  3. 단지 목록은 APT_COMPLEX 테이블에서 조회해서 select box에 넣음
 */
 
 const TODAY = new Date();
@@ -15,12 +11,32 @@ let aptComplexList = [];
 let currentPage = 1;
 const PAGE_SIZE = 10;
 
-/*
-  공고 상태 계산 함수
+let currentAnnNo = null;
+let formMode = "insert";
 
-  상태란?
-  → 현재 날짜가 모집기간보다 전/중/후인지 계산한 화면 표시값.
+/*
+  CSRF 헤더 생성
+
+  CSRF란?
+  → 로그인한 사용자의 권한을 악용한 위조 요청을 막는 보안 토큰.
+  왜 사용?
+  → Spring Security 사용 시 POST/PUT/DELETE 요청에 필요할 수 있다.
 */
+function getCsrfHeaders() {
+    const tokenMeta = document.querySelector('meta[name="_csrf"]');
+    const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+
+    const headers = {
+        "Content-Type": "application/json"
+    };
+
+    if (tokenMeta && headerMeta) {
+        headers[headerMeta.getAttribute("content")] = tokenMeta.getAttribute("content");
+    }
+
+    return headers;
+}
+
 function calcStatus(start, end) {
     if (!start || !end) {
         return "-";
@@ -34,12 +50,6 @@ function calcStatus(start, end) {
     return "진행중";
 }
 
-/*
-  상태 배지 생성 함수
-
-  배지란?
-  → 진행중, 마감, 예정 같은 상태를 색상 라벨처럼 보여주는 UI.
-*/
 function badgeHtml(status) {
     const map = {
         "진행중": "c-badge--active",
@@ -50,13 +60,6 @@ function badgeHtml(status) {
     return '<span class="c-badge ' + (map[status] || "") + '">' + status + '</span>';
 }
 
-/*
-  단지 목록 조회
-
-  사용 이유
-  → JSP에 단지명을 직접 적어두면 DB와 화면 데이터가 달라질 수 있음.
-  → APT_COMPLEX 테이블 기준으로 select option을 자동 생성한다.
-*/
 function loadAptComplexList() {
     fetch("/centralAdmin/announcement/aptComplexList")
         .then(function (response) {
@@ -77,9 +80,6 @@ function loadAptComplexList() {
         });
 }
 
-/*
-  select box option 생성 함수
-*/
 function renderAptSelect(selectId, defaultText) {
     const select = document.getElementById(selectId);
 
@@ -98,13 +98,6 @@ function renderAptSelect(selectId, defaultText) {
     select.innerHTML = html;
 }
 
-/*
-  공고 목록 조회
-
-  중요
-  → 조회 결과가 0건인 것은 오류가 아님.
-  → 서버 응답이 정상 200이면 data가 빈 배열이어도 renderList()에서 처리한다.
-*/
 function loadAnnouncementList() {
     const params = new URLSearchParams();
 
@@ -122,22 +115,12 @@ function loadAnnouncementList() {
 
     fetch("/centralAdmin/announcement/list?" + params.toString())
         .then(function (response) {
-            /*
-              response.ok가 false인 경우
-              → Controller 오류, XML 오류, DB 오류, URL 오류 등 서버 통신 실패.
-              → 이때만 catch로 넘긴다.
-            */
             if (!response.ok) {
                 throw new Error("공고 목록 조회 실패");
             }
-
             return response.json();
         })
         .then(function (data) {
-            /*
-              data가 빈 배열 []이어도 정상 응답이다.
-              → alert를 띄우지 않고 renderList()에서 빈 목록 메시지를 보여준다.
-            */
             posts = data || [];
             filtered = posts.slice();
 
@@ -145,43 +128,18 @@ function loadAnnouncementList() {
             renderList();
         })
         .catch(function (error) {
-
-            /*
-              console.error란?
-              → 브라우저 개발자도구(F12 Console)에만 에러를 출력한다.
-
-              왜 사용?
-              → 사용자에게 alert 팝업은 안보이고,
-                 개발자는 콘솔에서 실제 오류 원인을 확인 가능.
-            */
             console.error(error);
 
-            /*
-              alert 제거
-              → 화면 팝업 안뜨게 처리
-            */
-
-            /*
-            alert("공고 목록 조회 중 서버 오류가 발생했습니다.");
-            */
-
-            /*
-              목록 영역에 에러 메시지 출력
-              → 실무에서는 alert보다 화면 메시지를 더 많이 사용.
-            */
             document.getElementById("list-body").innerHTML = `
-        <tr>
-            <td colspan="6" style="text-align:center; padding:24px; color:red;">
-                공고 목록 조회 중 오류가 발생했습니다.
-            </td>
-        </tr>
-    `;
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:24px; color:red;">
+                        공고 목록 조회 중 오류가 발생했습니다.
+                    </td>
+                </tr>
+            `;
         });
 }
 
-/*
-  목록 렌더링
-*/
 function renderList() {
     const tbody = document.getElementById("list-body");
 
@@ -206,7 +164,7 @@ function renderList() {
         const st = p.statusNm || calcStatus(p.rcrtBgngDt, p.rcrtEndDt);
 
         return `
-            <tr>
+            <tr onclick="openDetail('${p.annNo}')" style="cursor:pointer;">
                 <td>${p.ttl || "-"}</td>
                 <td>${p.aptCmplexNm || "-"}</td>
                 <td>${p.rcrtBgngDt || "-"} ~ ${p.rcrtEndDt || "-"}</td>
@@ -221,9 +179,6 @@ function renderList() {
     renderPagination();
 }
 
-/*
-  페이지 버튼 생성
-*/
 function renderPagination() {
     const pagination = document.getElementById("pagination");
 
@@ -271,6 +226,14 @@ function resetFilter() {
 }
 
 function openRegister() {
+    formMode = "insert";
+    currentAnnNo = null;
+
+    clearForm();
+
+    document.getElementById("form-title").textContent = "입주자 모집 공고 등록";
+    document.getElementById("form-submit-btn").innerHTML = '<span class="material-symbols-rounded">check</span>등록';
+
     document.getElementById("form-modal").classList.remove("is-hidden");
 }
 
@@ -284,13 +247,255 @@ function closeFormOutside(event) {
     }
 }
 
-/*
-  모달 단지 선택 시 공급 세대수 자동 표시
+function clearForm() {
+    document.getElementById("f-ftitle").value = "";
+    document.getElementById("f-fsite").value = "";
+    document.getElementById("f-pblanc-start").value = "";
+    document.getElementById("f-pblanc-end").value = "";
+    document.getElementById("f-fstart").value = "";
+    document.getElementById("f-fend").value = "";
+    document.getElementById("f-funit").value = "";
+    document.getElementById("f-content").value = "";
 
-  공급 세대수
-  → CENTER_ANN_BOARD_POST에 저장하지 않음.
-  → APT_COMPLEX.UNIT_CNT 또는 APT_UNIT 합계로 조회한 값을 화면에 표시한다.
-*/
+    clearErrors();
+}
+
+function clearErrors() {
+    document.querySelectorAll(".err-msg").forEach(function (el) {
+        el.textContent = "";
+    });
+}
+
+function validateForm() {
+    clearErrors();
+
+    let valid = true;
+
+    const ttl = document.getElementById("f-ftitle").value.trim();
+    const aptCmplexNo = document.getElementById("f-fsite").value;
+    const rcrtBgngDt = document.getElementById("f-fstart").value;
+    const rcrtEndDt = document.getElementById("f-fend").value;
+    const cn = document.getElementById("f-content").value.trim();
+
+    if (!ttl) {
+        document.getElementById("e-ftitle").textContent = "공고 제목을 입력해주세요.";
+        valid = false;
+    }
+
+    if (!aptCmplexNo) {
+        document.getElementById("e-fsite").textContent = "단지를 선택해주세요.";
+        valid = false;
+    }
+
+    if (!rcrtBgngDt || !rcrtEndDt) {
+        document.getElementById("e-fdate").textContent = "모집 기간을 입력해주세요.";
+        valid = false;
+    }
+
+    if (rcrtBgngDt && rcrtEndDt && rcrtBgngDt > rcrtEndDt) {
+        document.getElementById("e-fdate").textContent = "모집 시작일은 종료일보다 늦을 수 없습니다.";
+        valid = false;
+    }
+
+    if (!cn) {
+        document.getElementById("e-content").textContent = "공고 내용을 입력해주세요.";
+        valid = false;
+    }
+
+    return valid;
+}
+
+function submitForm() {
+    if (!validateForm()) {
+        return;
+    }
+
+    const payload = {
+        ttl: document.getElementById("f-ftitle").value.trim(),
+        aptCmplexNo: document.getElementById("f-fsite").value,
+        pblancBgngDt: document.getElementById("f-pblanc-start").value,
+        pblancEndDt: document.getElementById("f-pblanc-end").value,
+        rcrtBgngDt: document.getElementById("f-fstart").value,
+        rcrtEndDt: document.getElementById("f-fend").value,
+        cn: document.getElementById("f-content").value.trim()
+    };
+
+    const url = formMode === "update"
+        ? "/centralAdmin/announcement/" + currentAnnNo
+        : "/centralAdmin/announcement";
+
+    const method = formMode === "update" ? "PUT" : "POST";
+
+    fetch(url, {
+        method: method,
+        headers: getCsrfHeaders(),
+        body: JSON.stringify(payload)
+    })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("공고 저장 실패");
+            }
+            return response.json();
+        })
+        .then(function (data) {
+            if (!data.success) {
+                alert("공고 저장에 실패했습니다.");
+                return;
+            }
+
+            alert(formMode === "update" ? "공고가 수정되었습니다." : "공고가 등록되었습니다.");
+
+            closeFormModal();
+            loadAnnouncementList();
+        })
+        .catch(function (error) {
+            console.error(error);
+            alert("공고 저장 중 오류가 발생했습니다.");
+        });
+}
+
+function openDetail(annNo) {
+    currentAnnNo = annNo;
+
+    fetch("/centralAdmin/announcement/" + annNo)
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("공고 상세 조회 실패");
+            }
+            return response.json();
+        })
+        .then(function (data) {
+            renderDetail(data);
+            document.getElementById("detail-modal").classList.remove("is-hidden");
+        })
+        .catch(function (error) {
+            console.error(error);
+            alert("공고 상세 정보를 불러오지 못했습니다.");
+        });
+}
+
+function renderDetail(data) {
+    const st = data.statusNm || calcStatus(data.rcrtBgngDt, data.rcrtEndDt);
+
+    document.getElementById("modal-content").innerHTML = `
+        <div class="c-field">
+            <label class="c-label">공고 제목</label>
+            <div>${data.ttl || "-"}</div>
+        </div>
+
+        <div class="c-field">
+            <label class="c-label">단지</label>
+            <div>${data.aptCmplexNm || "-"}</div>
+        </div>
+
+        <div class="c-field">
+            <label class="c-label">모집 기간</label>
+            <div>${data.rcrtBgngDt || "-"} ~ ${data.rcrtEndDt || "-"}</div>
+        </div>
+
+        <div class="c-field">
+            <label class="c-label">공급 세대수</label>
+            <div>${data.unitCnt || 0}세대</div>
+        </div>
+
+        <div class="c-field">
+            <label class="c-label">제출 서류</label>
+            <div>${data.sbmsnDocNm || "-"}</div>
+        </div>
+
+        <div class="c-field">
+            <label class="c-label">상태</label>
+            <div>${badgeHtml(st)}</div>
+        </div>
+
+        <div class="c-field">
+            <label class="c-label">공고 내용</label>
+            <div style="white-space:pre-wrap;">${data.cn || "-"}</div>
+        </div>
+    `;
+}
+
+function closeModal() {
+    document.getElementById("detail-modal").classList.add("is-hidden");
+}
+
+function closeOutside(event) {
+    if (event.target.id === "detail-modal") {
+        closeModal();
+    }
+}
+
+function editFromModal() {
+    if (!currentAnnNo) {
+        return;
+    }
+
+    fetch("/centralAdmin/announcement/" + currentAnnNo)
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("공고 수정 조회 실패");
+            }
+            return response.json();
+        })
+        .then(function (data) {
+            formMode = "update";
+
+            document.getElementById("f-ftitle").value = data.ttl || "";
+            document.getElementById("f-fsite").value = data.aptCmplexNo || "";
+            document.getElementById("f-pblanc-start").value = data.pblancBgngDt || "";
+            document.getElementById("f-pblanc-end").value = data.pblancEndDt || "";
+            document.getElementById("f-fstart").value = data.rcrtBgngDt || "";
+            document.getElementById("f-fend").value = data.rcrtEndDt || "";
+            document.getElementById("f-funit").value = data.unitCnt || "";
+            document.getElementById("f-content").value = data.cn || "";
+
+            document.getElementById("form-title").textContent = "입주자 모집 공고 수정";
+            document.getElementById("form-submit-btn").innerHTML = '<span class="material-symbols-rounded">check</span>수정';
+
+            closeModal();
+            document.getElementById("form-modal").classList.remove("is-hidden");
+        })
+        .catch(function (error) {
+            console.error(error);
+            alert("공고 수정 정보를 불러오지 못했습니다.");
+        });
+}
+
+function deleteFromModal() {
+    if (!currentAnnNo) {
+        return;
+    }
+
+    if (!confirm("공고를 삭제하시겠습니까?")) {
+        return;
+    }
+
+    fetch("/centralAdmin/announcement/" + currentAnnNo, {
+        method: "DELETE",
+        headers: getCsrfHeaders()
+    })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("공고 삭제 실패");
+            }
+            return response.json();
+        })
+        .then(function (data) {
+            if (!data.success) {
+                alert("공고 삭제에 실패했습니다.");
+                return;
+            }
+
+            alert("공고가 삭제되었습니다.");
+            closeModal();
+            loadAnnouncementList();
+        })
+        .catch(function (error) {
+            console.error(error);
+            alert("공고 삭제 중 오류가 발생했습니다.");
+        });
+}
+
 document.addEventListener("change", function (event) {
     if (event.target.id === "f-fsite") {
         const selected = event.target.options[event.target.selectedIndex];

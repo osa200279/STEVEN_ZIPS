@@ -1,13 +1,13 @@
-package kr.or.ddit.domain.central.admin.serviceImpl;
+package kr.or.ddit.domain.central.admin.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper;
 import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
-import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -48,13 +48,8 @@ public class AnnouncementServiceImpl implements IAnnouncementService {
         return announcementMapper.deleteAnnouncement(annNo);
     }
 
-    /*
-      단지 목록 조회
-    */
     @Override
     public List<AnnouncementDTO> selectAptComplexList() {
-
         return announcementMapper.selectAptComplexList();
     }
-
 }

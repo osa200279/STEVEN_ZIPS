@@ -7,6 +7,8 @@ import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 /**
  * 공고 관리 Service 인터페이스
  *
+ * Interface란?
+ * → Service가 반드시 구현해야 할 메소드 목록을 정해두는 설계도.
  */
 public interface IAnnouncementService {
 
@@ -20,9 +22,5 @@ public interface IAnnouncementService {
 
     int deleteAnnouncement(String annNo);
 
-    /*
-      단지 목록 조회
-    */
     List<AnnouncementDTO> selectAptComplexList();
-
 }
