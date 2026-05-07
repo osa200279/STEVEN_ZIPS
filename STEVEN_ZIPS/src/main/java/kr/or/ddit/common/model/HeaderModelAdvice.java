@@ -1,9 +1,9 @@
 package kr.or.ddit.common.model;
 
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
-import kr.or.ddit.domain.apt.manager.service.IMgmtOfficeService;
-import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
+import kr.or.ddit.domain.apt.mgmtOffice.service.IMgmtOfficeService;
+import kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

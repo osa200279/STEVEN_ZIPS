@@ -1,7 +1,7 @@
 package kr.or.ddit.domain.member.manager.common.service;
 
-import kr.or.ddit.domain.apt.manager.mapper.IMgmtOfficeMapper;
-import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
+import kr.or.ddit.domain.apt.mgmtOffice.mapper.IMgmtOfficeMapper;
+import kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;

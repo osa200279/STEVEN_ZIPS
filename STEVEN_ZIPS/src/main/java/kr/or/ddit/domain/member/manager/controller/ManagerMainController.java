@@ -1,8 +1,8 @@
 package kr.or.ddit.domain.member.manager.controller;
 
+import kr.or.ddit.domain.apt.mgmtOffice.mapper.IMgmtOfficeMapper;
+import kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.member.manager.vo.ManagerPaginationVO;
-import kr.or.ddit.domain.apt.manager.mapper.IMgmtOfficeMapper;
-import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.member.manager.common.service.IManagerModelService;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
