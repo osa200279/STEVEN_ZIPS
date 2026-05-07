@@ -49,15 +49,7 @@ function openMyRoom(roomNo, roomNm, el) {
                     
                     <button
                         onclick="leaveRoom()"
-                        style="
-                            border:none;
-                            background:#ef4444;
-                            color:white;
-                            padding:6px 12px;
-                            border-radius:8px;
-                            cursor:pointer;
-                            font-size:12px;
-                        ">
+                        class="leave-btn">
                         방 나가기
                     </button>
                 </div>
@@ -70,12 +62,18 @@ function openMyRoom(roomNo, roomNm, el) {
 
             html += `</div>
                 <div class="search-row">
-                    <input id="msg" class="fake-input"/>
+                    <input id="msg" class="fake-input" onkeydown="handleEnter(event)"/>
                     <button onclick="sendMessage()">전송</button>
                 </div>
             `;
 
             document.getElementById("chat-content").innerHTML = html;
+
+            const area = document.getElementById("message-area");
+
+            area.scrollTop = area.scrollHeight;
+
+            loadMyRooms();
         });
 }
 
@@ -91,45 +89,104 @@ function openDiscover() {
                 <div class="section-hd">
                     <h3>오픈채팅방</h3>
                 </div>
+
                 <div class="search-row">
-                    <input class="fake-input" placeholder="채팅방 검색" />
+                    <input
+                        class="fake-input"
+                        placeholder="채팅방 검색"
+                        oninput="filterElements('#open-chat-list .chat-room-item', this.value)"
+                    />
                 </div>
-                <div class="room-grid">
             `;
 
-            list.forEach(room => {
+            if(list.length === 0){
+
                 html += `
-                    <div class="room-box available"
+                    <div style="
+                        flex:1;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        color:#999;
+                        font-size:13px;
+                        min-height:180px;
+                    ">
+                        참여 가능한 오픈채팅방이 없습니다.
+                    </div>
+                `;
+            }
+
+            list.forEach(room => {
+
+                html += `
+                    <div class="chat-room-item"
                          onclick="enterRoom('${room.chatRoomNo}')">
-                        ${room.chatRoomNm}
+
+                        <div class="room-top">
+
+                            <div class="room-title">
+                                ${room.chatRoomNm}
+                            </div>
+
+                            <div class="room-member">
+                                참여자 ${room.memberCnt}명
+                            </div>
+
+                        </div>
+
+                        <div class="room-meta">
+
+                            <div class="room-desc">
+                                ${room.chatRoomDesc ?? '채팅방 소개가 없습니다.'}
+                            </div>
+
+                            <div class="room-last-msg">
+                                참여하려면 클릭하세요
+                            </div>
+
+                        </div>
+
                     </div>
                 `;
             });
 
-            html += `</div>`;
-
-            document.getElementById("chat-content").innerHTML = html;
+            document.getElementById("open-chat-list").innerHTML = html;
         });
 }
 
 function enterRoom(roomNo) {
 
-    fetch(contextPath + '/residentChat/enter/' + aptCmplexNo + '?chatRoomNo=' + roomNo, {
-        method: 'POST'
-    })  .then(room => room.json())
+    const ok = confirm('채팅방에 입장하시겠습니까?');
+
+    if (!ok) {
+        return;
+    }
+
+    fetch(
+        contextPath +
+        '/residentChat/enter/' +
+        aptCmplexNo +
+        '?chatRoomNo=' +
+        roomNo,
+        {
+            method: 'POST',
+            headers: {
+                ...csrfHeaders()
+            }
+        }
+    )
+        .then(room => room.json())
         .then(room => {
 
             loadMyRooms();
+
+            openDiscover();
 
             openMyRoom(
                 room.chatRoomNo,
                 room.chatRoomNm
             );
         });
-}
-
-function closeChat() {
-    openDiscover();
 }
 
 function setActiveRoom(el) {
@@ -153,34 +210,53 @@ function loadMyRooms() {
                   </button>
                 </div>
                 <div class="search-row">
-                  <input class="fake-input" placeholder="검색"/>
-                </div>
+                <input class="fake-input" placeholder="검색" oninput="filterElements('.chat-room-item', this.value)"/>                </div>
             `;
 
             list.forEach(room => {
+
                 html += `
-          <div class="chat-room-item"
-               onclick="openMyRoom('${room.chatRoomNo}', '${room.chatRoomNm}', this)">
+                <div class="chat-room-item
+                     ${String(currentRoomNo) === String(room.chatRoomNo) ? 'active' : ''}
+                     "
+                     onclick="openMyRoom('${room.chatRoomNo}', '${room.chatRoomNm}', this)">
 
-            <div style="display:flex;justify-content:space-between;">
-              <strong>${room.chatRoomNm}</strong>
+            ${
+                    room.unreadCnt > 0
+                        ? `
+                    <div class="room-unread">
+                        ${room.unreadCnt}
+                    </div>
+                  `
+                        : ''
+                }
 
-              ${room.unreadCnt > 0
-                    ? `<span style="background:red;color:white;border-radius:50%;padding:4px 7px;font-size:11px;">
-                     ${room.unreadCnt}
-                   </span>`
-                    : ``}
+            <div class="room-top">
+
+                <div class="room-title">
+                    ${room.chatRoomNm}
+                </div>
+
+                <div class="room-member">
+                    참여자 ${room.memberCnt}명
+                </div>
+
             </div>
 
-            <div style="font-size:12px;color:#888;">
-              참여자 ${room.memberCnt}명
+            <div class="room-meta">
+
+                <div class="room-desc">
+                    ${room.chatRoomDesc ?? '채팅방 소개가 없습니다.'}
+                </div>
+
+                <div class="room-last-msg">
+                    ${room.lastMsg ?? '대화 내역이 없습니다.'}
+                </div>
+
             </div>
 
-            <div style="font-size:12px;color:#aaa;">
-              ${room.lastMsg ?? ''}
-            </div>
-          </div>
-        `;
+        </div>
+    `;
             });
 
             document.querySelector('.chat-list').innerHTML = html;
@@ -189,7 +265,13 @@ function loadMyRooms() {
 
 function sendMessage() {
 
-    const content = document.getElementById("msg").value;
+    const input = document.getElementById("msg");
+
+    const content = input.value;
+
+    if (content === "") {
+        return;
+    }
 
     stomp.send("/pub/chat/send", {}, JSON.stringify({
         chatRoomNo: currentRoomNo,
@@ -197,7 +279,7 @@ function sendMessage() {
         msgTyCd: "TEXT"
     }));
 
-    document.getElementById("msg").value = "";
+    input.value = "";
 }
 
 function openCreateRoom() {
@@ -210,6 +292,9 @@ function submitCreateRoom() {
     const roomName =
         document.getElementById('create-room-name').value.trim();
 
+    const roomDesc =
+        document.getElementById('create-room-desc').value;
+
     const roomType =
         document.querySelector(
             'input[name="room-type"]:checked'
@@ -220,18 +305,21 @@ function submitCreateRoom() {
         return;
     }
 
-    createRoom(roomName, roomType);
+    createRoom(roomName, roomType, roomDesc);
 }
 
-function createRoom(roomName, roomType) {
+function createRoom(roomName, roomType, roomDesc) {
 
     fetch(contextPath + '/residentChat/createRoom/' + aptCmplexNo, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+            ...csrfHeaders()
+        },
 
         body: JSON.stringify({
             chatRoomNm: roomName,
-            chatRoomTyCd: roomType
+            chatRoomTyCd: roomType,
+            chatRoomDesc: roomDesc
         })
     })
         .then(res => res.json())
@@ -246,26 +334,125 @@ function createRoom(roomName, roomType) {
 
 function appendMessage(msg) {
 
-    const isMe = String(msg.senderUserNo) === String(userNo);
+    const area = document.getElementById("message-area");
+
+    // 시스템 메시지
+    if (msg.senderTy === 'SYSTEM') {
+
+        area.insertAdjacentHTML(
+            'beforeend',
+            `
+                <div class="system-message">
+                    ${msg.msgCn}
+                </div>
+            `
+        );
+
+        area.scrollTop = area.scrollHeight;
+        loadMyRooms();
+
+        return;
+    }
+
+    const isMe =
+        String(msg.senderUserNo) === String(userNo);
 
     const html = `
-        <div class="message ${isMe ? 'me' : 'other'}">
-            ${msg.msgCn}
+        <div class="message-wrap ${isMe ? 'me' : 'other'}">
+
+            ${!isMe
+        ? `
+                    <div class="sender-name">
+                        ${msg.senderUserNm}
+                    </div>
+                  `
+        : ''
+    }
+
+            <div class="message-row ${isMe ? 'me' : 'other'}">
+            
+                ${isMe
+                    ? `
+                        <div class="message-time">
+                            ${formatMessageTime(msg.regDttm)}
+                        </div>
+            
+                        <div class="message me">
+                            ${msg.msgCn}
+                        </div>
+                      `
+                    : `
+                        <div class="message other">
+                            ${msg.msgCn}
+                        </div>
+            
+                        <div class="message-time">
+                            ${formatMessageTime(msg.regDttm)}
+                        </div>
+                      `
+                }
+            
+            </div>
         </div>
     `;
 
-    const area = document.getElementById("message-area");
     area.insertAdjacentHTML('beforeend', html);
 
-    area.scrollTop = area.scrollHeight; // 자동 스크롤
+    area.scrollTop = area.scrollHeight;
+    loadMyRooms();
 }
 
 function renderMessage(msg) {
-    const isMe = String(msg.senderUserNo) === String(userNo);
+
+    // 시스템 메시지
+    if (msg.senderTy === 'SYSTEM') {
+
+        return `
+            <div class="system-message">
+                ${msg.msgCn}
+            </div>
+        `;
+    }
+
+    const isMe =
+        String(msg.senderUserNo) === String(userNo);
 
     return `
-        <div class="message ${isMe ? 'me' : 'other'}">
-            ${msg.msgCn}
+        <div class="message-wrap ${isMe ? 'me' : 'other'}">
+
+            ${!isMe
+        ? `
+                    <div class="sender-name">
+                        ${msg.senderUserNm}
+                    </div>
+                  `
+        : ''
+    }
+
+            <div class="message-row ${isMe ? 'me' : 'other'}">
+            
+                ${isMe
+                    ? `
+                        <div class="message-time">
+                            ${formatMessageTime(msg.regDttm)}
+                        </div>
+            
+                        <div class="message me">
+                            ${msg.msgCn}
+                        </div>
+                      `
+                    : `
+                        <div class="message other">
+                            ${msg.msgCn}
+                        </div>
+            
+                        <div class="message-time">
+                            ${formatMessageTime(msg.regDttm)}
+                        </div>
+                      `
+                }
+            
+            </div>
         </div>
     `;
 }
@@ -305,7 +492,10 @@ function leaveRoom() {
         '?chatRoomNo=' +
         currentRoomNo,
         {
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                ...csrfHeaders()
+            }
         }
     )
         .then(res => res.text())
@@ -323,7 +513,94 @@ function leaveRoom() {
             // 기본 화면 복귀
             openDiscover();
 
+            document.getElementById("chat-content").innerHTML = `
+                <div style="
+                    height:100%;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    color:#999;
+                    font-size:14px;
+                ">
+                    채팅방을 선택해주세요.
+                </div>
+            `;
             // 목록 새로고침
             loadMyRooms();
         });
+}
+function csrfHeaders() {
+
+    return {
+        [document.querySelector('meta[name="_csrf_header"]').content]:
+        document.querySelector('meta[name="_csrf"]').content
+    };
+}
+
+function filterElements(selector, keyword) {
+
+    keyword = keyword.toLowerCase().trim();
+
+    document.querySelectorAll(selector)
+        .forEach(el => {
+
+            const title =
+                el.querySelector('.room-title')?.innerText.toLowerCase() ?? '';
+
+            const desc =
+                el.querySelector('.room-desc')?.innerText.toLowerCase() ?? '';
+
+            const targetText = `${title} ${desc}`;
+
+            el.style.display =
+                targetText.includes(keyword)
+                    ? ""
+                    : "none";
+        });
+}
+
+function handleEnter(e) {
+
+    if (e.key === 'Enter') {
+
+        e.preventDefault();
+
+        sendMessage();
+    }
+}
+
+function formatMessageTime(regDttm) {
+
+    if (!regDttm) {
+        return '';
+    }
+
+    // "2026-05-07 14:21:33" -> "2026-05-07T14:21:33"
+    const normalized =
+        String(regDttm).replace(' ', 'T');
+
+    const date = new Date(normalized);
+
+    // 파싱 실패 방지
+    if (isNaN(date.getTime())) {
+        return '';
+    }
+
+    const now = new Date();
+
+    const isToday =
+        date.getFullYear() === now.getFullYear()
+        && date.getMonth() === now.getMonth()
+        && date.getDate() === now.getDate();
+
+    if (isToday) {
+
+        return date.toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+    }
+
+    return `${date.getMonth() + 1}월 ${date.getDate()}일`;
 }

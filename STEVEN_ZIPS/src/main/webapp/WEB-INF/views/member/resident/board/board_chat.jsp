@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>그룹채팅방 – 대덕아파트</title>
@@ -9,41 +11,356 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/apt/apt.css">
+
     <style>
-        .fake-input, .fake-select, .fake-textarea {
-            width: 100%;
-            border: 1px solid #d8ddd4;
-            background: #fff;
-            border-radius: 10px;
-            padding: 11px 13px;
-            font-size: 13px;
-            color: var(--text-dark);
-            box-sizing: border-box;
+
+        .page-desc-wrap{
+            margin-bottom:18px;
         }
 
-        .message-stream {
-            max-height: 400px;
-            overflow-y: auto;
+        .page-desc{
+            margin:0;
         }
 
-        .page-desc-wrap {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
+        .chat-layout{
+            display:grid;
+            grid-template-columns:320px minmax(780px, 1fr) 320px;
+            gap:20px;
+            align-items:stretch;
         }
 
-        .page-desc {
-            margin: 0;
+        .chat-list,
+        .chat-box,
+        .open-chat-list{
+            height:600px;
+            min-height:600px;
+            background:#fff;
+            border:1px solid #e5e7eb;
+            border-radius:14px;
         }
-        .modal-btn {
-            min-width: 78px !important;
-            padding: 8px 14px !important;
-            font-size: 12px !important;
-            border-radius: 8px !important;
+
+        .chat-list,
+        .open-chat-list{
+            overflow-y:auto;
+            padding:14px;
+
+            display:flex;
+            flex-direction:column;
+        }
+
+        .chat-box{
+            padding:14px;
+
+            display:flex;
+            flex-direction:column;
+        }
+
+        .chat-room-item{
+            position:relative;
+
+            flex-shrink:0;
+
+            height:102px;
+            min-height:102px;
+            max-height:102px;
+
+            padding:13px 15px;
+
+            margin-bottom:12px;
+
+            border:1px solid #e4e9e4;
+            border-radius:18px;
+
+            background:
+                    linear-gradient(
+                            180deg,
+                            #ffffff 0%,
+                            #fbfcfb 100%
+                    );
+
+            box-shadow:
+                    0 2px 10px rgba(0,0,0,0.03);
+
+            cursor:pointer;
+
+            overflow:hidden;
+
+            transition:
+                    transform 0.18s ease,
+                    box-shadow 0.18s ease,
+                    border-color 0.18s ease,
+                    background 0.18s ease;
+        }
+
+        .chat-room-item:hover{
+            transform:translateY(-2px);
+
+            border-color:#bfd8c7;
+
+            background:
+                    linear-gradient(
+                            180deg,
+                            #ffffff 0%,
+                            #f6fbf7 100%
+                    );
+
+            box-shadow:
+                    0 8px 22px rgba(43,103,78,0.10);
+        }
+
+        .chat-room-item.active{
+            border-color:#2b674e;
+
+            background:
+                    linear-gradient(
+                            180deg,
+                            #f7fcf8 0%,
+                            #eef7f1 100%
+                    );
+
+            box-shadow:
+                    0 10px 24px rgba(43,103,78,0.14);
+        }
+
+        .room-top{
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:12px;
+
+            margin-bottom:8px;
+        }
+
+        .room-title{
+            flex:1;
+
+            font-size:18px;
+            font-weight:700;
+            color:#111827;
+
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+        }
+
+        .room-member{
+            flex-shrink:0;
+
+            padding:5px 10px;
+
+            border:1px solid #d7e3db;
+            border-radius:999px;
+
+            background:#f7faf8;
+
+            font-size:12px;
+            font-weight:600;
+            color:#2b674e;
+        }
+
+        .room-meta{
+            display:flex;
+            flex-direction:column;
+            gap:4px;
+        }
+
+        .room-desc,
+        .room-last-msg{
+            font-size:13px;
+            line-height:1.45;
+
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+        }
+
+        .room-desc{
+            color:#6b7280;
+        }
+
+        .room-last-msg{
+            color:#374151;
+            font-weight:500;
+        }
+
+        .room-unread{
+            position:absolute;
+            top:12px;
+            right:12px;
+
+            min-width:22px;
+            height:22px;
+
+            padding:0 6px;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            border-radius:999px;
+
+            background:#ef4444;
+            color:#fff;
+
+            font-size:11px;
+            font-weight:700;
+
+            box-shadow:0 4px 10px rgba(239,68,68,0.25);
+        }
+
+        .room-box{
+            padding:12px;
+            border:1px solid #ececec;
+            border-radius:10px;
+            margin-bottom:10px;
+            cursor:pointer;
+            transition:0.2s;
+        }
+
+        .room-box:hover{
+            background:#f8faf8;
+        }
+
+        .message-stream{
+            flex:1;
+            min-height:0;
+            overflow-y:auto;
+
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+
+            padding:12px;
+            box-sizing:border-box;
+        }
+
+        .message-wrap{
+            margin-bottom:12px;
+        }
+
+        .message-wrap.me{
+            display:flex;
+            flex-direction:column;
+            align-items:flex-end;
+        }
+
+        .message-wrap.other{
+            display:flex;
+            flex-direction:column;
+            align-items:flex-start;
+        }
+
+        .message-row{
+            display:flex;
+            align-items:flex-end;
+            gap:6px;
+        }
+
+        .message-time{
+            font-size:11px;
+            color:#999;
+            white-space:nowrap;
+            margin-bottom:2px;
+        }
+
+        .sender-name{
+            font-size:11px;
+            color:#888;
+            margin-bottom:4px;
+            padding-left:4px;
+        }
+
+        .system-message{
+            text-align:center;
+            color:#888;
+            font-size:12px;
+            margin:12px 0;
+        }
+
+        .modal-btn{
+            min-width:78px !important;
+            padding:8px 14px !important;
+            font-size:12px !important;
+            border-radius:8px !important;
+        }
+
+        .search-row button{
+            flex-shrink:0;
+            height:44px;
+            padding:0 18px;
+            border:none;
+            border-radius:10px;
+            background:#2b674e;
+            color:white;
+            cursor:pointer;
+            font-weight:600;
+        }
+
+        .search-row{
+            display:flex;
+            align-items:center;
+            width:100%;
+        }
+
+
+        .search-row .fake-input{
+            display:block !important;
+
+            flex:1 1 auto;
+
+            width:auto !important;
+            max-width:none !important;
+            min-width:0;
+
+            box-sizing:border-box;
+        }
+
+        .leave-btn{
+            height:38px;
+
+            padding:0 16px;
+
+            border:none;
+            border-radius:12px;
+
+            background:linear-gradient(
+                    180deg,
+                    #ff6b6b 0%,
+                    #ef4444 100%
+            );
+
+            color:#fff !important;
+
+            font-size:13px;
+            font-weight:600;
+
+            cursor:pointer;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            transition:
+                    transform 0.15s ease,
+                    box-shadow 0.15s ease,
+                    opacity 0.15s ease;
+
+            box-shadow:
+                    0 6px 16px rgba(239,68,68,0.22);
+        }
+
+        .leave-btn:hover{
+            transform:translateY(-1px);
+
+            box-shadow:
+                    0 10px 22px rgba(239,68,68,0.28);
+        }
+
+        .leave-btn:active{
+            transform:scale(0.97);
         }
     </style>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/apt/apt.css">
 
 </head>
 <body>
@@ -70,19 +387,33 @@
                     채팅방 목록 검색, 실시간 채팅을 지원합니다.
                 </p>
 
-                <button class="btn-sub" onclick="openDiscover()" style="margin-bottom: 5px">
-                    오픈채팅 찾기
-                </button>
             </div>
 
             <section class="chat-layout">
+
                 <div class="chat-list">
-                    <%--js로 myChatRoom List 붙는 영역--%>
+                    <%-- 내 채팅방 --%>
                 </div>
 
                 <div class="chat-box" id="chat-content">
-                    <%--js로 오픈채팅방 들어오는 영역--%>
+
+                    <div style="
+                        height:100%;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        color:#999;
+                        font-size:14px;
+                    ">
+                        채팅방을 선택해주세요.
+                    </div>
+
                 </div>
+
+                <div class="open-chat-list" id="open-chat-list">
+                    <%-- 오픈채팅 목록 --%>
+                </div>
+
             </section>
 
         </div>
@@ -90,7 +421,7 @@
 </div>
 
 <div id="create-room-modal"
-     onclick="outsideClose(e)"
+     onclick="outsideClose(event)"
      style="display:none;
             position:fixed;
             inset:0;
@@ -123,6 +454,19 @@
                    id="create-room-name"
                    class="fake-input"
                    placeholder="채팅방 이름 입력">
+        </div>
+        <div style="margin-bottom:14px;">
+
+            <label style="display:block;margin-bottom:8px;font-size:13px;">
+                채팅방 소개
+            </label>
+
+            <textarea
+                    id="create-room-desc"
+                    class="fake-textarea"
+                    rows="4"
+                    placeholder="채팅방 소개 입력"></textarea>
+
         </div>
 
         <div style="margin-bottom:18px;">

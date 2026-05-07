@@ -25,8 +25,12 @@ public class ChatServiceImpl implements IChatService {
     }
 
     @Override
-    public List<ChatMessageVO> getMessages(String chatRoomNo) {
-        return mapper.selectMessages(chatRoomNo);
+    public List<ChatMessageVO> getMessages(String chatRoomNo,String userNo) {
+        return mapper.selectMessages(chatRoomNo, userNo);
+    }
+
+    public String selectMemberId(String chatRoomNo, String userNo){
+        return mapper.selectMemberId(chatRoomNo,userNo);
     }
 
     @Override
@@ -34,7 +38,7 @@ public class ChatServiceImpl implements IChatService {
     public void sendMessage(ChatMessageVO vo, String userNo) {
 
         // memberId 찾기
-        String memberId = mapper.selectMemberId(vo.getChatRoomNo(), userNo);
+        String memberId = selectMemberId(vo.getChatRoomNo(), userNo);
 
         vo.setChatMemberId(memberId);
 
@@ -125,5 +129,28 @@ public class ChatServiceImpl implements IChatService {
     @Transactional
     public int leaveRoom(String chatRoomNo, String userNo) {
         return mapper.leaveRoom(chatRoomNo, userNo);
+    }
+
+    @Override
+    public void sendSystemMessage(ChatMessageVO message) {
+        mapper.insertSystemMessage(message);
+    }
+
+    @Override
+    @Transactional
+    public void readRoom(String chatRoomNo, String userNo) {
+
+        String memberId =
+                mapper.selectMemberId(chatRoomNo, userNo);
+
+        mapper.readAllMessages(chatRoomNo, memberId);
+    }
+
+    @Override
+    public boolean isRoomMember(
+            String chatRoomNo,
+            String userNo
+    ) {
+    return mapper.isRoomMember(chatRoomNo,userNo) > 0;
     }
 }

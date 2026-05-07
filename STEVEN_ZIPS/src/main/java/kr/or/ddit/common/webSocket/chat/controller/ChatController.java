@@ -5,10 +5,13 @@ import kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO;
 import kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,6 +21,9 @@ public class ChatController {
 
     @Autowired
     private IChatService service;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     // 내 채팅방 목록 가져오기
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
@@ -42,11 +48,19 @@ public class ChatController {
             ,@AuthenticationPrincipal CustomUser user
     ) {
 
-/*        String userNo = user.getMember().getUserNo();
-        if(!service.isRoomMember(chatRoomNo, userNo)){
-            return null;
-        }*/
-        return service.getMessages(chatRoomNo);
+        String userNo = user.getMember().getUserNo();
+
+        if (!service.isRoomMember(chatRoomNo, userNo)) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "채팅방 접근 권한 없음"
+            );
+        }
+
+        service.readRoom(chatRoomNo, userNo);
+
+        return service.getMessages(chatRoomNo, userNo);
     }
 
     // 입장
@@ -61,6 +75,23 @@ public class ChatController {
         String userNo = user.getMember().getUserNo();
 
         service.enterRoom(chatRoomNo, userNo);
+
+        ChatMessageVO message = new ChatMessageVO();
+
+        message.setChatRoomNo(chatRoomNo);
+        message.setMsgCn(
+                user.getMember().getUserNm() + "님이 입장했습니다."
+        );
+
+        message.setMsgTyCd("ENTER");
+        message.setSenderTy("SYSTEM");
+
+        service.sendSystemMessage(message);
+
+        messagingTemplate.convertAndSend(
+                "/sub/chat/room/" + chatRoomNo,
+                message
+        );
 
         return service.selectRoom(chatRoomNo);
     }
@@ -101,6 +132,15 @@ public class ChatController {
     ) {
 
         String userNo = user.getMember().getUserNo();
+
+        ChatMessageVO message = new ChatMessageVO();
+
+        message.setChatRoomNo(chatRoomNo);
+        message.setSenderTy("SYSTEM");
+        message.setMsgTyCd("LEAVE");
+        message.setMsgCn(user.getMember().getUserNm() + "님이 퇴장했습니다.");
+
+        service.sendSystemMessage(message);
 
         service.leaveRoom(chatRoomNo, userNo);
 

@@ -28,7 +28,18 @@ public class ChatWsController {
 
         String userNo = user.getMember().getUserNo();
 
+        if(!chatService.isRoomMember(
+                message.getChatRoomNo(),
+                userNo
+        )){
+            return;
+        }
+
+
         message.setSenderUserNo(userNo);
+        message.setSenderUserNm(
+                user.getMember().getUserNm()
+        );
         message.setSenderTy("USER");
         message.setMsgTyCd("TEXT");
 

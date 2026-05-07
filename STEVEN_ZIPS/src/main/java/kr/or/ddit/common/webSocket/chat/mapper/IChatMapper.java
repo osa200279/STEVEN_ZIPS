@@ -11,7 +11,7 @@ import java.util.List;
 public interface IChatMapper {
     List<ChatRoomVO> selectMyRoomList(String userNo, String aptCmplexNo);
 
-    List<ChatMessageVO> selectMessages(String chatRoomNo);
+    List<ChatMessageVO> selectMessages(String chatRoomNo, String userNo);
 
     String selectMemberId(String chatRoomNo, String userNo);
 
@@ -34,4 +34,10 @@ public interface IChatMapper {
     List<ChatRoomVO> selectOpenRooms(String aptCmplexNo, String userNo);
 
     int leaveRoom(String chatRoomNo, String userNo);
+
+    void insertSystemMessage(ChatMessageVO message);
+
+    void readAllMessages(String chatRoomNo, String chatMemberId);
+
+    int isRoomMember(String chatRoomNo, String userNo);
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public interface IChatService {
     List<ChatRoomVO> selectMyRoomList(String userNo, String aptCmplexNo);
 
-    List<ChatMessageVO> getMessages(String roomId);
+    List<ChatMessageVO> getMessages(String roomId,String userNo);
 
     void sendMessage(ChatMessageVO vo, String userNo);
 
@@ -24,4 +24,12 @@ public interface IChatService {
     List<ChatRoomVO> selectOpenRooms(String aptCmplexNo, String userNo);
 
     int leaveRoom(String chatRoomNo, String userNo);
+
+    void sendSystemMessage(ChatMessageVO message);
+
+    void readRoom(String chatRoomNo, String userNo);
+
+    boolean isRoomMember(String chatRoomNo, String userNo);
+
+    String selectMemberId(String chatRoomNo, String userNo);
 }

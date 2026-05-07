@@ -18,9 +18,23 @@
 
     </update>
 
+    <update id="readAllMessages">
+
+        UPDATE CHAT_ROOM_READ   /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.readAllMessages*/
+        SET LAST_READ_MSG_NO = (
+            SELECT MAX(CHAT_MSG_NO)
+            FROM CHAT_MESSAGE
+            WHERE CHAT_ROOM_NO = #{chatRoomNo}
+        )
+        WHERE CHAT_ROOM_NO = #{chatRoomNo}
+          AND CHAT_MEMBER_ID = #{chatMemberId}
+
+    </update>
+
     <select id="selectMyRoomList" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
         SELECT CR.CHAT_ROOM_NO  /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.selectMyRoomList*/
              ,CR.CHAT_ROOM_NM
+             ,CR.CHAT_ROOM_DESC
              ,CM.MSG_CN   AS LAST_MSG
              ,CM.REG_DTTM AS LAST_TIME
              ,NVL(MC.MEMBER_CNT, 0) AS MEMBER_CNT
@@ -29,6 +43,7 @@
                       SELECT COUNT(*)
                       FROM CHAT_MESSAGE M
                       WHERE M.CHAT_ROOM_NO = CR.CHAT_ROOM_NO
+                        AND NVL(M.SENDER_TY, 'USER') != 'SYSTEM'
                         AND M.CHAT_MSG_NO > NVL((
                                                     SELECT MR.LAST_READ_MSG_NO
                                                     FROM CHAT_ROOM_READ MR
@@ -70,21 +85,38 @@
         ORDER BY CM.REG_DTTM DESC
     </select>
 
-    <select id="selectMessages" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO">
-        SELECT  /*kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO.selectMessages*/
+    <select id="selectMessages"
+            resultType="kr.or.ddit.common.webSocket.chat.vo.ChatMessageVO">
+
+        SELECT
             m.CHAT_MSG_NO
-            ,m.CHAT_ROOM_NO
-            ,m.MSG_TY_CD
-            ,m.MSG_CN
-            ,m.ATCH_FILE_ID
-            ,m.REG_DTTM
-            ,m.SENDER_TY
-            ,m.CHAT_MEMBER_ID
-            ,rm.USER_NO AS SENDER_USER_NO
+             , m.CHAT_ROOM_NO
+             , m.MSG_TY_CD
+             , m.MSG_CN
+             , m.ATCH_FILE_ID
+             , m.REG_DTTM
+             , m.SENDER_TY
+             , m.CHAT_MEMBER_ID
+
+             , rm.USER_NO AS SENDER_USER_NO
+             , mem.USER_NM AS SENDER_USER_NM
+
         FROM CHAT_MESSAGE m
-                 JOIN CHAT_ROOM_MEMBER rm
-                      ON m.CHAT_MEMBER_ID = rm.CHAT_MEMBER_ID
+
+                 LEFT JOIN CHAT_ROOM_MEMBER rm
+                           ON m.CHAT_MEMBER_ID = rm.CHAT_MEMBER_ID
+
+                 LEFT JOIN MEMBER mem
+                           ON rm.USER_NO = mem.USER_NO
+
+                 JOIN CHAT_ROOM_MEMBER rm2
+                      ON rm2.CHAT_ROOM_NO = m.CHAT_ROOM_NO
+                          AND rm2.USER_NO = #{userNo}
+                          AND rm2.LEFT_DTTM IS NULL
+
         WHERE m.CHAT_ROOM_NO = #{chatRoomNo}
+          AND m.REG_DTTM >= rm2.JOIN_DTTM
+
         ORDER BY m.REG_DTTM ASC
 
     </select>
@@ -137,6 +169,7 @@
         SELECT  /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.selectMyRoom*/
             cr.chat_room_no
              , cr.chat_room_nm
+             , cr.chat_room_desc
              , cr.chat_room_ty_cd
              , cr.reg_dt
              , cr.use_yn
@@ -167,6 +200,7 @@
         SELECT  /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.selectOpenRooms*/
             CR.CHAT_ROOM_NO
              , CR.CHAT_ROOM_NM
+             , cr.chat_room_desc
              , CR.CHAT_ROOM_TY_CD
              , CR.REG_DT
              , CR.RGTR_ID
@@ -201,6 +235,16 @@
         ORDER BY CR.REG_DT DESC
     </select>
 
+    <select id="isRoomMember" resultType="int">
+
+        SELECT COUNT(*) /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.isRoomMember*/
+        FROM CHAT_ROOM_MEMBER
+        WHERE CHAT_ROOM_NO = #{chatRoomNo}
+          AND USER_NO = #{userNo}
+          AND LEFT_DTTM IS NULL
+
+    </select>
+
     <insert id="insertRoomMember">
 
         INSERT INTO CHAT_ROOM_MEMBER ( /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.insertRoomMember*/
@@ -230,6 +274,7 @@
           , rgtr_id
           , chat_joinkey
           , apt_cmplex_no
+          , chat_room_desc
         )VALUES (
             #{chatRoomNo}
             , #{chatRoomNm}
@@ -239,6 +284,7 @@
             , #{rgtrId}
             , #{chatJoinKey}
             , #{aptCmplexNo}
+            , #{chatRoomDesc}
         )
     </insert>
 
@@ -250,6 +296,25 @@
            #{chatRoomNo}
            , #{chatMemberId}
          )
+    </insert>
+    <insert id="insertSystemMessage">
+
+        INSERT INTO CHAT_MESSAGE (
+           chat_msg_no
+         , chat_room_no
+         , msg_ty_cd
+         , msg_cn
+         , reg_dttm
+         , sender_ty
+        ) VALUES (
+         SEQ_CHAT_MESSAGE.NEXTVAL
+         , #{chatRoomNo}
+         , #{msgTyCd}
+         , #{msgCn}
+         , SYSDATE
+         , 'SYSTEM'
+         )
+
     </insert>
 
 </mapper>

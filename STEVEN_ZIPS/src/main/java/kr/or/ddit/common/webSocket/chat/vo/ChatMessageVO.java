@@ -14,6 +14,7 @@ public class ChatMessageVO {
     private Date regDttm;
 
     private String senderUserNo;
+    private String senderUserNm;
 
     private String senderTy;
     private String atchFileId;
