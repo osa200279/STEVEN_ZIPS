@@ -4,21 +4,22 @@ import lombok.Data;
 
 @Data
 public class ManagerVO {
-    private String userNo;
-    private String mgmtOfcNo;
-    private String mngrDutyCd;
+    // MANAGER
+    private String userNo;       // 직원 사용자 번호
+    private String mgmtOfcNo;    // 소속 관리사무소 번호
+    private String mngrDutyCd;   // 직무 코드
 
     // MEMBER
-    private String userId;
-    private String userNm;
-    private String telno;
-    private String userEml;
-    private String userYn;
-    private String birthDate;   // USER_RRNO 앞 6자리
+    private String userId;       // 로그인 아이디
+    private String userNm;       // 이름
+    private String telno;        // 연락처
+    private String userEml;      // 이메일
+    private String userYn;       // 사용 여부
+    private String birthDate;    // 주민번호 앞 6자리 또는 생년월일 표시용
 
     // MGMT_OFFICE / APT_COMPLEX
-    private String mgmtOfcNm;
-    private String aptCmplexNm;
+    private String mgmtOfcNm;    // 관리사무소명
+    private String aptCmplexNm;  // 아파트 단지명
 }
 
 /*
