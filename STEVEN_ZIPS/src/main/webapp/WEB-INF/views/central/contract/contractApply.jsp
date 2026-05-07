@@ -96,6 +96,11 @@
 
 <main class="ml-64 p-10 pt-28 bg-[#f8f7f4]">
 
+  <form id="submitForm"
+        action="${pageContext.request.contextPath}/contract/apply.do"
+        method="post"
+        enctype="multipart/form-data">
+
   <!-- 제목 -->
   <div class="mb-8">
     <h1 class="text-4xl font-bold tracking-tight text-on-surface mb-2">
@@ -126,10 +131,29 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <span class="text-sm text-gray-400">파일 없음</span>
-          <button class="bg-[#5c6b2f] text-white px-4 py-2 rounded-full text-sm">
+
+          <!-- 파일명 -->
+          <span class="text-sm text-gray-400 file-name">
+    파일 없음
+  </span>
+
+          <!-- 문서 타입 -->
+          <input type="hidden"
+                 name="docTypeList"
+                 value="RESIDENT" />
+
+          <!-- 실제 파일 input -->
+          <input type="file"
+                 name="uploadFiles"
+                 class="hidden file-input"
+                 accept=".pdf,.jpg,.jpeg,.png" />
+
+          <!-- 업로드 버튼 -->
+          <button type="button"
+                  class="upload-btn bg-[#5c6b2f] text-white px-4 py-2 rounded-full text-sm">
             업로드
           </button>
+
         </div>
       </div>
 
@@ -140,10 +164,25 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <span class="text-sm text-gray-400">파일 없음</span>
-          <button class="bg-[#5c6b2f] text-white px-4 py-2 rounded-full text-sm">
+
+  <span class="text-sm text-gray-400 file-name">
+    파일 없음
+  </span>
+
+          <input type="hidden"
+                 name="docTypeList"
+                 value="FAMILY" />
+
+          <input type="file"
+                 name="uploadFiles"
+                 class="hidden file-input"
+                 accept=".pdf,.jpg,.jpeg,.png" />
+
+          <button type="button"
+                  class="upload-btn bg-[#5c6b2f] text-white px-4 py-2 rounded-full text-sm">
             업로드
           </button>
+
         </div>
       </div>
 
@@ -154,10 +193,25 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <span class="text-sm text-gray-400">파일 없음</span>
-          <button class="bg-[#5c6b2f] text-white px-4 py-2 rounded-full text-sm">
+
+  <span class="text-sm text-gray-400 file-name">
+    파일 없음
+  </span>
+
+          <input type="hidden"
+                 name="docTypeList"
+                 value="FINANCE" />
+
+          <input type="file"
+                 name="uploadFiles"
+                 class="hidden file-input"
+                 accept=".pdf,.jpg,.jpeg,.png" />
+
+          <button type="button"
+                  class="upload-btn bg-[#5c6b2f] text-white px-4 py-2 rounded-full text-sm">
             업로드
           </button>
+
         </div>
       </div>
 
@@ -180,13 +234,62 @@
     <button class="px-5 py-2 bg-gray-200 rounded-full text-sm">
       취소
     </button>
-
-    <button class="px-6 py-2 bg-[#5c6b2f] text-white rounded-full text-sm">
+    <button type="submit"
+            class="px-6 py-2 bg-[#5c6b2f] text-white rounded-full text-sm">
       신청서 제출
     </button>
   </div>
-
+  </form>
 </main>
+
+
+<script>
+
+  // 업로드 버튼 클릭
+  document.querySelectorAll(".upload-btn").forEach(button => {
+
+    button.addEventListener("click", function () {
+
+      // 같은 영역 안의 file input 찾기
+      const wrapper = this.parentElement;
+
+      const fileInput =
+              wrapper.querySelector(".file-input");
+
+      // 파일 선택창 열기
+      fileInput.click();
+
+    });
+
+  });
+  document.querySelectorAll(".file-input").forEach(input => {
+
+    input.addEventListener("change", function () {
+
+      const wrapper = this.parentElement;
+
+      const fileNameSpan =
+              wrapper.querySelector(".file-name");
+
+      if (this.files.length > 0) {
+
+        fileNameSpan.innerText =
+                this.files[0].name;
+
+      } else {
+
+        fileNameSpan.innerText =
+                "파일 없음";
+
+      }
+
+    });
+
+  });
+
+</script>
+
+
 
 </body>
 
