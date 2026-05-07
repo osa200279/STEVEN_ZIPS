@@ -12,5 +12,5 @@ import java.util.List;
 public interface ICvplService {
     ServiceResult applyCvpl(CvplVO cvplVO, MultipartFile[] attachFiles) throws GeneralSecurityException, IOException;
 
-    List<CvplHstryVO> selectCvplHstryList(String aptCmplexNo, String userNo);
+    List<CvplVO> selectCvplListByAptCmplexNo(String aptCmplexNo, String userNo);
 }

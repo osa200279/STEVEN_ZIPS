@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>민원신청 – 대덕아파트</title>
+    <title>민원신청 – ${apt.aptCmlexNm}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
@@ -118,21 +119,35 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>2026-04-23</td>
-                                <td>주차선 보수 요청</td>
-                                <td><span class="badge ok">처리완료</span></td>
-                            </tr>
-                            <tr>
-                                <td>2026-04-21</td>
-                                <td>분리수거장 청소 요청</td>
-                                <td><span class="badge wait">접수</span></td>
-                            </tr>
-                            <tr>
-                                <td>2026-04-20</td>
-                                <td>엘리베이터 소음 문의</td>
-                                <td><span class="badge info">답변완료</span></td>
-                            </tr>
+                            <c:forEach var="cvpl" items="${cvplList}">
+                                <tr>
+                                    <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
+                                    <td>${cvpl.cvplTtl}</td>
+                                    <c:choose>
+                                        <c:when test="${cvpl.cvplSttsCd eq 'APLY'}">
+                                            <td><span class="badge wait">민원 신청됨</span></td>
+                                        </c:when>
+                                        <c:when test="${cvpl.cvplSttsCd eq 'RCPT'}">
+                                            <td><span class="badge ok">민원 접수됨</span></td>
+                                        </c:when>
+                                        <c:when test="${cvpl.cvplSttsCd eq 'SUPL'}">
+                                            <td><span class="badge wait">보완 요청</span></td>
+                                        </c:when>
+                                        <c:when test="${cvpl.cvplSttsCd eq 'REJS'}">
+                                            <td><span class="badge-red">처리 불가</span></td>
+                                        </c:when>
+                                        <c:when test="${cvpl.cvplSttsCd eq 'RJCT'}">
+                                            <td><span class="badge-red">반려</span></td>
+                                        </c:when>
+                                        <c:when test="${cvpl.cvplSttsCd eq 'COMP'}">
+                                            <td><span class="badge info">처리 완료</span></td>
+                                        </c:when>
+                                        <c:when test="${cvpl.cvplSttsCd eq 'END'}">
+                                            <td><span class="badge info">종결</span></td>
+                                        </c:when>
+                                    </c:choose>
+                                </tr>
+                            </c:forEach>
                         </tbody>
                     </table>
                 </div>

@@ -63,9 +63,25 @@
         )
     </insert>
 
-<!--    &lt;!&ndash;민원이력 리스트 조회&ndash;&gt;-->
-<!--    <select id="selectCvplHstryList" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplHstryVO">-->
-<!--              /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.insertCvplApply */-->
-<!--    </select>-->
-
+    <!--해당 아파트 내 민원 리스트 조회-->
+    <select id="selectCvplListByAptCmplexNo" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
+        select  /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectCvplListByAptCmplexNo */
+             cvpl_no
+             , cvpl_ty_cd
+             , cvpl_loc
+             , cvpl_cn
+             , cvpl_stts_cd
+             , cvpl_reg_dt
+             , cvpl_mdf_dt
+             , cvpl_rcpt_dt
+             , cvpl_end_dt
+             , cvpl_prrt
+             , cvpl_file_no
+             , cvpl_ttl
+             , user_no
+             , ho_no
+             , apt_cmplex_no
+        from cvpl
+        where user_no = #{userNo} and apt_cmplex_no = #{aptCmplexNo}
+    </select>
 </mapper>

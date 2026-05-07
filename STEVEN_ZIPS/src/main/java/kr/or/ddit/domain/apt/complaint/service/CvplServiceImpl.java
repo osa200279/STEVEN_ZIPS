@@ -112,8 +112,7 @@ public class CvplServiceImpl implements ICvplService {
     }
 
     @Override
-    public List<CvplHstryVO> selectCvplHstryList(String aptCmplexNo, String userNo) {
-//        return cvplMapper.selectCvplHstryList(aptCmplexNo, userNo);
-        return null;
+    public List<CvplVO> selectCvplListByAptCmplexNo(String aptCmplexNo, String userNo) {
+        return cvplMapper.selectCvplListByAptCmplexNo(aptCmplexNo, userNo);
     }
 }

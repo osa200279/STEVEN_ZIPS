@@ -55,8 +55,8 @@ public class CvplController {
         model.addAttribute("aptInfo", aptCommonDTO);
 
         ResidentVO residentVO = (ResidentVO)customUser.getMember();
-//        List<CvplHstryVO> cvplHstry = cvplService.selectCvplHstryList(aptCmplexNo, residentVO.getUserNo());
-//        model.addAttribute("cvplHstry", cvplHstry);
+        List<CvplVO> cvplList = cvplService.selectCvplListByAptCmplexNo(aptCmplexNo, residentVO.getUserNo());
+        model.addAttribute("cvplList", cvplList);
 
         return "apt/complaint/complaint_apply";
     }

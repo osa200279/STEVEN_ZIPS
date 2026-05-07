@@ -11,7 +11,7 @@ import java.util.List;
 public interface ICvplMapper {
     int insertCvplApply(CvplVO cvplVO);
 
-//    List<CvplHstryVO> selectCvplHstryList(@Param("aptCmplexNo") String aptCmplexNo,@Param("userNo") String userNo);
-
     int insertCvplHstry(CvplHstryVO cvplHstryVO);
+
+    List<CvplVO> selectCvplListByAptCmplexNo(@Param("aptCmplexNo") String aptCmplexNo,@Param("userNo") String userNo);
 }
