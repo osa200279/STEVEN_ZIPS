@@ -388,9 +388,6 @@
                 <label class="c-label">단지</label>
                 <select class="c-select" id="f-site">
                   <option value="">단지 전체</option>
-                  <option>강남 센트럴</option>
-                  <option>한강 리버뷰</option>
-                  <option>자이 아파트</option>
                 </select>
               </div>
               <div class="c-field" style="min-width: 130px">
@@ -472,9 +469,6 @@
                   <label class="c-label">단지 <span style="color: var(--red)">*</span></label>
                   <select id="f-fsite" class="c-select">
                     <option value="">단지 선택</option>
-                    <option>강남 센트럴</option>
-                    <option>한강 리버뷰</option>
-                    <option>자이 아파트</option>
                   </select>
                   <div class="err-msg" id="e-fsite"></div>
                 </div>
@@ -504,7 +498,7 @@
               <div class="form-grid">
                 <div class="c-field">
                   <label class="c-label">공급 세대수 <span style="color: var(--red)">*</span></label>
-                  <input type="number" id="f-funit" class="c-input" placeholder="예: 120" min="1" />
+                  <input type="number" id="f-funit" class="c-input" placeholder="단지 선택 시 자동 조회" readonly />
                   <div class="err-msg" id="e-funit"></div>
                 </div>
 

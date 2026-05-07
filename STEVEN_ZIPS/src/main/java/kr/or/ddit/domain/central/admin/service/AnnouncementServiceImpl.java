@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper;
 import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
-import kr.or.ddit.domain.central.admin.vo.AnnouncementVO;
+import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -21,25 +21,25 @@ public class AnnouncementServiceImpl implements IAnnouncementService {
     private final AnnouncementMapper announcementMapper;
 
     @Override
-    public List<AnnouncementVO> selectAnnouncementList(AnnouncementVO searchVO) {
+    public List<AnnouncementDTO> selectAnnouncementList(AnnouncementDTO searchVO) {
         return announcementMapper.selectAnnouncementList(searchVO);
     }
 
     @Override
-    public AnnouncementVO selectAnnouncement(String annNo) {
+    public AnnouncementDTO selectAnnouncement(String annNo) {
         return announcementMapper.selectAnnouncement(annNo);
     }
 
     @Override
     @Transactional
-    public int insertAnnouncement(AnnouncementVO announcementVO) {
-        return announcementMapper.insertAnnouncement(announcementVO);
+    public int insertAnnouncement(AnnouncementDTO announcementDTO) {
+        return announcementMapper.insertAnnouncement(announcementDTO);
     }
 
     @Override
     @Transactional
-    public int updateAnnouncement(AnnouncementVO announcementVO) {
-        return announcementMapper.updateAnnouncement(announcementVO);
+    public int updateAnnouncement(AnnouncementDTO announcementDTO) {
+        return announcementMapper.updateAnnouncement(announcementDTO);
     }
 
     @Override
@@ -47,4 +47,14 @@ public class AnnouncementServiceImpl implements IAnnouncementService {
     public int deleteAnnouncement(String annNo) {
         return announcementMapper.deleteAnnouncement(annNo);
     }
+
+    /*
+      단지 목록 조회
+    */
+    @Override
+    public List<AnnouncementDTO> selectAptComplexList() {
+
+        return announcementMapper.selectAptComplexList();
+    }
+
 }

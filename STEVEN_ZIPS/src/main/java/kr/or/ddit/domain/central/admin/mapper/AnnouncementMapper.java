@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import kr.or.ddit.domain.central.admin.vo.AnnouncementVO;
+import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 
 /**
  * 공고 관리 Mapper
@@ -16,26 +16,31 @@ public interface AnnouncementMapper {
     /**
      * 공고 목록 조회
      */
-    List<AnnouncementVO> selectAnnouncementList(AnnouncementVO searchVO);
+    List<AnnouncementDTO> selectAnnouncementList(AnnouncementDTO searchVO);
 
     /**
      * 공고 상세 조회
      */
-    AnnouncementVO selectAnnouncement(String annNo);
+    AnnouncementDTO selectAnnouncement(String annNo);
 
     /**
      * 공고 등록
      */
-    int insertAnnouncement(AnnouncementVO announcementVO);
+    int insertAnnouncement(AnnouncementDTO announcementDTO);
 
     /**
      * 공고 수정
      */
-    int updateAnnouncement(AnnouncementVO announcementVO);
+    int updateAnnouncement(AnnouncementDTO announcementDTO);
 
     /**
      * 공고 삭제
      * 실제 DELETE가 아니라 DEL_YN = 'Y'로 숨김 처리한다.
      */
     int deleteAnnouncement(String annNo);
+
+    /*
+      단지 목록 조회
+    */
+    List<AnnouncementDTO> selectAptComplexList();
 }

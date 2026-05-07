@@ -2,7 +2,7 @@ package kr.or.ddit.domain.central.admin.service;
 
 import java.util.List;
 
-import kr.or.ddit.domain.central.admin.vo.AnnouncementVO;
+import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 
 /**
  * 공고 관리 Service 인터페이스
@@ -10,13 +10,19 @@ import kr.or.ddit.domain.central.admin.vo.AnnouncementVO;
  */
 public interface IAnnouncementService {
 
-    List<AnnouncementVO> selectAnnouncementList(AnnouncementVO searchVO);
+    List<AnnouncementDTO> selectAnnouncementList(AnnouncementDTO searchVO);
 
-    AnnouncementVO selectAnnouncement(String annNo);
+    AnnouncementDTO selectAnnouncement(String annNo);
 
-    int insertAnnouncement(AnnouncementVO announcementVO);
+    int insertAnnouncement(AnnouncementDTO announcementDTO);
 
-    int updateAnnouncement(AnnouncementVO announcementVO);
+    int updateAnnouncement(AnnouncementDTO announcementDTO);
 
     int deleteAnnouncement(String annNo);
+
+    /*
+      단지 목록 조회
+    */
+    List<AnnouncementDTO> selectAptComplexList();
+
 }
