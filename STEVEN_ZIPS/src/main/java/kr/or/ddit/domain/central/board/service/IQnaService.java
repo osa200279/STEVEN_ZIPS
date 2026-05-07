@@ -4,6 +4,7 @@ package kr.or.ddit.domain.central.board.service;
 import kr.or.ddit.domain.central.board.vo.CvplVO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IQnaService {
 
@@ -18,4 +19,7 @@ public interface IQnaService {
     void deleteQna(String cvplNo, String userNo);
 
     int getTotalCount(String userNo);
+
+
+    Map<String, Object> getResidentInfo(String userNo);
 }

@@ -70,4 +70,20 @@
         WHERE USER_NO = #{userNo}
 
     </select>
+
+    <select id="getResidentInfo" resultType="map">
+        SELECT
+            HH.HO_NO,
+            AU.APT_CMPLEX_NO
+        FROM HSHLD_HEAD HH
+                 JOIN APT_DETAIL AD
+                      ON HH.HO_NO = AD.HO_NO
+                 JOIN APT_UNIT AU
+                      ON AD.DONG_NO = AU.DONG_NO
+        WHERE HH.USER_NO = #{userNo}
+    </select>
+
+
+
+
 </mapper>

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -77,9 +78,13 @@ public class QnaController {
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         MemberVO user = customUser.getMember();
 
+
+        Map<String, Object> info =
+                qnaService.getResidentInfo(user.getUserNo());
+
         vo.setUserNo(user.getUserNo());
-        vo.setHoNo("101-101");
-        vo.setAptCmplexNo("A12102002");
+        vo.setHoNo((String) info.get("HO_NO"));
+        vo.setAptCmplexNo((String) info.get("APT_CMPLEX_NO"));
         //vo.setAptCmplexNo(user.getAptCmplexNo());
 
 //        System.out.println("apt = " + user.getAptCmplexNo());

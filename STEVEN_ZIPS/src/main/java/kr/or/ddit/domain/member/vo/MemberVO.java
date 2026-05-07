@@ -24,6 +24,9 @@ public class MemberVO {
     private char emlNtcRcvYn;
     private char emlCtrtRcvYn;
     private String profFileId;
+    private String aptCmplexNo;
     private List<AuthVO> authList;
+
+
 }
 

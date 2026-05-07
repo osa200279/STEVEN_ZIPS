@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface IQnaMapper {
@@ -18,7 +19,13 @@ public interface IQnaMapper {
 
     void insertQna(CvplVO vo);
 
-    void deleteQna(String cvplNo, String userNo);
+    void deleteQna(
+            @Param("cvplNo") String cvplNo,
+            @Param("userNo") String userNo
+    );
 
     int getTotalCount(String userNo);
+
+
+    Map<String, Object> getResidentInfo(String userNo);
 }

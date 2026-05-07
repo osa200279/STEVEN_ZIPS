@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -50,4 +51,10 @@ public class QnaServiceImpl implements IQnaService {
     public int getTotalCount(String userNo) {
         return qnaMapper.getTotalCount(userNo);
     }
+
+    @Override
+    public Map<String, Object> getResidentInfo(String userNo) {
+        return qnaMapper.getResidentInfo(userNo);
+    }
+
 }
