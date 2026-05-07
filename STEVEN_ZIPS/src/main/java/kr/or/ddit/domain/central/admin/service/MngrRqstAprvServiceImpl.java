@@ -93,7 +93,7 @@ public class MngrRqstAprvServiceImpl implements IMngrRqstAprvService {
                 rqstNo,
                 aprvId,
                 userNo,
-                "단지관리자직원 권한신청 승인 처리"
+                null
         );
     }
 

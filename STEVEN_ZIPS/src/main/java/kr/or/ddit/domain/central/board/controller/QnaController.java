@@ -79,7 +79,12 @@ public class QnaController {
 
         vo.setUserNo(user.getUserNo());
         vo.setHoNo("101-101");
+        vo.setAptCmplexNo("A12102002");
+        //vo.setAptCmplexNo(user.getAptCmplexNo());
+
+//        System.out.println("apt = " + user.getAptCmplexNo());
        /* vo.setAptCmplexNo(user.getAptCmplexNo());*/
+
 
        /* System.out.println("apt = " + user.getAptCmplexNo());*/
 

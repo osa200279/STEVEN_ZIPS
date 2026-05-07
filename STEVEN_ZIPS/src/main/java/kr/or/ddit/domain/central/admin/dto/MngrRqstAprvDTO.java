@@ -53,4 +53,10 @@ public class MngrRqstAprvDTO {
     private String status;  // WAIT	승인대기 / OK	승인완료 / RJCT 반려 / CNL 신청취소
     private String role;    // HEAD	관리소장 / ACNT 회계담당 / ADM 행정담당 / FAC 시설담당
 
+    /* 단지 상세주소 표시용 */
+    private String sidoNm;      // 시도명
+    private String sigunguNm;   // 시군구명
+    private String emdNm;       // 읍면동명
+    private String detailAddr;  // 화면 표시용 상세주소
+
 }
