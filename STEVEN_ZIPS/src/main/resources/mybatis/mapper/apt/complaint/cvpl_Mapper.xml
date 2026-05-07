@@ -83,5 +83,6 @@
              , apt_cmplex_no
         from cvpl
         where user_no = #{userNo} and apt_cmplex_no = #{aptCmplexNo}
+        order by cvpl_reg_dt desc
     </select>
 </mapper>
