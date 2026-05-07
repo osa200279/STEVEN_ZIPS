@@ -82,7 +82,7 @@ public class QnaController {
 
         qnaService.insertQna(vo);
 
-        return "redirect:/main/qna/list.do";
+        return "redirect:/board/qna/list.do";
     }
 
     @GetMapping("/delete.do")
@@ -94,7 +94,7 @@ public class QnaController {
 
         qnaService.deleteQna(cvplNo, user.getUserNo());
 
-        return "redirect:/main/qna/list.do";
+        return "redirect:/board/qna/list.do";
     }
 
 }
