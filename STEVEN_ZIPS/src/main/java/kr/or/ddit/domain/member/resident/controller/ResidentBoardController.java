@@ -116,5 +116,22 @@ public class ResidentBoardController {
         return result;
     }
 
+    @PostMapping("/insertBoardComment")
+    @ResponseBody
+    public Map<String, Object> insertBoardComment(@RequestBody RsidBoardCommentVO rsidBoardCommentVO,
+                                                  @PathVariable String annNo,
+                                                  @AuthenticationPrincipal CustomUser principal
+                                                  ){
+        Map<String, Object> result = new HashMap<>();
+        rsidBoardCommentVO.setPostNo(annNo);
+        rsidBoardCommentVO.setUserNo(principal.getMember().getUserId());
+        int cnt = service.insertBoardComment(rsidBoardCommentVO);
+        result.put("success", cnt > 0);
+        return result;
+
+    }
+
+
+
 
 }
