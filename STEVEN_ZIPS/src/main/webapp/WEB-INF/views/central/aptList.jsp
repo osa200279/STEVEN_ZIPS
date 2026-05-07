@@ -152,9 +152,9 @@
         <span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
         <span class="text-primary font-bold">단지목록</span>
       </div>
-      <h1 class="text-4xl font-bold tracking-tight text-on-surface mb-2">
+      <h4 class="text-3xl font-bold tracking-tight text-on-surface mb-2">
         단지목록
-      </h1>
+      </h4>
 
       <p class="text-gray-500 mb-6">
         단지정보를 조회하고 확인할 수 있습니다.
@@ -212,8 +212,6 @@
   <!-- 초성 필터 -->
   <div class="bg-white p-5 rounded-2xl border border-[#eef2eb] mb-6 shadow-sm">
     <div class="flex flex-wrap items-center gap-2">
-      <span class="text-sm font-bold text-slate-500 mr-2">초성</span>
-
       <c:url var="allUrl" value="/apt/list.do" />
       <a href="${allUrl}"
          class="px-4 py-2 rounded-full text-sm font-bold border transition-all

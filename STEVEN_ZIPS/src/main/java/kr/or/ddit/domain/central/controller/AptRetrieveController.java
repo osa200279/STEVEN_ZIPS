@@ -25,6 +25,9 @@ public class AptRetrieveController {
     public String list(
             @RequestParam(value = "initial", required = false) String initial,
             @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "sidoNm", required = false) String sido,
+            @RequestParam(value = "sigunguNm", required = false) String sigungu,
+            @RequestParam(value = "unitCnt", required = false) String unitCnt,
             @RequestParam(value = "page", required = false, defaultValue = "1") int currentPage,
             Model model
     ) {
@@ -34,9 +37,11 @@ public class AptRetrieveController {
 
         pagingVO.setCurrentPage(currentPage);
 
+        // ㄱ~ㅎ 초성검색
         pagingVO.setSearchWord(initial);
-        pagingVO.setSearchType(keyword);
 
+        // 단지명 검색
+        pagingVO.setSearchType(keyword);
 
         // 총 개수
         int totalRecord =
