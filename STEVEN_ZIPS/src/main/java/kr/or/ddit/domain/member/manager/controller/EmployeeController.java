@@ -2,6 +2,7 @@ package kr.or.ddit.domain.member.manager.controller;
 
 import kr.or.ddit.domain.member.manager.service.IEmployeeService;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
+import kr.or.ddit.domain.member.manager.vo.MemberSearchDTO;
 import kr.or.ddit.domain.member.manager.vo.MngrRqstVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
@@ -19,157 +20,316 @@ import java.util.Map;
 
 @Slf4j
 @Controller
-@PreAuthorize("hasAnyRole('MNGR')")
+
+/*
+ * 관리사무소 직원 계정 API 컨트롤러
+ *
+ * @PreAuthorize("hasRole('MNGR')")
+ * - 관리사무소 기능 접근 권한 확인
+ * - RoleHierarchy 설정 기준 ADMIN도 MNGR 권한 상속
+ * - 상세 관리사무소 번호 검사는 각 메서드의 hasAccess에서 처리
+ */
+@PreAuthorize("hasRole('MNGR')")
 @RequestMapping("/manager/employee")
 public class EmployeeController {
 
     @Autowired
     private IEmployeeService employeeService;
 
-    // 직원 계정 관리 화면
-    @GetMapping("/account")
-    public String accountPage() {
-        return "manager/employee/mngr_account";
-    }
-
-    // 로그인 소장 정보 조회
-    @GetMapping("/info")
+    /*
+     * [재직 직원 목록 조회]
+     * GET /manager/employee/list/{mgmtOfcNo}
+     *
+     * @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+     * - URL의 mgmtOfcNo 접근 권한 확인
+     * - ADMIN은 전체 관리사무소 접근 가능
+     * - MNGR은 본인 소속 관리사무소만 접근 가능
+     *
+     * @ResponseBody
+     * - JSP 이동이 아닌 JSON 응답
+     *
+     * @PathVariable
+     * - URL의 관리사무소 번호
+     *
+     * @RequestParam(required = false, defaultValue = "")
+     * - 검색조건 선택값
+     * - 값이 없을 때 빈 문자열 처리
+     * - XML에서 빈 문자열이면 조건 제외
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/list/{mgmtOfcNo}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getLoginInfo(
-            @AuthenticationPrincipal CustomUser customUser) {
+    public ResponseEntity<Map<String, Object>> selectEmployeeList(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(required = false, defaultValue = "") String mngrDutyCd
+    ) {
         Map<String, Object> result = new HashMap<>();
-        try {
-            String userNo = customUser.getMember().getUserNo();
-            ManagerVO loginInfo = employeeService.getLoginManagerInfo(userNo);
-            result.put("loginInfo", loginInfo);
-        } catch (Exception e) {
-            log.error("소장 정보 조회 오류", e);
-            result.put("loginInfo", null);
-        }
-        return ResponseEntity.ok(result);
-    }
 
-    // 재직 직원 목록 조회
-    @GetMapping("/manager/list")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getManagerList(
-            @AuthenticationPrincipal CustomUser customUser) {
-        Map<String, Object> result = new HashMap<>();
         try {
-            String userNo = customUser.getMember().getUserNo();
-            ManagerVO loginInfo = employeeService.getLoginManagerInfo(userNo);
-            List<ManagerVO> list = employeeService.getManagerList(loginInfo.getMgmtOfcNo());
+            // 검색/필터 조건 전달용 Map
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("mgmtOfcNo", mgmtOfcNo);
+            paramMap.put("keyword", keyword);
+            paramMap.put("mngrDutyCd", mngrDutyCd);
+
+            // 재직 직원 목록
+            List<ManagerVO> list = employeeService.selectEmployeeList(paramMap);
             result.put("list", list);
+
         } catch (Exception e) {
-            log.error("직원 목록 조회 오류", e);
+            log.error("재직 직원 목록 조회 오류", e);
             result.put("list", new ArrayList<>());
         }
+
+        // HTTP 200 + JSON 응답
         return ResponseEntity.ok(result);
     }
 
-    // 요청 목록 조회
-    @GetMapping("/request/list")
+    /*
+     * [재직 직원 상세 조회]
+     * GET /manager/employee/{userNo}/detail/{mgmtOfcNo}
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/{userNo}/detail/{mgmtOfcNo}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getRequestList(
-            @AuthenticationPrincipal CustomUser customUser) {
+    public ResponseEntity<Map<String, Object>> selectEmployeeDetail(
+            @PathVariable String userNo,
+            @PathVariable String mgmtOfcNo
+    ) {
         Map<String, Object> result = new HashMap<>();
+
         try {
-            String userNo = customUser.getMember().getUserNo();
-            ManagerVO loginInfo = employeeService.getLoginManagerInfo(userNo);
-            List<MngrRqstVO> list = employeeService.getRequestList(loginInfo.getMgmtOfcNo());
-            result.put("list", list);
+            // 관리사무소 번호 + 직원 번호 기준 상세 조회
+            ManagerVO detail = employeeService.selectEmployeeDetail(userNo, mgmtOfcNo);
+            result.put("detail", detail);
+
         } catch (Exception e) {
-            log.error("요청 목록 조회 오류", e);
-            result.put("list", new ArrayList<>());
+            log.error("재직 직원 상세 조회 오류", e);
+            result.put("detail", null);
         }
+
         return ResponseEntity.ok(result);
     }
 
-    // 재직 직원 직무 수정
-    @PostMapping("/manager/update")
+    /*
+     * [재직 직원 직무 수정]
+     * POST /manager/employee/duty/update/{mgmtOfcNo}
+     *
+     * @param mgmtOfcNo 요청 URL의 관리사무소 번호
+     * @param vo 수정할 직원 직무 정보
+     * @return 직무 수정 처리 결과
+     * - ADMIN 조회 전용 정책
+     * - ADMIN의 등록/수정/삭제/취소/비활성화 처리 차단
+     * - MNGR만 실제 처리 가능
+     */
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @PostMapping("/duty/update/{mgmtOfcNo}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> updateManager(@RequestBody ManagerVO vo) {
+    public ResponseEntity<Map<String, Object>> updateEmployeeDuty(
+            @PathVariable String mgmtOfcNo,
+            @RequestBody ManagerVO vo
+    ) {
         Map<String, Object> result = new HashMap<>();
+
         try {
-            boolean success = employeeService.updateManagerDuty(vo);
+            // URL 관리사무소 번호를 수정 조건으로 사용
+            vo.setMgmtOfcNo(mgmtOfcNo);
+
+            // 직원 직무 수정 결과
+            boolean success = employeeService.updateEmployeeDuty(vo);
+
             result.put("success", success);
-            result.put("message", success ? "수정되었습니다." : "수정에 실패했습니다.");
+            result.put("message", success ? "직무가 수정되었습니다." : "직무 수정에 실패했습니다.");
+
         } catch (Exception e) {
-            log.error("직원 수정 오류", e);
+            log.error("재직 직원 직무 수정 오류", e);
             result.put("success", false);
             result.put("message", "처리 중 오류가 발생했습니다.");
         }
+
         return ResponseEntity.ok(result);
     }
 
-    // 요청 등록
-    @PostMapping("/request/insert")
+    /*
+     * [직원 계정 요청 목록 조회]
+     * GET /manager/employee/request/list/{mgmtOfcNo}
+     *
+     * keyword    : 요청자 이름/아이디/연락처 검색
+     * rqstDutyCd : 요청 직무 필터
+     * rqstSttsCd : 요청 상태 필터
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/request/list/{mgmtOfcNo}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> selectRequestList(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(required = false, defaultValue = "") String rqstDutyCd,
+            @RequestParam(required = false, defaultValue = "") String rqstSttsCd
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // 요청 목록 검색/필터 조건
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("mgmtOfcNo", mgmtOfcNo);
+            paramMap.put("keyword", keyword);
+            paramMap.put("rqstDutyCd", rqstDutyCd);
+            paramMap.put("rqstSttsCd", rqstSttsCd);
+
+            // 직원 계정 요청 목록
+            List<MngrRqstVO> list = employeeService.selectRequestList(paramMap);
+            result.put("list", list);
+
+        } catch (Exception e) {
+            log.error("직원 계정 요청 목록 조회 오류", e);
+            result.put("list", new ArrayList<>());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /*
+     * [직원 계정 요청 상세 조회]
+     * GET /manager/employee/request/{rqstNo}/detail/{mgmtOfcNo}
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/request/{rqstNo}/detail/{mgmtOfcNo}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> selectRequestDetail(
+            @PathVariable String rqstNo,
+            @PathVariable String mgmtOfcNo
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // 관리사무소 번호 + 요청 번호 기준 상세 조회
+            MngrRqstVO detail = employeeService.selectRequestDetail(rqstNo, mgmtOfcNo);
+            result.put("detail", detail);
+
+        } catch (Exception e) {
+            log.error("직원 계정 요청 상세 조회 오류", e);
+            result.put("detail", null);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /*
+     * [직원 계정 요청 등록]
+     * POST /manager/employee/request/insert/{mgmtOfcNo}
+     */
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @PostMapping("/request/insert/{mgmtOfcNo}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> insertRequest(
+            @PathVariable String mgmtOfcNo,
             @RequestBody MngrRqstVO vo,
-            @AuthenticationPrincipal CustomUser customUser) {
-
-        vo.setUserNo(customUser.getMember().getUserNo());
-
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
         Map<String, Object> result = new HashMap<>();
+
         try {
-            boolean success = employeeService.insertRequest(vo);
+            // 요청 등록자 USER_NO
+            vo.setUserNo(customUser.getMember().getUserNo());
+
+            // 직원 계정 요청 등록 결과
+            boolean success = employeeService.insertRequest(vo, mgmtOfcNo);
+
             result.put("success", success);
             result.put("message", success ? "요청이 등록되었습니다." : "등록에 실패했습니다.");
+
         } catch (Exception e) {
-            log.error("요청 등록 오류", e);
+            log.error("직원 계정 요청 등록 오류", e);
             result.put("success", false);
             result.put("message", "처리 중 오류가 발생했습니다.");
         }
+
         return ResponseEntity.ok(result);
     }
 
-    // 요청 수정
-    @PostMapping("/request/update")
+    /*
+     * [직원 계정 요청 수정]
+     * POST /manager/employee/request/update/{mgmtOfcNo}
+     */
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @PostMapping("/request/update/{mgmtOfcNo}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> updateRequest(@RequestBody MngrRqstVO vo) {
+    public ResponseEntity<Map<String, Object>> updateRequest(
+            @PathVariable String mgmtOfcNo,
+            @RequestBody MngrRqstVO vo
+    ) {
         Map<String, Object> result = new HashMap<>();
+
         try {
-            boolean success = employeeService.updateRequest(vo);
+            // 직원 계정 요청 수정 결과
+            boolean success = employeeService.updateRequest(vo, mgmtOfcNo);
+
             result.put("success", success);
-            result.put("message", success ? "수정되었습니다." : "수정에 실패했습니다.");
+            result.put("message", success ? "요청이 수정되었습니다." : "수정에 실패했습니다.");
+
         } catch (Exception e) {
-            log.error("요청 수정 오류", e);
+            log.error("직원 계정 요청 수정 오류", e);
             result.put("success", false);
             result.put("message", "처리 중 오류가 발생했습니다.");
         }
+
         return ResponseEntity.ok(result);
     }
 
-    // 요청 취소
-    @PostMapping("/request/cancel")
+    /*
+     * [직원 계정 요청 취소]
+     * POST /manager/employee/request/cancel/{mgmtOfcNo}
+     */
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @PostMapping("/request/cancel/{mgmtOfcNo}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> cancelRequest(@RequestBody MngrRqstVO vo) {
+    public ResponseEntity<Map<String, Object>> cancelRequest(
+            @PathVariable String mgmtOfcNo,
+            @RequestBody MngrRqstVO vo
+    ) {
         Map<String, Object> result = new HashMap<>();
+
         try {
-            boolean success = employeeService.cancelRequest(vo);
+            // 직원 계정 요청 취소 결과
+            boolean success = employeeService.cancelRequest(vo, mgmtOfcNo);
+
             result.put("success", success);
-            result.put("message", success ? "취소되었습니다." : "취소에 실패했습니다.");
+            result.put("message", success ? "요청이 취소되었습니다." : "취소에 실패했습니다.");
+
         } catch (Exception e) {
-            log.error("요청 취소 오류", e);
+            log.error("직원 계정 요청 취소 오류", e);
             result.put("success", false);
             result.put("message", "처리 중 오류가 발생했습니다.");
         }
+
         return ResponseEntity.ok(result);
     }
 
-    /*// 회원 검색 (팝업용)
-    @GetMapping("/member/search")
+    /*
+     * [직원 등록용 회원 검색]
+     * GET /manager/employee/member/search/{mgmtOfcNo}?keyword=홍길동
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/member/search/{mgmtOfcNo}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> searchMember(@RequestParam(required = false, defaultValue = "") String keyword) {
+    public ResponseEntity<Map<String, Object>> selectMemberSearchList(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(required = false, defaultValue = "") String keyword
+    ) {
         Map<String, Object> result = new HashMap<>();
+
         try {
-            List<MemberSearchVO> list = employeeService.searchMember(keyword);
+            // 직원 등록 가능 회원 목록
+            List<MemberSearchDTO> list = employeeService.selectMemberSearchList(keyword, mgmtOfcNo);
             result.put("list", list);
+
         } catch (Exception e) {
-            log.error("회원 검색 오류", e);
+            log.error("직원 등록용 회원 검색 오류", e);
             result.put("list", new ArrayList<>());
         }
+
         return ResponseEntity.ok(result);
-    }*/
+    }
 }
