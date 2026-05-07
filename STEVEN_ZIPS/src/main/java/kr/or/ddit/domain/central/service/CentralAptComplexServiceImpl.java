@@ -21,7 +21,8 @@ public class CentralAptComplexServiceImpl implements ICentralAptComplexService {
         return aptComplexMapper.selectAptComplexList(
                 pagingVO.getSearchWord(),
                 pagingVO.getStartRow(),
-                pagingVO.getEndRow()
+                pagingVO.getEndRow(),
+                pagingVO.getSearchVO()
         );
     }
 
@@ -36,8 +37,19 @@ public class CentralAptComplexServiceImpl implements ICentralAptComplexService {
     ) {
         return aptComplexMapper.selectAptComplexCount(
                 pagingVO.getSearchWord(),
-                pagingVO.getSearchType()
+                pagingVO.getSearchType(),
+                pagingVO.getSearchVO()
         );
 
+    }
+
+    @Override
+    public List<String> selectSigunguList(String sidoNm) {
+        return aptComplexMapper.selectSigunguList(sidoNm);
+    }
+
+    @Override
+    public List<String> selectSidoList() {
+        return aptComplexMapper.selectSidoList();
     }
 }

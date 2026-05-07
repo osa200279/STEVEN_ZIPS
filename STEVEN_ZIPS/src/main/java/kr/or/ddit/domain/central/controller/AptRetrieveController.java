@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -23,40 +24,71 @@ public class AptRetrieveController {
 
     @GetMapping("/list.do")
     public String list(
+            AptComplexVO searchVO,
             @RequestParam(value = "initial", required = false) String initial,
             @RequestParam(value = "keyword", required = false) String keyword,
-            @RequestParam(value = "sidoNm", required = false) String sido,
-            @RequestParam(value = "sigunguNm", required = false) String sigungu,
-            @RequestParam(value = "unitCnt", required = false) String unitCnt,
             @RequestParam(value = "page", required = false, defaultValue = "1") int currentPage,
             Model model
     ) {
 
+        /*
+         * searchVO에는 JSP name과 같은 필드가 자동으로 들어온다.
+         *
+         * 예)
+         * name="sidoNm"    -> searchVO.setSidoNm(...)
+         * name="sigunguNm" -> searchVO.setSigunguNm(...)
+         * name="unitCnt"   -> searchVO.setUnitCnt(...)
+         */
+
+        log.info("검색 시도 = {}", searchVO.getSidoNm());
+        log.info("검색 시군구 = {}", searchVO.getSigunguNm());
+        log.info("세대수 조건 코드 = {}", searchVO.getUnitCnt());
+
         PaginationInfoVO<AptComplexVO> pagingVO = new PaginationInfoVO<>();
         pagingVO.setScreenSize(12);
-
         pagingVO.setCurrentPage(currentPage);
 
-        // ㄱ~ㅎ 초성검색
-        pagingVO.setSearchWord(initial);
+        /*
+         * 기존 검색 조건
+         */
+        pagingVO.setSearchWord(initial);   // ㄱ~ㅎ 초성
+        pagingVO.setSearchType(keyword);   // 단지명 검색어
 
-        // 단지명 검색
-        pagingVO.setSearchType(keyword);
+        /*
+         * AptComplexVO 검색조건을 pagingVO에 담아야
+         * 기존 service / mapper 구조를 유지할 수 있음
+         */
+        pagingVO.setSearchVO(searchVO);
 
-        // 총 개수
-        int totalRecord =
-                aptComplexService.selectAptComplexCount(pagingVO);
+        // 총 개수 조회
+        int totalRecord = aptComplexService.selectAptComplexCount(pagingVO);
         pagingVO.setTotalRecord(totalRecord);
 
-        // 페이징 목록 조회
+        // 목록 조회
         pagingVO.setDataList(
                 aptComplexService.selectAptComplexList(pagingVO)
         );
 
+        // 시/도 목록 조회
+        List<String> sidoList = aptComplexService.selectSidoList();
+
         model.addAttribute("pagingVO", pagingVO);
+        model.addAttribute("searchVO", searchVO);
+        model.addAttribute("sidoList", sidoList);
+
         model.addAttribute("selectedInitial", initial);
+        model.addAttribute("keyword", keyword);
 
         return "central/aptList";
+    }
+
+    /*
+     * 시/도 선택 시 시/군/구 목록 조회 Ajax
+     */
+    @ResponseBody
+    @GetMapping("/sigungu.do")
+    public List<String> sigunguList(@RequestParam("sidoNm") String sidoNm) {
+        return aptComplexService.selectSigunguList(sidoNm);
     }
 
     @GetMapping("/search.do")

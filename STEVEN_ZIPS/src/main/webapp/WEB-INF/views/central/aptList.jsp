@@ -168,46 +168,72 @@
   </div>
   <!-- Search & Filter Area -->
   <div class="bg-white p-6 rounded-2xl border border-[#eef2eb] mb-8 shadow-sm">
-    <div class="flex flex-wrap items-center gap-4">
+
+    <form action="${pageContext.request.contextPath}/apt/list.do"
+          method="get"
+          id="aptSearchForm"
+          class="flex flex-wrap items-center gap-4">
+
+      <!-- 시/도 -->
       <div class="flex items-center gap-2 min-w-[140px] flex-1">
         <span class="text-sm font-bold text-slate-500 shrink-0">지역</span>
-        <select class="filter-select w-full bg-[#f1f3ef] border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20">
-          <option>시/도 전체</option>
-          <option>서울</option>
-          <option>경기</option>
+
+        <select name="sidoNm"
+                id="sidoNm"
+                class="filter-select w-full bg-[#f1f3ef] border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20">
+
+          <option value="">시/도 전체</option>
+
+          <c:forEach var="sido" items="${sidoList}">
+            <option value="${sido}"
+                    <c:if test="${searchVO.sidoNm eq sido}">selected</c:if>>
+                ${sido}
+            </option>
+          </c:forEach>
+
         </select>
       </div>
+
+      <!-- 시/군/구 -->
       <div class="flex items-center gap-2 min-w-[140px] flex-1">
-        <select class="filter-select w-full bg-[#f1f3ef] border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20">
-          <option>시/군/구</option>
+        <select name="sigunguNm"
+                id="sigunguNm"
+                class="filter-select w-full bg-[#f1f3ef] border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20">
+          <option value="">시/군/구</option>
         </select>
       </div>
+
+      <!-- 세대수 -->
       <div class="flex items-center gap-2 min-w-[140px] flex-1">
         <span class="text-sm font-bold text-slate-500 shrink-0">세대수</span>
-        <select class="filter-select w-full bg-[#f1f3ef] border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20">
-          <option>전체</option>
+
+        <select name="unitCnt"
+                id="unitCnt"
+                class="filter-select w-full bg-[#f1f3ef] border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20">
+          <option value="0" ${searchVO.unitCnt == 0 ? 'selected' : ''}>전체</option>
+          <option value="1" ${searchVO.unitCnt == 1 ? 'selected' : ''}>500세대 미만</option>
+          <option value="2" ${searchVO.unitCnt == 2 ? 'selected' : ''}>500세대 이상 ~ 1000세대 미만</option>
+          <option value="3" ${searchVO.unitCnt == 3 ? 'selected' : ''}>1000세대 이상</option>
         </select>
       </div>
-      <form action="${pageContext.request.contextPath}/apt/list.do"
-            method="get"
-            class="flex gap-2 flex-grow">
 
+      <!-- 단지명 -->
+      <div class="flex gap-2 flex-grow">
         <div class="flex-grow min-w-[200px]">
-          <input
-                  name="keyword"
-                  value="${param.keyword}"
-                  class="w-full bg-[#f1f3ef] border-none rounded-full px-6 py-2 text-sm focus:ring-2 focus:ring-primary/20"
-                  placeholder="단지명 검색"
-                  type="text"/>
+          <input name="keyword"
+                 value="${param.keyword}"
+                 class="w-full bg-[#f1f3ef] border-none rounded-full px-6 py-2 text-sm focus:ring-2 focus:ring-primary/20"
+                 placeholder="단지명 검색"
+                 type="text"/>
         </div>
 
         <button type="submit"
                 class="px-8 py-2 bg-primary text-white rounded-full font-bold text-sm hover:bg-opacity-90 transition-all">
           검색
         </button>
+      </div>
 
-      </form>
-    </div>
+    </form>
   </div>
   <!-- 초성 필터 -->
   <div class="bg-white p-5 rounded-2xl border border-[#eef2eb] mb-6 shadow-sm">
@@ -305,21 +331,89 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-  $(document).on("click", ".page-link", function(e){
+  $(function () {
 
-    e.preventDefault();
+    /*
+     * 검색 후 다시 화면에 들어왔을 때
+     * 기존 선택값 유지용
+     */
+    const selectedSidoNm = "${searchVO.sidoNm}";
+    const selectedSigunguNm = "${searchVO.sigunguNm}";
 
-    const page = $(this).data("page");
+    /*
+     * 시/군/구 목록 조회 함수
+     */
+    function loadSigunguList(sidoNm, selectedValue) {
+      const $sigunguNm = $("#sigunguNm");
 
-    if(!page){
-      return;
+      $sigunguNm.empty();
+      $sigunguNm.append('<option value="">시/군/구</option>');
+
+      if (!sidoNm) {
+        return;
+      }
+
+      $.ajax({
+        url: "${pageContext.request.contextPath}/apt/sigungu.do",
+        type: "GET",
+        data: {
+          sidoNm: sidoNm
+        },
+        dataType: "json",
+        success: function (sigunguList) {
+
+          $.each(sigunguList, function (index, sigunguNm) {
+            const selected = sigunguNm === selectedValue ? "selected" : "";
+
+            $sigunguNm.append(
+                    '<option value="' + sigunguNm + '" ' + selected + '>' + sigunguNm + '</option>'
+            );
+          });
+
+        },
+        error: function (xhr) {
+          console.error("시/군/구 조회 실패", xhr);
+          alert("시/군/구 목록을 불러오지 못했습니다.");
+        }
+      });
     }
 
-    const url = new URL(window.location.href);
+    /*
+     * 시/도 변경 시 시/군/구 자동 조회
+     */
+    $("#sidoNm").on("change", function () {
+      const sidoNm = $(this).val();
 
-    url.searchParams.set("page", page);
+      loadSigunguList(sidoNm, "");
+    });
 
-    location.href = url.toString();
+    /*
+     * 검색 후 화면 재진입 시 기존 시/군/구 선택값 복원
+     */
+    if (selectedSidoNm) {
+      loadSigunguList(selectedSidoNm, selectedSigunguNm);
+    }
+
+    /*
+     * 페이지 번호 클릭 시 현재 검색조건 유지하면서 page만 변경
+     */
+    $(document).on("click", ".page-link", function(e){
+
+      e.preventDefault();
+
+      const page = $(this).data("page");
+
+      if(!page){
+        return;
+      }
+
+      const url = new URL(window.location.href);
+
+      url.searchParams.set("page", page);
+
+      location.href = url.toString();
+    });
+
   });
 </script>
 </body>

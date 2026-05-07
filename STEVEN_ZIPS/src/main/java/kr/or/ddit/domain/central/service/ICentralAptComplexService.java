@@ -16,4 +16,8 @@ public interface ICentralAptComplexService {
     int selectAptComplexCount(
             PaginationInfoVO<AptComplexVO> pagingVO
     );
+
+    List<String> selectSigunguList(String sidoNm);
+
+    List<String> selectSidoList();
 }

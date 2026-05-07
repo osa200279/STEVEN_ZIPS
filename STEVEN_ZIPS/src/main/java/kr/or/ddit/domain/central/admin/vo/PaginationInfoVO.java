@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.admin.vo;
 
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import lombok.Data;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class PaginationInfoVO<T> {
 	private String sbmsnDocTyCd;	// 서류 유형
 	private String sbmsnDocSttsCd;
 	private String sbmsnDocNo;
-
+	private AptComplexVO searchVO;
 
 
 	public int getTotalPage() {

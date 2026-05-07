@@ -111,6 +111,31 @@
 
         </choose>
 
+        <if test="searchVO != null and searchVO.sidoNm != null and searchVO.sidoNm != ''">
+            AND SIDO_NM = #{searchVO.sidoNm}
+        </if>
+
+        <if test="searchVO != null and searchVO.sigunguNm != null and searchVO.sigunguNm != ''">
+            AND SIGUNGU_NM = #{searchVO.sigunguNm}
+        </if>
+
+        <if test="searchVO != null and searchVO.unitCnt != 0">
+            <choose>
+                <when test="searchVO.unitCnt == 1">
+                    AND UNIT_CNT &lt; 500
+                </when>
+
+                <when test="searchVO.unitCnt == 2">
+                    AND UNIT_CNT &gt;= 500
+                    AND UNIT_CNT &lt; 1000
+                </when>
+
+                <when test="searchVO.unitCnt == 3">
+                    AND UNIT_CNT &gt;= 1000
+                </when>
+            </choose>
+        </if>
+
         ORDER BY APT_CMPLEX_NM ASC
 
         ) A
@@ -202,6 +227,31 @@
 
         </choose>
 
+        <if test="searchVO != null and searchVO.sidoNm != null and searchVO.sidoNm != ''">
+            AND SIDO_NM = #{searchVO.sidoNm}
+        </if>
+
+        <if test="searchVO != null and searchVO.sigunguNm != null and searchVO.sigunguNm != ''">
+            AND SIGUNGU_NM = #{searchVO.sigunguNm}
+        </if>
+
+        <if test="searchVO != null and searchVO.unitCnt != 0">
+            <choose>
+                <when test="searchVO.unitCnt == 1">
+                    AND UNIT_CNT &lt; 500
+                </when>
+
+                <when test="searchVO.unitCnt == 2">
+                    AND UNIT_CNT &gt;= 500
+                    AND UNIT_CNT &lt; 1000
+                </when>
+
+                <when test="searchVO.unitCnt == 3">
+                    AND UNIT_CNT &gt;= 1000
+                </when>
+            </choose>
+        </if>
+
     </select>
 
 
@@ -217,6 +267,21 @@
         WHERE APT_CMPLEX_NM LIKE '%' || #{keyword} || '%'
         ORDER BY APT_CMPLEX_NM ASC
 
+    </select>
+
+    <select id="selectSigunguList" parameterType="string" resultType="string">
+        SELECT DISTINCT SIGUNGU_NM
+        FROM APT_COMPLEX
+        WHERE SIDO_NM = #{sido}
+          AND SIGUNGU_NM IS NOT NULL
+        ORDER BY SIGUNGU_NM
+    </select>
+
+    <select id="selectSidoList" resultType="string">
+        SELECT DISTINCT SIDO_NM
+        FROM APT_COMPLEX
+        WHERE SIDO_NM IS NOT NULL
+        ORDER BY SIDO_NM
     </select>
 
 
