@@ -6,24 +6,24 @@ import java.math.BigDecimal;
 
 @Data
 public class AptComplexVO {
-    private String aptCmplexNo; // kAptCode
-    private String aptCmplexNm;
-    private String bjdCd;
-    private String sidoNm;
-    private String sigunguNm;
-    private String emdNm;
-    private BigDecimal latVal;  // 경도
-    private BigDecimal lonVal;  // 위도
-    private int unitCnt;
-    private String bldYr;
-    private String cnscoNm;
-    private String imgFileNo;
-    private String rprsntImgFileNo;
-    private String heatTy;
-    private int pkgCnt;
-    private int maxFloor;
-    private int freePkgCnt;
-    private int dongCnt;
-    private String dorojuso;
-    private String ccCnt;
+    private String aptCmplexNo;     // kAptCode
+    private String aptCmplexNm;     // 아파트 단지명
+    private String bjdCd;           // 법정동 코드
+    private String sidoNm;          // 시도 명
+    private String sigunguNm;       // 시군구 명
+    private String emdNm;           // 읍면동 명
+    private BigDecimal latVal;      // 경도
+    private BigDecimal lonVal;      // 위도
+    private int unitCnt;            // 세대 수
+    private String bldYr;           // 준공년도
+    private String cnscoNm;         // 건설사 명
+    private String imgFileNo;       // 이미지 파일 번호
+    private String rprsntImgFileNo; // 대표이미지 파일 번호
+    private String heatTy;          // 난방 방식 코드
+    private int pkgCnt;             // 주차가능대수
+    private int maxFloor;           // 최대 층수
+    private int freePkgCnt;         // 세대당 무료주차대수
+    private int dongCnt;            // 동 수
+    private String dorojuso;        // 도로명주소
+    private String ccCnt;           // cctv 수
 }
