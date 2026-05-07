@@ -1,0 +1,25 @@
+package kr.or.ddit.domain.apt.board.inqry.dto;
+
+import lombok.Data;
+import java.util.Date;
+
+@Data
+public class InqryDTO {
+
+    private String postNo;       // 게시글번호
+    private String boardNo;      // 게시판번호
+    private String ttl;          // 제목
+    private String cn;           // 내용
+    private String wrtrId;       // 작성자아이디
+    private String prrtCd;       // 우선순위코드
+    private Date regDttm;        // 등록일시
+    private Date mdfDttm;        // 수정일시
+    private int inqCnt;          // 조회수
+    private String delYn;        // 삭제여부
+    private String atchFileId;   // 첨부파일아이디
+    private String opnYn;        // 공개여부
+
+    private String aptCmplexNo;  // 아파트단지번호
+    private String boardTyCd;    // 게시판유형코드
+    private String boardNm;      // 게시판명
+}
