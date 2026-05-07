@@ -21,7 +21,11 @@ function connectWebSocket() {
 
             subscribeNotification();
 
-            if (currentRoomNo) {
+            if (
+                typeof currentRoomNo !== 'undefined'
+                && typeof subscribeRoom === 'function'
+                && currentRoomNo
+            ) {
                 subscribeRoom(currentRoomNo);
             }
         },
