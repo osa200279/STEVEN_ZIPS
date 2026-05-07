@@ -6,8 +6,10 @@ import kr.or.ddit.common.enums.ServiceResult;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper;
+import kr.or.ddit.domain.apt.complaint.vo.CvplHstryVO;
 import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +55,7 @@ public class CvplServiceImpl implements ICvplService {
             // 2. 첨부 파일 처리 (null 체크 및 length 체크 순서 중요)
             if (attachFiles != null && attachFiles.length > 0) {
                 int size = attachFiles.length;
-                long fileGroupNo = attachFileMapper.getSeqFileGroupNo();
+                long fileGroupNo = attachFileMapper.getSeqFileGroupNo();    // 파일 묶음일 경우 fileFroupNo 하나로 묶는다
                 AttachFileVO[] files = new AttachFileVO[size];
 
                 for (int i = 0; i < size; i++) {
@@ -81,6 +83,12 @@ public class CvplServiceImpl implements ICvplService {
             int insertCheck = cvplMapper.insertCvplApply(cvplVO);
             if (insertCheck < 1) throw new RuntimeException("민원 본문 DB 저장 실패");
 
+            // 4. 민원 이력도 동시 저장
+            CvplHstryVO cvplHstryVO = new CvplHstryVO();
+            BeanUtils.copyProperties(cvplVO, cvplHstryVO);
+            insertCheck = cvplMapper.insertCvplHstry(cvplHstryVO);
+            if (insertCheck < 1) throw new RuntimeException("민원 이력 DB 저장 실패");
+
             return ServiceResult.OK;
 
         } catch (Exception e) {
@@ -99,5 +107,11 @@ public class CvplServiceImpl implements ICvplService {
             }
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public List<CvplHstryVO> selectCvplHstryList(String aptCmplexNo, String userNo) {
+//        return cvplMapper.selectCvplHstryList(aptCmplexNo, userNo);
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package kr.or.ddit.domain.apt.complaint.controller;
 
 import kr.or.ddit.common.enums.ServiceResult;
 import kr.or.ddit.domain.apt.complaint.service.ICvplService;
+import kr.or.ddit.domain.apt.complaint.vo.CvplHstryVO;
 import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
@@ -41,18 +42,21 @@ public class CvplController {
     @Autowired
     private ICvplService cvplService;
 
-    @Autowired
-    private IResidentMapper residentMapper;
-
-    // 민원 신청 폼 컨트롤러
+    // 민원 신청 페이지
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/apply.do/{aptCmplexNo}")
-    public String complaintApplyForm(@PathVariable String aptCmplexNo, Model model) {
+    public String complaintApplyForm(
+            @AuthenticationPrincipal CustomUser customUser,
+            @PathVariable String aptCmplexNo, Model model) {
         log.info("complaintApplyForm() 실행");
 
         // 헤더, 푸터 DTO
         AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
         model.addAttribute("aptInfo", aptCommonDTO);
+
+        ResidentVO residentVO = (ResidentVO)customUser.getMember();
+//        List<CvplHstryVO> cvplHstry = cvplService.selectCvplHstryList(aptCmplexNo, residentVO.getUserNo());
+//        model.addAttribute("cvplHstry", cvplHstry);
 
         return "apt/complaint/complaint_apply";
     }
@@ -108,4 +112,5 @@ public class CvplController {
             return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }

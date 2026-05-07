@@ -2,11 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper">
 
+    <!--민원신청-->
     <insert id="insertCvplApply" parameterType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
         <selectKey keyProperty="cvplNo" resultType="string" order="BEFORE">
             SELECT to_char(seq_cvpl.nextval) from dual
         </selectKey>
-        INSERT INTO cvpl ( cvpl_no
+        INSERT INTO cvpl ( cvpl_no      /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.insertCvplApply */
                          , cvpl_ty_cd
                          , cvpl_loc
                          , cvpl_cn
@@ -39,4 +40,32 @@
                , #{aptCmplexNo}
                )
     </insert>
+
+    <!--민원 이력 인서트-->
+    <insert id="insertCvplHstry" parameterType="kr.or.ddit.domain.apt.complaint.vo.CvplHstryVO">
+        <selectKey keyProperty="cvplHstryNo" resultType="string" order="BEFORE">
+            select seq_cvpl_hstry.nextval from dual
+        </selectKey>
+        INSERT INTO cvpl_hstry( /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.insertCvplHstry */
+        cvpl_hstry_no
+        , cvpl_ans
+        , pic_id
+        , cvpl_reg_dt
+        , cvpl_stts_cd
+        , cvpl_no
+        )VALUES(
+        #{cvplHstryNo}
+        , #{cvplAns}
+        , #{picId}
+        , sysdate
+        , #{cvplSttsCd}
+        , #{cvplNo}
+        )
+    </insert>
+
+<!--    &lt;!&ndash;민원이력 리스트 조회&ndash;&gt;-->
+<!--    <select id="selectCvplHstryList" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplHstryVO">-->
+<!--              /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.insertCvplApply */-->
+<!--    </select>-->
+
 </mapper>

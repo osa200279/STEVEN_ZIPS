@@ -107,33 +107,32 @@
                 </div>
                 <div class="panel">
                     <div class="section-hd">
-                        <h3>최근 접수 내역</h3>
-                        <span>최근 3건</span>
+                        <h3>내 민원 내역</h3>
                     </div>
                     <table class="data-table">
                         <thead>
-                        <tr>
-                            <th>접수일</th>
-                            <th>제목</th>
-                            <th>상태</th>
-                        </tr>
+                            <tr>
+                                <th>접수일</th>
+                                <th>제목</th>
+                                <th>상태</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>2026-04-23</td>
-                            <td>주차선 보수 요청</td>
-                            <td><span class="badge ok">처리완료</span></td>
-                        </tr>
-                        <tr>
-                            <td>2026-04-21</td>
-                            <td>분리수거장 청소 요청</td>
-                            <td><span class="badge wait">접수</span></td>
-                        </tr>
-                        <tr>
-                            <td>2026-04-20</td>
-                            <td>엘리베이터 소음 문의</td>
-                            <td><span class="badge info">답변완료</span></td>
-                        </tr>
+                            <tr>
+                                <td>2026-04-23</td>
+                                <td>주차선 보수 요청</td>
+                                <td><span class="badge ok">처리완료</span></td>
+                            </tr>
+                            <tr>
+                                <td>2026-04-21</td>
+                                <td>분리수거장 청소 요청</td>
+                                <td><span class="badge wait">접수</span></td>
+                            </tr>
+                            <tr>
+                                <td>2026-04-20</td>
+                                <td>엘리베이터 소음 문의</td>
+                                <td><span class="badge info">답변완료</span></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

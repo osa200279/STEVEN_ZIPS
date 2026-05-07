@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.member.controller;
 
+import kr.or.ddit.common.enums.board.BoardTyCd;
 import kr.or.ddit.domain.member.service.IMemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ConnController {
 
+
     @Autowired
     private IMemberService service;
 
@@ -17,6 +19,7 @@ public class ConnController {
     @GetMapping("/login.do")
     public String loginPage(){
         log.info("loginPage() 실행");
+
         return "member/login";
     }
 
