@@ -1,6 +1,6 @@
-package kr.or.ddit.domain.ztest.mapper;
+package kr.or.ddit.domain.central.board.mapper;
 
-import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
+import kr.or.ddit.domain.central.board.vo.CvplVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

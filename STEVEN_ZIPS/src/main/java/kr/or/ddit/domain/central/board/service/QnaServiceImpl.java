@@ -1,7 +1,7 @@
-package kr.or.ddit.domain.ztest.service;
+package kr.or.ddit.domain.central.board.service;
 
-import kr.or.ddit.domain.ztest.mapper.IQnaMapper;
-import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
+import kr.or.ddit.domain.central.board.mapper.IQnaMapper;
+import kr.or.ddit.domain.central.board.vo.CvplVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,13 +10,10 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class QnaServiceImpl  implements  IQnaService{
+public class QnaServiceImpl implements IQnaService {
 
     @Autowired
     private IQnaMapper qnaMapper;
-
-
-
 
     @Override
     public List<CvplVO> getList(

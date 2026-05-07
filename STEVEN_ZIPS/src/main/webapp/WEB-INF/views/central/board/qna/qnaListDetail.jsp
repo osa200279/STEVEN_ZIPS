@@ -192,12 +192,11 @@
     .char-counter.warn { color: #ba1a1a; }
   </style>
 </head>
-
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 <body class="bg-surface text-on-surface min-h-screen">
 
-<%@ include file="/WEB-INF/views/ztestview/header.jsp" %>
-<%@ include file="/WEB-INF/views/ztestview/sidebar.jsp" %>
-<%@ include file="/WEB-INF/views/ztestview/sidebarStyle.jsp" %>
+<%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
 
 <main class="ml-80 p-10 pt-28">
 

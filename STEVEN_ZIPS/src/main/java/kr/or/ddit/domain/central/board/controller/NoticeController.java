@@ -15,13 +15,13 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping("/")
+@RequestMapping("/board/notice")
 public class NoticeController {
 
     @Autowired
     private INoticeService noticeService;
 
-    @GetMapping("/notice/list.do")
+    @GetMapping("/list.do")
     public String noticeList(
             @RequestParam(defaultValue = "1") int page,
             Model model) {

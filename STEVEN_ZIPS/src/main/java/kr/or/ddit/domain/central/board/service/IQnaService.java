@@ -1,6 +1,7 @@
-package kr.or.ddit.domain.ztest.service;
+package kr.or.ddit.domain.central.board.service;
 
-import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
+
+import kr.or.ddit.domain.central.board.vo.CvplVO;
 
 import java.util.List;
 
