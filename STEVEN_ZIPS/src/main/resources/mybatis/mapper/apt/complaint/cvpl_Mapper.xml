@@ -7,8 +7,8 @@
         <selectKey keyProperty="cvplNo" resultType="string" order="BEFORE">
             SELECT to_char(seq_cvpl.nextval) FROM dual
         </selectKey>
-        INSERT INTO /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.insertCvplApply */
-                    cvpl ( cvpl_no
+        INSERT INTO cvpl /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.insertCvplApply */
+                          ( cvpl_no
                            , cvpl_ty_cd
                            , cvpl_loc
                            , cvpl_cn
