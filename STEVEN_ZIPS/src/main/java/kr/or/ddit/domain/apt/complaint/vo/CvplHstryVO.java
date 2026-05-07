@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class CvplHstryVO {
 
-    private String cvplHstryNo;
+    private String cvplHstryId;
     private String cvplAns;
     private String picId;
     private String cvplSttsCd;

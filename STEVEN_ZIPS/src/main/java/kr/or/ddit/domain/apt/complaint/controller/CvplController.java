@@ -78,7 +78,6 @@ public class CvplController {
         for(MyAptVO apt : resident.getMyAptList()){
             if(apt.getAptCmplexNo().equals(aptCmplexNo)){
                 cvplVO.setHoNo(apt.getHoNo());
-                log.info("## HO_NO : {}", cvplVO.getHoNo());
             }
         }
         cvplVO.setUserNo(member.getUserNo());

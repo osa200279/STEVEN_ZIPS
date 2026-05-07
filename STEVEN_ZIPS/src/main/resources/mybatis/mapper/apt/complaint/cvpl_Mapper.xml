@@ -43,18 +43,18 @@
 
     <!--민원 이력 인서트-->
     <insert id="insertCvplHstry" parameterType="kr.or.ddit.domain.apt.complaint.vo.CvplHstryVO">
-        <selectKey keyProperty="cvplHstryNo" resultType="string" order="BEFORE">
+        <selectKey keyProperty="cvplHstryId" resultType="string" order="BEFORE">
             select seq_cvpl_hstry.nextval from dual
         </selectKey>
         INSERT INTO cvpl_hstry( /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.insertCvplHstry */
-        cvpl_hstry_no
+        cvpl_hstry_id
         , cvpl_ans
         , pic_id
         , cvpl_reg_dt
         , cvpl_stts_cd
         , cvpl_no
         )VALUES(
-        #{cvplHstryNo}
+        #{cvplHstryId}
         , #{cvplAns}
         , #{picId}
         , sysdate

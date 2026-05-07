@@ -3,6 +3,7 @@ package kr.or.ddit.domain.apt.complaint.service;
 import com.google.api.services.drive.Drive;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.enums.ServiceResult;
+import kr.or.ddit.common.enums.apt.cvpl.CvplSttsCd;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper;
@@ -80,6 +81,7 @@ public class CvplServiceImpl implements ICvplService {
             }
 
             // 3. 민원 본문 저장
+            cvplVO.setCvplSttsCd("APLY");
             int insertCheck = cvplMapper.insertCvplApply(cvplVO);
             if (insertCheck < 1) throw new RuntimeException("민원 본문 DB 저장 실패");
 

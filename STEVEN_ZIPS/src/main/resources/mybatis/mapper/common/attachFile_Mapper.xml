@@ -69,6 +69,7 @@
         where file_group_no = to_number(#{fileGroupNo}) and file_save_uuid = #{fileSaveUuid}
     </select>
 
+    <!--fileGroupNo로 파일 묶음 조회-->
     <select id="selecAttachFileList" resultType="kr.or.ddit.common.file.vo.AttachFileVO">
         select FILE_GROUP_NO    /* kr.or.ddit.common.file.mapper.IAttachFileMapper.selecAttachFileList */
              , FILE_OG_NAME
