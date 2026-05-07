@@ -40,7 +40,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
             log.info("** 파일그룹번호 : {}, 파일저장명 : {}", fileGroupNo, fileSaveUuid);
             AttachFileVO file = attachFileMapper.getAttachFile(fileGroupNo, fileSaveUuid);
             log.info("파일 있음? {}", file);
-            return (file != null) ? file : null;
+            return file;
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
             return null;

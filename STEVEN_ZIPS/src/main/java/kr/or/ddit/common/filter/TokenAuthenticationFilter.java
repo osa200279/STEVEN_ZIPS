@@ -16,7 +16,7 @@ import java.io.IOException;
 @Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {	// OncePerRequestFilter를 상속받았기에 필터 기능을 하고 하나의 요청당 한번의 필터만 실행
 
-	private TokenProvider tokenProvider;
+	private final TokenProvider tokenProvider;
 	
 	private final static String HEADER_AUTHORIZATION = "Authorization";		// 요청 헤더에서 Authorization의 값을 꺼냄
 	private final static String TOKEN_PREFIX = "Bearer ";		// 토큰 접두어의 Bearer를 제거하기 위한 변수

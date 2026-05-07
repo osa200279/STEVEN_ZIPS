@@ -21,17 +21,16 @@ public class AuthService {
      */
     public boolean hasAccess(Object principal, String target){   // 캐스팅 안정성 때문에 customUser가 아닌 principal사용
 
-        if(!(principal instanceof CustomUser)) return false;   // 익명 사용자 거르기
+        if(!(principal instanceof CustomUser user)) return false;   // 익명 사용자 거르기
 
-        CustomUser user = (CustomUser)principal;    // 익명 사용자 방어코드
+        // 익명 사용자 방어코드
         if(user == null) return false;
 
         MemberVO member = user.getMember();
         if(member == null) return false;    // null 방어 코드
 
-        if(member instanceof ResidentVO){
+        if(member instanceof ResidentVO resident){
             // 다운캐스팅
-            ResidentVO resident = (ResidentVO) member;
 
             boolean isOwner = resident.getMyAptList().stream()
                     .anyMatch(apt -> apt.getAptCmplexNo().equals(target));
@@ -39,17 +38,13 @@ public class AuthService {
             if(!isOwner) log.info("권한 없는 단지 접근 시도 유저 : {}", resident.getUserId());
 
             return isOwner;
-        }else if(member instanceof MngrVO){
-            MngrVO mngr = (MngrVO) member;
+        }else if(member instanceof MngrVO mngr){
 
             boolean isManager = mngr.getMgmtOfcNo().equals(target);
 
             if(!isManager) log.info("권한 없는 단지 접근 시도 유저 : {}", mngr.getUserId());
 
             return isManager;
-        }else if(member instanceof AdmVO){
-            return true;
-        }
-        return false;
+        }else return member instanceof AdmVO;
     }
 }

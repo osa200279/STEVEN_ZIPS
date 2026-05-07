@@ -21,7 +21,7 @@ import java.util.Iterator;
 @Slf4j
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
-	private RequestCache requestCache = new HttpSessionRequestCache();
+	private final RequestCache requestCache = new HttpSessionRequestCache();
 	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,

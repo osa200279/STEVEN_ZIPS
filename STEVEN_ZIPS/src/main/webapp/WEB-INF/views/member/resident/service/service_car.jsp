@@ -819,7 +819,7 @@
             };
             reader.readAsDataURL(file.files[0]);
         }
-    };
+    }
 
 
 </script>

@@ -23,4 +23,4 @@ function imgPreview(file, previewDiv) {
         };
         reader.readAsDataURL(file.files[0]);
     }
-};
+}

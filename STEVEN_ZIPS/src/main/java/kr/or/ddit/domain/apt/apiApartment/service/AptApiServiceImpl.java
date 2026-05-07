@@ -35,8 +35,8 @@ public class AptApiServiceImpl implements IAptApiService {
     @Autowired
     private ISeqService aptService;
 
-    private String serviceKey = "279564b17283c0863ff904cbfee96deb15c26cd426ec71fe7c5966a865f64f2f";
-    private String kakaoKey = "e91015a224888fbe9e2afc3320c22a1b";
+    private final String serviceKey = "279564b17283c0863ff904cbfee96deb15c26cd426ec71fe7c5966a865f64f2f";
+    private final String kakaoKey = "e91015a224888fbe9e2afc3320c22a1b";
     RestTemplate rt = new RestTemplate();
 
     @Override
@@ -506,7 +506,7 @@ public class AptApiServiceImpl implements IAptApiService {
         if (dongCnt != 0){
             unitCnt = TotalunitCnt/dongCnt;
             unitCntRemain =TotalunitCnt%dongCnt;
-        };
+        }
 
         for(int i=1;i<=dongCnt;i++){
             AptUnitVO aptUnitVO = new AptUnitVO();
