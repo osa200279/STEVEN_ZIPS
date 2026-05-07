@@ -54,7 +54,20 @@ public class QnaServiceImpl implements IQnaService {
 
     @Override
     public Map<String, Object> getResidentInfo(String userNo) {
-        return qnaMapper.getResidentInfo(userNo);
+        Map<String, Object> info = qnaMapper.getResidentInfo(userNo);
+
+        if (info == null || info.isEmpty()) {
+            throw new RuntimeException("세대 정보가 연결되지 않은 사용자입니다.");
+            // 세대 정보란?
+            // → 현재 로그인한 사용자가 어느 호수(HO_NO), 어느 단지(APT_CMPLEX_NO)에 속하는지에 대한 정보.
+        }
+
+        return info;
     }
+
+//    @Override
+//    public Map<String, Object> getResidentInfo(String userNo) {
+//        return qnaMapper.getResidentInfo(userNo);
+//    }
 
 }

@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 
 <html lang="ko"><head>
@@ -211,6 +212,12 @@
       <p class="text-sm text-gray-400 mt-0.5">담당자가 확인 후 신속하게 답변해 드립니다.</p>
     </div>
   </div>
+
+  <c:if test="${not empty errorMessage}">
+    <div style="margin-bottom:16px; padding:14px 18px; border-radius:12px; background:#fff1f2; color:#be123c; font-size:14px; font-weight:700;">
+        ${errorMessage}
+    </div>
+  </c:if>
 
   <form action="/board/qna/writeProc.do" method="post" enctype="multipart/form-data" id="inquiryForm">
 

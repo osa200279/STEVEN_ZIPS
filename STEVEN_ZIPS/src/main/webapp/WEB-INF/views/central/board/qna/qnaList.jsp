@@ -183,7 +183,8 @@
             </div>
 
           <c:if test="${qna.userNo eq sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member.userNo}">
-            <button onclick="deleteQna('${qna.cvplNo}')"
+            <button type="button"
+                    onclick="deleteQna('${qna.cvplNo}')"
                     class="text-xs text-red-500 hover:underline">
               삭제
             </button>
@@ -247,8 +248,13 @@
   }
 
   function deleteQna(cvplNo) {
+    event.stopPropagation(); // 삭제 버튼 클릭 시 카드 열림/닫힘 이벤트가 같이 실행되는 것을 막음
+
     if (!confirm("삭제하시겠습니까?")) return;
-    location.href = '${pageContext.request.contextPath}/member/qna/delete.do?cvplNo=' + cvplNo;
+
+    location.href =
+            '${pageContext.request.contextPath}/board/qna/delete.do?cvplNo=' + cvplNo;
+    // /member/qna/delete.do 가 아니라 Controller 주소인 /board/qna/delete.do 로 맞춰야 함
   }
 
   $(document).on("click", ".page-link", function(e){
@@ -262,8 +268,10 @@
     }
 
     location.href =
-            '${pageContext.request.contextPath}/member/qna/list.do?page=' + page;
+            '${pageContext.request.contextPath}/board/qna/list.do?page=' + page;
+    // /member/qna/list.do 가 아니라 Controller 주소인 /board/qna/list.do 로 맞춰야 함
   });
+
 
 
 

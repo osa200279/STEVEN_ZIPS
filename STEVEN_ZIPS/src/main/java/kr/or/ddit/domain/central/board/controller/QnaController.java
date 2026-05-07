@@ -73,30 +73,57 @@ public class QnaController {
     }
 
     @PostMapping("/writeProc.do")
-    public String writeProc(CvplVO vo, Authentication auth) {
+    public String writeProc(CvplVO vo, Authentication auth, Model model) {
 
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         MemberVO user = customUser.getMember();
 
+        Map<String, Object> info;
 
-        Map<String, Object> info =
-                qnaService.getResidentInfo(user.getUserNo());
+        try {
+            info = qnaService.getResidentInfo(user.getUserNo());
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "세대 정보가 연결되지 않아 문의를 등록할 수 없습니다. 관리자에게 입주민 승인 상태를 확인해주세요.");
+            return "central/board/qna/qnaListDetail";
+            // return이란?
+            // → 이동할 JSP 화면 경로를 정하는 것.
+            // 여기서는 등록 실패 시 작성 화면으로 다시 보냄.
+        }
 
         vo.setUserNo(user.getUserNo());
-        vo.setHoNo((String) info.get("HO_NO"));
-        vo.setAptCmplexNo((String) info.get("APT_CMPLEX_NO"));
-        //vo.setAptCmplexNo(user.getAptCmplexNo());
-
-//        System.out.println("apt = " + user.getAptCmplexNo());
-       /* vo.setAptCmplexNo(user.getAptCmplexNo());*/
-
-
-       /* System.out.println("apt = " + user.getAptCmplexNo());*/
+        vo.setHoNo(String.valueOf(info.get("HONO")));
+        vo.setAptCmplexNo(String.valueOf(info.get("APTCMPLEXNO")));
 
         qnaService.insertQna(vo);
 
         return "redirect:/board/qna/list.do";
     }
+
+//    @PostMapping("/writeProc.do")
+//    public String writeProc(CvplVO vo, Authentication auth) {
+//
+//        CustomUser customUser = (CustomUser) auth.getPrincipal();
+//        MemberVO user = customUser.getMember();
+//
+//
+//        Map<String, Object> info =
+//                qnaService.getResidentInfo(user.getUserNo());
+//
+//        vo.setUserNo(user.getUserNo());
+//        vo.setHoNo((String) info.get("HO_NO"));
+//        vo.setAptCmplexNo((String) info.get("APT_CMPLEX_NO"));
+//        //vo.setAptCmplexNo(user.getAptCmplexNo());
+//
+////        System.out.println("apt = " + user.getAptCmplexNo());
+//       /* vo.setAptCmplexNo(user.getAptCmplexNo());*/
+//
+//
+//       /* System.out.println("apt = " + user.getAptCmplexNo());*/
+//
+//        qnaService.insertQna(vo);
+//
+//        return "redirect:/board/qna/list.do";
+//    }
 
     @GetMapping("/delete.do")
     public String deleteQna(@RequestParam String cvplNo,
