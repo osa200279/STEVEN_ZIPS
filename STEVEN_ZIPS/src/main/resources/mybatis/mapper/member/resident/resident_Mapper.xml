@@ -22,6 +22,7 @@
         <result property="dongNm" column="dong_nm"/>
         <result property="floor" column="floor"/>
         <result property="ho" column="ho"/>
+        <result property="hoNo" column="ho_no"/>
         <result property="sidoNm" column="sido_nm"/>
         <result property="sigunguNm" column="sigungu_nm"/>
         <result property="emdNm" column="emd_nm"/>

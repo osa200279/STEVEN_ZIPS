@@ -14,6 +14,7 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,37 +52,39 @@ public class GoogleDriveService {
      */
     public Drive getDriveService() throws IOException, GeneralSecurityException {
         // 1. OAuth 2.0 사용자 인증을 위한 credentials.json 읽기 (기존 방식)
-        InputStream in = GoogleDriveService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-        if (in == null) {
-            throw new IOException("credentials.json 파일을 찾을 수 없습니다.");
+        ClassPathResource resource = new ClassPathResource("credentials.json");
+        try (InputStream in = resource.getInputStream()) {
+            if (in == null) {
+                throw new IOException("credentials.json 파일을 찾을 수 없습니다.");
+            }
+            GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
+                    GsonFactory.getDefaultInstance(), new InputStreamReader(in));
+
+            // 2. 토큰 저장소 설정 (로컬 tokens/ 폴더에 StoredCredential 생성)
+            FileDataStoreFactory dataStoreFactory = new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH));
+
+            // 3. OAuth 2.0 인증 흐름 설정 (offline으로 설정해야 리프레시 토큰이 발급됨)
+            GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    GsonFactory.getDefaultInstance(),
+                    clientSecrets,
+                    Collections.singleton(DriveScopes.DRIVE))
+                    .setDataStoreFactory(dataStoreFactory)
+                    .setAccessType("offline")
+                    .build();
+
+            // 4. 로컬 서버 리시버를 통해 브라우저 인증 수행 (사용자 인증 방식)
+            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+            Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+
+            // 5. Drive 서비스 객체 반환
+            return new Drive.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    GsonFactory.getDefaultInstance(),
+                    credential)
+                    .setApplicationName("StevenZips")
+                    .build();
         }
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
-                GsonFactory.getDefaultInstance(), new InputStreamReader(in));
-
-        // 2. 토큰 저장소 설정 (로컬 tokens/ 폴더에 StoredCredential 생성)
-        FileDataStoreFactory dataStoreFactory = new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH));
-
-        // 3. OAuth 2.0 인증 흐름 설정 (offline으로 설정해야 리프레시 토큰이 발급됨)
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                GsonFactory.getDefaultInstance(),
-                clientSecrets,
-                Collections.singleton(DriveScopes.DRIVE))
-                .setDataStoreFactory(dataStoreFactory)
-                .setAccessType("offline")
-                .build();
-
-        // 4. 로컬 서버 리시버를 통해 브라우저 인증 수행 (사용자 인증 방식)
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-
-        // 5. Drive 서비스 객체 반환
-        return new Drive.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                GsonFactory.getDefaultInstance(),
-                credential)
-                .setApplicationName("StevenZips")
-                .build();
     }
 
     /**

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-@Transactional(rollbackFor = Exception.class)
+//@Transactional(rollbackFor = Exception.class)
 @Service
 public class CvplServiceImpl implements ICvplService {
 
@@ -35,52 +35,60 @@ public class CvplServiceImpl implements ICvplService {
 
     @Override
     public ServiceResult applyCvpl(CvplVO cvplVO, MultipartFile[] attachFiles) throws GeneralSecurityException, IOException {
-        Drive drive = googleDriveService.getDriveService();
+
         List<String> uploadedGids = new ArrayList<>();
-        long fileGroupNo;
-        int size = attachFiles.length;
+        Drive drive = null; // drive 객체를 밖으로 뺌
 
         try {
-            // 1. 첨부 파일 먼저 업로드
-            if (attachFiles != null && size > 0) {
-                AttachFileVO[] files = new AttachFileVO[size];  // DB에 인서트 할 VO정보 담아두는 곳
-                fileGroupNo = attachFileMapper.getSeqFileGroupNo(); // 파일 그룹 번호
+            drive = googleDriveService.getDriveService();
+
+            // 2. 첨부 파일 처리 (null 체크 및 length 체크 순서 중요)
+            if (attachFiles != null && attachFiles.length > 0) {
+                int size = attachFiles.length;
+                long fileGroupNo = attachFileMapper.getSeqFileGroupNo();
+                AttachFileVO[] files = new AttachFileVO[size];
 
                 for (int i = 0; i < size; i++) {
                     String originalFilename = attachFiles[i].getOriginalFilename();
                     String uuid = UUID.randomUUID().toString().replace("-", "");
                     String savedFileName = uuid + "_" + originalFilename;
                     String folderPath = "apt/cvpl/" + cvplVO.getAptCmplexNo() + "/" + cvplVO.getUserNo();
-                    String fullPath = folderPath + "/" + savedFileName;
-                    String cat = "민원";
 
+                    // 실제 업로드
                     String googleId = googleDriveService.uploadFile(attachFiles[i], folderPath, savedFileName);
                     uploadedGids.add(googleId);
 
-                    files[i] = AttachFileVO.fileSettings(attachFiles[i], fileGroupNo, cat, savedFileName, googleId, fullPath, i);
+                    files[i] = AttachFileVO.fileSettings(attachFiles[i], fileGroupNo, "민원", savedFileName, googleId, folderPath + "/" + savedFileName, i);
                 }
-                // 2. DB 인서트
+
+                // DB 인서트
                 for (AttachFileVO f : files) {
-                    int ins = attachFileMapper.insertAttachFile(f);
-                    if (ins < 1) throw new RuntimeException("파일 정보 DB인서트 실패.");
+                    attachFileMapper.insertAttachFile(f);
                 }
                 cvplVO.setCvplFileNo(String.valueOf(fileGroupNo));
             }
+
             // 3. 민원 본문 저장
             int insertCheck = cvplMapper.insertCvplApply(cvplVO);
             if (insertCheck < 1) throw new RuntimeException("민원 본문 DB 저장 실패");
+
             return ServiceResult.OK;
+
         } catch (Exception e) {
-            log.error("첨부 파일 업로드 중 오류 발생 : {}", e.getMessage());
-            // 오류 발생시(DB 인서트 실패 등) 구글 드라이브 롤백 로직
-            for(String gId : uploadedGids){
-                try{
-                    googleDriveService.moveToTrash(drive, gId);
-                }catch (Exception ex){
-                    log.error("구글 드라이브 롤백(파일 삭제) 실패(gId : {}) : {}", gId, ex.getMessage());
+            log.error("#### 에러 발생 원인: {}", e.getMessage());
+            e.printStackTrace(); // 상세 스택트레이스 출력
+
+            // 롤백: 이미 업로드된 파일들 삭제
+            if (drive != null && !uploadedGids.isEmpty()) {
+                for (String gId : uploadedGids) {
+                    try {
+                        googleDriveService.moveToTrash(drive, gId);
+                    } catch (Exception ex) {
+                        log.error("롤백 중 삭제 실패(gId: {}): {}", gId, ex.getMessage());
+                    }
                 }
             }
-            throw new RuntimeException(e.getMessage(), e);  // 롤백 유도 예외
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }

@@ -3,10 +3,13 @@
 <mapper namespace="kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper">
 
     <insert id="insertCvplApply" parameterType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
+        <selectKey keyProperty="cvplNo" resultType="string" order="BEFORE">
+            SELECT to_char(seq_cvpl.nextval) from dual
+        </selectKey>
         INSERT INTO cvpl ( cvpl_no
                          , cvpl_ty_cd
                          , cvpl_loc
-                         , cpvl_cn
+                         , cvpl_cn
                          , cvpl_stts_cd
                          , cvpl_reg_dt
                          , cvpl_mdf_dt
@@ -17,14 +20,14 @@
                          , cvpl_ttl
                          , user_no
                          , ho_no
-                         , aptCmplexNo)
+                         , apt_cmplex_no)
         VALUES (
                 #{cvplNo}
                , #{cvplTyCd}
                , #{cvplLoc}
                , #{cvplCn}
                , 'APLY'
-               , sydate
+               , sysdate
                , null
                , null
                , null
