@@ -96,7 +96,8 @@ body {
 
 .main-content {
     flex: 1;
-    padding: 26px 22px 20px;
+    /* 중앙관리자 레이아웃과 사이드바-본문 간격을 맞추기 위해 본문 패딩 기준을 동일하게 둔다. */
+    padding: 28px;
     overflow-y: auto;
 }
 
@@ -549,6 +550,36 @@ body {
 .topbar-icon-btn:hover {
     background: var(--gray-soft);
     color: var(--text-primary);
+}
+
+.topbar-action-btn {
+    height: 36px;
+    padding: 0 12px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: 0.15s;
+    flex-shrink: 0;
+}
+
+.topbar-action-btn:hover {
+    background: var(--gray-soft);
+    color: var(--text-primary);
+}
+
+.topbar-action-btn .material-symbols-rounded {
+    font-size: 16px;
 }
 
 .topbar-icon-btn .dot {

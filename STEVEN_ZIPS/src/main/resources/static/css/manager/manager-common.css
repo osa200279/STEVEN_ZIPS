@@ -11,8 +11,9 @@
 ============================================================ */
 .office-page {
     width: 100%;
-    max-width: 1520px;
-    margin: 0 auto;
+    /* 넓은 화면에서 내부 본문이 가운데 정렬되며 사이드바와 멀어지지 않도록 최대폭 제한을 두지 않는다. */
+    max-width: none;
+    margin: 0;
     padding: 0;
     color: var(--text-primary);
     font-family: "Noto Sans KR", sans-serif;
