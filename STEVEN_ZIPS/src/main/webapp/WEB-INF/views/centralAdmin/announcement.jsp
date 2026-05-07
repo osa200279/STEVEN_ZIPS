@@ -64,7 +64,7 @@
       }
 
       /* ===================================================== */
-      /* 스크롤 없는 꽉 채우기 모달 */
+      /* 공고 등록 모달 */
       /* ===================================================== */
 
       .c-modal--notice-form {
@@ -147,19 +147,79 @@
         flex: 1;
       }
 
-      /* 체크박스 3열 */
-      .cb-group--compact {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px 10px;
-        font-size: 12px;
-      }
+      /*!* 체크박스 3열 *!*/
+      /*.cb-group--compact {*/
+      /*  display: grid;*/
+      /*  grid-template-columns: repeat(3, 1fr);*/
+      /*  gap: 6px 10px;*/
+      /*  font-size: 12px;*/
+      /*}*/
 
       /* 에러 메시지 최소화 */
       .c-modal--notice-form .err-msg {
         min-height: 12px;
         font-size: 11px;
         margin-top: 2px;
+      }
+
+      /*
+        공급 세대수 readonly 스타일
+      */
+      #f-funit[readonly] {
+        color: #64748b;          /* 글자색 */
+        /*background: #eff6ff;     !* 연파랑 배경 *!*/
+        /*border-color: #93c5fd;   !* 테두리 색 *!*/
+      }
+
+      #f-fsite {
+        color: #475569;   /* 진회색 */
+      }
+
+      /*
+        날짜 input 글자색
+      */
+      .date-row .c-input {
+        color: #475569;
+      }
+
+      /*
+        날짜 placeholder 색상
+      */
+      .date-row .c-input::placeholder {
+        color: #475569;
+      }
+
+
+      /* 첨부파일 input 전체 */
+      #f-file {
+        padding: 0;              /* 기본 안쪽 여백 제거 */
+        color: #475569;
+      }
+
+      /*
+        파일 선택 버튼
+
+        margin 제거가 핵심.
+      */
+      #f-file::file-selector-button {
+        margin: 0;               /* 버튼 왼쪽 뜨는 여백 제거 */
+        margin-right: 10px;
+
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+
+        padding: 5px 12px;
+        border-radius: 8px;
+
+        color: #334155;
+        cursor: pointer;
+      }
+
+      /*
+        등록 버튼 체크 아이콘 초록색
+      */
+      #form-submit-btn .material-symbols-rounded {
+        color: #16a34a;
       }
 
       /* ================= 반응형 ================= */
@@ -499,8 +559,8 @@
 
               <div class="form-grid">
                 <div class="c-field">
-                  <label class="c-label">공급 세대수 <span style="color: var(--red)">*</span></label>
-                  <input type="number" id="f-funit" class="c-input" placeholder="단지 선택 시 자동 조회" readonly />
+                  <label class="c-label">공급 세대수 (자동조회)</label>
+                  <input type="number" id="f-funit" class="c-input" placeholder="단지 선택 시 자동 조회 됩니다." readonly />
                   <div class="err-msg" id="e-funit"></div>
                 </div>
 
