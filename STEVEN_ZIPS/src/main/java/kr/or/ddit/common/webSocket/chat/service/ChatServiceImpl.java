@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -44,6 +45,8 @@ public class ChatServiceImpl implements IChatService {
 
         // 메시지 저장
         mapper.insertMessage(vo);
+
+        vo.setRegDttm(new Date());
 
         // 읽음 처리
         mapper.updateLastRead(vo);
