@@ -71,7 +71,7 @@
         where apt_cmplex_no = #{aptCmplexNo}
     </select>
 
-<!--    <select id="selectAllMgmtOffice" resultType="kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO">
+<!--    <select id="selectAllMgmtOffice" resultType="kr.or.ddit.domain.apt.mgmtOffice.dto.MgmtOfficeVO">
         SELECT
             MO.MGMT_OFC_NO,
             MO.MGMT_OFC_NM,

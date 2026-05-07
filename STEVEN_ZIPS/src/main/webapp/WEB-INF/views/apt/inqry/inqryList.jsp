@@ -155,10 +155,10 @@
       <div class="flex justify-between items-center">
         <div class="flex-1 min-w-0 pr-4">
           <div class="text-xs text-gray-400 mb-1">
-            NO.${qna.cvplNo}
+            NO.${qna.postNo}
           </div>
           <div class="text-base font-semibold text-gray-900">
-            ${qna.cvplTtl}
+            ${qna.ttl}
           </div>
         </div>
 
@@ -179,12 +179,12 @@
             </c:choose>
 
             <div class="text-xs text-gray-400">
-              <fmt:formatDate value="${qna.cvplRegDt}" pattern="yyyy.MM.dd"/>
+              <fmt:formatDate value="${qna.regDttm}" pattern="yyyy.MM.dd"/>
             </div>
 
-          <c:if test="${qna.userNo eq sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member.userNo}">
+            <c:if test="${qna.wrtrId eq sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member.userId}">
             <button type="button"
-                    onclick="deleteQna('${qna.cvplNo}')"
+                    onclick="deleteQna('${qna.postNo}')"
                     class="text-xs text-red-500 hover:underline">
               삭제
             </button>
@@ -201,7 +201,7 @@
         <div class="flex gap-4">
           <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">👤</div>
           <p class="text-sm text-gray-700 leading-relaxed pt-1">
-            ${qna.cvplCn}
+            ${qna.cn}
           </p>
         </div>
       </div>
@@ -247,14 +247,13 @@
     }
   }
 
-  function deleteQna(cvplNo) {
-    event.stopPropagation(); // 삭제 버튼 클릭 시 카드 열림/닫힘 이벤트가 같이 실행되는 것을 막음
+  function deleteQna(postNo) {
+    event.stopPropagation();
 
     if (!confirm("삭제하시겠습니까?")) return;
 
     location.href =
-            '${pageContext.request.contextPath}/board/qna/delete.do?cvplNo=' + cvplNo;
-    // /member/qna/delete.do 가 아니라 Controller 주소인 /board/qna/delete.do 로 맞춰야 함
+            '${pageContext.request.contextPath}/board/qna/delete.do?postNo=' + postNo;
   }
 
   $(document).on("click", ".page-link", function(e){

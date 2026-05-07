@@ -237,7 +237,7 @@
           <button type="button" class="category-chip" data-value="청소">청결 / 환경</button>
           <button type="button" class="category-chip" data-value="기타">기타</button>
         </div>
-        <input type="hidden" name="cvplTyCd" id="categoryInput" value="시설"/>
+        <input type="hidden" name="prrtCd" id="categoryInput" value="시설"/>
       </div>
 
       <!-- ② 제목 -->
@@ -246,7 +246,7 @@
         <input class="form-input"
                type="text"
                id="titleInput"
-               name="cvplTtl"
+               name="ttl"
                placeholder="문의 제목을 입력하세요 (최대 50자)"
                maxlength="50"/>
         <div class="char-counter"><span id="titleCount">0</span> / 50</div>
@@ -257,7 +257,7 @@
         <label class="form-label required" for="contentInput">문의 내용</label>
         <textarea class="form-input"
                   id="contentInput"
-                  name="cvplCn"
+                  name="cn"
                   placeholder="문의 내용을 상세히 작성해주세요.&#10;&#10;예) 위치, 발생 시간, 증상 등을 함께 적어주시면 더 빠른 처리가 가능합니다."
                   maxlength="1000"></textarea>
         <div class="char-counter"><span id="contentCount">0</span> / 1000</div>
@@ -293,7 +293,7 @@
             </div>
           </div>
         </div>
-        <input type="hidden" name="isPublic" id="isPublicInput" value="Y"/>
+        <input type="hidden" name="opnYn" id="isPublicInput" value="Y"/>
       </div>
 
       <!-- ⑥ 동의 체크박스 -->
