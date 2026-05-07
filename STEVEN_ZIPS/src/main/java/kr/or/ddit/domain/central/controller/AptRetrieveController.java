@@ -24,6 +24,7 @@ public class AptRetrieveController {
     @GetMapping("/list.do")
     public String list(
             @RequestParam(value = "initial", required = false) String initial,
+            @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", required = false, defaultValue = "1") int currentPage,
             Model model
     ) {
@@ -32,10 +33,14 @@ public class AptRetrieveController {
         pagingVO.setScreenSize(12);
 
         pagingVO.setCurrentPage(currentPage);
+
         pagingVO.setSearchWord(initial);
+        pagingVO.setSearchType(keyword);
+
 
         // 총 개수
-        int totalRecord = aptComplexService.selectAptComplexCount(initial);
+        int totalRecord =
+                aptComplexService.selectAptComplexCount(pagingVO);
         pagingVO.setTotalRecord(totalRecord);
 
         // 페이징 목록 조회

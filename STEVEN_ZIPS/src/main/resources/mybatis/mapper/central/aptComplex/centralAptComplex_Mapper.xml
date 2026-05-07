@@ -130,72 +130,72 @@
 
         <choose>
 
-            <when test='initial == "ㄱ"'>
+            <when test='searchWord == "ㄱ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '가'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '나'
             </when>
 
-            <when test='initial == "ㄴ"'>
+            <when test='searchWord == "ㄴ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '나'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '다'
             </when>
 
-            <when test='initial == "ㄷ"'>
+            <when test='searchWord == "ㄷ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '다'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '라'
             </when>
 
-            <when test='initial == "ㄹ"'>
+            <when test='searchWord == "ㄹ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '라'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '마'
             </when>
 
-            <when test='initial == "ㅁ"'>
+            <when test='searchWord == "ㅁ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '마'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '바'
             </when>
 
-            <when test='initial == "ㅂ"'>
+            <when test='searchWord == "ㅂ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '바'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '사'
             </when>
 
-            <when test='initial == "ㅅ"'>
+            <when test='searchWord == "ㅅ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '사'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '아'
             </when>
 
-            <when test='initial == "ㅇ"'>
+            <when test='searchWord == "ㅇ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '아'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '자'
             </when>
 
-            <when test='initial == "ㅈ"'>
+            <when test='searchWord == "ㅈ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '자'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '차'
             </when>
 
-            <when test='initial == "ㅊ"'>
+            <when test='searchWord == "ㅊ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '차'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '카'
             </when>
 
-            <when test='initial == "ㅋ"'>
+            <when test='searchWord == "ㅋ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '카'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '타'
             </when>
 
-            <when test='initial == "ㅌ"'>
+            <when test='searchWord == "ㅌ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '타'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '파'
             </when>
 
-            <when test='initial == "ㅍ"'>
+            <when test='searchWord == "ㅍ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '파'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt; '하'
             </when>
 
-            <when test='initial == "ㅎ"'>
+            <when test='searchWord == "ㅎ"'>
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) >= '하'
                 AND SUBSTR(APT_CMPLEX_NM, 1, 1) &lt;= '힣'
             </when>

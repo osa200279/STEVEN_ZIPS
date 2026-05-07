@@ -31,7 +31,13 @@ public class CentralAptComplexServiceImpl implements ICentralAptComplexService {
     }
 
     @Override
-    public int selectAptComplexCount(String initial) {
-        return aptComplexMapper.selectAptComplexCount(initial);
+    public int selectAptComplexCount(
+            PaginationInfoVO<AptComplexVO> pagingVO
+    ) {
+        return aptComplexMapper.selectAptComplexCount(
+                pagingVO.getSearchWord(),
+                pagingVO.getSearchType()
+        );
+
     }
 }

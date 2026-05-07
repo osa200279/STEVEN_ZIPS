@@ -13,5 +13,7 @@ public interface ICentralAptComplexService {
 
     List<AptComplexVO> searchApt(String keyword);
 
-    int selectAptComplexCount(String initial);
+    int selectAptComplexCount(
+            PaginationInfoVO<AptComplexVO> pagingVO
+    );
 }

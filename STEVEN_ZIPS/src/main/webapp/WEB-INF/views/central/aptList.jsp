@@ -188,13 +188,25 @@
           <option>전체</option>
         </select>
       </div>
-      <div class="flex-grow min-w-[200px]">
-        <input class="w-full bg-[#f1f3ef] border-none rounded-full px-6 py-2 text-sm focus:ring-2 focus:ring-primary/20" placeholder="단지명 검색" type="text"/>
-      </div>
-      <div class="flex gap-2 shrink-0">
-        <button class="px-6 py-2 bg-white border border-slate-200 text-slate-600 rounded-full font-bold text-sm hover:bg-slate-50 transition-colors">초기화</button>
-        <button class="px-8 py-2 bg-primary text-white rounded-full font-bold text-sm hover:bg-opacity-90 transition-all">검색</button>
-      </div>
+      <form action="${pageContext.request.contextPath}/apt/list.do"
+            method="get"
+            class="flex gap-2 flex-grow">
+
+        <div class="flex-grow min-w-[200px]">
+          <input
+                  name="keyword"
+                  value="${param.keyword}"
+                  class="w-full bg-[#f1f3ef] border-none rounded-full px-6 py-2 text-sm focus:ring-2 focus:ring-primary/20"
+                  placeholder="단지명 검색"
+                  type="text"/>
+        </div>
+
+        <button type="submit"
+                class="px-8 py-2 bg-primary text-white rounded-full font-bold text-sm hover:bg-opacity-90 transition-all">
+          검색
+        </button>
+
+      </form>
     </div>
   </div>
   <!-- 초성 필터 -->
@@ -205,18 +217,18 @@
       <c:url var="allUrl" value="/apt/list.do" />
       <a href="${allUrl}"
          class="px-4 py-2 rounded-full text-sm font-bold border transition-all
-                ${empty selectedInitial ? 'bg-primary text-white border-primary' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}">
+                ${empty param.initial  ? 'bg-primary text-white border-primary' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}">
         전체
       </a>
 
       <c:forEach var="initial" items="${fn:split('ㄱ,ㄴ,ㄷ,ㄹ,ㅁ,ㅂ,ㅅ,ㅇ,ㅈ,ㅊ,ㅋ,ㅌ,ㅍ,ㅎ', ',')}">
         <c:url var="initialUrl" value="/apt/list.do">
-          <c:param name="initial" value="${initial}" />
+         <c:param name="initial" value="${initial}" />
         </c:url>
 
         <a href="${initialUrl}"
            class="px-4 py-2 rounded-full text-sm font-bold border transition-all
-                  ${selectedInitial eq initial ? 'bg-primary text-white border-primary' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}">
+                ${param.initial  eq initial ? 'bg-primary text-white border-primary' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}">
           ${initial}
         </a>
       </c:forEach>

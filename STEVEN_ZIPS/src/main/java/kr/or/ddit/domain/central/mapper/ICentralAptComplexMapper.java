@@ -12,7 +12,8 @@ public interface ICentralAptComplexMapper {
 
 
     int selectAptComplexCount(
-            @Param("initial") String initial
+            @Param("searchWord") String searchWord,
+            @Param("keyword") String keyword
     );
 
     // 아파트 단지 목록 조회 (페이징)
