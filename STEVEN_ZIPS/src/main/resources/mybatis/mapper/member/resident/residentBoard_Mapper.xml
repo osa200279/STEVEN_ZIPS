@@ -37,9 +37,123 @@
             ,#{boardNo}
         )
     </insert>
-    <select id="boardFreeList" resultType="kr.or.ddit.domain.member.resident.vo.RsidBoardVO">
 
+    <select id="boardFreeList" resultType="kr.or.ddit.domain.member.resident.vo.RsidBoardVO"
+            parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO">
+        SELECT *
+            FROM(
+                SELECT ROWNUM rn, a.*
+            FROM(
+                SELECT
+                    ann_no
+                    ,ttl
+                    ,cn
+                    ,wrtr_id
+                    ,top_fix_yn
+                    ,pblanc_bgng_dt
+                    ,pblanc_end_dt
+                    ,reg_dttm
+                    ,mdf_dttm
+                    ,inq_cnt
+                    ,del_yn
+                    ,atch_file_id
+                    ,board_no
+        FROM apt_ann_board_post
+        WHERE board_no = #{aptCmplexNo}
+        AND del_yn = 'N'
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'ttl'">
+                    AND ttl LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchType == 'wrtrId'">
+                    AND wrtr_id LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchType == 'cn'">
+                    AND cn LIKE '%' || #{searchWord} || '%'
+                </when>
+                <otherwise>
+                    AND ttl LIKE '%' || #{searchWord} || '%'
+                </otherwise>
+            </choose>
+        </if>
+        ORDER BY ann_no DESC
+        ) a
+        WHERE ROWNUM &lt;= #{endRow}
+        )
+        WHERE rn >= #{startRow}
     </select>
 
 
+    <select id="selectBoardFreeCount" resultType="int"
+            parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO">
+        SELECT COUNT(*)
+        FROM apt_ann_board_post
+        WHERE board_no = #{aptCmplexNo}
+        AND del_yn = 'N'
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'ttl'">
+                    AND ttl LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchType == 'wrtrId'">
+                    AND wrtr_id LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchType == 'cn'">
+                    AND cn LIKE '%' || #{searchWord} || '%'
+                </when>
+                <otherwise>
+                    AND ttl LIKE '%' || #{searchWord} || '%'
+                </otherwise>
+            </choose>
+        </if>
+    </select>
+    <select id="selectOneBoardFree" resultType="kr.or.ddit.domain.member.resident.vo.RsidBoardVO" parameterType="kr.or.ddit.domain.member.resident.vo.RsidBoardVO">
+        SELECT
+            ann_no
+            ,ttl
+            ,cn
+            ,wrtr_id
+            ,top_fix_yn
+            ,pblanc_bgng_dt
+            ,pblanc_end_dt
+            ,reg_dttm
+            ,mdf_dttm
+            ,inq_cnt
+            ,del_yn
+            ,atch_file_id
+            ,board_no
+        FROM
+            apt_ann_board_post
+        WHERE
+            ann_no = #{annNo}
+
+    </select>
+
+    <update id="deleteBoardFree" parameterType="string">
+        UPDATE apt_ann_board_post
+        SET del_yn = 'Y'
+        WHERE ann_no = #{annNo}
+    </update>
+
+    <update id="updateBoardFree" parameterType="kr.or.ddit.domain.member.resident.vo.RsidBoardVO">
+        UPDATE apt_ann_board_post
+        SET ttl = #{ttl},
+            cn = #{cn},
+            mdf_dttm = sysdate
+        WHERE ann_no = #{annNo}
+    </update>
+    <update id="updateInqCnt" parameterType="string">
+        UPDATE apt_ann_board_post
+        SET inq_cnt = inq_cnt + 1
+        WHERE ann_no = #{annNo}
+    </update>
+
 </mapper>
+
+
+
+
+
+
+
