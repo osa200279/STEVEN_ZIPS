@@ -37,6 +37,11 @@
         #mngrAccountPage .list-count-text    { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
         #mngrAccountPage .date-filter-group  { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         #mngrAccountPage .filter-date        { width: 136px; }
+        #mngrAccountPage .grid-actions .btn.is-disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
 
         /* 회원 검색 모달 */
         #memberSearchModal .member-list      { max-height: 300px; overflow-y: auto; margin-top: 12px; }
@@ -55,6 +60,13 @@
         #memberSearchModal .member-item .m-name { font-size: 13px; font-weight: 700; }
         #memberSearchModal .member-item .m-sub  { font-size: 11px; color: var(--text-tertiary); }
         #memberSearchModal .member-empty        { text-align: center; padding: 24px; font-size: 13px; color: var(--text-tertiary); }
+        #memberSearchModal .member-name-row     { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        #memberSearchModal .member-rjct-badge   {
+            display: inline-flex; align-items: center; height: 20px;
+            padding: 0 7px; border-radius: 4px;
+            border: 1px solid #e1b8b8; background: #f8e8e8; color: #8a2c2c;
+            font-size: 11px; font-weight: 700; line-height: 1;
+        }
 
         /* 선택된 회원 표시 박스 (회원 선택 시 visible 클래스 추가로 표시) */
         #rqstSelectedMember {
@@ -68,6 +80,114 @@
             background: #2e5c38; color: #fff;
             display: flex; align-items: center; justify-content: center;
             font-size: 13px; font-weight: 700; flex-shrink: 0;
+        }/* =========================================================
+             상세(읽기 전용) 모드
+            ========================================================= */
+
+        #mngrAccountPage .readonly-mode input.form-input,
+        #mngrAccountPage .readonly-mode select.form-select,
+        #mngrAccountPage .readonly-mode textarea.form-textarea{
+            background:#f8f9fb;
+            color:#555;
+            -webkit-text-fill-color:#555;
+            border-color:#d7dce2;
+            opacity:1;
+            font-weight:400;
+            cursor:default;
+        }
+
+        #mngrAccountPage .readonly-mode input.form-input:disabled,
+        #mngrAccountPage .readonly-mode select.form-select:disabled,
+        #mngrAccountPage .readonly-mode textarea.form-textarea:disabled{
+            color:#555;
+            -webkit-text-fill-color:#555;
+            opacity:1;
+        }
+        /*
+         * 상세 모드에서는 회원 검색 영역 숨김
+         */
+        #mngrAccountPage .readonly-mode .member-search-section{
+            display:none;
+        }
+        /*
+         * readonly textarea 리사이즈 방지
+         */
+        #mngrAccountPage .readonly-mode textarea{
+            resize:none;
+        }
+        /*
+         * 요청 수정 모드 표시
+         * - 같은 모달을 등록/상세/수정에서 재사용하므로 수정 모드에서만 안내와 입력 가능 필드를 분리해서 보여준다.
+         */
+        #requestEditNotice {
+            display: none;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 0 14px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #d8dde3;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        #requestEditNotice .material-symbols-rounded {
+            font-size: 18px;
+            color: #2e5c38;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        #requestEditNotice .edit-notice-title {
+            display: block;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+        #requestEditNotice .edit-notice-text {
+            display: block;
+            margin-top: 2px;
+            color: var(--text-tertiary);
+        }
+        #mngrAccountPage .request-edit-mode #requestEditNotice {
+            display: flex;
+        }
+        #mngrAccountPage .request-edit-mode #rqstDutyCd:not(:disabled),
+        #mngrAccountPage .request-edit-mode #rqstRmrkCn:not(:disabled) {
+            background: #fff;
+            color: var(--text-primary);
+            -webkit-text-fill-color: var(--text-primary);
+            border-color: #2e5c38;
+            box-shadow: 0 0 0 2px rgba(46, 92, 56, 0.08);
+            cursor: text;
+        }
+        #mngrAccountPage .request-edit-mode #rqstDutyCd:not(:disabled):focus,
+        #mngrAccountPage .request-edit-mode #rqstRmrkCn:not(:disabled):focus {
+            border-color: #265c30;
+            box-shadow: 0 0 0 3px rgba(46, 92, 56, 0.14);
+        }
+        #mngrAccountPage .request-edit-mode #rqstDutyCd:not(:disabled) {
+            cursor: pointer;
+        }
+        #rqstWaitBadge {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            width: fit-content;
+            margin-top: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #f7f1df;
+            border: 1px solid #ded19f;
+            color: #735c18;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        #rqstWaitBadge .material-symbols-rounded {
+            font-size: 14px;
+        }
+        #rqstWaitBadge.visible {
+            display: inline-flex;
         }
         #rqstSelectedMember .sel-info  { flex: 1; }
         #rqstSelectedMember .sel-name  { font-size: 13px; font-weight: 700; }
@@ -359,7 +479,7 @@
                                 </div>
 
                                 <%-- 회원 검색 섹션: 직원으로 등록할 기존 회원 선택 영역 --%>
-                                <div class="form-section">
+                                    <div class="form-section member-search-section">
                                     <div class="form-section-title">
                                         <span class="material-symbols-rounded">manage_search</span>
                                         직원 회원 검색
@@ -391,6 +511,14 @@
                                 <div class="form-section">
                                     <div class="form-section-title">
                                         <span class="material-symbols-rounded">assignment_ind</span>요청 정보
+                                    </div>
+                                    <%-- 수정 모드 안내: 대상 회원은 고정하고 직무/비고만 변경할 수 있음을 표시 --%>
+                                    <div id="requestEditNotice">
+                                        <span class="material-symbols-rounded">edit_note</span>
+                                        <span>
+                                            <span class="edit-notice-title">수정 가능한 요청입니다</span>
+                                            <span class="edit-notice-text">대상 회원은 변경할 수 없으며 직무와 비고만 수정할 수 있습니다.</span>
+                                        </span>
                                     </div>
                                     <div class="form-row cols-2">
                                         <div class="form-field">
@@ -435,6 +563,10 @@
                                         <div class="form-field">
                                             <label class="field-label">상태</label>
                                             <input type="text" class="form-input" id="rqstSttsCdText" readonly>
+                                            <%-- 승인대기 상태에서만 수정 가능하다는 점을 수정 모드에서 강조 --%>
+                                            <span id="rqstWaitBadge">
+                                                <span class="material-symbols-rounded">schedule</span>승인대기 - 수정 가능
+                                            </span>
                                         </div>
                                     </div>
                                     <%-- 반려(RJCT) 상태일 때만 JS에서 display를 열어 표시 --%>
