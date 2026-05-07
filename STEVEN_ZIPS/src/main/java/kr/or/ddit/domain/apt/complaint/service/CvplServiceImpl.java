@@ -33,11 +33,19 @@ public class CvplServiceImpl implements ICvplService {
     @Autowired
     private GoogleDriveService googleDriveService;
 
+    /**
+     * 민원 신청 서비스 로직
+     * @author 이용로
+     * @param cvplVO
+     * @param attachFiles
+     * @return ServiceResult
+     * @throws GeneralSecurityException 구글 API 자체 시큐리티 예외
+     * @throws IOException
+     */
     @Override
-    public ServiceResult applyCvpl(CvplVO cvplVO, MultipartFile[] attachFiles) throws GeneralSecurityException, IOException {
-
-        List<String> uploadedGids = new ArrayList<>();
-        Drive drive = null; // drive 객체를 밖으로 뺌
+    public ServiceResult applyCvpl(CvplVO cvplVO, MultipartFile[] attachFiles){
+        List<String> uploadedGids = new ArrayList<>();  // 업로드한 파일들의 구글아이디 모음
+        Drive drive = null; // catch phrase에서도 쓰려고 try바깥에 선언
 
         try {
             drive = googleDriveService.getDriveService();
@@ -53,12 +61,13 @@ public class CvplServiceImpl implements ICvplService {
                     String uuid = UUID.randomUUID().toString().replace("-", "");
                     String savedFileName = uuid + "_" + originalFilename;
                     String folderPath = "apt/cvpl/" + cvplVO.getAptCmplexNo() + "/" + cvplVO.getUserNo();
+                    String fullPath = folderPath + "/" + savedFileName;
 
                     // 실제 업로드
                     String googleId = googleDriveService.uploadFile(attachFiles[i], folderPath, savedFileName);
                     uploadedGids.add(googleId);
 
-                    files[i] = AttachFileVO.fileSettings(attachFiles[i], fileGroupNo, "민원", savedFileName, googleId, folderPath + "/" + savedFileName, i);
+                    files[i] = AttachFileVO.fileSettings(attachFiles[i], fileGroupNo, "민원", savedFileName, googleId, fullPath, i);
                 }
 
                 // DB 인서트
