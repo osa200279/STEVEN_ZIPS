@@ -166,11 +166,11 @@ function renderList() {
         return `
             <tr onclick="openDetail('${p.annNo}')" style="cursor:pointer;">
                 <td>${p.ttl || "-"}</td>
-                <td>${p.aptCmplexNm || "-"}</td>
+                <td style="text-align:left;">${p.aptCmplexNm || "-"}</td>
                 <td>${p.rcrtBgngDt || "-"} ~ ${p.rcrtEndDt || "-"}</td>
                 <td>${p.unitCnt || 0}세대</td>
                 <td>${p.sbmsnDocNm || "-"}</td>
-                <td>${badgeHtml(st)}</td>
+                <td style="text-align:center;">${badgeHtml(st)}</td>
             </tr>
         `;
     }).join("");

@@ -482,12 +482,12 @@
               <table class="c-table">
                 <thead>
                   <tr>
-                    <th>공고 제목</th>
-                    <th style="width: 120px">단지</th>
-                    <th style="width: 200px">모집 기간</th>
-                    <th style="width: 100px">공급</th>
-                    <th>제출 서류</th>
-                    <th style="width: 90px">상태</th>
+                    <th style="width: 43%;">공고 제목</th>
+                    <th style="width: 120px; text-align: left;">단지</th>
+                    <th style="width: 200px;">모집 기간</th>
+                    <th style="width: 100px;">공급</th>
+                    <th style="width: 180px;">제출 서류</th>
+                    <th style="width: 120px; text-align: center;">상태</th>
                   </tr>
                 </thead>
                 <tbody id="list-body"></tbody>
