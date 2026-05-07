@@ -21,7 +21,7 @@ import java.util.Map;
 @Slf4j
 @Controller
 
-/*
+/**
  * 관리사무소 직원 계정 API 컨트롤러
  *
  * @PreAuthorize("hasRole('MNGR')")
@@ -36,7 +36,7 @@ public class EmployeeController {
     @Autowired
     private IEmployeeService employeeService;
 
-    /*
+    /**
      * [재직 직원 목록 조회]
      * GET /manager/employee/list/{mgmtOfcNo}
      *
@@ -54,8 +54,7 @@ public class EmployeeController {
      * @RequestParam(required = false, defaultValue = "")
      * - 검색조건 선택값
      * - 값이 없을 때 빈 문자열 처리
-     * - XML에서 빈 문자열이면 조건 제외
-     */
+     * - XML에서 빈 문자열이면 조건 제외*/
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/list/{mgmtOfcNo}")
     @ResponseBody
@@ -86,7 +85,7 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
-    /*
+    /**
      * [재직 직원 상세 조회]
      * GET /manager/employee/{userNo}/detail/{mgmtOfcNo}
      */
@@ -112,7 +111,7 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
-    /*
+    /**
      * [재직 직원 직무 수정]
      * POST /manager/employee/duty/update/{mgmtOfcNo}
      *
@@ -121,7 +120,7 @@ public class EmployeeController {
      * @return 직무 수정 처리 결과
      * - ADMIN 조회 전용 정책
      * - ADMIN의 등록/수정/삭제/취소/비활성화 처리 차단
-     * - MNGR만 실제 처리 가능
+     - MNGR만 실제 처리 가능
      */
     @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @PostMapping("/duty/update/{mgmtOfcNo}")
@@ -151,13 +150,14 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
-    /*
+    /**
      * [직원 계정 요청 목록 조회]
      * GET /manager/employee/request/list/{mgmtOfcNo}
      *
      * keyword    : 요청자 이름/아이디/연락처 검색
      * rqstDutyCd : 요청 직무 필터
      * rqstSttsCd : 요청 상태 필터
+     * dateType/searchDate : 요청일/처리일 기준 날짜 필터
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/request/list/{mgmtOfcNo}")
@@ -166,7 +166,9 @@ public class EmployeeController {
             @PathVariable String mgmtOfcNo,
             @RequestParam(required = false, defaultValue = "") String keyword,
             @RequestParam(required = false, defaultValue = "") String rqstDutyCd,
-            @RequestParam(required = false, defaultValue = "") String rqstSttsCd
+            @RequestParam(required = false, defaultValue = "") String rqstSttsCd,
+            @RequestParam(required = false, defaultValue = "RQST") String dateType,
+            @RequestParam(required = false, defaultValue = "") String searchDate
     ) {
         Map<String, Object> result = new HashMap<>();
 
@@ -177,6 +179,8 @@ public class EmployeeController {
             paramMap.put("keyword", keyword);
             paramMap.put("rqstDutyCd", rqstDutyCd);
             paramMap.put("rqstSttsCd", rqstSttsCd);
+            paramMap.put("dateType", dateType);
+            paramMap.put("searchDate", searchDate);
 
             // 직원 계정 요청 목록
             List<MngrRqstVO> list = employeeService.selectRequestList(paramMap);
@@ -190,7 +194,7 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
-    /*
+    /**
      * [직원 계정 요청 상세 조회]
      * GET /manager/employee/request/{rqstNo}/detail/{mgmtOfcNo}
      */
@@ -216,7 +220,7 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
-    /*
+    /**
      * [직원 계정 요청 등록]
      * POST /manager/employee/request/insert/{mgmtOfcNo}
      */
@@ -249,7 +253,7 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
-    /*
+    /**
      * [직원 계정 요청 수정]
      * POST /manager/employee/request/update/{mgmtOfcNo}
      */
@@ -278,7 +282,7 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
-    /*
+    /**
      * [직원 계정 요청 취소]
      * POST /manager/employee/request/cancel/{mgmtOfcNo}
      */
@@ -307,7 +311,7 @@ public class EmployeeController {
         return ResponseEntity.ok(result);
     }
 
-    /*
+    /**
      * [직원 등록용 회원 검색]
      * GET /manager/employee/member/search/{mgmtOfcNo}?keyword=홍길동
      */
