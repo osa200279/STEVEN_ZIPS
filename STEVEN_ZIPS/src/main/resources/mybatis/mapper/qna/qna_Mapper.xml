@@ -4,7 +4,7 @@
 
     <!-- 문의 목록 조회 (페이징) -->
     <select id="getList"
-            resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
+            resultType="kr.or.ddit.domain.central.board.vo.CvplVO">
 
         SELECT *
         FROM (
@@ -26,6 +26,7 @@
 
     </select>
 
+
     <insert id="insertQna">
         INSERT INTO CVPL (
             CVPL_NO,
@@ -36,7 +37,8 @@
             CVPL_REG_DT,
             CVPL_TTL,
             USER_NO,
-            HO_NO
+            HO_NO,
+            APT_CMPLEX_NO
         ) VALUES (
                      'CV' || TO_CHAR(SYSDATE,'YYMMDDHH24MISS'),
                      #{cvplTyCd},
@@ -46,9 +48,11 @@
                      SYSDATE,
                      #{cvplTtl},
                      #{userNo},
-                     #{hoNo}
+                     #{hoNo},
+                     #{aptCmplexNo}
                  )
     </insert>
+
 
 
     <delete id="deleteQna">
