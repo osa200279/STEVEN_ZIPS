@@ -38,6 +38,7 @@
         )
     </insert>
 
+
     <select id="boardFreeList" resultType="kr.or.ddit.domain.member.resident.vo.RsidBoardVO"
             parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO">
         SELECT *
@@ -148,6 +149,30 @@
         SET inq_cnt = inq_cnt + 1
         WHERE ann_no = #{annNo}
     </update>
+
+    <insert id="insertBoardComment" parameterType="kr.or.ddit.domain.member.resident.vo.RsidBoardCommentVO">
+        INSERT INTO apt_board_comment (
+            cmt_no
+            ,post_no
+            ,cmt_group
+            ,cmt_cn
+            ,cmt_sort_ord
+            ,reg_dttm
+            ,del_yn
+            ,mdf_dttm
+            ,user_no
+        ) VALUES (
+            seq_board_comment.nextval
+            ,#{postNo}
+            ,#{cmtGroup}
+            ,#{cmtCn}
+            ,#{cmtSortOrd}
+            ,sysdate
+            ,'N'
+            ,sysdate
+            ,#{userNo}
+            )
+    </insert>
 
 </mapper>
 

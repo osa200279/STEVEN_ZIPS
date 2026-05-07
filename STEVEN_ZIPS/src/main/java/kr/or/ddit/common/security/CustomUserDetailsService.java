@@ -1,6 +1,6 @@
 package kr.or.ddit.common.security;
 
-import kr.or.ddit.common.util.member.resident.InoutCd;
+import kr.or.ddit.common.enums.member.resident.InoutCd;
 import kr.or.ddit.domain.member.admin.mapper.IAdmMapper;
 import kr.or.ddit.domain.member.admin.vo.AdmVO;
 import kr.or.ddit.domain.member.manager.mapper.IMngrMapper;

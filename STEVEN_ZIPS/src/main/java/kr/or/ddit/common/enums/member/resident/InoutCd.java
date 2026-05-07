@@ -1,4 +1,4 @@
-package kr.or.ddit.common.util.member.resident;
+package kr.or.ddit.common.enums.member.resident;
 
 /**
  * 입주 상태 코드
