@@ -1,9 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="true"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <%--csrf--%>
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
     <title>우리집맵핑 · 공고 관리</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,8 +15,6 @@
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralAside.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralHeader.css" />
     <link rel="stylesheet" href="<%= request.getContextPath() %>/css/centralCommon.css" />
-    <%--<script defer src="<%= request.getContextPath() %>/js/centralAside.js"></script>
-    <script defer src="<%= request.getContextPath() %>/js/centralHeader.js"></script>--%>
     <style id="page-style">
 
       /* ================= 제출 서류 목록 ================= */
@@ -518,6 +519,7 @@
 
             <div class="c-modal__body c-modal__body--compact">
 
+              <!-- 1행: 공고 제목 / 단지 -->
               <div class="form-grid">
                 <div class="c-field">
                   <label class="c-label">공고 제목 <span style="color: var(--red)">*</span></label>
@@ -534,6 +536,7 @@
                 </div>
               </div>
 
+              <!-- 2행: 공고 게시 기간 / 모집 기간 -->
               <div class="form-grid">
                 <div class="c-field">
                   <label class="c-label">공고 게시 기간</label>
@@ -555,6 +558,7 @@
                 </div>
               </div>
 
+              <!-- 3행: 공급 세대수 / 첨부파일 -->
               <div class="form-grid">
                 <div class="c-field">
                   <label class="c-label">공급 세대수 (자동조회)</label>
@@ -568,11 +572,14 @@
                 </div>
               </div>
 
+              <!-- 4행: 공고 내용 -->
               <div class="c-field">
                 <label class="c-label">공고 내용 <span style="color: var(--red)">*</span></label>
                 <textarea id="f-content" class="c-input" rows="3" placeholder="공고 주요 내용을 입력하세요."></textarea>
                 <div class="err-msg" id="e-content"></div>
               </div>
+
+            </div> <!-- c-modal__body 닫기 -->
 
             <div class="c-modal__footer c-modal__footer--compact">
               <button class="c-btn c-btn--ghost" onclick="closeFormModal()">취소</button>
@@ -580,8 +587,9 @@
                 <span class="material-symbols-rounded">check</span>등록
               </button>
             </div>
-          </div>
-        </div>
+
+          </div> <!-- c-modal 닫기 -->
+        </div> <!-- form-modal 닫기 -->
 
 
     <!-- 상세 모달 -->
