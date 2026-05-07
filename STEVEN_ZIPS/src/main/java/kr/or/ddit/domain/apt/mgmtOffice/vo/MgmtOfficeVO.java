@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.apt.manager.vo;
+package kr.or.ddit.domain.apt.mgmtOffice.vo;
 
 import lombok.Data;
 

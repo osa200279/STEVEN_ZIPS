@@ -1,7 +1,7 @@
-package kr.or.ddit.domain.apt.manager.service;
+package kr.or.ddit.domain.apt.mgmtOffice.service;
 
-import kr.or.ddit.domain.apt.manager.mapper.IMgmtOfficeMapper;
-import kr.or.ddit.domain.apt.manager.vo.MgmtOfficeVO;
+import kr.or.ddit.domain.apt.mgmtOffice.mapper.IMgmtOfficeMapper;
+import kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
