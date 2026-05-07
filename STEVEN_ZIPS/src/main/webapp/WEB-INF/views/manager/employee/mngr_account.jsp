@@ -33,6 +33,10 @@
         #mngrAccountPage .grid-actions       { display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: nowrap; }
         #mngrAccountPage .grid-actions .btn  { flex-shrink: 0; }
         #mngrAccountPage .confirm-message    { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+        #mngrAccountPage .panel-total        { margin-left: 8px; font-size: 12px; font-weight: 800; color: #2e5c38; }
+        #mngrAccountPage .list-count-text    { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+        #mngrAccountPage .date-filter-group  { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        #mngrAccountPage .filter-date        { width: 136px; }
 
         /* 회원 검색 모달 */
         #memberSearchModal .member-list      { max-height: 300px; overflow-y: auto; margin-top: 12px; }
@@ -51,42 +55,6 @@
         #memberSearchModal .member-item .m-name { font-size: 13px; font-weight: 700; }
         #memberSearchModal .member-item .m-sub  { font-size: 11px; color: var(--text-tertiary); }
         #memberSearchModal .member-empty        { text-align: center; padding: 24px; font-size: 13px; color: var(--text-tertiary); }
-
-        #mngrAccountPage .btn.is-disabled {
-            opacity: 1;
-            color: #9ca3af;
-            background: #f3f4f6;
-            border: 1px solid #d1d5db;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        #mngrAccountPage .btn.is-disabled:hover {
-            background: #eceff3;
-            border-color: #c5cad3;
-            color: #7b8491;
-        }
-
-        #mngrAccountPage .btn:disabled {
-            opacity: 1;
-            color: #9ca3af;
-            background: #f3f4f6;
-            border: 1px solid #d1d5db;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        /* disabled hover */
-        #mngrAccountPage .btn:disabled:hover {
-            background: #eceff3;
-            border-color: #c5cad3;
-            color: #7b8491;
-        }
-
-        /* 비활성 버튼 안 아이콘도 같이 회색 처리 */
-        #mngrAccountPage .btn:disabled .material-symbols-rounded {
-            color: #9ca3af;
-        }
 
         /* 선택된 회원 표시 박스 (회원 선택 시 visible 클래스 추가로 표시) */
         #rqstSelectedMember {
@@ -109,6 +77,7 @@
     <script src="${pageContext.request.contextPath}/js/manager/ag-grid-community.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
     <script src="${pageContext.request.contextPath}/js/manager/manager-agGrid.js"></script>
+    <script src="${pageContext.request.contextPath}/js/manager/AgRenderer.js"></script>
 </head>
 <body>
 <div class="app-wrapper">
@@ -122,38 +91,7 @@
                 <div class="page-header">
                     <div class="page-title-block">
                         <h2>직원 계정 관리</h2>
-                        <p>
-                            <c:out value="${aptCmplexNm}"/> · <c:out value="${mgmtOfcNm}"/>
-                        </p>
-                    </div>
-                    <div class="page-actions">
-                        <%-- data-action: JS 클릭 이벤트 위임의 구분자 역할 --%>
-                            <%-- ADMIN은 조회 전용이므로 계정 생성 요청 비활성화 --%>
-                            <c:if test="${isAdmin ne true}">
-                                <button type="button" class="btn btn-primary" data-action="open-request-modal">
-                                    <span class="material-symbols-rounded">person_add</span>계정 생성 요청
-                                </button>
-                            </c:if>
-                    </div>
-                </div>
-
-                <%-- 현황 카드 영역 (숫자는 JS loadEmployeeList / loadRequestList 호출 후 갱신) --%>
-                <div class="stat-row">
-                    <div class="stat-card">
-                        <div class="stat-icon green"><span class="material-symbols-rounded">group</span></div>
-                        <div><div class="stat-value" id="statManagerCount">0</div><div class="stat-label">재직 직원</div></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon blue"><span class="material-symbols-rounded">badge</span></div>
-                        <div><div class="stat-value" id="statActiveCount">0</div><div class="stat-label">활성 계정</div></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon yellow"><span class="material-symbols-rounded">pending_actions</span></div>
-                        <div><div class="stat-value" id="statWaitCount">0</div><div class="stat-label">승인대기 요청</div></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon red"><span class="material-symbols-rounded">block</span></div>
-                        <div><div class="stat-value" id="statInactiveCount">0</div><div class="stat-label">비활성 계정</div></div>
+                        <p>관리사무소 직원 계정과 계정 생성 요청을 조회하고 관리합니다.</p>
                     </div>
                 </div>
 
@@ -168,12 +106,24 @@
                 </div>
 
                 <%-- ══════════════════════════════════════════
-                     탭 패널 1: 재직 직원
+                     재직 직원 목록
                      ══════════════════════════════════════════ --%>
                 <div class="tab-panel active" id="managerTabPanel">
                     <div class="panel">
                         <div class="panel-header">
-                            <div class="panel-title"><span class="material-symbols-rounded">manage_accounts</span>재직 직원 목록</div>
+                            <div class="panel-title">
+                                <span class="material-symbols-rounded">manage_accounts</span>재직 직원 목록
+                                <span class="panel-total" id="managerTotalCount">0건</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-strip">
+                            <div class="summary-chips">
+                                <span class="summary-chip">전체 <strong id="managerChipTotal">0</strong></span>
+                                <span class="summary-chip">활성 <strong id="managerChipActive">0</strong></span>
+                                <span class="summary-chip">비활성 <strong id="managerChipInactive">0</strong></span>
+                            </div>
+                            <span class="summary-note">직무와 검색어로 직원 계정을 좁혀볼 수 있습니다.</span>
                         </div>
 
                         <%-- 검색/필터 영역 --%>
@@ -205,7 +155,7 @@
                                 <span>승인 완료된 직원 계정을 기준으로 표시합니다.</span>
                             </div>
                             <div class="grid-summary-right">
-                                <span class="mini-badge inactive">직무/검색 조건으로 조회할 수 있습니다.</span>
+                                <span class="list-count-text" id="managerStatusCount">활성 0 · 비활성 0</span>
                             </div>
                         </div>
 
@@ -217,18 +167,32 @@
                 </div>
 
                 <%-- ══════════════════════════════════════════
-                     탭 패널 2: 생성 요청
+                     계정 생성 요청 목록
                      ══════════════════════════════════════════ --%>
                 <div class="tab-panel" id="requestTabPanel">
                     <div class="panel">
                         <div class="panel-header">
-                            <div class="panel-title"><span class="material-symbols-rounded">assignment</span>계정 생성 요청 목록</div>
+                            <div class="panel-title">
+                                <span class="material-symbols-rounded">assignment</span>계정 생성 요청 목록
+                                <span class="panel-total" id="requestTotalCount">0건</span>
+                            </div>
                             <%-- ADMIN은 조회 전용이므로 요청 등록 비활성화 --%>
                             <c:if test="${isAdmin ne true}">
                                 <button type="button" class="btn btn-primary btn-sm" data-action="open-request-modal">
                                     <span class="material-symbols-rounded">add</span>요청 등록
                                 </button>
                             </c:if>
+                        </div>
+
+                        <div class="summary-strip">
+                            <div class="summary-chips">
+                                <span class="summary-chip">전체 <strong id="requestChipTotal">0</strong></span>
+                                <span class="summary-chip">승인대기 <strong id="requestChipWait">0</strong></span>
+                                <span class="summary-chip">승인완료 <strong id="requestChipOk">0</strong></span>
+                                <span class="summary-chip">반려 <strong id="requestChipReject">0</strong></span>
+                                <span class="summary-chip">신청취소 <strong id="requestChipCancel">0</strong></span>
+                            </div>
+                            <span class="summary-note">현재 조건으로 조회된 요청 현황입니다.</span>
                         </div>
 
                         <%-- 검색/필터 영역 --%>
@@ -247,6 +211,14 @@
                                     <option value="RJCT">반려</option>
                                     <option value="CNL">신청취소</option>
                                 </select>
+                                <div class="date-filter-group">
+                                    <select class="form-select filter-select" id="requestDateType">
+                                        <option value="RQST">요청일</option>
+                                        <option value="APRV">처리일</option>
+                                        <option value="BOTH">요청/처리일</option>
+                                    </select>
+                                    <input type="date" class="form-input filter-date" id="requestSearchDate">
+                                </div>
                             </div>
                             <div class="filter-right">
                                 <div class="search-wrap filter-keyword">
@@ -264,7 +236,7 @@
                                 <span>승인대기 요청은 수정 또는 취소할 수 있습니다.</span>
                             </div>
                             <div class="grid-summary-right">
-                                <span class="mini-badge wait">중앙관리자 승인 후 계정이 생성됩니다.</span>
+                                <span class="list-count-text" id="requestStatusCount">대기 0 · 승인 0 · 반려 0 · 취소 0</span>
                             </div>
                         </div>
 
