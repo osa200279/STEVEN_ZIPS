@@ -375,42 +375,65 @@ function openDetail(annNo) {
 }
 
 function renderDetail(data) {
+    /*
+      공고 상세 조회 화면
+
+      readonly-box란?
+      → 수정 가능한 input이 아니라,
+        input처럼 보이지만 읽기만 하는 박스.
+      왜 사용?
+      → 상세보기 화면을 등록/수정 모달과 비슷한 UI로 맞추기 위해.
+    */
     const st = data.statusNm || calcStatus(data.rcrtBgngDt, data.rcrtEndDt);
 
+    document.getElementById("detail-status-badge").innerHTML = badgeHtml(st);
     document.getElementById("modal-content").innerHTML = `
-        <div class="c-field">
-            <label class="c-label">공고 제목</label>
-            <div>${data.ttl || "-"}</div>
-        </div>
-
-        <div class="c-field">
-            <label class="c-label">단지</label>
-            <div>${data.aptCmplexNm || "-"}</div>
-        </div>
-
-        <div class="c-field">
-            <label class="c-label">모집 기간</label>
-            <div>${data.rcrtBgngDt || "-"} ~ ${data.rcrtEndDt || "-"}</div>
-        </div>
-
-        <div class="c-field">
-            <label class="c-label">공급 세대수</label>
-            <div>${data.unitCnt || 0}세대</div>
-        </div>
-
-        <div class="c-field">
-            <label class="c-label">제출 서류</label>
-            <div>${data.sbmsnDocNm || "-"}</div>
-        </div>
-
-        <div class="c-field">
-            <label class="c-label">상태</label>
-            <div>${badgeHtml(st)}</div>
-        </div>
-
-        <div class="c-field">
-            <label class="c-label">공고 내용</label>
-            <div style="white-space:pre-wrap;">${data.cn || "-"}</div>
+    
+        <!-- 상세 정보 -->
+        <div class="detail-form-grid">
+    
+            <div class="c-field">
+                <label class="c-label">공고 제목</label>
+                <div class="detail-readonly-box">${data.ttl || "-"}</div>
+            </div>
+    
+            <div class="c-field">
+                <label class="c-label">단지</label>
+                <div class="detail-readonly-box">${data.aptCmplexNm || "-"}</div>
+            </div>
+    
+            <div class="c-field">
+                <label class="c-label">공고 게시 기간</label>
+                <div class="detail-readonly-box">
+                    ${data.pblancBgngDt || "-"} ~ ${data.pblancEndDt || "-"}
+                </div>
+            </div>
+    
+            <div class="c-field">
+                <label class="c-label">모집 기간</label>
+                <div class="detail-readonly-box">
+                    ${data.rcrtBgngDt || "-"} ~ ${data.rcrtEndDt || "-"}
+                </div>
+            </div>
+    
+            <div class="c-field">
+                <label class="c-label">공급 세대수</label>
+                <div class="detail-readonly-box">${data.unitCnt || 0}세대</div>
+            </div>
+    
+            <div class="c-field">
+                <label class="c-label">제출 서류</label>
+                <div class="detail-readonly-box">${data.sbmsnDocNm || "-"}</div>
+            </div>
+    
+            <div class="c-field detail-full">
+                <label class="c-label">공고 내용</label>
+    
+                <div class="detail-readonly-box detail-readonly-box--content">
+                    ${data.cn || "-"}
+                </div>
+            </div>
+    
         </div>
     `;
 }

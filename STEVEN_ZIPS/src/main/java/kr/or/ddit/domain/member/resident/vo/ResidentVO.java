@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.member.resident.vo;
 
-import kr.or.ddit.common.util.member.resident.InoutCd;
+import kr.or.ddit.common.enums.member.resident.InoutCd;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author 이용로
+ * @author 이용로.
  */
 @Data
 public class ResidentVO extends MemberVO {
