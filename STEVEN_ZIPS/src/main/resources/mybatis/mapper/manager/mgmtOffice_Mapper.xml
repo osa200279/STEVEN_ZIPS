@@ -98,16 +98,15 @@
         <if test="sigunguNm != null and sigunguNm != ''">
             AND ac.sigungu_nm = #{sigunguNm}
         </if>
+        <!-- 화면에 노출되는 관리사무소명/단지명 기준 검색 -->
         <if test="searchWord != null and searchWord != ''">
             AND (
-            mo.mgmt_ofc_nm LIKE '%' || #{searchWord} || '%'
-            OR ac.apt_cmplex_nm LIKE '%' || #{searchWord} || '%'
-            OR ac.dorojuso LIKE '%' || #{searchWord} || '%'
+            UPPER(mo.mgmt_ofc_nm) LIKE '%' || UPPER(TRIM(#{searchWord})) || '%'
+            OR UPPER(ac.apt_cmplex_nm) LIKE '%' || UPPER(TRIM(#{searchWord})) || '%'
             )
         </if>
     </select>
 
-    <!-- ADMIN 관리사무소 모달 현재 페이지 목록 조회 -->
     <!-- ADMIN 관리사무소 모달 현재 페이지 목록 조회 -->
     <select id="selectAdminMgmtOfficeList"
             parameterType="kr.or.ddit.domain.member.manager.vo.ManagerPaginationVO"
@@ -133,11 +132,11 @@
         <if test="sigunguNm != null and sigunguNm != ''">
             AND ac.sigungu_nm = #{sigunguNm}
         </if>
+        <!-- 화면에 노출되는 관리사무소명/단지명 기준 검색 -->
         <if test="searchWord != null and searchWord != ''">
             AND (
-            mo.mgmt_ofc_nm LIKE '%' || #{searchWord} || '%'
-            OR ac.apt_cmplex_nm LIKE '%' || #{searchWord} || '%'
-            OR ac.dorojuso LIKE '%' || #{searchWord} || '%'
+            UPPER(mo.mgmt_ofc_nm) LIKE '%' || UPPER(TRIM(#{searchWord})) || '%'
+            OR UPPER(ac.apt_cmplex_nm) LIKE '%' || UPPER(TRIM(#{searchWord})) || '%'
             )
         </if>
         ORDER BY mo.mgmt_ofc_nm

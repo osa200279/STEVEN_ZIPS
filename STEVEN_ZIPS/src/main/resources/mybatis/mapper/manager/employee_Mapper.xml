@@ -244,6 +244,33 @@
             <if test="rqstSttsCd != null and rqstSttsCd != ''">
                 AND mr.rqst_stts_cd = #{rqstSttsCd}
             </if>
+
+            <!-- 요청일/처리일 기준 날짜 필터 -->
+            <if test="searchDate != null and searchDate != ''">
+                <choose>
+                    <when test="dateType == 'APRV'">
+                        AND mr.aprv_dt <![CDATA[>=]]> TO_DATE(#{searchDate}, 'YYYY-MM-DD')
+                        AND mr.aprv_dt <![CDATA[<]]> TO_DATE(#{searchDate}, 'YYYY-MM-DD') + 1
+                    </when>
+                    <when test="dateType == 'BOTH'">
+                        AND (
+                            (
+                                mr.rqst_dt <![CDATA[>=]]> TO_DATE(#{searchDate}, 'YYYY-MM-DD')
+                                AND mr.rqst_dt <![CDATA[<]]> TO_DATE(#{searchDate}, 'YYYY-MM-DD') + 1
+                            )
+                            OR
+                            (
+                                mr.aprv_dt <![CDATA[>=]]> TO_DATE(#{searchDate}, 'YYYY-MM-DD')
+                                AND mr.aprv_dt <![CDATA[<]]> TO_DATE(#{searchDate}, 'YYYY-MM-DD') + 1
+                            )
+                        )
+                    </when>
+                    <otherwise>
+                        AND mr.rqst_dt <![CDATA[>=]]> TO_DATE(#{searchDate}, 'YYYY-MM-DD')
+                        AND mr.rqst_dt <![CDATA[<]]> TO_DATE(#{searchDate}, 'YYYY-MM-DD') + 1
+                    </otherwise>
+                </choose>
+            </if>
         </where>
         ORDER BY mr.rqst_dt DESC
     </select>
