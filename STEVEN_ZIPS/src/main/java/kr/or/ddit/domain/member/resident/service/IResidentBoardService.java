@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.member.resident.service;
 
 import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.domain.member.resident.vo.RsidBoardCommentVO;
 import kr.or.ddit.domain.member.resident.vo.RsidBoardVO;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface IResidentBoardService {
     int updateBoardFree(RsidBoardVO rsidBoardVO);
 
     void updateInqCnt(String annNo);
+
+    int insertBoardComment(RsidBoardCommentVO rsidBoardCommentVO);
 }
