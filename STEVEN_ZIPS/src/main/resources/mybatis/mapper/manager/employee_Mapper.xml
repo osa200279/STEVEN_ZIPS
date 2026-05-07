@@ -49,6 +49,7 @@
         <result property="userTelno" column="user_telno"/>
         <result property="userEml"   column="user_eml"/>
         <result property="birthDate" column="birth_date"/>
+        <result property="rqstSttsCd" column="rqst_stts_cd"/>
     </resultMap>
 
 
@@ -387,6 +388,15 @@
         ,m.user_telno
         ,m.user_eml
         ,SUBSTR(m.user_rrno, 1, 6) AS birth_date
+        ,CASE
+            WHEN EXISTS (
+                SELECT 1
+                FROM mngr_rqst mr
+                WHERE mr.rqst_login_id = m.user_id
+                AND mr.rqst_stts_cd = 'RJCT'
+            ) THEN 'RJCT'
+            ELSE NULL
+        END AS rqst_stts_cd
         FROM member m
         <where>
             m.user_yn = 'Y'
@@ -416,12 +426,12 @@
             AND a.user_role_cd = 'ROLE_MNGR'
             )
 
-            <!-- 승인대기 요청에 이미 올라간 회원은 제외 -->
+            <!-- 승인대기 또는 승인완료 요청에 이미 올라간 회원은 재요청 대상에서 제외 -->
             AND NOT EXISTS (
             SELECT 1
             FROM mngr_rqst mr
             WHERE mr.rqst_login_id = m.user_id
-            AND mr.rqst_stts_cd = 'WAIT'
+            AND mr.rqst_stts_cd IN ('WAIT', 'OK')
             )
         </where>
         ORDER BY m.user_nm
