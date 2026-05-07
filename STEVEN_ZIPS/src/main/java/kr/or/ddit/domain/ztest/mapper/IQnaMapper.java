@@ -1,11 +1,10 @@
 package kr.or.ddit.domain.ztest.mapper;
 
-import kr.or.ddit.domain.ztest.vo.CvplVO;
+import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface IQnaMapper {

@@ -1,13 +1,12 @@
 package kr.or.ddit.domain.ztest.service;
 
 import kr.or.ddit.domain.ztest.mapper.IQnaMapper;
-import kr.or.ddit.domain.ztest.vo.CvplVO;
+import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service

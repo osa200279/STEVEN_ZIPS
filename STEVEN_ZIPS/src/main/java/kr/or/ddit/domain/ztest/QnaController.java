@@ -4,10 +4,9 @@ import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import kr.or.ddit.domain.ztest.service.IQnaService;
-import kr.or.ddit.domain.ztest.vo.CvplVO;
+import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller

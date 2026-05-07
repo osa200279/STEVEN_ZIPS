@@ -1,9 +1,8 @@
 package kr.or.ddit.domain.ztest.service;
 
-import kr.or.ddit.domain.ztest.vo.CvplVO;
+import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IQnaService {
 

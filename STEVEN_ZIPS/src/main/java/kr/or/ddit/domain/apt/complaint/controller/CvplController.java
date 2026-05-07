@@ -2,6 +2,7 @@ package kr.or.ddit.domain.apt.complaint.controller;
 
 import kr.or.ddit.common.enums.ServiceResult;
 import kr.or.ddit.domain.apt.complaint.service.ICvplService;
+import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -15,8 +16,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,14 +56,16 @@ public class CvplController {
     @PostMapping(value = "/apply/{aptCmplexNo}")
     public ResponseEntity<Map<String, String>> complaintApply(
             @AuthenticationPrincipal CustomUser customUser
-            , @PathVariable String aptCmplexNo, Model model) {
+            , @PathVariable String aptCmplexNo
+            , CvplVO cvplVO , MultipartFile[] attachFile) {
         log.info("complaintApply() 실행");
+        log.info("민원 내용 : {}", cvplVO.toString());
 
         MemberVO member = customUser.getMember();
         Map<String, String> resp = new HashMap<>();
 
         try{
-            ServiceResult result = cvplService.applyCvpl(member.getUserNo(), aptCmplexNo);
+            ServiceResult result = cvplService.applyCvpl(member.getUserNo(), aptCmplexNo, cvplVO);
 
             if(ServiceResult.OK.equals(result)){
                 resp.put("message", "민원이 접수되었습니다.");
