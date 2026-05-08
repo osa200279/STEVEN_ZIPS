@@ -715,6 +715,13 @@ function subscribeRoomList(roomList) {
                 '/sub/chat/room/' + roomNo,
                 function(msg) {
 
+                    console.log(
+                        "currentRoomNo =",
+                        currentRoomNo,
+                        "roomNo =",
+                        roomNo
+                    );
+
                     const data = JSON.parse(msg.body);
 
                     // 현재 보고 있는 방
