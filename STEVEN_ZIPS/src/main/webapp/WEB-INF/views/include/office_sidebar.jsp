@@ -110,14 +110,14 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
 
-                    <span class="sub-group-label">시설 관리</span>
+                    <span class="sub-group-label">시설자산 관리</span>
                     <a href="${ctx}/manager/facilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">시설 목록</span>
+                        <span class="nav-text">일반 · 검침시설</span>
                     </a>
                     <a href="${ctx}/manager/publicFacilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">공용 시설 관리</span>
+                        <span class="nav-text">공용 시설</span>
                     </a>
 
                     <%-- 공사·점검 --%>
@@ -141,6 +141,11 @@
                     <a href="${ctx}/manager/facility/partnerList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facility/partnerList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">협력업체 관리</span>
+                    </a>
+                    <a href="${ctx}/manager/facility/contractList${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/facility/contractList') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">계약 관리</span>
                     </a>
 
                 </div>
