@@ -61,14 +61,18 @@ public class CvplServiceImpl implements ICvplService {
                 for (int i = 0; i < size; i++) {
                     String originalFilename = attachFiles[i].getOriginalFilename();
                     String uuid = UUID.randomUUID().toString().replace("-", "");
+
+                    //----------------- 필수 커스텀 부분 ---------------------
                     String savedFileName = uuid + "_" + originalFilename;
                     String folderPath = "apt/cvpl/" + cvplVO.getAptCmplexNo() + "/" + cvplVO.getUserNo();
                     String fullPath = folderPath + "/" + savedFileName;
+                    //--------------- 필수 커스텀 부분 end -------------------
 
                     // 실제 업로드
                     String googleId = googleDriveService.uploadFile(attachFiles[i], folderPath, savedFileName);
                     uploadedGids.add(googleId);
 
+                    // 업로드한 파일 메타데이터 저장
                     files[i] = AttachFileVO.fileSettings(attachFiles[i], fileGroupNo, "민원", savedFileName, googleId, fullPath, i);
                 }
 
