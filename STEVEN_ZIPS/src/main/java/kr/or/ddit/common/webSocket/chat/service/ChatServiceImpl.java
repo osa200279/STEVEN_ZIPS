@@ -174,7 +174,24 @@ public class ChatServiceImpl implements IChatService {
     @Override
     @Transactional
     public int leaveRoom(String chatRoomNo, String userNo) {
-        return mapper.leaveRoom(chatRoomNo, userNo);
+
+        int reslut = mapper.leaveRoom(chatRoomNo, userNo);
+
+        int memberCnt = countActiveMembers(chatRoomNo);
+
+        if(memberCnt == 0){
+            disableRoom(chatRoomNo);
+        }
+
+        return reslut;
+    }
+
+    private void disableRoom(String chatRoomNo) {
+        mapper.disableRoom(chatRoomNo);
+    }
+
+    private int countActiveMembers(String chatRoomNo) {
+        return mapper.countActiveMembers(chatRoomNo);
     }
 
     @Override

@@ -42,4 +42,8 @@ public interface IChatMapper {
     int isRoomMember(String chatRoomNo, String userNo);
 
     ChatRoomVO selectRoomByJoinKey(String aptCmplexNo, String joinKey);
+
+    int countActiveMembers(String chatRoomNo);
+
+    void disableRoom(String chatRoomNo);
 }

@@ -312,7 +312,7 @@
     </insert>
     <insert id="insertSystemMessage">
 
-        INSERT INTO CHAT_MESSAGE (
+        INSERT INTO CHAT_MESSAGE (  /**/
            chat_msg_no
          , chat_room_no
          , msg_ty_cd
@@ -329,5 +329,19 @@
          )
 
     </insert>
+
+
+    <select id="countActiveMembers" resultType="int">
+        SELECT COUNT(*) /**/
+        FROM CHAT_ROOM_MEMBER
+        WHERE CHAT_ROOM_NO = #{chatRoomNo}
+          AND LEFT_DTTM IS NULL
+    </select>
+
+    <update id="disableRoom">
+        UPDATE CHAT_ROOM    /**/
+        SET USE_YN = 'N'
+        WHERE CHAT_ROOM_NO = #{chatRoomNo}
+    </update>
 
 </mapper>
