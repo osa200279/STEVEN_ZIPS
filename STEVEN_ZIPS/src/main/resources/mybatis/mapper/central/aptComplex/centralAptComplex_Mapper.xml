@@ -313,4 +313,20 @@
         WHERE APT_CMPLEX_NO = #{aptCmplexNo}
     </select>
 
+    <select id="selectAptMapList"
+            resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
+        SELECT
+            APT_CMPLEX_NO       AS aptCmplexNo,
+            APT_CMPLEX_NM       AS aptCmplexNm,
+            SIDO_NM             AS sidoNm,
+            SIGUNGU_NM          AS sigunguNm,
+            DOROJUSO            AS dorojuso,
+            LAT_VAL             AS latVal,
+            LON_VAL             AS lonVal,
+            UNIT_CNT            AS unitCnt,
+            DONG_CNT            AS dongCnt
+        FROM APT_COMPLEX
+        WHERE LAT_VAL IS NOT NULL
+          AND LON_VAL IS NOT NULL
+    </select>
 </mapper>

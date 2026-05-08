@@ -128,6 +128,9 @@
            href="${pageContext.request.contextPath}/main/apt/search.do">단지 검색</a>
 
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
+           href="${pageContext.request.contextPath}/main/apt/map.do">지도 검색</a>
+
+        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
            href="${pageContext.request.contextPath}/main/apt/dashboard.do">단지별 통계 조회</a>
       </div>
     </details>

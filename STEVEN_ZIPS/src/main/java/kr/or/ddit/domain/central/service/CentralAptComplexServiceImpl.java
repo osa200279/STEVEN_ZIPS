@@ -57,4 +57,9 @@ public class CentralAptComplexServiceImpl implements ICentralAptComplexService {
     public AptComplexVO selectAptComplexDetail(String aptCmplexNo) {
         return aptComplexMapper.selectAptComplexDetail(aptCmplexNo);
     }
+
+    @Override
+    public List<AptComplexVO> selectAptMapList() {
+        return aptComplexMapper.selectAptMapList();
+    }
 }

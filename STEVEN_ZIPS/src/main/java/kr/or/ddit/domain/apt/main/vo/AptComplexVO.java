@@ -12,8 +12,8 @@ public class AptComplexVO {
     private String sidoNm;          // 시도 명
     private String sigunguNm;       // 시군구 명
     private String emdNm;           // 읍면동 명
-    private BigDecimal latVal;      // 경도
-    private BigDecimal lonVal;      // 위도
+    private BigDecimal latVal;      // 위도
+    private BigDecimal lonVal;      // 경도
     private int unitCnt;            // 세대 수
     private String bldYr;           // 준공년도
     private String cnscoNm;         // 건설사 명

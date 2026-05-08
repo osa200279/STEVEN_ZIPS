@@ -22,4 +22,6 @@ public interface ICentralAptComplexService {
     List<String> selectSidoList();
 
     AptComplexVO selectAptComplexDetail(String aptCmplexNo);
+
+    List<AptComplexVO> selectAptMapList();
 }

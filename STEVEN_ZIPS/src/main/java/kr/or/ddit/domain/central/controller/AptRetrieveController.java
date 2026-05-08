@@ -127,4 +127,11 @@ public class AptRetrieveController {
 
         return "central/aptDetail";
     }
+
+    @GetMapping("/map.do")
+    public String aptMap(Model model) {
+        List<AptComplexVO> aptList = aptComplexService.selectAptMapList();
+        model.addAttribute("aptList", aptList);
+        return "central/aptMap";
+    }
 }
