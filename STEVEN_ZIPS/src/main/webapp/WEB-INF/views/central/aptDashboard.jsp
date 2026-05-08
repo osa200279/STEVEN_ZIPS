@@ -91,11 +91,17 @@
 <%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 
-<main class="ml-80 pt-28 px-10 space-y-gutter">
+<main class="ml-80 p-8 pt-28 max-w-8xl">
   <!-- Header Section -->
   <header class="flex flex-col gap-2 mb-8">
-    <h1 class="text-5xl font-bold tracking-tight text-on-surface mb-4">단지별 통계 조회</h1>
-    <p class="text-gray-500 mb-6">주택 단지 운영 및 계약 지표에 대한 실시간 분석 현황입니다.</p>
+
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">단지별 통계 조회</h1>
+
+
+    <p class="text-gray-500 text-sm ">
+      주택 단지 운영 및 계약 지표에 대한 실시간 분석 현황입니다.
+    </p>
   </header>
   <!-- Filter Bar -->
   <section class="tonal-surface p-6 rounded-lg flex flex-wrap items-end gap-6 border border-outline-variant/30">
