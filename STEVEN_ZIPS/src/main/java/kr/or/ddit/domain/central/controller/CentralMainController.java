@@ -21,11 +21,6 @@ public class CentralMainController {
     @Autowired
     IAttachFileService attachFileService;
 
-    @GetMapping("/dashboard.do")
-    public String dashboard() {
-        return "central/aptDashboard";
-    }
-
     @GetMapping("/intro.do")
     public String intro() {
         return "central/service";

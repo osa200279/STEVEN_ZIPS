@@ -89,7 +89,8 @@
         <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
-        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"   href="${pageContext.request.contextPath}/apt/intro.do">서비스 소개</a>
+        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
+           href="${pageContext.request.contextPath}/main/intro.do">서비스 소개</a>
       </div>
     </details>
 
@@ -121,13 +122,13 @@
       </summary>
       <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
-           href="${pageContext.request.contextPath}/apt/list.do">단지 목록</a>
+           href="${pageContext.request.contextPath}/main/apt/list.do">단지 목록</a>
 
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
-           href="${pageContext.request.contextPath}/apt/search.do">단지 검색</a>
+           href="${pageContext.request.contextPath}/main/apt/search.do">단지 검색</a>
 
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
-           href="${pageContext.request.contextPath}/main/dashboard.do">단지별 통계 조회</a>
+           href="${pageContext.request.contextPath}/main/apt/dashboard.do">단지별 통계 조회</a>
       </div>
     </details>
 

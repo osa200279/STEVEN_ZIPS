@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping("/apt")
+@RequestMapping("/main/apt")
 public class AptRetrieveController {
 
     @Autowired
@@ -102,6 +102,11 @@ public class AptRetrieveController {
         model.addAttribute("aptList", aptList);
 
         return "central/aptSearch";
+    }
+
+    @GetMapping("/dashboard.do")
+    public String dashboard() {
+        return "central/aptDashboard";
     }
 
 }

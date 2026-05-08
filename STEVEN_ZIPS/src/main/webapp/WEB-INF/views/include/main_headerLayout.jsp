@@ -274,8 +274,9 @@
                         </div>
 
                         <div class="mega-cell">
-                            <span><a href="${pageContext.request.contextPath}/apt/list.do">단지 목록</a></span>
-                            <span><a href="${pageContext.request.contextPath}/apt/search.do">단지 검색</a></span>
+                            <span><a href="${pageContext.request.contextPath}/main/apt/list.do">단지 목록</a></span>
+                            <span><a href="${pageContext.request.contextPath}/main/apt/search.do">단지 검색</a></span>
+                            <span><a href="${pageContext.request.contextPath}/main/apt/dashboard.do">단지별 통계 조회</a></span>
                         </div>
 
                         <div class="mega-cell">
