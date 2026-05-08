@@ -17,16 +17,15 @@ function connectWebSocket() {
     stomp.connect(
         {},
         () => {
+
             console.log("웹소켓 연결됨");
+
+            roomSubscriptions = {};
 
             subscribeNotification();
 
-            if (
-                typeof currentRoomNo !== 'undefined'
-                && typeof subscribeRoom === 'function'
-                && currentRoomNo
-            ) {
-                subscribeRoom(currentRoomNo);
+            if (typeof loadMyRooms === 'function') {
+                loadMyRooms();
             }
         },
         (error) => {
