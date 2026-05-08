@@ -205,6 +205,23 @@
     }
     .btn-ghost:hover { color: var(--primary); }
 
+    /*추가: 권한 전용 이동 버튼은 일반 헤더 메뉴와 구분되도록 작은 outline 버튼으로 표시 */
+    .btn-role {
+        background: #fff;
+        border: 1px solid rgba(34, 96, 70, 0.45);
+        color: var(--primary);
+        padding: 0.42rem 0.62rem;
+        border-radius: 9999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.14s, border-color 0.14s, color 0.14s;
+    }
+    .btn-role:hover {
+        background: #f4f9f6;
+        border-color: var(--primary);
+    }
+
     .btn-pill {
         background: var(--primary); color: #fff; border: none;
         padding: 0.6rem 1.25rem; border-radius: 9999px;
@@ -241,7 +258,23 @@
                     <button type="button" id="joinFormBtn" class="btn-pill">회원가입</button>
                 </sec:authorize>
                 <sec:authorize access="isAuthenticated()">
-                    <button type="button" id="myAptBtn" class="btn-ghost">🏢 나의 아파트</button>
+                    <%-- 관리소장/admin은 관리사무소 버튼으로 대체하기 위해 주석 처리 --%>
+                    <%-- <button type="button" id="myAptBtn" class="btn-ghost">🏢 나의 아파트</button> --%>
+
+                    <%--  추가: 관리소장(ROLE_MNGR) / 중앙관리자(ROLE_ADMIN)는 헤더에서 관리사무소 페이지로 바로 이동 --%>
+                    <sec:authorize access="hasAnyRole('ADMIN', 'MNGR')">
+                        <button type="button" id="managerMainBtn" class="btn-role">관리사무소</button>
+                    </sec:authorize>
+
+                    <%-- 추가: 중앙관리자(ROLE_ADMIN)는 중앙관리자 화면으로 바로 이동 --%>
+                    <sec:authorize access="hasRole('ADMIN')">
+                        <button type="button" id="centralAdminBtn" class="btn-role">중앙관리</button>
+                    </sec:authorize>
+
+                    <%--추가: 일반 회원/입주민은 기존 나의 아파트 버튼 유지 --%>
+                    <sec:authorize access="!hasAnyRole('ADMIN', 'MNGR')">
+                        <button type="button" id="myAptBtn" class="btn-ghost">🏢 나의 아파트</button>
+                    </sec:authorize>
                     <button type="button" id="myPageBtn" class="btn-pill">마이페이지</button>
                     <button type="button" id="logoutBtn" class="btn-ghost">로그아웃</button>
                     <form id="logoutForm" action="${pageContext.request.contextPath}/logout" method="post" style="display:none;">
@@ -309,9 +342,21 @@
     /* ── 로그아웃 / 나의 아파트 ── */
     document.addEventListener("DOMContentLoaded", () => {
         const myAptBtn  = document.getElementById("myAptBtn");
+        // 추가: 관리소장/admin 전용 관리사무소 페이지 이동 버튼
+        const managerMainBtn = document.getElementById("managerMainBtn");
+        //추가: admin 전용 중앙관리자 대시보드 이동 버튼
+        const centralAdminBtn = document.getElementById("centralAdminBtn");
         const logoutBtn = document.getElementById("logoutBtn");
 
         if (myAptBtn)  myAptBtn.addEventListener("click", openAptSelection);
+        // 추가: /manager/main 진입 시 MNGR은 본인 사무소, ADMIN은 사무소 선택 화면으로 이동
+        if (managerMainBtn) managerMainBtn.addEventListener("click", () => {
+            location.href = "${pageContext.request.contextPath}/manager/main";
+        });
+        // 2026.05.08 수정: /centralAdmin/dashboard는 JSP가 없어 오류가 나므로 실제 존재하는 중앙관리 화면으로 이동
+        if (centralAdminBtn) centralAdminBtn.addEventListener("click", () => {
+            location.href = "${pageContext.request.contextPath}/centralAdmin/buildSearch";
+        });
         if (logoutBtn) logoutBtn.addEventListener("click", () => {
             const form = document.getElementById("logoutForm");
             if (form) form.submit();

@@ -202,6 +202,18 @@
                     </button>
                 </div>
 
+                <%-- 2026.05.08 추가: 관리소장(ROLE_MNGR) / 중앙관리자(ROLE_ADMIN) 전용 관리사무소 페이지 이동 버튼 --%>
+                <c:if test="${member.authList[0].auth == 'ROLE_ADMIN' || member.authList[0].auth == 'ROLE_MNGR'}">
+                    <div class="mt-3">
+                        <button type="button"
+                                onclick="location.href='${pageContext.request.contextPath}/manager/main'"
+                                class="w-full bg-white text-[#226046] border border-[#226046] py-4 rounded-full font-bold hover:bg-[#f4f9f6] transition">
+                            관리사무소 페이지
+                        </button>
+                    </div>
+                </c:if>
+                <%-- // 2026.05.08 추가 끝: 관리사무소 페이지 이동 버튼 --%>
+
             </div>
             <div class="bg-white rounded-2xl p-6 shadow-sm">
                 <form id="updateForm" action="${pageContext.request.contextPath}/member/updateSimple" method="post" class="space-y-6">
