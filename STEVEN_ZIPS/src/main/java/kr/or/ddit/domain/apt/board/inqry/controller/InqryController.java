@@ -32,7 +32,8 @@ public class InqryController {
         MemberVO user = customUser.getMember();
 
         PaginationInfoVO<InqryDTO> pagingVO = new PaginationInfoVO<>();
-        pagingVO.setScreenSize(5);
+
+        pagingVO.setScreenSize(2);
         pagingVO.setCurrentPage(currentPage);
 
         int totalRecord = inqryService.getTotalCount(
