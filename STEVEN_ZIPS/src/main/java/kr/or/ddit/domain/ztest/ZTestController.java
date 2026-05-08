@@ -21,11 +21,6 @@ public class ZTestController {
     @Autowired
     IAttachFileService attachFileService;
 
-    @GetMapping("/react")
-    public String react(){
-        return "ztestview/react_link";
-    }
-
     @GetMapping("/aptapi")
     public String aptapi(){
         return "ztestview/aptapi";
