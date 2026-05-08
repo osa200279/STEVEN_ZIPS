@@ -816,6 +816,7 @@
                                 <th>차종</th>
                                 <th>등록일</th>
                                 <th>상태</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1072,7 +1073,12 @@
                                 <td>\${car.regDt ? car.regDt.substring(0,10) : ''}</td>
                                 <td>
                                     <span class="badge \${badgeClass}">\${statusText}</span>
-                                    <span class="delete-text" data-vhcl-id="\${car.rsidVhclNo}">삭제</span>
+                                </td>
+                                <td>
+                                    <span class="delete-text"
+                                          data-vhcl-id="\${car.rsidVhclNo}">
+                                        삭제
+                                    </span>
                                 </td>
                             </tr>
                             `;

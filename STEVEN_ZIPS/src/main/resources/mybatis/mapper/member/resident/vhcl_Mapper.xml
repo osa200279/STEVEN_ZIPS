@@ -91,15 +91,16 @@
     </select>
 
     <select id="existsVhclNo" resultType="int">
-        SELECT COUNT(*)
-        FROM RSID_VHCL
-        WHERE VHCL_NO = #{vhclNo}
+        SELECT  COUNT(*)
+        FROM    RSID_VHCL
+        WHERE   VHCL_NO = #{vhclNo}
     </select>
 
     <select id="countMyVhcl" resultType="int">
-        SELECT COUNT(*)
-        FROM rsid_vhcl
-        WHERE user_no = #{userNo}
+        SELECT  COUNT(*)
+        FROM    rsid_vhcl
+        WHERE   user_no = #{userNo}
+        AND     ho_no   = #{hoNo}
     </select>
 
     <select id="selectMyHoList" resultType="java.lang.String">

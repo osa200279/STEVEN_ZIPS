@@ -173,7 +173,7 @@
                 <ul>
                     <li><a href="${pageContext.request.contextPath}/resident/service/moving">전입/전출신고</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/service/car/${aptCmplexNo}">차량등록</a></li>
-                    <li><a href="${pageContext.request.contextPath}/resident/service/visitor">방문차량등록</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/service/visitor/${aptCmplexNo}">방문차량등록</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/service/facility">공용시설예약</a></li>
                 </ul>
             </div>

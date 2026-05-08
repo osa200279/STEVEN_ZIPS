@@ -187,9 +187,17 @@ public class ResidentMainController {
         return "member/resident/service_car";
     }
 
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/service/visitor/{aptCmplexNo}")
+    public String serviceVisitor(
+            @PathVariable String aptCmplexNo
+            ,Model model
+    ) {
 
-    @GetMapping("/service/visitor")
-    public String serviceVisitor() {
+        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
+        model.addAttribute("aptInfo", aptCommonDTO);
+
+
         return "member/resident/service/service_visitor";
     }
 

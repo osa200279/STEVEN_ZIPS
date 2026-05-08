@@ -560,8 +560,6 @@
 
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
 <%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
 <div class="main-shell">
     <%@ include file="/WEB-INF/views/include/sidebarLayout.jsp" %>

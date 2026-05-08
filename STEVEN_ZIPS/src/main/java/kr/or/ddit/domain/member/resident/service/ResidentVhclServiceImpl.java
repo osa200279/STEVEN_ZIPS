@@ -103,7 +103,6 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
             String vhclNo,
             String dong,
             String ho,
-            boolean isExtra,
             MultipartFile file
     ) throws IOException {
 

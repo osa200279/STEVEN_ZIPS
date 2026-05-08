@@ -74,7 +74,7 @@ public class GoogleDriveService {
                     .build();
 
             // 4. 로컬 서버 리시버를 통해 브라우저 인증 수행 (사용자 인증 방식)
-            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+            LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(-1).build();   // -1 포트 : 자동으로 빈포트사용
             Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
 
             // 5. Drive 서비스 객체 반환

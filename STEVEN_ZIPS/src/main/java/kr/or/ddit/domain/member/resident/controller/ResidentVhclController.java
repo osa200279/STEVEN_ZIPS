@@ -80,7 +80,7 @@ public class ResidentVhclController {
 
         residentVhclService.registerVhcl(
                 userNo, aptCmplexNo, vhclNm, vhclNo,
-                dong, ho, isExtra, file
+                dong, ho, file
         );
 
         return "OK";
