@@ -208,7 +208,9 @@
       <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
     </button>
     <div>
-      <h1 class="text-2xl font-bold text-gray-900">새 문의 작성</h1>
+    <h1 class="text-2xl font-bold text-gray-900">
+  ${empty inqry.postNo ? '새 문의 작성' : '문의 수정'}
+</h1>
       <p class="text-sm text-gray-400 mt-0.5">담당자가 확인 후 신속하게 답변해 드립니다.</p>
     </div>
   </div>
@@ -219,14 +221,29 @@
     </div>
   </c:if>
 
-  <form action="${pageContext.request.contextPath}/board/inqry/writeProc.do"
-        method="post"
-        enctype="multipart/form-data"
-        id="inquiryForm">
+<c:choose>
+
+  <c:when test="${not empty inqry.postNo}">
+    <form action="${pageContext.request.contextPath}/board/inqry/updateProc.do"
+          method="post"
+          enctype="multipart/form-data"
+          id="inquiryForm">
+  </c:when>
+
+  <c:otherwise>
+    <form action="${pageContext.request.contextPath}/board/inqry/writeProc.do"
+          method="post"
+          enctype="multipart/form-data"
+          id="inquiryForm">
+  </c:otherwise>
+
+</c:choose>
 
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 
-
+<input type="hidden"
+       name="postNo"
+       value="${inqry.postNo}">
     <div class="space-y-5">
 
       <!-- ① 카테고리 -->
@@ -250,6 +267,7 @@
                type="text"
                id="titleInput"
                name="ttl"
+               value="${inqry.ttl}"
                placeholder="문의 제목을 입력하세요 (최대 50자)"
                maxlength="50"/>
         <div class="char-counter"><span id="titleCount">0</span> / 50</div>
@@ -262,7 +280,7 @@
                   id="contentInput"
                   name="cn"
                   placeholder="문의 내용을 상세히 작성해주세요.&#10;&#10;예) 위치, 발생 시간, 증상 등을 함께 적어주시면 더 빠른 처리가 가능합니다."
-                  maxlength="1000"></textarea>
+                  maxlength="1000">${inqry.cn}</textarea>
         <div class="char-counter"><span id="contentCount">0</span> / 1000</div>
       </div>
 

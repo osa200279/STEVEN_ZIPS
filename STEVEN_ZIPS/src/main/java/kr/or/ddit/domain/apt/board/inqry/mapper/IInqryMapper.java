@@ -44,4 +44,17 @@ public interface IInqryMapper {
             @Param("aptCmplexNo") String aptCmplexNo,
             @Param("boardTyCd") String boardTyCd
     );
+
+    InqryDTO detail(
+            @Param("postNo") String postNo,
+            @Param("userNo") String userNo,
+            @Param("userId") String userId
+    );
+
+
+    int updateInqry(
+            @Param("dto") InqryDTO dto,
+            @Param("userNo") String userNo,
+            @Param("userId") String userId
+    );
 }

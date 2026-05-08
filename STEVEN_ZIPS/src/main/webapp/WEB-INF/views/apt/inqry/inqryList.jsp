@@ -183,14 +183,27 @@
               <fmt:formatDate value="${inqry.regDttm}" pattern="yyyy.MM.dd"/>
             </div>
 
-            <c:if test="${inqry.wrtrId eq sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member.userId}">
-              <button type="button"
-                      onclick="deleteInqry('${inqry.postNo}')"
-                      class="text-xs text-red-500 hover:underline">
-                삭제
-              </button>
-          </c:if>
+           <c:if test="${inqry.wrtrId eq sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member.userId}">
 
+  <div class="flex items-center gap-2 mt-1">
+
+    <button type="button"
+            onclick="goUpdate('${inqry.postNo}')"
+            class="text-xs text-[#6F7F3F] hover:underline">
+      수정
+    </button>
+
+    <span class="text-gray-300 text-xs">|</span>
+
+    <button type="button"
+            onclick="deleteInqry('${inqry.postNo}')"
+            class="text-xs text-red-500 hover:underline">
+      삭제
+    </button>
+
+  </div>
+
+</c:if>
 
           </div>
 
@@ -271,10 +284,13 @@
             '${pageContext.request.contextPath}/board/inqry/list.do?page=' + page;
   });
 
+  function goUpdate(postNo) {
 
+    event.stopPropagation();
 
-
-
+    location.href =
+            '${pageContext.request.contextPath}/board/inqry/updateForm.do?postNo=' + postNo;
+  }
 
 </script>
 </body>

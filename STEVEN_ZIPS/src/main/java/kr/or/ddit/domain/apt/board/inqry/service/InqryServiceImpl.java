@@ -103,6 +103,37 @@ public class InqryServiceImpl implements IInqryService {
         );
     }
 
+    @Override
+    public InqryDTO detail(String postNo, String userNo, String userId) {
+        InqryDTO dto = inqryMapper.detail(
+                postNo,
+                userNo,
+                userId
+        );
+
+        if (dto == null) {
+            throw new RuntimeException("존재하지 않거나 접근 권한이 없습니다.");
+        }
+
+        return dto;
+    }
+
+    @Override
+    public void updateInqry(InqryDTO dto, String userNo, String userId) {
+        int result = inqryMapper.updateInqry(
+                dto,
+                userNo,
+                userId
+        );
+
+        if (result <= 0) {
+            throw new RuntimeException("수정에 실패했습니다.");
+        }
+    }
+
+
+
+
     private InqryDTO getResidentInfo(String userNo) {
 
         InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
@@ -115,76 +146,3 @@ public class InqryServiceImpl implements IInqryService {
     }
 }
 
-//package kr.or.ddit.domain.apt.board.inqry.service;
-//
-//import kr.or.ddit.domain.apt.board.inqry.mapper.IInqryMapper;
-//import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//import java.util.Map;
-//
-//@Slf4j
-//@Service
-//public class InqryServiceImpl implements IInqryService {
-//
-//    @Autowired
-//    private IInqryMapper qnaMapper;
-//
-//    @Override
-//    public List<CvplVO> getList(
-//            String userNo,
-//            int startRow,
-//            int endRow
-//    ) {
-//        return qnaMapper.getList(
-//                userNo,
-//                startRow,
-//                endRow
-//        );
-//    }
-//
-//    @Override
-//    public void insertQna(CvplVO vo) {
-//        if (vo.getCvplTtl() == null || vo.getCvplTtl().trim().isEmpty()) {
-//            throw new RuntimeException("제목 없음");
-//        }
-//
-//        if (vo.getCvplCn() == null || vo.getCvplCn().trim().isEmpty()) {
-//            throw new RuntimeException("내용 없음");
-//        }
-//
-//        qnaMapper.insertQna(vo);
-//    }
-//
-//    @Override
-//    public void deleteQna(String cvplNo, String userNo) {
-//        qnaMapper.deleteQna(cvplNo, userNo);
-//    }
-//
-//    @Override
-//    public int getTotalCount(String userNo) {
-//        return qnaMapper.getTotalCount(userNo);
-//    }
-//
-//    @Override
-//    public Map<String, Object> getResidentInfo(String userNo) {
-//        Map<String, Object> info = qnaMapper.getResidentInfo(userNo);
-//
-//        if (info == null || info.isEmpty()) {
-//            throw new RuntimeException("세대 정보가 연결되지 않은 사용자입니다.");
-//            // 세대 정보란?
-//            // → 현재 로그인한 사용자가 어느 호수(HO_NO), 어느 단지(APT_CMPLEX_NO)에 속하는지에 대한 정보.
-//        }
-//
-//        return info;
-//    }
-//
-////    @Override
-////    public Map<String, Object> getResidentInfo(String userNo) {
-////        return qnaMapper.getResidentInfo(userNo);
-////    }
-//
-//}
