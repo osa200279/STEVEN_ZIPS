@@ -2,8 +2,8 @@ package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
-import kr.or.ddit.domain.apt.mgmtOffice.service.IMgmtOfficeService;
-import kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO;
+import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtOfficeService;
+import kr.or.ddit.domain.apt.mgmtOffice.main.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.member.resident.vo.MyAptVO;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
