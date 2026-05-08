@@ -24,6 +24,8 @@ public class ChatWsController {
     @MessageMapping("/chat/send")
     public void sendMessage(ChatMessageVO message, Principal principal) {
 
+        System.out.println("principal = " + principal);
+
         CustomUser user = (CustomUser) ((Authentication) principal).getPrincipal();
 
         String userNo = user.getMember().getUserNo();

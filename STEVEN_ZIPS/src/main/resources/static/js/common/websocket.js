@@ -12,7 +12,7 @@ function connectWebSocket() {
     const socket = new SockJS(contextPath + '/ws');
 
     stomp = Stomp.over(socket);
-    stomp.debug = null;
+    stomp.debug = console.log;
 
     stomp.connect(
         {},

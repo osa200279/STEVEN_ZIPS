@@ -10,16 +10,34 @@ let currentRoomNm = null;
 /* websocket 구독하는 함수 */
 function subscribeRoom(roomId) {
 
+    if (!stomp || !stomp.connected) {
+
+        console.warn("웹소켓 아직 연결 안됨");
+
+        setTimeout(() => {
+            subscribeRoom(roomId);
+        }, 300);
+
+        return;
+    }
+
     if (subscription) {
         subscription.unsubscribe();
     }
 
-    subscription = stomp.subscribe('/sub/chat/room/' + roomId, function(msg) {
+    console.log("채팅방 구독:", roomId);
 
-        const data = JSON.parse(msg.body);
+    subscription = stomp.subscribe(
+        '/sub/chat/room/' + roomId,
+        function(msg) {
 
-        appendMessage(data);
-    });
+            console.log("실시간 수신:", msg);
+
+            const data = JSON.parse(msg.body);
+
+            appendMessage(data);
+        }
+    );
 }
 
 /* 내 채팅방 목록에서 눌렀을때 실행됨 */
@@ -36,7 +54,7 @@ function openMyRoom(roomNo, roomNm, el) {
     }
 
     //새 채팅방 구독
-    subscribeRoom(roomNo);
+
 
     // 기존 메시지 로딩
     fetch(contextPath + '/residentChat/messages/' + aptCmplexNo + '?chatRoomNo=' + roomNo)
@@ -68,6 +86,8 @@ function openMyRoom(roomNo, roomNm, el) {
             `;
 
             document.getElementById("chat-content").innerHTML = html;
+
+            subscribeRoom(roomNo);
 
             const area = document.getElementById("message-area");
 
