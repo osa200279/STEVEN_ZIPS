@@ -346,6 +346,105 @@
 
         </section>
 
+
+
+
+
+
+
+        <section class="facility-section">
+
+            <h2 class="facility-section-title">주변사항</h2>
+
+            <table class="facility-table">
+
+                <tbody>
+
+                <tr>
+                    <th>편의시설</th>
+
+                    <td>
+                        관공서(우골동주민센터)
+                        병원(자애의원)
+                        대형상가(삼익쇼핑)
+                    </td>
+
+                    <th>교육시설</th>
+
+                    <td>
+                        초등학교(우림남초등학교)
+                        중학교(우림중)
+                        고등학교(대인전자고)
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>지하철</th>
+
+                    <td colspan="3">
+                        1호선(수도권) 경춘선
+                        (도보 5~10분 이내)
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+
+        <section class="facility-section">
+
+            <h2 class="facility-section-title">입주편의시설 조회</h2>
+
+            <table class="facility-table">
+
+                <thead>
+
+                <tr>
+                    <th>유형</th>
+                    <th>최대수용인원수</th>
+                    <th>외부인 개방여부</th>
+                    <th>입주민 이용요금</th>
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr>
+                    <td>피트니스센터</td>
+                    <td>10명</td>
+                    <td>입주민전용</td>
+                    <td>10000원</td>
+                </tr>
+
+                <tr>
+                    <td>노인정</td>
+                    <td>30명</td>
+                    <td>입주민전용</td>
+                    <td>24000원</td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
     </div>
 
 </main>
