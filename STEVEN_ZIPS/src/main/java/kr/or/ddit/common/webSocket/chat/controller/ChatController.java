@@ -118,6 +118,9 @@ public class ChatController {
             @AuthenticationPrincipal CustomUser user
     ) {
 
+
+        System.out.println("user = " + user);
+
         String userNo = user.getMember().getUserNo();
 
         return service.selectOpenRooms(aptCmplexNo,userNo);
