@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper">
+
+    <insert id="insertBoardFree" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO">
+        <selectKey keyProperty="postNo" resultType="string" order="BEFORE">
+            SELECT seq_board_post.nextval FROM dual
+        </selectKey>
+        INSERT INTO apt_board_post (
+        post_no
+        ,board_no
+        ,ttl
+        ,cn
+        ,wrtr_id
+        ,prrt_cd
+        ,reg_dttm
+        ,mdf_dttm
+        ,inq_cnt
+        ,del_yn
+        ,atch_file_id
+        ,opn_yn
+        ) VALUES (
+        #{postNo}
+        ,#{boardNo}
+        ,#{ttl}
+        ,#{cn}
+        ,#{wrtrId}
+        ,#{prrtCd}
+        ,SYSDATE
+        ,SYSDATE
+        ,0
+        ,'N'
+        ,#{atchFileId}
+        ,NVL(#{opnYn}, 'Y')
+        )
+    </insert>
+    <update id="deleteBoardComment" parameterType="string">
+        UPDATE apt_board_comment
+           SET del_yn = 'Y'
+         WHERE cmt_no = #{cmtNo}
+    </update>
+    <update id="updateBoardComment" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO">
+        UPDATE apt_board_comment
+        SET cmt_cn = #{cmtCn},
+            mdf_dttm = SYSDATE
+        WHERE cmt_no = #{cmtNo}
+    </update>
+
+    <select id="boardFreeList" resultType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO" parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO">
+        SELECT *
+            FROM (
+        SELECT ROWNUM rn, a.*
+            FROM (
+        SELECT post_no
+               ,board_no
+               ,ttl
+               ,cn
+               ,wrtr_id
+               ,prrt_cd
+               ,reg_dttm
+               ,mdf_dttm
+               ,inq_cnt
+               ,del_yn
+               ,atch_file_id
+               ,opn_yn
+        FROM apt_board_post
+        WHERE board_no = #{aptCmplexNo}
+        AND del_yn = 'N'
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'ttl'">
+                AND ttl LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchType == 'wrtrId'">
+                AND wrtr_id LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchType == 'cn'">
+                AND cn LIKE '%' || #{searchWord} || '%'
+                </when>
+                <otherwise>
+                AND ttl LIKE '%' || #{searchWord} || '%'
+                </otherwise>
+            </choose>
+        </if>
+        ORDER BY TO_NUMBER(post_no) DESC
+        ) a WHERE ROWNUM &lt;= #{endRow}
+        ) WHERE rn >= #{startRow}
+    </select>
+
+
+    <select id="selectBoardFreeCount" resultType="int" parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO">
+        SELECT COUNT(*)
+        FROM apt_board_post
+        WHERE board_no = #{aptCmplexNo}
+        AND del_yn = 'N'
+        <if test="searchWord != null and searchWord != ''">
+            <choose>
+                <when test="searchType == 'ttl'">
+                AND ttl LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchType == 'wrtrId'">
+                AND wrtr_id LIKE '%' || #{searchWord} || '%'
+                </when>
+                <when test="searchType == 'cn'">
+                AND cn LIKE '%' || #{searchWord} || '%'
+                </when>
+                <otherwise>
+                AND ttl LIKE '%' || #{searchWord} || '%'</otherwise>
+            </choose>
+        </if>
+    </select>
+
+    <select id="selectOneBoardFree" resultType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO">
+        SELECT
+            post_no
+            ,board_no
+            ,ttl, cn
+            ,wrtr_id
+            ,prrt_cd
+            ,reg_dttm
+            ,mdf_dttm
+            ,inq_cnt
+            ,del_yn
+            ,atch_file_id
+            ,opn_yn
+        FROM apt_board_post
+        WHERE post_no = #{postNo}
+
+    </select>
+
+    <update id="deleteBoardFree" parameterType="string">
+        UPDATE apt_board_post
+        SET del_yn = 'Y'
+        WHERE post_no = #{postNo}
+    </update>
+
+    <update id="updateBoardFree" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO">
+        UPDATE apt_board_post
+        SET ttl = #{ttl}
+            ,cn = #{cn}
+            ,mdf_dttm = SYSDATE
+        WHERE post_no = #{postNo}
+    </update>
+
+    <update id="updateInqCnt" parameterType="string">
+        UPDATE apt_board_post
+        SET inq_cnt = inq_cnt + 1
+        WHERE post_no = #{postNo}
+    </update>
+
+    <insert id="insertBoardComment" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO">
+        <selectKey keyProperty="cmtNo" resultType="string" order="BEFORE">
+        SELECT seq_board_comment.nextval FROM dual
+        </selectKey>
+        INSERT INTO apt_board_comment (
+        cmt_no
+        ,post_no
+        ,cmt_group
+        ,cmt_cn
+        ,cmt_sort_ord
+        ,reg_dttm
+        ,del_yn
+        ,mdf_dttm
+        ,user_no
+        ) VALUES (
+        #{cmtNo}
+        ,#{postNo}
+        ,#{cmtNo}
+        ,#{cmtCn}
+        ,0
+        ,SYSDATE
+        ,'N'
+        ,SYSDATE
+        ,#{userNo}
+        )
+    </insert>
+    <insert id="insertSubComment" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO">
+        INSERT INTO apt_board_comment (
+            cmt_no
+            ,post_no
+            ,cmt_group
+            ,cmt_cn
+            ,cmt_sort_ord
+            ,reg_dttm
+            ,del_yn
+            ,mdf_dttm
+            ,user_no
+        ) VALUES (
+            seq_board_comment.nextval
+            ,#{postNo}
+            ,(
+            SELECT cmt_group
+            FROM apt_board_comment
+            WHERE cmt_no = #{cmtNo})
+            ,#{cmtCn}
+            ,(
+            SELECT MAX(cmt_sort_ord)
+            FROM apt_board_comment
+            WHERE cmt_group = (
+            SELECT cmt_group
+            FROM apt_board_comment
+            WHERE cmt_no = #{cmtNo}
+                              )
+            ) + 1
+            ,SYSDATE
+            ,'N'
+            ,SYSDATE
+            ,#{userNo}
+            )
+    </insert>
+    <select id="boardFreeComment" parameterType="string" resultType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO">
+        SELECT
+             c.cmt_no
+             ,c.post_no
+             ,c.cmt_group
+             ,c.cmt_cn
+             ,c.cmt_sort_ord
+             ,c.reg_dttm
+             ,c.del_yn
+             ,c.mdf_dttm
+             ,m.user_no
+             ,m.user_id
+        FROM apt_board_comment c
+        LEFT JOIN member m on c.user_no = m.user_no
+        WHERE c.post_no = #{postNo}
+          AND c.del_yn = 'N'
+        ORDER BY c.cmt_group ASC,
+                 c.cmt_sort_ord ASC
+    </select>
+
+
+
+</mapper>
+
+
+
+
+
+
+

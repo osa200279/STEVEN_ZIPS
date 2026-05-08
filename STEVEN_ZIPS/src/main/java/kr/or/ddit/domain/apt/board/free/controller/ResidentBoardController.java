@@ -1,18 +1,20 @@
-package kr.or.ddit.domain.member.resident.controller;
+package kr.or.ddit.domain.apt.board.free.controller;
 
 import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
-import kr.or.ddit.domain.member.resident.service.IResidentBoardService;
-import kr.or.ddit.domain.member.resident.vo.RsidBoardCommentVO;
-import kr.or.ddit.domain.member.resident.vo.RsidBoardVO;
+import kr.or.ddit.domain.apt.board.free.service.IResidentBoardService;
+import kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO;
+import kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,20 +33,21 @@ public class ResidentBoardController {
             RsidBoardVO rsidBoardVO,
             @RequestParam String aptCmplexNo,
             @RequestParam(required = false) MultipartFile attachFile,
-            @AuthenticationPrincipal CustomUser principal) {
+            @AuthenticationPrincipal CustomUser principal) throws IOException {
 
         rsidBoardVO.setWrtrId(principal.getMember().getUserId());
         rsidBoardVO.setBoardNo(aptCmplexNo + "_free");
-        service.insertBoardFree(rsidBoardVO);
+        service.insertBoardFree(rsidBoardVO, attachFile);
         System.out.println("aptCmplexNo: " + aptCmplexNo);
         System.out.println("boardNo: " + rsidBoardVO.getBoardNo());
         return "redirect:/resident/boardFreeList/" + aptCmplexNo;
     }
 
-    //@PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/boardFreeList/{aptCmplexNo}")
     public String boardFreeList(
             @PathVariable String aptCmplexNo,
+            @AuthenticationPrincipal CustomUser principal,
             @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage,
             @RequestParam(name = "searchWord", required = false) String searchWord,
             @RequestParam(name = "searchType", required = false) String searchType,
@@ -79,21 +82,27 @@ public class ResidentBoardController {
 
         return "member/resident/board/board_free_list";
     }
-    
-    @GetMapping("/boardFreeDetail/{annNo}/{aptCmplexNo}")
-    public String boardFreeDetail(@PathVariable String annNo,
+
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/boardFreeDetail/{postNo}/{aptCmplexNo}")
+    public String boardFreeDetail(@PathVariable String postNo,
                                   @PathVariable String aptCmplexNo,
                                   @AuthenticationPrincipal CustomUser principal,
                                   RsidBoardVO rsidBoardVO,
                                   Model model){
-        rsidBoardVO.setAnnNo(annNo);
-        service.updateInqCnt(annNo);
+        System.out.println("=== 상세보기 디버그 ===");
+        System.out.println("postNo: " + postNo);
+        rsidBoardVO.setPostNo(postNo);
+        System.out.println("rsidBoardVO.postNo: " + rsidBoardVO.getPostNo());
+        service.updateInqCnt(postNo);
         RsidBoardVO board = service.selectOneBoardFree(rsidBoardVO);
-        System.out.println("board: " + board);
+        model.addAttribute("freeBoard", board);
+        System.out.println("board.ttl: " + (board != null ? board.getTtl() : "NULL"));
+        System.out.println("====================");
 
-        model.addAttribute("board", board);
+        model.addAttribute("freeBoard", board);
         model.addAttribute("aptCmplexNo", aptCmplexNo);
-        model.addAttribute("annNo", annNo);
+        model.addAttribute("postNo", postNo);
         return "member/resident/board/board_free_detail";
     }
 
@@ -106,30 +115,71 @@ public class ResidentBoardController {
         return result;
     }
 
-    @PutMapping("/boardFreeDelete/{annNo}")
+    @PutMapping("/boardFreeDelete/{postNo}")
     @ResponseBody
-    public Map<String, Object> boardFreeDelete(@PathVariable String annNo){
+    public Map<String, Object> boardFreeDelete(@PathVariable String postNo){
         Map<String, Object> result = new HashMap<>();
-        int cnt = service.deleteBoardFree(annNo);
+        int cnt = service.deleteBoardFree(postNo);
         System.out.println("updateResult: " + cnt);
         result.put("success", cnt > 0);
         return result;
     }
 
-    @PostMapping("/insertBoardComment")
+    @PostMapping("/insertBoardComment/{postNo}")
     @ResponseBody
     public Map<String, Object> insertBoardComment(@RequestBody RsidBoardCommentVO rsidBoardCommentVO,
-                                                  @PathVariable String annNo,
+                                                  @PathVariable String postNo,
                                                   @AuthenticationPrincipal CustomUser principal
                                                   ){
+
         Map<String, Object> result = new HashMap<>();
-        rsidBoardCommentVO.setPostNo(annNo);
-        rsidBoardCommentVO.setUserNo(principal.getMember().getUserId());
+        rsidBoardCommentVO.setPostNo(postNo);
+        rsidBoardCommentVO.setUserNo(principal.getMember().getUserNo());
         int cnt = service.insertBoardComment(rsidBoardCommentVO);
         result.put("success", cnt > 0);
         return result;
 
     }
+
+    @GetMapping("/boardFreeComment/{postNo}")
+    @ResponseBody
+    public List<RsidBoardCommentVO> boardFreeComment(@PathVariable String postNo) {
+        return service.boardFreeComment(postNo);
+    }
+
+    @PutMapping("/updateBoardComment")
+    @ResponseBody
+    public Map<String, Object> updateBoardComment(@RequestBody RsidBoardCommentVO rsidBoardCommentVO){
+        Map<String, Object> result = new HashMap<>();
+        int cnt = service.updateBoardComment(rsidBoardCommentVO);
+        result.put("success", cnt > 0);
+        return result;
+    }
+
+    @PutMapping("/deleteBoardComment/{cmtNo}")
+    @ResponseBody
+    public Map<String, Object> deleteBoardComment(@PathVariable String cmtNo){
+        Map<String, Object> result = new HashMap<>();
+        int cnt = service.deleteBoardComment(cmtNo);
+        result.put("success", cnt > 0);
+        return result;
+    }
+
+    @PostMapping("/insertSubComment/{cmtNo}")
+    @ResponseBody
+    public Map<String, Object> insertSubComment(@RequestBody RsidBoardCommentVO rsidBoardCommentVO,
+                                                @PathVariable String cmtNo,
+                                                @AuthenticationPrincipal CustomUser principal){
+        Map<String, Object> result = new HashMap<>();
+        rsidBoardCommentVO.setCmtNo(cmtNo);
+        rsidBoardCommentVO.setUserNo(principal.getMember().getUserNo());
+        int cnt = service.insertSubComment(rsidBoardCommentVO);
+        result.put("success", cnt > 0);
+        return result;
+
+    }
+
+
 
 
 

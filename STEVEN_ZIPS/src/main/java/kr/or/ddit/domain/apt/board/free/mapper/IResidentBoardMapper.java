@@ -1,8 +1,8 @@
-package kr.or.ddit.domain.member.resident.mapper;
+package kr.or.ddit.domain.apt.board.free.mapper;
 
 import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
-import kr.or.ddit.domain.member.resident.vo.RsidBoardCommentVO;
-import kr.or.ddit.domain.member.resident.vo.RsidBoardVO;
+import kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO;
+import kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -20,11 +20,19 @@ public interface IResidentBoardMapper {
 
     RsidBoardVO selectOneBoardFree(RsidBoardVO rsidBoardVO);
 
-    int deleteBoardFree(String annNo);
+    int deleteBoardFree(String postNo);
 
     int updateBoardFree(RsidBoardVO rsidBoardVO);
 
-    void updateInqCnt(String annNo);
+    void updateInqCnt(String postNo);
 
     int insertBoardComment(RsidBoardCommentVO rsidBoardCommentVO);
+
+    List<RsidBoardCommentVO> boardFreeComment(String postNo);
+
+    int updateBoardComment(RsidBoardCommentVO rsidBoardCommentVO);
+
+    int deleteBoardComment(String cmtNo);
+
+    int insertSubComment(RsidBoardCommentVO rsidBoardCommentVO);
 }

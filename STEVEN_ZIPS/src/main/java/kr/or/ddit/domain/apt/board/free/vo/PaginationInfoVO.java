@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.member.resident.vo;
+package kr.or.ddit.domain.apt.board.free.vo;
 
 import lombok.Data;
 
