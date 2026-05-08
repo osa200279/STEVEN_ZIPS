@@ -109,4 +109,22 @@ public class AptRetrieveController {
         return "central/aptDashboard";
     }
 
+    @GetMapping("/detail.do")
+    public String aptDetail(@RequestParam("aptCmplexNo") String aptCmplexNo, Model model) {
+        log.info("아파트 단지 상세 조회 aptCmplexNo = {}", aptCmplexNo);
+
+        AptComplexVO aptInfo = aptComplexService.selectAptComplexDetail(aptCmplexNo);
+
+        log.info("조회된 아파트 단지 상세 정보 = {}", aptInfo);
+
+        if (aptInfo == null) {
+            model.addAttribute("message", "해당 단지 정보를 찾을 수 없습니다.");
+            model.addAttribute("redirectUrl", "/apt/list.do");
+            return "common/errorAlert";
+        }
+
+        model.addAttribute("aptInfo", aptInfo);
+
+        return "central/aptDetail";
+    }
 }

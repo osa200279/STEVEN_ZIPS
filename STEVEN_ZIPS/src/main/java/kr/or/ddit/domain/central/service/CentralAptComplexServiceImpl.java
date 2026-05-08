@@ -52,4 +52,9 @@ public class CentralAptComplexServiceImpl implements ICentralAptComplexService {
     public List<String> selectSidoList() {
         return aptComplexMapper.selectSidoList();
     }
+
+    @Override
+    public AptComplexVO selectAptComplexDetail(String aptCmplexNo) {
+        return aptComplexMapper.selectAptComplexDetail(aptCmplexNo);
+    }
 }

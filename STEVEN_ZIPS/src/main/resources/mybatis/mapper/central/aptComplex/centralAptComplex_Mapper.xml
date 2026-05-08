@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.central.mapper.ICentralAptComplexMapper">
 
-
+    <!-- 단지 목록 조회 -->
     <select id="selectAptComplexList"
             resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
 
@@ -284,5 +284,33 @@
         ORDER BY SIDO_NM
     </select>
 
+    <select id="selectAptComplexDetail"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
+
+        SELECT
+            APT_CMPLEX_NO,
+            APT_CMPLEX_NM,
+            BJD_CD,
+            SIDO_NM,
+            SIGUNGU_NM,
+            EMD_NM,
+            LAT_VAL,
+            LON_VAL,
+            UNIT_CNT,
+            BLD_YR,
+            CNSCO_NM,
+            IMG_FILE_NO,
+            RPRSNT_IMG_FILE_NO,
+            HEAT_TY,
+            PKG_CNT,
+            MAX_FLOOR,
+            FREE_PKG_CNT,
+            DONG_CNT,
+            DOROJUSO,
+            CC_CNT
+        FROM APT_COMPLEX
+        WHERE APT_CMPLEX_NO = #{aptCmplexNo}
+    </select>
 
 </mapper>

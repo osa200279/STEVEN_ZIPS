@@ -33,5 +33,8 @@ public interface ICentralAptComplexMapper {
 
     // 검색
     List<AptComplexVO> searchApt(String keyword);
+
+    // 단지 상세화면
+    AptComplexVO selectAptComplexDetail(@Param("aptCmplexNo") String aptCmplexNo);
 }
 

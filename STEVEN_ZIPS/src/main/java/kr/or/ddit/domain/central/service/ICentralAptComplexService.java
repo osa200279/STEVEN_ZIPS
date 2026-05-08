@@ -20,4 +20,6 @@ public interface ICentralAptComplexService {
     List<String> selectSigunguList(String sidoNm);
 
     List<String> selectSidoList();
+
+    AptComplexVO selectAptComplexDetail(String aptCmplexNo);
 }
