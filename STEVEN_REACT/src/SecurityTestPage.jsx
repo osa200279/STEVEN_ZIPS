@@ -3,7 +3,7 @@ import axios from 'axios';
 const SecurityTestPage = () => {
   const checkAuth = async () => {
     try {
-      // 8080 포트의 백엔드 API 호출 (이전 답변에서 만든 컨트롤러 경로)
+      // 8080 포트의 백엔드 API 호출 (이전 답변에서 만든 컨트롤러 경로) 도선호
       const res = await axios.get('http://localhost:8080/react/test', {
         withCredentials: true 
       });
@@ -15,7 +15,7 @@ const SecurityTestPage = () => {
 
   return (
     <div style={{ border: '2px solid #444', padding: '20px', borderRadius: '10px' }}>
-      <h2>🔐 중앙관리자 보안 테스트 섹션</h2>
+      <h2>🔐!! 중앙관리자 보안 테스트 섹션</h2>
       <p>JSP 세션이 리액트 API 요청까지 유지되는지 확인합니다.</p>
       
       <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
