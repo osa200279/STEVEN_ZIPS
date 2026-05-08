@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.member.manager.common.advice;
+package kr.or.ddit.domain.apt.mgmtOffice.common.advice;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

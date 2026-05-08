@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.or.ddit.domain.member.manager.mapper.IEmployeeMapper">
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.mapper.IEmployeeMapper">
 
     <!--
         ================================================================
@@ -26,7 +26,7 @@
     </resultMap>
 
     <!-- mngr_rqst + manager 조인 결과 → MngrRqstVO 매핑 -->
-    <resultMap id="mngrRqstMap" type="kr.or.ddit.domain.member.manager.vo.MngrRqstVO">
+    <resultMap id="mngrRqstMap" type="kr.or.ddit.domain.apt.mgmtOffice.vo.MngrRqstVO">
         <result property="rqstNo"      column="rqst_no"/>
         <result property="rqstLoginId" column="rqst_login_id"/>
         <result property="rqstMngrNm"  column="rqst_mngr_nm"/>
@@ -42,7 +42,7 @@
     </resultMap>
 
     <!-- member 조회 결과 → MemberSearchDTO 매핑 -->
-    <resultMap id="memberSearchMap" type="kr.or.ddit.domain.member.manager.vo.MemberSearchDTO">
+    <resultMap id="memberSearchMap" type="kr.or.ddit.domain.apt.mgmtOffice.DTO.MemberSearchDTO">
         <result property="userNo"    column="user_no"/>
         <result property="userId"    column="user_id"/>
         <result property="userNm"    column="user_nm"/>
@@ -311,7 +311,7 @@
         rqst_dt는 SYSDATE 입력
         ================================================================
     -->
-    <insert id="insertRequest" parameterType="kr.or.ddit.domain.member.manager.vo.MngrRqstVO">
+    <insert id="insertRequest" parameterType="kr.or.ddit.domain.apt.mgmtOffice.vo.MngrRqstVO">
         <selectKey keyProperty="rqstNo" resultType="String" order="BEFORE">
             SELECT TO_CHAR(seq_manager_rqst.NEXTVAL) FROM dual
         </selectKey>
@@ -344,7 +344,7 @@
         WAIT 상태 + 본 사무소 요청만 수정 가능
         ================================================================
     -->
-    <update id="updateRequest" parameterType="kr.or.ddit.domain.member.manager.vo.MngrRqstVO">
+    <update id="updateRequest" parameterType="kr.or.ddit.domain.apt.mgmtOffice.vo.MngrRqstVO">
         UPDATE mngr_rqst mr
         SET
         mr.rqst_duty_cd = #{rqstDutyCd}
@@ -361,7 +361,7 @@
         WAIT 상태 + 본 사무소 요청만 취소 가능
         ================================================================
     -->
-    <update id="cancelRequest" parameterType="kr.or.ddit.domain.member.manager.vo.MngrRqstVO">
+    <update id="cancelRequest" parameterType="kr.or.ddit.domain.apt.mgmtOffice.vo.MngrRqstVO">
         UPDATE mngr_rqst mr
         SET
         mr.rqst_stts_cd = #{rqstSttsCd}

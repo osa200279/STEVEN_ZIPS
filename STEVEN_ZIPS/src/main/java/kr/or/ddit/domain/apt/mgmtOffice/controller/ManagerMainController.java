@@ -1,9 +1,9 @@
-package kr.or.ddit.domain.member.manager.controller;
+package kr.or.ddit.domain.apt.mgmtOffice.controller;
 
 import kr.or.ddit.domain.apt.mgmtOffice.mapper.IMgmtOfficeMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO;
-import kr.or.ddit.domain.member.manager.vo.ManagerPaginationVO;
-import kr.or.ddit.domain.member.manager.common.service.IManagerModelService;
+import kr.or.ddit.domain.apt.mgmtOffice.vo.ManagerPaginationVO;
+import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
@@ -375,4 +375,5 @@ public class ManagerMainController {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
         return "manager/mngr_accountArrears";
     }
+
 }

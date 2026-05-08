@@ -1,8 +1,7 @@
-package kr.or.ddit.domain.member.manager.mapper;
+package kr.or.ddit.domain.apt.mgmtOffice.mapper;
 
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface IMngrMapper {

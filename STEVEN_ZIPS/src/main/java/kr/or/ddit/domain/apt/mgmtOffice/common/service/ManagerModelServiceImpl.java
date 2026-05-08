@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.member.manager.common.service;
+package kr.or.ddit.domain.apt.mgmtOffice.common.service;
 
 import kr.or.ddit.domain.apt.mgmtOffice.mapper.IMgmtOfficeMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO;

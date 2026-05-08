@@ -1,11 +1,11 @@
-package kr.or.ddit.domain.member.manager.service;
+package kr.or.ddit.domain.apt.mgmtOffice.service;
 
 import java.util.List;
 import java.util.Map;
 
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
-import kr.or.ddit.domain.member.manager.vo.MemberSearchDTO;
-import kr.or.ddit.domain.member.manager.vo.MngrRqstVO;
+import kr.or.ddit.domain.apt.mgmtOffice.DTO.MemberSearchDTO;
+import kr.or.ddit.domain.apt.mgmtOffice.vo.MngrRqstVO;
 
 public interface IEmployeeService {
 

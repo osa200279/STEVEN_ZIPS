@@ -1,7 +1,7 @@
 package kr.or.ddit.domain.apt.mgmtOffice.mapper;
 
 import kr.or.ddit.domain.apt.mgmtOffice.vo.MgmtOfficeVO;
-import kr.or.ddit.domain.member.manager.vo.ManagerPaginationVO;
+import kr.or.ddit.domain.apt.mgmtOffice.vo.ManagerPaginationVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

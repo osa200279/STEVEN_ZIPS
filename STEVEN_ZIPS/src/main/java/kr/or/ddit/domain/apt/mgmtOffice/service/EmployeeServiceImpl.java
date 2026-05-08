@@ -1,10 +1,10 @@
-package kr.or.ddit.domain.member.manager.service;
+package kr.or.ddit.domain.apt.mgmtOffice.service;
 
 import kr.or.ddit.common.enums.member.mngr.MngrRqstStatusCd;
-import kr.or.ddit.domain.member.manager.mapper.IEmployeeMapper;
+import kr.or.ddit.domain.apt.mgmtOffice.mapper.IEmployeeMapper;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
-import kr.or.ddit.domain.member.manager.vo.MemberSearchDTO;
-import kr.or.ddit.domain.member.manager.vo.MngrRqstVO;
+import kr.or.ddit.domain.apt.mgmtOffice.DTO.MemberSearchDTO;
+import kr.or.ddit.domain.apt.mgmtOffice.vo.MngrRqstVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

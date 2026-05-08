@@ -83,10 +83,6 @@ public class InqryController {
         return "redirect:/board/inqry/list.do";
     }
 
-
-
-
-
     @GetMapping("/updateForm.do")
     public String updateForm(
             @RequestParam String postNo,
@@ -139,11 +135,6 @@ public class InqryController {
 
         return "redirect:/board/inqry/list.do";
     }
-
-
-
-
-
 
     @GetMapping("/delete.do")
     public String deleteInqry(

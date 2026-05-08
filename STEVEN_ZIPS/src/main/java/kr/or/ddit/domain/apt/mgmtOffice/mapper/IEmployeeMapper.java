@@ -1,8 +1,8 @@
-package kr.or.ddit.domain.member.manager.mapper;
+package kr.or.ddit.domain.apt.mgmtOffice.mapper;
 
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
-import kr.or.ddit.domain.member.manager.vo.MemberSearchDTO;
-import kr.or.ddit.domain.member.manager.vo.MngrRqstVO;
+import kr.or.ddit.domain.apt.mgmtOffice.DTO.MemberSearchDTO;
+import kr.or.ddit.domain.apt.mgmtOffice.vo.MngrRqstVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

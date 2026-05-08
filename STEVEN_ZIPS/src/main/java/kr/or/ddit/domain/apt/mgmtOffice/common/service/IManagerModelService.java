@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.member.manager.common.service;
+package kr.or.ddit.domain.apt.mgmtOffice.common.service;
 
 import kr.or.ddit.domain.member.vo.CustomUser;
 import org.springframework.ui.Model;

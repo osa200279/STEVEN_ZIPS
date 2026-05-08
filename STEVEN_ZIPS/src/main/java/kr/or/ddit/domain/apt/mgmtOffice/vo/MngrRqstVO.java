@@ -1,9 +1,6 @@
-package kr.or.ddit.domain.member.manager.vo;
+package kr.or.ddit.domain.apt.mgmtOffice.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class MngrRqstVO {

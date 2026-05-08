@@ -3,7 +3,7 @@ package kr.or.ddit.common.security;
 import kr.or.ddit.common.enums.member.resident.InoutCd;
 import kr.or.ddit.domain.member.admin.mapper.IAdmMapper;
 import kr.or.ddit.domain.member.admin.vo.AdmVO;
-import kr.or.ddit.domain.member.manager.mapper.IMngrMapper;
+import kr.or.ddit.domain.apt.mgmtOffice.mapper.IMngrMapper;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.mapper.IMemberMapper;
 import kr.or.ddit.domain.member.resident.mapper.IResidentMapper;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
