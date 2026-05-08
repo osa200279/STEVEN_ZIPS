@@ -204,7 +204,7 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">민원</span>
-                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">민원 접수 현황</span></a>
+                    <a href="/manager/cvpl-list/${mgmtOfcNo}" class="nav-item" aria-disabled="true"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">민원 접수 현황</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">민원 처리</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">고위험 민원 알림</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">1:1 채팅 문의</span></a>
