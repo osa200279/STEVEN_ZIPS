@@ -75,19 +75,19 @@
                 {
                     headerName:'직원',
                     field:'userNm',
-                    width:200,
+                    width:250,
                     cellRenderer:AgRenderer.user.by('userNm','userId')
                 },
                 {
                     headerName:'직무',
                     field:'mngrDutyCd',
-                    width:120,
+                    width:100,
                     cellRenderer:AgRenderer.badge(AgRenderer.CODE.JOB_TY)
                 },
                 {
                     headerName:'연락처',
                     field:'telno',
-                    width:140
+                    width:250
                 },
                 {
                     headerName:'이메일',
