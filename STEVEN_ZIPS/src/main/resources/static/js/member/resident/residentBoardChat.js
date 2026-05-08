@@ -3,55 +3,17 @@ document.addEventListener("DOMContentLoaded", function () {
     openDiscover();
 });
 
-let subscription = null;
+let roomSubscriptions = {};
 let currentRoomNo = null;
-let currentRoomNm = null;
 
-/* websocket 구독하는 함수 */
-function subscribeRoom(roomId) {
-
-    if (!stomp || !stomp.connected) {
-
-        console.warn("웹소켓 아직 연결 안됨");
-
-        setTimeout(() => {
-            subscribeRoom(roomId);
-        }, 300);
-
-        return;
-    }
-
-    if (subscription) {
-        subscription.unsubscribe();
-    }
-
-    console.log("채팅방 구독:", roomId);
-
-    subscription = stomp.subscribe(
-        '/sub/chat/room/' + roomId,
-        function(msg) {
-
-            console.log("실시간 수신:", msg);
-
-            const data = JSON.parse(msg.body);
-
-            appendMessage(data);
-        }
-    );
-}
 
 /* 내 채팅방 목록에서 눌렀을때 실행됨 */
 function openMyRoom(roomNo, roomNm, el) {
 
     currentRoomNo = roomNo;
-    currentRoomNm = roomNm;
 
     if (el) setActiveRoom(el);
 
-    //기존 구독 끊기
-    if (subscription) {
-        subscription.unsubscribe();
-    }
 
     //새 채팅방 구독
 
@@ -86,8 +48,6 @@ function openMyRoom(roomNo, roomNm, el) {
             `;
 
             document.getElementById("chat-content").innerHTML = html;
-
-            subscribeRoom(roomNo);
 
             const area = document.getElementById("message-area");
 
@@ -139,7 +99,8 @@ function openDiscover() {
             list.forEach(room => {
 
                 html += `
-                    <div class="chat-room-item"
+                    <div class="chat-room-item
+                         data-room-no="${room.chatRoomNo}"
                          onclick="enterRoom('${room.chatRoomNo}')">
 
                         <div class="room-top">
@@ -236,10 +197,10 @@ function loadMyRooms() {
             list.forEach(room => {
 
                 html += `
-                <div class="chat-room-item
-                     ${String(currentRoomNo) === String(room.chatRoomNo) ? 'active' : ''}
-                     "
-                     onclick="openMyRoom('${room.chatRoomNo}', '${room.chatRoomNm}', this)">
+                    <div
+                        class="chat-room-item ${String(currentRoomNo) === String(room.chatRoomNo) ? 'active' : ''}"
+                        data-room-no="${room.chatRoomNo}"
+                        onclick="openMyRoom('${room.chatRoomNo}', '${room.chatRoomNm}', this)">
 
             ${
                     room.unreadCnt > 0
@@ -280,7 +241,10 @@ function loadMyRooms() {
             });
 
             document.querySelector('.chat-list').innerHTML = html;
+
+            subscribeRoomList(list);
         });
+
 }
 
 function sendMessage() {
@@ -354,7 +318,12 @@ function createRoom(roomName, roomType, roomDesc) {
 
 function appendMessage(msg) {
 
+
     const area = document.getElementById("message-area");
+
+    if (!area) {
+        return;
+    }
 
     // 시스템 메시지
     if (msg.senderTy === 'SYSTEM') {
@@ -369,8 +338,7 @@ function appendMessage(msg) {
         );
 
         area.scrollTop = area.scrollHeight;
-        loadMyRooms();
-
+        updateRoomLastMessage(msg);
         return;
     }
 
@@ -419,7 +387,7 @@ function appendMessage(msg) {
     area.insertAdjacentHTML('beforeend', html);
 
     area.scrollTop = area.scrollHeight;
-    loadMyRooms();
+    updateRoomLastMessage(msg);
 }
 
 function renderMessage(msg) {
@@ -521,14 +489,7 @@ function leaveRoom() {
         .then(res => res.text())
         .then(() => {
 
-            // 구독 끊기
-            if (subscription) {
-                subscription.unsubscribe();
-                subscription = null;
-            }
-
             currentRoomNo = null;
-            currentRoomNm = null;
 
             // 기본 화면 복귀
             openDiscover();
@@ -623,4 +584,86 @@ function formatMessageTime(regDttm) {
     }
 
     return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
+
+function updateRoomLastMessage(msg) {
+
+    const roomEl = document.querySelector(
+        `.chat-room-item[data-room-no="${msg.chatRoomNo}"]`
+    );
+
+    if (!roomEl) {
+        return;
+    }
+
+    const lastMsgEl =
+        roomEl.querySelector('.room-last-msg');
+
+    if (lastMsgEl) {
+
+        lastMsgEl.innerText =
+            msg.senderTy === 'SYSTEM'
+                ? '[알림] ' + msg.msgCn
+                : msg.msgCn;
+    }
+}
+
+function subscribeRoomList(roomList) {
+
+    if (!stomp || !stomp.connected) {
+        return;
+    }
+
+    roomList.forEach(room => {
+
+        const roomNo = room.chatRoomNo;
+
+        // 이미 구독중이면 skip
+        if (roomSubscriptions[roomNo]) {
+            return;
+        }
+
+        roomSubscriptions[roomNo] =
+            stomp.subscribe(
+                '/sub/chat/room/' + roomNo,
+                function(msg) {
+
+                    const data = JSON.parse(msg.body);
+
+                    // 현재 보고 있는 방
+                    if (String(currentRoomNo) === String(roomNo)) {
+
+                        appendMessage(data);
+
+                        fetch(
+                            contextPath +
+                            '/residentChat/read/' +
+                            aptCmplexNo +
+                            '?chatRoomNo=' +
+                            roomNo,
+                            {
+                                method: 'POST',
+                                headers: {
+                                    ...csrfHeaders()
+                                }
+                            }
+                        ).then(() => {
+
+                            loadMyRooms();
+
+                        });
+
+                    } else {
+
+                        // 방 목록 마지막 메시지 갱신
+                        updateRoomLastMessage(data);
+
+                        // unread 갱신
+                        loadMyRooms();
+                    }
+                }
+            );
+
+        console.log("방 구독:", roomNo);
+    });
 }

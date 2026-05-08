@@ -336,6 +336,71 @@
             transform:scale(.97);
         }
 
+        /* 채팅 레이아웃 전용 반응형 */
+        .chat-layout{
+            display:grid;
+            grid-template-columns:
+        minmax(260px, 300px)
+        minmax(480px, 1fr)
+        minmax(260px, 300px);
+
+            gap:20px;
+            align-items:stretch;
+            min-width:0;
+        }
+
+        .chat-list,
+        .chat-box,
+        .open-chat-list{
+            min-width:0;
+        }
+
+        /* 1400 이하 */
+        @media (max-width: 1400px){
+
+            .chat-layout{
+                grid-template-columns:
+            260px
+            minmax(0, 1fr)
+            260px;
+            }
+        }
+
+        /* 1100 이하 */
+        @media (max-width: 1100px){
+
+            .chat-layout{
+                grid-template-columns:
+            240px
+            minmax(0, 1fr);
+            }
+
+            .open-chat-list{
+                grid-column:1 / -1;
+                height:320px;
+                min-height:320px;
+            }
+        }
+
+        /* 태블릿 */
+        @media (max-width: 768px){
+
+            .chat-layout{
+                grid-template-columns:1fr;
+            }
+
+            .chat-list,
+            .chat-box,
+            .open-chat-list{
+                height:auto;
+                min-height:unset;
+            }
+
+            .message{
+                max-width:88%;
+            }
+        }
+
     </style>
 
 </head>

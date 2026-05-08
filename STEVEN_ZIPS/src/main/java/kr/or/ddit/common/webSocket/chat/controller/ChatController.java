@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -147,4 +148,19 @@ public class ChatController {
         return "OK";
     }
 
+    @PostMapping("/read/{aptCmplexNo}")
+    @ResponseBody
+    public void readRoom(
+            @RequestParam String chatRoomNo,
+            Authentication authentication
+    ) {
+
+        CustomUser user =
+                (CustomUser) authentication.getPrincipal();
+
+        service.readRoom(
+                chatRoomNo,
+                user.getMember().getUserNo()
+        );
+    }
 }

@@ -44,6 +44,7 @@
                       FROM CHAT_MESSAGE M
                       WHERE M.CHAT_ROOM_NO = CR.CHAT_ROOM_NO
                         AND NVL(M.SENDER_TY, 'USER') != 'SYSTEM'
+                        AND M.CHAT_MEMBER_ID != CRM.CHAT_MEMBER_ID
                         AND M.CHAT_MSG_NO > NVL((
                                                     SELECT MR.LAST_READ_MSG_NO
                                                     FROM CHAT_ROOM_READ MR
