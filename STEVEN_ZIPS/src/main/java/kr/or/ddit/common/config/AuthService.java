@@ -55,13 +55,8 @@ public class AuthService {
         if (!(principal instanceof CustomUser user)) return false;
 
         MemberVO member = user.getMember();
-        // 정확히 입주민 타입인지 확인
-        if(!(member instanceof ResidentVO resident)) return false;
 
-        // 단지 접근 권한 확인
-        boolean hasAptAccess = hasAccess(resident, aptCmplexNo);
-
-        return hasAptAccess;
+        return (member instanceof ResidentVO) ? hasAccess(user, aptCmplexNo)  : false;
     }
 
     /**
