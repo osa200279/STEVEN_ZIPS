@@ -21,13 +21,9 @@ public class AuthService {
      */
     public boolean hasAccess(Object principal, String target){   // 캐스팅 안정성 때문에 customUser가 아닌 principal사용
 
-        if(!(principal instanceof CustomUser user)) return false;   // 익명 사용자 거르기
-
-        // 익명 사용자 방어코드
-        if(user == null) return false;
+        if(!(principal instanceof CustomUser user)) return false;   // principal이 CustomUser타입이면 user변수 생성후 초기화하고 아니면 false반환
 
         MemberVO member = user.getMember();
-        if(member == null) return false;    // null 방어 코드
 
         if(member instanceof ResidentVO resident){
             // 다운캐스팅
@@ -48,6 +44,26 @@ public class AuthService {
         }else return member instanceof AdmVO;
 
     }
+
+    /**
+     * only 입주민만 허용해주는 서비스
+     * @param principal
+     * @param aptCmplexNo
+     * @return
+     */
+    public boolean isResidentOnly(Object principal, String aptCmplexNo){
+        if (!(principal instanceof CustomUser user)) return false;
+
+        MemberVO member = user.getMember();
+        // 정확히 입주민 타입인지 확인
+        if(!(member instanceof ResidentVO resident)) return false;
+
+        // 단지 접근 권한 확인
+        boolean hasAptAccess = hasAccess(resident, aptCmplexNo);
+
+        return hasAptAccess;
+    }
+
     /**
      * 관리사무소 계정 여부 확인
      *
