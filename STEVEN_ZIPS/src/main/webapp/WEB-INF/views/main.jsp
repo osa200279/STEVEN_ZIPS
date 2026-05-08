@@ -119,12 +119,16 @@ body {
 		<!-- Hero Section -->
 		<section
 			class="relative min-h-[870px] flex items-center pt-20 overflow-hidden">
-			<div class="absolute inset-0 z-0">
-				<img class="w-full h-full object-cover opacity-20"
-					data-alt="Modern high-rise apartment building against a clear sky with soft, bright daylight and architectural elegance"
-					src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHhnh6wIbc8oTVwnu4ofpfMP3uZ0lXYmGP4YdW5_LFLAaS6jbHw-y8OQJgLj-o2C8zpqrYgjJDSAFS4vKEI6k4VasvG2hksOa2wWz3yh2z-CH2Euy0CDeaN2ELfISPSU8zxLQBE6jxAHA__IWLvPBoufF5-sBsDNruOEUOpK2m_ImLSyLhYO4D9dOJxLyhDtP44sHkMLpqikYnfB3n1WGK_xVTs6dnkLX_S2Bal2ZX6vW8l6M-PzaaAlZZp_haH_HGMsZXrRJ_XjON" />
-				<div
-					class="absolute inset-0 bg-gradient-to-r from-surface via-surface/60 to-transparent"></div>
+			<div class="absolute inset-0 z-0 overflow-hidden">
+
+				<!-- 배경 이미지: 왼쪽부터 꽉 차게 -->
+				<img class="w-full h-full object-cover object-left"
+					 alt="아파트 배경 이미지"
+					 src="https://i.pinimg.com/1200x/c4/a0/c1/c4a0c145de3b36ec23fc9ebd274a58af.jpg" />
+
+				<!-- 텍스트 가독성용 오버레이 -->
+				<div class="absolute inset-0 bg-gradient-to-r from-white/85 via-white/60 to-transparent"></div>
+
 			</div>
 			<div class="relative z-10 max-w-7xl mx-auto px-8 w-full">
 				<div class="max-w-2xl">
