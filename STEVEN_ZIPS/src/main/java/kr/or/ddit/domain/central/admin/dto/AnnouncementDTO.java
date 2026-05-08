@@ -41,11 +41,11 @@ public class AnnouncementDTO {
     /* 세대수 관련 */
     private Integer totalUnitCnt;  // 전체 세대수
     private Integer supplyCnt;     // 공급 세대수
+    private Integer unitCnt;       // 단지 셀렉트박스 data-unit-cnt용
     private String supplyDisplay;  // 화면 표시용: 50 / 192세대
 
     /* 제출서류 관련 */
-    private String sbmsnDocCds;    // 제출서류 코드 문자열
-    private String sbmsnDocNms;    // 제출서류명 문자열
+    private String sbmsnDoc;       // 제출서류
 
     /* 첨부파일 관련 */
     private String hasFileYn;      // 첨부파일 존재 여부
@@ -59,6 +59,7 @@ public class AnnouncementDTO {
     private String searchFrom;         // 검색 시작일
     private String searchTo;           // 검색 종료일
     private String searchStatus;       // 검색 상태
+
 
 
 }

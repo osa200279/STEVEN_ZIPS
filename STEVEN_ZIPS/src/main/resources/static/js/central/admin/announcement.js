@@ -90,7 +90,10 @@ function renderAptSelect(selectId, defaultText) {
     let html = '<option value="">' + defaultText + '</option>';
 
     aptComplexList.forEach(function (apt) {
-        html += '<option value="' + apt.aptCmplexNo + '" data-unit-cnt="' + (apt.unitCnt || 0) + '">';
+        html += '<option value="' + apt.aptCmplexNo + '"';
+        html += ' data-unit-cnt="' + (apt.unitCnt || 0) + '"';
+        html += ' data-dorojuso="' + (apt.dorojuso || "") + '"';
+        html += '>';
         html += apt.aptCmplexNm;
         html += '</option>';
     });
@@ -121,6 +124,7 @@ function loadAnnouncementList() {
             return response.json();
         })
         .then(function (data) {
+            console.log("공고 목록 첫 번째 데이터:", data[0]);  //데이터 들어오나 확인
             posts = data || [];
             filtered = posts.slice();
 
@@ -132,8 +136,8 @@ function loadAnnouncementList() {
 
             document.getElementById("list-body").innerHTML = `
                 <tr>
-                    <td colspan="6" style="text-align:center; padding:24px; color:red;">
-                        공고 목록 조회 중 오류가 발생했습니다.
+                    <td colspan="8" style="text-align:center; padding:24px;">
+                        해당하는 공고가 없습니다.
                     </td>
                 </tr>
             `;
@@ -148,39 +152,98 @@ function renderList() {
 
     if (slice.length === 0) {
         tbody.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align:center; padding:24px;">
-                    조회된 공고가 없습니다.
-                </td>
-            </tr>
-        `;
+        <tr>
+            <td colspan="8" style="text-align:center; padding:24px;">
+                조회된 공고가 없습니다.
+            </td>
+        </tr>
+    `;
 
         document.getElementById("list-count").textContent = 0;
         renderPagination();
         return;
+
+        // return `
+        //         <td>${p.ttl || "-"}</td>
+        //
+        //         <td style="text-align:left;">
+        //             ${p.aptCmplexNm || "-"}
+        //         </td>
+        //
+        //         <td style="text-align:left;">
+        //             ${p.dorojuso || "-"}
+        //         </td>
+        //
+        //         <td>
+        //             ${p.pblancBgngDt || "-"} ~ ${p.pblancEndDt || "-"}
+        //         </td>
+        //
+        //         <td>
+        //             ${p.rcrtBgngDt || "-"} ~ ${p.rcrtEndDt || "-"}
+        //         </td>
+        //
+        //         <td>
+        //             ${p.supplyDisplay || "0/0세대"}
+        //         </td>
+        //
+        //         <td>
+        //             ${p.sbmsnDoc || "-"}
+        //         </td>
+        //
+        //         <td style="text-align:center;">
+        //             ${badgeHtml(st)}
+        //         </td>
+        //     </tr>
+        // `;
     }
 
     tbody.innerHTML = slice.map(function (p) {
+        /*
+          st
+          → 공고 상태값.
+          DB에서 statusNm이 오면 그 값을 쓰고,
+          없으면 모집 시작일/종료일 기준으로 화면에서 계산한다.
+        */
         const st = p.statusNm || calcStatus(p.rcrtBgngDt, p.rcrtEndDt);
 
         return `
-            <tr onclick="openDetail('${p.annNo}')" style="cursor:pointer;">
-                <td>${p.ttl || "-"}</td>
-                <td>${p.rcrtBgngDt || "-"} ~ ${p.rcrtEndDt || "-"}</td>
-                <td style="text-align:left;">
-                    <div>${p.aptCmplexNm || "-"}</div>
-                    <div style="font-size:12px; color:#64748b;">${p.dorojuso || ""}</div>
-                </td>
-                <td>${p.supplyDisplay || "0/0세대"}</td>
-                <td>
-                    ${p.sbmsnDocNms || "-"}
-                    ${p.hasFileYn === "Y"
-                            ? '<button type="button" class="file-down-btn" onclick="event.stopPropagation(); downloadFile(\'' + p.atchFileId + '\')">📎</button>'
-                            : ''}
-                </td>
-                <td style="text-align:center;">${badgeHtml(st)}</td>
-            </tr>
-        `;
+        <tr onclick="openDetail('${p.annNo}')" style="cursor:pointer;">
+            <td>${p.ttl || "-"}</td>
+
+            <td style="text-align:left;">
+                ${p.aptCmplexNm || "-"}
+            </td>
+
+            <td style="text-align:left;">
+                ${p.dorojuso || "-"}
+            </td>
+            
+            <td>
+                ${p.pblancBgngDt || "-"} ~ ${p.pblancEndDt || "-"}
+            </td>
+
+            <td>
+                ${p.rcrtBgngDt || "-"} ~ ${p.rcrtEndDt || "-"}
+            </td>
+
+            <td>
+                ${p.supplyDisplay || "0/0세대"}
+            </td>
+
+            <td>
+                ${p.sbmsnDoc || p.sbmsnDocNm || "-"}
+                ${
+            p.hasFileYn === "Y"
+                ? '<button type="button" class="file-down-btn" onclick="event.stopPropagation(); downloadFile(\'' + p.atchFileId + '\')">📎</button>'
+                : ''
+        }
+            </td>
+
+            <td style="text-align:center;">
+                ${badgeHtml(st)}
+            </td>
+        </tr>
+    `;
     }).join("");
 
     document.getElementById("list-count").textContent = filtered.length;
@@ -237,10 +300,14 @@ function openRegister() {
     formMode = "insert";
     currentAnnNo = null;
 
+    /*
+      등록 모달을 열 때 이전 값이 남지 않도록 초기화
+    */
     clearForm();
 
     document.getElementById("form-title").textContent = "입주자 모집 공고 등록";
-    document.getElementById("form-submit-btn").innerHTML = '<span class="material-symbols-rounded">check</span>등록';
+    document.getElementById("form-submit-btn").innerHTML =
+        '<span class="material-symbols-rounded">check</span>등록';
 
     document.getElementById("form-modal").classList.remove("is-hidden");
 }
@@ -255,16 +322,56 @@ function closeFormOutside(event) {
     }
 }
 
+/*
+  등록/수정 모달 입력값 초기화 함수
+*/
 function clearForm() {
+
+    /*
+      기본 입력값 초기화
+    */
     document.getElementById("f-ftitle").value = "";
     document.getElementById("f-fsite").value = "";
+    document.getElementById("f-detail-addr").value = "";
+
     document.getElementById("f-pblanc-start").value = "";
     document.getElementById("f-pblanc-end").value = "";
     document.getElementById("f-fstart").value = "";
     document.getElementById("f-fend").value = "";
+
     document.getElementById("f-funit").value = "";
     document.getElementById("f-content").value = "";
 
+    /*
+      전체 세대수 표시 초기화
+      예: /192세대 → /0세대
+    */
+    document.getElementById("total-unit-text").textContent = "/0세대";
+
+    /*
+      파일 input 초기화
+    */
+    const fileInput = document.getElementById("f-file");
+
+    if (fileInput) {
+        fileInput.value = "";
+    }
+
+    /*
+      제출서류 체크박스 초기화
+
+      querySelectorAll이란?
+      → 조건에 맞는 HTML 요소들을 여러 개 가져오는 함수.
+
+      여기서는 name='sbmsnDoc'인 체크박스를 모두 가져온다.
+    */
+    document.querySelectorAll("input[name='sbmsnDoc']").forEach(function (checkbox) {
+        checkbox.checked = false;
+    });
+
+    /*
+      에러 메시지 초기화
+    */
     clearErrors();
 }
 
@@ -318,6 +425,21 @@ function submitForm() {
         return;
     }
 
+    /*
+      제출서류 체크값 수집
+      map()
+      → 배열 데이터를 다른 형태로 변환할 때 사용.
+      join(",")
+      → 배열을 콤마 문자열로 합친다.
+    */
+    const sbmsnDoc = Array.from(
+        document.querySelectorAll("input[name='sbmsnDoc']:checked")
+    )
+        .map(function (checkbox) {
+            return checkbox.parentElement.textContent.trim();
+        })
+        .join(",");
+
     const payload = {
         ttl: document.getElementById("f-ftitle").value.trim(),
         aptCmplexNo: document.getElementById("f-fsite").value,
@@ -325,7 +447,9 @@ function submitForm() {
         pblancEndDt: document.getElementById("f-pblanc-end").value,
         rcrtBgngDt: document.getElementById("f-fstart").value,
         rcrtEndDt: document.getElementById("f-fend").value,
-        cn: document.getElementById("f-content").value.trim()
+        cn: document.getElementById("f-content").value.trim(),
+        supplyCnt: document.getElementById("f-funit").value,
+        sbmsnDoc: sbmsnDoc
     };
 
     const url = formMode === "update"
@@ -334,16 +458,44 @@ function submitForm() {
 
     const method = formMode === "update" ? "PUT" : "POST";
 
+    const formData = new FormData();
+
+    /*
+      Blob이란?
+      → 문자열 데이터를 파일처럼 감싸서 전송하는 객체.
+      → @RequestPart("data")로 DTO를 받을 때 JSON 데이터를 multipart 안에 넣기 위해 사용.
+    */
+    formData.append(
+        "data",
+        new Blob([JSON.stringify(payload)], {
+            type: "application/json"
+        })
+    );
+
+    const file = document.getElementById("f-file").files[0];
+
+    if (file) {
+        formData.append("file", file);
+    }
+
     fetch(url, {
         method: method,
-        headers: getCsrfHeaders(),
-        body: JSON.stringify(payload)
+        headers: getCsrfOnlyHeaders(),
+        body: formData
     })
-        .then(function (response) {
-            if (!response.ok) {
-                throw new Error("공고 저장 실패");
+        .then(async function (response) {
+            const text = await response.text();
+
+            let data = {};
+            if (text) {
+                data = JSON.parse(text);
             }
-            return response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "공고 저장 실패");
+            }
+
+            return data;
         })
         .then(function (data) {
             if (!data.success) {
@@ -358,22 +510,51 @@ function submitForm() {
         })
         .catch(function (error) {
             console.error(error);
-            alert("공고 저장 중 오류가 발생했습니다.");
+            alert("공고 저장 중 오류가 발생했습니다.\n" + error.message);
         });
 }
 
 function openDetail(annNo) {
+    /*
+      currentAnnNo
+      → 현재 상세보기 중인 공고번호.
+      왜 사용?
+      → 상세 모달에서 수정/삭제 버튼을 눌렀을 때 어떤 공고를 처리할지 알기 위해 사용한다.
+    */
     currentAnnNo = annNo;
 
     fetch("/centralAdmin/announcement/" + annNo)
         .then(function (response) {
+            /*
+              response.ok
+              → HTTP 상태코드가 200번대인지 확인한다.
+              왜 사용?
+              → 404, 500 같은 서버 오류일 때 상세 모달을 열지 않기 위해.
+            */
             if (!response.ok) {
                 throw new Error("공고 상세 조회 실패");
             }
+
+            /*
+              response.json()
+              → 서버가 보내준 JSON 문자열을 JavaScript 객체로 변환한다.
+              왜 사용?
+              → data.ttl, data.sbmsnDoc 같은 방식으로 값을 꺼내기 위해.
+            */
             return response.json();
         })
         .then(function (data) {
+            /*
+              상세 데이터 확인용 로그.
+              제출서류가 안 보이면 여기에서 sbmsnDoc 값이 있는지 확인한다.
+            */
+            console.log("상세 데이터:", data);
+
             renderDetail(data);
+
+            /*
+              상세 모달 열기
+            */
             document.getElementById("detail-modal").classList.remove("is-hidden");
         })
         .catch(function (error) {
@@ -396,54 +577,63 @@ function renderDetail(data) {
 
     document.getElementById("detail-status-badge").innerHTML = badgeHtml(st);
     document.getElementById("modal-content").innerHTML = `
-    
-        <!-- 상세 정보 -->
-        <div class="detail-form-grid">
-    
-            <div class="c-field">
-                <label class="c-label">공고 제목</label>
-                <div class="detail-readonly-box">${data.ttl || "-"}</div>
-            </div>
-    
-            <div class="c-field">
-                <label class="c-label">단지</label>
-                <div class="detail-readonly-box">${data.aptCmplexNm || "-"}</div>
-            </div>
-    
-            <div class="c-field">
-                <label class="c-label">공고 게시 기간</label>
-                <div class="detail-readonly-box">
-                    ${data.pblancBgngDt || "-"} ~ ${data.pblancEndDt || "-"}
-                </div>
-            </div>
-    
-            <div class="c-field">
-                <label class="c-label">모집 기간</label>
-                <div class="detail-readonly-box">
-                    ${data.rcrtBgngDt || "-"} ~ ${data.rcrtEndDt || "-"}
-                </div>
-            </div>
-    
-            <div class="c-field">
-                <label class="c-label">공급 세대수</label>
-                <div class="detail-readonly-box">${data.unitCnt || 0}세대</div>
-            </div>
-    
-            <div class="c-field">
-                <label class="c-label">제출 서류</label>
-                <div class="detail-readonly-box">${data.sbmsnDocNm || "-"}</div>
-            </div>
-    
-            <div class="c-field detail-full">
-                <label class="c-label">공고 내용</label>
-    
-                <div class="detail-readonly-box detail-readonly-box--content">
-                    ${data.cn || "-"}
-                </div>
-            </div>
-    
+    <div class="detail-form-grid">
+
+        <!-- 공고 제목: 한 줄 전체 사용 -->
+        <div class="c-field">
+            <label class="c-label">공고 제목</label>
+            <div class="detail-readonly-box">${data.ttl || "-"}</div>
         </div>
-    `;
+        
+        <!-- 공급 세대수 -->
+        <div class="c-field">
+            <label class="c-label">공급 세대수</label>
+            <div class="detail-readonly-box">${data.supplyDisplay || "0/0세대"}</div>
+        </div>
+
+        <!-- 단지 / 상세주소 -->
+        <div class="c-field">
+            <label class="c-label">단지</label>
+            <div class="detail-readonly-box">${data.aptCmplexNm || "-"}</div>
+        </div>
+
+        <div class="c-field">
+            <label class="c-label">상세주소</label>
+            <div class="detail-readonly-box">${data.dorojuso || "-"}</div>
+        </div>
+
+        <!-- 공고 게시 기간 / 모집 기간 -->
+        <div class="c-field">
+            <label class="c-label">공고 게시 기간</label>
+            <div class="detail-readonly-box">
+                ${data.pblancBgngDt || "-"} ~ ${data.pblancEndDt || "-"}
+            </div>
+        </div>
+
+        <div class="c-field">
+            <label class="c-label">모집 기간</label>
+            <div class="detail-readonly-box">
+                ${data.rcrtBgngDt || "-"} ~ ${data.rcrtEndDt || "-"}
+            </div>
+        </div>
+
+        <!-- 제출 서류: 한 줄 전체 사용 -->
+        <div class="c-field detail-doc-full">
+            <label class="c-label">제출 서류</label>
+            <div class="detail-readonly-box detail-doc-box">
+                ${data.sbmsnDoc || "-"}
+            </div>
+        </div>
+        
+
+        <!-- 공고 내용: 한 줄 전체 사용 -->
+        <div class="c-field detail-full">
+            <label class="c-label">공고 내용</label>
+            <div class="detail-readonly-box detail-readonly-box--content">${data.cn || "-"}</div>
+        </div>
+
+    </div>
+`;
 }
 
 function closeModal() {
@@ -456,33 +646,131 @@ function closeOutside(event) {
     }
 }
 
+/*
+  상세 모달에서 [수정] 버튼 클릭 시 실행
+
+  기능
+  → 현재 보고 있는 공고번호(currentAnnNo)로 상세 데이터를 다시 조회하고,
+    등록/수정 모달 input에 값을 채운 뒤 수정 모드로 연다.
+*/
 function editFromModal() {
+
     if (!currentAnnNo) {
         return;
     }
 
     fetch("/centralAdmin/announcement/" + currentAnnNo)
         .then(function (response) {
+
             if (!response.ok) {
                 throw new Error("공고 수정 조회 실패");
             }
+
             return response.json();
         })
         .then(function (data) {
+
+            console.log("수정 모달 데이터:", data);
+
+            /*
+              formMode
+              → submitForm()에서 등록인지 수정인지 구분하는 값.
+              update이면 PUT 요청으로 보냄.
+            */
             formMode = "update";
 
+            /*
+              기본 공고 정보 세팅
+            */
             document.getElementById("f-ftitle").value = data.ttl || "";
             document.getElementById("f-fsite").value = data.aptCmplexNo || "";
+
+            /*
+              공고 게시 기간
+            */
             document.getElementById("f-pblanc-start").value = data.pblancBgngDt || "";
             document.getElementById("f-pblanc-end").value = data.pblancEndDt || "";
+
+            /*
+              모집 기간
+            */
             document.getElementById("f-fstart").value = data.rcrtBgngDt || "";
             document.getElementById("f-fend").value = data.rcrtEndDt || "";
-            document.getElementById("f-funit").value = data.unitCnt || "";
+
+            /*
+              공급 세대수
+
+              supplyCnt
+              → 현재 공급 세대수.
+              unitCnt
+              → 전체 세대수.
+              그래서 input에는 supplyCnt가 들어가는 게 맞음.
+            */
+            document.getElementById("f-funit").value = data.supplyCnt || "0";
+
+            /*
+              전체 세대수 표시
+              예: /192세대
+            */
+            document.getElementById("total-unit-text").textContent =
+                "/" + (data.totalUnitCnt || data.unitCnt || 0) + "세대";
+
+            /*
+              상세주소 세팅
+
+              중요!
+              JSP id가 f-detail-addr이므로 여기에 넣어야 함.
+            */
+            document.getElementById("f-detail-addr").value = data.dorojuso || "";
+
+            /*
+              공고 내용 세팅
+            */
             document.getElementById("f-content").value = data.cn || "";
 
-            document.getElementById("form-title").textContent = "입주자 모집 공고 수정";
-            document.getElementById("form-submit-btn").innerHTML = '<span class="material-symbols-rounded">check</span>수정';
+            /*
+              제출서류 체크박스 초기화
+            */
+            document.querySelectorAll("input[name='sbmsnDoc']").forEach(function (checkbox) {
+                checkbox.checked = false;
+            });
 
+            /*
+              제출서류 다시 체크
+
+              DB 값 예시:
+              신분증 사본,주민등록등본,소득증명서
+            */
+            if (data.sbmsnDoc) {
+                const docs = data.sbmsnDoc.split(",");
+
+                document.querySelectorAll("input[name='sbmsnDoc']").forEach(function (checkbox) {
+                    checkbox.checked = docs.includes(checkbox.value);
+                });
+            }
+
+            /*
+              단지 select에 들어있는 data-unit-cnt, data-dorojuso도 다시 반영
+              단, 위에서 DB 상세값을 이미 넣었으므로 보조용으로 사용.
+            */
+            applyAptAutoInfo();
+
+            /*
+              applyAptAutoInfo()가 공급세대수를 건드릴 수 있으므로
+              공급 세대수는 마지막에 다시 한 번 세팅.
+            */
+            document.getElementById("f-funit").value = data.supplyCnt || "0";
+
+            /*
+              모달 제목 / 버튼 문구 변경
+            */
+            document.getElementById("form-title").textContent = "입주자 모집 공고 수정";
+            document.getElementById("form-submit-btn").innerHTML =
+                '<span class="material-symbols-rounded">check</span>수정';
+
+            /*
+              상세 모달 닫고 수정 모달 열기
+            */
             closeModal();
             document.getElementById("form-modal").classList.remove("is-hidden");
         })
@@ -527,18 +815,54 @@ function deleteFromModal() {
         });
 }
 
-document.addEventListener("change", function (event) {
-    if (event.target.id === "f-fsite") {
-        const selected = event.target.options[event.target.selectedIndex];
-        const unitCnt = selected.getAttribute("data-unit-cnt") || "";
+/*
+  단지 선택 시 자동조회
 
-        document.getElementById("f-funit").value = unitCnt;
+  change 이벤트란?
+  → select, input 값이 바뀌었을 때 실행되는 이벤트.
+*/
+document.addEventListener("change", function (event) {
+
+    if (event.target.id === "f-fsite") {
+
+        /*
+          신규 등록 시 공급 세대수 기본값 0 세팅
+        */
+        document.getElementById("f-funit").value = "0";
+
+        /*
+          선택한 단지의 상세주소 / 전체세대수 자동 세팅
+        */
+        applyAptAutoInfo();
     }
 });
+
 
 document.addEventListener("DOMContentLoaded", function () {
     loadAptComplexList();
     loadAnnouncementList();
+
+    /*
+      input 이벤트
+      → 사용자가 글자를 입력하거나 지울 때마다 실행되는 이벤트.
+    */
+    const titleInput = document.getElementById("f-title");
+
+    if (titleInput) {
+        titleInput.addEventListener("input", function () {
+            /*
+              clearTimeout / setTimeout
+              → 사용자가 글자를 칠 때마다 바로 서버 요청을 보내지 않고,
+                입력이 잠깐 멈췄을 때만 검색하게 한다.
+            */
+            clearTimeout(window.titleSearchTimer);
+
+            window.titleSearchTimer = setTimeout(function () {
+                currentPage = 1;
+                loadAnnouncementList();
+            }, 300);
+        });
+    }
 });
 
 
@@ -552,4 +876,72 @@ function downloadFile(fileGroupNo) {
     }
 
     location.href = "/centralAdmin/announcement/file/download/" + fileGroupNo;
+}
+
+
+function getCsrfOnlyHeaders() {
+    const tokenMeta = document.querySelector('meta[name="_csrf"]');
+    const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+
+    const headers = {};
+
+    if (tokenMeta && headerMeta) {
+        headers[headerMeta.getAttribute("content")] = tokenMeta.getAttribute("content");
+    }
+
+    return headers;
+}
+
+/*
+  단지 자동조회 함수
+
+  applyAptAutoInfo란?
+  → 선택한 단지의 전체 세대수와 상세주소를 화면에 자동 세팅하는 함수.
+
+  왜 사용?
+  → 등록 모달에서는 단지를 직접 선택했을 때 사용하고,
+    수정 모달에서는 DB에서 가져온 단지값을 select에 세팅한 뒤 다시 화면에 반영할 때 사용한다.
+*/
+function applyAptAutoInfo() {
+
+    /*
+      f-fsite
+      → 등록/수정 모달의 단지 선택 select 박스
+    */
+    const siteSelect = document.getElementById("f-fsite");
+
+    if (!siteSelect) {
+        return;
+    }
+
+    const selected = siteSelect.options[siteSelect.selectedIndex];
+
+    if (!selected) {
+        return;
+    }
+
+    /*
+      data-unit-cnt
+      → renderAptSelect()에서 option 태그에 넣어둔 전체 세대수
+    */
+    const unitCnt = selected.getAttribute("data-unit-cnt") || "0";
+
+    /*
+      data-dorojuso
+      → renderAptSelect()에서 option 태그에 넣어둔 상세주소
+    */
+    const dorojuso = selected.getAttribute("data-dorojuso") || "";
+
+    /*
+      전체 세대수 표시
+      예: /192세대
+    */
+    document.getElementById("total-unit-text").textContent = "/" + unitCnt + "세대";
+
+    /*
+      중요!
+      JSP의 상세주소 input id는 f-detail-addr임.
+      기존에 f-dorojuso로 쓰면 해당 id가 없어서 값이 안 들어감.
+    */
+    document.getElementById("f-detail-addr").value = dorojuso;
 }

@@ -57,7 +57,7 @@ public class AnnouncementController {
     ) {
         announcementDTO.setAnnNo(annNo);
 
-        int result = announcementService.insertAnnouncement(
+        int result = announcementService.updateAnnouncement(
                 announcementDTO,
                 file
         );
@@ -132,4 +132,29 @@ public class AnnouncementController {
     public List<AnnouncementDTO> aptComplexList() {
         return announcementService.selectAptComplexList();
     }
+
+
+    /*
+  단지 상세정보 조회
+
+  @PathVariable이란?
+  → URL 경로에 있는 값을 가져오는 기능.
+
+  예시:
+  /aptDetail/A1001
+             ↑
+        이 값을 가져옴
+*/
+    @GetMapping("/aptDetail/{aptCmplexNo}")
+    @ResponseBody
+    public AnnouncementDTO getAptDetail(
+            @PathVariable String aptCmplexNo
+    ) {
+
+        return announcementService.selectAptDetail(aptCmplexNo);
+    }
+
+
 }
+
+

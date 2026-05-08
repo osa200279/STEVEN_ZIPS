@@ -32,6 +32,7 @@
         , NVL(cap.inq_cnt, 0) AS inqCnt                             /** 조회수 */
         , NVL(cap.del_yn, 'N') AS delYn                             /** 삭제여부 */
         , NVL(cap.opn_yn, 'Y') AS opnYn                             /** 공개여부 */
+        , cap.sbmsn_doc AS sbmsnDoc                                 /** 제출서류내용 */
         , cap.atch_file_id AS atchFileId                            /** 첨부파일ID */
         , ac.dorojuso                                                   /** 상세주소 */
 
@@ -66,12 +67,12 @@
         FROM apt_unit au
         WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
         ), NVL(ac.unit_cnt, 0))
-        || '세대' supply_display                                        /** 공급표시 */
+        || '세대' supplyDisplay                                        /** 공급표시 */
 
         , CASE
         WHEN cap.atch_file_id IS NULL THEN 'N'
         ELSE 'Y'
-        END has_file_yn                                               /** 첨부파일존재여부 */
+        END hasFileYn                                               /** 첨부파일존재여부 */
         , CASE
         WHEN cap.rcrt_bgng_dt IS NULL
         OR cap.rcrt_end_dt IS NULL
@@ -150,6 +151,7 @@
         , NVL(cap.inq_cnt, 0) AS inqCnt
         , NVL(cap.del_yn, 'N') AS delYn
         , NVL(cap.opn_yn, 'Y') AS opnYn
+        , cap.sbmsn_doc AS sbmsnDoc                                     /** 제출서류내용 */
         , cap.atch_file_id AS atchFileId
         , ac.dorojuso                                                   /** 상세주소 */
 
@@ -184,12 +186,12 @@
         FROM apt_unit au
         WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
         ), NVL(ac.unit_cnt, 0))
-        || '세대' supply_display                                        /** 공급표시 */
+        || '세대' supplyDisplay                                        /** 공급표시 */
 
         , CASE
         WHEN cap.atch_file_id IS NULL THEN 'N'
         ELSE 'Y'
-        END has_file_yn                                               /** 첨부파일존재여부 */
+        END hasFileYn                                               /** 첨부파일존재여부 */
         , CASE
         WHEN cap.rcrt_bgng_dt IS NULL
         OR cap.rcrt_end_dt IS NULL
@@ -236,6 +238,7 @@
         , rcrt_end_dt         /** 모집종료일 */
         , reg_dttm            /** 등록일시 */
         , inq_cnt             /** 조회수 */
+        , sbmsn_doc           /** 제출서류 */
         , atch_file_id        /** 첨부파일ID */
         , del_yn              /** 삭제여부 */
         , opn_yn              /** 공개여부 */
@@ -266,6 +269,7 @@
         , TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')
         , SYSDATE
         , 0
+        , #{sbmsnDoc}
         , #{atchFileId}
         , NVL(#{delYn}, 'N')
         , NVL(#{opnYn}, 'Y')
@@ -283,6 +287,7 @@
         SET
         ttl = #{ttl}                                      /** 제목 */
         , cn = #{cn}                                        /** 내용 */
+        , sbmsn_doc = #{sbmsnDoc}                           /** 제출서류 */
         , pblanc_bgng_dt = TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')
         , pblanc_end_dt = TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')
         , rcrt_bgng_dt = TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')
@@ -316,6 +321,7 @@
         SELECT
         ac.apt_cmplex_no AS aptCmplexNo
         , ac.apt_cmplex_nm AS aptCmplexNm
+        , ac.dorojuso AS dorojuso                      /** 상세주소 */
         , NVL((
         SELECT SUM(NVL(au.unit_cnt, 0))
         FROM apt_unit au
@@ -329,6 +335,35 @@
         AND NVL(cbi.use_yn, 'Y') = 'Y'
         )
         ORDER BY ac.apt_cmplex_nm
+
+    </select>
+
+
+    <!-- 단지 상세정보 조회 -->
+    <select id="selectAptDetail"
+            resultType="kr.or.ddit.domain.central.admin.dto.AnnouncementDTO">
+
+        /* 단지 상세정보 조회 */
+
+        SELECT
+        ac.apt_cmplex_no AS aptCmplexNo
+        , ac.apt_cmplex_nm AS aptCmplexNm
+        , ac.dorojuso      AS dorojuso
+
+        /*
+        전체 세대수 조회
+
+        apt_unit의 세대수를 모두 합산.
+        */
+        , NVL((
+        SELECT SUM(NVL(au.unit_cnt, 0))
+        FROM apt_unit au
+        WHERE au.apt_cmplex_no = ac.apt_cmplex_no
+        ), 0) AS unitCnt
+
+        FROM apt_complex ac
+
+        WHERE ac.apt_cmplex_no = #{aptCmplexNo}
 
     </select>
 

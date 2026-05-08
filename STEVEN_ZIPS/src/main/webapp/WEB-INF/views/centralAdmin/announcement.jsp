@@ -148,14 +148,6 @@
         flex: 1;
       }
 
-      /*!* 체크박스 3열 *!*/
-      /*.cb-group--compact {*/
-      /*  display: grid;*/
-      /*  grid-template-columns: repeat(3, 1fr);*/
-      /*  gap: 6px 10px;*/
-      /*  font-size: 12px;*/
-      /*}*/
-
       /* 에러 메시지 최소화 */
       .c-modal--notice-form .err-msg {
         min-height: 12px;
@@ -251,31 +243,98 @@
         gap:22px 14px;
       }
 
-      .detail-readonly-box{
-        min-height:34px;
-        padding:8px 12px;
+      /*
+       상세 모달 라벨 스타일
 
-        border:1px solid #e5e7eb;
-        border-radius:8px;
-        background:#fff;
+       c-label이란?
+       → input 위에 붙는 제목 글자.
+       예: 공고 제목, 공급 세대수, 단지, 상세주소
 
-        font-size:13px;
-        color:#334155;
+       왜 수정?
+       → 데이터 글자보다 제목을 더 크고 굵게 보여서
+         화면 구분이 잘 되게 하기 위해.
+     */
+      .c-modal--detail .c-label {
+        font-size: 13px;
+        font-weight: 800;
+        color: #334155;
+        margin-bottom: 8px;
       }
 
-      .detail-readonly-box--content{
-        min-height:120px;
+      /*
+        상세 모달 데이터 박스 기본 스타일
 
-        line-height:1.7;
-        white-space:pre-wrap;
+        detail-readonly-box란?
+        → input처럼 보이지만 수정하지 않는 상세보기 전용 박스.
+      */
+      .detail-readonly-box {
+        min-height: 34px;
+        padding: 8px 12px;
 
-        text-align:left;      /* 왼쪽 정렬 */
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #ffffff;
 
-        display:flex;
-        align-items:flex-start; /* 위쪽 정렬 */
-        justify-content:flex-start;
+        font-size: 13px;
+        font-weight: 500;
+        color: #475569;
 
-        padding-top:14px;
+        text-align: left;
+      }
+
+      /*
+        공고 내용 박스
+
+        왜 따로 분리?
+        → 공고 내용은 긴 텍스트라서 위쪽/왼쪽부터 보여야 자연스럽다.
+
+        white-space: pre-wrap
+        → 줄바꿈을 유지해서 보여주는 속성.
+      */
+      .detail-readonly-box--content {
+        min-height: 120px;
+        padding: 14px 12px;
+
+        display: block !important;
+        text-align: left !important;
+
+        line-height: 1.7;
+        white-space: pre-wrap;
+
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+      }
+
+      /*
+  제출서류를 한 줄 전체로 보여주는 상세 박스
+*/
+      .detail-doc-full {
+        grid-column: 1 / -1; /* 2열 전체 사용 */
+      }
+
+      /*
+        제출서류 한 줄 표시
+      */
+      .detail-doc-box {
+        min-height: 34px;
+        white-space: nowrap;      /* 줄바꿈 방지 */
+        overflow-x: auto;         /* 길면 가로 스크롤 */
+        overflow-y: hidden;
+      }
+
+      /*
+        공고 내용 정렬
+      */
+      .detail-readonly-box--content {
+        min-height: 120px;
+
+        line-height: 1.7;
+        white-space: pre-wrap;
+
+        text-align: left;
+
+        display: block;           /* 기존 flex 때문에 글자가 애매하게 가운데 보일 수 있어서 block으로 변경 */
+        padding: 14px 12px;
       }
 
       .detail-full{
@@ -433,11 +492,13 @@
               <table class="c-table">
                 <thead>
                   <tr>
-                    <th style="width: 43%;">공고 제목</th>
-                    <th style="width: 120px; text-align: left;">단지</th>
+                    <th style="width: 20%;">공고 제목</th>
+                    <th style="width: 170px; text-align: left;">단지</th>
+                    <th style="width: 260px; text-align: left;">상세주소</th>
+                    <th style="width: 180px;">공고 게시 기간</th>
                     <th style="width: 200px;">모집 기간</th>
-                    <th style="width: 100px;">공급</th>
-                    <th style="width: 180px;">제출 서류</th>
+                    <th style="width: 100px;">공급 세대수</th>
+                    <th style="width: 220px;">제출 서류</th>
                     <th style="width: 120px; text-align: center;">상태</th>
                   </tr>
                 </thead>
@@ -470,7 +531,7 @@
 
             <div class="c-modal__body c-modal__body--compact">
 
-              <!-- 1행: 공고 제목 / 단지 -->
+              <!-- 1행: 공고 제목 / 공급 세대수 -->
               <div class="form-grid">
                 <div class="c-field">
                   <label class="c-label">공고 제목 <span style="color: var(--red)">*</span></label>
@@ -479,15 +540,36 @@
                 </div>
 
                 <div class="c-field">
+                  <label class="c-label">공급 세대수 <span style="color: var(--red)">*</span>(단지 선택 시, 자동조회)</label>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="number" id="f-funit" class="c-input" placeholder="공급 세대수 입력" style="flex:1;" />
+                    <!-- 전체 세대수 표시 영역 -->
+                    <span id="total-unit-text" style="font-size:13px; font-weight:700; color:#475569;">
+                      /0세대
+                    </span>
+                  </div>
+                  <div class="err-msg" id="e-funit"></div>
+                </div>
+              </div>
+
+              <!-- 2행: 단지 선택 / 상세 주소 -->
+              <div class="form-grid">
+                <div class="c-field">
                   <label class="c-label">단지 <span style="color: var(--red)">*</span></label>
                   <select id="f-fsite" class="c-select">
                     <option value="">단지 선택</option>
                   </select>
                   <div class="err-msg" id="e-fsite"></div>
                 </div>
+
+                <div class="c-field">
+                  <label class="c-label">상세 주소 <span style="color: var(--red)">*</span>(단지 선택 시, 자동입력)</label>
+                  <input type="text" id="f-detail-addr" class="c-input" placeholder="예:서울특별시 강남구 강남대로 105" />
+                  <div class="err-msg" id="e-detail-addr"></div>
+                </div>
               </div>
 
-              <!-- 2행: 공고 게시 기간 / 모집 기간 -->
+              <!-- 3행: 공고 게시 기간 / 모집 기간 -->
               <div class="form-grid">
                 <div class="c-field">
                   <label class="c-label">공고 게시 기간 <span style="color: var(--red)">*</span></label>
@@ -509,17 +591,25 @@
                 </div>
               </div>
 
-              <!-- 3행: 공급 세대수 / 첨부파일 -->
+              <!-- 4행: 첨부파일 -->
               <div class="form-grid">
-                <div class="c-field">
-                  <label class="c-label">공급 세대수 <span style="color: var(--red)">*</span> (자동조회)</label>
-                  <input type="number" id="f-funit" class="c-input" placeholder="단지 선택 시 자동 조회 됩니다." readonly />
-                  <div class="err-msg" id="e-funit"></div>
-                </div>
-
                 <div class="c-field">
                   <label class="c-label">첨부파일</label>
                   <input type="file" id="f-file" class="c-input" />
+                </div>
+              </div>
+
+              <div class="c-field">
+                <label class="c-label">제출 서류 <span style="color: var(--red)">*</span></label>
+
+                <div class="cb-group">
+
+                  <label><input type="checkbox" name="sbmsnDoc" value="신분증 사본"> 신분증 사본</label>
+                  <label><input type="checkbox" name="sbmsnDoc" value="주민등록등본"> 주민등록등본</label>
+                  <label><input type="checkbox" name="sbmsnDoc" value="가족관계증명서"> 가족관계증명서</label>
+                  <label><input type="checkbox" name="sbmsnDoc" value="소득증명서"> 소득증명서</label>
+                  <label><input type="checkbox" name="sbmsnDoc" value="근로소득원천징수영수증"> 근로소득원천징수영수증</label>
+
                 </div>
               </div>
 

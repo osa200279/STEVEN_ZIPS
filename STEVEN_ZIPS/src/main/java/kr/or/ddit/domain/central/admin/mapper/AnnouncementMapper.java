@@ -26,4 +26,6 @@ public interface AnnouncementMapper {
     int deleteAnnouncement(String annNo);
 
     List<AnnouncementDTO> selectAptComplexList();
+
+    AnnouncementDTO selectAptDetail(String aptCmplexNo);
 }

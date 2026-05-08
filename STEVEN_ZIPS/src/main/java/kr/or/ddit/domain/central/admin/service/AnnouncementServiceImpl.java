@@ -97,4 +97,9 @@ public class AnnouncementServiceImpl implements IAnnouncementService {
     public List<AnnouncementDTO> selectAptComplexList() {
         return announcementMapper.selectAptComplexList();
     }
+
+    @Override
+    public AnnouncementDTO selectAptDetail(String aptCmplexNo) {
+        return announcementMapper.selectAptDetail(aptCmplexNo);
+    }
 }
