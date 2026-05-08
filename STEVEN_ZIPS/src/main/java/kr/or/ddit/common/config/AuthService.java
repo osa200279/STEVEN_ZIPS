@@ -26,7 +26,6 @@ public class AuthService {
         MemberVO member = user.getMember();
 
         if(member instanceof ResidentVO resident){
-            // 다운캐스팅
 
             boolean isOwner = resident.getMyAptList().stream()
                     .anyMatch(apt -> apt.getAptCmplexNo().equals(target));
@@ -47,6 +46,7 @@ public class AuthService {
 
     /**
      * only 입주민만 허용해주는 서비스
+     * @author 이용로
      * @param principal
      * @param aptCmplexNo
      * @return
@@ -56,7 +56,7 @@ public class AuthService {
 
         MemberVO member = user.getMember();
 
-        return (member instanceof ResidentVO) ? hasAccess(user, aptCmplexNo)  : false;
+        return (member instanceof ResidentVO) ? hasAccess(user, aptCmplexNo) : false;
     }
 
     /**
