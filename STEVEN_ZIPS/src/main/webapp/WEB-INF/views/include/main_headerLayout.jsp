@@ -313,8 +313,7 @@
                         </div>
 
                         <div class="mega-cell">
-                            <span><a href="${pageContext.request.contextPath}/facility/historyDetail.do">시설 유지보수 이력</a></span>
-                            <span><a href="${pageContext.request.contextPath}/">시설 하자보수 이력</a></span>
+                            <span><a href="${pageContext.request.contextPath}/facility/history.do">시설 유지보수 이력</a></span>
                             <span><a href="${pageContext.request.contextPath}/facility/checkHistory.do">시설 점검 기록 확인</a></span>
                         </div>
 
