@@ -169,7 +169,7 @@
   <!-- Search & Filter Area -->
   <div class="bg-white p-6 rounded-2xl border border-[#eef2eb] mb-8 shadow-sm">
 
-    <form action="${pageContext.request.contextPath}/apt/list.do"
+    <form action="${pageContext.request.contextPath}/main/apt/list.do"
           method="get"
           id="aptSearchForm"
           class="flex flex-wrap items-center gap-4">
@@ -238,7 +238,7 @@
   <!-- 초성 필터 -->
   <div class="bg-white p-5 rounded-2xl border border-[#eef2eb] mb-6 shadow-sm">
     <div class="flex flex-wrap items-center gap-2">
-      <c:url var="allUrl" value="/apt/list.do" />
+      <c:url var="allUrl" value="/main/apt/list.do" />
       <a href="${allUrl}"
          class="px-4 py-2 rounded-full text-sm font-bold border transition-all
                 ${empty param.initial  ? 'bg-primary text-white border-primary' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}">
@@ -246,7 +246,7 @@
       </a>
 
       <c:forEach var="initial" items="${fn:split('ㄱ,ㄴ,ㄷ,ㄹ,ㅁ,ㅂ,ㅅ,ㅇ,ㅈ,ㅊ,ㅋ,ㅌ,ㅍ,ㅎ', ',')}">
-        <c:url var="initialUrl" value="/apt/list.do">
+        <c:url var="initialUrl" value="/main/apt/list.do">
          <c:param name="initial" value="${initial}" />
         </c:url>
 
@@ -354,7 +354,7 @@
       }
 
       $.ajax({
-        url: "${pageContext.request.contextPath}/apt/sigungu.do",
+        url: "${pageContext.request.contextPath}/main/apt/sigungu.do",
         type: "GET",
         data: {
           sidoNm: sidoNm

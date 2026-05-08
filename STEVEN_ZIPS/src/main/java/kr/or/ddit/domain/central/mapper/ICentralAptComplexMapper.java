@@ -28,9 +28,10 @@ public interface ICentralAptComplexMapper {
     // 시/도 목록 조회
     List<String> selectSidoList();
 
+    // 시/군/구 목록 조회
+    List<String> selectSigunguList(@Param("sidoNm") String sidoNm);
+
     // 검색
     List<AptComplexVO> searchApt(String keyword);
-
-    List<String> selectSigunguList(String sido);
 }
 

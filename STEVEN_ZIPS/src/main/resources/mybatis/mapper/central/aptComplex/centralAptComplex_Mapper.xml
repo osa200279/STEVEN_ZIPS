@@ -272,7 +272,7 @@
     <select id="selectSigunguList" parameterType="string" resultType="string">
         SELECT DISTINCT SIGUNGU_NM
         FROM APT_COMPLEX
-        WHERE SIDO_NM = #{sido}
+        WHERE SIDO_NM = #{sidoNm}
           AND SIGUNGU_NM IS NOT NULL
         ORDER BY SIGUNGU_NM
     </select>
