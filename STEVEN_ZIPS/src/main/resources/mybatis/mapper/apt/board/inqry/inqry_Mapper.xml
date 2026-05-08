@@ -118,11 +118,17 @@
         FROM apt_board_post abp
                  JOIN apt_board_instance abi
                       ON abp.board_no = abi.board_no
-        WHERE abi.apt_cmplex_no = #{aptCmplexNo}
-          AND abi.board_ty_cd = #{boardTyCd}
-          AND abi.use_yn = 'Y'
-          AND abp.del_yn = 'N'
-          AND abp.wrtr_id = #{wrtrId}
+        WHERE abi.board_ty_cd = #{boardTyCd}
+        AND abi.use_yn = 'Y'
+        AND abp.del_yn = 'N'
+
+        <if test="aptCmplexNo != null and aptCmplexNo != ''">
+            AND abi.apt_cmplex_no = #{aptCmplexNo}
+        </if>
+
+        <if test="wrtrId != null and wrtrId != ''">
+            AND abp.wrtr_id = #{wrtrId}
+        </if>
     </select>
 
     <select id="getResidentInfo"

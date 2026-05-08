@@ -32,19 +32,24 @@ public class InqryServiceImpl implements IInqryService {
     public List<InqryDTO> getList(String userNo, String wrtrId, int startRow, int endRow) {
 
     /*
-      관리자/단지관리자는 전체 문의글 조회.
-      입주민은 본인 단지 + 본인 작성글만 조회.
+      ADMIN / MNGR
+      → 모든 문의글 조회
+      → 작성자, 단지 제한 없음
     */
         if (isAdminOrManager()) {
             return inqryMapper.getList(
-                    null,              // 작성자 조건 없음
-                    null,              // 단지 조건 없음
+                    null,
+                    null,
                     BOARD_TY_CD_INQRY,
                     startRow,
                     endRow
             );
         }
 
+    /*
+      RESIDENT
+      → 본인 단지 + 본인 글만 조회
+    */
         InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
 
         if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
@@ -134,6 +139,10 @@ public class InqryServiceImpl implements IInqryService {
     @Override
     public int getTotalCount(String userNo, String wrtrId) {
 
+    /*
+      ADMIN / MNGR
+      → 전체 문의글 개수
+    */
         if (isAdminOrManager()) {
             return inqryMapper.getTotalCount(
                     null,
@@ -142,6 +151,10 @@ public class InqryServiceImpl implements IInqryService {
             );
         }
 
+    /*
+      RESIDENT
+      → 본인 단지 + 본인 글 개수
+    */
         InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
 
         if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
