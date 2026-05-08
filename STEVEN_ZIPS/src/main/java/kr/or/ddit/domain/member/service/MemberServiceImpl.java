@@ -55,6 +55,7 @@ public class MemberServiceImpl implements IMemberService {
             // 프로필 파일 업로드 처리
             AttachFileVO attachFile = null;
             if(profFile != null && !profFile.isEmpty()){
+
                 String originalFilename = profFile.getOriginalFilename();
                 String uuid = UUID.randomUUID().toString().replace("-", "");
 
@@ -63,15 +64,18 @@ public class MemberServiceImpl implements IMemberService {
 
                 // 경로 설정
                 String folderPath = "member/prof_img/" + member.getUserId();
-
+                String fullPath = folderPath + "/" + savedFileName;
                 String cat = "mem_prof";
+
+
                 // 구글 드라이브에 업로드
                 String googleId = googleDriveService.uploadFile(profFile, folderPath, savedFileName);
 
                 // 데이터베이스에 인서트
                 long seq = attachFileMapper.getSeqFileGroupNo();
+
                 attachFile = AttachFileVO.fileSettings(profFile, seq, cat, savedFileName, googleId,
-                        folderPath + "/" + savedFileName,1 );
+                    fullPath,1 );
                 int cnt = attachFileMapper.insertAttachFile(attachFile);
 
                 if(cnt > 0){    // 파일 인서트 성공시

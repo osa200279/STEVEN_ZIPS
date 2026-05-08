@@ -2,11 +2,9 @@ package kr.or.ddit.domain.apt.complaint.controller;
 
 import kr.or.ddit.common.enums.ServiceResult;
 import kr.or.ddit.domain.apt.complaint.service.ICvplService;
-import kr.or.ddit.domain.apt.complaint.vo.CvplHstryVO;
 import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
-import kr.or.ddit.domain.member.resident.mapper.IResidentMapper;
 import kr.or.ddit.domain.member.resident.vo.MyAptVO;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -42,7 +40,10 @@ public class CvplController {
     @Autowired
     private ICvplService cvplService;
 
-    // 민원 신청 페이지
+    /**
+     * 민원신청 페이지
+     * @author 이용로
+     */
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/apply.do/{aptCmplexNo}")
     public String complaintApplyForm(
@@ -61,7 +62,10 @@ public class CvplController {
         return "apt/complaint/complaint_apply";
     }
 
-    // 민원 신청 비동기 컨트롤러
+    /**
+     * 민원 신청 비동기
+     * @author 이용로
+     */
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @ResponseBody
     @PostMapping(value = "/apply/{aptCmplexNo}")
