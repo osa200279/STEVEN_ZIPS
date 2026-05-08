@@ -7,6 +7,7 @@ import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +18,8 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/board/inqry")
+@PreAuthorize("hasRole('RESIDENT')")
+@RequestMapping("/apt/board/inqry")
 public class InqryController {
 
     private final IInqryService inqryService;
@@ -80,7 +82,7 @@ public class InqryController {
             return "apt/inqry/inqryListDetail";
         }
 
-        return "redirect:/board/inqry/list.do";
+        return "redirect:/apt/board/inqry/list.do";
     }
 
     @GetMapping("/updateForm.do")
@@ -133,7 +135,7 @@ public class InqryController {
             return "apt/inqry/inqryListDetail";
         }
 
-        return "redirect:/board/inqry/list.do";
+        return "redirect:/apt/board/inqry/list.do";
     }
 
     @GetMapping("/delete.do")
@@ -150,7 +152,7 @@ public class InqryController {
                 user.getUserId()
         );
 
-        return "redirect:/board/inqry/list.do";
+        return "redirect:/apt/board/inqry/list.do";
     }
 }
 

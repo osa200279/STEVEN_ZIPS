@@ -28,11 +28,17 @@
                  FROM apt_board_post abp
                           JOIN apt_board_instance abi
                                ON abp.board_no = abi.board_no
-                 WHERE abi.apt_cmplex_no = #{aptCmplexNo}
-                   AND abi.board_ty_cd = #{boardTyCd}
-                   AND abi.use_yn = 'Y'
-                   AND abp.del_yn = 'N'
-                   AND abp.wrtr_id = #{wrtrId}
+                WHERE abi.board_ty_cd = #{boardTyCd}
+                  AND abi.use_yn = 'Y'
+                  AND abp.del_yn = 'N'
+
+                  <if test="aptCmplexNo != null and aptCmplexNo != ''">
+                    AND abi.apt_cmplex_no = #{aptCmplexNo}
+                  </if>
+
+                  <if test="wrtrId != null and wrtrId != ''">
+                    AND abp.wrtr_id = #{wrtrId}
+                  </if>
              )
         WHERE rnum BETWEEN #{startRow} AND #{endRow}
     </select>
@@ -44,6 +50,15 @@
         FROM apt_board_instance abi
         WHERE TRIM(abi.apt_cmplex_no) = TRIM(#{aptCmplexNo})
           AND TRIM(abi.board_ty_cd) = TRIM(#{boardTyCd})
+          AND TRIM(abi.use_yn) = 'Y'
+    </select>
+
+    <select id="getCommonBoardNo"
+            resultType="string">
+        /* IInqryMapper.getCommonBoardNo */
+        SELECT MAX(abi.board_no)
+        FROM apt_board_instance abi
+        WHERE TRIM(abi.board_ty_cd) = TRIM(#{boardTyCd})
           AND TRIM(abi.use_yn) = 'Y'
     </select>
 

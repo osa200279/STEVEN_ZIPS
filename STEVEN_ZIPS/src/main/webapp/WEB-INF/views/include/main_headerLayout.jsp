@@ -320,7 +320,7 @@
 
                         <div class="mega-cell">
                             <span><a href="${pageContext.request.contextPath}/board/notice/list.do">공지사항</a></span>
-                            <span><a href="${pageContext.request.contextPath}/board/inqry/list.do">문의게시판</a></span>
+                            <span><a href="${pageContext.request.contextPath}/apt/board/inqry/list.do">문의게시판</a></span>
                         </div>
 
                     </div>

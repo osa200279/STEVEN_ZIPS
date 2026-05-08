@@ -20,12 +20,36 @@ public class InqryServiceImpl implements IInqryService {
 
     private final IInqryMapper inqryMapper;
 
+    /*
+      문의게시판 게시판 유형 코드
+
+      BoardTyCd.INQRY.name()
+      → enum 값 INQRY를 문자열 "INQRY"로 가져온다.
+    */
     private static final String BOARD_TY_CD_INQRY = BoardTyCd.INQRY.name();
 
     @Override
     public List<InqryDTO> getList(String userNo, String wrtrId, int startRow, int endRow) {
 
-        InqryDTO residentInfo = getResidentInfo(userNo);
+    /*
+      관리자/단지관리자는 전체 문의글 조회.
+      입주민은 본인 단지 + 본인 작성글만 조회.
+    */
+        if (isAdminOrManager()) {
+            return inqryMapper.getList(
+                    null,              // 작성자 조건 없음
+                    null,              // 단지 조건 없음
+                    BOARD_TY_CD_INQRY,
+                    startRow,
+                    endRow
+            );
+        }
+
+        InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
+
+        if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
+            throw new RuntimeException("입주민 단지 정보를 찾을 수 없습니다.");
+        }
 
         return inqryMapper.getList(
                 wrtrId,
@@ -47,29 +71,31 @@ public class InqryServiceImpl implements IInqryService {
             throw new RuntimeException("내용 없음");
         }
 
-        InqryDTO residentInfo = getResidentInfo(userNo);
+        /*
 
-        String boardNo = inqryMapper.getBoardNo(
-                residentInfo.getAptCmplexNo(),
-                BOARD_TY_CD_INQRY
-        );
+          세대정보를 사용하지 않음.
+          → 공통 문의게시판 boardNo를 조회하거나,
+            XML에서 INQRY 유형 게시판 1개를 조회하도록 처리.
 
-        /* 확인용 */
-        System.out.println("로그인 userNo = " + userNo);
-        System.out.println("조회된 aptCmplexNo = " + residentInfo.getAptCmplexNo());
-        System.out.println("조회된 hoNo = " + residentInfo.getHoNo());
-        System.out.println("boardTyCd = " + BOARD_TY_CD_INQRY);
-        System.out.println("조회된 boardNo = " + boardNo);
+          주의:
+          → 아래 getCommonBoardNo()는 Mapper에 새로 추가할 메서드.
+        */
+        String boardNo = inqryMapper.getCommonBoardNo(BOARD_TY_CD_INQRY);
 
         if (boardNo == null || boardNo.trim().isEmpty()) {
-            throw new RuntimeException("해당 단지의 문의게시판이 생성되지 않았습니다.");
+            throw new RuntimeException("문의게시판이 생성되지 않았습니다.");
         }
 
         dto.setBoardNo(boardNo);
         dto.setUserNo(userNo);
-        dto.setHoNo(residentInfo.getHoNo());
-        dto.setAptCmplexNo(residentInfo.getAptCmplexNo());
         dto.setBoardTyCd(BOARD_TY_CD_INQRY);
+
+        /*
+          세대정보를 사용하지 않으므로 아래 값들은 세팅하지 않음.
+
+          dto.setHoNo(...)
+          dto.setAptCmplexNo(...)
+        */
 
         if (dto.getOpnYn() == null || dto.getOpnYn().trim().isEmpty()) {
             dto.setOpnYn("Y");
@@ -81,7 +107,21 @@ public class InqryServiceImpl implements IInqryService {
     @Override
     public void deleteInqry(String postNo, String userNo, String wrtrId) {
 
-        InqryDTO residentInfo = getResidentInfo(userNo);
+        if (isAdminOrManager()) {
+            inqryMapper.deleteInqry(
+                    postNo,
+                    null,
+                    null,
+                    BOARD_TY_CD_INQRY
+            );
+            return;
+        }
+
+        InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
+
+        if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
+            throw new RuntimeException("입주민 단지 정보를 찾을 수 없습니다.");
+        }
 
         inqryMapper.deleteInqry(
                 postNo,
@@ -94,7 +134,19 @@ public class InqryServiceImpl implements IInqryService {
     @Override
     public int getTotalCount(String userNo, String wrtrId) {
 
-        InqryDTO residentInfo = getResidentInfo(userNo);
+        if (isAdminOrManager()) {
+            return inqryMapper.getTotalCount(
+                    null,
+                    null,
+                    BOARD_TY_CD_INQRY
+            );
+        }
+
+        InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
+
+        if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
+            throw new RuntimeException("입주민 단지 정보를 찾을 수 없습니다.");
+        }
 
         return inqryMapper.getTotalCount(
                 wrtrId,
@@ -105,6 +157,11 @@ public class InqryServiceImpl implements IInqryService {
 
     @Override
     public InqryDTO detail(String postNo, String userNo, String userId) {
+
+        /*
+          상세 조회는 기존처럼 postNo + userNo/userId 기준 유지.
+          본인 문의글만 수정/조회 가능하게 하는 목적.
+        */
         InqryDTO dto = inqryMapper.detail(
                 postNo,
                 userNo,
@@ -120,6 +177,10 @@ public class InqryServiceImpl implements IInqryService {
 
     @Override
     public void updateInqry(InqryDTO dto, String userNo, String userId) {
+
+        /*
+          수정도 세대정보가 아니라 작성자 본인 여부 기준.
+        */
         int result = inqryMapper.updateInqry(
                 dto,
                 userNo,
@@ -131,18 +192,32 @@ public class InqryServiceImpl implements IInqryService {
         }
     }
 
+    /*
+  현재 로그인 사용자가 특정 권한을 가지고 있는지 확인
 
-
-
-    private InqryDTO getResidentInfo(String userNo) {
-
-        InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
-
-        if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
-            throw new RuntimeException("세대 정보가 연결되지 않은 사용자입니다.");
-        }
-
-        return residentInfo;
+  role 예시:
+  ROLE_RESIDENT
+  ROLE_MNGR
+  ROLE_ADMIN
+*/
+    private boolean hasRole(String role) {
+        return org.springframework.security.core.context.SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(auth -> auth.getAuthority().equals(role));
     }
+
+    /*
+      관리자 권한 여부 확인
+
+      왜 사용?
+      → 관리자와 중앙관리자는 세대정보 없이 문의게시판 접근 가능하게 하기 위해.
+    */
+    private boolean isAdminOrManager() {
+        return hasRole("ROLE_ADMIN") || hasRole("ROLE_MNGR");
+    }
+
 }
 

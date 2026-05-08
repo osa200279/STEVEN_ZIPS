@@ -224,14 +224,14 @@
 <c:choose>
 
   <c:when test="${not empty inqry.postNo}">
-    <form action="${pageContext.request.contextPath}/board/inqry/updateProc.do"
+    <form action="${pageContext.request.contextPath}/apt/board/inqry/updateProc.do"
           method="post"
           enctype="multipart/form-data"
           id="inquiryForm">
   </c:when>
 
   <c:otherwise>
-    <form action="${pageContext.request.contextPath}/board/inqry/writeProc.do"
+    <form action="${pageContext.request.contextPath}/apt/board/inqry/writeProc.do"
           method="post"
           enctype="multipart/form-data"
           id="inquiryForm">

@@ -130,7 +130,7 @@
             </svg>
           </div>
         </div>
-        <button onclick="location.href='${pageContext.request.contextPath}/board/inqry/writeForm.do'"
+        <button onclick="location.href='${pageContext.request.contextPath}/apt/board/inqry/writeForm.do'"
                 class="px-5 py-2 rounded-full bg-[#6F7F3F] text-white text-sm font-medium hover:bg-[#5f6e35]">
           + 새 문의
         </button>
@@ -267,7 +267,7 @@
     if (!confirm("삭제하시겠습니까?")) return;
 
     location.href =
-            '${pageContext.request.contextPath}/board/inqry/delete.do?postNo=' + postNo;
+            '${pageContext.request.contextPath}/apt/board/inqry/delete.do?postNo=' + postNo;
   }
 
   $(document).on("click", ".page-link", function(e){
@@ -281,7 +281,7 @@
     }
 
     location.href =
-            '${pageContext.request.contextPath}/board/inqry/list.do?page=' + page;
+            '${pageContext.request.contextPath}/apt/board/inqry/list.do?page=' + page;
   });
 
   function goUpdate(postNo) {
@@ -289,7 +289,7 @@
     event.stopPropagation();
 
     location.href =
-            '${pageContext.request.contextPath}/board/inqry/updateForm.do?postNo=' + postNo;
+            '${pageContext.request.contextPath}/apt/board/inqry/updateForm.do?postNo=' + postNo;
   }
 
 </script>
