@@ -112,42 +112,42 @@
                     </div>
                     <table class="data-table">
                         <thead>
-                            <tr>
-                                <th>접수일</th>
-                                <th>제목</th>
-                                <th>상태</th>
-                            </tr>
+                        <tr>
+                            <th>접수일</th>
+                            <th>제목</th>
+                            <th>상태</th>
+                        </tr>
                         </thead>
-                        <tbody>
-                            <c:forEach var="cvpl" items="${cvplList}">
-                                <tr>
-                                    <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
-                                    <td>${cvpl.cvplTtl}</td>
-                                    <c:choose>
-                                        <c:when test="${cvpl.cvplSttsCd eq 'APLY'}">
-                                            <td><span class="badge wait">민원 신청됨</span></td>
-                                        </c:when>
-                                        <c:when test="${cvpl.cvplSttsCd eq 'RCPT'}">
-                                            <td><span class="badge ok">민원 접수됨</span></td>
-                                        </c:when>
-                                        <c:when test="${cvpl.cvplSttsCd eq 'SUPL'}">
-                                            <td><span class="badge wait">보완 요청</span></td>
-                                        </c:when>
-                                        <c:when test="${cvpl.cvplSttsCd eq 'REJS'}">
-                                            <td><span class="badge wait">처리 불가</span></td>
-                                        </c:when>
-                                        <c:when test="${cvpl.cvplSttsCd eq 'RJCT'}">
-                                            <td><span class="badge wait">반려</span></td>
-                                        </c:when>
-                                        <c:when test="${cvpl.cvplSttsCd eq 'COMP'}">
-                                            <td><span class="badge info">처리 완료</span></td>
-                                        </c:when>
-                                        <c:when test="${cvpl.cvplSttsCd eq 'END'}">
-                                            <td><span class="badge info">종결</span></td>
-                                        </c:when>
-                                    </c:choose>
-                                </tr>
-                            </c:forEach>
+                        <tbody id="cvplBody">
+                        <c:forEach var="cvpl" items="${cvplList}">
+                            <tr>
+                                <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
+                                <td>${cvpl.cvplTtl}</td>
+                                <c:choose>
+                                    <c:when test="${cvpl.cvplSttsCd eq 'APLY'}">
+                                        <td><span class="badge wait">민원 신청됨</span></td>
+                                    </c:when>
+                                    <c:when test="${cvpl.cvplSttsCd eq 'RCPT'}">
+                                        <td><span class="badge ok">민원 접수됨</span></td>
+                                    </c:when>
+                                    <c:when test="${cvpl.cvplSttsCd eq 'SUPL'}">
+                                        <td><span class="badge wait">보완 요청</span></td>
+                                    </c:when>
+                                    <c:when test="${cvpl.cvplSttsCd eq 'REJS'}">
+                                        <td><span class="badge wait">처리 불가</span></td>
+                                    </c:when>
+                                    <c:when test="${cvpl.cvplSttsCd eq 'RJCT'}">
+                                        <td><span class="badge wait">반려</span></td>
+                                    </c:when>
+                                    <c:when test="${cvpl.cvplSttsCd eq 'COMP'}">
+                                        <td><span class="badge info">처리 완료</span></td>
+                                    </c:when>
+                                    <c:when test="${cvpl.cvplSttsCd eq 'END'}">
+                                        <td><span class="badge info">종결</span></td>
+                                    </c:when>
+                                </c:choose>
+                            </tr>
+                        </c:forEach>
                         </tbody>
                     </table>
                 </div>
@@ -185,6 +185,66 @@
                     alert(result.message);
                     // 민원 등록 후 폼 리셋
                     form.reset();
+
+                    // 민원 등록 후 내역 최신화
+                    try {
+                        const listResp = await fetch(`/apt/complaint/ajax/load-cvpl/${aptCmplexNo}`);
+
+                        if (listResp.ok) {
+                            const cvplList = await listResp.json();
+                            let html = '';
+
+                            // JSTL 대신 JS의 forEach 사용
+                            cvplList.forEach(cvpl => {
+                                // 1. 날짜 포맷팅 (JS 방식)
+                                const regDate = new Date(cvpl.cvplRegDt);
+                                const formattedDate = regDate.getFullYear() + "."
+                                    + String(regDate.getMonth() + 1).padStart(2, '0') + "."
+                                    + String(regDate.getDate()).padStart(2, '0') + " "
+                                    + String(regDate.getHours()).padStart(2, '0') + ":"
+                                    + String(regDate.getMinutes()).padStart(2, '0');
+
+                                let badgeHtml = '';
+                                switch (cvpl.cvplSttsCd) {
+                                    case 'APLY':
+                                        badgeHtml = '<span class="badge wait">민원 신청됨</span>';
+                                        break;
+                                    case 'RCPT':
+                                        badgeHtml = '<span class="badge ok">민원 접수됨</span>';
+                                        break;
+                                    case 'SUPL':
+                                        badgeHtml = '<span class="badge wait">보완 요청</span>';
+                                        break;
+                                    case 'REJS':
+                                        badgeHtml = '<span class="badge wait">처리 불가</span>';
+                                        break;
+                                    case 'RJCT':
+                                        badgeHtml = '<span class="badge wait">반려</span>';
+                                        break;
+                                    case 'COMP':
+                                        badgeHtml = '<span class="badge info">처리 완료</span>';
+                                        break;
+                                    case 'END':
+                                        badgeHtml = '<span class="badge info">종결</span>';
+                                        break;
+                                    default:
+                                        badgeHtml = '<span class="badge wait">대기</span>';
+                                }
+
+                                html += `
+                                       <tr>
+                                        <td>\${formattedDate}</td>
+                                        <td>\${cvpl.cvplTtl}</td>
+                                        <td>\${badgeHtml}</td>
+                                        </tr>
+                                `;
+                            });
+                            document.querySelector('#cvplBody').innerHTML = html;
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert("내역을 최신화 하는데 실패했습니다. 새로고침 해주세요.")
+                    }
                 } else {
                     alert("접수 실패 : " + result.message);
                 }

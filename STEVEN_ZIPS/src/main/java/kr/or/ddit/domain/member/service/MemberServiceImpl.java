@@ -59,14 +59,14 @@ public class MemberServiceImpl implements IMemberService {
                 String originalFilename = profFile.getOriginalFilename();
                 String uuid = UUID.randomUUID().toString().replace("-", "");
 
+                // -------------- 필수 커스텀 지정 부분 -------------------
                 // 저장 될 파일명
                 String savedFileName = uuid + "_" +  originalFilename;
-
                 // 경로 설정
                 String folderPath = "member/prof_img/" + member.getUserId();
                 String fullPath = folderPath + "/" + savedFileName;
                 String cat = "mem_prof";
-
+                // ------------- 필수 커스텀 지정 부분 end -----------------
 
                 // 구글 드라이브에 업로드
                 String googleId = googleDriveService.uploadFile(profFile, folderPath, savedFileName);

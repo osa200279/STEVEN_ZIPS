@@ -76,15 +76,14 @@ public class CvplController {
             , CvplVO cvplVO) {
         log.info("complaintApply() 실행");
 
-        MemberVO member = customUser.getMember();
-        ResidentVO resident = (ResidentVO)member;
+        ResidentVO resident = (ResidentVO)customUser.getMember();
 
         for(MyAptVO apt : resident.getMyAptList()){
             if(apt.getAptCmplexNo().equals(aptCmplexNo)){
                 cvplVO.setHoNo(apt.getHoNo());
             }
         }
-        cvplVO.setUserNo(member.getUserNo());
+        cvplVO.setUserNo(resident.getUserNo());
         cvplVO.setAptCmplexNo(aptCmplexNo);
         // 응답용 해시맵
         Map<String, String> resp = new HashMap<>();
@@ -116,4 +115,16 @@ public class CvplController {
         }
     }
 
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @ResponseBody
+    @GetMapping(value = "/ajax/load-cvpl/{aptCmplexNo}")
+    public ResponseEntity<List<CvplVO>> ajaxLoadCvpl(
+            @AuthenticationPrincipal CustomUser customUser, @PathVariable String aptCmplexNo){
+
+        ResidentVO resident = (ResidentVO)customUser.getMember();
+
+        List<CvplVO> cvplList = cvplService.selectCvplListByAptCmplexNo(aptCmplexNo, resident.getUserNo());
+
+        return ResponseEntity.ok(cvplList);
+    }
 }
