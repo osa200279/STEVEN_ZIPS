@@ -401,6 +401,91 @@
             }
         }
 
+        .room-menu-wrap{
+            position:relative;
+        }
+
+        .room-menu-btn{
+            width:38px;
+            height:38px;
+
+            border:none;
+            border-radius:12px;
+
+            background:transparent;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            color:#6b7280;
+
+            font-size:24px;
+            line-height:1;
+
+            cursor:pointer;
+
+            transition:.15s ease;
+        }
+
+        .room-menu-btn:hover{
+            background:#f3f4f6;
+            color:#111827;
+        }
+
+        .room-menu-dropdown{
+            position:absolute;
+            top:48px;
+            right:0;
+
+            width:180px;
+
+            display:none;
+            flex-direction:column;
+
+            background:#fff;
+
+            border:1px solid #e5e7eb;
+            border-radius:14px;
+
+            box-shadow:0 10px 30px rgba(0,0,0,0.12);
+
+            overflow:hidden;
+
+            z-index:30;
+        }
+
+        .room-menu-dropdown.show{
+            display:flex;
+        }
+
+        .room-menu-dropdown button{
+            height:46px;
+
+            border:none;
+            background:#fff;
+
+            text-align:left;
+
+            padding:0 16px;
+
+            font-size:14px;
+            cursor:pointer;
+
+            transition:.15s ease;
+        }
+
+        .room-menu-dropdown button:hover{
+            background:#f9fafb;
+        }
+        .room-menu-dropdown .danger{
+            color:#dc2626;
+            background:#fef2f2;
+        }
+
+        .room-menu-dropdown .danger:hover{
+            background:#fee2e2;
+        }
     </style>
 
 </head>
@@ -549,6 +634,146 @@
             </button>
 
         </div>
+    </div>
+</div>
+<div id="invite-code-modal"
+     onclick="closeInviteOutside(event)"
+     style="
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.45);
+        z-index:9999;
+        align-items:center;
+        justify-content:center;
+     ">
+
+    <div style="
+        width:420px;
+        background:#fff;
+        border-radius:18px;
+        padding:24px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.18);
+    ">
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:18px;
+        ">
+
+            <h3 style="margin:0;">초대코드</h3>
+
+            <button
+                    onclick="closeInviteCodeModal()"
+                    style="
+                    border:none;
+                    background:none;
+                    font-size:20px;
+                    cursor:pointer;
+                ">
+                ×
+            </button>
+        </div>
+
+        <div style="
+            padding:18px;
+            border-radius:14px;
+            background:#f9fafb;
+            text-align:center;
+        ">
+
+            <div style="
+                margin-bottom:10px;
+                font-size:13px;
+                color:#666;
+            ">
+                아래 코드를 공유해 초대할 수 있습니다.
+            </div>
+
+            <div id="invite-code-text"
+                 style="
+                    font-size:22px;
+                    font-weight:700;
+                    letter-spacing:1px;
+                    color:#2b674e;
+                 ">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="join-code-modal"
+     onclick="closeJoinCodeOutside(event)"
+     style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+ ">
+
+    <div style="
+    width:420px;
+    background:#fff;
+    border-radius:18px;
+    padding:24px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.18);
+">
+
+        <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:18px;
+    ">
+
+            <h3 style="margin:0;">초대코드로 입장</h3>
+
+            <button
+                    onclick="closeJoinCodeModal()"
+                    style="
+                border:none;
+                background:none;
+                font-size:20px;
+                cursor:pointer;
+            ">
+                ×
+            </button>
+        </div>
+
+        <div style="margin-bottom:16px;">
+
+            <input
+                    id="join-code-input"
+                    class="fake-input"
+                    placeholder="초대코드를 입력하세요"
+                    onkeydown="handleJoinCodeEnter(event)"
+            >
+        </div>
+
+        <div style="
+        display:flex;
+        justify-content:flex-end;
+        gap:10px;
+    ">
+
+            <button
+                    onclick="joinByCode()"
+                    class="btn-main modal-btn">
+                입장하기
+            </button>
+
+            <button
+                    onclick="closeJoinCodeModal()"
+                    class="btn-ghost modal-btn">
+                취소
+            </button>
+
+        </div>
+
     </div>
 </div>
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -32,6 +33,46 @@ public class ChatServiceImpl implements IChatService {
 
     public String selectMemberId(String chatRoomNo, String userNo){
         return mapper.selectMemberId(chatRoomNo,userNo);
+    }
+
+    @Override
+    @Transactional
+    public ChatRoomVO joinByCode(
+            String aptCmplexNo,
+            String joinKey,
+            String userNo
+    ) {
+
+        ChatRoomVO room =
+                mapper.selectRoomByJoinKey(
+                        aptCmplexNo,
+                        joinKey
+                );
+
+        if(room == null){
+
+            throw new RuntimeException(
+                    "유효하지 않은 초대코드"
+            );
+        }
+
+        if(!isRoomMember(room.getChatRoomNo(), userNo)){
+
+            ChatMemberVO memberVO =
+                    new ChatMemberVO();
+
+            memberVO.setChatRoomNo(
+                    room.getChatRoomNo()
+            );
+
+            memberVO.setUserNo(userNo);
+
+            memberVO.setChatroleCd("MEMBER");
+
+            insertRoomMember(memberVO);
+        }
+
+        return room;
     }
 
     @Override
@@ -97,9 +138,11 @@ public class ChatServiceImpl implements IChatService {
 
         String roomNo = mapper.getRoomNoSeq();
 
-        String joinKey = RandomStringUtils
-                .randomAlphanumeric(6)
-                .toUpperCase();
+        String joinKey =
+                UUID.randomUUID()
+                        .toString()
+                        .replace("-", "")
+                        .substring(0, 20);
 
         roomVO.setChatRoomNo(roomNo);
         roomVO.setChatJoinKey(joinKey);

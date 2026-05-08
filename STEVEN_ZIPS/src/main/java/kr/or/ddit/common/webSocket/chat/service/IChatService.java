@@ -32,4 +32,6 @@ public interface IChatService {
     boolean isRoomMember(String chatRoomNo, String userNo);
 
     String selectMemberId(String chatRoomNo, String userNo);
+
+    ChatRoomVO joinByCode(String aptCmplexNo, String joinKey, String userNo);
 }

@@ -163,4 +163,23 @@ public class ChatController {
                 user.getMember().getUserNo()
         );
     }
+
+
+    @PostMapping("/joinByCode/{aptCmplexNo}")
+    @ResponseBody
+    public ChatRoomVO joinByCode(
+            @PathVariable String aptCmplexNo,
+            @RequestParam String joinKey,
+            Authentication authentication
+    ){
+
+        CustomUser user =
+                (CustomUser) authentication.getPrincipal();
+
+        return service.joinByCode(
+                aptCmplexNo,
+                joinKey,
+                user.getMember().getUserNo()
+        );
+    }
 }

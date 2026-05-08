@@ -5,11 +5,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 let roomSubscriptions = {};
 let currentRoomNo = null;
-
+let currentJoinKey = null;
 
 /* 내 채팅방 목록에서 눌렀을때 실행됨 */
-function openMyRoom(roomNo, roomNm, el) {
-
+function openMyRoom(roomNo, roomNm, joinKey, el) {
+    currentJoinKey = joinKey;
     currentRoomNo = roomNo;
 
     if (el) setActiveRoom(el);
@@ -26,12 +26,29 @@ function openMyRoom(roomNo, roomNm, el) {
             let html = `
                 <div class="section-hd">
                     <h3>${roomNm}</h3>
+                                        
+                    <div class="room-menu-wrap">
                     
-                    <button
-                        onclick="leaveRoom()"
-                        class="leave-btn">
-                        방 나가기
-                    </button>
+                        <button
+                            class="room-menu-btn"
+                            onclick="toggleRoomMenu(event)">
+                            ⋮
+                        </button>
+                    
+                        <div class="room-menu-dropdown" id="room-menu-dropdown">
+                    
+                            <button onclick="openInviteCodeModal()">
+                                초대코드 보기
+                            </button>
+                    
+                            <button
+                                class="danger"
+                                onclick="leaveRoom()">
+                                방 나가기
+                            </button>
+                    
+                        </div>
+                    </div>
                 </div>
                 <div class="message-stream" id="message-area">
             `;
@@ -67,7 +84,28 @@ function openDiscover() {
 
             let html = `
                 <div class="section-hd">
-                    <h3>오픈채팅방</h3>
+                    <div style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:space-between;
+                        gap:10px;
+                        width:100%;
+                    ">
+                        <h3 style="margin:0;">오픈채팅방</h3>
+                    
+                        <button
+                            onclick="openJoinCodeModal()"
+                            class="btn-main"
+                            style="
+                                height:34px;
+                                padding:0 14px;
+                                border-radius:10px;
+                                font-size:12px;
+                                font-weight:600;
+                            ">
+                            초대코드로 입장
+                        </button>
+                    </div>
                 </div>
 
                 <div class="search-row">
@@ -165,7 +203,9 @@ function enterRoom(roomNo) {
 
             openMyRoom(
                 room.chatRoomNo,
-                room.chatRoomNm
+                room.chatRoomNm,
+                room.chatJoinKey,
+                null
             );
         });
 }
@@ -200,8 +240,12 @@ function loadMyRooms() {
                     <div
                         class="chat-room-item ${String(currentRoomNo) === String(room.chatRoomNo) ? 'active' : ''}"
                         data-room-no="${room.chatRoomNo}"
-                        onclick="openMyRoom('${room.chatRoomNo}', '${room.chatRoomNm}', this)">
-
+                        onclick="openMyRoom(
+                            '${room.chatRoomNo}',
+                            '${room.chatRoomNm}',
+                            '${room.chatJoinKey}',
+                            this
+                        )">
             ${
                     room.unreadCnt > 0
                         ? `
@@ -312,7 +356,11 @@ function createRoom(roomName, roomType, roomDesc) {
             closeCreateRoomModal();
 
             loadMyRooms();
-            openMyRoom(room.chatRoomNo, room.chatRoomNm);
+            openMyRoom(
+                room.chatRoomNo,
+                room.chatRoomNm,
+                room.chatJoinKey
+            );
         });
 }
 
@@ -666,4 +714,156 @@ function subscribeRoomList(roomList) {
 
         console.log("방 구독:", roomNo);
     });
+}
+
+function toggleRoomMenu(e){
+
+    e.stopPropagation();
+
+    document
+        .getElementById('room-menu-dropdown')
+        .classList.toggle('show');
+}
+
+document.addEventListener('click', () => {
+
+    document
+        .getElementById('room-menu-dropdown')
+        ?.classList.remove('show');
+});
+
+function openInviteCodeModal(){
+
+    document
+        .getElementById('room-menu-dropdown')
+        ?.classList.remove('show');
+
+    document
+        .getElementById('invite-code-modal')
+        .style.display = 'flex';
+
+    document
+        .getElementById('invite-code-text')
+        .innerText = currentJoinKey;
+}
+
+function closeInviteCodeModal(){
+
+    document
+        .getElementById('invite-code-modal')
+        .style.display = 'none';
+}
+
+function closeInviteOutside(e){
+
+    if(e.target.id === 'invite-code-modal'){
+
+        closeInviteCodeModal();
+    }
+}
+function openJoinCodeModal(){
+
+    document
+        .getElementById('join-code-modal')
+        .style.display = 'flex';
+
+    document
+        .getElementById('join-code-input')
+        .focus();
+}
+
+function closeJoinCodeModal(){
+
+    document
+        .getElementById('join-code-modal')
+        .style.display = 'none';
+
+    document
+        .getElementById('join-code-input')
+        .value = '';
+}
+
+function closeJoinCodeOutside(e){
+
+    if(e.target.id === 'join-code-modal'){
+
+        closeJoinCodeModal();
+    }
+}
+
+function handleJoinCodeEnter(e){
+
+    if(e.key === 'Enter'){
+
+        e.preventDefault();
+
+        joinByCode();
+    }
+}
+
+function joinByCode(){
+
+    const joinKey =
+        document
+            .getElementById('join-code-input')
+            .value
+            .trim();
+
+    if(!joinKey){
+
+        alert('초대코드를 입력하세요.');
+        return;
+    }
+
+    fetch(
+        contextPath +
+        '/residentChat/joinByCode/' +
+        aptCmplexNo +
+        '?joinKey=' +
+        encodeURIComponent(joinKey),
+        {
+            method:'POST',
+            headers:{
+                ...csrfHeaders()
+            }
+        }
+    )
+        .then(res => {
+
+            if(!res.ok){
+
+                throw new Error();
+            }
+
+            return res.json();
+        })
+        .then(room => {
+
+            closeJoinCodeModal();
+
+            loadMyRooms();
+
+            openDiscover();
+
+            setTimeout(() => {
+
+                const el = document.querySelector(
+                    '.chat-room-item[data-room-no="' +
+                    room.chatRoomNo +
+                    '"]'
+                );
+
+                openMyRoom(
+                    room.chatRoomNo,
+                    room.chatRoomNm,
+                    room.chatJoinKey,
+                    el
+                );
+
+            }, 50);
+        })
+        .catch(() => {
+
+            alert('유효하지 않은 초대코드입니다.');
+        });
 }

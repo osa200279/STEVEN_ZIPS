@@ -35,6 +35,7 @@
         SELECT CR.CHAT_ROOM_NO  /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.selectMyRoomList*/
              ,CR.CHAT_ROOM_NM
              ,CR.CHAT_ROOM_DESC
+             ,CR.CHAT_JOIN_KEY
              ,CM.MSG_CN   AS LAST_MSG
              ,CM.REG_DTTM AS LAST_TIME
              ,NVL(MC.MEMBER_CNT, 0) AS MEMBER_CNT
@@ -175,7 +176,7 @@
              , cr.reg_dt
              , cr.use_yn
              , cr.rgtr_id
-             , cr.chat_joinkey
+             , cr.chat_join_key
              , cr.apt_cmplex_no
 
              , nvl(mc.member_cnt, 0) AS member_cnt
@@ -205,7 +206,7 @@
              , CR.CHAT_ROOM_TY_CD
              , CR.REG_DT
              , CR.RGTR_ID
-             , CR.CHAT_JOINKEY
+             , CR.CHAT_JOIN_KEY
              , CR.APT_CMPLEX_NO
 
              , NVL(MC.MEMBER_CNT, 0) AS MEMBER_CNT
@@ -246,6 +247,17 @@
 
     </select>
 
+    <select id="selectRoomByJoinKey"
+            resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
+
+        SELECT *
+        FROM CHAT_ROOM
+        WHERE CHAT_JOIN_KEY = #{joinKey}
+          AND APT_CMPLEX_NO = #{aptCmplexNo}
+          AND USE_YN = 'Y'
+
+    </select>
+
     <insert id="insertRoomMember">
 
         INSERT INTO CHAT_ROOM_MEMBER ( /*kr.or.ddit.common.webSocket.chat.mapper.IChatMapper.insertRoomMember*/
@@ -273,7 +285,7 @@
           , reg_dt
           , use_yn
           , rgtr_id
-          , chat_joinkey
+          , chat_join_key
           , apt_cmplex_no
           , chat_room_desc
         )VALUES (

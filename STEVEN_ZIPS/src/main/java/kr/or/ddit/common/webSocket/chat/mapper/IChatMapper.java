@@ -40,4 +40,6 @@ public interface IChatMapper {
     void readAllMessages(String chatRoomNo, String chatMemberId);
 
     int isRoomMember(String chatRoomNo, String userNo);
+
+    ChatRoomVO selectRoomByJoinKey(String aptCmplexNo, String joinKey);
 }
