@@ -130,7 +130,7 @@
             </svg>
           </div>
         </div>
-        <button onclick="location.href='${pageContext.request.contextPath}/board/qna/writeForm.do'"
+        <button onclick="location.href='${pageContext.request.contextPath}/board/inqry/writeForm.do'"
                 class="px-5 py-2 rounded-full bg-[#6F7F3F] text-white text-sm font-medium hover:bg-[#5f6e35]">
           + 새 문의
         </button>
@@ -148,46 +148,47 @@
     </div>
   </c:if>
 
-  <c:forEach var="qna" items="${pagingVO.dataList}">
+  <c:forEach var="inqry" items="${pagingVO.dataList}">
 
     <div class="forest-card" onclick="toggleDetail(this)">
 
       <div class="flex justify-between items-center">
         <div class="flex-1 min-w-0 pr-4">
           <div class="text-xs text-gray-400 mb-1">
-            NO.${qna.postNo}
+            NO.${inqry.postNo}
           </div>
           <div class="text-base font-semibold text-gray-900">
-            ${qna.ttl}
+            ${inqry.ttl}
           </div>
         </div>
 
         <div class="flex items-center gap-3 flex-shrink-0">
           <div class="flex flex-col items-end gap-1">
 
-            <c:choose>
+<%--            <c:choose>--%>
+<%--              <c:when test="${inqry.cvplSttsCd eq '접수'}">--%>
+<%--                <span class="status-pill bg-yellow-100 text-yellow-700">접수</span>--%>
+<%--              </c:when>--%>
+<%--              <c:when test="${inqry.cvplSttsCd eq '처리중'}">--%>
+<%--                <span class="status-pill bg-yellow-100 text-yellow-700">처리중</span>--%>
+<%--              </c:when>--%>
+<%--              <c:otherwise>--%>
+<%--                <span class="status-pill bg-[#dfe5cb] text-[#3f4c15]">처리완료</span>--%>
+<%--              </c:otherwise>--%>
+<%--            </c:choose>--%>
 
-              <c:when test="${qna.cvplSttsCd eq '접수'}">
-                <span class="status-pill bg-yellow-100 text-yellow-700">접수</span>
-              </c:when>
-              <c:when test="${qna.cvplSttsCd eq '처리중'}">
-                <span class="status-pill bg-yellow-100 text-yellow-700">처리중</span>
-              </c:when>
-              <c:otherwise>
-                <span class="status-pill bg-[#dfe5cb] text-[#3f4c15]">처리완료</span>
-              </c:otherwise>
-            </c:choose>
+              <span class="status-pill bg-[#dfe5cb] text-[#3f4c15]">등록완료</span>
 
             <div class="text-xs text-gray-400">
-              <fmt:formatDate value="${qna.regDttm}" pattern="yyyy.MM.dd"/>
+              <fmt:formatDate value="${inqry.regDttm}" pattern="yyyy.MM.dd"/>
             </div>
 
-            <c:if test="${qna.wrtrId eq sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member.userId}">
-            <button type="button"
-                    onclick="deleteQna('${qna.postNo}')"
-                    class="text-xs text-red-500 hover:underline">
-              삭제
-            </button>
+            <c:if test="${inqry.wrtrId eq sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member.userId}">
+              <button type="button"
+                      onclick="deleteInqry('${inqry.postNo}')"
+                      class="text-xs text-red-500 hover:underline">
+                삭제
+              </button>
           </c:if>
 
 
@@ -201,7 +202,7 @@
         <div class="flex gap-4">
           <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">👤</div>
           <p class="text-sm text-gray-700 leading-relaxed pt-1">
-            ${qna.cn}
+            ${inqry.cn}
           </p>
         </div>
       </div>
@@ -247,13 +248,13 @@
     }
   }
 
-  function deleteQna(postNo) {
+  function deleteInqry(postNo) {
     event.stopPropagation();
 
     if (!confirm("삭제하시겠습니까?")) return;
 
     location.href =
-            '${pageContext.request.contextPath}/board/qna/delete.do?postNo=' + postNo;
+            '${pageContext.request.contextPath}/board/inqry/delete.do?postNo=' + postNo;
   }
 
   $(document).on("click", ".page-link", function(e){
@@ -267,8 +268,7 @@
     }
 
     location.href =
-            '${pageContext.request.contextPath}/board/qna/list.do?page=' + page;
-    // /member/qna/list.do 가 아니라 Controller 주소인 /board/qna/list.do 로 맞춰야 함
+            '${pageContext.request.contextPath}/board/inqry/list.do?page=' + page;
   });
 
 

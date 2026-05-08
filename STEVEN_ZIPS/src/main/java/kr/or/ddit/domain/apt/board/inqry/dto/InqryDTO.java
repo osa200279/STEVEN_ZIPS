@@ -1,8 +1,13 @@
 package kr.or.ddit.domain.apt.board.inqry.dto;
 
 import lombok.Data;
+
 import java.util.Date;
 
+/**
+ * 입주민 문의게시판 DTO
+ *
+ */
 @Data
 public class InqryDTO {
 
@@ -11,7 +16,7 @@ public class InqryDTO {
     private String ttl;          // 제목
     private String cn;           // 내용
     private String wrtrId;       // 작성자아이디
-    private String prrtCd;       // 우선순위코드
+    private String prrtCd;       // 문의유형코드
     private Date regDttm;        // 등록일시
     private Date mdfDttm;        // 수정일시
     private int inqCnt;          // 조회수
@@ -22,4 +27,7 @@ public class InqryDTO {
     private String aptCmplexNo;  // 아파트단지번호
     private String boardTyCd;    // 게시판유형코드
     private String boardNm;      // 게시판명
+
+    private String userNo;       // 사용자번호
+    private String hoNo;         // 세대번호
 }

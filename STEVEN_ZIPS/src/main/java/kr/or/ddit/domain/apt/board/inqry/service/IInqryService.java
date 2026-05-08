@@ -8,13 +8,12 @@ public interface IInqryService {
 
     List<InqryDTO> getList(String userNo, String wrtrId, int startRow, int endRow);
 
-    void insertQna(InqryDTO dto, String userNo);
+    void insertInqry(InqryDTO dto, String userNo);
 
-    void deleteQna(String postNo, String userNo, String wrtrId);
+    void deleteInqry(String postNo, String userNo, String wrtrId);
 
     int getTotalCount(String userNo, String wrtrId);
 }
-
 
 //package kr.or.ddit.domain.apt.board.inqry.service;
 //

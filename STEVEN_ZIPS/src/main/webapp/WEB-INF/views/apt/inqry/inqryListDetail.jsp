@@ -219,7 +219,10 @@
     </div>
   </c:if>
 
-  <form action="/board/qna/writeProc.do" method="post" enctype="multipart/form-data" id="inquiryForm">
+  <form action="${pageContext.request.contextPath}/board/inqry/writeProc.do"
+        method="post"
+        enctype="multipart/form-data"
+        id="inquiryForm">
 
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 

@@ -1,33 +1,35 @@
 package kr.or.ddit.domain.apt.board.inqry.service;
 
+import kr.or.ddit.common.enums.board.BoardTyCd;
 import kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO;
 import kr.or.ddit.domain.apt.board.inqry.mapper.IInqryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
+/**
+ * 입주민 문의게시판 Service 구현체
+ *
+ * Service란?
+ * → Controller와 Mapper 사이에서 업무 로직을 처리하는 클래스.
+ */
 @Service
 @RequiredArgsConstructor
 public class InqryServiceImpl implements IInqryService {
 
     private final IInqryMapper inqryMapper;
 
-    private static final String BOARD_TY_CD_INQRY = "INQRY";
-    // 상수란?
-    // → 변하지 않는 고정값.
-    // 왜 사용?
-    // → "INQRY"를 여러 곳에 직접 쓰면 오타 위험이 있어서 한 곳에서 관리한다.
+    private static final String BOARD_TY_CD_INQRY = BoardTyCd.INQRY.name();
 
     @Override
     public List<InqryDTO> getList(String userNo, String wrtrId, int startRow, int endRow) {
 
-        String aptCmplexNo = getAptCmplexNo(userNo);
+        InqryDTO residentInfo = getResidentInfo(userNo);
 
         return inqryMapper.getList(
                 wrtrId,
-                aptCmplexNo,
+                residentInfo.getAptCmplexNo(),
                 BOARD_TY_CD_INQRY,
                 startRow,
                 endRow
@@ -35,7 +37,7 @@ public class InqryServiceImpl implements IInqryService {
     }
 
     @Override
-    public void insertQna(InqryDTO dto, String userNo) {
+    public void insertInqry(InqryDTO dto, String userNo) {
 
         if (dto.getTtl() == null || dto.getTtl().trim().isEmpty()) {
             throw new RuntimeException("제목 없음");
@@ -45,25 +47,46 @@ public class InqryServiceImpl implements IInqryService {
             throw new RuntimeException("내용 없음");
         }
 
-        dto.setAptCmplexNo(getAptCmplexNo(userNo));
+        InqryDTO residentInfo = getResidentInfo(userNo);
+
+        String boardNo = inqryMapper.getBoardNo(
+                residentInfo.getAptCmplexNo(),
+                BOARD_TY_CD_INQRY
+        );
+
+        /* 확인용 */
+        System.out.println("로그인 userNo = " + userNo);
+        System.out.println("조회된 aptCmplexNo = " + residentInfo.getAptCmplexNo());
+        System.out.println("조회된 hoNo = " + residentInfo.getHoNo());
+        System.out.println("boardTyCd = " + BOARD_TY_CD_INQRY);
+        System.out.println("조회된 boardNo = " + boardNo);
+
+        if (boardNo == null || boardNo.trim().isEmpty()) {
+            throw new RuntimeException("해당 단지의 문의게시판이 생성되지 않았습니다.");
+        }
+
+        dto.setBoardNo(boardNo);
+        dto.setUserNo(userNo);
+        dto.setHoNo(residentInfo.getHoNo());
+        dto.setAptCmplexNo(residentInfo.getAptCmplexNo());
         dto.setBoardTyCd(BOARD_TY_CD_INQRY);
 
         if (dto.getOpnYn() == null || dto.getOpnYn().trim().isEmpty()) {
             dto.setOpnYn("Y");
         }
 
-        inqryMapper.insertQna(dto);
+        inqryMapper.insertInqry(dto);
     }
 
     @Override
-    public void deleteQna(String postNo, String userNo, String wrtrId) {
+    public void deleteInqry(String postNo, String userNo, String wrtrId) {
 
-        String aptCmplexNo = getAptCmplexNo(userNo);
+        InqryDTO residentInfo = getResidentInfo(userNo);
 
-        inqryMapper.deleteQna(
+        inqryMapper.deleteInqry(
                 postNo,
                 wrtrId,
-                aptCmplexNo,
+                residentInfo.getAptCmplexNo(),
                 BOARD_TY_CD_INQRY
         );
     }
@@ -71,24 +94,24 @@ public class InqryServiceImpl implements IInqryService {
     @Override
     public int getTotalCount(String userNo, String wrtrId) {
 
-        String aptCmplexNo = getAptCmplexNo(userNo);
+        InqryDTO residentInfo = getResidentInfo(userNo);
 
         return inqryMapper.getTotalCount(
                 wrtrId,
-                aptCmplexNo,
+                residentInfo.getAptCmplexNo(),
                 BOARD_TY_CD_INQRY
         );
     }
 
-    private String getAptCmplexNo(String userNo) {
+    private InqryDTO getResidentInfo(String userNo) {
 
-        Map<String, Object> info = inqryMapper.getResidentInfo(userNo);
+        InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
 
-        if (info == null || info.get("APTCMPLEXNO") == null) {
+        if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
             throw new RuntimeException("세대 정보가 연결되지 않은 사용자입니다.");
         }
 
-        return String.valueOf(info.get("APTCMPLEXNO"));
+        return residentInfo;
     }
 }
 

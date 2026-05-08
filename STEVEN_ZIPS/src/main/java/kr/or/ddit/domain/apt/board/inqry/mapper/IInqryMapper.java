@@ -5,8 +5,13 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
+/**
+ * 입주민 문의게시판 Mapper
+ *
+ * Mapper란?
+ * → Java 메서드와 MyBatis XML SQL을 연결하는 인터페이스.
+ */
 @Mapper
 public interface IInqryMapper {
 
@@ -18,9 +23,9 @@ public interface IInqryMapper {
             @Param("endRow") int endRow
     );
 
-    void insertQna(InqryDTO dto);
+    void insertInqry(InqryDTO dto);
 
-    void deleteQna(
+    void deleteInqry(
             @Param("postNo") String postNo,
             @Param("wrtrId") String wrtrId,
             @Param("aptCmplexNo") String aptCmplexNo,
@@ -33,38 +38,10 @@ public interface IInqryMapper {
             @Param("boardTyCd") String boardTyCd
     );
 
-    Map<String, Object> getResidentInfo(@Param("userNo") String userNo);
+    InqryDTO getResidentInfo(@Param("userNo") String userNo);
+
+    String getBoardNo(
+            @Param("aptCmplexNo") String aptCmplexNo,
+            @Param("boardTyCd") String boardTyCd
+    );
 }
-
-
-//package kr.or.ddit.domain.apt.board.inqry.mapper;
-//
-//import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
-//import org.apache.ibatis.annotations.Mapper;
-//import org.apache.ibatis.annotations.Param;
-//
-//import java.util.List;
-//import java.util.Map;
-//
-//@Mapper
-//public interface IInqryMapper {
-//
-//
-//    List<CvplVO> getList(
-//            @Param("userNo") String userNo,
-//            @Param("startRow") int startRow,
-//            @Param("endRow") int endRow
-//    );
-//
-//    void insertQna(CvplVO vo);
-//
-//    void deleteQna(
-//            @Param("cvplNo") String cvplNo,
-//            @Param("userNo") String userNo
-//    );
-//
-//    int getTotalCount(String userNo);
-//
-//
-//    Map<String, Object> getResidentInfo(String userNo);
-//}

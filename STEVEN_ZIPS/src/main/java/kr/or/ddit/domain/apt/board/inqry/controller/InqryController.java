@@ -1,8 +1,7 @@
-
 package kr.or.ddit.domain.apt.board.inqry.controller;
 
-import kr.or.ddit.domain.apt.board.inqry.service.IInqryService;
 import kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO;
+import kr.or.ddit.domain.apt.board.inqry.service.IInqryService;
 import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
@@ -18,13 +17,13 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/board/qna")
+@RequestMapping("/board/inqry")
 public class InqryController {
 
     private final IInqryService inqryService;
 
     @GetMapping("/list.do")
-    public String qnaList(
+    public String inqryList(
             @RequestParam(value = "page", defaultValue = "1") int currentPage,
             Model model,
             Authentication auth
@@ -40,6 +39,7 @@ public class InqryController {
                 user.getUserNo(),
                 user.getUserId()
         );
+
         pagingVO.setTotalRecord(totalRecord);
 
         List<InqryDTO> list = inqryService.getList(
@@ -62,25 +62,35 @@ public class InqryController {
     }
 
     @PostMapping("/writeProc.do")
-    public String writeProc(InqryDTO vo, Authentication auth) {
-
+    public String writeProc(
+            InqryDTO dto,
+            Authentication auth,
+            Model model
+    ) {
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         MemberVO user = customUser.getMember();
 
-        vo.setWrtrId(user.getUserId());
+        dto.setWrtrId(user.getUserId());
 
-        inqryService.insertQna(vo, user.getUserNo());
+        try {
+            inqryService.insertInqry(dto, user.getUserNo());
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "apt/inqry/inqryListDetail";
+        }
 
         return "redirect:/board/inqry/list.do";
     }
 
     @GetMapping("/delete.do")
-    public String deleteQna(@RequestParam String postNo, Authentication auth) {
-
+    public String deleteInqry(
+            @RequestParam String postNo,
+            Authentication auth
+    ) {
         CustomUser customUser = (CustomUser) auth.getPrincipal();
         MemberVO user = customUser.getMember();
 
-        inqryService.deleteQna(
+        inqryService.deleteInqry(
                 postNo,
                 user.getUserNo(),
                 user.getUserId()
@@ -89,7 +99,6 @@ public class InqryController {
         return "redirect:/board/inqry/list.do";
     }
 }
-
 
 
 //package kr.or.ddit.domain.apt.board.inqry.controller;
