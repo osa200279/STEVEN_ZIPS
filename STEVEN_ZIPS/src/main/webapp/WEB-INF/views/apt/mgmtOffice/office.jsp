@@ -41,7 +41,7 @@
         <%-- 본문 영역: /manager/main 처음 진입 시 대시보드가 보임 --%>
         <main class="main-content">
             <div id="contentArea">
-                <%@ include file="/WEB-INF/views/manager/dashboard.jsp" %>
+                <%@ include file="/WEB-INF/views/apt/mgmtOffice/dashboard.jsp" %>
             </div>
         </main>
 

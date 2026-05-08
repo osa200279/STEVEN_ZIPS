@@ -44,7 +44,7 @@ public class ManagerMainController {
 
         if (admin) {
             managerAccessService.addManagerViewModel(model, customUser, null);
-            return "manager/office";
+            return "apt/mgmtOffice/office";
         }
 
         MemberVO member = customUser.getMember();
@@ -54,7 +54,7 @@ public class ManagerMainController {
             return "redirect:/manager/main/" + loginMngr.getMgmtOfcNo();
         }
 
-        return "manager/office";
+        return "apt/mgmtOffice/office";
     }
 
     // 관리사무소 번호 기준 대시보드
@@ -66,7 +66,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/office";
+        return "apt/mgmtOffice/office";
     }
 
     // ── ADMIN 전용 API ────────────────────────────────────────
@@ -181,7 +181,7 @@ public class ManagerMainController {
         // - 관리자 여부, 관리사무소 번호, 로그인 사용자명
         // - 관리사무소명, 단지명
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/employee/mngr_account";
+        return "apt/mgmtOffice/employee/mngr_account";
     }
 
     // 휴가 일정
@@ -193,7 +193,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/employee/vacation";
+        return "apt/mgmtOffice/employee/vacation";
     }
 
     // 입주민 목록
@@ -205,7 +205,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_resident_list";
+        return "apt/mgmtOffice/mngr_resident_list";
     }
 
     // 입주민 승인
@@ -217,7 +217,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_resident_auth";
+        return "apt/mgmtOffice/mngr_resident_auth";
     }
 
     // 전출입 관리
@@ -229,7 +229,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_resident_moveList";
+        return "apt/mgmtOffice/mngr_resident_moveList";
     }
 
     // 입주민 자동 처리
@@ -241,7 +241,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_resident_auto";
+        return "apt/mgmtOffice/mngr_resident_auto";
     }
 
     // 방문 차량 자동 처리
@@ -253,7 +253,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_visit_auto";
+        return "apt/mgmtOffice/mngr_visit_auto";
     }
 
     // 시설 목록
@@ -265,7 +265,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_facility_list";
+        return "apt/mgmtOffice/mngr_facility_list";
     }
 
     // 공용 시설
@@ -277,7 +277,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_public_facility";
+        return "apt/mgmtOffice/mngr_public_facility";
     }
 
     // 검침 기록
@@ -289,7 +289,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_meterReading";
+        return "apt/mgmtOffice/mngr_meterReading";
     }
 
     // 시설 점검 이력
@@ -301,7 +301,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_facility_history";
+        return "apt/mgmtOffice/mngr_facility_history";
     }
 
     // 작업 일정
@@ -313,7 +313,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_facility_workCalendar";
+        return "apt/mgmtOffice/mngr_facility_workCalendar";
     }
 
     // 협력업체
@@ -325,7 +325,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_partner_list";
+        return "apt/mgmtOffice/mngr_partner_list";
     }
 
     // 관리비 부과
@@ -337,7 +337,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_billCharge";
+        return "apt/mgmtOffice/mngr_billCharge";
     }
 
     // 고지서 발행
@@ -349,7 +349,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_billIssue";
+        return "apt/mgmtOffice/mngr_billIssue";
     }
 
     // 관리비 항목 요약
@@ -361,7 +361,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_billItemSummary";
+        return "apt/mgmtOffice/mngr_billItemSummary";
     }
 
     // 연체 관리
@@ -373,7 +373,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "manager/mngr_accountArrears";
+        return "apt/mgmtOffice/mngr_accountArrears";
     }
 
 }
