@@ -61,7 +61,7 @@
             margin-bottom:12px;
 
             border:1px solid #e4e9e4;
-            border-radius:18px;
+            border-radius:16px;
 
             background:linear-gradient(
                     180deg,
@@ -211,41 +211,49 @@
 
             display:flex;
             flex-direction:column;
-            gap:10px;
+            gap:2px !important;
         }
 
         .message-wrap{
-            margin-bottom:12px;
+            display:flex;
+            flex-direction:column;
+
+            margin-bottom:10px;
         }
 
         .message-wrap.me{
-            display:flex;
-            flex-direction:column;
             align-items:flex-end;
         }
 
         .message-wrap.other{
-            display:flex;
-            flex-direction:column;
             align-items:flex-start;
         }
 
-        .message-row{
-            display:flex;
+        .message-inline{
+            display:inline-flex;
             align-items:flex-end;
             gap:6px;
+
+            max-width:75%;
+        }
+        .message-wrap.me .message-inline{
+            justify-content:flex-end;
+        }
+
+        .message-wrap.other .message-inline{
+            justify-content:flex-start;
         }
 
         .message-time{
-            margin-bottom:2px;
-
-            font-size:11px;
+            font-size:10px;
             color:#999;
             white-space:nowrap;
+
+            margin-bottom:2px;
         }
 
         .sender-name{
-            margin-bottom:4px;
+            margin-bottom:1px;
             padding-left:4px;
 
             font-size:11px;
@@ -264,6 +272,10 @@
         .search-row{
             width:100%;
             margin-top:12px;
+
+            display:flex;
+            align-items:center;
+            gap:10px;
         }
 
         .search-row button{
@@ -486,6 +498,64 @@
         .room-menu-dropdown .danger:hover{
             background:#fee2e2;
         }
+
+        .msg-input-wrap{
+            position:relative;
+            flex:1;
+        }
+
+        .msg-input-wrap .fake-input{
+            padding-right:64px !important;
+        }
+
+        .msg-length{
+            position:absolute;
+
+            top:50%;
+            right:14px;
+
+            transform:translateY(-50%);
+
+            font-size:11px;
+            font-weight:500;
+            color:#9ca3af;
+
+            pointer-events:none;
+        }
+
+        .message{
+            display:inline-block;
+
+            max-width:min(520px, 70vw);
+
+            padding:10px 14px;
+
+            border-radius:16px;
+
+            font-size:13px;
+            line-height:1.45;
+
+            white-space:pre-wrap;
+
+            word-break:break-word;
+            overflow-wrap:anywhere;
+
+            box-sizing:border-box;
+        }
+
+        .message.me{
+            background:#2b674e;
+            color:#fff;
+
+            border-bottom-right-radius:6px;
+        }
+
+        .message.other{
+            background:#f3f4f6;
+            color:#111827;
+
+            border-bottom-left-radius:6px;
+        }
     </style>
 
 </head>
@@ -558,7 +628,7 @@
 
     <div style="width:420px;
                 background:white;
-                border-radius:18px;
+                border-radius:16px;
                 padding:24px;
                 box-shadow:0 10px 30px rgba(0,0,0,0.18);">
 
@@ -578,6 +648,7 @@
 
             <input type="text"
                    id="create-room-name"
+                   maxlength="40"
                    class="fake-input"
                    placeholder="채팅방 이름 입력">
         </div>
@@ -590,6 +661,7 @@
             <textarea
                     id="create-room-desc"
                     class="fake-textarea"
+                    maxlength="200"
                     rows="4"
                     placeholder="채팅방 소개 입력"></textarea>
 
@@ -651,7 +723,7 @@
     <div style="
         width:420px;
         background:#fff;
-        border-radius:18px;
+        border-radius:16px;
         padding:24px;
         box-shadow:0 10px 30px rgba(0,0,0,0.18);
     ">
@@ -718,7 +790,7 @@
     <div style="
     width:420px;
     background:#fff;
-    border-radius:18px;
+    border-radius:16px;
     padding:24px;
     box-shadow:0 10px 30px rgba(0,0,0,0.18);
 ">

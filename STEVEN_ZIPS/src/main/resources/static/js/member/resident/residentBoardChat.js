@@ -58,11 +58,29 @@ function openMyRoom(roomNo, roomNm, joinKey, el) {
             });
 
             html += `</div>
-                <div class="search-row">
-                    <input id="msg" class="fake-input" onkeydown="handleEnter(event)"/>
-                    <button onclick="sendMessage()">전송</button>
-                </div>
-            `;
+                        <div class="search-row">
+                    
+                            <div class="msg-input-wrap">
+                    
+                                <textarea
+                                    id="msg"
+                                    maxlength="300"
+                                    class="fake-textarea chat-textarea"
+                                    rows="1"
+                                    onkeydown="handleEnter(event)"
+                                    placeholder="메시지를 입력하세요"
+                                ></textarea>
+                    
+                                <div class="msg-length" id="msg-length">
+                                    0 / 300
+                                </div>
+                    
+                            </div>
+                    
+                            <button onclick="sendMessage()">전송</button>
+                    
+                        </div>
+                    `;
 
             document.getElementById("chat-content").innerHTML = html;
 
@@ -308,6 +326,17 @@ function sendMessage() {
     }));
 
     input.value = "";
+    input.style.height = '44px';
+
+
+    const counter =
+        document.getElementById('msg-length');
+
+    if(counter){
+
+        counter.innerText = '0/300';
+        counter.style.color = '#9ca3af';
+    }
 }
 
 function openCreateRoom() {
@@ -327,6 +356,16 @@ function submitCreateRoom() {
         document.querySelector(
             'input[name="room-type"]:checked'
         ).value;
+
+    if(roomName.length > 40){
+        alert('채팅방 이름은 40자 이하만 가능합니다.');
+        return;
+    }
+
+    if(roomDesc.length > 200){
+        alert('소개글은 200자 이하만 가능합니다.');
+        return;
+    }
 
     if (!roomName) {
         alert('채팅방 이름을 입력하세요.');
@@ -394,43 +433,40 @@ function appendMessage(msg) {
         String(msg.senderUserNo) === String(userNo);
 
     const html = `
-        <div class="message-wrap ${isMe ? 'me' : 'other'}">
-
-            ${!isMe
-        ? `
-                    <div class="sender-name">
-                        ${msg.senderUserNm}
-                    </div>
-                  `
-        : ''
-    }
-
-            <div class="message-row ${isMe ? 'me' : 'other'}">
-            
-                ${isMe
-                    ? `
-                        <div class="message-time">
-                            ${formatMessageTime(msg.regDttm)}
-                        </div>
-            
-                        <div class="message me">
-                            ${msg.msgCn}
-                        </div>
-                      `
-                    : `
-                        <div class="message other">
-                            ${msg.msgCn}
-                        </div>
-            
-                        <div class="message-time">
-                            ${formatMessageTime(msg.regDttm)}
-                        </div>
-                      `
-                }
-            
-            </div>
-        </div>
-    `;
+                            <div class="message-wrap ${isMe ? 'me' : 'other'}">
+                            
+                                ${!isMe
+                                    ? `
+                                        <div class="sender-name">
+                                            ${msg.senderUserNm}
+                                        </div>
+                                      `
+                                    : ''
+                                }
+                            
+                                <div class="message-inline">
+                            
+                                    ${isMe
+                                    ? `
+                                        <div class="message-time">
+                                            ${formatMessageTime(msg.regDttm)}
+                                        </div>
+                                    
+                                        <div class="message me">${escapeHtml(msg.msgCn)}</div>
+                                      `
+                                    : `
+                                            <div class="message other">${escapeHtml(msg.msgCn)}</div>
+                            
+                                            <div class="message-time">
+                                                ${formatMessageTime(msg.regDttm)}
+                                            </div>
+                                          `
+                                }
+                            
+                                </div>
+                            
+                            </div>
+                    `;
 
     area.insertAdjacentHTML('beforeend', html);
 
@@ -453,44 +489,41 @@ function renderMessage(msg) {
     const isMe =
         String(msg.senderUserNo) === String(userNo);
 
-    return `
-        <div class="message-wrap ${isMe ? 'me' : 'other'}">
-
-            ${!isMe
-        ? `
-                    <div class="sender-name">
-                        ${msg.senderUserNm}
-                    </div>
-                  `
-        : ''
-    }
-
-            <div class="message-row ${isMe ? 'me' : 'other'}">
-            
-                ${isMe
-                    ? `
-                        <div class="message-time">
-                            ${formatMessageTime(msg.regDttm)}
+            return `
+                        <div class="message-wrap ${isMe ? 'me' : 'other'}">
+                        
+                            ${!isMe
+                                        ? `
+                                    <div class="sender-name">
+                                        ${msg.senderUserNm}
+                                    </div>
+                                  `
+                                        : ''
+                                    }
+                        
+                            <div class="message-inline">
+                        
+                                ${isMe
+                                        ? `
+                                        <div class="message-time">
+                                            ${formatMessageTime(msg.regDttm)}
+                                        </div>
+                                        
+                                        <div class="message me">${escapeHtml(msg.msgCn)}</div> 
+                                      `
+                                        : `
+                                        <div class="message other">${escapeHtml(msg.msgCn)}</div>
+                        
+                                        <div class="message-time">
+                                            ${formatMessageTime(msg.regDttm)}
+                                        </div>
+                                      `
+                                    }
+                        
+                            </div>
+                        
                         </div>
-            
-                        <div class="message me">
-                            ${msg.msgCn}
-                        </div>
-                      `
-                    : `
-                        <div class="message other">
-                            ${msg.msgCn}
-                        </div>
-            
-                        <div class="message-time">
-                            ${formatMessageTime(msg.regDttm)}
-                        </div>
-                      `
-                }
-            
-            </div>
-        </div>
-    `;
+        `;
 }
 
 function closeCreateRoomModal() {
@@ -590,14 +623,20 @@ function filterElements(selector, keyword) {
 
 function handleEnter(e) {
 
-    if (e.key === 'Enter') {
-
-        e.preventDefault();
-
-        sendMessage();
+    if(e.key !== 'Enter'){
+        return;
     }
-}
 
+    // Shift + Enter → 줄바꿈
+    if(e.shiftKey){
+        return;
+    }
+
+    // Enter → 전송
+    e.preventDefault();
+
+    sendMessage();
+}
 function formatMessageTime(regDttm) {
 
     if (!regDttm) {
@@ -866,4 +905,55 @@ function joinByCode(){
 
             alert('유효하지 않은 초대코드입니다.');
         });
+}
+
+document.addEventListener('input', e => {
+
+    if(e.target.id === 'msg'){
+
+        e.target.style.height = 'auto';
+
+        e.target.style.height =
+            Math.min(e.target.scrollHeight, 140) + 'px';
+
+        if(e.target.value.length > 300){
+
+            e.target.value =
+                e.target.value.substring(0, 300);
+        }
+
+        const length = e.target.value.length;
+
+        const counter =
+            document.getElementById('msg-length');
+
+        if(counter){
+
+            counter.innerText =
+                `${length}/300`;
+
+            if(length > 250){
+
+                counter.style.color = '#ef4444';
+
+            }else{
+
+                counter.style.color = '#9ca3af';
+            }
+        }
+    }
+});
+
+function escapeHtml(str){
+
+    if(str == null){
+        return '';
+    }
+
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
