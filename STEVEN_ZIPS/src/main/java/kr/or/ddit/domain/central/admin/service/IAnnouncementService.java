@@ -3,6 +3,7 @@ package kr.or.ddit.domain.central.admin.service;
 import java.util.List;
 
 import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 공고 관리 Service 인터페이스
@@ -16,9 +17,15 @@ public interface IAnnouncementService {
 
     AnnouncementDTO selectAnnouncement(String annNo);
 
-    int insertAnnouncement(AnnouncementDTO announcementDTO);
+    int insertAnnouncement(
+            AnnouncementDTO announcementDTO,
+            MultipartFile file
+    );
 
-    int updateAnnouncement(AnnouncementDTO announcementDTO);
+    int updateAnnouncement(
+            AnnouncementDTO announcementDTO,
+            MultipartFile file
+    );
 
     int deleteAnnouncement(String annNo);
 

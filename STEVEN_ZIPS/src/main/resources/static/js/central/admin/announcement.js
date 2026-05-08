@@ -166,10 +166,18 @@ function renderList() {
         return `
             <tr onclick="openDetail('${p.annNo}')" style="cursor:pointer;">
                 <td>${p.ttl || "-"}</td>
-                <td style="text-align:left;">${p.aptCmplexNm || "-"}</td>
                 <td>${p.rcrtBgngDt || "-"} ~ ${p.rcrtEndDt || "-"}</td>
-                <td>${p.unitCnt || 0}세대</td>
-                <td>${p.sbmsnDocNm || "-"}</td>
+                <td style="text-align:left;">
+                    <div>${p.aptCmplexNm || "-"}</div>
+                    <div style="font-size:12px; color:#64748b;">${p.dorojuso || ""}</div>
+                </td>
+                <td>${p.supplyDisplay || "0/0세대"}</td>
+                <td>
+                    ${p.sbmsnDocNms || "-"}
+                    ${p.hasFileYn === "Y"
+                            ? '<button type="button" class="file-down-btn" onclick="event.stopPropagation(); downloadFile(\'' + p.atchFileId + '\')">📎</button>'
+                            : ''}
+                </td>
                 <td style="text-align:center;">${badgeHtml(st)}</td>
             </tr>
         `;
@@ -532,3 +540,16 @@ document.addEventListener("DOMContentLoaded", function () {
     loadAptComplexList();
     loadAnnouncementList();
 });
+
+
+function downloadFile(fileGroupNo) {
+    /*
+      파일 다운로드
+    */
+    if (!fileGroupNo) {
+        alert("다운로드할 첨부파일이 없습니다.");
+        return;
+    }
+
+    location.href = "/centralAdmin/announcement/file/download/" + fileGroupNo;
+}

@@ -33,17 +33,45 @@
         , NVL(cap.del_yn, 'N') AS delYn                             /** 삭제여부 */
         , NVL(cap.opn_yn, 'Y') AS opnYn                             /** 공개여부 */
         , cap.atch_file_id AS atchFileId                            /** 첨부파일ID */
+        , ac.dorojuso                                                   /** 상세주소 */
+
         , NVL((
         SELECT SUM(NVL(au.unit_cnt, 0))
         FROM apt_unit au
         WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), NVL(ac.unit_cnt, 0)) AS unitCnt                        /** 공급세대수 */
-        , (
-        SELECT LISTAGG(af.file_og_name, ', ')
-        WITHIN GROUP (ORDER BY af.file_sort_order, af.file_og_name)
-        FROM attach_file af
-        WHERE TO_CHAR(af.file_group_no) = cap.atch_file_id
-        ) AS sbmsnDocNm                                           /** 제출서류명 */
+        ), NVL(ac.unit_cnt, 0)) total_unit_cnt                          /** 전체세대수 */
+
+        , NVL((
+        SELECT COUNT(*)
+        FROM rent_listing rl
+        INNER JOIN apt_detail ad
+        ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_unit au
+        ON ad.dong_no = au.dong_no
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        ), 0) supply_cnt                                                /** 공급수 */
+
+        , NVL((
+        SELECT COUNT(*)
+        FROM rent_listing rl
+        INNER JOIN apt_detail ad
+        ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_unit au
+        ON ad.dong_no = au.dong_no
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        ), 0)
+        || '/'
+        || NVL((
+        SELECT SUM(NVL(au.unit_cnt, 0))
+        FROM apt_unit au
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        ), NVL(ac.unit_cnt, 0))
+        || '세대' supply_display                                        /** 공급표시 */
+
+        , CASE
+        WHEN cap.atch_file_id IS NULL THEN 'N'
+        ELSE 'Y'
+        END has_file_yn                                               /** 첨부파일존재여부 */
         , CASE
         WHEN cap.rcrt_bgng_dt IS NULL
         OR cap.rcrt_end_dt IS NULL
@@ -123,17 +151,45 @@
         , NVL(cap.del_yn, 'N') AS delYn
         , NVL(cap.opn_yn, 'Y') AS opnYn
         , cap.atch_file_id AS atchFileId
+        , ac.dorojuso                                                   /** 상세주소 */
+
         , NVL((
         SELECT SUM(NVL(au.unit_cnt, 0))
         FROM apt_unit au
         WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), NVL(ac.unit_cnt, 0)) AS unitCnt
-        , (
-        SELECT LISTAGG(af.file_og_name, ', ')
-        WITHIN GROUP (ORDER BY af.file_sort_order, af.file_og_name)
-        FROM attach_file af
-        WHERE TO_CHAR(af.file_group_no) = cap.atch_file_id
-        ) AS sbmsnDocNm
+        ), NVL(ac.unit_cnt, 0)) total_unit_cnt                          /** 전체세대수 */
+
+        , NVL((
+        SELECT COUNT(*)
+        FROM rent_listing rl
+        INNER JOIN apt_detail ad
+        ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_unit au
+        ON ad.dong_no = au.dong_no
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        ), 0) supply_cnt                                                /** 공급수 */
+
+        , NVL((
+        SELECT COUNT(*)
+        FROM rent_listing rl
+        INNER JOIN apt_detail ad
+        ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_unit au
+        ON ad.dong_no = au.dong_no
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        ), 0)
+        || '/'
+        || NVL((
+        SELECT SUM(NVL(au.unit_cnt, 0))
+        FROM apt_unit au
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        ), NVL(ac.unit_cnt, 0))
+        || '세대' supply_display                                        /** 공급표시 */
+
+        , CASE
+        WHEN cap.atch_file_id IS NULL THEN 'N'
+        ELSE 'Y'
+        END has_file_yn                                               /** 첨부파일존재여부 */
         , CASE
         WHEN cap.rcrt_bgng_dt IS NULL
         OR cap.rcrt_end_dt IS NULL

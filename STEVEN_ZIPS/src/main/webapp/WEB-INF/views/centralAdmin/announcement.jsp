@@ -490,7 +490,7 @@
               <!-- 2행: 공고 게시 기간 / 모집 기간 -->
               <div class="form-grid">
                 <div class="c-field">
-                  <label class="c-label">공고 게시 기간</label>
+                  <label class="c-label">공고 게시 기간 <span style="color: var(--red)">*</span></label>
                   <div class="date-row">
                     <input type="date" id="f-pblanc-start" class="c-input" />
                     <span>~</span>
@@ -512,7 +512,7 @@
               <!-- 3행: 공급 세대수 / 첨부파일 -->
               <div class="form-grid">
                 <div class="c-field">
-                  <label class="c-label">공급 세대수 (자동조회)</label>
+                  <label class="c-label">공급 세대수 <span style="color: var(--red)">*</span> (자동조회)</label>
                   <input type="number" id="f-funit" class="c-input" placeholder="단지 선택 시 자동 조회 됩니다." readonly />
                   <div class="err-msg" id="e-funit"></div>
                 </div>

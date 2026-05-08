@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 중앙관리자 공고 관리 Controller
@@ -45,6 +46,29 @@ public class AnnouncementController {
     }
 
     /**
+     * 공고 수정 API
+     */
+    @PutMapping("/{annNo}")
+    @ResponseBody
+    public ResponseEntity<?> update(
+            @PathVariable String annNo,
+            @RequestPart("data") AnnouncementDTO announcementDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+        announcementDTO.setAnnNo(annNo);
+
+        int result = announcementService.insertAnnouncement(
+                announcementDTO,
+                file
+        );
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("success", result > 0);
+
+        return ResponseEntity.ok(resultMap);
+    }
+
+    /**
      * 공고 상세 조회 API
      */
     @ResponseBody
@@ -56,48 +80,29 @@ public class AnnouncementController {
     /**
      * 공고 등록 API
      */
-    @ResponseBody
     @PostMapping
-    public ResponseEntity<?> insert(@RequestBody AnnouncementDTO announcementDTO) {
+    @ResponseBody
+    public ResponseEntity<?> insert(
+            @RequestPart("data") AnnouncementDTO announcementDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+    /*
+      MultipartFile이란?
+      → 브라우저에서 업로드한 파일을 Java에서 받는 객체.
+      왜 사용?
+      → 첨부파일 업로드 기능을 만들 때 사용한다.
+    */
 
-        /*
-          임시 작성자 ID
-          → 나중에는 로그인한 중앙관리자 ID로 교체하는 것이 실무 방식.
-        */
         announcementDTO.setWrtrId("admin");
-
-        /*
-          기본값 세팅
-          → DB NOT NULL 또는 기본 상태 처리를 위해 사용.
-        */
         announcementDTO.setTopFixYn("N");
         announcementDTO.setDelYn("N");
         announcementDTO.setOpnYn("Y");
 
-        int result = announcementService.insertAnnouncement(announcementDTO);
+        int result = announcementService.insertAnnouncement(announcementDTO, file);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("success", result > 0);
         resultMap.put("annNo", announcementDTO.getAnnNo());
-
-        return ResponseEntity.ok(resultMap);
-    }
-
-    /**
-     * 공고 수정 API
-     */
-    @ResponseBody
-    @PutMapping("/{annNo}")
-    public ResponseEntity<?> update(
-            @PathVariable String annNo,
-            @RequestBody AnnouncementDTO announcementDTO
-    ) {
-        announcementDTO.setAnnNo(annNo);
-
-        int result = announcementService.updateAnnouncement(announcementDTO);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("success", result > 0);
 
         return ResponseEntity.ok(resultMap);
     }

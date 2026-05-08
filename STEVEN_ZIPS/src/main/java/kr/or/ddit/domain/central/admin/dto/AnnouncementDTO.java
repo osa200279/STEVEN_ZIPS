@@ -36,19 +36,19 @@ public class AnnouncementDTO {
     /* APT_COMPLEX 조인 컬럼 */
     private String aptCmplexNo;    // 아파트단지번호
     private String aptCmplexNm;    // 아파트단지명
+    private String dorojuso;       // 상세주소
 
-    /* APT_UNIT / APT_COMPLEX 조회 컬럼 */
-    private Integer unitCnt;       // 공급세대수
+    /* 세대수 관련 */
+    private Integer totalUnitCnt;  // 전체 세대수
+    private Integer supplyCnt;     // 공급 세대수
+    private String supplyDisplay;  // 화면 표시용: 50 / 192세대
 
-    /*
-      제출서류명
+    /* 제출서류 관련 */
+    private String sbmsnDocCds;    // 제출서류 코드 문자열
+    private String sbmsnDocNms;    // 제출서류명 문자열
 
-      중요
-      → 현재 CENTER_ANN_BOARD_POST 테이블에는 제출서류 목록 저장 컬럼이 없음.
-      → 그래서 목록 조회에서는 ATTACH_FILE 기준 파일명을 표시하고,
-        첨부파일이 없으면 화면에서 입력한 체크박스 값은 DB에 저장되지 않는다.
-    */
-    private String sbmsnDocNm;         // 제출서류명
+    /* 첨부파일 관련 */
+    private String hasFileYn;      // 첨부파일 존재 여부
 
     /* 화면 표시용 */
     private String statusNm;       // 진행상태명
@@ -59,4 +59,6 @@ public class AnnouncementDTO {
     private String searchFrom;         // 검색 시작일
     private String searchTo;           // 검색 종료일
     private String searchStatus;       // 검색 상태
+
+
 }
