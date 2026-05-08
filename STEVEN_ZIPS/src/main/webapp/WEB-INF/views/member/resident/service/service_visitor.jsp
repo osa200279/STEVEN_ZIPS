@@ -153,7 +153,7 @@
                 <span class="cur">방문자 차량등록</span>
             </div>
             <h1 class="page-title">방문자 차량등록</h1>
-            <p class="page-desc">방문 예약 입력 폼과 최근 등록 방문 차량 목록을 함께 보여주는 화면입니다.</p>
+            <p class="page-desc">방문 예약을 할 수 있는 페이지 입니다.</p>
 
             <section class="grid-2">
                 <div class="panel">
@@ -162,6 +162,23 @@
                         <span>사전 등록</span>
                     </div>
                     <div class="form-grid">
+                        <%--차량유형적는곳--%>
+                        <div class="th">차량 유형</div>
+                        <div class="td">
+                            <select id="vstVhclTyCd" class="fake-select">
+
+                                <option value="">선택</option>
+
+                                <option value="SEDAN">승용차</option>
+                                <option value="SUV">SUV</option>
+                                <option value="VAN">승합차</option>
+                                <option value="TRUCK">트럭</option>
+                                <option value="BIKE">오토바이</option>
+
+                            </select>
+                        </div>
+
+                            <%--방문 날짜 적는곳--%>
                         <div class="th">
                             방문일시
                         </div>
@@ -171,6 +188,29 @@
                                     id="visitDt"
                                     class="fake-input"/>
                         </div>
+
+                            <%-- 체류 시간 적는곳--%>
+                        <div class="th">체류시간</div>
+                        <div class="td">
+                            <div class="inline-fields">
+
+                                <input
+                                        type="number"
+                                        id="stayHour"
+                                        class="fake-input"
+                                        min="1"
+                                        max="168"
+                                        placeholder="시간 입력"
+                                        style="max-width:140px;">
+
+                                <span style="display:flex;align-items:center;">
+                                    시간
+                                </span>
+
+                            </div>
+                        </div>
+
+                                <%-- 차량 번호 적는곳--%>
                         <div class="th">
                             차량번호
                         </div>
@@ -182,6 +222,8 @@
                                     maxlength="9"
                                     placeholder="예) 123가4567"/>
                         </div>
+
+                            <%-- 방문자 명 --%>
                         <div class="th">
                             방문자명
                         </div>
@@ -264,32 +306,32 @@
 
     // 연락처 자동 하이픈
     document.getElementById("visitorTel")
-        .addEventListener("input", function(e){
+        .addEventListener("input", function (e) {
 
             let value = e.target.value
                 .replace(/[^0-9]/g, "")
-                .slice(0,11);
+                .slice(0, 11);
 
-            if(value.length < 4){
+            if (value.length < 4) {
                 e.target.value = value;
-            }else if(value.length < 8){
+            } else if (value.length < 8) {
                 e.target.value =
-                    value.slice(0,3) + "-" +
+                    value.slice(0, 3) + "-" +
                     value.slice(3);
-            }else{
+            } else {
                 e.target.value =
-                    value.slice(0,3) + "-" +
-                    value.slice(3,7) + "-" +
+                    value.slice(0, 3) + "-" +
+                    value.slice(3, 7) + "-" +
                     value.slice(7);
             }
         });
 
     // 차량번호 공백 제거
     document.getElementById("vhclNo")
-        .addEventListener("input", function(e){
+        .addEventListener("input", function (e) {
 
             e.target.value =
-                e.target.value.replace(/\s/g,"");
+                e.target.value.replace(/\s/g, "");
         });
 
 </script>
