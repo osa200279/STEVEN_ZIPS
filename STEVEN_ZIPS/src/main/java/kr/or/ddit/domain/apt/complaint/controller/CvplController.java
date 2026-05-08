@@ -44,7 +44,7 @@ public class CvplController {
      * 민원신청 페이지
      * @author 이용로
      */
-    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
     @GetMapping("/apply.do/{aptCmplexNo}")
     public String complaintApplyForm(
             @AuthenticationPrincipal CustomUser customUser,
@@ -66,7 +66,7 @@ public class CvplController {
      * 민원 신청 비동기
      * @author 이용로
      */
-    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
     @ResponseBody
     @PostMapping(value = "/apply/{aptCmplexNo}")
     public ResponseEntity<Map<String, String>> complaintApply(
