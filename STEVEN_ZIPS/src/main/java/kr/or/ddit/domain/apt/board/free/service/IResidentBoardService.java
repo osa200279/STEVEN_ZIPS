@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.board.free.service;
 
-import kr.or.ddit.common.model.PaginationInfoVO;
+import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.board.free.vo.PaginationInfoVO;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,4 +34,7 @@ public interface IResidentBoardService {
     int deleteBoardComment(String cmtNo);
 
     int insertSubComment(RsidBoardCommentVO rsidBoardCommentVO);
+
+
+    AttachFileVO selectAttachFile(String fileGroupNo);
 }

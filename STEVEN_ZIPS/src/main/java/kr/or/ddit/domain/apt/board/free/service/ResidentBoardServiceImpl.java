@@ -3,7 +3,7 @@ package kr.or.ddit.domain.apt.board.free.service;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
-import kr.or.ddit.common.model.PaginationInfoVO;
+import kr.or.ddit.domain.apt.board.free.vo.PaginationInfoVO;
 import kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO;
@@ -41,10 +41,17 @@ public class ResidentBoardServiceImpl implements IResidentBoardService {
         return mapper.deleteBoardComment(cmtNo);
     }
 
+    @Transactional
     @Override
     public int insertSubComment(RsidBoardCommentVO rsidBoardCommentVO) {
         return mapper.insertSubComment(rsidBoardCommentVO);
     }
+
+    @Override
+    public AttachFileVO selectAttachFile(String fileGroupNo) {
+        return mapper.selectAttachFile(fileGroupNo);
+    }
+
 
     @Transactional
     @Override
@@ -64,6 +71,7 @@ public class ResidentBoardServiceImpl implements IResidentBoardService {
         return mapper.updateBoardFree(rsidBoardVO);
     }
 
+    @Transactional
     @Override
     public void updateInqCnt(String postNo) {
         mapper.updateInqCnt(postNo);
@@ -79,33 +87,52 @@ public class ResidentBoardServiceImpl implements IResidentBoardService {
         return mapper.selectOneBoardFree(rsidBoardVO);
     }
 
+
+    /*  파일업로드 메서드
+        글 작성 요청
+            ↓
+        첨부파일이 있으면? → 구글 드라이브에 업로드 → DB에 파일 정보 저장
+            ↓
+        게시글 DB에 저장
+     */
     @Transactional
+    @Override
     public void insertBoardFree(RsidBoardVO rsidBoardVO, MultipartFile attachFile) throws IOException {
 
-        // 파일 처리
+        // ① 첨부파일 확인
         if (attachFile != null && !attachFile.isEmpty()) {
             String originalFilename = attachFile.getOriginalFilename();
+
+            // ②파일명 만들기
+            // 같은 이름의 파일이 충돌하지 않도록 앞에 랜덤 문자열을 붙입니다.
             String uuid = UUID.randomUUID().toString().replace("-", "");
             String savedFileName = uuid + "_" + originalFilename;
 
+            // ③ 저장 경로 설정
+            // 구글 드라이브 내 저장 위치를 지정합니다.
             String folderPath = "board/free/" + rsidBoardVO.getWrtrId();
             String fullPath = folderPath + "/" + savedFileName;
 
+            // ④ 구글 드라이브에 업로드
+            // 실제 파일을 구글 드라이브에 올리고, 업로드된 파일의 구글 파일 ID를 받아옵니다.
             String googleId = googleDriveService.uploadFile(attachFile, folderPath, savedFileName);
 
             long seq = iAttachFileMapper.getSeqFileGroupNo();
             AttachFileVO attachFileVO = AttachFileVO.fileSettings(
                     attachFile, seq, "board_free", savedFileName, googleId, fullPath, 1
             );
+
+            // ⑤ 파일 정보를 DB에 저장
+            // 파일명, 구글 ID, 경로 등을 DB의 첨부파일 테이블에 저장합니다.
             iAttachFileMapper.insertAttachFile(attachFileVO);
 
-            rsidBoardVO.setAtchFileId(attachFileVO.getFileGroupNo() + "_" + savedFileName);
+            rsidBoardVO.setAtchFileId(String.valueOf(attachFileVO.getFileGroupNo()));
         }
 
+        // ⑥ 게시글 저장
         mapper.insertBoardFree(rsidBoardVO);
+        System.out.println("atch_file_id 값: " + rsidBoardVO.getAtchFileId());
     }
-
-
 
     @Override
     public int selectBoardFreeCount(PaginationInfoVO<RsidBoardVO> pagingVO) {

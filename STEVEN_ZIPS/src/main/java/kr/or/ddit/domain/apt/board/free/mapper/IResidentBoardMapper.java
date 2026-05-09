@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.board.free.mapper;
 
-import kr.or.ddit.common.model.PaginationInfoVO;
+import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.board.free.vo.PaginationInfoVO;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -12,7 +13,7 @@ import java.util.List;
 public interface IResidentBoardMapper {
     void insertBoardFree(RsidBoardVO rsidBoardVO);
 
-    
+
 
     int selectBoardFreeCount(PaginationInfoVO<RsidBoardVO> pagingVO);
 
@@ -35,4 +36,6 @@ public interface IResidentBoardMapper {
     int deleteBoardComment(String cmtNo);
 
     int insertSubComment(RsidBoardCommentVO rsidBoardCommentVO);
+
+    AttachFileVO selectAttachFile(String fileGroupNo);
 }
