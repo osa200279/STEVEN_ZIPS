@@ -353,6 +353,37 @@
         gap:8px;
       }
 
+      /* ================= 공고 운영 안내 접이식 ================= */
+
+      .announce-guide-toggle {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
+      }
+
+      .announce-guide-toggle .material-symbols-rounded {
+        font-size: 20px;
+        transition: transform 0.2s ease;
+      }
+
+      /* 접혔을 때 본문 숨김 */
+      .announce-guide-card.is-collapsed .announce-guide-body {
+        display: none;
+      }
+
+      /* 접혔을 때 아이콘 회전 */
+      .announce-guide-card.is-collapsed .announce-guide-toggle .material-symbols-rounded {
+        transform: rotate(-90deg);
+      }
+
     </style>
   </head>
   <body>
@@ -436,6 +467,118 @@
           </div>
         </div>
 
+        <!-- 공고 운영 안내 -->
+        <div class="c-card c-card--divide announce-guide-card is-collapsed"
+             id="announce-guide-card"
+             style="margin-top: 16px; margin-bottom: 16px;">
+          <div class="c-card__header">
+            <div>
+              <div class="c-card__title">공고 운영 안내</div>
+              <div class="c-card__sub">입주자 모집 공고 등록 후 진행 절차와 주요 제출 서류를 확인합니다.</div>
+            </div>
+            <%-- 안내 접기 --%>
+            <button type="button" class="announce-guide-toggle" onclick="toggleAnnounceGuide()">
+              <span id="announce-guide-toggle-text">접기</span>
+              <span class="material-symbols-rounded" id="announce-guide-toggle-icon">expand_more</span>
+            </button>
+          </div>
+
+          <div class="c-card__body announce-guide-body">
+            <!-- 핵심: 높이 맞추기 위한 grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch;">
+
+              <!-- ================= 왼쪽 ================= -->
+              <div style="display: flex; flex-direction: column; height: 100%;">
+                <div style="font-size: 14px; font-weight: 800; margin-bottom: 12px;">
+                  입주자 모집 절차
+                </div>
+
+                <!-- 핵심: 전체 높이 채우기 -->
+                <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
+
+                  <div class="c-step-item">
+                    <div class="c-step-num">1</div>
+                    <div class="c-step-text">
+                      <strong>공고 등록</strong>
+                      <span>관리자가 모집 공고를 등록하고 신청 기간을 설정합니다.</span>
+                    </div>
+                  </div>
+
+                  <div class="c-step-item">
+                    <div class="c-step-num">2</div>
+                    <div class="c-step-text">
+                      <strong>신청 접수</strong>
+                      <span>신청 기간 내 입주 희망자가 신청서를 제출합니다.</span>
+                    </div>
+                  </div>
+
+                  <div class="c-step-item">
+                    <div class="c-step-num">3</div>
+                    <div class="c-step-text">
+                      <strong>서류 심사</strong>
+                      <span>제출된 서류를 기준으로 자격 요건을 심사합니다.</span>
+                    </div>
+                  </div>
+
+                  <!-- 마지막 요소를 아래로 밀기 -->
+                  <div class="c-step-item">
+                    <div class="c-step-num">4</div>
+                    <div class="c-step-text">
+                      <strong>결과 발표</strong>
+                      <span>심사 결과를 공지하고 당첨자에게 개별 통보합니다.</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- ================= 오른쪽 ================= -->
+              <div style="display: flex; flex-direction: column; height: 100%;">
+                <div style="font-size: 14px; font-weight: 800; margin-bottom: 6px;">
+                  제출 서류 안내
+                </div>
+
+                <!-- 안내문 위치 이동 -->
+                <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 12px;">
+                  ※ 모든 서류는 공고일 이후 발급분만 인정됩니다. <br/>
+                  ※ 제출 서류는 단지별 공고 조건에 따라 달라질 수 있습니다.
+                </div>
+
+                <!-- 전체 높이 채우기 -->
+                <div style="display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+
+                  <div class="doc-item">
+                    <span class="material-symbols-rounded doc-icon">check_circle</span>
+                    신분증 사본
+                  </div>
+
+                  <div class="doc-item">
+                    <span class="material-symbols-rounded doc-icon">check_circle</span>
+                    주민등록등본
+                  </div>
+
+                  <div class="doc-item">
+                    <span class="material-symbols-rounded doc-icon">check_circle</span>
+                    가족관계증명서
+                  </div>
+
+                  <div class="doc-item">
+                    <span class="material-symbols-rounded doc-icon">check_circle</span>
+                    소득증명서
+                  </div>
+
+                  <!-- 마지막 요소 아래 정렬 -->
+                  <div class="doc-item">
+                    <span class="material-symbols-rounded doc-icon">check_circle</span>
+                    근로소득원천징수영수증
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
 
         <!-- 탭1: 목록 -->
         <div id="tab0" class="tab-panel is-active">
@@ -651,114 +794,6 @@
         </div>
       </div>
     </div>
-
-
-        <!-- 공고 운영 안내 -->
-        <div class="c-card c-card--divide" style="margin-top: 16px; margin-bottom: 16px;">
-
-          <div class="c-card__header">
-            <div>
-              <div class="c-card__title">공고 운영 안내</div>
-              <div class="c-card__sub">입주자 모집 공고 등록 후 진행 절차와 주요 제출 서류를 확인합니다.</div>
-            </div>
-          </div>
-
-          <div class="c-card__body">
-            <!-- 핵심: 높이 맞추기 위한 grid -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch;">
-
-              <!-- ================= 왼쪽 ================= -->
-              <div style="display: flex; flex-direction: column; height: 100%;">
-                <div style="font-size: 14px; font-weight: 800; margin-bottom: 12px;">
-                  입주자 모집 절차
-                </div>
-
-                <!-- 핵심: 전체 높이 채우기 -->
-                <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
-
-                  <div class="c-step-item">
-                    <div class="c-step-num">1</div>
-                    <div class="c-step-text">
-                      <strong>공고 등록</strong>
-                      <span>관리자가 모집 공고를 등록하고 신청 기간을 설정합니다.</span>
-                    </div>
-                  </div>
-
-                  <div class="c-step-item">
-                    <div class="c-step-num">2</div>
-                    <div class="c-step-text">
-                      <strong>신청 접수</strong>
-                      <span>신청 기간 내 입주 희망자가 신청서를 제출합니다.</span>
-                    </div>
-                  </div>
-
-                  <div class="c-step-item">
-                    <div class="c-step-num">3</div>
-                    <div class="c-step-text">
-                      <strong>서류 심사</strong>
-                      <span>제출된 서류를 기준으로 자격 요건을 심사합니다.</span>
-                    </div>
-                  </div>
-
-                  <!-- 마지막 요소를 아래로 밀기 -->
-                  <div class="c-step-item">
-                    <div class="c-step-num">4</div>
-                    <div class="c-step-text">
-                      <strong>결과 발표</strong>
-                      <span>심사 결과를 공지하고 당첨자에게 개별 통보합니다.</span>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-              <!-- ================= 오른쪽 ================= -->
-              <div style="display: flex; flex-direction: column; height: 100%;">
-                <div style="font-size: 14px; font-weight: 800; margin-bottom: 6px;">
-                  제출 서류 안내
-                </div>
-
-                <!-- 안내문 위치 이동 -->
-                <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 12px;">
-                  ※ 모든 서류는 공고일 이후 발급분만 인정됩니다. <br/>
-                  ※ 제출 서류는 단지별 공고 조건에 따라 달라질 수 있습니다.
-                </div>
-
-                <!-- 전체 높이 채우기 -->
-                <div style="display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
-
-                  <div class="doc-item">
-                    <span class="material-symbols-rounded doc-icon">check_circle</span>
-                    신분증 사본
-                  </div>
-
-                  <div class="doc-item">
-                    <span class="material-symbols-rounded doc-icon">check_circle</span>
-                    주민등록등본
-                  </div>
-
-                  <div class="doc-item">
-                    <span class="material-symbols-rounded doc-icon">check_circle</span>
-                    가족관계증명서
-                  </div>
-
-                  <div class="doc-item">
-                    <span class="material-symbols-rounded doc-icon">check_circle</span>
-                    소득증명서
-                  </div>
-
-                  <!-- 마지막 요소 아래 정렬 -->
-                  <div class="doc-item">
-                    <span class="material-symbols-rounded doc-icon">check_circle</span>
-                    근로소득원천징수영수증
-                  </div>
-
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
 
   </div> <!-- main-content -->
 </div> <!-- main-wrap -->

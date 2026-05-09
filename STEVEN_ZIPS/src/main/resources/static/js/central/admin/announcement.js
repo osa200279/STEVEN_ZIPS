@@ -945,3 +945,33 @@ function applyAptAutoInfo() {
     */
     document.getElementById("f-detail-addr").value = dorojuso;
 }
+
+/*
+  공고 운영 안내 접기/펼치기
+
+  toggle이란?
+  → 특정 상태를 켰다/껐다 전환하는 기능.
+  왜 사용?
+  → 안내 영역을 필요할 때만 펼쳐서 화면 공간을 줄이기 위해 사용.
+*/
+function toggleAnnounceGuide() {
+    const card = document.getElementById("announce-guide-card");
+    const text = document.getElementById("announce-guide-toggle-text");
+    const icon = document.getElementById("announce-guide-toggle-icon");
+
+    if (!card) {
+        return;
+    }
+
+    card.classList.toggle("is-collapsed");
+
+    const isCollapsed = card.classList.contains("is-collapsed");
+
+    if (text) {
+        text.textContent = isCollapsed ? "펼치기" : "접기";
+    }
+
+    if (icon) {
+        icon.textContent = isCollapsed ? "chevron_right" : "expand_more";
+    }
+}
