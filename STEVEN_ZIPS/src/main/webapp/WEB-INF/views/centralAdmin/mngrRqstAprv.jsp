@@ -159,7 +159,7 @@
                         </div>
                         <div class="select-box">
                             <select class="fake-select" onchange="filterTable('rqstTable', this.value)">
-                                <option value="all">전체 상태</option>
+                                <option value="all">전체</option>
                                 <option value="CNL">신청취소</option>
                                 <option value="WAIT" selected>승인대기</option>
                                 <option value="OK">승인완료</option>
@@ -193,8 +193,8 @@
                 </table>
             </div>
             <div class="table-footer">
-                <span id="rqstFooterTotal">총 <strong>0</strong>건 표시 중</span>
-                <span>체크 후 승인/반려 버튼을 누르면 DB에 즉시 반영됩니다.</span>
+<%--                <span id="rqstFooterTotal">총 <strong>0</strong>건 표시 중</span>--%>
+<%--                <span>체크 후 승인/반려 버튼을 누르면 DB에 즉시 반영됩니다.</span>--%>
             </div>
         </section>
 
@@ -211,7 +211,7 @@
                     </div>
                     <div class="select-box">
                         <select class="c-select" onchange="filterStatus(this.value)">
-                            <option value="">전체 상태</option>
+                            <option value="">전체</option>
                             <option value="active">사용</option>
                             <option value="inactive">미사용</option>
                         </select>
