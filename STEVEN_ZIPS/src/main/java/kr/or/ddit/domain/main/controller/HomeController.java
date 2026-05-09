@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtOfficeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,5 +46,11 @@ public class HomeController {
 		model.addAttribute("prevPage", prevPage);
 
 		return "accessError";
+	}
+
+	@PreAuthorize("hasRole('MEMBER')")
+	@GetMapping("/react/test01")
+	public String react(){
+		return "ztestview/react_link";
 	}
 }

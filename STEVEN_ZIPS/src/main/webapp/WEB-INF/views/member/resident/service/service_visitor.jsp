@@ -9,142 +9,22 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/apt/apt.css">
-
-    <style>
-
-        .upload-box:hover {
-            background: #f7fbf8;
-        }
-
-        .upload-box.dragover {
-            border-color: #2a6d44;
-            background: #eef8f0;
-        }
-
-        .upload-content .plus {
-            font-size: 40px;
-            font-weight: bold;
-            color: #2a6d44;
-        }
-
-        .upload-content .text {
-            font-size: 13px;
-            color: #666;
-            margin-top: 8px;
-        }
-
-        .file-name {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #333;
-        }
-
-        /* 업로드 박스 */
-        .upload-box {
-            width: 400px;
-            height: 300px;
-
-            border: 2px dashed #cfd7cf;
-            border-radius: 12px;
-            position: relative;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            cursor: pointer;
-        }
-
-        /* 기본 + 상태 */
-        .upload-content {
-            text-align: center;
-        }
-
-        /* 썸네일 카드 */
-        .preview-card {
-            width: 70%;
-            height: 70%;
-            background: transparent;
-            border-radius: 20px;
-
-            display: none;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .preview-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-
-            border-radius: 16px;
-            background: #fff;
-            padding: 6px;
-
-            box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
-        }
-
-        .remove-btn {
-            position: absolute;
-            top: 2px;
-            right: -8px;
-
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-
-            background: #e53935;
-            color: #fff;
-            border: none;
-
-            font-size: 18px;
-            cursor: pointer;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .delete-text {
-            color: #e57373;
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .delete-text:hover {
-            color: #d32f2f;
-            text-decoration: underline;
-        }
-
-        @keyframes errorFlash {
-            0% {
-                border-color: #e53935;
-                background-color: #fff5f5;
-            }
-            50% {
-                border-color: #e53935;
-                background-color: #ffecec;
-            }
-            100% {
-                border-color: #d8ddd4;
-                background-color: #fff;
-            }
-        }
-
-        .input-error {
-            animation: errorFlash .8s ease;
-        }
-    </style>
-
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/member/resident/residentVstVhcl.css">
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
+
 <div class="main-shell">
     <%@ include file="/WEB-INF/views/include/apt_sidebarLayout.jsp" %>
     <main class="content-area">
         <div class="page-content-wrap">
+
+            <%--js 에서 쓰려고 data에 아파트정보 심어둠--%>
+            <div id="pageData"
+                 data-apt-cmplex-no="${aptInfo.aptComplexInfo.aptCmplexNo}"
+                 data-apt-name="${aptInfo.aptComplexInfo.aptCmplexNm}">
+            </div>
+
             <div class="breadcrumb">
                 <a href="${pageContext.request.contextPath}/">HOME</a>
                 <span>›</span>
@@ -155,185 +35,212 @@
             <h1 class="page-title">방문자 차량등록</h1>
             <p class="page-desc">방문 예약을 할 수 있는 페이지 입니다.</p>
 
-            <section class="grid-2">
-                <div class="panel">
-                    <div class="section-hd">
-                        <h3>방문 차량 예약</h3>
-                        <span>사전 등록</span>
+            <!-- 목록 -->
+            <section class="panel">
+
+                <div class="section-hd">
+                    <h3>방문 차량 목록</h3>
+
+                    <button type="button"
+                            class="btn-main"
+                            id="openModalBtn">
+                        방문차량 등록하기
+                    </button>
+                </div>
+
+                <div class="visit-table-wrap">
+
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>방문자</th>
+                            <th>차량번호</th>
+                            <th>차량유형</th>
+                            <th>방문일시</th>
+                            <th>체류시간</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="visitTableBody">
+
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- 등록 모달 -->
+            <div class="modal-wrap"
+                 id="visitModal">
+
+                <div class="modal-box">
+
+                    <div class="modal-header">
+
+                        <h3>방문 차량 등록</h3>
+
+                        <button type="button"
+                                class="close-btn"
+                                id="closeModalBtn">
+                            ×
+                        </button>
+
                     </div>
+
                     <div class="form-grid">
-                        <%--차량유형적는곳--%>
-                        <div class="th">차량 유형</div>
+
+                        <div class="th">차량유형</div>
                         <div class="td">
-                            <select id="vstVhclTyCd" class="fake-select">
+                            <select id="vstVhclTyCd"
+                                    class="fake-input">
 
                                 <option value="">선택</option>
 
                                 <option value="SEDAN">승용차</option>
                                 <option value="SUV">SUV</option>
                                 <option value="VAN">승합차</option>
-                                <option value="TRUCK">트럭</option>
+                                <option value="LIGHT_TRUCK">소형트럭</option>
+                                <option value="TRUCK">화물트럭</option>
                                 <option value="BIKE">오토바이</option>
-
                             </select>
                         </div>
 
-                            <%--방문 날짜 적는곳--%>
-                        <div class="th">
-                            방문일시
-                        </div>
-                        <div class="td">
-                            <input
-                                    type="datetime-local"
-                                    id="visitDt"
-                                    class="fake-input"/>
+                        <div class="th th-column">
+
+                            <span>
+                                차량번호 뒷자리
+                            </span>
+
+                            <small>
+                                차량 번호 뒤 4자리 입력
+                            </small>
+
                         </div>
 
-                            <%-- 체류 시간 적는곳--%>
+                        <div class="td">
+
+                            <input type="text"
+                                   id="vstVhclNo"
+                                   class="fake-input"
+                                   maxlength="4"
+                                   inputmode="numeric"
+                                   placeholder="숫자 4자리">
+
+                        </div>
+
+                        <div class="th">방문자명</div>
+                        <div class="td">
+                            <input type="text"
+                                   id="vstRm"
+                                   class="fake-input"
+                                   placeholder="방문자명">
+                        </div>
+
+                        <div class="th">방문일시</div>
+
+                        <div class="td">
+
+                            <div class="visit-datetime-wrap">
+
+                                <input type="date"
+                                       id="visitDate"
+                                       class="fake-input">
+
+                                <select id="visitHour"
+                                        class="fake-input">
+
+                                    <option value="">
+                                        시간 선택
+                                    </option>
+
+                                    <option value="00">00:00</option>
+                                    <option value="01">01:00</option>
+                                    <option value="02">02:00</option>
+                                    <option value="03">03:00</option>
+                                    <option value="04">04:00</option>
+                                    <option value="05">05:00</option>
+                                    <option value="06">06:00</option>
+                                    <option value="07">07:00</option>
+                                    <option value="08">08:00</option>
+                                    <option value="09">09:00</option>
+                                    <option value="10">10:00</option>
+                                    <option value="11">11:00</option>
+                                    <option value="12">12:00</option>
+                                    <option value="13">13:00</option>
+                                    <option value="14">14:00</option>
+                                    <option value="15">15:00</option>
+                                    <option value="16">16:00</option>
+                                    <option value="17">17:00</option>
+                                    <option value="18">18:00</option>
+                                    <option value="19">19:00</option>
+                                    <option value="20">20:00</option>
+                                    <option value="21">21:00</option>
+                                    <option value="22">22:00</option>
+                                    <option value="23">23:00</option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
                         <div class="th">체류시간</div>
+
                         <div class="td">
-                            <div class="inline-fields">
 
-                                <input
-                                        type="number"
-                                        id="stayHour"
-                                        class="fake-input"
-                                        min="1"
-                                        max="168"
-                                        placeholder="시간 입력"
-                                        style="max-width:140px;">
+                            <div class="stay-hour-wrap">
 
-                                <span style="display:flex;align-items:center;">
+                                <input type="number"
+                                       id="stayHr"
+                                       class="fake-input"
+                                       min="1"
+                                       max="72"
+                                       step="1"
+                                       placeholder="최대 72">
+
+                                <span class="time-unit">
                                     시간
                                 </span>
 
                             </div>
+
                         </div>
 
-                                <%-- 차량 번호 적는곳--%>
-                        <div class="th">
-                            차량번호
-                        </div>
+                        <div class="th">방문목적</div>
                         <div class="td">
-                            <input
-                                    type="text"
-                                    id="vhclNo"
-                                    class="fake-input"
-                                    maxlength="9"
-                                    placeholder="예) 123가4567"/>
+                    <textarea id="vstPrpsCn"
+                              class="fake-textarea"
+                              placeholder="방문 목적"></textarea>
                         </div>
 
-                            <%-- 방문자 명 --%>
-                        <div class="th">
-                            방문자명
-                        </div>
-                        <div class="td">
-                            <input
-                                    type="text"
-                                    id="visitorNm"
-                                    class="fake-input"
-                                    maxlength="20"
-                                    placeholder="방문자 이름 입력"/>
-                        </div>
-                        <div class="th">
-                            연락처
-                        </div>
-                        <div class="td">
-                            <input
-                                    type="text"
-                                    id="visitorTel"
-                                    class="fake-input"
-                                    maxlength="13"
-                                    placeholder="010-0000-0000"/>
-                        </div>
-                        <div class="th">
-                            방문 목적
-                        </div>
-                        <div class="td">
-                            <input
-                                    type="text"
-                                    id="visitPurpose"
-                                    class="fake-input"
-                                    maxlength="50"
-                                    placeholder="방문 목적 입력"/>
-                        </div>
                     </div>
+
                     <div class="btn-row">
-                        <button
-                                type="button"
-                                id="registerBtn"
-                                class="btn-main">
-                            방문 예약 신청
+
+                        <button type="button"
+                                class="btn-sub"
+                                id="closeModalBtn2">
+                            취소
                         </button>
+
+                        <button type="button"
+                                class="btn-main"
+                                id="registerVisitBtn">
+                            등록하기
+                        </button>
+
                     </div>
+
                 </div>
-                <div class="panel">
-                    <div class="section-hd">
-                        <h3>최근 등록한 방문 차량</h3>
-                        <span>목록</span></div>
-                    <table class="data-table">
-                        <thead>
-                        <tr>
-                            <th>방문일시</th>
-                            <th>차량번호</th>
-                            <th>방문자</th>
-                            <th>상태</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>2026-04-25 18:00</td>
-                            <td>12가 3456</td>
-                            <td>이민호</td>
-                            <td><span class="badge ok">승인</span></td>
-                        </tr>
-                        <tr>
-                            <td>2026-04-26 10:30</td>
-                            <td>98다 7654</td>
-                            <td>최수진</td>
-                            <td><span class="badge wait">대기</span></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+
+            </div>
+
 
         </div>
     </main>
 </div>
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
-<script>
-
-    // 연락처 자동 하이픈
-    document.getElementById("visitorTel")
-        .addEventListener("input", function (e) {
-
-            let value = e.target.value
-                .replace(/[^0-9]/g, "")
-                .slice(0, 11);
-
-            if (value.length < 4) {
-                e.target.value = value;
-            } else if (value.length < 8) {
-                e.target.value =
-                    value.slice(0, 3) + "-" +
-                    value.slice(3);
-            } else {
-                e.target.value =
-                    value.slice(0, 3) + "-" +
-                    value.slice(3, 7) + "-" +
-                    value.slice(7);
-            }
-        });
-
-    // 차량번호 공백 제거
-    document.getElementById("vhclNo")
-        .addEventListener("input", function (e) {
-
-            e.target.value =
-                e.target.value.replace(/\s/g, "");
-        });
-
-</script>
+<script src="${pageContext.request.contextPath}/js/member/resident/residentVstVhcl.js"></script>
 </body>
 </html>

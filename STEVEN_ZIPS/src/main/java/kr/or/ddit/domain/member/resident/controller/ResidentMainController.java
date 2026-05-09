@@ -184,7 +184,7 @@ public class ResidentMainController {
         model.addAttribute("aptCmplexNo", aptCmplexNo);
         model.addAttribute("aptList", aptList);
 
-        return "member/resident/service_car";
+        return "member/resident/service/service_car";
     }
 
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")

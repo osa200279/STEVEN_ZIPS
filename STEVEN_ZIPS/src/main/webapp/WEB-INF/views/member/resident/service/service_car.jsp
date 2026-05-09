@@ -852,7 +852,7 @@
     const uploadContent = document.querySelector(".upload-content");
 
 
-    /* 유효성 체킁*/
+    /*유효성체크*/
     function validateVhclNo(front, back) {
 
         const frontRegex = /^[0-9]{2,3}[가-힣]$/;
@@ -897,7 +897,7 @@
         }, 800);
     }
 
-    // 클릭 → 파일 선택
+    // 파일 선택
     uploadBox.addEventListener("click", () => {
         fileInput.click();
     });
@@ -918,7 +918,6 @@
         reader.onload = (e) => {
             previewImg.src = e.target.result;
 
-            // UI 전환
             uploadContent.style.display = "none";
             previewCard.style.display = "flex";
         };
@@ -926,7 +925,6 @@
         reader.readAsDataURL(file);
     });
 
-    // X 버튼 → 삭제
     removeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
 
@@ -937,7 +935,6 @@
         uploadContent.style.display = "block";
     });
 
-    // 드래그 이벤트
     uploadBox.addEventListener("dragover", (e) => {
         e.preventDefault();
         uploadBox.classList.add("dragover");
@@ -974,9 +971,7 @@
         if (file.files && file.files[0]) {
             const reader = new FileReader();
 
-            // onload이벤트 파일읽기가 완료되면 실행됨
             reader.onload = function (event) {
-                // div 내부를 비우고 이미지를 새로 삽입
                 previewDiv.innerHTML = `
                 <img src='\${event.target.result}' class='preview-img'>
                 `;

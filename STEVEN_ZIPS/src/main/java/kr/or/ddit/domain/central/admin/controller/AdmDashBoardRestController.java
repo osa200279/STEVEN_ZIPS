@@ -23,8 +23,5 @@ public class AdmDashBoardRestController {
         return new ResponseEntity<>(auth , HttpStatus.OK);
     }
 
-    @GetMapping("/testView")
-    public String react(){
-        return "ztestview/react_link";
-    }
+
 }
