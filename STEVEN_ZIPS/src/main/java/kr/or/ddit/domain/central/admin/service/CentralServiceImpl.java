@@ -3,6 +3,7 @@ package kr.or.ddit.domain.central.admin.service;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.admin.mapper.CentralMapper;
 import kr.or.ddit.domain.central.admin.vo.*;
 import lombok.RequiredArgsConstructor;

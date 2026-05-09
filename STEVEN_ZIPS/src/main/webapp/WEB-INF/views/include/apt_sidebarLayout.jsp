@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
@@ -139,7 +140,7 @@
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/apply') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/complaint/apply">민원신청 및 내역</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/live') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/complaint/live">실시간문의</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/chatbot') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/complaint/chatbot">챗봇민원접수</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/status') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/complaint/status">민원접수현황</a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/status') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="/apt/complaint/list/${apt.aptCmplexNo}">민원 내역</a>
       </div>
     </details>
 

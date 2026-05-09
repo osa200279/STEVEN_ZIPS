@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.admin.mapper;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.admin.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -10,9 +11,9 @@ import java.util.List;
 @Mapper
 public interface CentralMapper {
 
-    int selectContractCount(kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<ContractVO> pagingVO);
+    int selectContractCount(PaginationInfoVO<ContractVO> pagingVO);
 
-    List<ContractVO> selectContractList(kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<ContractVO> pagingVO);
+    List<ContractVO> selectContractList(PaginationInfoVO<ContractVO> pagingVO);
 
     void insertContract(RentContractVO rentContractVO);
 
@@ -28,9 +29,9 @@ public interface CentralMapper {
 
     List<ContractAptVO> contractForm(Model model);
 
-    int selectContractFormCount(kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<ContractFormVO> pagingVO);
+    int selectContractFormCount(PaginationInfoVO<ContractFormVO> pagingVO);
 
-    List<ContractFormVO> SelectContractFormList(kr.or.ddit.domain.central.admin.vo.PaginationInfoVO<ContractFormVO> pagingVO);
+    List<ContractFormVO> SelectContractFormList(PaginationInfoVO<ContractFormVO> pagingVO);
 
     ContractFormVO contractFormDetail(String frmNo);
 

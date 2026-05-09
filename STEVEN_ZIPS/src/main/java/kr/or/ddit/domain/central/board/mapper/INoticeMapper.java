@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.central.board.mapper;
 
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.board.vo.NoticeVO;
 import org.apache.ibatis.annotations.Mapper;
 

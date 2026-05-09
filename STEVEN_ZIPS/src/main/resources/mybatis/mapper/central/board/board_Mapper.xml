@@ -38,7 +38,7 @@
 
 
     <select id="selectNoticeListPaging"
-            parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO"
+            parameterType="kr.or.ddit.common.model.PaginationInfoVO"
             resultType="kr.or.ddit.domain.central.board.vo.NoticeVO">
 
         SELECT *

@@ -312,7 +312,7 @@
 <body>
   <%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
   <div class="main-shell">
-    <%@ include file="/WEB-INF/views/include/sidebarLayout.jsp" %>
+    <%@ include file="/WEB-INF/views/include/apt_sidebarLayout.jsp" %>
     <main class="content-area">
       <div class="page-content-wrap">
         <div class="breadcrumb">

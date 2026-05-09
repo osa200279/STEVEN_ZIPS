@@ -2,7 +2,7 @@ package kr.or.ddit.domain.apt.board.inqry.controller;
 
 import kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO;
 import kr.or.ddit.domain.apt.board.inqry.service.IInqryService;
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.central.admin.vo;
+package kr.or.ddit.common.model;
 
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import lombok.Data;
@@ -10,7 +10,7 @@ public class PaginationInfoVO<T> {
 	private int totalRecord;		// 총 게시글 수
 	private int totalPage;			// 총 페이지 수
 	private int currentPage;		// 현재 페이지
-	private int screenSize = 10;		// 페이지 당 게시글 수
+	private int screenSize = 10;	// 페이지 당 게시글 수
 	private int blockSize = 5;		// 페이지 블록 수
 	private int startRow;			// 시작 row
 	private int endRow;				// 끝 row

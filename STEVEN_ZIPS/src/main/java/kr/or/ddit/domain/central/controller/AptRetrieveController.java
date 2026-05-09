@@ -1,7 +1,7 @@
 package kr.or.ddit.domain.central.controller;
 
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.service.ICentralAptComplexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

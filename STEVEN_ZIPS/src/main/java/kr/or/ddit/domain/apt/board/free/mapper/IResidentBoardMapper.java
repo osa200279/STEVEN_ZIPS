@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.apt.board.free.mapper;
 
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO;
 import org.apache.ibatis.annotations.Mapper;

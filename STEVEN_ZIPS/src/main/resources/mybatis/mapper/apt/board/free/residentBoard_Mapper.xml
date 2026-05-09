@@ -46,7 +46,7 @@
         WHERE cmt_no = #{cmtNo}
     </update>
 
-    <select id="boardFreeList" resultType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO" parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO">
+    <select id="boardFreeList" resultType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO" parameterType="kr.or.ddit.common.model.PaginationInfoVO">
         SELECT *
             FROM (
         SELECT ROWNUM rn, a.*
@@ -88,7 +88,7 @@
     </select>
 
 
-    <select id="selectBoardFreeCount" resultType="int" parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO">
+    <select id="selectBoardFreeCount" resultType="int" parameterType="kr.or.ddit.common.model.PaginationInfoVO">
         SELECT COUNT(*)
         FROM apt_board_post
         WHERE board_no = #{aptCmplexNo}

@@ -3,7 +3,7 @@ package kr.or.ddit.domain.apt.board.free.service;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO;

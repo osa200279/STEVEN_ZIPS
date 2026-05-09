@@ -1,7 +1,7 @@
 package kr.or.ddit.domain.central.service;
 
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 
 import java.util.List;
 

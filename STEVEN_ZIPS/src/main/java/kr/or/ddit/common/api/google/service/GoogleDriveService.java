@@ -117,7 +117,7 @@ public class GoogleDriveService {
             // 3. 파일 업로드 및 ID 가져오기
             File uploadedFile = service.files().create(fileMetadata, mediaContent)
                     .setSupportsAllDrives(true)
-                    .setFields("id") // webViewLink 대신 id만 받아도 충분
+                    .setFields("id") // webViewLink 대신 id(googleId)만 받아도 충분
                     .execute();
 
             return uploadedFile.getId();
@@ -257,7 +257,6 @@ public class GoogleDriveService {
 
     /**
      * 파일 구글아이디로 업로드 파일 삭제 (휴지통 이동)
-     *
      * @param service
      * @param googleId
      * @author 이용로

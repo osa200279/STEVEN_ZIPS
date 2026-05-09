@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.central.board.controller;
 
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.board.service.INoticeService;
 import kr.or.ddit.domain.central.board.vo.NoticeVO;
 import lombok.extern.slf4j.Slf4j;

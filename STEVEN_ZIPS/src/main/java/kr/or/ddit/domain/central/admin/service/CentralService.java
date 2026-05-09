@@ -1,7 +1,7 @@
 package kr.or.ddit.domain.central.admin.service;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.admin.vo.*;
-import org.jspecify.annotations.Nullable;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -96,7 +96,7 @@
     </delete>
 
     <select id="selectContractCount"
-            parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO"
+            parameterType="kr.or.ddit.common.model.PaginationInfoVO"
             resultType="int">
         SELECT COUNT(*)
         FROM RENT_CTRT rc
@@ -117,7 +117,7 @@
     </select>
 
     <select id="selectContractList"
-            parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO"
+            parameterType="kr.or.ddit.common.model.PaginationInfoVO"
             resultType="kr.or.ddit.domain.central.admin.vo.ContractVO">
         SELECT *
         FROM (
@@ -199,14 +199,14 @@
         </if>
     </sql>
 
-    <select id="selectContractFormCount" resultType="int" parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO">
+    <select id="selectContractFormCount" resultType="int" parameterType="kr.or.ddit.common.model.PaginationInfoVO">
         select count(*)
         from CNTRCT_FRM cf
         join APT_COMPLEX ac on ac.APT_CMPLEX_NO = cf.APT_CMPLEX_NO
         where 1=1
         <include refid="contractFormSearch"/>
     </select>
-    <select id="SelectContractFormList" resultType="kr.or.ddit.domain.central.admin.vo.ContractFormVO" parameterType="kr.or.ddit.domain.central.admin.vo.PaginationInfoVO">
+    <select id="SelectContractFormList" resultType="kr.or.ddit.domain.central.admin.vo.ContractFormVO" parameterType="kr.or.ddit.common.model.PaginationInfoVO">
         select *
         from(
                 select

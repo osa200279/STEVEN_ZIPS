@@ -114,6 +114,12 @@ public class CvplController {
         }
     }
 
+    /**
+     * 비동기 민원 내역 리스트 불러오기
+     * @param customUser
+     * @param aptCmplexNo
+     * @return
+     */
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @ResponseBody
     @GetMapping(value = "/ajax/load-cvpl/{aptCmplexNo}")
@@ -125,5 +131,18 @@ public class CvplController {
         List<CvplVO> cvplList = cvplService.selectCvplListByAptCmplexNo(aptCmplexNo, resident.getUserNo());
 
         return ResponseEntity.ok(cvplList);
+    }
+
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/list/{aptCmplexNo}")
+    public String cvplList(@AuthenticationPrincipal CustomUser customUser
+            , @PathVariable String aptCmplexNo
+            , Model model) {
+        ResidentVO resident = (ResidentVO)customUser.getMember();
+        List<CvplVO> cvplList = cvplService.selectCvplListByAptCmplexNo(aptCmplexNo, resident.getUserNo());
+
+        model.addAttribute("cvplList", cvplList);
+
+        return "apt/complaint/complaint_list";
     }
 }

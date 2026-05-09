@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.apt.board.free.controller;
 
-import kr.or.ddit.domain.central.admin.vo.PaginationInfoVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.board.free.service.IResidentBoardService;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO;
 import kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO;

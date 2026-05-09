@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.admin.controller;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.admin.service.CentralService;
 import kr.or.ddit.domain.central.admin.vo.*;
 import lombok.RequiredArgsConstructor;
