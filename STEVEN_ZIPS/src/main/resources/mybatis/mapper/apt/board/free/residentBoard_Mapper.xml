@@ -6,7 +6,7 @@
         <selectKey keyProperty="postNo" resultType="string" order="BEFORE">
             SELECT seq_board_post.nextval FROM dual
         </selectKey>
-        INSERT INTO apt_board_post (
+        INSERT INTO apt_board_post (    /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.insertBoardFree*/
         post_no
         ,board_no
         ,ttl
@@ -34,20 +34,22 @@
         ,NVL(#{opnYn}, 'Y')
         )
     </insert>
+
     <update id="deleteBoardComment" parameterType="string">
-        UPDATE apt_board_comment
+        UPDATE apt_board_comment    /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.deleteBoardComment*/
            SET del_yn = 'Y'
          WHERE cmt_no = #{cmtNo}
     </update>
+
     <update id="updateBoardComment" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO">
-        UPDATE apt_board_comment
+        UPDATE apt_board_comment    /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.updateBoardComment*/
         SET cmt_cn = #{cmtCn},
             mdf_dttm = SYSDATE
         WHERE cmt_no = #{cmtNo}
     </update>
 
     <select id="boardFreeList" resultType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO" parameterType="kr.or.ddit.common.model.PaginationInfoVO">
-        SELECT *
+        SELECT *    /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.boardFreeList*/
             FROM (
         SELECT ROWNUM rn, a.*
             FROM (
@@ -87,9 +89,8 @@
         ) WHERE rn >= #{startRow}
     </select>
 
-
     <select id="selectBoardFreeCount" resultType="int" parameterType="kr.or.ddit.common.model.PaginationInfoVO">
-        SELECT COUNT(*)
+        SELECT COUNT(*)     /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.selectBoardFreeCount*/
         FROM apt_board_post
         WHERE board_no = #{aptCmplexNo}
         AND del_yn = 'N'
@@ -111,7 +112,7 @@
     </select>
 
     <select id="selectOneBoardFree" resultType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO">
-        SELECT
+        SELECT      /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.selectOneBoardFree*/
             post_no
             ,board_no
             ,ttl, cn
@@ -129,13 +130,13 @@
     </select>
 
     <update id="deleteBoardFree" parameterType="string">
-        UPDATE apt_board_post
+        UPDATE apt_board_post       /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.deleteBoardFree*/
         SET del_yn = 'Y'
         WHERE post_no = #{postNo}
     </update>
 
     <update id="updateBoardFree" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO">
-        UPDATE apt_board_post
+        UPDATE apt_board_post       /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.updateBoardFree*/
         SET ttl = #{ttl}
             ,cn = #{cn}
             ,mdf_dttm = SYSDATE
@@ -143,7 +144,7 @@
     </update>
 
     <update id="updateInqCnt" parameterType="string">
-        UPDATE apt_board_post
+        UPDATE apt_board_post       /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.updateInqCnt*/
         SET inq_cnt = inq_cnt + 1
         WHERE post_no = #{postNo}
     </update>
@@ -152,7 +153,7 @@
         <selectKey keyProperty="cmtNo" resultType="string" order="BEFORE">
         SELECT seq_board_comment.nextval FROM dual
         </selectKey>
-        INSERT INTO apt_board_comment (
+        INSERT INTO apt_board_comment (     /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.insertBoardComment*/
         cmt_no
         ,post_no
         ,cmt_group
@@ -174,8 +175,9 @@
         ,#{userNo}
         )
     </insert>
+
     <insert id="insertSubComment" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO">
-        INSERT INTO apt_board_comment (
+        INSERT INTO apt_board_comment (     /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.insertSubComment*/
             cmt_no
             ,post_no
             ,cmt_group
@@ -208,8 +210,9 @@
             ,#{userNo}
             )
     </insert>
+
     <select id="boardFreeComment" parameterType="string" resultType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardCommentVO">
-        SELECT
+        SELECT              /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.boardFreeComment*/
              c.cmt_no
              ,c.post_no
              ,c.cmt_group
@@ -227,8 +230,24 @@
         ORDER BY c.cmt_group ASC,
                  c.cmt_sort_ord ASC
     </select>
-
-
+    <select id="selectAttachFile" parameterType="string" resultType="kr.or.ddit.common.file.vo.AttachFileVO">
+        SELECT
+            file_group_no
+            ,file_og_name
+            ,file_save_uuid
+            ,file_path
+            ,file_ext
+            ,file_size
+            ,mime_type
+            ,reg_dt
+            ,mdf_dt
+            ,file_sort_order
+            ,down_cnt
+            ,google_id
+            ,cat
+        FROM attach_file
+        WHERE file_group_no = #{fileGroupNo}
+    </select>
 
 </mapper>
 
