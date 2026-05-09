@@ -97,13 +97,17 @@ function initMngrAccountPage() {
         return MngrAccountGrid.sttsText(code);
     }
 
-    // 날짜 값을 yyyy.MM.dd 형태로 변환
+    // 날짜 값을 yy.MM.dd 형태로 변환
     function formatDate(value) {
         if (!value) return "-";
         var str = String(value);
-        return str.length >= 10 && str.indexOf("-") > -1
-            ? str.slice(0, 10).replace(/-/g, ".")
-            : str;
+        if (str.length >= 10 && str.indexOf("-") > -1) {
+            return str.slice(2, 10).replace(/-/g, ".");
+        }
+        if (str.length >= 10 && str.indexOf(".") > -1) {
+            return str.slice(2, 10);
+        }
+        return str;
     }
 
     // 지정한 id를 가진 input 요소의 값을 가져와 양끝 공백 제거
@@ -357,10 +361,10 @@ function initMngrAccountPage() {
         var duty = document.getElementById("accountDutyCd");
         if (duty) duty.disabled = false; // '직무' 필드만 선택 가능하게 변경
 
-        // 하단 버튼을 '수정 저장'으로 세팅
+        // 하단 저장 버튼 세팅
         document.getElementById("accountModalFooter").innerHTML =
             '<button type="button" class="btn btn-secondary" data-modal-close>취소</button>'
-            + '<button type="button" class="btn btn-primary" data-action="submit-manager-update">수정 저장</button>';
+            + '<button type="button" class="btn btn-primary" data-action="submit-manager-update">저장</button>';
 
         openModal("accountModal");
     }
@@ -494,7 +498,7 @@ function initMngrAccountPage() {
 
         document.getElementById("requestModalFooter").innerHTML =
             '<button type="button" class="btn btn-secondary" data-modal-close>취소</button>'
-            + '<button type="button" class="btn btn-primary" data-action="submit-request-update">수정 저장</button>';
+            + '<button type="button" class="btn btn-primary" data-action="submit-request-update">저장</button>';
 
         openModal("requestModal");
     }

@@ -71,6 +71,15 @@
     text-transform: uppercase;
 }
 
+.manager-ag-grid .ag-header-cell.align-center .ag-header-cell-label,
+.manager-ag-grid .ag-header-cell.align-right .ag-header-cell-label {
+    justify-content: center;
+}
+
+.manager-ag-grid .ag-header-cell.align-right .ag-header-cell-label {
+    justify-content: flex-end;
+}
+
 .manager-ag-grid .ag-cell {
     padding-left: 16px;
     padding-right: 16px;
@@ -78,6 +87,16 @@
     display: flex;
     align-items: center;
     font-size: 13px;
+}
+
+.manager-ag-grid .ag-cell.align-center {
+    justify-content: center;
+    text-align: center;
+}
+
+.manager-ag-grid .ag-cell.align-right {
+    justify-content: flex-end;
+    text-align: right;
 }
 
 .manager-ag-grid .ag-cell.ag-cell-focus {
@@ -98,6 +117,10 @@
     font-size: 12px;
     color: var(--text-tertiary);
     background: var(--card);
+}
+
+.manager-ag-grid .ag-paging-page-size {
+    display: none;
 }
 
 .manager-ag-grid .ag-paging-button {
@@ -254,15 +277,55 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 22px;
+    min-height: 22px;
     min-width: auto;
     padding: 0 8px;
+    border: 0;
     border-radius: 4px;
     font-size: 11px;
-    font-weight: 700;
-    line-height: 1;
+    font-weight: 600;
+    line-height: 1.2;
     letter-spacing: 0;
     white-space: nowrap;
+    box-shadow: none;
+    background: #f8fafc;
+    cursor: default;
+    pointer-events: none;
+}
+
+.manager-ag-grid .badge.badge-green {
+    color: #1f5a35;
+    background: #f4f9f6;
+}
+
+.manager-ag-grid .badge.badge-blue {
+    color: #1f4f73;
+    background: #f5f8fb;
+}
+
+.manager-ag-grid .badge.badge-yellow {
+    color: #70591a;
+    background: #fbf8ee;
+}
+
+.manager-ag-grid .badge.badge-red {
+    color: #873232;
+    background: #fbf4f4;
+}
+
+.manager-ag-grid .badge.badge-orange {
+    color: #7a4a18;
+    background: #fbf6f0;
+}
+
+.manager-ag-grid .badge.badge-purple {
+    color: #58407f;
+    background: #f7f5fb;
+}
+
+.manager-ag-grid .badge.badge-gray {
+    color: #4b5563;
+    background: #f8fafc;
 }
 
 .grid-badge {

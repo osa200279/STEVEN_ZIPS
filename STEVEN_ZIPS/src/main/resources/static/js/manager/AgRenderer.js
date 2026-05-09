@@ -246,11 +246,17 @@ var AgRenderer = (function () {
         if (!params.value) return '<span class="td-empty">-</span>';
         return '<span class="td-mono">' + String(params.value).replace('T', ' ').slice(0, 16) + '</span>';
     };
-    /* yyyy-MM-dd → yyyy.MM.dd  (기존 formatDate 호환) */
+    /* yyyy-MM-dd -> yy.MM.dd */
     date.dot = function (params) {
         if (!params.value) return '-';
         var s = String(params.value);
-        return s.length >= 10 && s.indexOf('-') > -1 ? s.slice(0, 10).replace(/-/g, '.') : s;
+        if (s.length >= 10 && s.indexOf('-') > -1) {
+            return s.slice(2, 10).replace(/-/g, '.');
+        }
+        if (s.length >= 10 && s.indexOf('.') > -1) {
+            return s.slice(2, 10);
+        }
+        return s;
     };
 
 

@@ -73,6 +73,19 @@
             managerGridEl,
             [
                 {
+                    headerName:'No',
+                    valueGetter:function(params){
+                        return params.node ? params.node.rowIndex + 1 : '';
+                    },
+                    width:52,
+                    minWidth:44,
+                    maxWidth:80,
+                    sortable:false,
+                    filter:false,
+                    cellClass:'align-center',
+                    headerClass:'align-center'
+                },
+                {
                     headerName:'직원',
                     field:'userNm',
                     width:250,
@@ -82,6 +95,8 @@
                     headerName:'직무',
                     field:'mngrDutyCd',
                     width:100,
+                    cellClass:'align-center',
+                    headerClass:'align-center',
                     cellRenderer:AgRenderer.badge(AgRenderer.CODE.JOB_TY)
                 },
                 {
@@ -99,6 +114,8 @@
                     headerName:'상태',
                     field:'userYn',
                     width:90,
+                    cellClass:'align-center',
+                    headerClass:'align-center',
                     cellRenderer:AgRenderer.yn('활성','비활성')
                 },
                 {
@@ -112,6 +129,8 @@
                     width:isAdmin?90:140,
                     sortable:false,
                     filter:false,
+                    cellClass:'align-center',
+                    headerClass:'align-center',
 
                     cellRenderer:isAdmin
                         ? AgRenderer.actions([
@@ -152,6 +171,19 @@
             requestGridEl,
             [
                 {
+                    headerName:'No',
+                    valueGetter:function(params){
+                        return params.node ? params.node.rowIndex + 1 : '';
+                    },
+                    width:52,
+                    minWidth:44,
+                    maxWidth:80,
+                    sortable:false,
+                    filter:false,
+                    cellClass:'align-center',
+                    headerClass:'align-center'
+                },
+                {
                     headerName:'요청 직원',
                     field:'rqstMngrNm',
                     width:250,
@@ -161,24 +193,32 @@
                     headerName:'직무',
                     field:'rqstDutyCd',
                     width:150,
+                    cellClass:'align-center',
+                    headerClass:'align-center',
                     cellRenderer:AgRenderer.badge(AgRenderer.CODE.JOB_TY)
                 },
                 {
-                    headerName:'요청일',
+                    headerName:'요청 일자',
                     field:'rqstDt',
                     width:150,
+                    cellClass:'align-center',
+                    headerClass:'align-center',
                     cellRenderer:AgRenderer.date.dot
                 },
                 {
-                    headerName:'처리일',
+                    headerName:'처리 일자',
                     field:'aprvDt',
                     width:150,
+                    cellClass:'align-center',
+                    headerClass:'align-center',
                     cellRenderer:AgRenderer.date.dot
                 },
                 {
                     headerName:'상태',
                     field:'rqstSttsCd',
                     width:140,
+                    cellClass:'align-center',
+                    headerClass:'align-center',
                     cellRenderer:AgRenderer.badge(AgRenderer.CODE.ACNT_RQST_STTS)
                 },
                 {
@@ -197,6 +237,8 @@
                     width:230,
                     sortable:false,
                     filter:false,
+                    cellClass:'align-center',
+                    headerClass:'align-center',
 
                     cellRenderer:isAdmin
                         ? AgRenderer.actions([
