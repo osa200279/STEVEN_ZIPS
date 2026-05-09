@@ -247,7 +247,6 @@
                     <div class="nav-top-cell">계약공고</div>
                     <div class="nav-top-cell">계약 신청 및 조회</div>
                     <div class="nav-top-cell">공공주택 정보</div>
-                    <div class="nav-top-cell">시설이력조회</div>
                     <div class="nav-top-cell">공지사항</div>
                 </div>
             </div>
@@ -310,12 +309,8 @@
                             <span><a href="${pageContext.request.contextPath}/main/apt/list.do">단지 목록</a></span>
                             <span><a href="${pageContext.request.contextPath}/main/apt/search.do">단지 검색</a></span>
                             <span><a href="${pageContext.request.contextPath}/main/apt/map.do">지도 검색</a></span>
+                            <span><a href="${pageContext.request.contextPath}/facility/history.do">단지 시설정보</a></span>
                             <span><a href="${pageContext.request.contextPath}/main/apt/dashboard.do">단지별 통계 조회</a></span>
-                        </div>
-
-                        <div class="mega-cell">
-                            <span><a href="${pageContext.request.contextPath}/facility/history.do">시설 유지보수 이력</a></span>
-                            <span><a href="${pageContext.request.contextPath}/facility/checkHistory.do">시설 점검 기록 확인</a></span>
                         </div>
 
                         <div class="mega-cell">

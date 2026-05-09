@@ -131,21 +131,10 @@
            href="${pageContext.request.contextPath}/main/apt/map.do">지도 검색</a>
 
         <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
-           href="${pageContext.request.contextPath}/main/apt/dashboard.do">단지별 통계 조회</a>
-      </div>
-    </details>
+           href="${pageContext.request.contextPath}/facility/history.do">단지 시설정보</a>
 
-    <details class="nav-item group">
-      <summary class="flex items-center justify-between px-3 py-3 rounded-full cursor-pointer hover:bg-white/50 transition-colors">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#226046] text-xl">forum</span>
-          <span class="font-bold text-sm text-gray-700 whitespace-nowrap">시설이력조회</span>
-        </div>
-        <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
-      </summary>
-      <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
-        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"href="/facility/historyDetail.do">시설 유지보수 이력</a>
-        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap" href="/facility/checkHistory.do">시설 점검 기록 확인</a>
+        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
+           href="${pageContext.request.contextPath}/main/apt/dashboard.do">단지별 통계 조회</a>
       </div>
     </details>
 
