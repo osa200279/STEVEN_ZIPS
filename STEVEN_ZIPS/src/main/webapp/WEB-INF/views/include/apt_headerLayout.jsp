@@ -89,10 +89,10 @@
             <span>민원접수<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="/apt/complaint/apply.do/${apt.aptCmplexNo}">민원신청</a>
+                <a href="/apt/complaint/apply.do/${apt.aptCmplexNo}">민원 신청</a>
+                <a href="/apt/complaint/list/${apt.aptCmplexNo}">민원 내역</a>
                 <a href="${pageContext.request.contextPath}/resident/complaint/live">실시간문의</a>
                 <a href="${pageContext.request.contextPath}/resident/complaint/chatbot">챗봇민원접수</a>
-                <a href="${pageContext.request.contextPath}/resident/complaint/status">민원접수현황</a>
             </div>
         </div>
 

@@ -11,39 +11,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/apt/apt.css">
     <style>
-        .select {
-            width: 100%;
-            border: 1px solid #d8ddd4;
-            border-radius: 10px;
-            font-size: 13px;
-            color: var(--text-dark);
-            box-sizing: border-box;
-
-            /* 화살표 커스텀 설정 */
-            appearance: none;
-            -webkit-appearance: none;
-            /* 오른쪽에서 13px 띄움 */
-            background: #fff url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E') no-repeat right 13px center;
-            background-size: 10px; /* 화살표 크기 조절 */
-            /* 화살표와 텍스트가 겹치지 않게 여백 추가 */
-            padding: 11px 30px 11px 13px;
-        }
-
-        input.a-input, .a-textarea {
-            width: 100%;
-            border: 1px solid #d8ddd4;
-            background: #fff;
-            border-radius: 10px;
-            padding: 11px 13px;
-            font-size: 13px;
-            color: var(--text-dark);
-            box-sizing: border-box;
-        }
-
-        .a-textarea {
-            height: 240px;
-        }
-
         /* 모달 배경 레이어 */
         .modal-overlay {
             position: fixed;
@@ -100,6 +67,10 @@
             line-height: 1.8;
             color: var(--text-dark);
         }
+
+        .panel {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -117,53 +88,57 @@
             </div>
             <h1 class="page-title">민원 내역</h1>
             <p class="page-desc"><sec:authentication property="principal.member.userNm"/>님의 민원 내역입니다 </p>
-            <section class="grid-2">
-                <div class="panel">
-                    <div class="section-hd">
-                        <h3>내 민원 내역</h3>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                        <tr>
-                            <th>접수일</th>
-                            <th>제목</th>
-                            <th>상태</th>
-                        </tr>
-                        </thead>
-                        <tbody id="cvplBody">
-                        <c:forEach var="cvpl" items="${cvplList}">
-                            <tr onclick="openCvplDetail('${cvpl.cvplNo}')" style="cursor:pointer;">
-                                <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
-                                <td>${cvpl.cvplTtl}</td>
-                                <c:choose>
-                                    <c:when test="${cvpl.cvplSttsCd eq 'APLY'}">
-                                        <td><span class="badge wait">민원 신청됨</span></td>
-                                    </c:when>
-                                    <c:when test="${cvpl.cvplSttsCd eq 'RCPT'}">
-                                        <td><span class="badge ok">민원 접수됨</span></td>
-                                    </c:when>
-                                    <c:when test="${cvpl.cvplSttsCd eq 'SUPL'}">
-                                        <td><span class="badge wait">보완 요청</span></td>
-                                    </c:when>
-                                    <c:when test="${cvpl.cvplSttsCd eq 'REJS'}">
-                                        <td><span class="badge wait">처리 불가</span></td>
-                                    </c:when>
-                                    <c:when test="${cvpl.cvplSttsCd eq 'RJCT'}">
-                                        <td><span class="badge wait">반려</span></td>
-                                    </c:when>
-                                    <c:when test="${cvpl.cvplSttsCd eq 'COMP'}">
-                                        <td><span class="badge info">처리 완료</span></td>
-                                    </c:when>
-                                    <c:when test="${cvpl.cvplSttsCd eq 'END'}">
-                                        <td><span class="badge info">종결</span></td>
-                                    </c:when>
-                                </c:choose>
-                            </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
+            <div class="panel">
+                <div class="section-hd">
+                    <h3>내 민원 내역</h3>
                 </div>
-            </section>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>접수일</th>
+                        <th>카테고리</th>
+                        <th>제목</th>
+                        <th>발생장소</th>
+                        <th>상태</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="cvplBody">
+                    <c:forEach var="cvpl" items="${cvplList}">
+                        <tr onclick="openCvplDetail('${cvpl.cvplNo}')" style="cursor:pointer;">
+                            <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
+                            <td>${cvpl.cvplTyCd}</td>
+                            <td>${cvpl.cvplTtl}</td>
+                            <td>${cvpl.cvplLoc}</td>
+                            <c:choose>
+                                <c:when test="${cvpl.cvplSttsCd eq 'APLY'}">
+                                    <td><span class="badge wait">민원 신청됨</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplSttsCd eq 'RCPT'}">
+                                    <td><span class="badge ok">민원 접수됨</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplSttsCd eq 'SUPL'}">
+                                    <td><span class="badge wait">보완 요청</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplSttsCd eq 'REJS'}">
+                                    <td><span class="badge wait">처리 불가</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplSttsCd eq 'RJCT'}">
+                                    <td><span class="badge wait">반려</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplSttsCd eq 'COMP'}">
+                                    <td><span class="badge info">처리 완료</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplSttsCd eq 'END'}">
+                                    <td><span class="badge info">종결</span></td>
+                                </c:when>
+                            </c:choose>
+                            <td><button class="btn-sz-outline">상세보기</button></td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 </div>

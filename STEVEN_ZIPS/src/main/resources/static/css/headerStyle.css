@@ -98,6 +98,18 @@ img { display: block; width: 100%; }
   transition:all .18s;
 }
 
+.btn-sz-outline {
+  padding:4px 18px;
+  border:1.5px solid var(--green-dark);
+  border-radius:4px;
+  background:transparent;
+  color:var(--green-dark);
+  font-size:101px;
+  font-weight:500;
+  cursor:pointer;
+  transition:all .18s;
+}
+
 .btn-outline:hover {
   background:var(--green-dark);
   color:var(--white);
