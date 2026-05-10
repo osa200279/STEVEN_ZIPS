@@ -1,6 +1,5 @@
 package kr.or.ddit.common.model;
 
-import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import lombok.Data;
 
 import java.util.List;
@@ -19,103 +18,16 @@ public class PaginationInfoVO<T> {
 	private List<T> dataList; 		// 결과를 담을 데이터 리스트
 	private String searchType;		// 검색 타입
 	private String searchWord ;		// 검색 단어
-	private String type;
-	private String user;
-	private String status;			// 상태
-	private String ctrtNo;			// 계약 번호
-	private String expiry;
-	private String aptCmplexNo;		// 아파트 단지 번호
-	private String aptCmplexNm;		// 아파트 단지 명
-	private String frmNo;			// 서식 번호
-	private String frmNm;			// 서식 명
-	private String rentTypeCd;		// 계약 유형
-	private String sbmsnDocTyCd;	// 서류 유형
-	private String sbmsnDocSttsCd;
-	private String sbmsnDocNo;
-	private AptComplexVO searchVO;
+	private T searchVO;
 
-
-	public int getTotalPage() {
-		return totalPage;
-	}
-	public void setTotalPage(int totalPage) {
-		this.totalPage = totalPage;
-	}
-	public int getCurrentPage() {
-		return currentPage;
-	}
-	/*public void setCurrentPage(int currentPage) {
-		this.currentPage = currentPage;
-	}*/
-	public int getScreenSize() {
-		return screenSize;
-	}
-	public void setScreenSize(int screenSize) {
-		this.screenSize = screenSize;
-	}
-	public int getBlockSize() {
-		return blockSize;
-	}
-	public void setBlockSize(int blockSize) {
-		this.blockSize = blockSize;
-	}
-	public int getStartRow() {
-		return startRow;
-	}
-	public void setStartRow(int startRow) {
-		this.startRow = startRow;
-	}
-	public int getEndRow() {
-		return endRow;
-	}
-	public void setEndRow(int endRow) {
-		this.endRow = endRow;
-	}
-	public int getStartPage() {
-		return startPage;
-	}
-	public void setStartPage(int startPage) {
-		this.startPage = startPage;
-	}
-	public int getEndPage() {
-		return endPage;
-	}
-	public void setEndPage(int endPage) {
-		this.endPage = endPage;
-	}
-	public List<T> getDataList() {
-		return dataList;
-	}
-	public void setDataList(List<T> dataList) {
-		this.dataList = dataList;
-	}
-	public String getSearchType() {
-		return searchType;
-	}
-	public void setSearchType(String searchType) {
-		this.searchType = searchType;
-	}
-	public String getSearchWord() {
-		return searchWord;
-	}
-	public void setSearchWord(String searchWord) {
-		this.searchWord = searchWord;
-	}
-	public int getTotalRecord() {
-		return totalRecord;
+	public PaginationInfoVO() {
+		super();
 	}
 
-	@Override
-	public String toString() {
-		return "PaginationInfoVO [totalRecord=" + totalRecord + ", totalPage=" + totalPage + ", currentPage="
-				+ currentPage + ", screenSize=" + screenSize + ", blockSize=" + blockSize + ", startRow=" + startRow
-				+ ", endRow=" + endRow + ", startPage=" + startPage + ", endPage=" + endPage + ", dataList=" + dataList
-				+ ", searchType=" + searchType + ", searchWord=" + searchWord + "]";
-	}
 	// PaginationInfoVO 객체를 만들 때, 한 페이지당 게시글 수와 페이지 블록 수를 원하는 값으로
 	// 초기화 할 수 있습니다.
-	public PaginationInfoVO() {}
 	public PaginationInfoVO(int screenSize, int blockSize) {
+		super();
 		this.screenSize = screenSize;
 		this.blockSize = blockSize;
 	}
@@ -179,8 +91,6 @@ public class PaginationInfoVO<T> {
 		html.append("</ul>");
 		return html.toString();
 	}
-
-
 
 }
 
