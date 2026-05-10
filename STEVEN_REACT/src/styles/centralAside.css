@@ -1,0 +1,111 @@
+/* src/styles/centralAside.css */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
+
+:root {
+  --bg: #fff4e4;
+  --card: #ffffff;
+  --border: #e8eaed;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --accent: #e9e2e2;
+  --sb-bg: #2f4158;   /* 사이드바 배경색 */
+  --sb-icon: rgb(48, 45, 255);
+  --sb-label: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg);
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+#wrapper {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+#sidebar {
+  width: 240px;
+  background: var(--sb-bg);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  flex-shrink: 0;
+}
+
+#sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar-logo {
+  padding: 20px 20px 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.logo-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #009785FF;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 7px 10px 10px 7px;
+}
+
+.nav-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1); 
+  margin: 8px 10px; 
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  color: var(--sb-icon);
+  text-decoration: none;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nav-item.active {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent);
+}
+
+.admin-card {
+  margin: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.material-symbols-rounded {
+  font-family: 'Material Symbols Rounded' !important;
+  font-display: block;
+}
