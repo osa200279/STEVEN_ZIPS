@@ -176,7 +176,7 @@
                         </tr>
                         </thead>
                         <tbody id="cvplBody">
-                        <c:forEach var="cvpl" items="${cvplList}">
+                        <c:forEach var="cvpl" items="${page.dataList}">
                             <tr onclick="openCvplDetail('${cvpl.cvplNo}')" style="cursor:pointer;">
                                 <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
                                 <td>${cvpl.cvplTtl}</td>
@@ -207,6 +207,9 @@
                         </c:forEach>
                         </tbody>
                     </table>
+                    <div class="paging-fmt flex justify-center gap-2">
+                        ${page.pagingHTML}
+                    </div>
                 </div>
             </section>
         </div>
@@ -267,6 +270,17 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
+        document.addEventListener("click", function (e) {
+            const link = e.target.closest(".page-link");
+            if (link) {
+                e.preventDefault();
+                const page = link.dataset.page;
+                if(page) {
+                    location.href = "?curPage=" + page;
+                }
+            }
+        });
+
         // 민원 접수 버튼 클릭 이벤트
         const submitBtn = document.querySelector("#submitBtn");
         submitBtn.addEventListener("click", async (e) => {
@@ -291,82 +305,11 @@
                 const result = await resp.json();
                 if (resp.ok) {
                     alert(result.message);
-                    // 민원 등록 후 폼 리셋
-                    form.reset();
-
-                    // 민원 등록 후 내역 최신화
-                    try {
-                        const listResp = await fetch(`/apt/complaint/ajax/load-cvpl/${aptCmplexNo}`);
-
-                        if (listResp.ok) {
-                            const cvplList = await listResp.json();
-                            let html = '';
-
-                            // JSTL 대신 JS의 forEach 사용
-                            cvplList.forEach(cvpl => {
-                                // 1. 날짜 포맷팅 (JS 방식)
-                                const regDate = new Date(cvpl.cvplRegDt);
-                                const formattedDate = regDate.getFullYear() + "."
-                                    + String(regDate.getMonth() + 1).padStart(2, '0') + "."
-                                    + String(regDate.getDate()).padStart(2, '0') + " "
-                                    + String(regDate.getHours()).padStart(2, '0') + ":"
-                                    + String(regDate.getMinutes()).padStart(2, '0');
-
-                                // let badgeHtml = '';
-                                // switch (cvpl.cvplSttsCd) {
-                                //     case 'APLY':
-                                //         badgeHtml = '<span class="badge wait">민원 신청됨</span>';
-                                //         break;
-                                //     case 'RCPT':
-                                //         badgeHtml = '<span class="badge ok">민원 접수됨</span>';
-                                //         break;
-                                //     case 'SUPL':
-                                //         badgeHtml = '<span class="badge wait">보완 요청</span>';
-                                //         break;
-                                //     case 'REJS':
-                                //         badgeHtml = '<span class="badge wait">처리 불가</span>';
-                                //         break;
-                                //     case 'RJCT':
-                                //         badgeHtml = '<span class="badge wait">반려</span>';
-                                //         break;
-                                //     case 'COMP':
-                                //         badgeHtml = '<span class="badge info">처리 완료</span>';
-                                //         break;
-                                //     case 'END':
-                                //         badgeHtml = '<span class="badge info">종결</span>';
-                                //         break;
-                                //     default:
-                                //         badgeHtml = '<span class="badge wait">대기</span>';
-                                // }
-
-                                let badgeMarkup = '';
-                                switch (cvpl.cvplSttsCd) {
-                                    case 'APLY': badgeMarkup = '<span class="badge wait">민원 신청됨</span>'; break;
-                                    case 'RCPT': badgeMarkup = '<span class="badge ok">민원 접수됨</span>'; break;
-                                    case 'SUPL': badgeMarkup = '<span class="badge wait">보완 요청</span>'; break;
-                                    case 'REJS': badgeMarkup = '<span class="badge wait">처리 불가</span>'; break;
-                                    case 'RJCT': badgeMarkup = '<span class="badge wait">반려</span>'; break;
-                                    case 'COMP': badgeMarkup = '<span class="badge info">처리 완료</span>'; break;
-                                    case 'END':  badgeMarkup = '<span class="badge info">종결</span>'; break;
-                                    default:     badgeMarkup = '<span class="badge wait">대기</span>';
-                                }
-                                html += `
-                                             <tr onclick="openCvplDetail('\${cvpl.cvplNo}')" style="cursor:pointer;">
-                                                <td>\${formattedDate}</td>
-                                                <td>\${cvpl.cvplTtl}</td>
-                                                <td class="status-cell">\${badgeMarkup}</td>
-                                            </tr>
-                                        `;
-                            });
-                            document.querySelector('#cvplBody').innerHTML = html;
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        alert("내역을 최신화 하는데 실패했습니다. 새로고침 해주세요.")
-                    }
-                } else {
-                    alert("접수 실패 : " + result.message);
+                    location.href = window.location.pathname + "?curPage=1"
+                }else{
+                    alert(result.message);
                 }
+
             } catch (error) {
                 console.error(error);
                 alert("서버와 통신 중 문제가 발생했습니다.")

@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.complaint.mapper;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.complaint.vo.CvplHstryVO;
 import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -14,4 +15,8 @@ public interface ICvplMapper {
     int insertCvplHstry(CvplHstryVO cvplHstryVO);
 
     List<CvplVO> selectCvplListByAptCmplexNo(@Param("aptCmplexNo") String aptCmplexNo,@Param("userNo") String userNo);
+
+    int selectCvplCount(CvplVO cvpl);
+
+    List<CvplVO> selectMyCvplList(PaginationInfoVO<CvplVO> page);
 }

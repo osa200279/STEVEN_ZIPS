@@ -65,6 +65,7 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #999;
         }
+
         .pagination {
             display: flex;
             justify-content: center;
@@ -148,15 +149,15 @@
                 <c:forEach var="notice" items="${pagingVO.dataList}" varStatus="status">
                     <tr class="notice-row" onclick="location.href='detail.do?annNo=${notice.annNo}'">
 
-                            <!-- 번호 -->
-                            <td class="px-6 py-5 text-sm text-gray-400 text-center">
-    ${(pagingVO.currentPage - 1) * pagingVO.screenSize + status.index + 1}
-</td>
+                        <!-- 번호 -->
+                        <td class="px-6 py-5 text-sm text-gray-400 text-center">
+                                ${(pagingVO.currentPage - 1) * pagingVO.screenSize + status.index + 1}
+                        </td>
                         <!-- 제목 -->
                         <td class="px-6 py-5">
-            <span class="text-sm font-medium text-gray-900">
-                    ${notice.ttl}
-            </span>
+                            <span class="text-sm font-medium text-gray-900">
+                                    ${notice.ttl}
+                            </span>
                         </td>
 
                         <!-- 등록일 -->
@@ -195,7 +196,7 @@
 <!-- END: MainContentArea -->
 </body>
 <script>
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
         const link = e.target.closest(".page-link");
 
         if (link) {

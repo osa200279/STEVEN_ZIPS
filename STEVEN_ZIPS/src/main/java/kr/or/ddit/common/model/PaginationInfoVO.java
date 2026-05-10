@@ -52,7 +52,16 @@ public class PaginationInfoVO<T> {
 		// / blockSize * blockSize는 1,2,3,4,5... 페이지마다 실수계산이 아닌 정수 계산을 이용해
 		// endPage를 구하기 위함
 		endPage = (currentPage + (blockSize - 1)) / blockSize * blockSize;
-		startPage = endPage - (blockSize - 1); // 시작 페이지 = 끝 페이지 - (블록 사이즈 - 1)
+
+		if (totalPage > 0 && endPage > totalPage) {
+			endPage = totalPage;
+		}
+
+		startPage = ((currentPage - 1) / blockSize) * blockSize + 1;
+
+		if(startPage < 1){
+			 startPage = 1;
+		}
 	}
 
 	public String getPagingHTML() {
@@ -73,17 +82,20 @@ public class PaginationInfoVO<T> {
 		// 총 페이지가 14개고 현재 페이지가 9페이지라면 넘어가야할 페이지가 남아 있는 것이기 때문에 endPage
 		// 만큼 반복되고 넘어가야할 페이지가 존재하지 않는 상태라면 마지막 페이지가 포함되어 있는 block영역
 		// 이므로 totalPage 만큼 반복하면 됩니다.
-		for(int i = startPage; i <= (endPage < totalPage ? endPage : totalPage); i++) {
+		int realEndPage = (endPage < totalPage) ? endPage : totalPage;
+
+		for (int i = startPage; i <= realEndPage; i++) {
 			if (i == currentPage) {
-				html.append("<li class='page-item active'><span class='page-link'>" +
-						i + "</span></li>");
-			}else {
-				html.append("<li class='page-item'><a href='' class='page-link' data-page='"
-						+ i +"'>" + i + "</a></li>");
+				html.append("<li class='page-item active'><span class='page-link'>" + i + "</span></li>");
+			} else {
+				html.append("<li class='page-item'><a href='' class='page-link' data-page='" + i + "'>" + i + "</a></li>");
 			}
 		}
 
-		if(endPage < totalPage) {
+		if (endPage < totalPage) {
+			// 더 있다는 표시로 '...' 추가 (클릭 안되는 스타일)
+			html.append("<li class='page-item disabled'><span class='page-link' style='border:none; background:none;'>...</span></li>");
+			// Next 버튼
 			html.append("<li class='page-item'><a href='' class='page-link' data-page='"
 					+ (endPage + 1) + "'>Next</a></li>");
 		}
@@ -93,8 +105,5 @@ public class PaginationInfoVO<T> {
 	}
 
 }
-
-
-
 
 

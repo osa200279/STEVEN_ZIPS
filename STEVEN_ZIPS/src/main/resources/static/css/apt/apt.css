@@ -272,6 +272,39 @@ body {
     border-bottom: 1px solid var(--border);
 }
 
+.paging-fmt > * {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* 번호 사이 간격 */
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* 선택된(active) 페이지의 배경색과 글자색 변경 */
+.pagination .page-item.active .page-link {
+    background-color: #007bff !important; /* 원하는 파란색 코드 */
+    border-color: #007bff !important;
+    color: white !important; /* 글자색은 흰색으로 */
+    font-weight: bold;
+}
+
+/* (옵션) 페이지 번호 기본 스타일 정리 */
+.pagination .page-item .page-link {
+    font-size: 14px !important;
+    color: #333;
+    padding: 2px 8px;
+    /*border: 1px solid #dee2e6;*/
+    transition: all 0.2s;
+}
+
+/* (옵션) 마우스를 올렸을 때 효과 */
+.pagination .page-item .page-link:hover {
+    background-color: #e9ecef;
+    color: #0056b3;
+}
+
 .form-grid .th {
     background: var(--green-pale);
     color: var(--text-mid);

@@ -5,6 +5,7 @@ import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.enums.ServiceResult;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper;
 import kr.or.ddit.domain.apt.complaint.vo.CvplHstryVO;
 import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
@@ -117,5 +118,15 @@ public class CvplServiceImpl implements ICvplService {
     @Override
     public List<CvplVO> selectCvplListByAptCmplexNo(String aptCmplexNo, String userNo) {
         return cvplMapper.selectCvplListByAptCmplexNo(aptCmplexNo, userNo);
+    }
+
+    @Override
+    public int selectCvplCount(CvplVO cvpl) {
+        return cvplMapper.selectCvplCount(cvpl);
+    }
+
+    @Override
+    public List<CvplVO> selectMyCvplList(PaginationInfoVO<CvplVO> page) {
+        return cvplMapper.selectMyCvplList(page);
     }
 }

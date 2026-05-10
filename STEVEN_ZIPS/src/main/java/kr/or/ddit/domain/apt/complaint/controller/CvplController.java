@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.complaint.controller;
 
 import kr.or.ddit.common.enums.ServiceResult;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.complaint.service.ICvplService;
 import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
@@ -46,18 +47,36 @@ public class CvplController {
     @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
     @GetMapping("/apply.do/{aptCmplexNo}")
     public String complaintApplyForm(
-            @AuthenticationPrincipal CustomUser customUser,
-            @PathVariable String aptCmplexNo, Model model) {
+            @AuthenticationPrincipal CustomUser customUser
+            , @PathVariable String aptCmplexNo
+            , @RequestParam(defaultValue = "1") int curPage
+            , Model model) {
         log.info("complaintApplyForm() 실행");
+        ResidentVO residentVO = (ResidentVO)customUser.getMember();
+
+        // 페이징VO 생성 및 현재페이지 세팅
+        PaginationInfoVO<CvplVO> page = new PaginationInfoVO<>(11, 5);
+
+        // 검색조건 설정
+        CvplVO searchVO = new CvplVO();
+        searchVO.setAptCmplexNo(aptCmplexNo);
+        searchVO.setUserNo(residentVO.getUserNo());
+        page.setSearchVO(searchVO);
+
+        // 전체 데이터 갯수 조회
+        int totalRecord = cvplService.selectCvplCount(page.getSearchVO());
+        page.setTotalRecord(totalRecord);
+        page.setCurrentPage(curPage);
+
+        // 해당 페이지 범위에 맞는 리스트만 조회
+        List<CvplVO> cvplList = cvplService.selectMyCvplList(page);
+        page.setDataList(cvplList);
+
+        model.addAttribute("page", page);
 
         // 헤더, 푸터 DTO
         AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
         model.addAttribute("aptInfo", aptCommonDTO);
-
-        ResidentVO residentVO = (ResidentVO)customUser.getMember();
-        List<CvplVO> cvplList = cvplService.selectCvplListByAptCmplexNo(aptCmplexNo, residentVO.getUserNo());
-        model.addAttribute("cvplList", cvplList);
-
         return "apt/complaint/complaint_apply";
     }
 
@@ -124,7 +143,10 @@ public class CvplController {
     @ResponseBody
     @GetMapping(value = "/ajax/load-cvpl/{aptCmplexNo}")
     public ResponseEntity<List<CvplVO>> ajaxLoadCvpl(
-            @AuthenticationPrincipal CustomUser customUser, @PathVariable String aptCmplexNo){
+            @AuthenticationPrincipal CustomUser customUser
+            , @PathVariable String aptCmplexNo
+            , @RequestParam(defaultValue = "1") int curPage
+            , Model model)    {
 
         ResidentVO resident = (ResidentVO)customUser.getMember();
 
@@ -133,6 +155,8 @@ public class CvplController {
         return ResponseEntity.ok(cvplList);
     }
 
+
+    // 민원 리스트 페이지
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/list/{aptCmplexNo}")
     public String cvplList(@AuthenticationPrincipal CustomUser customUser
