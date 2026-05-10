@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.main.service;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.board.ann.mapper.IAptAnnBoardPostMapper;
 import kr.or.ddit.domain.apt.board.ann.vo.AptAnnBoardPostVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
@@ -100,5 +101,23 @@ public class AptComplexServiceImpl implements IAptComplexService {
 
         return resp;
     }
+
+    @Override
+    public List<String> selectSidoList() {
+        return aptComplexMapper.selectSidoList();
+    }
+
+    @Override
+    public int selectMainAptCount(String sidoNm, String keyword) {
+        return aptComplexMapper.selectMainAptCount(sidoNm, keyword);
+    }
+
+    @Override
+    public List<AptComplexVO> selectMainAptList(PaginationInfoVO<AptComplexVO> pagingVO,
+                                                String sidoNm,
+                                                String keyword) {
+        return aptComplexMapper.selectMainAptList(pagingVO, sidoNm, keyword);
+    }
+
 
 }

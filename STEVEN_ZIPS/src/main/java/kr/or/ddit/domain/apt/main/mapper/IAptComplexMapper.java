@@ -1,8 +1,12 @@
 package kr.or.ddit.domain.apt.main.mapper;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface IAptComplexMapper {
@@ -14,5 +18,13 @@ public interface IAptComplexMapper {
 
     String selectManagerAptCmplexNo(String userId);
 
-    AptMainPageDTO selectAptMainDTO(String aptCmplexNo);
+    List<String> selectSidoList();
+
+    int selectMainAptCount(@Param("sidoNm") String sidoNm,
+                           @Param("keyword") String keyword);
+
+    List<AptComplexVO> selectMainAptList(@Param("pagingVO") PaginationInfoVO<AptComplexVO> pagingVO,
+                                         @Param("sidoNm") String sidoNm,
+                                         @Param("keyword") String keyword);
+
 }

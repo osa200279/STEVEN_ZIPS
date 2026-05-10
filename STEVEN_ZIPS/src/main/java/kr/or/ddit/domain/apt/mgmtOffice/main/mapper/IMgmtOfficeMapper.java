@@ -26,4 +26,7 @@ public interface IMgmtOfficeMapper {
     List<String> selectAdminMgmtOfficeSidoList();
     // ADMIN 관리사무소 모달 시군구 목록 조회
     List<String> selectAdminMgmtOfficeSigunguList(String sidoNm);
+
+    // 아파트 단지번호로 관리사무소 정보 조회
+    MgmtOfficeVO selectMgmtOfficeByAptCmplexNo(String aptCmplexNo);
 }

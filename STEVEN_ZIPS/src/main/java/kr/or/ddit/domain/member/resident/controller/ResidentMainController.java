@@ -64,55 +64,27 @@ public class ResidentMainController {
      */
     @GetMapping("/manage/intro")
     public String manageIntro(Authentication authentication, Model model) {
-        /*
-         * 1. 로그인 여부 체크
-         * authentication == null : 로그인 자체가 안 된 상태
-         */
+
+        // 1. 로그인 여부 체크
         if (authentication == null || !authentication.isAuthenticated()) {
             model.addAttribute("message", "로그인이 필요합니다.");
             model.addAttribute("redirectUrl", "/login");
             return "member/resident/resident_auth_error";
         }
 
-        /*
-         * 2. 입주민 권한 체크
-         * ROLE_RESIDENT
-         */
+        // 2. 입주민 권한 체크
         boolean isResident = authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_RESIDENT"));
+                .anyMatch(auth -> "ROLE_RESIDENT".equals(auth.getAuthority()));
 
-        /*
-         * 3. 입주민 권한이 아니면 SweetAlert 페이지로 이동
-         */
+        // 3. 입주민이 아니면 진입 불가
         if (!isResident) {
             model.addAttribute("message", "입주민 권한으로 로그인 해 주세요!");
             model.addAttribute("redirectUrl", "/login.do");
             return "member/resident/resident_auth_error";
         }
 
-        /*
-         * 4. 정상 접근
-         */
-        String userId = authentication.getName();
-
-        log.info("관리사무소 소개 조회 userId = {}", userId);
-
-        MgmtOfficeVO office = mgmtOfficeService.selectMgmtOfficeByManagerUserNo(userId);
-
-        log.info("조회된 관리사무소 정보 = {}", office);
-
-        if (office == null) {
-            model.addAttribute("message", "로그인 계정에 연결된 관리사무소 정보가 없습니다.");
-            model.addAttribute("redirectUrl", "/");
-            return "member/resident/resident_auth_error";
-        }
-
-        // 아파트 소개페이지 DTO정보 가져오기
-        String aptCmplexNo = office.getAptCmplexNo();
-        AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
-
-        model.addAttribute("aptInfo", aptMainPageDTO);
-
+        // 4. 정상 접근
+        // office, aptInfo는 HeaderModelAdvice가 자동으로 model에 넣어줌
         return "member/resident/manage_intro";
     }
 

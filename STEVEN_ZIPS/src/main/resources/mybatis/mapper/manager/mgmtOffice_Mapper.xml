@@ -171,4 +171,16 @@
         ORDER BY ac.sigungu_nm
     </select>
 
+    <select id="selectMgmtOfficeByAptCmplexNo"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.main.vo.MgmtOfficeVO">
+        SELECT MGMT_OFC_NO      AS mgmtOfcNo,
+               MGMT_OFC_NM      AS mgmtOfcNm,
+               MGMT_OFC_TELNO   AS mgmtOfcTelno,
+               APT_CMPLEX_NO    AS aptCmplexNo
+        FROM MGMT_OFFICE
+        WHERE APT_CMPLEX_NO = #{aptCmplexNo}
+    </select>
+
+
 </mapper>

@@ -15,4 +15,13 @@ public class MgmtOfficeServiceImpl implements IMgmtOfficeService {
     public MgmtOfficeVO selectMgmtOfficeByManagerUserNo(String userId) {
         return mgmtOfficeMapper.selectMgmtOfficeByManagerUserNo(userId);
     }
+
+    /**
+     * 아파트 단지번호 기준으로 관리사무소 정보를 조회한다.
+     * HeaderModelAdvice에서 관리소장/입주민 공통으로 사용한다.
+     */
+    @Override
+    public MgmtOfficeVO selectMgmtOfficeByAptCmplexNo(String aptCmplexNo) {
+        return mgmtOfficeMapper.selectMgmtOfficeByAptCmplexNo(aptCmplexNo);
+    }
 }

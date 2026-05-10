@@ -6,7 +6,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>관리사무소 소개 – ${office.aptCmplexNm}</title>
+  <title>관리사무소 소개 – ${aptInfo.aptComplexInfo.aptCmplexNm}</title>
 
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
@@ -400,204 +400,205 @@
 </head>
 <body>
 
-  <%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
-  <div class="main-shell">
-    <%@ include file="/WEB-INF/views/include/apt_sidebarLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
+<div class="main-shell">
+  <%@ include file="/WEB-INF/views/include/apt_sidebarLayout.jsp" %>
 
-    <div class="content-area">
-      <div class="page-content-wrap">
+  <div class="content-area">
+    <div class="page-content-wrap">
 
-        <nav class="breadcrumb">
-          <a href="${pageContext.request.contextPath}/">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
-              <path d="M9 21V12h6v9"/>
-            </svg>
-          </a>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:10px;height:10px;color:#bbb">
-            <path d="M9 18l6-6-6-6"/>
+      <nav class="breadcrumb">
+        <a href="${pageContext.request.contextPath}/">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+            <path d="M9 21V12h6v9"/>
           </svg>
-          <a href="resident/manage/intro">관리사무소</a>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:10px;height:10px;color:#bbb">
-            <path d="M9 18l6-6-6-6"/>
+        </a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:10px;height:10px;color:#bbb">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+        <a href="resident/manage/intro">관리사무소</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:10px;height:10px;color:#bbb">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+        <span class="cur">관리사무소 소개</span>
+      </nav>
+
+      <h1 class="page-title">관리사무소 소개</h1>
+
+      <div class="office-profile">
+        <div class="office-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+            <rect x="2" y="7" width="20" height="15" rx="2"/>
+            <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
           </svg>
-          <span class="cur">관리사무소 소개</span>
-        </nav>
-
-        <h1 class="page-title">관리사무소 소개</h1>
-
-        <div class="office-profile">
-          <div class="office-icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
-              <rect x="2" y="7" width="20" height="15" rx="2"/>
-              <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
-            </svg>
-          </div>
-          <div class="office-profile-info">
-            <h2>${office.mgmtOfcNm}</h2>
-            <div class="addr">
-              <c:choose>
-                <c:when test="${not empty office.dorojuso}">
-                  ${office.dorojuso}
-                </c:when>
-                <c:otherwise>
-                  ${office.sidoNm} ${office.sigunguNm} ${office.emdNm}
-                </c:otherwise>
-              </c:choose>
-            </div>
-            <div class="office-tags">
-              <span class="office-tag">${office.unitCnt}세대</span>
-              <span class="office-tag">${office.dongCnt}개 동</span>
-              <span class="office-tag">
-                <c:choose>
-                    <c:when test="${not empty office.bldYr and fn:length(office.bldYr) == 8}">
-                        ${fn:substring(office.bldYr, 0, 4)}년
-                        ${fn:substring(office.bldYr, 4, 6)}월
-                        ${fn:substring(office.bldYr, 6, 8)}일 준공
-                    </c:when>
-
-                    <c:otherwise>
-                        ${office.bldYr} 준공
-                    </c:otherwise>
-                </c:choose>
-              </span>
-            </div>
-          </div>
         </div>
-
-        <table class="info-table">
-          <tbody>
-            <tr>
-              <th>대표번호</th>
-              <td>
-              <%-- 전화번호 '-' 추가 방법 (참고 : apt-main.jsp와 동일) --%>
-              <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, '-', '')}" />
-              <c:set var="telNo" value="${fn:replace(telNo, ' ', '')}" />
-              <c:set var="telLength" value="${fn:length(telNo)}" />
-                 <c:choose>
-                  <c:when test="${fn:startsWith(telNo, '02') and telLength == 9}">
-                      ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 5)}-${fn:substring(telNo, 5, 9)}
-                  </c:when>
-
-                  <c:when test="${fn:startsWith(telNo, '02') and telLength == 10}">
-                      ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 6)}-${fn:substring(telNo, 6, 10)}
-                  </c:when>
-
-                  <c:when test="${not fn:startsWith(telNo, '02') and telLength == 10}">
-                      ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 6)}-${fn:substring(telNo, 6, 10)}
-                  </c:when>
-
-                  <c:when test="${not fn:startsWith(telNo, '02') and telLength == 11}">
-                      ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 7)}-${fn:substring(telNo, 7, 11)}
+        <div class="office-profile-info">
+          <%-- 관리사무소명은 office, 단지 관련 정보는 aptInfo 사용 --%>
+          <h2>${office.mgmtOfcNm}</h2>
+          <div class="addr">
+            <c:choose>
+              <c:when test="${not empty aptInfo.aptComplexInfo.dorojuso}">
+                ${aptInfo.aptComplexInfo.dorojuso}
+              </c:when>
+              <c:otherwise>
+                ${aptInfo.aptComplexInfo.sidoNm} ${aptInfo.aptComplexInfo.sigunguNm} ${aptInfo.aptComplexInfo.emdNm}
+              </c:otherwise>
+            </c:choose>
+          </div>
+          <div class="office-tags">
+            <span class="office-tag">${aptInfo.aptComplexInfo.unitCnt}세대</span>
+            <span class="office-tag">${aptInfo.aptComplexInfo.dongCnt}개 동</span>
+            <span class="office-tag">
+                <c:choose>
+                  <c:when test="${not empty aptInfo.aptComplexInfo.bldYr and fn:length(aptInfo.aptComplexInfo.bldYr) == 8}">
+                    ${fn:substring(aptInfo.aptComplexInfo.bldYr, 0, 4)}년
+                    ${fn:substring(aptInfo.aptComplexInfo.bldYr, 4, 6)}월
+                    ${fn:substring(aptInfo.aptComplexInfo.bldYr, 6, 8)}일 준공
                   </c:when>
 
                   <c:otherwise>
-                      ${office.mgmtOfcTelno}
+                    ${aptInfo.aptComplexInfo.bldYr} 준공
                   </c:otherwise>
-              </c:choose>
-              </td>
-              <th class="r">운영시간</th>
-              <td>평일 09:00 ~ 18:00</td>
-            </tr>
-            <tr>
-              <th>점심시간</th>
-              <td>12:00 ~ 13:00</td>
-              <th class="r"></th>
-              <td></td>
-            </tr>
-            <tr>
-              <th>이메일</th>
-              <td>
-                <c:choose>
-                  <c:when test="${not empty office.mgmtOfcEml}">
-                    ${office.mgmtOfcEml}
-                  </c:when>
-                  <c:otherwise>-</c:otherwise>
                 </c:choose>
-              </td>
-              <th class="r">휴무일</th>
-              <td>토일·공휴일</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="section-hd">
-          <h3>관리 직원 소개</h3>
-          <span class="count">총 <em>4</em>명</span>
-        </div>
-
-        <div class="staff-grid">
-          <div class="staff-card">
-            <div class="staff-avatar">김</div>
-            <div class="staff-name">김○○</div>
-            <div class="staff-role">관리소장</div>
-          </div>
-          <div class="staff-card">
-            <div class="staff-avatar">이</div>
-            <div class="staff-name">이○○</div>
-            <div class="staff-role">관리소장</div>
-          </div>
-          <div class="staff-card">
-            <div class="staff-avatar">박</div>
-            <div class="staff-name">박○○</div>
-            <div class="staff-role">관리소장</div>
-          </div>
-          <div class="staff-card">
-            <div class="staff-avatar">최</div>
-            <div class="staff-name">최○○</div>
-            <div class="staff-role">관리소장</div>
+              </span>
           </div>
         </div>
-
-        <div class="bottom-grid">
-          <div class="bottom-card">
-            <div class="bottom-card-head">운영시간 안내</div>
-            <table class="hours-table">
-              <tbody>
-                <tr><th>월 – 금</th><td>09:00 ~ 18:00</td></tr>
-                <tr><th>점심시간</th><td>12:00 ~ 13:00</td></tr>
-                <tr><th>토요일</th><td>09:00 ~ 13:00</td></tr>
-                <tr><th>일·공휴일</th><td class="off">휴무</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="bottom-card">
-            <div class="bottom-card-head">관리 서류 다운로드</div>
-            <ul class="doc-list">
-              <li class="doc-item">
-                <div class="doc-left">
-                  <span class="doc-dot"></span>
-                  <span class="doc-name">관리규약 (2025년 개정)</span>
-                </div>
-                <span class="doc-date">2025.01.01</span>
-                <button class="doc-btn" onclick="location.href='${pageContext.request.contextPath}/manage/download?file=rule_2025.pdf'">PDF</button>
-              </li>
-              <li class="doc-item">
-                <div class="doc-left">
-                  <span class="doc-dot"></span>
-                  <span class="doc-name">업무 운영수칙</span>
-                </div>
-                <span class="doc-date">2024.10.10</span>
-                <button class="doc-btn" onclick="location.href='${pageContext.request.contextPath}/manage/download?file=operation_rule.pdf'">PDF</button>
-              </li>
-              <li class="doc-item">
-                <div class="doc-left">
-                  <span class="doc-dot"></span>
-                  <span class="doc-name">주차 운영 규정</span>
-                </div>
-                <span class="doc-date">2024.06.01</span>
-                <button class="doc-btn" onclick="location.href='${pageContext.request.contextPath}/manage/download?file=parking_rule.pdf'">PDF</button>
-              </li>
-            </ul>
-          </div>
-        </div>
-
       </div>
+
+      <table class="info-table">
+        <tbody>
+        <tr>
+          <th>대표번호</th>
+          <td>
+            <%-- 전화번호 '-' 추가 방법 (참고 : apt-main.jsp와 동일) --%>
+            <c:set var="telNo" value="${fn:replace(office.mgmtOfcTelno, '-', '')}" />
+            <c:set var="telNo" value="${fn:replace(telNo, ' ', '')}" />
+            <c:set var="telLength" value="${fn:length(telNo)}" />
+            <c:choose>
+              <c:when test="${fn:startsWith(telNo, '02') and telLength == 9}">
+                ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 5)}-${fn:substring(telNo, 5, 9)}
+              </c:when>
+
+              <c:when test="${fn:startsWith(telNo, '02') and telLength == 10}">
+                ${fn:substring(telNo, 0, 2)}-${fn:substring(telNo, 2, 6)}-${fn:substring(telNo, 6, 10)}
+              </c:when>
+
+              <c:when test="${not fn:startsWith(telNo, '02') and telLength == 10}">
+                ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 6)}-${fn:substring(telNo, 6, 10)}
+              </c:when>
+
+              <c:when test="${not fn:startsWith(telNo, '02') and telLength == 11}">
+                ${fn:substring(telNo, 0, 3)}-${fn:substring(telNo, 3, 7)}-${fn:substring(telNo, 7, 11)}
+              </c:when>
+
+              <c:otherwise>
+                ${office.mgmtOfcTelno}
+              </c:otherwise>
+            </c:choose>
+          </td>
+          <th class="r">운영시간</th>
+          <td>평일 09:00 ~ 18:00</td>
+        </tr>
+        <tr>
+          <th>점심시간</th>
+          <td>12:00 ~ 13:00</td>
+          <th class="r"></th>
+          <td></td>
+        </tr>
+        <tr>
+          <th>이메일</th>
+          <td>
+            <c:choose>
+              <c:when test="${not empty office.mgmtOfcEml}">
+                ${office.mgmtOfcEml}
+              </c:when>
+              <c:otherwise>-</c:otherwise>
+            </c:choose>
+          </td>
+          <th class="r">휴무일</th>
+          <td>토일·공휴일</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div class="section-hd">
+        <h3>관리 직원 소개</h3>
+        <span class="count">총 <em>4</em>명</span>
+      </div>
+
+      <div class="staff-grid">
+        <div class="staff-card">
+          <div class="staff-avatar">김</div>
+          <div class="staff-name">김○○</div>
+          <div class="staff-role">관리소장</div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-avatar">이</div>
+          <div class="staff-name">이○○</div>
+          <div class="staff-role">관리소장</div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-avatar">박</div>
+          <div class="staff-name">박○○</div>
+          <div class="staff-role">관리소장</div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-avatar">최</div>
+          <div class="staff-name">최○○</div>
+          <div class="staff-role">관리소장</div>
+        </div>
+      </div>
+
+      <div class="bottom-grid">
+        <div class="bottom-card">
+          <div class="bottom-card-head">운영시간 안내</div>
+          <table class="hours-table">
+            <tbody>
+            <tr><th>월 – 금</th><td>09:00 ~ 18:00</td></tr>
+            <tr><th>점심시간</th><td>12:00 ~ 13:00</td></tr>
+            <tr><th>토요일</th><td>09:00 ~ 13:00</td></tr>
+            <tr><th>일·공휴일</th><td class="off">휴무</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bottom-card">
+          <div class="bottom-card-head">관리 서류 다운로드</div>
+          <ul class="doc-list">
+            <li class="doc-item">
+              <div class="doc-left">
+                <span class="doc-dot"></span>
+                <span class="doc-name">관리규약 (2025년 개정)</span>
+              </div>
+              <span class="doc-date">2025.01.01</span>
+              <button class="doc-btn" onclick="location.href='${pageContext.request.contextPath}/manage/download?file=rule_2025.pdf'">PDF</button>
+            </li>
+            <li class="doc-item">
+              <div class="doc-left">
+                <span class="doc-dot"></span>
+                <span class="doc-name">업무 운영수칙</span>
+              </div>
+              <span class="doc-date">2024.10.10</span>
+              <button class="doc-btn" onclick="location.href='${pageContext.request.contextPath}/manage/download?file=operation_rule.pdf'">PDF</button>
+            </li>
+            <li class="doc-item">
+              <div class="doc-left">
+                <span class="doc-dot"></span>
+                <span class="doc-name">주차 운영 규정</span>
+              </div>
+              <span class="doc-date">2024.06.01</span>
+              <button class="doc-btn" onclick="location.href='${pageContext.request.contextPath}/manage/download?file=parking_rule.pdf'">PDF</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
     </div>
   </div>
+</div>
 
-  <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
+<%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 
 </body>
 </html>

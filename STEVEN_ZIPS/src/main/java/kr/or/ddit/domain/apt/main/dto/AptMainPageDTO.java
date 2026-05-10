@@ -27,6 +27,9 @@ public class AptMainPageDTO {
         private String sigunguNm;       // 시군구 명
         private String emdNm;           // 읍면동 명
         private String dorojuso;        // 도로주소
+        private Integer unitCnt;        // 세대수
+        private Integer dongCnt;        // 동수
+        private String bldYr;           // 준공일 또는 준공년도
     }
 
     // 아파트 관리사무소 정보

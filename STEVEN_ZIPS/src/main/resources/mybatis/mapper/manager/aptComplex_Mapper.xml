@@ -46,7 +46,74 @@
 
     </select>
 
-    <select id="selectAptMainDTO" resultType="kr.or.ddit.domain.apt.main.dto.AptMainPageDTO">
-        select
+    <select id="selectAptMainDTO"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.main.dto.AptMainPageDTO$AptComplexInfo">
+
+        SELECT
+            APT_CMPLEX_NO   AS aptCmplexNo,
+            APT_CMPLEX_NM   AS aptCmplexNm,
+            SIDO_NM         AS sidoNm,
+            SIGUNGU_NM      AS sigunguNm,
+            EMD_NM          AS emdNm,
+            DOROJUSO        AS dorojuso,
+            UNIT_CNT        AS unitCnt,
+            DONG_CNT        AS dongCnt,
+            BLD_YR          AS bldYr
+        FROM APT_COMPLEX
+        WHERE APT_CMPLEX_NO = #{aptCmplexNo}
+
     </select>
+
+    <select id="selectSidoList" resultType="string">
+        SELECT DISTINCT SIDO_NM
+        FROM APT_COMPLEX
+        WHERE SIDO_NM IS NOT NULL
+        ORDER BY SIDO_NM
+    </select>
+
+    <select id="selectMainAptCount" resultType="int">
+        SELECT COUNT(*)
+        FROM APT_COMPLEX
+        WHERE SIDO_NM = #{sidoNm}
+        <if test="keyword != null and keyword != ''">
+            AND (
+            APT_CMPLEX_NM LIKE '%' || #{keyword} || '%'
+            OR DOROJUSO LIKE '%' || #{keyword} || '%'
+            )
+        </if>
+    </select>
+
+    <select id="selectMainAptList"
+            resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
+        SELECT *
+        FROM (
+        SELECT ROWNUM RN,
+        A.*
+        FROM (
+        SELECT
+        APT_CMPLEX_NO AS aptCmplexNo,
+        APT_CMPLEX_NM AS aptCmplexNm,
+        SIDO_NM       AS sidoNm,
+        SIGUNGU_NM    AS sigunguNm,
+        EMD_NM        AS emdNm,
+        DOROJUSO      AS dorojuso,
+        UNIT_CNT      AS unitCnt,
+        DONG_CNT      AS dongCnt,
+        BLD_YR        AS bldYr
+        FROM APT_COMPLEX
+        WHERE SIDO_NM = #{sidoNm}
+        <if test="keyword != null and keyword != ''">
+            AND (
+            APT_CMPLEX_NM LIKE '%' || #{keyword} || '%'
+            OR DOROJUSO LIKE '%' || #{keyword} || '%'
+            )
+        </if>
+        ORDER BY APT_CMPLEX_NM ASC
+        ) A
+        WHERE ROWNUM &lt;= #{pagingVO.endRow}
+        )
+        WHERE RN &gt;= #{pagingVO.startRow}
+    </select>
+
 </mapper>
