@@ -6,7 +6,6 @@ import kr.or.ddit.common.security.CustomAccessDeniedHandler;
 import kr.or.ddit.common.security.CustomLoginFailureHandler;
 import kr.or.ddit.common.security.CustomLoginSuccessHandler;
 import kr.or.ddit.common.security.CustomUserDetailsService;
-import kr.or.ddit.common.util.JwtProperties;
 import kr.or.ddit.common.util.TokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,17 +100,26 @@ public class SecurityConfig {
     @Bean
     protected SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource())); // security config에 등록한 cors정책
+
         http.csrf(csrf -> csrf.disable());
+
         http.formLogin(login -> login.disable());
+
         http.httpBasic(basic -> basic.disable());
+
         http.headers(config -> config.frameOptions(fOpt -> fOpt.sameOrigin())); // 동일 출처 사이트 내에서만 프레임으로 로딩 가능
+
+        // 세션 사용 비활성화
         http.sessionManagement(
                 management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );  // 세션 사용 비활성화
+        );
+
         http.securityMatcher("/api/react/**")
                 .authorizeHttpRequests(
-                        authorize -> authorize.requestMatchers(REACT_PASS_URL).permitAll()
-                );  // REACT_PASS_URL 프리패스
+                        authorize -> authorize
+                                .requestMatchers("/api/react/admin/**").hasRole("ADMIN")
+                                .anyRequest().permitAll()
+                );
 
         http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
 

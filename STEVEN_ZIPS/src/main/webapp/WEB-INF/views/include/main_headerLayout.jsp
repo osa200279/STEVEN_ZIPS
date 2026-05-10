@@ -26,8 +26,8 @@
     */
 
     :root {
-        --hdr-px: 2rem;          /* header 좌우 패딩 */
-        --hdr-gap: 2rem;         /* 로고·메뉴·버튼 사이 gap */
+        --hdr-px: 2rem; /* header 좌우 패딩 */
+        --hdr-gap: 2rem; /* 로고·메뉴·버튼 사이 gap */
         --logo-w: 170px;
         --btn-w: 330px;
         --primary: #226046;
@@ -38,16 +38,16 @@
         position: fixed;
         inset: 0 0 auto 0;
         z-index: 50;
-        overflow: visible;       /* 메가메뉴가 header 밖으로 흘러나옴 */
+        overflow: visible; /* 메가메뉴가 header 밖으로 흘러나옴 */
     }
 
     /* ── 흰 바 ── */
     #hdr-bar {
-        position: relative;      /* 메가메뉴 absolute 기준 */
-        background: rgba(255,255,255,0.93);
+        position: relative; /* 메가메뉴 absolute 기준 */
+        background: rgba(255, 255, 255, 0.93);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 2px 24px rgba(0,0,0,0.07);
+        box-shadow: 0 2px 24px rgba(0, 0, 0, 0.07);
     }
 
     /* ── 1500px 중앙 정렬 wrapper ── */
@@ -56,7 +56,7 @@
         margin: 0 auto;
         padding: 0 var(--hdr-px);
         display: flex;
-        align-items: stretch;    /* 세로 전체 채움 */
+        align-items: stretch; /* 세로 전체 채움 */
         gap: var(--hdr-gap);
     }
 
@@ -70,7 +70,11 @@
         font-weight: 700;
         color: var(--primary);
     }
-    #hdr-logo a { color: inherit; text-decoration: none; }
+
+    #hdr-logo a {
+        color: inherit;
+        text-decoration: none;
+    }
 
     /* ── 메뉴 영역 (flex:1) — 상단탭 + 메가메뉴 공통 컨테이너 ── */
     #nav-wrap {
@@ -100,7 +104,11 @@
         user-select: none;
         transition: color 0.14s;
     }
-    .nav-top-cell:hover  { color: var(--primary); }
+
+    .nav-top-cell:hover {
+        color: var(--primary);
+    }
+
     .nav-top-cell.active {
         color: var(--primary);
         font-weight: 700;
@@ -125,13 +133,13 @@
     #mega-wrap {
         position: absolute;
         top: 100%;
-        left: calc(-1 * var(--hdr-px));   /* hdr-inner padding 보정 */
+        left: calc(-1 * var(--hdr-px)); /* hdr-inner padding 보정 */
         right: calc(-1 * var(--hdr-px));
         background: rgba(34, 96, 70, 0.94);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
-        border-top: 1px solid rgba(255,255,255,0.13);
-        box-shadow: 0 10px 36px rgba(0,0,0,0.18);
+        border-top: 1px solid rgba(255, 255, 255, 0.13);
+        box-shadow: 0 10px 36px rgba(0, 0, 0, 0.18);
 
         opacity: 0;
         visibility: hidden;
@@ -171,19 +179,21 @@
     .mega-cell {
         display: flex;
         flex-direction: column;
-        align-items: center;     /* ← 상단 탭 justify-content:center 와 축 일치 */
+        align-items: center; /* ← 상단 탭 justify-content:center 와 축 일치 */
         justify-content: flex-start;
         padding: 1.4rem 0.25rem;
         gap: 0.55rem;
     }
+
     .mega-cell span {
         font-size: 0.8125rem;
-        color: rgba(255,255,255,0.8);
+        color: rgba(255, 255, 255, 0.8);
         cursor: pointer;
         white-space: nowrap;
         transition: color 0.14s;
         text-align: center;
     }
+
     .mega-cell span:hover {
         color: #fff;
         text-decoration: underline;
@@ -197,13 +207,19 @@
 
     /* ── 버튼 공통 ── */
     .btn-ghost {
-        background: none; border: none;
-        color: #475569; cursor: pointer;
+        background: none;
+        border: none;
+        color: #475569;
+        cursor: pointer;
         padding: 0.5rem 0.75rem;
-        font-size: 0.875rem; font-weight: 500;
+        font-size: 0.875rem;
+        font-weight: 500;
         transition: color 0.14s;
     }
-    .btn-ghost:hover { color: var(--primary); }
+
+    .btn-ghost:hover {
+        color: var(--primary);
+    }
 
     /*추가: 권한 전용 이동 버튼은 일반 헤더 메뉴와 구분되도록 작은 outline 버튼으로 표시 */
     .btn-role {
@@ -217,18 +233,27 @@
         cursor: pointer;
         transition: background 0.14s, border-color 0.14s, color 0.14s;
     }
+
     .btn-role:hover {
         background: #f4f9f6;
         border-color: var(--primary);
     }
 
     .btn-pill {
-        background: var(--primary); color: #fff; border: none;
-        padding: 0.6rem 1.25rem; border-radius: 9999px;
-        font-size: 0.875rem; font-weight: 600; cursor: pointer;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 0.6rem 1.25rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
         transition: opacity 0.14s;
     }
-    .btn-pill:hover { opacity: 0.87; }
+
+    .btn-pill:hover {
+        opacity: 0.87;
+    }
 </style>
 
 <header id="site-header">
@@ -276,7 +301,8 @@
                     </sec:authorize>
                     <button type="button" id="myPageBtn" class="btn-pill">마이페이지</button>
                     <button type="button" id="logoutBtn" class="btn-ghost">로그아웃</button>
-                    <form id="logoutForm" action="${pageContext.request.contextPath}/logout" method="post" style="display:none;">
+                    <form id="logoutForm" action="${pageContext.request.contextPath}/logout" method="post"
+                          style="display:none;">
                         <sec:csrfInput/>
                     </form>
                 </sec:authorize>
@@ -310,7 +336,8 @@
                             <span><a href="${pageContext.request.contextPath}/main/apt/search.do">단지 검색</a></span>
                             <span><a href="${pageContext.request.contextPath}/main/apt/map.do">지도 검색</a></span>
                             <span><a href="${pageContext.request.contextPath}/facility/history.do">단지 시설정보</a></span>
-                            <span><a href="${pageContext.request.contextPath}/main/apt/dashboard.do">단지별 통계 조회</a></span>
+                            <span><a
+                                    href="${pageContext.request.contextPath}/main/apt/dashboard.do">단지별 통계 조회</a></span>
                         </div>
 
                         <div class="mega-cell">
@@ -336,22 +363,24 @@
 <script>
     /* ── 로그아웃 / 나의 아파트 ── */
     document.addEventListener("DOMContentLoaded", () => {
-        const myAptBtn  = document.getElementById("myAptBtn");
+        const myAptBtn = document.getElementById("myAptBtn");
         // 추가: 관리소장/admin 전용 관리사무소 페이지 이동 버튼
         const managerMainBtn = document.getElementById("managerMainBtn");
         //추가: admin 전용 중앙관리자 대시보드 이동 버튼
         const centralAdminBtn = document.getElementById("centralAdminBtn");
         const logoutBtn = document.getElementById("logoutBtn");
 
-        if (myAptBtn)  myAptBtn.addEventListener("click", openAptSelection);
+        if (myAptBtn) myAptBtn.addEventListener("click", openAptSelection);
         // 추가: /manager/main 진입 시 MNGR은 본인 사무소, ADMIN은 사무소 선택 화면으로 이동
         if (managerMainBtn) managerMainBtn.addEventListener("click", () => {
             location.href = "${pageContext.request.contextPath}/manager/main";
         });
-        // 2026.05.08 수정: /centralAdmin/dashboard는 JSP가 없어 오류가 나므로 실제 존재하는 중앙관리 화면으로 이동
+
+        // 2026.05.11 수정: 중앙관리자 대시보드 리액트 페이지로 연결
         if (centralAdminBtn) centralAdminBtn.addEventListener("click", () => {
-            location.href = "${pageContext.request.contextPath}/centralAdmin/buildSearch";
+            location.href = "http://localhost:7777";
         });
+
         if (logoutBtn) logoutBtn.addEventListener("click", () => {
             const form = document.getElementById("logoutForm");
             if (form) form.submit();

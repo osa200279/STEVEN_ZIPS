@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.admin.controller;
 
+import kr.or.ddit.domain.member.admin.vo.AdmVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,10 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/react")
+@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/api/react/admin")
 public class AdmDashBoardRestController {
 
-    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/test")
     public ResponseEntity<String> test(@AuthenticationPrincipal CustomUser customUser){
         String auth = customUser.getMember().getAuthList().get(0).getAuth();
@@ -23,5 +25,11 @@ public class AdmDashBoardRestController {
         return new ResponseEntity<>(auth , HttpStatus.OK);
     }
 
+    @GetMapping("/home")
+    public ResponseEntity<String> home(@AuthenticationPrincipal CustomUser customUser){
+        AdmVO adm = (AdmVO)customUser.getMember();
+
+        return new ResponseEntity<>(adm.getUserNo() , HttpStatus.OK);
+    }
 
 }
