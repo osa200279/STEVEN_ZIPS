@@ -23,14 +23,14 @@ public class ResidentVstVhclController {
     @PostMapping("/register/{aptCmplexNo}")
     @ResponseBody
     public ResponseEntity<String> registerVisit(
-            @PathVariable String aptCmplexNo
-            , @RequestBody VisitRegisterDTO dto
-            , @AuthenticationPrincipal CustomUser principal
+            @PathVariable String aptCmplexNo,
+            @RequestBody VisitRegisterDTO dto,
+            @AuthenticationPrincipal CustomUser principal
     ){
 
         residentVstVhclService.registerVisit(
                 dto,
-                principal.getMember().getUserNo()
+                principal
         );
 
         return ResponseEntity.ok("SUCCESS");
