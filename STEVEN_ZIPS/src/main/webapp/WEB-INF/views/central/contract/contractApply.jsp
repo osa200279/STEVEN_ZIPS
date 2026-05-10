@@ -303,25 +303,44 @@
 
   });
     //신청서 제출
-  document.getElementById("submitBtn")
+  document.querySelector("#submitBtn")
       .addEventListener("click", function () {
 
-          Swal.fire({
-              icon: "success",
-              title: "제출 완료",
-              text: "신청서가 제출되었습니다.",
-              confirmButtonColor: "#5c6b2f",
-              confirmButtonText: "확인"
-          }).then((result) => {
+          // 유효성 검사
+          const fileInputs = document.querySelectorAll(".file-input");
+          let allUploaded = true;
 
-              if (result.isConfirmed) {
-
-                  document.getElementById("submitForm").submit();
-
+          fileInputs.forEach(input => {
+              if (!input.files || input.files.length === 0) {
+                  allUploaded = false;
               }
-
           });
 
+          if (!allUploaded) {
+              Swal.fire({
+                  icon: "warning",
+                  title: "파일 미업로드",
+                  text: "모든 서류를 업로드해주세요.",
+                  confirmButtonColor: "#5c6b2f",
+                  confirmButtonText: "확인"
+              });
+              return;
+          }
+
+          // 제출 확인
+          Swal.fire({
+              icon: "question",
+              title: "제출 하시겠습니까?",
+              text: "신청서를 제출합니다.",
+              confirmButtonColor: "#5c6b2f",
+              confirmButtonText: "확인",
+              showCancelButton: true,
+              cancelButtonText: "취소"
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  document.getElementById("submitForm").submit();
+              }
+          });
       });
 
 </script>

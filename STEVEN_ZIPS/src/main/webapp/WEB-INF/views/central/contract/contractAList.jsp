@@ -194,13 +194,35 @@
   <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
     <h2 class="text-lg font-semibold mb-4 text-[#4d5c2b]">진행 상태</h2>
 
-    <div class="space-y-2 text-sm text-gray-600">
-
-      <div>✔ 신청서 제출 완료</div>
-      <div>✔ 서류 검토 중</div>
-      <div class="text-gray-400">- 계약 승인 대기</div>
-
-    </div>
+      <div class="space-y-2 text-sm text-gray-600">
+          <c:choose>
+              <c:when test="${not empty list}">
+                  <c:set var="stts" value="${list[0].ctrtSttsCd}"/>
+                  <div class="${stts == 'SUB' || stts == 'PND' || stts == 'APR' || stts == 'RJC' || stts == 'CNL' || stts == 'EXP' ? 'text-green-600' : 'text-gray-400'}">
+                      ✔ 신청서 제출 완료
+                  </div>
+                  <div class="${stts == 'PND' || stts == 'APR' || stts == 'RJC' ? 'text-green-600' : 'text-gray-400'}">
+                      <c:choose>
+                          <c:when test="${stts == 'PND' || stts == 'APR' || stts == 'RJC'}">✔</c:when>
+                          <c:otherwise>-</c:otherwise>
+                      </c:choose>
+                      서류 검토
+                  </div>
+                  <div class="${stts == 'APR' ? 'text-green-600' : stts == 'RJC' ? 'text-red-600' : stts == 'CNL' ? 'text-gray-400' : 'text-gray-400'}">
+                      <c:choose>
+                          <c:when test="${stts == 'APR'}">✔ 승인됨</c:when>
+                          <c:when test="${stts == 'RJC'}">✘ 반려</c:when>
+                          <c:when test="${stts == 'CNL'}">- 취소</c:when>
+                          <c:when test="${stts == 'EXP'}">- 만료됨</c:when>
+                          <c:otherwise>- 계약 승인 대기</c:otherwise>
+                      </c:choose>
+                  </div>
+              </c:when>
+              <c:otherwise>
+                  <div class="text-gray-400">- 신청서 미제출</div>
+              </c:otherwise>
+          </c:choose>
+      </div>
   </div>
 
   <!-- 버튼 -->

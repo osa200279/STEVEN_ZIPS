@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.mapper.IContractUserMapper">
+
+    <!-- userNo로 rentCtrtNo 조회 -->
+    <select id="selectRentCtrtNo" parameterType="string" resultType="string">
+        SELECT rent_ctrt_no
+        FROM rent_ctrt
+        WHERE user_no = #{userNo}
+        ORDER BY reg_dt DESC
+            FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 제출서류 insert -->
+    <insert id="insertContractDoc" parameterType="kr.or.ddit.domain.central.vo.ContractUserVO">
+        <selectKey keyProperty="sbmsnDocNo" resultType="string" order="BEFORE">
+            SELECT seq_sbmsn_doc.nextval
+            FROM dual
+        </selectKey>
+        INSERT INTO sbmsn_doc (
+        sbmsn_doc_no
+        ,sbmsn_doc_ty_cd
+        ,sbmsn_doc_stts_cd
+        ,atch_file_id
+        ,rent_ctrt_no
+        ) VALUES (
+        #{sbmsnDocNo}
+        ,#{sbmsnDocTyCd}
+        ,#{sbmsnDocSttsCd}
+        ,#{atchFileId}
+        ,#{rentCtrtNo}
+        )
+    </insert>
+
+    <!-- userNo로 제출서류 조회 -->
+    <select id="selectContractDoc" parameterType="string" resultType="kr.or.ddit.domain.central.vo.ContractUserVO">
+        SELECT
+            sd.sbmsn_doc_no
+             ,sd.sbmsn_doc_ty_cd
+             ,sd.sbmsn_doc_stts_cd
+             ,sd.rjct_rsn_cn
+             ,sd.atch_file_id
+             ,sd.rent_ctrt_no
+             ,rc.ctrt_stts_cd
+        FROM sbmsn_doc sd
+        INNER JOIN rent_ctrt rc ON sd.rent_ctrt_no = rc.rent_ctrt_no
+        WHERE rc.user_no = #{userNo}
+        ORDER BY sd.reg_dt DESC
+    </select>
+
+
+
+</mapper>

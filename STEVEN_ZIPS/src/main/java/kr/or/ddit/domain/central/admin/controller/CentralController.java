@@ -159,9 +159,6 @@ public class CentralController {
 
         return "centralAdmin/conManagement";
     }
-*/
-
-/*
 
     @GetMapping("/contractFormList.do")
     public String contractFormList(
@@ -218,7 +215,7 @@ public class CentralController {
     @GetMapping("/contractDetail.do")
     @ResponseBody
     public ContractVO contractDetail(@RequestParam String ctrtNo) {
-        return service.selectContractDeatil(ctrtNo);
+        return service.selectOneContract(ctrtNo);
     }
     @PostMapping("/contractModifyStatus")
     @ResponseBody
@@ -247,9 +244,9 @@ public class CentralController {
     
     @GetMapping("/contractFormDetail.do")
     @ResponseBody
-    public ContractFormVO contractFormDetail(@RequestParam String frmNo){
+    public ContractFormVO selectOneContractForm(@RequestParam String frmNo) {
 
-        return service.contractFormDetail(frmNo);
+        return service.selectOneContractForm(frmNo);
     }
 
     @PostMapping("/contractFormInsert.do")
