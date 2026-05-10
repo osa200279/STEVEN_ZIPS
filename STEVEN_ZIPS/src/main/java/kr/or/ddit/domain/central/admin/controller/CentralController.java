@@ -114,7 +114,7 @@ public class CentralController {
         return "centralAdmin/contractDoc";
     }
 
-
+/* 못 씀
     @GetMapping("/contractList.do")
     public String contractList(
             @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage,
@@ -159,6 +159,9 @@ public class CentralController {
 
         return "centralAdmin/conManagement";
     }
+*/
+
+/*
 
     @GetMapping("/contractFormList.do")
     public String contractFormList(
@@ -197,6 +200,7 @@ public class CentralController {
 
         return "centralAdmin/contractForm";
     }
+*/
 
     @PostMapping("/contractInsert.do")
     public String contractInsert(RentContractVO rentContractVO,
@@ -277,6 +281,7 @@ public class CentralController {
         return "redirect:/centralAdmin/contractFormList.do";
     }
 
+/*
     // 작성자 : 오수아
     @GetMapping("/contractDocList.do")
     public String contractDocList(
@@ -312,4 +317,6 @@ public class CentralController {
 
         return "centralAdmin/contractDoc";
     }
+*/
+
 }
