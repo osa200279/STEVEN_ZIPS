@@ -195,7 +195,7 @@ function renderRequestTable() {
             */
             actionHtml =
                 '<button type="button" class="icon-btn-sm" onclick="addApprovedAccountToList(this)" title="계정 목록에 추가">' +
-                '<span class="material-symbols-rounded">download</span></button>';
+                '<span class="material-symbols-rounded">arrow_downward</span></button>';
         } else {
             actionHtml = '<span style="font-size:11px;color:#94a3b8;">-</span>';
         }

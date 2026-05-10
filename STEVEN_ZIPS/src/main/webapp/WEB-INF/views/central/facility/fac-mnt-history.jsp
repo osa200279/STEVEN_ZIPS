@@ -1,23 +1,24 @@
-
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 
-<html class="light" lang="ko"><head>
+<html class="light" lang="ko">
+<head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>단지 시설정보</title>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 
     <style>
-
         body{
             font-family:'Malgun Gothic', sans-serif;
             background:#fff;
             color:#222;
         }
+
         .facility-page{
             margin-left:260px;
             padding:120px 48px 80px;
@@ -112,37 +113,161 @@
             color:#666;
         }
 
-        .facility-notice{
-            margin-top:12px;
-            font-size:13px;
-            color:#666;
-            line-height:1.7;
+
+        .facility-search-form{
+            margin-bottom:40px;
+            padding:24px;
+            display:flex;
+            align-items:center;
+            gap:14px;
+            background:#fff;
+            border:1px solid #e5e7eb;
+            border-radius:14px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.05);
         }
 
-        .facility-red{
-            color:#d90429;
-            font-weight:700;
+        .search-label{
+            font-size:14px;
+            font-weight:800;
+            color:#475569;
+            white-space:nowrap;
+        }
+
+        .search-select,
+        .search-input{
+            height:42px;
+            border:0;
+            border-radius:22px;
+            background:#eef1ee;
+            padding:0 18px;
+            font-size:14px;
+            color:#111827;
+            outline:none;
+        }
+
+        .search-select{
+            width:230px;
+        }
+
+        .search-input{
+            flex:1;
+            min-width:260px;
+        }
+
+        .search-button{
+            height:42px;
+            min-width:90px;
+            border:0;
+            border-radius:22px;
+            background:#00583f;
+            color:#fff;
+            font-size:14px;
+            font-weight:800;
+            cursor:pointer;
+        }
+
+        .facility-card-section{
+            margin-bottom:50px;
+        }
+
+        .facility-card-count{
+            margin-bottom:20px;
+            font-size:22px;
+            font-weight:800;
+            color:#00583f;
+        }
+
+        .facility-card-grid{
+            display:grid;
+            grid-template-columns:repeat(4, 1fr);
+            gap:24px;
+        }
+
+        .facility-card{
+            display:block;
+            text-decoration:none;
+            color:inherit;
+            border:1px solid #e5e7eb;
+            border-radius:18px;
+            overflow:hidden;
+            background:#fff;
+            box-shadow:0 3px 10px rgba(15, 23, 42, 0.06);
+        }
+
+        .facility-card:hover{
+            transform:translateY(-3px);
+            box-shadow:0 8px 18px rgba(15, 23, 42, 0.12);
+        }
+
+        .facility-card-top{
+            position:relative;
+            height:150px;
+            background:#eaf3ee;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .facility-card-badge{
+            position:absolute;
+            top:18px;
+            left:18px;
+            padding:7px 14px;
+            border-radius:20px;
+            background:#00583f;
+            color:#fff;
+            font-size:13px;
+            font-weight:800;
+        }
+
+        .facility-card-icon{
+            font-size:34px;
+            color:#9bb9ad;
+        }
+
+        .facility-card-body{
+            padding:24px;
+        }
+
+        .facility-card-title{
+            font-size:20px;
+            font-weight:800;
+            color:#00583f;
+            margin-bottom:8px;
+        }
+
+        .facility-card-address{
+            font-size:14px;
+            color:#94a3b8;
+            margin-bottom:24px;
+        }
+
+        .facility-card-meta{
+            display:flex;
+            justify-content:space-between;
+            font-size:13px;
+            font-weight:800;
+            color:#00583f;
+        }
+
+        .facility-empty-box{
+            padding:60px;
+            border:1px solid #e5e7eb;
+            border-radius:14px;
+            text-align:center;
+            color:#64748b;
+            background:#fff;
         }
 
     </style>
 </head>
 
-
-
-
-
-
-
 <body class="bg-surface text-on-surface flex flex-col min-h-screen">
+
 <%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
 <%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
-<!-- SideNavBar Shell -->
-
-<!-- TopNavBar -->
 
 <main class="facility-page">
-
     <div class="facility-container">
 
         <!-- 페이지 제목 -->
@@ -152,302 +277,322 @@
             공동주택 시설 및 관리 현황을 확인할 수 있습니다.
         </p>
 
-        <!-- 관리사항 -->
-        <section class="facility-section">
+        <!-- 검색 영역 -->
+        <form method="get"
+              action="${pageContext.request.contextPath}/facility/history.do"
+              class="facility-search-form">
 
-            <h2 class="facility-section-title">관리사항</h2>
+            <%-- 조회 버튼을 눌렀는지 Controller에 전달 --%>
+            <input type="hidden" name="searchYn" value="Y"/>
 
-            <table class="facility-table">
+            <label class="search-label">지역</label>
 
-                <tbody>
+            <%-- 시/도 검색 조건 --%>
+            <select name="sidoNm" class="search-select">
+                <option value="">시/도 전체</option>
+                <option value="서울특별시" ${dto.sidoNm eq '서울특별시' ? 'selected' : ''}>서울특별시</option>
+                <option value="대전광역시" ${dto.sidoNm eq '대전광역시' ? 'selected' : ''}>대전광역시</option>
+                <option value="경기도" ${dto.sidoNm eq '경기도' ? 'selected' : ''}>경기도</option>
+            </select>
 
-                <tr>
-                    <th>일반관리</th>
+            <%-- 시/군/구 검색 조건 --%>
+            <select name="sigunguNm" class="search-select">
+                <option value="">시/군/구</option>
+                <option value="마포구" ${dto.sigunguNm eq '마포구' ? 'selected' : ''}>마포구</option>
+                <option value="강남구" ${dto.sigunguNm eq '강남구' ? 'selected' : ''}>강남구</option>
+                <option value="유성구" ${dto.sigunguNm eq '유성구' ? 'selected' : ''}>유성구</option>
+            </select>
 
-                    <td colspan="3">
-                        <div class="facility-info-list">
-                            <span>관리방식 : 위탁관리</span>
-                            <span>인원 : 4</span>
-                            <span>계약업체 : 세화종합관리(주)</span>
-                        </div>
-                    </td>
-                </tr>
+            <label class="search-label">세대수</label>
 
-                <tr>
-                    <th>경비관리</th>
+            <%-- 세대수 구간 검색 조건 --%>
+            <select name="unitRange" class="search-select">
+                <option value="">전체</option>
+                <option value="UNDER_300" ${dto.unitRange eq 'UNDER_300' ? 'selected' : ''}>300세대 미만</option>
+                <option value="300_500" ${dto.unitRange eq '300_500' ? 'selected' : ''}>300세대 이상 500세대 미만</option>
+                <option value="500_1000" ${dto.unitRange eq '500_1000' ? 'selected' : ''}>500세대 이상 1000세대 미만</option>
+                <option value="OVER_1000" ${dto.unitRange eq 'OVER_1000' ? 'selected' : ''}>1000세대 이상</option>
+            </select>
 
-                    <td colspan="3">
-                        <div class="facility-info-list">
-                            <span>관리방식 : 위탁관리</span>
-                            <span>인원 : 4</span>
-                            <span>계약업체 : (주)이데아그룹</span>
-                        </div>
-                    </td>
-                </tr>
+            <%-- 단지명 직접 검색 --%>
+            <input type="text"
+                   name="keyword"
+                   value="${dto.keyword}"
+                   class="search-input"
+                   placeholder="단지명 검색"/>
 
-                <tr>
-                    <th>청소관리</th>
+            <button type="submit" class="search-button">검색</button>
+        </form>
 
-                    <td colspan="3">
-                        <div class="facility-info-list">
-                            <span>관리방식 : 위탁관리</span>
-                            <span>인원 : 3</span>
-                            <span>음식물처리방법 : 음식물쓰레기종량제</span>
-                            <span>계약업체 : 이데아그룹</span>
-                        </div>
-                    </td>
-                </tr>
+        <c:if test="${searched}">
 
-                <tr>
-                    <th>소독관리</th>
+            <section class="facility-card-section">
 
-                    <td colspan="3">
-                        <div class="facility-info-list">
-                            <span>관리방식 : 위탁관리</span>
-                            <span>연간소독횟수 : 12</span>
-                            <span>소독방법 : 분무식</span>
-                            <span>계약업체 : (주)와브이시스템</span>
-                        </div>
-                    </td>
-                </tr>
+                <c:choose>
+                    <c:when test="${not empty aptCardList}">
 
-                </tbody>
-
-            </table>
-
-        </section>
-
-        <!-- 시설사항 -->
-        <section class="facility-section">
-
-            <h2 class="facility-section-title">시설사항</h2>
-
-            <table class="facility-table">
-
-                <tbody>
-
-                <tr>
-                    <th>건물구조</th>
-                    <td>철골철근콘크리트구조</td>
-
-                    <th>수전용량</th>
-                    <td>800 Kw</td>
-                </tr>
-
-                <tr>
-                    <th>세대전기계약방식</th>
-                    <td>단일계약</td>
-
-                    <th>전기안전관리자법정 선임여부</th>
-                    <td>위탁선임</td>
-                </tr>
-
-                <tr>
-                    <th>화재수신반방식</th>
-                    <td>R형</td>
-
-                    <th>급수방식</th>
-                    <td>부스터방식</td>
-                </tr>
-
-                <tr>
-                    <th>승강기관리형태</th>
-                    <td>위탁관리</td>
-
-                    <th>승강기대수</th>
-                    <td>8</td>
-                </tr>
-
-                <tr>
-                    <th>주차대수</th>
-
-                    <td colspan="3">
-
-                        <div class="facility-info-list">
-                            <span>지상 : 59</span>
-                            <span>지하 : 263</span>
-                            <span>총 322대</span>
+                        <div class="facility-card-count">
+                            총 ${aptCardList.size()}개 단지
                         </div>
 
-                    </td>
-                </tr>
-
-                <tr>
-                    <th>CCTV대수</th>
-                    <td>45</td>
-
-                    <th>부대 · 복리시설</th>
-                    <td>관리사무소, 노인정, 어린이놀이터</td>
-                </tr>
-
-                </tbody>
-
-            </table>
-
-        </section>
-
-        <!-- 긴급차량 -->
-        <section class="facility-section">
-
-            <h2 class="facility-section-title">긴급차량 출입관리</h2>
-
-            <table class="facility-table">
-
-                <tbody>
-
-                <tr>
-                    <th>홈네트워크</th>
-
-                    <th>긴급자동차 출입가능한 출입문</th>
-
-                    <th>
-                        선택한 출입문의<br>
-                        주차관제 시스템
-                    </th>
-
-                    <th>긴급자동차 출입방법</th>
-
-                    <th>긴급자동차 즉시통과</th>
-                </tr>
-
-                <tr>
-
-                    <td style="text-align:center;">무</td>
-
-                    <td style="text-align:center;">
-                        정문
-                    </td>
-
-                    <td style="text-align:center;">
-                        무
-                    </td>
-
-                    <td>
-
-                        <span class="facility-red">
-                            ※ 주차관제시스템이 “무”인 경우 입력이 불필요합니다.
-                        </span>
-
-                    </td>
-
-                    <td style="text-align:center;">
-                        가능
-                    </td>
-
-                </tr>
-
-                </tbody>
-
-            </table>
-
-            <p class="facility-notice">
-                ※ 무인차단기가 긴급자동차(경찰차, 소방차, 119 구급차 등)의 전용번호판을 자동으로 인식하여 차량을 통과시키는 기능이 있는지를 묻는 항목입니다.
-            </p>
-
-        </section>
-
-
-
-
-
-
-
-        <section class="facility-section">
-
-            <h2 class="facility-section-title">주변사항</h2>
-
-            <table class="facility-table">
-
-                <tbody>
-
-                <tr>
-                    <th>편의시설</th>
-
-                    <td>
-                        관공서(우골동주민센터)
-                        병원(자애의원)
-                        대형상가(삼익쇼핑)
-                    </td>
-
-                    <th>교육시설</th>
-
-                    <td>
-                        초등학교(우림남초등학교)
-                        중학교(우림중)
-                        고등학교(대인전자고)
-                    </td>
-                </tr>
-
-                <tr>
-                    <th>지하철</th>
-
-                    <td colspan="3">
-                        1호선(수도권) 경춘선
-                        (도보 5~10분 이내)
-                    </td>
-                </tr>
-
-                </tbody>
-
-            </table>
-
-        </section>
-
-
-        <section class="facility-section">
-
-            <h2 class="facility-section-title">입주편의시설 조회</h2>
-
-            <table class="facility-table">
-
-                <thead>
-
-                <tr>
-                    <th>유형</th>
-                    <th>최대수용인원수</th>
-                    <th>외부인 개방여부</th>
-                    <th>입주민 이용요금</th>
-                </tr>
-
-                </thead>
-
-                <tbody>
-
-                <tr>
-                    <td>피트니스센터</td>
-                    <td>10명</td>
-                    <td>입주민전용</td>
-                    <td>10000원</td>
-                </tr>
-
-                <tr>
-                    <td>노인정</td>
-                    <td>30명</td>
-                    <td>입주민전용</td>
-                    <td>24000원</td>
-                </tr>
-
-                </tbody>
-
-            </table>
-
-        </section>
-
-
-
-
-
-
-
-
-
-
-
+                        <div class="facility-card-grid">
+                            <c:forEach var="apt" items="${aptCardList}">
+                                <a class="facility-card"
+                                   href="${pageContext.request.contextPath}/facility/history.do?searchYn=Y&sidoNm=${dto.sidoNm}&sigunguNm=${dto.sigunguNm}&unitRange=${dto.unitRange}&keyword=${dto.keyword}&aptCmplexNo=${apt.aptCmplexNo}">
+
+                                    <div class="facility-card-top">
+                                <span class="facility-card-badge">
+                                    ${apt.sidoNm} ${apt.sigunguNm}
+                                </span>
+                                        <span class="material-symbols-outlined facility-card-icon">apartment</span>
+                                    </div>
+
+                                    <div class="facility-card-body">
+                                        <div class="facility-card-title">${apt.aptCmplexNm}</div>
+                                        <div class="facility-card-address">${apt.dorojuso}</div>
+
+                                        <div class="facility-card-meta">
+                                            <span>${apt.unitCnt}세대 ${apt.dongCnt}동</span>
+                                            <span>${apt.bldYr} 준공</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </c:forEach>
+                        </div>
+
+                    </c:when>
+
+                    <c:otherwise>
+                        <div class="facility-empty-box">
+                            조회 조건과 일치하는 단지가 없습니다. 지역, 세대수 또는 단지명을 변경하여 다시 검색해 주세요.
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+
+            </section>
+
+        </c:if>
+
+        <c:choose>
+
+            <%-- 처음 화면: 표는 유지하고 안내 문구 출력 --%>
+            <c:when test="${not searched}">
+                <section class="facility-section">
+                    <h2 class="facility-section-title">단지 시설정보 조회</h2>
+
+                    <table class="facility-table">
+                        <tbody>
+                        <tr>
+                            <td style="text-align:center; padding:60px; color:#64748b;">
+                                조회 조건을 선택한 후 검색 버튼을 눌러 단지 시설정보를 확인해 주세요.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </c:when>
+
+            <%-- 조회 후 결과 있음 --%>
+            <c:when test="${not empty aptInfo}">
+
+                    <!-- 단지 기본정보 -->
+                    <section class="facility-section">
+                        <h2 class="facility-section-title">단지 기본정보</h2>
+
+                        <table class="facility-table">
+                            <tbody>
+                            <tr>
+                                <th>단지명</th>
+                                <td colspan="3">${aptInfo.aptCmplexNm} (${aptInfo.aptCmplexNo})</td>
+                            </tr>
+                            <tr>
+                                <th>법정동주소</th>
+                                <td>${aptInfo.sidoNm} ${aptInfo.sigunguNm} ${aptInfo.emdNm}</td>
+                                <th>도로명주소</th>
+                                <td>${aptInfo.dorojuso}</td>
+                            </tr>
+                            <tr>
+                                <th>난방방식</th>
+                                <td>${aptInfo.heatTy}</td>
+                                <th>준공년도</th>
+                                <td>${aptInfo.bldYr}</td>
+                            </tr>
+                            <tr>
+                                <th>최대층수</th>
+                                <td>${aptInfo.maxFloor}층</td>
+                                <th>동수 / 세대수</th>
+                                <td>${aptInfo.dongCnt}동 / ${aptInfo.unitCnt}세대</td>
+                            </tr>
+                            <tr>
+                                <th>주차가능대수</th>
+                                <td>${aptInfo.pkgCnt}대</td>
+                                <th>세대당 무료주차</th>
+                                <td>${aptInfo.freePkgCnt}대</td>
+                            </tr>
+                            <tr>
+                                <th>CCTV 수</th>
+                                <td>${aptInfo.ccCnt}</td>
+                                <th>시공사 / 시행사</th>
+                                <td>${aptInfo.cnscoNm}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- 관리사항 -->
+                    <section class="facility-section">
+                        <h2 class="facility-section-title">관리사항</h2>
+
+                        <table class="facility-table">
+                            <tbody>
+                            <tr>
+                                <th>협력업체</th>
+                                <td colspan="3">
+                                    <div class="facility-info-list">
+                                        <c:choose>
+                                            <c:when test="${not empty aptInfo.partnerList}">
+                                                <span>${aptInfo.partnerList}</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span>등록된 협력업체가 없습니다.</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- 시설사항 -->
+                    <section class="facility-section">
+                        <h2 class="facility-section-title">시설사항</h2>
+
+                        <table class="facility-table">
+                            <thead>
+                            <tr>
+                                <th>시설명</th>
+                                <th>시설유형</th>
+                                <th>위치 동</th>
+                                <th>상세 위치</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <c:choose>
+                                <c:when test="${not empty facilityInfoList}">
+                                    <c:forEach var="item" items="${facilityInfoList}">
+                                        <c:if test="${not empty item.facilityNo}">
+                                            <tr>
+                                                <td>${item.facilityNm}</td>
+                                                <td>${item.facilityTyCd}</td>
+                                                <td>${item.dongNo}</td>
+                                                <td>${item.locCn}</td>
+                                            </tr>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <tr>
+                                        <td colspan="4" style="text-align:center;">등록된 시설정보가 없습니다.</td>
+                                    </tr>
+                                </c:otherwise>
+                            </c:choose>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- 주변사항 -->
+                    <section class="facility-section">
+                        <h2 class="facility-section-title">주변사항</h2>
+
+                        <table class="facility-table">
+                            <tbody>
+                            <tr>
+                                <th>주변 인프라</th>
+                                <td colspan="3">
+                                    <c:choose>
+                                        <c:when test="${not empty aptInfo.infraList}">
+                                            ${aptInfo.infraList}
+                                        </c:when>
+                                        <c:otherwise>-</c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </section>
+
+                    <!-- 입주편의시설 조회 -->
+                    <section class="facility-section">
+                        <h2 class="facility-section-title">입주편의시설 조회</h2>
+
+                        <table class="facility-table">
+                            <thead>
+                            <tr>
+                                <th>공용시설명</th>
+                                <th>물품명</th>
+                                <th>예약가능여부</th>
+                                <th>이용금액</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <c:choose>
+                                <c:when test="${not empty facilityInfoList}">
+                                    <c:forEach var="item" items="${facilityInfoList}">
+                                        <c:if test="${not empty item.cmnFacilityNo}">
+                                            <tr>
+                                                <td>${item.cmnFacilityNm}</td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${not empty item.itemNm}">
+                                                            ${item.itemNm}
+                                                        </c:when>
+                                                        <c:otherwise>-</c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                                <td>${item.cmnFacilityRsvYn}</td>
+                                                <td>${item.cmnFacilityAmt}원</td>
+                                            </tr>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <tr>
+                                        <td colspan="4" style="text-align:center;">등록된 입주편의시설이 없습니다.</td>
+                                    </tr>
+                                </c:otherwise>
+                            </c:choose>
+                            </tbody>
+                        </table>
+                    </section>
+
+            </c:when>
+
+            <%-- 조회 후 결과 없음 --%>
+            <c:otherwise>
+                <section class="facility-section">
+                    <h2 class="facility-section-title">단지 시설정보 조회</h2>
+
+                    <table class="facility-table">
+                        <tbody>
+                        <tr>
+                            <td style="text-align:center; padding:60px; color:#64748b;">
+                                입력하신 조건과 일치하는 단지 시설정보가 없습니다.
+                                검색 조건을 변경한 후 다시 조회해 주세요.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </c:otherwise>
+
+        </c:choose>
 
 
     </div>
-
 </main>
-<!-- Footer -->
 
-</body></html>
+</body>
+</html>

@@ -211,7 +211,7 @@
                     </div>
                     <div class="select-box">
                         <select class="c-select" onchange="filterStatus(this.value)">
-                            <option value="">전체</option>
+                            <option value="">상태</option>
                             <option value="active">사용</option>
                             <option value="inactive">미사용</option>
                         </select>
