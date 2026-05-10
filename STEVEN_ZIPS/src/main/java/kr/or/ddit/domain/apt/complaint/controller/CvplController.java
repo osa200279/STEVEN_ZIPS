@@ -143,6 +143,10 @@ public class CvplController {
 
         model.addAttribute("cvplList", cvplList);
 
+        // 헤더, 푸터 DTO
+        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
+        model.addAttribute("aptInfo", aptCommonDTO);
+
         return "apt/complaint/complaint_list";
     }
 }
