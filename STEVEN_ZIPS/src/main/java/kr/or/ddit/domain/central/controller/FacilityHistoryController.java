@@ -53,15 +53,53 @@ public class FacilityHistoryController {
         FacilityInfoDTO aptInfo = null;
 
         /*
-         * 조회 버튼을 눌렀을 때만 단지 시설정보 조회 실행.
-         * 처음 진입 시에는 DB 조회하지 않음.
+         * 카드 목록 데이터
+         *
+         * 검색 결과로 여러 단지가 조회될 수 있으므로
+         * 카드 형태로 먼저 보여주기 위해 사용.
+         */
+        List<FacilityInfoDTO> aptCardList = null;
+
+        /*
+         * 검색 버튼 클릭 시 카드 목록 조회
          */
         if (searched) {
+            aptCardList = facilityInfoService.getAptCardList(dto);
+        }
+
+        /*
+         * 카드 클릭 시 상세조회
+         *
+         * aptCmplexNo가 존재하면
+         * 선택한 단지 상세정보를 조회한다.
+         */
+        if (dto.getAptCmplexNo() != null
+                && !dto.getAptCmplexNo().isEmpty()) {
+
             facilityInfoList = facilityInfoService.getFacilityInfoList(dto);
 
-            if (facilityInfoList != null && !facilityInfoList.isEmpty()) {
+            if (facilityInfoList != null
+                    && !facilityInfoList.isEmpty()) {
+
                 aptInfo = facilityInfoList.get(0);
             }
+        }
+
+        /*
+         * 검색용 지역 목록 조회
+         */
+        List<String> sidoList = facilityInfoService.getSidoList();
+
+        List<String> sigunguList = null;
+
+        /*
+         * 시/도가 선택된 경우에만
+         * 해당 시/군/구 목록 조회
+         */
+        if (dto.getSidoNm() != null
+                && !dto.getSidoNm().isEmpty()) {
+
+            sigunguList = facilityInfoService.getSigunguList(dto.getSidoNm());
         }
 
         model.addAttribute("list", list);
@@ -69,6 +107,9 @@ public class FacilityHistoryController {
         model.addAttribute("searched", searched);
         model.addAttribute("aptInfo", aptInfo);
         model.addAttribute("facilityInfoList", facilityInfoList);
+        model.addAttribute("aptCardList", aptCardList);
+        model.addAttribute("sidoList", sidoList);
+        model.addAttribute("sigunguList", sigunguList);
 
         return "central/facility/fac-mnt-history";
     }

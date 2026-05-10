@@ -288,20 +288,38 @@
             <label class="search-label">지역</label>
 
             <%-- 시/도 검색 조건 --%>
-            <select name="sidoNm" class="search-select">
-                <option value="">시/도 전체</option>
-                <option value="서울특별시" ${dto.sidoNm eq '서울특별시' ? 'selected' : ''}>서울특별시</option>
-                <option value="대전광역시" ${dto.sidoNm eq '대전광역시' ? 'selected' : ''}>대전광역시</option>
-                <option value="경기도" ${dto.sidoNm eq '경기도' ? 'selected' : ''}>경기도</option>
-            </select>
+                <select name="sidoNm"
+                        id="sidoNm"
+                        class="search-select">
+
+                    <option value="">시/도 전체</option>
+
+                    <c:forEach var="sido" items="${sidoList}">
+                        <option value="${sido}"
+                            ${dto.sidoNm eq sido ? 'selected' : ''}>
+                                ${sido}
+                        </option>
+                    </c:forEach>
+
+                </select>
 
             <%-- 시/군/구 검색 조건 --%>
-            <select name="sigunguNm" class="search-select">
-                <option value="">시/군/구</option>
-                <option value="마포구" ${dto.sigunguNm eq '마포구' ? 'selected' : ''}>마포구</option>
-                <option value="강남구" ${dto.sigunguNm eq '강남구' ? 'selected' : ''}>강남구</option>
-                <option value="유성구" ${dto.sigunguNm eq '유성구' ? 'selected' : ''}>유성구</option>
-            </select>
+                <select name="sigunguNm"
+                        id="sigunguNm"
+                        class="search-select">
+
+                    <option value="">시/군/구</option>
+
+                    <c:if test="${not empty sigunguList}">
+                        <c:forEach var="sigungu" items="${sigunguList}">
+                            <option value="${sigungu}"
+                                ${dto.sigunguNm eq sigungu ? 'selected' : ''}>
+                                    ${sigungu}
+                            </option>
+                        </c:forEach>
+                    </c:if>
+
+                </select>
 
             <label class="search-label">세대수</label>
 
@@ -593,6 +611,30 @@
 
     </div>
 </main>
+
+<script>
+
+    /*
+     * 시/도 변경 시 자동 조회
+     *
+     * onchange란?
+     * → select 값이 바뀌었을 때 실행되는 이벤트.
+     */
+    document.getElementById("sidoNm")
+        .addEventListener("change", function() {
+
+            /*
+             * 선택한 시/도 기준으로
+             * Controller를 다시 호출하여
+             * 시/군/구 목록 재조회.
+             */
+            location.href =
+                "${pageContext.request.contextPath}/facility/history.do"
+                + "?sidoNm=" + this.value;
+
+        });
+
+</script>
 
 </body>
 </html>

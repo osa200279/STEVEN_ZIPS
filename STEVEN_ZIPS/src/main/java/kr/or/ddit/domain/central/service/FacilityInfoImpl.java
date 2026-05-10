@@ -33,4 +33,21 @@ public class FacilityInfoImpl implements IFacilityInfoService {
     public List<FacilityInfoDTO> getFacilityInfoList(FacilityInfoDTO dto) {
         return mapper.selectFacilityInfoList(dto);
     }
+
+    /**
+     * 시/도 목록 조회
+     */
+    @Override
+    public List<String> getSidoList() {
+        return mapper.selectSidoList();
+    }
+
+    /**
+     * 시/군/구 목록 조회
+     */
+    @Override
+    public List<String> getSigunguList(String sidoNm) {
+        return mapper.selectSigunguList(sidoNm);
+    }
+
 }

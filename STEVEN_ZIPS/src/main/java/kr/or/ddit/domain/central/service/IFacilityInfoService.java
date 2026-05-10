@@ -13,5 +13,8 @@ public interface IFacilityInfoService {
 
     List<FacilityInfoDTO> getAptCardList(FacilityInfoDTO dto);
 
+    List<String> getSidoList();
+
+    List<String> getSigunguList(String sidoNm);
 
 }

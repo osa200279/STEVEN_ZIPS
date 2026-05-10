@@ -15,5 +15,15 @@ public interface IFacilityInfoMapper {
 
     List<FacilityInfoDTO> selectAptCardList(FacilityInfoDTO dto);
 
+    /**
+     * 시/도 목록 조회
+     */
+    List<String> selectSidoList();
+
+    /**
+     * 선택한 시/도의 시/군/구 목록 조회
+     */
+    List<String> selectSigunguList(String sidoNm);
+
 
 }
