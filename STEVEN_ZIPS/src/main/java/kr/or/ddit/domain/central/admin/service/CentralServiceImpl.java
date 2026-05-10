@@ -19,8 +19,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CentralServiceImpl implements CentralService {
 
-    private final CentralMapper mapper;
 
+    private final CentralMapper mapper;
 
 
     @Override
@@ -32,6 +32,7 @@ public class CentralServiceImpl implements CentralService {
     public List<ContractDocVO> selectContractDocList(PaginationInfoVO<ContractDocVO> pagingVO) {
         return mapper.selectContractDocList(pagingVO);
     }
+
 
     private final GoogleDriveService googleDriveService;
     private final IAttachFileMapper attachFileMapper;
@@ -74,8 +75,8 @@ public class CentralServiceImpl implements CentralService {
     }
 
     @Override
-    public ContractVO selectContractDeatil(String ctrtNo) {
-        return mapper.selectContractDetail(ctrtNo);
+    public ContractVO selectOneContract(String ctrtNo) {
+        return mapper.selectOneContract(ctrtNo);
     }
 
     @Override
@@ -135,7 +136,6 @@ public class CentralServiceImpl implements CentralService {
         attachFileMapper.insertAttachFile(attachFile);
 
 
-
     }
 
     @Override
@@ -144,8 +144,8 @@ public class CentralServiceImpl implements CentralService {
     }
 
     @Override
-    public ContractFormVO contractFormDetail(String frmNo) {
-        return mapper.contractFormDetail(frmNo);
+    public ContractFormVO selectOneContractForm(String frmNo) {
+        return mapper.selectOneContractForm(frmNo);
     }
 
     @Override
@@ -167,5 +167,9 @@ public class CentralServiceImpl implements CentralService {
     public List<ContractFormVO> selectContractFormList(PaginationInfoVO<ContractFormVO> pagingVO) {
         return mapper.SelectContractFormList(pagingVO);
     }
+
+
+
+
 
 }

@@ -17,7 +17,7 @@ public interface CentralMapper {
 
     void insertContract(RentContractVO rentContractVO);
 
-    ContractVO selectContractDetail(String ctrtNo);
+    ContractVO selectOneContract(String ctrtNo);
 
     int updateContract(RentContractVO rentContractVO);
 
@@ -33,11 +33,15 @@ public interface CentralMapper {
 
     List<ContractFormVO> SelectContractFormList(PaginationInfoVO<ContractFormVO> pagingVO);
 
-    ContractFormVO contractFormDetail(String frmNo);
+    ContractFormVO selectOneContractForm(String frmNo);
 
     void contractFormUpdate(ContractFormVO contractFormVO);
 
     int selectContractDocCount(PaginationInfoVO<ContractDocVO> pagingVO);
 
     List<ContractDocVO> selectContractDocList(PaginationInfoVO<ContractDocVO> pagingVO);
+
+
+
+
 }

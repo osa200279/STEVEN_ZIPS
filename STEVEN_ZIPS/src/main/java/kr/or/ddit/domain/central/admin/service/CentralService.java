@@ -15,7 +15,7 @@ public interface CentralService {
 
     List<ContractVO> selectContractList(PaginationInfoVO<ContractVO> pagingVO);
 
-    ContractVO selectContractDeatil(String ctrtNo);
+    ContractVO selectOneContract(String ctrtNo);
 
     void updateContract(RentContractVO vo, MultipartFile[] files) throws Exception;
 
@@ -31,12 +31,16 @@ public interface CentralService {
     List<ContractFormVO> selectContractFormList(PaginationInfoVO<ContractFormVO> pagingVO);
 
 
-    ContractFormVO contractFormDetail(String frmNo);
+    ContractFormVO selectOneContractForm(String frmNo);
 
     void contractFormUpdate(ContractFormVO contractFormVO);
 
     int selectContractDocCount(PaginationInfoVO<ContractDocVO> pagingVO);
 
     List<ContractDocVO> selectContractDocList(PaginationInfoVO<ContractDocVO> pagingVO);
+
+
+
+
 
 }
