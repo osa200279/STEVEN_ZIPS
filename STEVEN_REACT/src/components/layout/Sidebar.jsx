@@ -1,5 +1,5 @@
 
-const Sidebar = ({ isCollapsed, toggleSidebar }) => {
+const Sidebar = ({ isCollapsed, toggleSidebar, admInfo }) => {
   return (
     <aside id="sidebar" className={isCollapsed ? 'collapsed' : ''}>
       <div className="sidebar-logo">
@@ -27,8 +27,6 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
         <div className="nav-divider"></div>
       </nav>
 
-      
-
 
       {/* 관리자 명함 카드 */}
       <div className="admin-card">
@@ -38,7 +36,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
         {!isCollapsed && (
           <div style={{ flex: 1, marginLeft: '12px' }}>
             <p style={{ color: '#fff', fontSize: '12px', fontWeight: '700', margin: 0 }}>중앙관리자</p>
-            <span style={{ color: 'var(--sb-label)', fontSize: '10px' }}>ㅇㅇㅇ 님</span>
+            <span style={{ color: 'var(--sb-label)', fontSize: '10px' }}>{ admInfo ? `${admInfo.userNm} 님` : '정보 로딩중...' }</span>
           </div>
         )}
       </div>

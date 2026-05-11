@@ -1,5 +1,6 @@
 
-const Header = ({ parent, current }) => {
+// eslint-disable-next-line no-unused-vars
+const Header = ({ parent, current, admInfo }) => {
   return (
     <div className="topbar">
       <div className="breadcrumb">

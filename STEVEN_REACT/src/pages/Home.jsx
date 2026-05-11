@@ -1,22 +1,25 @@
 
 const Home = () => {
+
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
       height: '100%',
-      backgroundColor: 'var(--bg)' 
+      backgroundColor: 'var(--bg)'
     }}>
-      <h1 style={{ 
-        fontSize: '110px', 
-        fontWeight: '900', 
-        color: 'var(--text-primary)', 
+      <h1 style={{
+        fontSize: '110px',
+        fontWeight: '900',
+        color: 'var(--text-primary)',
         letterSpacing: '-5px',
         margin: 0,
         opacity: 0.9
-      }}>WELCOME</h1>
+      }}>
+        DASHBOARD
+      </h1>
       <div style={{
         marginTop: '10px',
         padding: '6px 16px',
