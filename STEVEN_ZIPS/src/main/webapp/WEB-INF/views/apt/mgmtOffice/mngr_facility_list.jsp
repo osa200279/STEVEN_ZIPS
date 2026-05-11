@@ -136,14 +136,15 @@
         .facility-modal-col-right { padding-left:20px; }
         .facility-col-label { font-size:11px; font-weight:800; color:#8a9a8e; letter-spacing:.5px; text-transform:uppercase; padding-bottom:8px; border-bottom:1px solid var(--line,#d7dce2); margin-bottom:14px; }
         #facilityPage .facility-location-row { display:grid; grid-template-columns:minmax(110px,1fr) minmax(0,2fr); gap:14px; }
-        #facilityPage .facility-date-row { display:grid; grid-template-columns:minmax(110px,1fr) minmax(0,2fr); gap:14px; }
+        #facilityPage .facility-date-row { display:grid; grid-template-columns:minmax(220px,320px); gap:14px; }
         #facilityPage .facility-edit-only { display:none; }
         #facilityPage.is-edit-mode .facility-edit-only { display:grid; }
-        #facilityPage .facility-correction-row { grid-template-columns:auto minmax(0,1fr); align-items:start; column-gap:10px; row-gap:4px; }
+        #facilityPage .facility-type-control { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:8px; }
+        #facilityPage .facility-correction-guide { margin-top:5px; }
         #facilityPage .correction-inline-btn { flex-shrink:0; white-space:nowrap; }
         #facilityPage.is-edit-mode .correction-inline-btn { display:inline-flex; }
-        #facilityPage .facility-use-row { grid-template-columns:minmax(160px,1fr) minmax(0,1.45fr); align-items:center; gap:14px; }
-        #facilityPage .facility-use-left { display:flex; align-items:center; gap:10px; min-width:0; }
+        #facilityPage .facility-use-row { grid-template-columns:1fr; }
+        #facilityPage .facility-use-control { display:flex; align-items:center; gap:10px; min-width:0; min-height:32px; }
         #facilityPage .facility-use-status { font-size:12px; font-weight:800; color:#1f5a35; white-space:nowrap; }
         #facilityPage .facility-use-status.is-off { color:#7f1d1d; }
         #facilityPage .use-toggle { position:relative; display:inline-flex; width:46px; height:24px; flex-shrink:0; }
@@ -161,7 +162,7 @@
             #facilityPage .facility-location-row,
             #facilityPage .facility-date-row,
             #facilityPage .facility-use-row,
-            #facilityPage .facility-correction-row { grid-template-columns:1fr; }
+            #facilityPage .facility-type-control { grid-template-columns:1fr; }
         }
     </style>
 
@@ -245,7 +246,7 @@
                 <%-- ══ 등록·수정 모달 (wide 2컬럼)
                      좌: 시설 기본정보 + 운영상태(수정 모드만)
                      우: 시설 사진 + 등록 후 연결 안내
-                     시설유형 정정 버튼: 시설유형 필드 바로 아래 인라인 배치
+                     시설유형 정정 버튼: 수정 모드에서 시설유형 필드 옆에 인라인 배치
                 ══ --%>
                 <div class="modal-overlay" id="facilityModal">
                     <div class="modal modal-wide">
@@ -316,48 +317,48 @@
                                                     <label class="field-label">설치일자</label>
                                                     <input type="date" class="form-input" id="instlDt" name="instlDt">
                                                 </div>
-                                                <div></div>
                                             </div>
 
                                             <div class="form-row cols-1">
                                                 <div class="form-field">
                                                     <label class="field-label">시설유형 <span class="req">*</span></label>
-                                                    <select class="form-select" id="facilityTyCd" name="facilityTyCd" required>
-                                                        <option value="">선택</option>
-                                                        <option value="ELV">ELV · 승강기</option>
-                                                        <option value="WTR">WTR · 급수시설</option>
-                                                        <option value="ELC">ELC · 전기시설</option>
-                                                        <option value="GAS">GAS · 가스시설</option>
-                                                        <option value="FIRE">FIRE · 소방시설</option>
-                                                        <option value="SEC">SEC · 보안시설</option>
-                                                        <option value="ETC">ETC · 기타시설</option>
-                                                    </select>
-                                                    <div class="field-help">시설유형은 시설 분류 및 후속 관리 기준입니다.</div>
-                                                </div>
-                                            </div>
-
-                                            <div class="form-row facility-correction-row facility-edit-only">
-                                                <button type="button" class="btn btn-secondary btn-sm correction-inline-btn" id="facilityCorrectionBtn" data-action="openCorrection">
-                                                    <span class="material-symbols-rounded">edit_note</span>시설유형 정정
-                                                </button>
-                                                <div>
-                                                    <div class="field-help lock">시설유형 정정이 필요하면 정정 버튼을 눌러 변경 가능 여부를 확인하세요.</div>
-                                                    <div id="correctionGuide" style="display:none;">
-                                                        <div class="field-help" style="color:#7c2d12;font-weight:700;">정정 가능 · 변경할 시설유형을 선택하고 저장하세요.</div>
+                                                    <div class="facility-type-control">
+                                                        <select class="form-select" id="facilityTyCd" name="facilityTyCd" required>
+                                                            <option value="">선택</option>
+                                                            <option value="ELV">ELV · 승강기</option>
+                                                            <option value="WTR">WTR · 급수시설</option>
+                                                            <option value="ELC">ELC · 전기시설</option>
+                                                            <option value="GAS">GAS · 가스시설</option>
+                                                            <option value="FIRE">FIRE · 소방시설</option>
+                                                            <option value="SEC">SEC · 보안시설</option>
+                                                            <option value="ETC">ETC · 기타시설</option>
+                                                        </select>
+                                                        <button type="button" class="btn btn-secondary btn-sm correction-inline-btn facility-edit-only" id="facilityCorrectionBtn" data-action="openCorrection">
+                                                            <span class="material-symbols-rounded">edit_note</span>시설유형 정정
+                                                        </button>
+                                                    </div>
+                                                    <div class="facility-correction-guide">
+                                                        <div class="field-help">시설유형은 시설 분류 및 후속 관리 기준입니다.</div>
+                                                        <div class="field-help lock">시설유형 정정이 필요하면 정정 버튼을 눌러 변경 가능 여부를 확인하세요.</div>
+                                                        <div id="correctionGuide" style="display:none;">
+                                                            <div class="field-help" style="color:#7c2d12;font-weight:700;">정정 가능 · 변경할 시설유형을 선택하고 저장하세요.</div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-row facility-use-row facility-edit-only">
-                                                <div class="facility-use-left">
-                                                    <span class="field-label" style="margin:0;">사용 가능 여부</span>
-                                                    <label class="use-toggle" for="useYnToggle">
-                                                        <input type="checkbox" id="useYnToggle" checked>
-                                                        <span class="use-toggle-slider"></span>
-                                                    </label>
-                                                    <span class="facility-use-status" id="useYnStatusText">사용 가능</span>
+                                                <div class="form-field">
+                                                    <label class="field-label">사용 가능 여부</label>
+                                                    <div class="facility-use-control">
+                                                        <label class="use-toggle" for="useYnToggle">
+                                                            <input type="checkbox" id="useYnToggle" checked>
+                                                            <span class="use-toggle-slider"></span>
+                                                        </label>
+                                                        <span class="facility-use-status" id="useYnStatusText">사용 가능</span>
+                                                    </div>
+                                                    <div class="field-help facility-use-guide">FAULT 판정 시 자동으로 사용 불가 처리됩니다. 복구 시 사용 가능으로 변경하세요.</div>
                                                 </div>
-                                                <div class="field-help facility-use-guide">FAULT 판정 시 자동으로 사용 불가 처리됩니다. 복구 시 사용 가능으로 변경하세요.</div>
                                             </div>
                                         </div>
 
