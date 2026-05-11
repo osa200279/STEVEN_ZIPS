@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.central.service.IFacilityInfoService;
+import kr.or.ddit.common.model.PaginationInfoVO;
 
 import java.util.List;
 
@@ -31,74 +32,79 @@ public class FacilityHistoryController {
     public String facilityHistory(
             FacilityInfoDTO dto,
             @RequestParam(value = "searchYn", required = false) String searchYn,
+            @RequestParam(value = "currentPage", required = false, defaultValue = "1") int currentPage,
             Model model
     ) {
 
-        /*
-         * searchYn
-         * → 사용자가 조회 버튼을 눌렀는지 구분하는 값.
-         *
-         * 왜 필요?
-         * → 처음 화면에 들어왔을 때는 검색하지 않고 빈 화면으로 보여주기 위해.
-         *
-         * 사용 상황
-         * → JSP 검색 form에 hidden input으로 searchYn=Y를 보내면
-         *   그때만 DB 조회를 실행한다.
-         */
         boolean searched = "Y".equals(searchYn);
 
         List<FacilityHistoryVO> list = facilityHistoryService.getFacilityHistoryList();
 
         List<FacilityInfoDTO> facilityInfoList = null;
         FacilityInfoDTO aptInfo = null;
-
-        /*
-         * 카드 목록 데이터
-         *
-         * 검색 결과로 여러 단지가 조회될 수 있으므로
-         * 카드 형태로 먼저 보여주기 위해 사용.
-         */
         List<FacilityInfoDTO> aptCardList = null;
 
+        String detailMessage = null;
+        String detailErrorMessage = null;
+
         /*
-         * 검색 버튼 클릭 시 카드 목록 조회
+         * PaginationInfoVO란?
+         * → 페이징 계산을 대신 해주는 공통 객체.
+         *
+         * 왜 사용?
+         * → startRow, endRow, totalPage, Prev/Next HTML을 직접 계산하지 않아도 된다.
+         *
+         * screenSize = 8
+         * → 카드 4개 x 2줄 = 한 페이지에 8개 출력.
          */
+        PaginationInfoVO<FacilityInfoDTO> pagingVO = new PaginationInfoVO<>(8, 5);
+        pagingVO.setCurrentPage(currentPage);
+        pagingVO.setSearchVO(dto);
+
         if (searched) {
+
+            /*
+             * 검색 조건 + 페이징 row 값을 DTO에 세팅
+             * Mapper XML에서 #{startRow}, #{endRow}로 사용한다.
+             */
+            dto.setStartRow(pagingVO.getStartRow());
+            dto.setEndRow(pagingVO.getEndRow());
+
+            int totalRecord = facilityInfoService.getAptCardTotalCount(dto);
+
+            pagingVO.setTotalRecord(totalRecord);
+            pagingVO.setCurrentPage(currentPage);
+
+            dto.setStartRow(pagingVO.getStartRow());
+            dto.setEndRow(pagingVO.getEndRow());
+
             aptCardList = facilityInfoService.getAptCardList(dto);
+
+            pagingVO.setDataList(aptCardList);
         }
 
-        /*
-         * 카드 클릭 시 상세조회
-         *
-         * aptCmplexNo가 존재하면
-         * 선택한 단지 상세정보를 조회한다.
-         */
-        if (dto.getAptCmplexNo() != null
-                && !dto.getAptCmplexNo().isEmpty()) {
+        if (dto.getAptCmplexNo() != null && !dto.getAptCmplexNo().isEmpty()) {
 
-            facilityInfoList = facilityInfoService.getFacilityInfoList(dto);
+            try {
+                facilityInfoList = facilityInfoService.getFacilityInfoList(dto);
 
-            if (facilityInfoList != null
-                    && !facilityInfoList.isEmpty()) {
+                if (facilityInfoList != null && !facilityInfoList.isEmpty()) {
+                    aptInfo = facilityInfoList.get(0);
+                } else {
+                    detailMessage = "조회된 데이터가 없습니다.";
+                }
 
-                aptInfo = facilityInfoList.get(0);
+            } catch (Exception e) {
+                log.error("단지 시설 상세정보 조회 중 오류 발생", e);
+                detailErrorMessage = "단지 시설정보를 불러오는 중 에러가 발생했습니다.";
             }
         }
 
-        /*
-         * 검색용 지역 목록 조회
-         */
         List<String> sidoList = facilityInfoService.getSidoList();
 
         List<String> sigunguList = null;
 
-        /*
-         * 시/도가 선택된 경우에만
-         * 해당 시/군/구 목록 조회
-         */
-        if (dto.getSidoNm() != null
-                && !dto.getSidoNm().isEmpty()) {
-
+        if (dto.getSidoNm() != null && !dto.getSidoNm().isEmpty()) {
             sigunguList = facilityInfoService.getSigunguList(dto.getSidoNm());
         }
 
@@ -108,8 +114,11 @@ public class FacilityHistoryController {
         model.addAttribute("aptInfo", aptInfo);
         model.addAttribute("facilityInfoList", facilityInfoList);
         model.addAttribute("aptCardList", aptCardList);
+        model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("sidoList", sidoList);
         model.addAttribute("sigunguList", sigunguList);
+        model.addAttribute("detailMessage", detailMessage);
+        model.addAttribute("detailErrorMessage", detailErrorMessage);
 
         return "central/facility/fac-mnt-history";
     }

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class FacilityInfoImpl implements IFacilityInfoService {
+public class FacilityInfoServiceImpl implements IFacilityInfoService {
 
     private final IFacilityInfoMapper mapper;
 
@@ -48,6 +48,11 @@ public class FacilityInfoImpl implements IFacilityInfoService {
     @Override
     public List<String> getSigunguList(String sidoNm) {
         return mapper.selectSigunguList(sidoNm);
+    }
+
+    @Override
+    public int getAptCardTotalCount(FacilityInfoDTO dto) {
+        return mapper.selectAptCardTotalCount(dto);
     }
 
 }

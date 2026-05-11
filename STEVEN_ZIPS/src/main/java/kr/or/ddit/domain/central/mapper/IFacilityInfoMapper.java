@@ -25,5 +25,7 @@ public interface IFacilityInfoMapper {
      */
     List<String> selectSigunguList(String sidoNm);
 
+    /* 단지카드 페이징 처리 */
+    int selectAptCardTotalCount(FacilityInfoDTO dto);
 
 }

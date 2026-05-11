@@ -121,5 +121,14 @@ public class FacilityInfoDTO {
     private String publicFacilityList; // 공용시설 목록 문자열
     private String publicItemList;     // 공용시설 물품 목록 문자열
 
+    /* 단지카드 페이징 */
+    private int startRow;    // 페이징 시작 row
+    private int endRow;      // 페이징 끝 row
+
+    /* 주변 인프라 */
+    private String educationInfra;      // 교육시설
+    private String transitInfo;         // 교통정보 = 교통노선정보 + 교통접근성
+    private String welfareInfra;        // 복지시설
+    private String convenienceInfra;    // 생활편의시설
 
 }

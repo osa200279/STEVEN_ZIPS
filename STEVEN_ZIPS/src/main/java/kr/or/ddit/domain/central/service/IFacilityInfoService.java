@@ -17,4 +17,6 @@ public interface IFacilityInfoService {
 
     List<String> getSigunguList(String sidoNm);
 
+    int getAptCardTotalCount(FacilityInfoDTO dto);
+
 }

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 
 <html class="light" lang="ko">
@@ -259,6 +260,89 @@
             background:#fff;
         }
 
+        .facility-pagination{
+            margin-top:30px;
+            display:flex;
+            justify-content:center;
+        }
+
+        .facility-pagination .pagination{
+            display:flex;
+            gap:8px;
+            list-style:none;
+            padding:0;
+            margin:0;
+        }
+
+        .facility-pagination .page-link{
+            min-width:36px;
+            height:36px;
+            padding:0 12px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            border:1px solid #d1d5db;
+            border-radius:10px;
+            text-decoration:none;
+            color:#334155;
+            font-size:14px;
+            font-weight:800;
+            background:#fff;
+        }
+
+        .facility-pagination .page-link:hover{
+            background:#eef1ee;
+        }
+
+        .facility-pagination .page-item.active .page-link{
+            background:#00583f;
+            color:#fff;
+            border-color:#00583f;
+        }
+
+        .sortable-th{
+            cursor:pointer;
+            user-select:none;
+        }
+
+        /*
+         * cursor:pointer
+         * → 마우스를 올렸을 때 클릭 가능한 손가락 모양으로 보여준다.
+         *
+         * user-select:none
+         * → 정렬 버튼을 여러 번 클릭할 때 글자가 드래그 선택되는 것을 막는다.
+         */
+
+        .facility-card.is-selected{
+            border:3px solid #00583f;
+            box-shadow:0 0 0 4px rgba(0, 88, 63, 0.12);
+            transform:translateY(-3px);
+        }
+
+        .facility-card.is-selected .facility-card-top{
+            background:#d9eee5;
+        }
+
+        .facility-card.is-selected .facility-card-title::after{
+            content:"선택됨";
+
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+
+            margin-left:8px;
+            padding:4px 10px;
+
+            border-radius:999px;
+
+            background-color: #DBEAFE;
+            color: #1D4ED8;
+
+            font-size:11px;
+            font-weight:800;
+
+            vertical-align:middle;
+        }
     </style>
 </head>
 
@@ -281,7 +365,8 @@
         <form method="get"
               action="${pageContext.request.contextPath}/facility/history.do"
               class="facility-search-form">
-
+            <%-- 단지카드 페이징 처리 --%>
+            <input type="hidden" name="currentPage" id="currentPage" value="${pagingVO.currentPage}" />
             <%-- 조회 버튼을 눌렀는지 Controller에 전달 --%>
             <input type="hidden" name="searchYn" value="Y"/>
 
@@ -350,13 +435,13 @@
                     <c:when test="${not empty aptCardList}">
 
                         <div class="facility-card-count">
-                            총 ${aptCardList.size()}개 단지
+                            총 ${pagingVO.totalRecord}개 단지
                         </div>
 
                         <div class="facility-card-grid">
                             <c:forEach var="apt" items="${aptCardList}">
-                                <a class="facility-card"
-                                   href="${pageContext.request.contextPath}/facility/history.do?searchYn=Y&sidoNm=${dto.sidoNm}&sigunguNm=${dto.sigunguNm}&unitRange=${dto.unitRange}&keyword=${dto.keyword}&aptCmplexNo=${apt.aptCmplexNo}">
+                                <a class="facility-card ${dto.aptCmplexNo eq apt.aptCmplexNo ? 'is-selected' : ''}"
+                                   href="${pageContext.request.contextPath}/facility/history.do?searchYn=Y&sidoNm=${dto.sidoNm}&sigunguNm=${dto.sigunguNm}&unitRange=${dto.unitRange}&keyword=${dto.keyword}&currentPage=${pagingVO.currentPage}&aptCmplexNo=${apt.aptCmplexNo}">
 
                                     <div class="facility-card-top">
                                 <span class="facility-card-badge">
@@ -371,12 +456,23 @@
 
                                         <div class="facility-card-meta">
                                             <span>${apt.unitCnt}세대 ${apt.dongCnt}동</span>
-                                            <span>${apt.bldYr} 준공</span>
+                                            <span>
+                                                ${fn:substring(apt.bldYr, 0, 4)}.
+                                                ${fn:substring(apt.bldYr, 4, 6)}.
+                                                ${fn:substring(apt.bldYr, 6, 8)}
+                                                준공
+                                            </span>
                                         </div>
                                     </div>
                                 </a>
                             </c:forEach>
                         </div>
+                        <%-- 단지카드 페이징 처리 --%>
+                        <c:if test="${pagingVO.totalPage > 1}">
+                            <div class="facility-pagination">
+                                    ${pagingVO.pagingHTML}
+                            </div>
+                        </c:if>
 
                     </c:when>
 
@@ -421,7 +517,7 @@
                             <tbody>
                             <tr>
                                 <th>단지명</th>
-                                <td colspan="3">${aptInfo.aptCmplexNm} (${aptInfo.aptCmplexNo})</td>
+                                <td colspan="3">${aptInfo.aptCmplexNm}</td>
                             </tr>
                             <tr>
                                 <th>법정동주소</th>
@@ -433,7 +529,11 @@
                                 <th>난방방식</th>
                                 <td>${aptInfo.heatTy}</td>
                                 <th>준공년도</th>
-                                <td>${aptInfo.bldYr}</td>
+                                <td>
+                                        ${fn:substring(aptInfo.bldYr, 0, 4)}.
+                                        ${fn:substring(aptInfo.bldYr, 4, 6)}.
+                                        ${fn:substring(aptInfo.bldYr, 6, 8)}
+                                </td>
                             </tr>
                             <tr>
                                 <th>최대층수</th>
@@ -449,7 +549,7 @@
                             </tr>
                             <tr>
                                 <th>CCTV 수</th>
-                                <td>${aptInfo.ccCnt}</td>
+                                <td>${aptInfo.ccCnt}대</td>
                                 <th>시공사 / 시행사</th>
                                 <td>${aptInfo.cnscoNm}</td>
                             </tr>
@@ -486,30 +586,95 @@
                     <section class="facility-section">
                         <h2 class="facility-section-title">시설사항</h2>
 
-                        <table class="facility-table">
+                        <table class="facility-table" id="facilitySortTable">
                             <thead>
                             <tr>
-                                <th>시설명</th>
-                                <th>시설유형</th>
-                                <th>위치 동</th>
-                                <th>상세 위치</th>
+                                    <%--
+                                        data-sort-col
+                                        → 몇 번째 컬럼을 정렬할지 JS에 알려주는 값.
+                                        0: 시설명, 1: 시설유형, 2: 위치, 3: 상세 위치
+                                    --%>
+                                    <th class="sortable-th" data-sort-col="0">시설명 ⇅</th>
+                                    <th class="sortable-th" data-sort-col="1">시설유형 ⇅</th>
+                                    <th class="sortable-th" data-sort-col="2">위치 ⇅</th>
+                                    <th class="sortable-th" data-sort-col="3">상세 위치 ⇅</th>
                             </tr>
                             </thead>
 
                             <tbody>
                             <c:choose>
                                 <c:when test="${not empty facilityInfoList}">
+
+                                    <%--
+                                        prevFacilityNo
+                                        → 바로 이전에 출력한 시설번호를 저장하는 변수.
+
+                                        왜 사용?
+                                        → public_item 조인 때문에 같은 시설이 여러 번 조회되므로
+                                          같은 facilityNo는 화면에 한 번만 출력하기 위해 사용.
+                                    --%>
+                                    <c:set var="prevFacilityNo" value="" />
+                                    <c:set var="facilityPrintCnt" value="0" />
+
                                     <c:forEach var="item" items="${facilityInfoList}">
-                                        <c:if test="${not empty item.facilityNo}">
+
+                                        <%--
+                                            facilityNo가 있고,
+                                            이전에 출력한 facilityNo와 다를 때만 출력한다.
+                                        --%>
+                                        <c:if test="${not empty item.facilityNo and item.facilityNo ne prevFacilityNo}">
                                             <tr>
                                                 <td>${item.facilityNm}</td>
+                                                <%-- 시설유형코드 -> 한글로 변환 --%>
                                                 <td>${item.facilityTyCd}</td>
-                                                <td>${item.dongNo}</td>
-                                                <td>${item.locCn}</td>
+                                                <td>
+
+                                                            <c:choose>
+                                                                <%--
+                                                                    SEC = 보안시설
+                                                                    경비실 같은 보안시설은 특정 동이 아니라 단지 전체 시설로 보는 경우가 많아서
+                                                                    위치를 "아파트명"만 출력한다.
+                                                                --%>
+                                                                <c:when test="${item.facilityTyCd eq 'SEC'}">
+                                                                    ${aptInfo.aptCmplexNm}
+                                                                </c:when>
+
+                                                                <%--
+                                                                    dongNo 예시: A12185003_3
+                                                                    "_" 뒤 숫자만 잘라서 "SH성산아파트 3동" 형태로 출력한다.
+                                                                --%>
+                                                                <c:when test="${not empty item.dongNo}">
+                                                                    ${aptInfo.aptCmplexNm} ${fn:substringAfter(item.dongNo, '_')}동
+                                                                </c:when>
+
+                                                                <c:otherwise>-</c:otherwise>
+                                                            </c:choose>
+                                                </td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${not empty item.locCn}">
+                                                            ${item.locCn}
+                                                        </c:when>
+                                                        <c:otherwise>-</c:otherwise>
+                                                    </c:choose>
+                                                </td>
                                             </tr>
+
+                                            <%-- 현재 출력한 시설번호를 저장 --%>
+                                            <c:set var="prevFacilityNo" value="${item.facilityNo}" />
+                                            <c:set var="facilityPrintCnt" value="${facilityPrintCnt + 1}" />
                                         </c:if>
+
                                     </c:forEach>
+
+                                    <c:if test="${facilityPrintCnt eq 0}">
+                                        <tr>
+                                            <td colspan="4" style="text-align:center;">등록된 시설정보가 없습니다.</td>
+                                        </tr>
+                                    </c:if>
+
                                 </c:when>
+
                                 <c:otherwise>
                                     <tr>
                                         <td colspan="4" style="text-align:center;">등록된 시설정보가 없습니다.</td>
@@ -520,71 +685,60 @@
                         </table>
                     </section>
 
-                    <!-- 주변사항 -->
-                    <section class="facility-section">
-                        <h2 class="facility-section-title">주변사항</h2>
 
-                        <table class="facility-table">
-                            <tbody>
-                            <tr>
-                                <th>주변 인프라</th>
-                                <td colspan="3">
-                                    <c:choose>
-                                        <c:when test="${not empty aptInfo.infraList}">
-                                            ${aptInfo.infraList}
-                                        </c:when>
-                                        <c:otherwise>-</c:otherwise>
-                                    </c:choose>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </section>
 
                     <!-- 입주편의시설 조회 -->
-                    <section class="facility-section">
-                        <h2 class="facility-section-title">입주편의시설 조회</h2>
+                <section class="facility-section">
+                    <h2 class="facility-section-title">주변사항</h2>
 
-                        <table class="facility-table">
-                            <thead>
-                            <tr>
-                                <th>공용시설명</th>
-                                <th>물품명</th>
-                                <th>예약가능여부</th>
-                                <th>이용금액</th>
-                            </tr>
-                            </thead>
+                    <table class="facility-table">
+                        <tbody>
+                        <tr>
+                            <th>교육시설</th>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty aptInfo.educationInfra}">
+                                        ${aptInfo.educationInfra}
+                                    </c:when>
+                                    <c:otherwise>-</c:otherwise>
+                                </c:choose>
+                            </td>
 
-                            <tbody>
-                            <c:choose>
-                                <c:when test="${not empty facilityInfoList}">
-                                    <c:forEach var="item" items="${facilityInfoList}">
-                                        <c:if test="${not empty item.cmnFacilityNo}">
-                                            <tr>
-                                                <td>${item.cmnFacilityNm}</td>
-                                                <td>
-                                                    <c:choose>
-                                                        <c:when test="${not empty item.itemNm}">
-                                                            ${item.itemNm}
-                                                        </c:when>
-                                                        <c:otherwise>-</c:otherwise>
-                                                    </c:choose>
-                                                </td>
-                                                <td>${item.cmnFacilityRsvYn}</td>
-                                                <td>${item.cmnFacilityAmt}원</td>
-                                            </tr>
-                                        </c:if>
-                                    </c:forEach>
-                                </c:when>
-                                <c:otherwise>
-                                    <tr>
-                                        <td colspan="4" style="text-align:center;">등록된 입주편의시설이 없습니다.</td>
-                                    </tr>
-                                </c:otherwise>
-                            </c:choose>
-                            </tbody>
-                        </table>
-                    </section>
+                            <th>교통정보</th>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty aptInfo.transitInfo}">
+                                        ${aptInfo.transitInfo}
+                                    </c:when>
+                                    <c:otherwise>-</c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>복지시설</th>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty aptInfo.welfareInfra}">
+                                        ${aptInfo.welfareInfra}
+                                    </c:when>
+                                    <c:otherwise>-</c:otherwise>
+                                </c:choose>
+                            </td>
+
+                            <th>생활편의시설</th>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${not empty aptInfo.convenienceInfra}">
+                                        ${aptInfo.convenienceInfra}
+                                    </c:when>
+                                    <c:otherwise>-</c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
 
             </c:when>
 
@@ -632,6 +786,117 @@
                 "${pageContext.request.contextPath}/facility/history.do"
                 + "?sidoNm=" + this.value;
 
+        });
+
+    /*
+     * 페이징 버튼 클릭 처리
+     *
+     * data-page란?
+     * → PaginationInfoVO가 만든 페이지 번호를 담고 있는 HTML 속성.
+     *
+     * 왜 사용?
+     * → 페이지 번호를 클릭했을 때 form의 currentPage 값을 바꿔서 다시 검색하기 위해.
+     */
+    document.addEventListener("click", function(e) {
+
+        if (e.target.classList.contains("page-link")
+            && e.target.dataset.page) {
+
+            e.preventDefault();
+
+            document.getElementById("currentPage").value = e.target.dataset.page;
+            document.querySelector(".facility-search-form").dataset.paging = "Y";
+            document.querySelector(".facility-search-form").submit();
+        }
+    });
+
+    /*
+ * 시설사항 테이블 컬럼 정렬
+ *
+ * 정렬이란?
+ * → 데이터를 가나다순 또는 반대순으로 다시 배치하는 것.
+ *
+ * 왜 JS로 처리?
+ * → 이미 화면에 조회된 데이터만 오름차순/내림차순으로 바꾸는 기능이라
+ *   서버를 다시 호출하지 않아도 된다.
+ */
+    document.querySelectorAll("#facilitySortTable .sortable-th").forEach(function(th) {
+
+        th.addEventListener("click", function() {
+
+            const table = document.getElementById("facilitySortTable");
+            const tbody = table.querySelector("tbody");
+
+            /*
+             * data-sort-col 값 가져오기
+             * → 사용자가 클릭한 제목이 몇 번째 컬럼인지 확인한다.
+             */
+            const colIndex = Number(this.dataset.sortCol);
+
+            /*
+             * 현재 정렬 방향 확인
+             * asc  = 오름차순
+             * desc = 내림차순
+             */
+            const currentDir = this.dataset.sortDir || "desc";
+            const nextDir = currentDir === "asc" ? "desc" : "asc";
+
+            this.dataset.sortDir = nextDir;
+
+            /*
+             * tbody 안의 tr들을 배열로 변환
+             * → sort()를 사용하려면 배열 형태가 편하다.
+             */
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+
+            rows.sort(function(a, b) {
+                const aText = a.children[colIndex].innerText.trim();
+                const bText = b.children[colIndex].innerText.trim();
+
+                /*
+                 * localeCompare
+                 * → 한글 가나다순 정렬에 사용한다.
+                 */
+                if (nextDir === "asc") {
+                    return aText.localeCompare(bText, "ko");
+                } else {
+                    return bText.localeCompare(aText, "ko");
+                }
+            });
+
+            /*
+             * 정렬된 tr을 tbody에 다시 붙인다.
+             * appendChild는 기존 요소를 복사하는 게 아니라 위치를 이동시킨다.
+             */
+            rows.forEach(function(row) {
+                tbody.appendChild(row);
+            });
+        });
+    });
+
+    /*
+     * 검색 버튼 클릭 시 항상 1페이지부터 조회
+     *
+     * 왜 필요?
+     * → 현재 5페이지에 있다가 검색하면 currentPage=5가 그대로 넘어가서
+     *   검색 결과도 5페이지부터 보이는 문제가 생길 수 있다.
+     */
+    document.querySelector(".facility-search-form")
+        .addEventListener("submit", function() {
+
+            /*
+             * paging=Y
+             * → 페이지 번호를 클릭해서 넘어가는 경우.
+             * 이때는 currentPage를 1로 바꾸면 안 된다.
+             */
+            if (this.dataset.paging === "Y") {
+                this.dataset.paging = "";
+                return;
+            }
+            /*
+             * 일반 검색 버튼 submit이면 1페이지로 초기화
+             */
+            document.getElementById("currentPage").value = "1";
         });
 
 </script>
