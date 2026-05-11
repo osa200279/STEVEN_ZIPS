@@ -110,14 +110,14 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
 
-                    <span class="sub-group-label">시설자산 관리</span>
+                    <span class="sub-group-label">시설 관리</span>
                     <a href="${ctx}/manager/facilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">일반 · 검침시설</span>
+                        <span class="nav-text">시설자산 관리</span>
                     </a>
                     <a href="${ctx}/manager/publicFacilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">편의 시설</span>
+                        <span class="nav-text">편의시설 관리</span>
                     </a>
 
                     <%-- 공사·점검 --%>
