@@ -67,21 +67,21 @@
             <h4>자유게시판 목록</h4>
             <p>게시글 검색 및 필터, 페이징이 포함된 목록 화면입니다.</p>
             <div class="menu-links">
-              <a href="${pageContext.request.contextPath}/resident/board/free/list">목록</a>
+              <a href="${pageContext.request.contextPath}/resident/board/free/list/${aptCmplexNo}">목록</a>
             </div>
           </div>
           <div class="menu-card">
             <h4>글쓰기</h4>
             <p>제목, 내용, 파일첨부를 입력하는 작성 화면입니다.</p>
             <div class="menu-links">
-              <a href="${pageContext.request.contextPath}/resident/board/free/write">글쓰기</a>
+              <a href="${pageContext.request.contextPath}/resident/board/free/write/${aptCmplexNo}">글쓰기</a>
             </div>
           </div>
           <div class="menu-card">
             <h4>상세보기</h4>
             <p>게시글 본문과 댓글을 확인하는 상세 화면입니다.</p>
             <div class="menu-links">
-              <a href="${pageContext.request.contextPath}/resident/board/free/detail">상세</a>
+              <a href="${pageContext.request.contextPath}/resident/board/free/detail/${aptCmplexNo}">상세</a>
             </div>
           </div>
         </section>
