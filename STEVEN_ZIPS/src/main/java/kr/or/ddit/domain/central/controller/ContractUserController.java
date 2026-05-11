@@ -1,9 +1,10 @@
 package kr.or.ddit.domain.central.controller;
 
-import kr.or.ddit.domain.central.board.service.INoticeService;
-import kr.or.ddit.domain.central.board.vo.NoticeVO;
+import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
+import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
 import kr.or.ddit.domain.central.service.IContractUserService;
 import kr.or.ddit.domain.central.vo.ContractUserVO;
+import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -26,10 +24,10 @@ import java.util.List;
 public class ContractUserController {
 
     @Autowired
-    private INoticeService noticeService;
+    private IContractUserService contractUserService;
 
     @Autowired
-    private IContractUserService contractUserService;
+    private IAnnouncementService announcementService;
 
     @GetMapping("/list.do")
     public String contractList() {
@@ -37,10 +35,10 @@ public class ContractUserController {
         return "central/contract/contractList";
     }
 
-    @GetMapping("/notice.do")
+    /*@GetMapping("/notice.do")
     public String contractNotice() {
         return "central/contract/contractNotice"; // JSP 이름
-    }
+    }*/
 
 
     @GetMapping("/apply.do")
@@ -89,16 +87,46 @@ public class ContractUserController {
         return "central/contract/contractAList";
     }*/
 
+    // 컨트롤러에서 rentCtrtNo 파라미터 제거
+
     @PreAuthorize("hasRole('MEMBER')")
-    @PostMapping("/apply.do")
-    public String applyContract(
-            @RequestParam("uploadFiles") MultipartFile[] contractDocFile,
-            @RequestParam("docTypeList") List<String> docTypeList,
-            @AuthenticationPrincipal CustomUser principal
-    ) throws IOException {
+    @GetMapping("/noticeList.do")
+    public String contractNoticeList(AnnouncementDTO searchVO, Model model) {
+        List<AnnouncementDTO> list = announcementService.selectAnnouncementList(searchVO);
+        if (!list.isEmpty()) {
+            log.info("첫번째 aptCmplexNo: {}", list.get(0).getAptCmplexNo());
+        }
+        model.addAttribute("list", list);
+        return "central/contract/contractNotice";
+    }
+
+    @PreAuthorize("hasRole('MEMBER')")
+    @ResponseBody
+    @PostMapping("/request.do")
+    public Map<String, Object> contractRequest(@RequestBody RentCtrtVO rentCtrtVO,
+                                               @AuthenticationPrincipal CustomUser principal){
+
         String userNo = principal.getMember().getUserNo();
-        contractUserService.insertContractDoc(contractDocFile, docTypeList, userNo);
-        return "redirect:/contract/history.do";
+        rentCtrtVO.setUserNo(userNo);
+        contractUserService.insertRentCtrt(rentCtrtVO);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        return result;
+
+    }
+
+    @PreAuthorize("hasRole('MEMBER')")
+    @GetMapping("/detail.do")
+    public String contractDetail(
+            @RequestParam("annNo") String annNo,
+            @AuthenticationPrincipal CustomUser principal,
+            Model model) {
+        AnnouncementDTO announcement = announcementService.selectAnnouncement(annNo);
+        log.info("annNo: {}", annNo);
+        log.info("announcement: {}", announcement);
+        model.addAttribute("announcement", announcement);
+        model.addAttribute("principal", principal);
+        return "central/contract/contractNoticeDetail";
     }
 
     @PreAuthorize("hasRole('MEMBER')")
@@ -113,27 +141,26 @@ public class ContractUserController {
         return "central/contract/contractAList";
     }
 
-
-
-
-
-
-
-
-
-
-
-    @GetMapping("/noticeList.do")
-    public String noticeList() {
-        return "central/contract/notice";
+    @PreAuthorize("hasRole('MEMBER')")
+    @PutMapping("/update.do")
+    @ResponseBody
+    public Map<String, Object> contractUpdate(@RequestBody RentCtrtVO rentCtrtVO,
+                                              @AuthenticationPrincipal CustomUser principal) {
+        String userNo = principal.getMember().getUserNo();
+        rentCtrtVO.setUserNo(userNo);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        return result;
     }
+
+
 
     /*@GetMapping("/history.do")
     public String contractHistory() {
         return "central/contract/contractAList";
     }*/
 
-    @GetMapping("/detail.do")
+   /* @GetMapping("/detail.do")
     public String contractDetail(String annNo, Model model) {
 
         NoticeVO notice = noticeService.getNoticeDetail(annNo);
@@ -141,5 +168,7 @@ public class ContractUserController {
 
 
         return "central/contract/contractNoticeDetail"; // 상세 JSP
-    }
+    }*/
+
+
 }

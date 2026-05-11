@@ -5,7 +5,7 @@ import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.central.mapper.IContractUserMapper;
 import kr.or.ddit.domain.central.vo.ContractUserVO;
-import lombok.RequiredArgsConstructor;
+import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,4 +66,19 @@ public class ContractUserServiceImpl implements IContractUserService {
     public List<ContractUserVO> selectContractDoc(String userNo) {
         return contractUserMapper.selectContractDoc(userNo);
     }
+
+    @Transactional
+    @Override
+    public void insertRentCtrt(RentCtrtVO rentCtrtVO) {
+        log.info("aptCmplexNo: {}", rentCtrtVO.getAptCmplexNo());
+        // 단지번호로 매물번호 조회
+        String rentLstgNo = contractUserMapper.selectRentLstgNo(rentCtrtVO.getAptCmplexNo());
+        log.info("rentLstgNo: {}", rentLstgNo);
+        rentCtrtVO.setRentLstgNo(rentLstgNo);
+        // ctrt_id는 rentCtrtNo와 동일하게 세팅 (selectKey 실행 후)
+        contractUserMapper.insertRentCtrtVO(rentCtrtVO);
+        rentCtrtVO.setCtrtId(rentCtrtVO.getRentCtrtNo());
+    }
+
+
 }

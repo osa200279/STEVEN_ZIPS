@@ -31,6 +31,40 @@
         ,#{rentCtrtNo}
         )
     </insert>
+    <insert id="insertRentCtrtVO" parameterType="kr.or.ddit.domain.central.vo.RentCtrtVO">
+        <selectKey keyProperty="rentCtrtNo" resultType="string" order="BEFORE">
+            SELECT seq_rent_ctrt.nextval
+            FROM dual
+        </selectKey>
+        INSERT INTO rent_ctrt (
+        rent_ctrt_no
+        ,rent_lstg_no
+        ,ctrt_id
+        ,mvin_yn
+        ,ctrt_stts_cd
+        ,reg_dt
+        ,user_no
+        ,rentor_nm
+        ,rentor_telno
+        ,agnt_nm
+        ,agnt_telno
+        ,spcl_stpltn_cn
+        ) VALUES (
+        #{rentCtrtNo}
+        ,#{rentLstgNo}
+        ,#{rentCtrtNo}
+        ,'N'
+        ,'SUB'
+        ,SYSDATE
+        ,#{userNo}
+        ,#{rentorNm}
+        ,#{rentorTelno}
+        ,#{agntNm}
+        ,#{agntTelno}
+        ,#{spclStpltnCn}
+        )
+    </insert>
+
 
     <!-- userNo로 제출서류 조회 -->
     <select id="selectContractDoc" parameterType="string" resultType="kr.or.ddit.domain.central.vo.ContractUserVO">
@@ -48,6 +82,13 @@
         ORDER BY sd.reg_dt DESC
     </select>
 
-
+    <select id="selectRentLstgNo" parameterType="string" resultType="string">
+        SELECT rl.rent_lstg_no
+        FROM rent_listing rl
+                 INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+                 INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
+        WHERE au.apt_cmplex_no = #{aptCmplexNo}
+          AND ROWNUM = 1
+    </select>
 
 </mapper>
