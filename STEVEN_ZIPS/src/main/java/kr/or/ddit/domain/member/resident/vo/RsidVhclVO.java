@@ -8,6 +8,7 @@ import java.util.Date;
 public class RsidVhclVO {
 
     private String rsidVhclNo;
+
     private String vhclSttsCd;
     private String vhclNm;
     private String vhclNo;

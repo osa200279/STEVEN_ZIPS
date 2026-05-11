@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.employee.mapper.OfficeVhclMapper">
+
+
+
+    <insert id="insertVehicle">
+
+        INSERT INTO RSID_VHCL
+        (
+            RSID_VHCL_NO,
+            VHCL_NM,
+            VHCL_NO,
+            VHCL_STTS_CD,
+            VHCL_FILE_NO,
+            USER_NO,
+            HO_NO
+        )
+        VALUES
+            (
+                #{rsidVhclNo},
+                #{vhclNm},
+                #{vhclNo},
+                #{vhclSttsCd},
+                #{vhclFileNo},
+                #{userNo},
+                #{hoNo}
+            )
+
+    </insert>
+
+    <select id="getVehicleList"
+            resultType="kr.or.ddit.domain.member.resident.vo.RsidVhclVO">
+
+        SELECT
+            RSID_VHCL_NO,
+            VHCL_STTS_CD,
+            VHCL_NM,
+            VHCL_NO,
+            USER_NO,
+            HO_NO,
+            VHCL_FILE_NO,
+            REG_DT,
+            MDF_DT
+        FROM RSID_VHCL
+        ORDER BY REG_DT DESC
+
+    </select>
+    
+    <delete id="deleteVehicle">
+
+        DELETE
+        FROM RSID_VHCL
+        WHERE RSID_VHCL_NO = #{rsidVhclNo}
+
+    </delete>
+
+</mapper>

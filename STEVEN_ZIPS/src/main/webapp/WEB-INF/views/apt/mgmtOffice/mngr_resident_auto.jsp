@@ -460,35 +460,55 @@
                             <div class="modal-body">
 
                                 <!-- 세대 정보 -->
+                                <!-- 세대 정보 -->
                                 <div class="form-section">
+
                                     <div class="form-section-title">
                                         <span class="material-symbols-rounded">home</span>
-                                        세대 정보 · HO_NO
+                                        세대 정보
                                     </div>
-                                    <div class="form-row cols-3">
-                                        <%-- HO_NO 구성 : 동 + 호 --%>
-                                        <div class="form-field">
-                                            <label class="field-label">동 <span class="req">*</span>
-                                                <small style="font-weight:400;color:var(--text-tertiary);">DONG</small>
-                                            </label>
-                                            <input type="text" class="form-input" name="dong" placeholder="예) 101동" required>
-                                        </div>
-                                        <div class="form-field">
-                                            <label class="field-label">호수 <span class="req">*</span>
-                                                <small style="font-weight:400;color:var(--text-tertiary);">HO</small>
-                                            </label>
-                                            <input type="text" class="form-input" name="ho" placeholder="예) 1203호" required>
-                                        </div>
-                                        <%-- USER_NO → 이름 표시 --%>
-                                        <div class="form-field">
-                                            <label class="field-label">입주민명 <span class="req">*</span>
-                                                <small style="font-weight:400;color:var(--text-tertiary);">USER_NM</small>
-                                            </label>
-                                            <input type="text" class="form-input" name="userNm" placeholder="홍길동" required>
-                                        </div>
-                                    </div>
-                                </div>
 
+                                    <div class="form-row cols-2">
+
+                                        <!-- USER_NO -->
+                                        <div class="form-field">
+
+                                            <label class="field-label">
+                                                입주민 번호
+                                                <span class="req">*</span>
+                                            </label>
+
+                                            <input
+                                                    type="text"
+                                                    class="form-input"
+                                                    id="userNo"
+                                                    name="userNo"
+                                                    placeholder="예) USER001"
+                                                    required>
+
+                                        </div>
+
+                                        <!-- HO_NO -->
+                                        <div class="form-field">
+
+                                            <label class="field-label">
+                                                세대 번호
+                                                <span class="req">*</span>
+                                            </label>
+
+                                            <input
+                                                    type="text"
+                                                    class="form-input"
+                                                    id="hoNo"
+                                                    name="hoNo"
+                                                    placeholder="예) HO-101-1203"
+                                                    required>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
                                 <!-- 차량 정보 -->
                                 <div class="form-section">
                                     <div class="form-section-title">
@@ -501,33 +521,17 @@
                                             <label class="field-label">차량번호 <span class="req">*</span>
                                                 <small style="font-weight:400;color:var(--text-tertiary);">VHCL_NO</small>
                                             </label>
-                                            <input type="text" class="form-input" name="vhclNo" placeholder="예) 12가 3456" required>
+                                            <input type="text" class="form-input" id="vhclNo" name="vhclNo" placeholder="예) 12가 3456" required>
                                         </div>
                                         <%-- VHCL_NM VARCHAR2(50) NOT NULL --%>
                                         <div class="form-field">
                                             <label class="field-label">차량명 <span class="req">*</span>
                                                 <small style="font-weight:400;color:var(--text-tertiary);">VHCL_NM</small>
                                             </label>
-                                            <input type="text" class="form-input" name="vhclNm" placeholder="예) 현대 아반떼" required>
+                                            <input type="text" class="form-input" id="vhclNm" name="vhclNm" placeholder="예) 현대 아반떼" required>
                                         </div>
                                     </div>
-                                    <div class="form-row cols-1">
-                                        <%-- VST_VHCL_TY_CD VARCHAR2(20) 공통코드 VHC_TY --%>
-                                        <div class="form-field">
-                                            <label class="field-label">차량 유형 <span class="req">*</span>
-                                                <small style="font-weight:400;color:var(--text-tertiary);">VST_VHCL_TY_CD · VHC_TY</small>
-                                            </label>
-                                            <select class="form-select" name="vhclTyCd" required>
-                                                <option value="">선택하세요</option>
-                                                <option value="GEN">GEN · 일반</option>
-                                                <option value="MOV">MOV · 이사차량</option>
-                                                <option value="WRK">WRK · 업무/공사</option>
-                                                <option value="DLV">DLV · 배달/택배</option>
-                                                <option value="EMG">EMG · 긴급/공용</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
+
 
                                 <!-- 차량등록증 첨부 -->
                                 <div class="form-section">
@@ -594,6 +598,9 @@
             </div><!-- /office-page #vhclPage -->
 
             <script>
+
+                const CONTEXT_PATH = '${pageContext.request.contextPath}';
+
             (function () {
                 var page = document.getElementById('vhclPage');
                 if (!page || page.dataset.bound === 'true') return;
@@ -612,19 +619,10 @@
 
                 // 입주민 온라인 신청 목록 (RSID_VHCL + SUBMIT_DOC_STTS)
                 var rqstData = [
-                    { id:'RV-001', userNm:'김민준', dong:'101동', ho:'1203호', hoNo:'HO-101-1203', vhclTyCd:'GEN',  vhclNm:'현대 아반떼', vhclNo:'12가 3456', regDt:'2026-04-20', stts:'SUBMIT', rejectReason:'', regType:'ONLINE', imgNm:'vehicle_reg_001.jpg' },
-                    { id:'RV-002', userNm:'이서연', dong:'102동', ho:'803호',  hoNo:'HO-102-0803', vhclTyCd:'MOV',  vhclNm:'기아 셀토스', vhclNo:'34나 7890', regDt:'2026-04-21', stts:'SUBMIT', rejectReason:'', regType:'ONLINE', imgNm:'vehicle_reg_002.jpg' },
-                    { id:'RV-003', userNm:'박지훈', dong:'103동', ho:'501호',  hoNo:'HO-103-0501', vhclTyCd:'GEN',  vhclNm:'테슬라 모델3', vhclNo:'56다 1122', regDt:'2026-04-19', stts:'APRV',   rejectReason:'', regType:'ONLINE', imgNm:'vehicle_reg_003.jpg' },
-                    { id:'RV-004', userNm:'최수아', dong:'101동', ho:'702호',  hoNo:'HO-101-0702', vhclTyCd:'WRK',  vhclNm:'현대 포터',   vhclNo:'78라 3344', regDt:'2026-04-18', stts:'REJT',   rejectReason:'차량등록증 사진이 불분명합니다. 재첨부 후 다시 신청해 주세요.', regType:'ONLINE', imgNm:'vehicle_reg_004.jpg' },
-                    { id:'RV-005', userNm:'정우성', dong:'104동', ho:'1101호', hoNo:'HO-104-1101', vhclTyCd:'GEN',  vhclNm:'BMW 5시리즈', vhclNo:'90마 5566', regDt:'2026-04-22', stts:'SUBMIT', rejectReason:'', regType:'ONLINE', imgNm:'vehicle_reg_005.jpg' },
-                    { id:'RV-006', userNm:'강하은', dong:'102동', ho:'305호',  hoNo:'HO-102-0305', vhclTyCd:'GEN',  vhclNm:'쌍용 티볼리', vhclNo:'11바 7788', regDt:'2026-04-23', stts:'SUBMIT', rejectReason:'', regType:'ONLINE', imgNm:'vehicle_reg_006.jpg' },
                 ];
 
                 // 전체 등록 차량 (승인완료 + 직접등록)
                 var allData = [
-                    { id:'RV-003', userNm:'박지훈', dong:'103동', ho:'501호',  vhclTyCd:'GEN',  vhclNm:'테슬라 모델3', vhclNo:'56다 1122', regDt:'2026-04-19', regType:'ONLINE' },
-                    { id:'RV-007', userNm:'윤소희', dong:'105동', ho:'201호',  vhclTyCd:'GEN',  vhclNm:'현대 그랜저',  vhclNo:'22사 9900', regDt:'2026-04-15', regType:'OFFLINE' },
-                    { id:'RV-008', userNm:'임재현', dong:'101동', ho:'1001호', vhclTyCd:'WRK',  vhclNm:'기아 봉고',    vhclNo:'33아 1234', regDt:'2026-04-10', regType:'OFFLINE' },
                 ];
 
                 var currentRqstIdx  = null;
@@ -747,6 +745,56 @@
                     }).join('');
                 }
 
+                async function loadVehicleList() {
+
+                    try {
+
+                        const response = await fetch(CONTEXT_PATH + '/manager/resident/auto/list');
+
+                        const data = await response.json();
+
+                        allData = data.map(function(r){
+
+                            return {
+
+                                id: r.rsidVhclNo,
+
+                                userNo: r.userNo,
+
+                                hoNo: r.hoNo,
+
+                                userNm: r.userNo,
+
+                                dong: '',
+
+                                ho: r.hoNo,
+
+                                vhclTyCd: 'GEN',
+
+                                vhclNm: r.vhclNm,
+
+                                vhclNo: r.vhclNo,
+
+                                regDt: r.regDt
+                                    ? String(r.regDt).substring(0,10)
+                                    : '',
+
+                                regType: 'OFFLINE'
+                            };
+                        });
+
+                        renderAll(allData);
+
+                        updateStats();
+
+                    } catch (e) {
+
+                        console.error(e);
+
+                        alert('차량 목록 조회 실패');
+                    }
+                }
+
                 /* ── 체크박스 ── */
                 function bindRowChecks() {
                     document.getElementById('checkAll').checked = false;
@@ -867,8 +915,15 @@
                 var regEditBtn   = document.getElementById('regEditBtn');
                 var regDeleteBtn = document.getElementById('regDeleteBtn');
 
+                regDeleteBtn.addEventListener('click', function() {
+
+                    openDeleteModal('all', currentRegIdx);
+
+                });
+
                 function openRegModal(mode, idx) {
                     regForm.reset();
+                    currentRegIdx = null;
                     document.getElementById('imgPreviewArea').style.display = 'none';
                     regSaveBtn.style.display   = 'inline-flex';
                     regEditBtn.style.display   = 'none';
@@ -895,14 +950,15 @@
                     }
                     openModal('regModal');
                 }
-
                 function fillRegForm(r) {
-                    regForm.dong.value      = r.dong     || '';
-                    regForm.ho.value        = r.ho       || '';
-                    regForm.userNm.value    = r.userNm   || '';
-                    regForm.vhclNo.value    = r.vhclNo   || '';
-                    regForm.vhclNm.value    = r.vhclNm   || '';
-                    regForm.vhclTyCd.value  = r.vhclTyCd || '';
+
+                    regForm.userNo.value = r.userNo || '';
+
+                    regForm.hoNo.value = r.hoNo || '';
+
+                    regForm.vhclNo.value = r.vhclNo || '';
+
+                    regForm.vhclNm.value = r.vhclNm || '';
                 }
 
                 function setRegDisabled(disabled) {
@@ -912,23 +968,65 @@
                 // 삭제 확인 모달
                 function openDeleteModal(src, idx) {
                     deleteTargetArr = src === 'all' ? allData : rqstData;
+
                     deleteTargetIdx = idx;
+
                     var r = deleteTargetArr[idx];
+
+                    if (!r) {
+                        alert('삭제 대상 정보를 찾을 수 없습니다.');
+                        return;
+                    }
+
                     document.getElementById('deleteTargetInfo').innerHTML =
-                        di('입주민', r.userNm)
-                        + di('세대', r.dong + ' ' + r.ho)
-                        + di('차량번호 · VHCL_NO', r.vhclNo)
-                        + di('차량명 · VHCL_NM', r.vhclNm);
+
+                        di('입주민', r.userNm || '-')
+
+                        + di('세대', (r.dong || '') + ' ' + (r.ho || ''))
+
+                        + di('차량번호 · VHCL_NO', r.vhclNo || '-')
+
+                        + di('차량명 · VHCL_NM', r.vhclNm || '-');
+
                     openModal('deleteModal');
                 }
 
-                /* ── 승인 처리 ── */
                 function approveById(id) {
-                    var r = rqstData.find(function(x){ return x.id === id; });
+
+                    var r = rqstData.find(function(x){
+                        return x.id === id;
+                    });
+
                     if (!r) return;
+
+                    // 이미 승인된 경우 종료
+                    if (r.stts === 'APRV') {
+                        return;
+                    }
+
                     r.stts = 'APRV';
-                    // 전체 차량 목록에도 추가
-                    allData.push({ id:r.id, userNm:r.userNm, dong:r.dong, ho:r.ho, vhclTyCd:r.vhclTyCd, vhclNm:r.vhclNm, vhclNo:r.vhclNo, regDt:r.regDt, regType:'ONLINE' });
+
+                    // 이미 등록되어 있는지 확인
+                    var exists = allData.some(function(v){
+                        return v.id === r.id;
+                    });
+
+                    // 없을 때만 추가
+                    if (!exists) {
+
+                        allData.push({
+                            id: r.id,
+                            userNm: r.userNm,
+                            dong: r.dong,
+                            ho: r.ho,
+                            vhclTyCd: r.vhclTyCd,
+                            vhclNm: r.vhclNm,
+                            vhclNo: r.vhclNo,
+                            regDt: r.regDt,
+                            regType: 'ONLINE'
+                        });
+
+                    }
                 }
 
                 /* ── 이미지 업로드 미리보기 ── */
@@ -995,8 +1093,12 @@
                     if (action === 'changeToEdit')  openRegModal('edit',   Number(regEditBtn.dataset.idx));
                     if (action === 'closeRegModal') closeModal('regModal');
 
-                    if (action === 'openDeleteConfirm') openDeleteModal('all', currentRegIdx);
-                    if (action === 'openDelete')        openDeleteModal(src,   idx);
+                    if (action === 'openDelete') openDeleteModal(src, idx);
+
+
+                    if (action === 'openDeleteConfirm') {
+                        openDeleteModal('all', currentRegIdx);
+                    }
                     if (action === 'closeDeleteModal')  closeModal('deleteModal');
 
                     // 필터
@@ -1031,19 +1133,120 @@
                 });
 
                 /* ── 직접등록 폼 저장 ── */
-                regForm.addEventListener('submit', function(e) {
+                regForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    if (!regForm.vhclNo.value.trim()) { alert('차량번호를 입력하세요.'); return; }
-                    /* 실제 저장: RSID_VHCL insert/update (SUBMIT_DOC_STTS = APRV 직접 등록) */
-                    alert('저장 처리 — 백엔드 연결 시 RSID_VHCL insert/update로 처리하면 됩니다.');
-                    closeModal('regModal');
-                });
+
+                    if (!regForm.vhclNo.value.trim()) {
+                        alert('차량번호를 입력하세요.');
+                        return;
+                    }
+
+                    try {
+
+                        const formData = new FormData();
+
+                        // form 값
+                        formData.append("userNo", regForm.userNo.value);
+                        formData.append("hoNo", regForm.hoNo.value);
+
+                        formData.append("vhclNo", regForm.vhclNo.value);
+                        formData.append("vhclNm", regForm.vhclNm.value);
+
+                        // 파일
+                        const fileInput = document.getElementById("vhclImgInput");
+
+                        if (fileInput.files.length > 0) {
+                            formData.append("uploadFile", fileInput.files[0]);
+                        }
+
+                        // csrf
+                        const token = document.querySelector('meta[name="_csrf"]').content;
+                        const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+                        const response = await fetch(CONTEXT_PATH + '/manager/resident/auto/register', {
+                            method: 'POST',
+                            headers: {
+                                [header]: token
+                            },
+                            body: formData
+                        });
+
+                        if (!response.ok) {
+                            throw new Error("등록 실패");
+                        }
+                        const result = await response.text();
+
+
+                        const saveData = {
+
+                            id: currentRegIdx !== null
+                                ? allData[currentRegIdx].id
+                                : 'RV-' + Date.now(),
+
+                            userNo: regForm.userNo.value,
+
+                            hoNo: regForm.hoNo.value,
+
+                            userNm: regForm.userNo.value,
+
+                            dong: '',
+
+                            ho: regForm.hoNo.value,
+
+                            vhclTyCd: 'GEN',
+
+                            vhclNm: regForm.vhclNm.value,
+
+                            vhclNo: regForm.vhclNo.value,
+
+                            regDt: new Date().toISOString().slice(0, 10),
+
+                            regType: 'OFFLINE'
+                        };
+
+// 수정
+                        if (currentRegIdx !== null) {
+
+                            allData[currentRegIdx] = saveData;
+
+                        }
+// 신규등록
+                        else {
+
+                            allData.unshift(saveData);
+                        }
+                            renderAll(allData);
+
+                            updateStats();
+
+                            alert("차량 등록 완료");
+
+                            closeModal('regModal');
+
+                            regForm.reset();
+
+                            currentRegIdx = null;
+
+                        }
+                    catch
+                        (err)
+                        {
+
+                            console.error(err);
+
+                            alert("등록 중 오류 발생");
+                        }
+
+                    });
+
+
+
 
                 /* ── 삭제 확정 ── */
                 document.getElementById('deleteConfirmBtn').addEventListener('click', function() {
                     if (deleteTargetIdx === null || !deleteTargetArr) return;
                     deleteTargetArr.splice(deleteTargetIdx, 1);
-                    renderAll(allData);
+                    loadVehicleList();
                     updateStats();
                     closeModal('deleteModal');
                     closeModal('regModal');
@@ -1057,9 +1260,9 @@
                 });
 
                 /* ── 초기 렌더 ── */
-                updateStats();
                 renderRqst(rqstData);
-                renderAll(allData);
+
+                loadVehicleList();
             })();
             </script>
 
