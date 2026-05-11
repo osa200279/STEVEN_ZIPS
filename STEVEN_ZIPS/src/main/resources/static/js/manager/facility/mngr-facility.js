@@ -6,7 +6,7 @@
  * 기준
  * - JSP id/class/CSS 구조 변경 금지
  * - 등록·수정은 파일 업로드가 있어 FormData 전송
- * - Controller 주소 기준: /manager/facility/api/...
+ * - Controller 주소 기준: /manager/facility/...
  * - 시설유형 정정은 prompt() 아닌 수정 모달 내 잠금해제 방식으로 처리
  * ============================================================
  */
@@ -32,6 +32,9 @@
     var contextPath = config.contextPath || "";   // 컨텍스트 경로
     var mgmtOfcNo   = config.mgmtOfcNo   || "";  // 관리사무소 번호
 
+    /* 현재 선택된 시설종류 탭: FACILITY(일반시설) / PUBLIC(편의시설) */
+    var currentFacilityKind = "FACILITY";
+
     /*
      * ADMIN 여부 판별
      * JSP의 sec:authorize 결과는 Boolean / "true" 두 형태 모두 가능
@@ -42,7 +45,7 @@
 
     /* API 경로 조합 */
     function apiUrl(path) {
-        return contextPath + "/manager/facility/api/" + path;
+        return contextPath + "/manager/facility/" + path;
     }
 
     /* CSRF 토큰 헤더 */
@@ -160,6 +163,16 @@
         return String(value).slice(0, 10);
     }
 
+    function formatDongNo(value) {
+        if (value == null || value === "") return "공용";
+
+        var text = String(value);
+        var idx  = text.lastIndexOf("_");
+        var dong = idx > -1 ? text.slice(idx + 1) : text;
+
+        return dong || "공용";
+    }
+
     function setUseYnValue(value) {
         var normalized = value === "N" ? "N" : "Y";
         var hidden     = document.getElementById("useYn");
@@ -179,11 +192,36 @@
         return result.detail || result.facility || result || {};
     }
 
+    /* 시설종류 코드 → 화면 표시명 */
+    function getFacilityKindText(kind) {
+        return kind === "PUBLIC" ? "편의시설" : "일반시설";
+    }
+
+    /* 시설종류 탭 활성화 표시 */
+    function updateFacilityTabs() {
+        var buttons = page ? page.querySelectorAll(".facility-tab-btn") : [];
+
+        buttons.forEach(function (button) {
+            button.classList.toggle("active", button.dataset.kind === currentFacilityKind);
+        });
+    }
+
+    /* 시설종류 탭 변경 */
+    function setFacilityTab(kind) {
+        currentFacilityKind = kind === "PUBLIC" ? "PUBLIC" : "FACILITY";
+        updateFacilityTabs();
+        closeSuggestList();
+        FacilityGrid.reset();
+        loadFacilityList();
+    }
+
     /* ── 검색 ──────────────────────────────────────────── */
 
     /* 검색 조건 URLSearchParams 구성 */
     function collectSearchParam() {
         var params = new URLSearchParams();
+
+        params.append("facilityKind", currentFacilityKind); // 상단 탭 기준 시설종류
 
         var facilityTyCd = document.getElementById("filterFacTy").value;                         // 시설유형
         var useYn        = document.getElementById("filterUseYn")  ? document.getElementById("filterUseYn").value  : ""; // 사용여부
@@ -200,7 +238,7 @@
 
     /* 검색 조건 요약 텍스트 (목록 헤더 표시용) */
     function getFilterSummaryText() {
-        var labels     = [];
+        var labels     = ["시설종류: " + getFacilityKindText(currentFacilityKind)];
         var facilityTy = document.getElementById("filterFacTy");  // 시설유형 셀렉트
         var useYn      = document.getElementById("filterUseYn");   // 사용여부 셀렉트
         var dong       = document.getElementById("filterDong");    // 동 셀렉트
@@ -220,48 +258,28 @@
         document.getElementById("resultDesc").textContent    = getFilterSummaryText();
     }
 
-    /**
-     * 현황 카드 갱신
-     *
-     * 카드 기준 (FACILITY 마스터 기준)
-     * - statTotal      : 전체 시설 수
-     * - statDong       : 동 지정 시설 수 (dongNo 있고 '공용' 아닌 것)
-     * - statCommonLoc  : 공용 위치 시설 수 (dongNo 없거나 '공용')
-     * - statDisabled   : 이용불가 시설 수 (USE_YN = 'N')
-     *                    오늘 추가된 건수는 서버 stats.disabledToday 기준
-     */
+    /* 현황 카드 갱신 */
     function updateStats(list, stats) {
         stats = stats || {};
         list  = list  || [];
 
-        /* 전체 시설 수 */
-        var totalCnt = stats.totalCnt != null
-            ? stats.totalCnt
-            : list.length;
-
-        /* 동 지정 시설 수 */
         var dongCnt = stats.dongCnt != null
             ? stats.dongCnt
             : list.filter(function (row) {
                 return row.dongNo && row.dongNo !== "공용";
             }).length;
 
-        /* 공용 위치 시설 수 */
         var commonLocCnt = stats.commonLocCnt != null
             ? stats.commonLocCnt
             : list.filter(function (row) {
                 return !row.dongNo || row.dongNo === "공용";
             }).length;
 
-        /* 이용불가 시설 수 (USE_YN = 'N') */
         var disabledTotal = stats.disabledTotal != null
             ? stats.disabledTotal
             : list.filter(function (row) { return row.useYn === "N"; }).length;
 
-        /* 오늘 FAULT 판정 건수 (서버 stats 기준, 없으면 빈값) */
         var disabledToday = stats.disabledToday != null ? Number(stats.disabledToday) : null;
-
-        document.getElementById("statTotal").textContent = totalCnt;
 
         if (document.getElementById("statDong")) {
             document.getElementById("statDong").textContent = dongCnt;
@@ -272,13 +290,39 @@
         if (document.getElementById("statDisabled")) {
             document.getElementById("statDisabled").textContent = disabledTotal;
 
-            /* 오늘 추가된 이용불가 건수 보조 텍스트 */
             var todayEl = document.getElementById("statDisabledToday");
             if (todayEl) {
                 todayEl.textContent = disabledToday != null && disabledToday > 0
                     ? "오늘 " + disabledToday + "건 추가"
                     : "";
             }
+        }
+    }
+
+    /* 탭과 무관한 전체 시설 총수 카드 갱신 */
+    function updateTotalFacilityCount(list) {
+        document.getElementById("statTotal").textContent = (list || []).length;
+    }
+
+    /* 탭과 무관한 전체 시설 총수 조회 */
+    async function loadTotalFacilityCount() {
+        try {
+            var params = collectSearchParam();
+            params.set("facilityKind", "ALL");
+
+            var url = apiUrl("list/" + encodeURIComponent(mgmtOfcNo));
+            var queryString = params.toString();
+
+            if (queryString) {
+                url += "?" + queryString;
+            }
+
+            var result = await getJson(url);
+            var list = result.list || result.facilityList || [];
+
+            updateTotalFacilityCount(list);
+        } catch (e) {
+            console.error(e);
         }
     }
 
@@ -300,12 +344,14 @@
             FacilityGrid.setRows(list);
             updateListHeader(list.length);
             updateStats(list, result.stats || {});
+            await loadTotalFacilityCount();
         } catch (e) {
             console.error(e);
             alertMessage(e.message || "시설 목록 조회 중 오류가 발생했습니다.");
             FacilityGrid.setRows([]);
             updateListHeader(0);
             updateStats([], {});
+            updateTotalFacilityCount([]);
         }
     }
 
@@ -540,12 +586,12 @@
      * 시설유형 정정 버튼 클릭 처리
      *
      * 1단계: 잠금 상태
-     *        → GET /api/type/correct/check/{mgmtOfcNo}/{facilityNo} 로 연결 데이터 검증
+     *        → GET /type/correct/check/{mgmtOfcNo}/{facilityNo} 로 연결 데이터 검증
      *        → 연결 데이터 없으면 facilityTyCd 드롭다운 잠금 해제 + 안내 문구 표시
      *        → 연결 데이터 있으면 변경 불가 메시지 표시
      *
      * 2단계: 잠금해제 상태
-     *        → 저장 버튼 클릭 시 POST /api/type/correct/{mgmtOfcNo} 로 실제 정정 처리
+     *        → 저장 버튼 클릭 시 POST /type/correct/{mgmtOfcNo} 로 실제 정정 처리
      *        → saveFacility 내부에서 correctionUnlocked 플래그 기준으로 분기
      */
     async function openCorrection() {
@@ -638,10 +684,11 @@
         document.getElementById("detailBasicGrid").innerHTML = ""
             + detailItem("시설번호",       escapeHtml(facility.facilityNo))
             + detailItem("시설명",         escapeHtml(facility.facilityNm))
-            + detailItem("시설유형",       codeBadge(AgRenderer.CODE.FACILITY_TY, facility.facilityTyCd))
+            + detailItem("시설종류",       badge("badge-teal", facility.facilityKindNm || getFacilityKindText(facility.facilityKind)))
+            + detailItem("시설유형",       badge("badge-blue", facility.facilityTyNm || facility.facilityTyCd || "-"))
             + detailItem("운영상태",       useYnBadge(facility.useYn))
-            + detailItem("검침 연결 여부", meterLinkedBadge(facility.meterLinkedYn))
-            + detailItem("동",             escapeHtml(facility.dongNo || "공용"))
+            + detailItem("검침 연결 여부", badge("badge-gray", "추후 연동"))
+            + detailItem("동",             escapeHtml(formatDongNo(facility.dongNo)))
             + detailItem("상세위치",       escapeHtml(facility.locCn  || "-"))
             + detailItem("설치일자",       escapeHtml(formatDate(facility.instlDt) || "-"));
 
@@ -787,6 +834,7 @@
         var useYn        = document.getElementById("filterUseYn")   ? document.getElementById("filterUseYn").value  : "";
         var dongNo       = document.getElementById("filterDong")    ? document.getElementById("filterDong").value   : "";
 
+        if (row.facilityKind && row.facilityKind !== currentFacilityKind)       return false;
         if (facilityTyCd && row.facilityTyCd !== facilityTyCd)                 return false;
         if (useYn        && row.useYn        !== useYn)                        return false;
         if (dongNo === "_COMMON_" && row.dongNo)                               return false;
@@ -800,6 +848,7 @@
         var values = [
             row.facilityNo,
             row.facilityNm,
+            row.facilityKindNm,
             row.facilityTyCd,
             row.facilityTyNm,
             row.useYn === "N" ? "사용 불가" : "사용 가능",
@@ -906,15 +955,24 @@
     /* CSV 파일 다운로드 */
     function downloadCsv(fileName, headerList, rowList) {
         var lines = [];
+
+        /*
+         * Excel용 구분자 선언
+         * - 한국어 Windows Excel에서 CSV를 열 때 쉼표 구분을 못 잡는 경우가 있어서 추가
+         * - 이 줄이 있으면 Excel이 쉼표(,) 기준으로 컬럼을 나눠서 읽음
+         */
+        lines.push("sep=,");
+
         lines.push(headerList.map(csvValue).join(","));
 
         rowList.forEach(function (row) {
             lines.push([
                 row.facilityNo || "",
                 row.facilityNm || "",
-                getCodeText(AgRenderer.CODE.FACILITY_TY, row.facilityTyCd),
+                row.facilityKindNm || getFacilityKindText(row.facilityKind),
+                row.facilityTyNm || getCodeText(AgRenderer.CODE.FACILITY_TY, row.facilityTyCd),
                 row.useYn === "N" ? "사용 불가" : "사용 가능",
-                row.dongNo || "공용",
+                formatDongNo(row.dongNo),
                 row.locCn  || "",
                 formatDate(row.instlDt) || ""
             ].map(csvValue).join(","));
@@ -924,7 +982,9 @@
          * 브라우저에서 직접 CSV 생성
          * BOM(\ufeff) 추가로 엑셀 한글 깨짐 방지
          */
-        var blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+        var blob = new Blob(["\ufeff" + lines.join("\r\n")], {
+            type: "application/vnd.ms-excel;charset=utf-8;"
+        });
         var url  = URL.createObjectURL(blob);  // Blob URL
         var link = document.createElement("a");
 
@@ -943,8 +1003,8 @@
             return;
         }
 
-        downloadCsv("시설자산_목록.csv", [
-            "시설번호", "시설명", "시설유형", "운영상태", "동", "상세위치", "설치일자"
+        downloadCsv("시설자산_목록.xls", [
+            "시설번호", "시설명", "시설종류", "시설유형", "운영상태", "동", "상세위치", "설치일자"
         ], currentList);
     }
 
@@ -973,6 +1033,7 @@
             if (action === "openRegister")   openRegisterModal();
             if (action === "searchFacility") loadFacilityList();
             if (action === "resetFacility")  resetSearch();
+            if (action === "setFacilityTab") setFacilityTab(btn.dataset.kind);
             if (action === "exportExcel")    exportFacilityExcel();
             if (action === "selectSuggest") {
                 document.getElementById("filterKeyword").value = btn.dataset.keyword || "";
@@ -1111,6 +1172,7 @@
         correctionBtn = document.getElementById("facilityCorrectionBtn"); // 시설유형 정정 버튼
 
         FacilityGrid.init("facilityGrid");
+        updateFacilityTabs();
 
         bindEvents();
         loadFacilityList();

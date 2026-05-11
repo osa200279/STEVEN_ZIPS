@@ -5,6 +5,7 @@
  *
  * 목록 컬럼 기준
  * 시설번호 / 시설명 / 시설유형 / 운영상태 / 동 / 상세위치 / 설치일자 / 관리
+ * 시설종류(일반시설/편의시설)는 탭으로 구분한다.
  *
  * 검침 연결·예정 점검은 상세 모달에서만 확인
  * ADMIN은 관리 컬럼에 상세 버튼만 표시
@@ -39,13 +40,44 @@ var FacilityGrid = (function () {
     }
 
     /**
-     * USE_YN → 운영상태 배지 렌더러
+     * USE_YN → 운영상태 텍스트 렌더러
      * N: 사용 불가 / 그 외: 사용 가능
      */
     function useYnRenderer(params) {
-        return params.value === "N"
-            ? badge("badge-use-n", "사용 불가")
-            : badge("badge-use-y", "사용 가능");
+        var isDisabled = params.value === "N";
+        var cls = isDisabled ? "status-text is-disabled" : "status-text is-available";
+        var text = isDisabled ? "사용 불가" : "사용 가능";
+
+        return '<span class="' + cls + '">' + escapeHtml(text) + '</span>';
+    }
+
+    /**
+     * 시설유형 표시용 텍스트 반환
+     * - DB에서 내려온 facilityTyNm(공통코드명)을 우선 사용
+     * - 공통코드명이 없는 값은 화면에서 최소한 한글로 보정
+     */
+    function getFacilityTypeText(row) {
+        row = row || {};
+
+        var fallbackMap = {
+            ELV:  "승강기",
+            WTR:  "급수시설",
+            ELC:  "전기시설",
+            GAS:  "가스시설",
+            PLAY: "놀이터",
+            SEC:  "보안시설",
+            ETC:  "기타시설",
+            PARK: "주차장",
+            FIRE: "소방시설",
+            COMM: "커뮤니티"
+        };
+
+        return row.facilityTyNm || fallbackMap[row.facilityTyCd] || row.facilityTyCd || "-";
+    }
+
+    /** 시설유형 배지 렌더러: 코드 대신 한글명을 보여준다. */
+    function facilityTypeRenderer(params) {
+        return badge("badge-blue", getFacilityTypeText(params.data || {}));
     }
 
     /**
@@ -65,6 +97,16 @@ var FacilityGrid = (function () {
             return '<span class="td-empty">-</span>';
         }
         return '<span class="td-mono">' + escapeHtml(params.value) + '</span>';
+    }
+
+    function formatDongNo(value) {
+        if (value == null || value === "") return "공용";
+
+        var text = String(value);
+        var idx  = text.lastIndexOf("_");
+        var dong = idx > -1 ? text.slice(idx + 1) : text;
+
+        return dong || "공용";
     }
 
     /**
@@ -133,9 +175,9 @@ var FacilityGrid = (function () {
             {
                 headerName: "시설유형",
                 field: "facilityTyCd",
-                width: 105, minWidth: 95,
+                width: 112, minWidth: 100,
                 cellClass: "cell-center",
-                cellRenderer: AgRenderer.badge(AgRenderer.CODE.FACILITY_TY)
+                cellRenderer: facilityTypeRenderer
             },
             {
                 headerName: "운영상태",
@@ -151,7 +193,7 @@ var FacilityGrid = (function () {
                 cellClass: "cell-center",
                 /* 동번호 없으면 공용으로 표시 */
                 valueFormatter: function (params) {
-                    return params.value ? params.value : "공용";
+                    return formatDongNo(params.value);
                 }
             },
             {

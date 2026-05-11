@@ -4,6 +4,7 @@ import com.google.api.services.drive.Drive;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.mapper.IFacilityMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 시설자산 Service 구현체
- * FACILITY 기본 CRUD + 사진 업로드/삭제 + 이용불가 통계
+ * 시설 Service 구현체
+ * FACILITY 기본 CRUD + 시설 화면 조회 + 사진 업로드/삭제 + 이용불가 통계
  */
 @Slf4j
 @Service
@@ -42,6 +43,29 @@ public class FacilityServiceImpl implements IFacilityService {
     @Override
     public List<FacilityVO> selectFacilityList(Map<String, Object> paramMap) {
         return facilityMapper.selectFacilityList(paramMap);
+    }
+
+    /**
+     * 시설 화면 목록 조회
+     *
+     * FACILITY 기준 전체 시설 조회
+     * PUBLIC_FACILITY 연결 여부로 일반시설/편의시설 구분
+     * 목록 화면 표시와 버튼 분기용 DTO 반환
+     */
+    @Override
+    public List<FacilityDTO> selectFacilityViewList(Map<String, Object> paramMap) {
+        return facilityMapper.selectFacilityViewList(paramMap);
+    }
+
+    /**
+     * 시설 화면 상세 조회
+     *
+     * FACILITY.FACILITY_NO 기준 단건 조회
+     * 편의시설이면 PUBLIC_FACILITY 요약 정보 포함
+     */
+    @Override
+    public FacilityDTO selectFacilityViewDetail(String mgmtOfcNo, String facilityNo) {
+        return facilityMapper.selectFacilityViewDetail(mgmtOfcNo, facilityNo);
     }
 
     /**
@@ -70,6 +94,7 @@ public class FacilityServiceImpl implements IFacilityService {
      * 이용불가 시설 통계 조회
      * 현황 카드 표시용
      * 반환 키: DISABLED_TOTAL(전체) / DISABLED_TODAY(오늘 FAULT 판정)
+     * 이후 시설상태통계로 확장 가능 // 지금은 이용불가만
      */
     @Override
     public Map<String, Object> selectDisabledStats(String mgmtOfcNo) {

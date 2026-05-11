@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.mgmtOffice.facility.service;
 
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,14 +9,58 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 시설자산 Service 인터페이스
+ * 시설 Service 인터페이스
  */
 public interface IFacilityService {
 
     /**
      * 시설 목록 조회
+     *
+     * FACILITY 테이블 기준 기존 시설 목록 조회
+     * 일반시설 등록/수정 화면의 기존 흐름 유지용
      */
     List<FacilityVO> selectFacilityList(Map<String, Object> paramMap);
+
+    /**
+     * 시설 화면 목록 조회
+     *
+     * 조회 기준
+     * - FACILITY 기준 전체 시설 조회
+     * - PUBLIC_FACILITY 연결 여부로 일반시설/편의시설 구분
+     *
+     * 사용 위치
+     * - 시설관리 목록 화면
+     * - 일반시설/편의시설 통합 목록 표시
+     * - 화면 버튼 분기용 facilityKind 확인
+     *
+     * paramMap 검색 조건 키
+     * - mgmtOfcNo     : 관리사무소 번호
+     * - facilityKind  : 시설종류, ALL/FACILITY/PUBLIC
+     * - keyword       : 시설명·상세위치 검색어
+     * - facilityTyCd  : 시설유형코드
+     * - useYn         : 사용여부
+     * - dongNo        : 동번호
+     */
+    List<FacilityDTO> selectFacilityViewList(Map<String, Object> paramMap);
+
+    /**
+     * 시설 화면 상세 조회
+     *
+     * 조회 기준
+     * - FACILITY.FACILITY_NO 기준 단건 조회
+     * - PUBLIC_FACILITY 연결 시 편의시설 요약 정보 포함
+     *
+     * 사용 위치
+     * - 일반시설 상세 요약
+     * - 편의시설 상세 요약
+     * - 시설 기본 상세 표시
+     * - 편의시설 기본 정보 표시
+     * - 점검/협력업체/검침 정보는 추후 별도 조회로 확장
+     */
+    FacilityDTO selectFacilityViewDetail(
+            String mgmtOfcNo,   // 관리사무소 번호
+            String facilityNo   // 시설번호, FACILITY.FACILITY_NO
+    );
 
     /**
      * 시설 상세 조회

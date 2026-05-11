@@ -1,5 +1,6 @@
 ﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c"   uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn"  uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
@@ -104,6 +105,13 @@
            - 공통 manager-agGrid.css는 건드리지 않고 이 JSP 안에서만 적용
            - 검색 항목과 목록 컬럼을 맞추기 위해 검침/점검 필터는 제외
         ============================================================ */
+        #facilityPage .facility-tab-row { display:flex; gap:24px; width:100%; padding:0; margin-bottom:18px; background:transparent; border:none; border-bottom:1px solid var(--line); border-radius:0; }
+        #facilityPage .facility-tab-btn { position:relative; display:flex; align-items:center; gap:6px; min-height:42px; padding:0 2px; border:none; border-radius:0; background:transparent; color:#6b7280; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; transition:.15s; }
+        #facilityPage .facility-tab-btn:hover { color:#111827; }
+        #facilityPage .facility-tab-btn .material-symbols-rounded { font-size:16px; color:#9ca3af; }
+        #facilityPage .facility-tab-btn.active { background:transparent; color:#111827; box-shadow:none; }
+        #facilityPage .facility-tab-btn.active::after { content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--accent); }
+        #facilityPage .facility-tab-btn.active .material-symbols-rounded { color:var(--accent); }
         #facilityPage .facility-filter-grid { display:grid; grid-template-columns:1fr 1fr 1fr minmax(280px,1.4fr) auto; gap:10px; align-items:end; }
         #facilityPage .facility-filter-panel { overflow:visible; }
         #facilityPage .facility-filter-panel .panel-body { overflow:visible; }
@@ -121,6 +129,15 @@
         #facilityPage .list-header-right { display:flex; align-items:center; justify-content:flex-end; gap:7px; flex-shrink:0; }
         #facilityPage .facility-grid-wrap { overflow:hidden; }
         #facilityPage .grid-ellipsis { display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #facilityPage .grid-actions .btn { min-height:28px; height:28px; padding:0 10px; font-size:11px; border-radius:4px; }
+        #facilityPage .list-header-right .btn,
+        #facilityPage .facility-filter-grid .btn { min-height:32px; height:32px; padding:0 12px; font-size:12px; border-radius:4px; }
+        #facilityPage .status-text { display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:12px; font-weight:700; line-height:1; white-space:nowrap; }
+        #facilityPage .status-text::before { content:""; width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+        #facilityPage .status-text.is-available { color:#1f7a3f; }
+        #facilityPage .status-text.is-available::before { background:#22c55e; }
+        #facilityPage .status-text.is-disabled { color:#b42318; }
+        #facilityPage .status-text.is-disabled::before { background:#ef4444; }
 
         /* 시설자산 화면 안의 배지만 작고 각진 태그 형태로 보정한다. */
         #facilityPage .ag-theme-alpine .badge { display:inline-flex; align-items:center; justify-content:center; min-height:20px; height:20px; padding:0 7px; border-radius:4px; font-size:11px; font-weight:600; line-height:20px; border:1px solid transparent; box-shadow:none; white-space:nowrap; }
@@ -180,8 +197,8 @@
     <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
     <script src="${pageContext.request.contextPath}/js/manager/manager-agGrid.js"></script>
     <script src="${pageContext.request.contextPath}/js/manager/AgRenderer.js"></script>
-    <script src="${pageContext.request.contextPath}/js/manager/facility/mngr-facility-grid.js?v=facility-20260511-05"></script>
-    <script src="${pageContext.request.contextPath}/js/manager/facility/mngr-facility.js?v=facility-20260511-07"></script>
+    <script src="${pageContext.request.contextPath}/js/manager/facility/mngr-facility-grid.js?v=facility-ui-20260511-02"></script>
+    <script src="${pageContext.request.contextPath}/js/manager/facility/mngr-facility.js?v=facility-ui-20260511-02"></script>
 </head>
 <body>
 <div class="app-wrapper">
@@ -196,11 +213,21 @@
                 </div>
 
                 <div class="asset-summary-row">
-                    <div class="asset-summary-card primary"><div class="summary-icon"><span class="material-symbols-rounded">apartment</span></div><div><div class="summary-label">전체 시설</div><div class="summary-value" id="statTotal">0</div></div></div>
+                    <div class="asset-summary-card primary"><div class="summary-icon"><span class="material-symbols-rounded">apartment</span></div><div><div class="summary-label">전체 시설 총수</div><div class="summary-value" id="statTotal">0</div></div></div>
                     <div class="asset-summary-card"><div class="summary-icon"><span class="material-symbols-rounded">domain</span></div><div><div class="summary-label">동 지정 시설</div><div class="summary-value" id="statDong">0</div></div></div>
                     <div class="asset-summary-card"><div class="summary-icon"><span class="material-symbols-rounded">location_city</span></div><div><div class="summary-label">공용 위치 시설</div><div class="summary-value" id="statCommonLoc">0</div></div></div>
                     <%-- 이용불가 시설: USE_YN='N' 전체 + 오늘 FAULT 판정 건수 --%>
                     <div class="asset-summary-card"><div class="summary-icon"><span class="material-symbols-rounded">block</span></div><div><div class="summary-label">이용불가 시설</div><div class="summary-value" id="statDisabled">0</div><div style="font-size:11px;color:#9caa9e;margin-top:2px;" id="statDisabledToday"></div></div></div>
+                </div>
+
+                <%-- 시설종류 탭: 서버 API는 그대로 사용하고, JS에서 facilityKind 값만 바꿔 조회한다. --%>
+                <div class="facility-tab-row tab-bar" role="tablist" aria-label="시설종류 선택">
+                    <button type="button" class="facility-tab-btn tab-btn active" data-action="setFacilityTab" data-kind="FACILITY" id="facilityTabFacility">
+                        <span class="material-symbols-rounded">engineering</span>일반시설
+                    </button>
+                    <button type="button" class="facility-tab-btn tab-btn" data-action="setFacilityTab" data-kind="PUBLIC" id="facilityTabPublic">
+                        <span class="material-symbols-rounded">groups</span>편의시설
+                    </button>
                 </div>
 
                 <div class="panel facility-filter-panel">
@@ -210,13 +237,14 @@
                             검색 항목과 목록 컬럼 기준을 맞춘다.
                             - 위치 조건: 동
                             - 상태 조건: 운영상태
+                            - 시설종류: 상단 탭(일반시설/편의시설)에서 선택
                             - 분류 조건: 시설유형
                             - 통합검색: 시설번호 / 시설명 / 상세위치
                         --%>
                         <div class="facility-filter-grid">
                             <div class="form-field"><label class="field-label">시설유형</label><select class="form-select" id="filterFacTy" name="facilityTyCd"><option value="">전체</option><option value="ELV">승강기</option><option value="WTR">급수시설</option><option value="ELC">전기시설</option><option value="GAS">가스시설</option><option value="FIRE">소방시설</option><option value="SEC">보안시설</option><option value="ETC">기타시설</option></select></div>
                             <div class="form-field"><label class="field-label">운영상태</label><select class="form-select" id="filterUseYn" name="useYn"><option value="">전체</option><option value="Y">사용 가능</option><option value="N">사용 불가</option></select></div>
-                            <div class="form-field"><label class="field-label">동</label><select class="form-select" id="filterDong" name="dongNo"><option value="">전체</option><c:forEach var="dong" items="${dongList}"><option value="${dong.dongNo}">${empty dong.dongNm ? dong.dongNo : dong.dongNm}동</option></c:forEach><option value="_COMMON_">공용 위치</option></select></div>
+                            <div class="form-field"><label class="field-label">동</label><select class="form-select" id="filterDong" name="dongNo"><option value="">전체</option><c:forEach var="dong" items="${dongList}"><option value="${dong.dongNo}">${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}</option></c:forEach><option value="_COMMON_">공용 위치</option></select></div>
                             <div class="form-field facility-search-field"><label class="field-label">시설 검색</label><div class="search-wrap"><span class="material-symbols-rounded">search</span><input type="text" class="form-input" id="filterKeyword" name="keyword" autocomplete="off" placeholder="시설번호 · 시설명 · 상세위치 검색"><div class="facility-search-suggest" id="facilitySuggestList"></div></div></div>
                             <div class="form-field"><label class="field-label">&nbsp;</label><div class="page-actions"><button type="button" class="btn btn-secondary btn-sm" data-action="resetFacility">초기화</button><button type="button" class="btn btn-primary btn-sm" data-action="searchFacility">검색</button></div></div>
                         </div>
@@ -235,11 +263,11 @@
                         </div>
                     </div>
                     <div class="facility-grid-wrap"><div id="facilityGrid" class="ag-theme-alpine"></div></div>
-                    <%-- 편의시설(헬스장·독서실 등) 안내: 시설자산 목록에서 제외됨을 명확히 한다. --%>
+                    <%-- 편의시설 안내: 시설자산 목록에서 함께 조회되며, 상세 관리는 편의시설 관리 화면에서 진행한다. --%>
                     <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid var(--line);background:#f8f9fb;font-size:12px;color:#6b7a6e;">
                         <span class="material-symbols-rounded" style="font-size:15px;color:#2e5c38;flex-shrink:0;">info</span>
-                        헬스장·독서실 등 편의시설은 이 목록에 포함되지 않습니다.
-                        <a href="${pageContext.request.contextPath}/manager/publicFacilityList" style="color:#2e5c38;font-weight:700;text-decoration:none;margin-left:4px;">편의시설 관리 →</a>
+                        헬스장·독서실 등 편의시설도 이 목록에서 함께 조회됩니다.
+                        <a href="${pageContext.request.contextPath}/manager/publicFacilityList" style="color:#2e5c38;font-weight:700;text-decoration:none;margin-left:4px;">예약/운영 상세 관리 →</a>
                     </div>
                 </div>
 
@@ -302,7 +330,7 @@
                                                     <select class="form-select" id="dongNo" name="dongNo">
                                                         <option value="">선택 (없음)</option>
                                                         <c:forEach var="dong" items="${dongList}">
-                                                            <option value="${dong.dongNo}">${empty dong.dongNm ? dong.dongNo : dong.dongNm}동</option>
+                                                            <option value="${dong.dongNo}">${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}</option>
                                                         </c:forEach>
                                                     </select>
                                                 </div>
@@ -488,7 +516,7 @@
 
             if (deleteFileUuids) {
                 deleteFileUuids.value = checkedValues.join(",");
-            }
+            }아니
         });
     });
 </script>

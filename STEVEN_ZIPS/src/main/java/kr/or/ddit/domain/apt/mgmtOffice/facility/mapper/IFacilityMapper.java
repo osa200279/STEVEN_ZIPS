@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.mgmtOffice.facility.mapper;
 
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -9,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 시설자산 Mapper 인터페이스
- * FACILITY 테이블 기준 CRUD 및 연관 데이터 조회
+ * 시설 Mapper 인터페이스
+ * FACILITY 테이블 기준 CRUD 및 시설 화면 조회
  */
 @Mapper
 public interface IFacilityMapper {
@@ -26,6 +27,44 @@ public interface IFacilityMapper {
      * - dongNo       : 동번호 (_COMMON_ 이면 공용 위치 시설만)
      */
     List<FacilityVO> selectFacilityList(Map<String, Object> paramMap);
+
+    /**
+     * 시설 화면 목록 조회
+     *
+     * 조회 기준
+     * - FACILITY 기준 전체 시설 조회
+     * - PUBLIC_FACILITY 연결 여부로 일반시설/편의시설 구분
+     *
+     * paramMap 검색 조건 키
+     * - mgmtOfcNo     : 관리사무소 번호
+     * - facilityKind  : 시설종류, ALL/FACILITY/PUBLIC
+     * - keyword       : 시설명·상세위치 검색어
+     * - facilityTyCd  : 시설유형코드
+     * - useYn         : 사용여부
+     * - dongNo        : 동번호
+     *
+     * 반환값
+     * - FacilityDTO 목록
+     * - 시설 목록/상세 화면 표시용
+     */
+    List<FacilityDTO> selectFacilityViewList(Map<String, Object> paramMap);
+
+    /**
+     * 시설 화면 상세 조회
+     *
+     * 조회 기준
+     * - FACILITY.FACILITY_NO 기준 단건 조회
+     * - PUBLIC_FACILITY 연결 시 편의시설 전용 정보 함께 조회
+     *
+     * 사용 위치
+     * - 일반시설 기본 상세 조회
+     * - 편의시설 기본 정보 조회
+     * - 유지보수/점검/협력업체 정보는 추후 별도 조회로 확장
+     */
+    FacilityDTO selectFacilityViewDetail(
+            @Param("mgmtOfcNo") String mgmtOfcNo,    // 관리사무소 번호
+            @Param("facilityNo") String facilityNo   // 시설번호
+    );
 
     /**
      * 시설 상세 조회
@@ -124,7 +163,7 @@ public interface IFacilityMapper {
 
     /**
      * 동 목록 조회
-     * APT_UNIT 기준 단지 내 동 목록 (DISTINCT 중복 제거)
+     * APT_UNIT 기준 단지 내 동 목록, DISTINCT 중복 제거
      * 시설 등록 화면 동 선택 드롭다운용
      */
     List<FacilityVO> selectDongList(String mgmtOfcNo); // 관리사무소 번호

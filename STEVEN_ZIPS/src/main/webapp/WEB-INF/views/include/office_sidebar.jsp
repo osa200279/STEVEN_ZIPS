@@ -117,7 +117,7 @@
                     </a>
                     <a href="${ctx}/manager/publicFacilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">공용 시설</span>
+                        <span class="nav-text">편의 시설</span>
                     </a>
 
                     <%-- 공사·점검 --%>

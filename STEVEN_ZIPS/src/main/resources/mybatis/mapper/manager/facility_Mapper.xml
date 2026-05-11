@@ -109,6 +109,105 @@
     </select>
 
     <!--
+        시설 화면 목록 조회
+        시설관리 화면에서 일반시설과 편의시설을 함께 조회하는 화면 전용 목록 조회
+
+        정리 기준
+        - FACILITY 기본정보 중심으로 조회
+        - PUBLIC_FACILITY 연결 여부로 일반시설/편의시설만 구분
+        - 최근 점검/계약/검침/협력업체 미리보기는 아직 붙이지 않음
+        - 이후 각 관리 화면이 완성되면 별도 쿼리로 추가 조회
+    -->
+    <select id="selectFacilityViewList" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO">
+        select case
+        when public_facility.cmn_facility_no is not null then 'PUBLIC'
+        else 'FACILITY'
+        end as facility_kind                              <!-- 시설종류, FACILITY/PUBLIC -->
+        , case
+        when public_facility.cmn_facility_no is not null then '편의시설'
+        else '일반시설'
+        end as facility_kind_nm                                <!-- 시설종류명 -->
+        , facility.facility_no                                   <!-- 시설번호 -->
+        , nvl(public_facility.cmn_facility_nm, facility.facility_nm)
+        as facility_nm                                         <!-- 화면 표시 시설명 -->
+        , facility.facility_ty_cd                                <!-- 시설유형코드 -->
+        , facility_type_code.code_name as facility_ty_nm         <!-- 시설유형명 -->
+        , facility.instl_dt                                      <!-- 설치일자 -->
+        , facility.apt_cmplex_no                                 <!-- 아파트단지번호 -->
+        , facility.dong_no                                       <!-- 동 원본값 -->
+        , case
+        when instr(facility.dong_no, '_') > 0
+        then substr(facility.dong_no, instr(facility.dong_no, '_') + 1)
+        else facility.dong_no
+        end as display_dong_no                                 <!-- 동 표시값 -->
+        , facility.loc_cn                                        <!-- 상세위치 -->
+        , facility.use_yn                                        <!-- 사용여부 -->
+        , case
+        when facility.use_yn = 'Y' then '사용 가능'
+        when facility.use_yn = 'N' then '사용 불가'
+        else '-'
+        end as use_yn_nm                                       <!-- 사용여부명 -->
+        , public_facility.cmn_facility_no                        <!-- 편의시설번호 -->
+        , public_facility.cmn_facility_nm                        <!-- 편의시설명 -->
+        , public_facility.cmn_facility_rsv_yn                    <!-- 예약가능여부 -->
+        , public_facility.cmn_facility_opr_hr                    <!-- 운영시간 -->
+        from facility
+        <!-- 편의시설 전용 정보 확인용 JOIN -->
+        left outer join public_facility
+        on public_facility.facility_no = facility.facility_no
+        <!-- 시설유형명 확인용 공통코드 JOIN -->
+        left outer join common_code facility_type_code
+        on  facility_type_code.group_code_no = 'FACILITY_TY'
+        and facility_type_code.code_no_cd    = facility.facility_ty_cd
+        where facility.apt_cmplex_no = (
+        <!-- 관리사무소 번호로 단지번호 확인 -->
+        select mgmt_office.apt_cmplex_no
+        from mgmt_office
+        where mgmt_office.mgmt_ofc_no = #{mgmtOfcNo}
+        )
+        <!-- 시설종류 필터: ALL이면 전체, PUBLIC이면 편의시설만, FACILITY이면 일반시설만 -->
+        <if test="facilityKind != null and facilityKind != '' and facilityKind != 'ALL'">
+            <choose>
+                <when test="facilityKind == 'PUBLIC'">
+                    and public_facility.cmn_facility_no is not null
+                </when>
+                <when test="facilityKind == 'FACILITY'">
+                    and public_facility.cmn_facility_no is null
+                </when>
+            </choose>
+        </if>
+        <!-- 시설번호·시설명·편의시설명·상세위치 통합 검색 -->
+        <if test="keyword != null and keyword != ''">
+            and (
+            lower(facility.facility_no) like '%' || lower(#{keyword}) || '%'
+            or lower(facility.facility_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(public_facility.cmn_facility_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(facility.loc_cn) like '%' || lower(#{keyword}) || '%'
+            )
+        </if>
+        <!-- 시설유형 필터 -->
+        <if test="facilityTyCd != null and facilityTyCd != ''">
+            and facility.facility_ty_cd = #{facilityTyCd}
+        </if>
+        <!-- 사용여부 필터 -->
+        <if test="useYn != null and useYn != ''">
+            and facility.use_yn = #{useYn}
+        </if>
+        <!-- 동 필터: _COMMON_ 이면 동 없는 공용 위치 시설만 -->
+        <if test="dongNo != null and dongNo != ''">
+            <choose>
+                <when test="dongNo == '_COMMON_'">
+                    and (facility.dong_no is null or facility.dong_no = '')
+                </when>
+                <otherwise>
+                    and facility.dong_no = #{dongNo}
+                </otherwise>
+            </choose>
+        </if>
+        order by facility.facility_no desc
+    </select>
+
+    <!--
         시설 상세 조회
         관리사무소 기준 단지번호로 접근 권한 확인
         검침 연결 여부 포함
@@ -141,6 +240,65 @@
         select mo.apt_cmplex_no
         from mgmt_office mo
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
+        )
+    </select>
+
+    <!--
+        시설 화면 상세 조회
+        일반시설과 편의시설을 같은 상세 모달에서 조회하기 위한 화면 전용 상세 조회
+
+        정리 기준
+        - 상세 버튼에서는 시설 기본정보만 조회
+        - 최근 점검/보수/검침/계약 정보는 각 관리 화면 구현 후 별도 쿼리로 추가
+        - 한 쿼리에 모든 JOIN을 넣지 않아 XML 복잡도를 낮춤
+    -->
+    <select id="selectFacilityViewDetail" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO">
+        select case
+        when public_facility.cmn_facility_no is not null then 'PUBLIC'
+        else 'FACILITY'
+        end as facility_kind                              <!-- 시설종류, FACILITY/PUBLIC -->
+        , case
+        when public_facility.cmn_facility_no is not null then '편의시설'
+        else '일반시설'
+        end as facility_kind_nm                                <!-- 시설종류명 -->
+        , facility.facility_no                                   <!-- 시설번호 -->
+        , nvl(public_facility.cmn_facility_nm, facility.facility_nm)
+        as facility_nm                                         <!-- 화면 표시 시설명 -->
+        , facility.facility_ty_cd                                <!-- 시설유형코드 -->
+        , facility_type_code.code_name as facility_ty_nm         <!-- 시설유형명 -->
+        , facility.instl_dt                                      <!-- 설치일자 -->
+        , facility.apt_cmplex_no                                 <!-- 아파트단지번호 -->
+        , facility.dong_no                                       <!-- 동 원본값 -->
+        , case
+        when instr(facility.dong_no, '_') > 0
+        then substr(facility.dong_no, instr(facility.dong_no, '_') + 1)
+        else facility.dong_no
+        end as display_dong_no                                 <!-- 동 표시값 -->
+        , facility.loc_cn                                        <!-- 상세위치 -->
+        , facility.use_yn                                        <!-- 사용여부 -->
+        , case
+        when facility.use_yn = 'Y' then '사용 가능'
+        when facility.use_yn = 'N' then '사용 불가'
+        else '-'
+        end as use_yn_nm                                       <!-- 사용여부명 -->
+        , public_facility.cmn_facility_no                        <!-- 편의시설번호 -->
+        , public_facility.cmn_facility_nm                        <!-- 편의시설명 -->
+        , public_facility.cmn_facility_rsv_yn                    <!-- 예약가능여부 -->
+        , public_facility.cmn_facility_opr_hr                    <!-- 운영시간 -->
+        from facility
+        <!-- 편의시설 전용 정보 확인용 JOIN -->
+        left outer join public_facility
+        on public_facility.facility_no = facility.facility_no
+        <!-- 시설유형명 확인용 공통코드 JOIN -->
+        left outer join common_code facility_type_code
+        on  facility_type_code.group_code_no = 'FACILITY_TY'
+        and facility_type_code.code_no_cd    = facility.facility_ty_cd
+        where facility.facility_no = #{facilityNo}
+        <!-- 관리사무소 기준 단지번호로 접근 권한 확인 -->
+        and facility.apt_cmplex_no = (
+        select mgmt_office.apt_cmplex_no
+        from mgmt_office
+        where mgmt_office.mgmt_ofc_no = #{mgmtOfcNo}
         )
     </select>
 
