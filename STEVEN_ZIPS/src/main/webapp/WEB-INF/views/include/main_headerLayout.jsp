@@ -270,7 +270,7 @@
                 <div class="nav-grid">
                     <div class="nav-top-cell active">서비스 소개</div>
                     <div class="nav-top-cell">계약공고</div>
-                    <div class="nav-top-cell">계약 신청 및 조회</div>
+                    <div class="nav-top-cell">매물정보</div>
                     <div class="nav-top-cell">공공주택 정보</div>
                     <div class="nav-top-cell">공지사항</div>
                 </div>
@@ -324,11 +324,12 @@
 
                         <div class="mega-cell">
                             <span><a href="${pageContext.request.contextPath}/contract/notice.do">계약 공고</a></span>
+                            <span><a href="${pageContext.request.contextPath}/contract/apply.do">계약 신청</a></span>
+                            <span><a href="${pageContext.request.contextPath}/contract/history.do">계약 조회</a></span>
                         </div>
 
                         <div class="mega-cell">
-                            <span><a href="${pageContext.request.contextPath}/contract/apply.do">계약 신청</a></span>
-                            <span><a href="${pageContext.request.contextPath}/contract/history.do">계약 조회</a></span>
+                            <span><a href="${pageContext.request.contextPath}/">매물 정보</a></span>
                         </div>
 
                         <div class="mega-cell">

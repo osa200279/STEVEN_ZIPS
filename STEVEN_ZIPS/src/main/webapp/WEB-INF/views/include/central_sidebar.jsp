@@ -83,7 +83,7 @@
     <details class="nav-item group">
       <summary class="flex items-center justify-between px-3 py-3 rounded-full cursor-pointer hover:bg-white/50 transition-colors">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#226046] text-xl">campaign</span>
+          <span class="material-symbols-outlined text-[#226046] text-xl">info</span>
           <span class="font-bold text-sm text-gray-700 whitespace-nowrap">서비스 소개</span>
         </div>
         <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
@@ -97,7 +97,7 @@
     <details class="nav-item group">
       <summary class="flex items-center justify-between px-3 py-3 rounded-full cursor-pointer hover:bg-white/50 transition-colors">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#226046] text-xl">home_work</span>
+          <span class="material-symbols-outlined text-[#226046] text-xl">description</span>
           <span class="font-bold text-sm text-gray-700 whitespace-nowrap">계약 관리</span>
         </div>
         <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
@@ -115,7 +115,21 @@
     <details class="nav-item group">
       <summary class="flex items-center justify-between px-3 py-3 rounded-full cursor-pointer hover:bg-white/50 transition-colors">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#226046] text-xl">assignment_turned_in</span>
+          <span class="material-symbols-outlined text-[#226046] text-xl">home_work</span>
+          <span class="font-bold text-sm text-gray-700 whitespace-nowrap">매물 정보</span>
+        </div>
+        <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
+      </summary>
+      <div class="flex flex-col gap-1 mt-1 ml-8 pr-2 mb-2">
+        <a class="px-3 py-2 text-sm text-gray-600 hover:text-[#226046] hover:bg-white/70 rounded-full transition-all whitespace-nowrap"
+           href="${pageContext.request.contextPath}/">매물 정보</a>
+      </div>
+    </details>
+
+    <details class="nav-item group">
+      <summary class="flex items-center justify-between px-3 py-3 rounded-full cursor-pointer hover:bg-white/50 transition-colors">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#226046] text-xl">domain</span>
           <span class="font-bold text-sm text-gray-700 whitespace-nowrap">공공주택정보</span>
         </div>
         <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
@@ -141,7 +155,7 @@
     <details class="nav-item group">
       <summary class="flex items-center justify-between px-3 py-3 rounded-full cursor-pointer hover:bg-white/50 transition-colors">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[#226046] text-xl">compare</span>
+          <span class="material-symbols-outlined text-[#226046] text-xl">campaign</span>
           <span class="font-bold text-sm text-gray-700 whitespace-nowrap">공지사항</span>
         </div>
         <span class="material-symbols-outlined text-sm transition-transform group-open:rotate-180">expand_more</span>
