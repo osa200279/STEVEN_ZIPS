@@ -9,7 +9,7 @@
   --text-secondary: #4b5563;
   --accent: #e9e2e2;
   --sb-bg: #2f4158;   /* 사이드바 배경색 */
-  --sb-icon: rgb(48, 45, 255);
+  --sb-icon: #fff4e4;
   --sb-label: #ffffff;
 }
 
@@ -17,15 +17,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
-  background-color: var(--bg);
-  font-family: 'Noto Sans KR', sans-serif !important;
 }
 
 #wrapper {
@@ -36,9 +27,13 @@ body,
 
 #sidebar {
   width: 240px;
+  height: 100vh;
   background: var(--sb-bg);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
   transition: width 0.3s ease;
   flex-shrink: 0;
 }
@@ -69,6 +64,7 @@ body,
 
 .sidebar-nav {
   flex: 1;
+  overflow: auto;
   padding: 7px 10px 10px 7px;
 }
 
@@ -86,7 +82,7 @@ body,
   text-decoration: none;
   border-radius: 8px;
 
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -105,7 +101,13 @@ body,
   gap: 12px;
 }
 
-.material-symbols-rounded {
-  font-family: 'Material Symbols Rounded' !important;
-  font-display: block;
+.section-label{
+  font-size: 11px;
+  color: #a0cab6;
 }
+
+.luci-icon{
+  width: 18px;
+  height: 18px;
+}
+
