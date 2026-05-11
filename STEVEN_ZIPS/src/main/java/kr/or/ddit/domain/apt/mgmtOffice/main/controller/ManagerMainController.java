@@ -206,6 +206,10 @@ public class ManagerMainController {
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
+        //////////////
+
+
+        /////////////////
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
         return "apt/mgmtOffice/mngr_resident_list";
     }

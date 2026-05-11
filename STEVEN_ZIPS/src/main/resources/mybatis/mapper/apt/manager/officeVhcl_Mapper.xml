@@ -46,7 +46,7 @@
         ORDER BY REG_DT DESC
 
     </select>
-    
+
     <delete id="deleteVehicle">
 
         DELETE

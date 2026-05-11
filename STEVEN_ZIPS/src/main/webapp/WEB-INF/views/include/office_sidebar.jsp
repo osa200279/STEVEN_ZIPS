@@ -84,7 +84,7 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">입주/퇴거 관리</span>
                     </a>
-                    <a href="${ctx}/manager/resident/auto${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/resident/auto') ? 'active' : ''}">
+                    <a href="/manager/resident/auto/list/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/resident/auto') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">입주민 차량 관리</span>
                     </a>

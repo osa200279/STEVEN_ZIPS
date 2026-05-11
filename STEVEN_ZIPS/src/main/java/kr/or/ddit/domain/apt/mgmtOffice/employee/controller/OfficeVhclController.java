@@ -5,7 +5,9 @@ import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,9 +24,12 @@ public class OfficeVhclController {
     /**
      * 페이지 이동
      */
-    @GetMapping
-    public String residentAutoPage() {
+    @PreAuthorize("hasRole('MNGR') and @authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/management/{mgmtOfcNo}")
+    public String residentAutoPage(@PathVariable String mgmtOfcNo, Model model) {
 
+
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
         return "apt/mgmtOffice/employee/mngr_resident_auto";
     }
 
@@ -70,11 +75,14 @@ public class OfficeVhclController {
             return ResponseEntity.badRequest().body("등록 실패");
         }
     }
-    @GetMapping("/list")
-    @ResponseBody
-    public List<RsidVhclVO> getVehicleList() {
 
-        return officeVhclService.getVehicleList();
+    @PreAuthorize("hasRole('MNGR') and @authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/list/{mgmtOfcNo}")
+    public String getVehicleList(@PathVariable String mgmtOfcNo, Model model) {
+
+
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+        return "apt/mgmtOffice/mngr_resident_auto";
     }
 
     @PostMapping("/delete")
