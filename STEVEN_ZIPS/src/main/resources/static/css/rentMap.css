@@ -1,0 +1,341 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+    color: #17201b;
+    background: #f7faf6;
+}
+
+.rent-map-page {
+    display: grid;
+    grid-template-columns: 390px 520px 1fr;
+
+    /* 공통 헤더 높이만큼 아래에서 시작 */
+    margin-top: 60px;
+
+    /* 헤더 높이를 제외한 나머지 화면만 사용 */
+    height: calc(100vh - 60px);
+
+    overflow: hidden;
+    background: #f7faf6;
+    position: relative;
+    transition: grid-template-columns 0.25s ease;
+}
+
+/* 좌측 리스트 */
+.rent-list-panel {
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    overflow-y: auto;
+}
+
+.rent-search-box {
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.rent-search-box h2 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 800;
+}
+
+.rent-search-box p {
+    margin: 0 0 18px;
+    font-size: 14px;
+    color: #667085;
+}
+
+.rent-filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.filter-btn {
+    border: 1px solid #d0d5dd;
+    background: #fff;
+    color: #344054;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    background: #005f46;
+    border-color: #005f46;
+    color: #fff;
+}
+
+.rent-keyword {
+    width: 100%;
+    height: 42px;
+    border: 1px solid #d0d5dd;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 14px;
+}
+
+.rent-list {
+    padding: 14px;
+}
+
+.rent-card {
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    background: #fff;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.rent-card:hover,
+.rent-card.active {
+    border-color: #005f46;
+    box-shadow: 0 8px 24px rgba(0, 95, 70, 0.12);
+}
+
+.rent-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.rent-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #e8f3ef;
+    color: #005f46;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.rent-card-title {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.rent-card-price {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #005f46;
+    font-weight: 900;
+}
+
+.rent-card-desc {
+    margin: 0;
+    font-size: 13px;
+    color: #667085;
+    line-height: 1.5;
+}
+
+/* 중앙 상세 */
+.rent-detail-panel {
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    overflow-y: auto;
+}
+
+.rent-detail-empty {
+    padding: 40px 28px;
+    color: #667085;
+}
+
+.rent-detail-hero {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+}
+
+.rent-detail-content {
+    padding: 24px;
+}
+
+.rent-detail-content h2 {
+    margin: 0 0 8px;
+    font-size: 25px;
+    font-weight: 900;
+}
+
+.rent-detail-price {
+    font-size: 24px;
+    font-weight: 900;
+    color: #005f46;
+    margin-bottom: 22px;
+}
+
+.rent-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid #e5e7eb;
+    border-left: 1px solid #e5e7eb;
+    margin-bottom: 24px;
+}
+
+.rent-info-item {
+    padding: 14px;
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.rent-info-label {
+    display: block;
+    font-size: 12px;
+    color: #667085;
+    margin-bottom: 5px;
+}
+
+.rent-info-value {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.rent-detail-section-title {
+    font-size: 17px;
+    font-weight: 900;
+    margin: 26px 0 10px;
+}
+
+.rent-detail-desc {
+    color: #344054;
+    line-height: 1.7;
+}
+
+.rent-detail-btn {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 12px;
+    background: #005f46;
+    color: #fff;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+/* 지도 */
+.rent-map-panel {
+    position: relative;
+    min-width: 0;
+}
+
+#rentMap {
+    width: 100%;
+    height: 100%;
+}
+
+/* 지도 마커 스타일 */
+.rent-marker {
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: #005f46;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    white-space: nowrap;
+}
+
+@media (max-width: 1200px) {
+    .rent-map-page {
+        grid-template-columns: 360px 1fr;
+    }
+
+    .rent-detail-panel {
+        display: none;
+    }
+}
+
+/* =========================
+   상세 패널 닫기 / 열기
+   ========================= */
+
+/* 상세 패널이 닫혔을 때: 리스트 + 지도 */
+.rent-map-page.detail-collapsed {
+    grid-template-columns: 390px 0 1fr;
+}
+
+/* 상세 패널 */
+.rent-detail-panel {
+    position: relative;
+    overflow-y: auto;
+    transition: opacity 0.2s ease;
+}
+
+/* 상세 패널 닫힘 상태 */
+.rent-map-page.detail-collapsed .rent-detail-panel {
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-right: none;
+}
+
+/* 상세 패널 상단 */
+.rent-detail-panel-header {
+    height: 52px;
+    padding: 0 18px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* 닫기 버튼 */
+.rent-detail-close-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: #f2f4f7;
+    color: #344054;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.rent-detail-close-btn:hover {
+    background: #005f46;
+    color: #ffffff;
+}
+
+/* 상세 패널 위에 떠 있는 닫기 버튼 */
+.rent-detail-close-floating-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 100;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    color: #344054;
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 300;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.rent-detail-close-floating-btn:hover {
+    background: #005f46;
+    color: #ffffff;
+}
+
+/* 상세 패널이 닫혔을 때 닫기 버튼도 숨김 */
+.rent-map-page.detail-collapsed .rent-detail-close-floating-btn {
+    display: none;
+}
