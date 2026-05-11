@@ -12,7 +12,7 @@ function connectWebSocket() {
     const socket = new SockJS(contextPath + '/ws');
 
     stomp = Stomp.over(socket);
-    stomp.debug = console.log;
+    stomp.debug = null;
 
     stomp.connect(
         {},
@@ -57,7 +57,7 @@ function subscribeNotification() {
 
         console.log("알림:", data);
         showToast({
-            title: "새 알림",
+            title: data.title || "알림",
             message: data.message,
             type: data.type || "info",
             onClick: () => {

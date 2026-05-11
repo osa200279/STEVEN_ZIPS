@@ -10,6 +10,10 @@
   <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
 
   <script src="${pageContext.request.contextPath}/js/common/websocket.js"></script>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/toast.css">
+
+  <script src="${pageContext.request.contextPath}/js/common/toast.js"></script>
+
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
