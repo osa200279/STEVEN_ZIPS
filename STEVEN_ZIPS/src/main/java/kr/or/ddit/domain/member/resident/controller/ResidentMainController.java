@@ -3,7 +3,9 @@ package kr.or.ddit.domain.member.resident.controller;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtOfficeService;
-import kr.or.ddit.domain.apt.mgmtOffice.main.vo.MgmtOfficeVO;
+import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
+import kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO;
+import kr.or.ddit.domain.member.resident.service.IResidentFacilityService;
 import kr.or.ddit.domain.member.resident.vo.MyAptVO;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -18,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -31,6 +34,9 @@ public class ResidentMainController {
 
     @Autowired
     private IAptComplexService aptComplexService;
+
+    @Autowired
+    private IResidentFacilityService residentFacilityService;
 
     /**
      * 내 아파트 목록 조회 컨트롤러
@@ -93,8 +99,51 @@ public class ResidentMainController {
         return "member/resident/manage_operation";
     }
 
+    /* 입주민 시설관리이력 */
+    @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/manage/facility")
-    public String manageFacility() {
+    public String manageFacility(
+            @AuthenticationPrincipal CustomUser customUser,
+            @RequestParam(value = "aptCmplexNo", required = false) String aptCmplexNo,
+            @RequestParam(value = "currentPage", required = false, defaultValue = "1") int currentPage,
+            Model model
+    ) {
+        /*
+         * @PreAuthorize("hasRole('RESIDENT')")
+         * → 입주민 이상만 접근 가능.
+         * SecurityConfig의 권한 계층 때문에 MNGR, ADMIN도 접근 가능.
+         */
+
+        String userNo = customUser.getMember().getUserNo();
+
+        /*
+         * aptCmplexNo가 없으면 로그인한 입주민의 단지번호를 DB에서 조회한다.
+         */
+        if (aptCmplexNo == null || aptCmplexNo.isBlank()) {
+            aptCmplexNo = residentFacilityService.getResidentAptCmplexNo(userNo);
+        }
+
+        int screenSize = 5;
+        int startRow = (currentPage - 1) * screenSize + 1;
+        int endRow = currentPage * screenSize;
+
+        int totalRecord = residentFacilityService.getFacilityHistoryCount(aptCmplexNo);
+        int totalPage = (int) Math.ceil((double) totalRecord / screenSize);
+
+        FacilityInfoDTO aptInfo = residentFacilityService.getAptInfo(aptCmplexNo);
+        List<ResidentFacilityHistoryDTO> statusCardList =
+                residentFacilityService.getFacilityStatusCardList(aptCmplexNo);
+        List<ResidentFacilityHistoryDTO> historyList =
+                residentFacilityService.getFacilityHistoryList(aptCmplexNo, startRow, endRow);
+
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
+        model.addAttribute("aptInfo", aptInfo);
+        model.addAttribute("statusCardList", statusCardList);
+        model.addAttribute("historyList", historyList);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("totalRecord", totalRecord);
+
         return "member/resident/manage_facility";
     }
 

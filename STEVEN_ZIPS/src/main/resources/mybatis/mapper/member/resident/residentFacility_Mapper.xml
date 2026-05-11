@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.domain.member.resident.mapper.IResidentFacilityMapper">
+
+    <select id="selectResidentAptCmplexNo" resultType="string">
+        /* IResidentFacilityMapper.selectResidentAptCmplexNo */
+        SELECT au.apt_cmplex_no
+        FROM hshld_head hh
+                 JOIN apt_detail ad
+                      ON hh.ho_no = ad.ho_no
+                 JOIN apt_unit au
+                      ON ad.dong_no = au.dong_no
+        WHERE hh.user_no = #{userNo}
+          AND NVL(hh.inout_cd, 'IN') != 'OUT'
+          AND ROWNUM = 1
+    </select>
+
+    <select id="selectAptInfo"
+            resultType="kr.or.ddit.domain.central.dto.FacilityInfoDTO">
+
+        /* IResidentFacilityMapper.selectAptInfo */
+
+        SELECT ac.apt_cmplex_no  aptCmplexNo      /* 단지번호 */
+             , ac.apt_cmplex_nm  aptCmplexNm     /* 단지명 */
+
+            /*
+             * 헤더 출력용 단지 주소 문자열
+             *
+             * 주의:
+             * → MyBatis XML 주석 안에서도 달러 중괄호 표현식은 파라미터로 해석될 수 있다.
+             * → 그래서 JSP EL 표현식은 XML 주석에 직접 쓰지 않는다.
+             */
+             , ac.sido_nm
+            || ' '
+            || ac.sigungu_nm
+            || ' '
+            || ac.emd_nm
+            || ' '
+            || ac.dorojuso    aptComplexInfo  /* 헤더 출력용 주소 */
+
+             , ac.sido_nm        sidoNm          /* 시도명 */
+             , ac.sigungu_nm     sigunguNm       /* 시군구명 */
+             , ac.emd_nm         emdNm           /* 읍면동명 */
+             , ac.dorojuso       dorojuso        /* 도로명주소 */
+             , ac.heat_ty        heatTy          /* 난방방식 */
+             , ac.cnsco_nm       cnscoNm         /* 시공사명 */
+             , ac.unit_cnt       unitCnt         /* 세대수 */
+             , ac.dong_cnt       dongCnt         /* 동수 */
+             , ac.pkg_cnt        pkgCnt          /* 주차가능대수 */
+             , ac.free_pkg_cnt   freePkgCnt      /* 세대당 무료주차대수 */
+             , ac.max_floor      maxFloor        /* 최고층수 */
+             , ac.cc_cnt         ccCnt           /* CCTV 수 */
+             , ac.bld_yr         bldYr           /* 준공년도 */
+        FROM apt_complex ac
+        WHERE ac.apt_cmplex_no = #{aptCmplexNo}   /* 조회할 단지번호 */
+
+    </select>
+
+    <select id="selectFacilityStatusCardList"
+            resultType="kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO">
+        /* IResidentFacilityMapper.selectFacilityStatusCardList */
+        SELECT *
+        FROM (
+                 SELECT facility_no      facilityNo
+                      , facility_nm      facilityNm
+                      , facility_ty_cd   facilityTyCd
+                      , chk_dt           chkDt
+                      , chk_stts_cd      chkSttsCd
+                      , chk_cn           chkCn
+                      , partner_nm       partnerNm
+                      , rn
+                 FROM (
+                          SELECT f.facility_no
+                               , f.facility_nm
+                               , f.facility_ty_cd
+                               , TO_CHAR(fch.chk_dt, 'YYYY-MM-DD') chk_dt
+                               , fch.chk_stts_cd
+                               , fch.chk_cn
+                               , p.partner_nm
+                               , ROW_NUMBER() OVER (
+                              PARTITION BY f.facility_no
+                              ORDER BY fch.chk_dt DESC, fch.reg_dt DESC
+                              ) rn
+                          FROM facility f
+                                   LEFT JOIN facility_check_hstry fch
+                                             ON f.facility_no = fch.facility_no
+                                   LEFT JOIN partner p
+                                             ON fch.partner_no = p.partner_no
+                          WHERE f.apt_cmplex_no = #{aptCmplexNo}
+                            AND NVL(f.use_yn, 'Y') = 'Y'
+                      )
+                 WHERE rn = 1
+                 ORDER BY chk_dt DESC NULLS LAST
+             )
+        WHERE ROWNUM &lt;= 4
+    </select>
+
+    <select id="selectFacilityHistoryList"
+            resultType="kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO">
+        /* IResidentFacilityMapper.selectFacilityHistoryList */
+        SELECT *
+        FROM (
+                 SELECT rownum rn
+                      , a.*
+                 FROM (
+                          SELECT fch.fac_chk_hstry_no facChkHstryNo
+                               , f.facility_no         facilityNo
+                               , f.facility_nm         facilityNm
+                               , f.facility_ty_cd      facilityTyCd
+                               , TO_CHAR(fch.chk_dt, 'YYYY-MM-DD') chkDt
+                               , fch.chk_stts_cd       chkSttsCd
+                               , fch.chk_cn            chkCn
+                               , fch.chk_ty_cd         chkTyCd
+                               , p.partner_nm          partnerNm
+                               , NVL(p.pic_nm, p.partner_nm) picNm
+                          FROM facility_check_hstry fch
+                                   JOIN facility f
+                                        ON fch.facility_no = f.facility_no
+                                   LEFT JOIN partner p
+                                             ON fch.partner_no = p.partner_no
+                          WHERE f.apt_cmplex_no = #{aptCmplexNo}
+                            AND NVL(f.use_yn, 'Y') = 'Y'
+                          ORDER BY fch.chk_dt DESC, fch.reg_dt DESC
+                      ) a
+                 WHERE rownum &lt;= #{endRow}
+             )
+        WHERE rn &gt;= #{startRow}
+    </select>
+
+    <select id="selectFacilityHistoryCount" resultType="int">
+        /* IResidentFacilityMapper.selectFacilityHistoryCount */
+        SELECT COUNT(*)
+        FROM facility_check_hstry fch
+                 JOIN facility f
+                      ON fch.facility_no = f.facility_no
+        WHERE f.apt_cmplex_no = #{aptCmplexNo}
+          AND NVL(f.use_yn, 'Y') = 'Y'
+    </select>
+
+</mapper>

@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -43,6 +44,36 @@
     .process-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:14px;} .process-step {padding:18px 14px;border-radius:14px;border:1px solid var(--border);background:#fff;text-align:center;} .process-step.active {background:#eef8f0;border-color:#b8d9c0;}
     @media (max-width:1200px){.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid{grid-template-columns:repeat(2,1fr)} .grid-2,.grid-2.equal,.chat-layout{grid-template-columns:1fr} .label-grid{grid-template-columns:140px 1fr}}
     @media (max-width:900px){.main-shell{flex-direction:column}.content-area{padding:24px 18px 48px}.page-content-wrap{max-width:100%}.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid,.seat-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:120px 1fr}.label-grid{grid-template-columns:120px 1fr}}
+
+    .facility-pagination {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .facility-pagination .page-link {
+      min-width: 34px;
+      height: 34px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-mid);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+      background: #fff;
+    }
+
+    .facility-pagination .page-link.active {
+      background: var(--green-dark);
+      color: #fff;
+      border-color: var(--green-dark);
+    }
+
   </style>
 
 </head>
@@ -71,86 +102,51 @@
           </div>
         </section>
         <section class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">승강기</div>
-            <div class="stat-value">정상</div>
-            <div class="stat-sub">최근 점검 2026-04-12</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">소방설비</div>
-            <div class="stat-value">점검완료</div>
-            <div class="stat-sub">정밀 점검 이상 없음</div>
-          </div>
-          <div class="stat-card">
-          <div class="stat-label">급수시설</div>
-            <div class="stat-value">양호</div>
-            <div class="stat-sub">수질 검사 통과</div>
-          </div><div class="stat-card">
-          <div class="stat-label">전기설비</div>
-          <div class="stat-value">정상</div>
-          <div class="stat-sub">부하 점검 완료</div>
-        </div>
+          <c:forEach var="card" items="${statusCardList}">
+            <div class="stat-card">
+              <div class="stat-label">${card.facilityNm}</div>
+              <div class="stat-value">${card.chkSttsCd}</div>
+              <div class="stat-sub">최근 점검 ${card.chkDt}</div>
+            </div>
+          </c:forEach>
         </section>
-        <section class="panel">
-          <div class="section-hd">
-            <h3>상세 점검 내역</h3>
-            <span>최근 5건</span>
+
+        <tbody>
+        <c:choose>
+          <c:when test="${not empty historyList}">
+            <c:forEach var="history" items="${historyList}">
+              <tr>
+                <td>${history.chkDt}</td>
+                <td>${history.facilityNm}</td>
+                <td>${history.chkCn}</td>
+                <td>
+                  <span class="badge ok">${history.chkSttsCd}</span>
+                </td>
+                <td>${history.picNm}</td>
+              </tr>
+            </c:forEach>
+          </c:when>
+          <c:otherwise>
+            <tr>
+              <td colspan="5" style="text-align:center; padding:40px;">
+                등록된 시설 점검 이력이 없습니다.
+              </td>
+            </tr>
+          </c:otherwise>
+        </c:choose>
+        </tbody>
+
+        <%-- 페이징 처리 --%>
+        <c:if test="${totalPage > 1}">
+          <div class="facility-pagination">
+            <c:forEach begin="1" end="${totalPage}" var="page">
+              <a class="page-link ${currentPage eq page ? 'active' : ''}"
+                 href="${pageContext.request.contextPath}/resident/manage/facility?aptCmplexNo=${aptCmplexNo}&currentPage=${page}">
+                  ${page}
+              </a>
+            </c:forEach>
           </div>
-          <table class="data-table">
-            <thead>
-            <tr>
-              <th>점검일</th>
-              <th>구분</th>
-              <th>세부 내용</th>
-              <th>상태</th>
-              <th>담당자</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td>2026-04-12</td>
-              <td>승강기</td>
-              <td>운행 상태 및 비상통화 장치 점검</td>
-              <td>
-                <span class="badge ok">정상</span>
-              </td>
-              <td>시설팀 김민수</td>
-            </tr>
-            <tr>
-              <td>2026-04-11</td>
-              <td>소방설비</td>
-              <td>소화전 압력 및 경보 설비 테스트</td>
-              <td>
-                <span class="badge ok">완료</span>
-              </td>
-              <td>안전팀 이서연</td>
-            </tr>
-            <tr>
-              <td>2026-04-09</td>
-              <td>급수시설</td>
-              <td>저수조 청소 및 배관 점검</td>
-              <td>
-                <span class="badge ok">양호</span>
-              </td>
-              <td>외부업체</td>
-            </tr>
-            <tr>
-              <td>2026-04-07</td>
-              <td>전기설비</td>
-              <td>비상 발전기 시운전 및 패널 확인</td>
-              <td><span class="badge ok">정상</span></td>
-              <td>전기실 박정훈</td>
-            </tr>
-            <tr>
-              <td>2026-04-04</td>
-              <td>공용부</td>
-              <td>주차장 조명 교체 이력 등록</td>
-              <td><span class="badge info">처리완료</span></td>
-              <td>관리사무소</td>
-            </tr>
-            </tbody>
-          </table>
-        </section>
+        </c:if>
 
       </div>
     </main>

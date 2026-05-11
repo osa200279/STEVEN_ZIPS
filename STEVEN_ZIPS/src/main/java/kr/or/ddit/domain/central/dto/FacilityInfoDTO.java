@@ -131,4 +131,6 @@ public class FacilityInfoDTO {
     private String welfareInfra;        // 복지시설
     private String convenienceInfra;    // 생활편의시설
 
+
+
 }
