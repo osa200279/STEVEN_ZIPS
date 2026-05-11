@@ -329,7 +329,8 @@
                         </div>
 
                         <div class="mega-cell">
-                            <span><a href="${pageContext.request.contextPath}/rent/map">매물 정보</a></span>
+                            <span><a href="${pageContext.request.contextPath}/rent/map">매물 지도</a></span>
+                            <span><a href="${pageContext.request.contextPath}/rent/list">매물 목록</a></span>
                         </div>
 
                         <div class="mega-cell">

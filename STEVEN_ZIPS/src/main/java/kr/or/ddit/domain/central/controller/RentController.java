@@ -20,4 +20,19 @@ public class RentController {
         log.info("임대 매물 지도 화면 진입");
         return "central/rentMap";
     }
+
+    /**
+     * 임대 매물 목록 화면
+     *
+     * 현재는 rentList.jsp 내부에서 하드코딩 매물 데이터를 사용하고,
+     * 추후 DB 연동 시 Model에 매물 목록을 담아 전달하도록 확장 예정
+     *
+     * 접속 주소:
+     * /rent/list
+     */
+    @GetMapping("/list")
+    public String rentList() {
+        log.info("임대 매물 목록 화면 진입");
+        return "central/rentList";
+    }
 }

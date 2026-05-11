@@ -6,144 +6,159 @@ body {
     margin: 0;
     font-family: "Pretendard", "Noto Sans KR", sans-serif;
     color: #17201b;
-    background: #f7faf6;
+    background: #f8faf6;
 }
 
+/* =========================
+   전체 페이지 래퍼
+   ========================= */
+.rent-map-wrap {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 88px 24px 32px;
+}
+
+/*
+ * 중앙 사이드바가 있는 화면용
+ * central_sidebar가 왼쪽에 고정되어 있으므로
+ * 본문도 사이드바 너비만큼 오른쪽으로 밀어준다.
+ */
+.rent-map-wrap.with-sidebar {
+    max-width: none;
+    width: calc(100% - 280px);
+    margin-left: 280px;
+    margin-right: 0;
+    padding: 88px 32px 32px;
+}
+
+@media (max-width: 1200px) {
+    .rent-map-wrap.with-sidebar {
+        width: 100%;
+        margin-left: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+/* =========================
+   상단 타이틀 영역
+   ========================= */
+.rent-map-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.rent-map-top-left {
+    min-width: 0;
+}
+
+.rent-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    color: #98a2b3;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.rent-breadcrumb strong {
+    color: #005f46;
+    font-weight: 800;
+}
+
+.breadcrumb-arrow {
+    color: #98a2b3;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.rent-map-page-title {
+    margin: 0 0 10px;
+    font-size: 36px;
+    line-height: 1.15;
+    font-weight: 900;
+    color: #0b1f17;
+}
+
+.rent-map-page-desc {
+    margin: 0;
+    font-size: 16px;
+    color: #667085;
+    line-height: 1.6;
+}
+
+.rent-map-top-right {
+    flex-shrink: 0;
+    padding-top: 10px;
+}
+
+.rent-list-move-btn {
+    height: 48px;
+    padding: 0 22px;
+    border: 1px solid #e4e7ec;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #344054;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(16, 24, 40, 0.05);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rent-list-move-btn:hover {
+    background: #f9fafb;
+    border-color: #d0d5dd;
+}
+
+.rent-list-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* =========================
+   지도 + 상세정보 레이아웃
+   ========================= */
 .rent-map-page {
     display: grid;
-    grid-template-columns: 390px 520px 1fr;
-
-    /* 공통 헤더 높이만큼 아래에서 시작 */
-    margin-top: 60px;
-
-    /* 헤더 높이를 제외한 나머지 화면만 사용 */
-    height: calc(100vh - 60px);
-
+    grid-template-columns: 520px 1fr;
+    height: calc(100vh - 250px);
+    min-height: 680px;
     overflow: hidden;
-    background: #f7faf6;
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 16px 40px rgba(16, 24, 40, 0.08);
     position: relative;
     transition: grid-template-columns 0.25s ease;
 }
 
-/* 좌측 리스트 */
-.rent-list-panel {
-    background: #ffffff;
-    border-right: 1px solid #e5e7eb;
-    overflow-y: auto;
+/* 처음 진입 / 상세 닫힘 상태: 지도만 넓게 */
+.rent-map-page.detail-collapsed {
+    grid-template-columns: 0 1fr;
 }
 
-.rent-search-box {
-    padding: 24px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.rent-search-box h2 {
-    margin: 0 0 8px;
-    font-size: 26px;
-    font-weight: 800;
-}
-
-.rent-search-box p {
-    margin: 0 0 18px;
-    font-size: 14px;
-    color: #667085;
-}
-
-.rent-filter-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 14px;
-}
-
-.filter-btn {
-    border: 1px solid #d0d5dd;
-    background: #fff;
-    color: #344054;
-    border-radius: 999px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.filter-btn.active {
-    background: #005f46;
-    border-color: #005f46;
-    color: #fff;
-}
-
-.rent-keyword {
-    width: 100%;
-    height: 42px;
-    border: 1px solid #d0d5dd;
-    border-radius: 10px;
-    padding: 0 14px;
-    font-size: 14px;
-}
-
-.rent-list {
-    padding: 14px;
-}
-
-.rent-card {
-    padding: 18px;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    margin-bottom: 12px;
-    background: #fff;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.rent-card:hover,
-.rent-card.active {
-    border-color: #005f46;
-    box-shadow: 0 8px 24px rgba(0, 95, 70, 0.12);
-}
-
-.rent-card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.rent-type-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 9px;
-    border-radius: 999px;
-    background: #e8f3ef;
-    color: #005f46;
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.rent-card-title {
-    margin: 0 0 8px;
-    font-size: 17px;
-    font-weight: 800;
-}
-
-.rent-card-price {
-    margin: 0 0 8px;
-    font-size: 18px;
-    color: #005f46;
-    font-weight: 900;
-}
-
-.rent-card-desc {
-    margin: 0;
-    font-size: 13px;
-    color: #667085;
-    line-height: 1.5;
-}
-
-/* 중앙 상세 */
+/* =========================
+   상세 패널
+   ========================= */
 .rent-detail-panel {
+    position: relative;
     background: #ffffff;
     border-right: 1px solid #e5e7eb;
     overflow-y: auto;
+    transition: opacity 0.2s ease;
+}
+
+.rent-map-page.detail-collapsed .rent-detail-panel {
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-right: none;
 }
 
 .rent-detail-empty {
@@ -217,15 +232,45 @@ body {
     border: none;
     border-radius: 12px;
     background: #005f46;
-    color: #fff;
+    color: #ffffff;
     font-weight: 900;
     cursor: pointer;
 }
 
-/* 지도 */
+/* 상세 패널 닫기 버튼 */
+.rent-detail-close-floating-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 100;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.96);
+    color: #344054;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.rent-detail-close-floating-btn:hover {
+    background: #005f46;
+    color: #ffffff;
+}
+
+.rent-map-page.detail-collapsed .rent-detail-close-floating-btn {
+    display: none;
+}
+
+/* =========================
+   지도
+   ========================= */
 .rent-map-panel {
     position: relative;
     min-width: 0;
+    height: 100%;
 }
 
 #rentMap {
@@ -238,104 +283,46 @@ body {
     padding: 7px 10px;
     border-radius: 8px;
     background: #005f46;
-    color: #fff;
+    color: #ffffff;
     font-size: 12px;
     font-weight: 800;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
     white-space: nowrap;
 }
 
-@media (max-width: 1200px) {
+/* =========================
+   반응형
+   ========================= */
+@media (max-width: 1400px) {
+    .rent-map-wrap {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
     .rent-map-page {
-        grid-template-columns: 360px 1fr;
+        grid-template-columns: 480px 1fr;
+    }
+
+    .rent-map-page.detail-collapsed {
+        grid-template-columns: 0 1fr;
+    }
+}
+
+@media (max-width: 1200px) {
+    .rent-map-top {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .rent-map-top-right {
+        padding-top: 0;
+    }
+
+    .rent-map-page {
+        grid-template-columns: 1fr;
     }
 
     .rent-detail-panel {
         display: none;
     }
-}
-
-/* =========================
-   상세 패널 닫기 / 열기
-   ========================= */
-
-/* 상세 패널이 닫혔을 때: 리스트 + 지도 */
-.rent-map-page.detail-collapsed {
-    grid-template-columns: 390px 0 1fr;
-}
-
-/* 상세 패널 */
-.rent-detail-panel {
-    position: relative;
-    overflow-y: auto;
-    transition: opacity 0.2s ease;
-}
-
-/* 상세 패널 닫힘 상태 */
-.rent-map-page.detail-collapsed .rent-detail-panel {
-    opacity: 0;
-    pointer-events: none;
-    overflow: hidden;
-    border-right: none;
-}
-
-/* 상세 패널 상단 */
-.rent-detail-panel-header {
-    height: 52px;
-    padding: 0 18px;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #ffffff;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-/* 닫기 버튼 */
-.rent-detail-close-btn {
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 50%;
-    background: #f2f4f7;
-    color: #344054;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.rent-detail-close-btn:hover {
-    background: #005f46;
-    color: #ffffff;
-}
-
-/* 상세 패널 위에 떠 있는 닫기 버튼 */
-.rent-detail-close-floating-btn {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 100;
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.95);
-    color: #344054;
-    font-size: 26px;
-    line-height: 1;
-    font-weight: 300;
-    cursor: pointer;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-}
-
-.rent-detail-close-floating-btn:hover {
-    background: #005f46;
-    color: #ffffff;
-}
-
-/* 상세 패널이 닫혔을 때 닫기 버튼도 숨김 */
-.rent-map-page.detail-collapsed .rent-detail-close-floating-btn {
-    display: none;
 }
