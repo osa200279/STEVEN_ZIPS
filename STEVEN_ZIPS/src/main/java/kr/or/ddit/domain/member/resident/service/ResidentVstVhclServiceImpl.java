@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.member.resident.service;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.member.resident.mapper.IVstVhclMapper;
 import kr.or.ddit.domain.member.resident.vo.MyAptVO;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -25,7 +27,7 @@ public class ResidentVstVhclServiceImpl implements IResidentVstVhclService{
     @Override
     public void registerVisit(
             VisitRegisterDTO dto
-            ,CustomUser principal ) {
+            , CustomUser principal, String aptCmplexNo) {
 
         try {
 
@@ -36,22 +38,30 @@ public class ResidentVstVhclServiceImpl implements IResidentVstVhclService{
                             + ":00";
 
             SimpleDateFormat sdf =
-                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
             Date vstYmd = sdf.parse(visitDateTime);
 
             ResidentVO resident =
                     (ResidentVO) principal.getMember();
 
-            MyAptVO myApt =
-                    resident.getMyAptList().get(0);
+            MyAptVO myApt = null;
+
+            for (MyAptVO apt : resident.getMyAptList()) {
+
+                if (aptCmplexNo.equals(apt.getAptCmplexNo())) {
+                    myApt = apt;
+                    break;
+                }
+            }
+
+            if (myApt == null) {
+                throw new RuntimeException("거주지 정보 없음");
+            }
+
 
             String hoNo =
-                    myApt.getAptCmplexNo()
-                            + "_"
-                            + myApt.getDongNm()
-                            + "_"
-                            + myApt.getHo();
+                    myApt.getHoNo();
 
             VstVhclRsvtVO vo =
                     new VstVhclRsvtVO();
@@ -72,7 +82,7 @@ public class ResidentVstVhclServiceImpl implements IResidentVstVhclService{
 
             vo.setHoNo(hoNo);
 
-/*            vstVhclMapper.insertVisitReservation(vo);*/
+            vstVhclMapper.insertVisitReservation(vo);
 
         } catch (Exception e) {
 
@@ -80,5 +90,39 @@ public class ResidentVstVhclServiceImpl implements IResidentVstVhclService{
 
             throw new RuntimeException("방문예약 등록 실패");
         }
+    }
+
+    @Override
+    public int deleteVisit(
+            String rsvtNo,String userNo) {
+        return vstVhclMapper.deleteVisit(rsvtNo,userNo);
+    }
+
+    @Override
+    public void selectVisitList(
+
+            PaginationInfoVO<VstVhclRsvtVO> pagingVO,
+
+            String userNo,
+
+            String aptCmplexNo
+    ) {
+
+        int totalRecord =
+                vstVhclMapper.selectVisitCount(
+                        userNo,
+                        aptCmplexNo
+                );
+
+        pagingVO.setTotalRecord(totalRecord);
+
+        List<VstVhclRsvtVO> dataList =
+                vstVhclMapper.selectVisitList(
+                        pagingVO,
+                        userNo,
+                        aptCmplexNo
+                );
+
+        pagingVO.setDataList(dataList);
     }
 }

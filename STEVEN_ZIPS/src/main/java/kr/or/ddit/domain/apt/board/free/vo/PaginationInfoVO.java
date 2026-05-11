@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.board.free.vo;
 
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import lombok.Data;
 
 import java.util.List;

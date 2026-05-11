@@ -11,735 +11,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
 
-    <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background: var(--bg);
-            color: var(--text-dark);
-            margin: 0;
-        }
-
-        .material-symbols-outlined {
-            font-family: 'Material Symbols Outlined';
-        }
-
-        .main-shell {
-            display: flex;
-            align-items: stretch;
-            width: 100%;
-            min-height: calc(100vh - 114px);
-            margin-top: 114px;
-            background: var(--bg);
-        }
-
-        .content-area {
-            flex: 1;
-            min-width: 0;
-            padding: 32px 40px 64px;
-        }
-
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--text-light);
-            margin-bottom: 18px;
-        }
-
-        .breadcrumb a {
-            color: var(--text-light);
-            text-decoration: none;
-        }
-
-        .breadcrumb .cur {
-            color: var(--green-dark);
-            font-weight: 700;
-        }
-
-        .page-title {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--text-dark);
-            padding-bottom: 14px;
-            border-bottom: 2px solid var(--green-dark);
-            margin-bottom: 16px;
-            letter-spacing: -.4px;
-        }
-
-        .page-desc {
-            font-size: 13px;
-            line-height: 1.8;
-            color: var(--text-light);
-            margin-bottom: 24px;
-        }
-
-        .hero-card, .card, .panel {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            box-shadow: 0 10px 24px rgba(30, 60, 40, .05);
-        }
-
-        .hero-card {
-            padding: 24px 28px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--green-dark), #386a4d);
-            color: #fff;
-        }
-
-        .hero-card h2 {
-            font-size: 20px;
-            margin: 0 0 8px;
-            letter-spacing: -.3px;
-        }
-
-        .hero-card p {
-            margin: 0;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, .82);
-            font-size: 13px;
-        }
-
-        .chip-row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 14px;
-        }
-
-        .chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            background: rgba(255, 255, 255, .18);
-            color: #fff;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns:repeat(4, minmax(0, 1fr));
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px 18px 16px;
-        }
-
-        .stat-label {
-            color: var(--text-light);
-            font-size: 12px;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--green-dark);
-            letter-spacing: -.6px;
-        }
-
-        .stat-sub {
-            margin-top: 6px;
-            font-size: 12px;
-            color: var(--text-light);
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns:1.2fr .8fr;
-            gap: 18px;
-            margin-bottom: 22px;
-        }
-
-        .grid-2.equal {
-            grid-template-columns:1fr 1fr;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns:repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 22px;
-        }
-
-        .section-hd {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .section-hd h3 {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--text-dark);
-        }
-
-        .section-hd span {
-            font-size: 12px;
-            color: var(--text-light);
-        }
-
-        .card, .panel {
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .bullet-list {
-            margin: 0;
-            padding-left: 18px;
-            color: var(--text-mid);
-            line-height: 1.8;
-            font-size: 13px;
-        }
-
-        .bullet-list li + li {
-            margin-top: 6px;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            background: #fff;
-            overflow: hidden;
-            border-radius: 12px;
-        }
-
-        .data-table thead th {
-            background: var(--green-pale);
-            color: var(--text-mid);
-            padding: 12px 14px;
-            text-align: left;
-            font-weight: 700;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .data-table tbody td {
-            padding: 13px 14px;
-            border-bottom: 1px solid #edf0eb;
-            color: var(--text-dark);
-            vertical-align: top;
-        }
-
-        .data-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .mini-table td, .mini-table th {
-            padding: 10px 12px !important;
-        }
-
-        .label-grid {
-            display: grid;
-            grid-template-columns:160px 1fr 160px 1fr;
-            border-top: 1px solid var(--border);
-            border-left: 1px solid var(--border);
-            overflow: hidden;
-            border-radius: 12px;
-            margin-bottom: 18px;
-        }
-
-        .label-grid div {
-            padding: 13px 16px;
-            border-right: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            font-size: 13px;
-        }
-
-        .label-grid .th {
-            background: var(--green-pale);
-            color: var(--text-mid);
-            font-weight: 700;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns:160px 1fr;
-            border-top: 1px solid var(--border);
-            border-left: 1px solid var(--border);
-            overflow: hidden;
-            border-radius: 12px;
-        }
-
-        .form-grid .th, .form-grid .td {
-            padding: 14px 16px;
-            border-right: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .form-grid .th {
-            background: var(--green-pale);
-            color: var(--text-mid);
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .fake-input, .fake-select, .fake-textarea {
-            width: 100%;
-            border: 1px solid #d8ddd4;
-            background: #fff;
-            border-radius: 10px;
-            padding: 11px 13px;
-            font-size: 13px;
-            color: var(--text-dark);
-            box-sizing: border-box;
-        }
-
-        .fake-textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        .inline-fields {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 22px;
-            flex-wrap: wrap;
-        }
-
-        .btn-main, .btn-sub, .btn-danger, .btn-ghost {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 120px;
-            padding: 12px 18px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 800;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            box-sizing: border-box;
-        }
-
-        .btn-main {
-            background: var(--green-dark);
-            color: #fff;
-        }
-
-        .btn-sub {
-            background: #edf5ef;
-            color: var(--green-dark);
-        }
-
-        .btn-danger {
-            background: #b64444;
-            color: #fff;
-        }
-
-        .btn-ghost {
-            background: #fff;
-            color: var(--text-mid);
-            border: 1px solid var(--border);
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        .badge.ok {
-            background: #ecf7ef;
-            color: #2f7a4d;
-        }
-
-        .badge.wait {
-            background: #fff5df;
-            color: #9a6b00;
-        }
-
-        .badge.danger {
-            background: #fbe8e8;
-            color: #a23a3a;
-        }
-
-        .badge.info {
-            background: #edf4fb;
-            color: #2d6688;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns:repeat(3, minmax(0, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .menu-card {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 20px;
-        }
-
-        .menu-card h4 {
-            margin: 0 0 8px;
-            font-size: 16px;
-            color: var(--text-dark);
-        }
-
-        .menu-card p {
-            margin: 0 0 12px;
-            font-size: 13px;
-            color: var(--text-light);
-            line-height: 1.7;
-        }
-
-        .menu-links {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .menu-links a {
-            text-decoration: none;
-            color: var(--green-dark);
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .seat-grid {
-            display: grid;
-            grid-template-columns:repeat(6, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .room-grid {
-            display: grid;
-            grid-template-columns:repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .seat, .room-box {
-            padding: 16px 8px;
-            text-align: center;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-            border: 1px solid var(--border);
-            background: #fff;
-        }
-
-        .seat.available, .room-box.available {
-            background: #f1f8f2;
-            color: #2a6d44;
-        }
-
-        .seat.busy, .room-box.busy {
-            background: #f8ecec;
-            color: #9f4747;
-        }
-
-        .seat.selected, .room-box.selected {
-            background: var(--green-dark);
-            color: #fff;
-        }
-
-        .chart-box {
-            height: 240px;
-            border: 1px dashed #cfd7cf;
-            border-radius: 12px;
-            background: linear-gradient(to top, rgba(43, 103, 78, .08), rgba(43, 103, 78, .02)), repeating-linear-gradient(to right, transparent 0 72px, rgba(0, 0, 0, .03) 72px 73px), repeating-linear-gradient(to bottom, transparent 0 47px, rgba(0, 0, 0, .04) 47px 48px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .chart-line {
-            position: absolute;
-            left: 22px;
-            right: 22px;
-            bottom: 26px;
-            top: 28px;
-        }
-
-        .chart-line svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .chat-layout {
-            display: grid;
-            grid-template-columns:320px 1fr;
-            gap: 18px;
-        }
-
-        .chat-list, .chat-box {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-        }
-
-        .chat-list {
-            padding: 16px;
-        }
-
-        .chat-box {
-            padding: 18px;
-        }
-
-        .chat-room-item {
-            padding: 12px 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 1px solid transparent;
-        }
-
-        .chat-room-item.active {
-            background: #f4f8f5;
-            border-color: #d8e6db;
-        }
-
-        .message-stream {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            min-height: 320px;
-        }
-
-        .message {
-            max-width: 72%;
-            padding: 12px 14px;
-            border-radius: 14px;
-            font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .message.me {
-            align-self: flex-end;
-            background: var(--green-dark);
-            color: #fff;
-        }
-
-        .message.other {
-            align-self: flex-start;
-            background: #f2f4f0;
-            color: var(--text-dark);
-        }
-
-        .search-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
-        .search-row .fake-input, .search-row .fake-select {
-            max-width: 220px;
-        }
-
-        .notice-card {
-            padding: 18px 20px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #fff8ea, #fff1d5);
-            border: 1px solid #f0dfb4;
-            margin-bottom: 18px;
-        }
-
-        .process-grid {
-            display: grid;
-            grid-template-columns:repeat(4, 1fr);
-            gap: 14px;
-        }
-
-        .process-step {
-            padding: 18px 14px;
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            background: #fff;
-            text-align: center;
-        }
-
-        .process-step.active {
-            background: #eef8f0;
-            border-color: #b8d9c0;
-        }
-
-        @media (max-width: 1200px) {
-            .stats-grid, .menu-grid, .grid-3, .room-grid, .process-grid {
-                grid-template-columns:repeat(2, 1fr)
-            }
-
-            .grid-2, .grid-2.equal, .chat-layout {
-                grid-template-columns:1fr
-            }
-
-            .label-grid {
-                grid-template-columns:140px 1fr
-            }
-        }
-
-        @media (max-width: 900px) {
-            .main-shell {
-                flex-direction: column
-            }
-
-            .content-area {
-                padding: 24px 18px 48px
-            }
-
-            .stats-grid, .menu-grid, .grid-3, .room-grid, .process-grid, .seat-grid {
-                grid-template-columns:1fr
-            }
-
-            .form-grid {
-                grid-template-columns:120px 1fr
-            }
-
-            .label-grid {
-                grid-template-columns:120px 1fr
-            }
-        }
-
-        .upload-box:hover {
-            background: #f7fbf8;
-        }
-
-        .upload-box.dragover {
-            border-color: #2a6d44;
-            background: #eef8f0;
-        }
-
-        .upload-content .plus {
-            font-size: 40px;
-            font-weight: bold;
-            color: #2a6d44;
-        }
-
-        .upload-content .text {
-            font-size: 13px;
-            color: #666;
-            margin-top: 8px;
-        }
-
-        .file-name {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #333;
-        }
-
-        /* 업로드 박스 */
-        .upload-box {
-            width: 400px;
-            height: 300px;
-            border: 2px dashed #cfd7cf;
-            border-radius: 12px;
-            position: relative;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            cursor: pointer;
-        }
-
-        /* 기본 + 상태 */
-        .upload-content {
-            text-align: center;
-        }
-
-        /* 썸네일 카드 (검은 영역) */
-        .preview-card {
-            width: 70%;
-            height: 70%;
-            background: transparent; /* 🔥 검은색 제거 */
-            border-radius: 20px;
-
-            display: none; /* 처음엔 숨김 */
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .preview-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-
-            border-radius: 16px;
-            background: #fff;
-            padding: 6px;
-
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        /* X 버튼 */
-        .remove-btn {
-            position: absolute;
-            top: 2px;
-            right: -8px;
-
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-
-            background: #e53935;
-            color: #fff;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .delete-text {
-            color: #e57373;          /* 연한 빨강 */
-            font-size: 12px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .delete-text:hover {
-            color: #d32f2f;          /* hover 시 진하게 */
-            text-decoration: underline;
-        }
-
-        @keyframes errorFlash {
-            0% {
-                border-color: #e53935;
-                background-color: #fff5f5;
-            }
-            50% {
-                border-color: #e53935;
-                background-color: #ffecec;
-            }
-            100% {
-                border-color: #d8ddd4;
-                background-color: #fff;
-            }
-        }
-
-        .input-error {
-            animation: errorFlash 0.8s ease;
-        }
-    </style>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/apt/apt.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/member/resident/residentVhcl.css">
 
 </head>
 <body>
@@ -757,56 +30,13 @@
             </div>
             <h1 class="page-title">차량등록</h1>
             <p class="page-desc">차량 등록을 진행 하고, 등록 차량 목록을 확인할 수 있습니다.</p>
-
-            <section class="grid-2">
-                <div class="panel">
-                    <div class="section-hd">
-                        <h3>차량 등록 정보</h3>
-                    </div>
-                    <div class="form-grid">
-                        <div class="th">차종</div>
-                        <div class="td"><input id="vhclNmData" class="fake-input" placeholder="ex)현대 아반떼"/></div>
-                        <div class="th">차량번호</div>
-                        <div class="td">
-                            <div style="display:flex; gap:8px;">
-                                <input id="vhclNoFront" class="fake-input" style="width:120px;" placeholder="ex)12가"/>
-                                <input id="vhclNoBack" class="fake-input" style="width:140px;" placeholder="ex)1234"/>
-                            </div>
-                        </div>
-                        <div class="th">동 / 호수</div>
-                        <div class="td">
-                        <select id="hoSelect" class="fake-select">
-                            <c:forEach var="apt" items="${aptList}">
-                                <option value="${apt.ho}" data-dong="${apt.dongNm}">
-                                    ${apt.dongNm}동 ${apt.ho}호
-                                </option>
-                            </c:forEach>
-                        </select>
-                        </div>
-                        <div class="th">차량등록증</div>
-                        <div class="td">
-                            <div id="uploadBox" class="upload-box">
-                                <input type="file" id="fileInput" hidden accept="image/*">
-
-                                <!-- 기본 상태 -->
-                                <div class="upload-content">
-                                    <div class="plus">+</div>
-                                    <div class="text">파일을 드래그하거나 클릭하여 업로드</div>
-                                </div>
-
-                                <!-- 썸네일 카드 -->
-                                <div id="previewCard" class="preview-card">
-                                    <img id="previewImg" class="preview-img">
-                                    <button id="removeBtn" class="remove-btn">×</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="btn-row">
-                        <button class="btn-main" id="registerBtn">차량 등록</button>
-                    </div>
-                </div>
-                <div class="panel">
+            <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+                <button class="btn-main" id="openModalBtn">
+                    + 차량 등록
+                </button>
+            </div>
+            <section>
+                <div class="panel vhcl-table-wrap">
                     <div class="section-hd"><h3>등록한 차량 목록</h3><span>최근 등록</span></div>
                     <table class="data-table">
                         <thead>
@@ -823,10 +53,125 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="pagination" class="btn-row" style="margin-top:auto;"></div>
             </section>
 
         </div>
     </main>
+</div>
+<div class="modal-wrap" id="vhclModal">
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <h3>차량 등록</h3>
+            <button class="close-btn" id="closeModalBtn">×</button>
+        </div>
+
+<div class="form-grid">
+
+    <div class="th">차종</div>
+    <div class="td">
+        <input
+                id="vhclNmData"
+                class="fake-input"
+                placeholder="ex) 현대 아반떼"
+        />
+    </div>
+
+    <div class="th">차량번호</div>
+    <div class="td">
+        <div style="display:flex; gap:8px;">
+            <input
+                    id="vhclNoFront"
+                    class="fake-input"
+                    style="width:120px;"
+                    placeholder="ex) 12가"
+            />
+
+            <input
+                    id="vhclNoBack"
+                    class="fake-input"
+                    style="width:140px;"
+                    maxlength="4"
+                    placeholder="ex) 1234"
+            />
+        </div>
+
+        <div class="field-guide">
+            차량번호 형식 : 12가 1234
+        </div>
+    </div>
+
+    <div class="th">동 / 호수</div>
+    <div class="td">
+
+        <select id="hoSelect" class="fake-input">
+            <c:forEach var="apt" items="${aptList}">
+                <option
+                        value="${apt.ho}"
+                        data-dong="${apt.dongNm}">
+                    ${apt.dongNm}동 ${apt.ho}호
+                </option>
+            </c:forEach>
+        </select>
+
+    </div>
+
+    <div class="th th-column">
+        차량등록증
+        <small>이미지 파일만 업로드 가능합니다</small>
+    </div>
+
+    <div class="td">
+
+        <div id="uploadBox" class="upload-box">
+
+            <input
+                    type="file"
+                    id="fileInput"
+                    hidden
+                    accept="image/*"
+            >
+
+            <!-- 기본 상태 -->
+            <div class="upload-content">
+                <div class="plus">+</div>
+
+                <div class="text">
+                    파일을 드래그하거나 클릭하여 업로드
+                </div>
+            </div>
+
+            <!-- 썸네일 -->
+            <div id="previewCard" class="preview-card">
+
+                <img
+                        id="previewImg"
+                        class="preview-img"
+                >
+
+                <button
+                        type="button"
+                        id="removeBtn"
+                        class="remove-btn">
+                    ×
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <div class="btn-row">
+            <button class="btn-main" id="registerBtn">
+                차량 등록
+            </button>
+        </div>
+
+    </div>
 </div>
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 <script !src="">
@@ -850,6 +195,24 @@
     const previewImg = document.getElementById("previewImg");
     const removeBtn = document.getElementById("removeBtn");
     const uploadContent = document.querySelector(".upload-content");
+
+    const vhclModal = document.getElementById("vhclModal");
+
+    document.getElementById("openModalBtn")
+        .addEventListener("click", () => {
+            vhclModal.classList.add("active");
+        });
+
+    document.getElementById("closeModalBtn")
+        .addEventListener("click", () => {
+            vhclModal.classList.remove("active");
+        });
+
+    vhclModal.addEventListener("click", (e) => {
+        if(e.target === vhclModal){
+            vhclModal.classList.remove("active");
+        }
+    });
 
 
     /*유효성체크*/
@@ -1148,6 +511,7 @@
             })
             .then(() => {
                 alert("등록 완료");
+                vhclModal.classList.remove("active");
                 resetForm();
                 loadMyVhcl();
             })

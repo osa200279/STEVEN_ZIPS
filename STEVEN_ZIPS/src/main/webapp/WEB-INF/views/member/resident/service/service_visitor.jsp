@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
     <title>방문자 차량등록 – 대덕아파트</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
@@ -53,12 +55,15 @@
                     <table class="data-table">
                         <thead>
                         <tr>
+                            <th>번호</th>
                             <th>방문자</th>
                             <th>차량번호</th>
                             <th>차량유형</th>
+                            <th>방문목적</th>
                             <th>방문일시</th>
                             <th>체류시간</th>
                             <th>상태</th>
+                            <th>관리</th>
                         </tr>
                         </thead>
 
@@ -66,6 +71,9 @@
 
                         </tbody>
                     </table>
+                </div>
+                <div class="paging-wrap">
+                    <div id="pagingArea"></div>
                 </div>
             </section>
 
@@ -209,9 +217,11 @@
 
                         <div class="th">방문목적</div>
                         <div class="td">
-                    <textarea id="vstPrpsCn"
-                              class="fake-textarea"
-                              placeholder="방문 목적"></textarea>
+                            <input type="text"
+                                   id="vstPrpsCn"
+                                   class="fake-input"
+                                   maxlength="20"
+                                   placeholder="방문 목적">
                         </div>
 
                     </div>
