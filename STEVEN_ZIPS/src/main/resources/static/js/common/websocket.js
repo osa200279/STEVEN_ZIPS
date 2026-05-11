@@ -56,7 +56,16 @@ function subscribeNotification() {
         const data = JSON.parse(msg.body);
 
         console.log("알림:", data);
-        // showToast(data);
+        showToast({
+            title: "새 알림",
+            message: data.message,
+            type: data.type || "info",
+            onClick: () => {
+                if (data.url) {
+                    location.href = data.url;
+                }
+            }
+        });
     });
 }
 

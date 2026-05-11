@@ -22,3 +22,5 @@
   </script>
 
 </c:if>
+
+<div id="toastContainer"></div>
