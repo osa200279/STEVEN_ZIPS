@@ -5,6 +5,7 @@ import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.mapper.IFacilityMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +58,11 @@ public class FacilityServiceImpl implements IFacilityService {
         return facilityMapper.selectFacilityViewList(paramMap);
     }
 
+    @Override
+    public int selectFacilityViewCount(Map<String, Object> paramMap) {
+        return facilityMapper.selectFacilityViewCount(paramMap);
+    }
+
     /**
      * 시설 화면 상세 조회
      *
@@ -99,6 +105,16 @@ public class FacilityServiceImpl implements IFacilityService {
     @Override
     public Map<String, Object> selectDisabledStats(String mgmtOfcNo) {
         return facilityMapper.selectDisabledStats(mgmtOfcNo);
+    }
+
+    /**
+     * 시설유형 필터 목록 조회
+     */
+    @Override
+    public List<Map<String, Object>> selectFacilityTypeList(
+            Map<String, Object> paramMap
+    ) {
+        return facilityMapper.selectFacilityTypeList(paramMap);
     }
 
     /**
@@ -387,4 +403,43 @@ public class FacilityServiceImpl implements IFacilityService {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
+
+    /**
+     * 시설 위치 동 목록 조회
+     *
+     * 처리 흐름
+     * 1. 관리사무소 번호로 단지번호 조회
+     * 2. 단지번호 기준 APT_UNIT 동 목록 조회
+     */
+    @Override
+    public List<FacilityLocationDTO> selectFacilityUnitList(String mgmtOfcNo) {
+        String aptCmplexNo = facilityMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
+        return facilityMapper.selectFacilityUnitList(aptCmplexNo);
+    }
+
+    /**
+     * 시설 위치 층 목록 조회
+     *
+     * 처리 흐름
+     * 1. 화면에서 선택한 동번호 전달
+     * 2. APT_DETAIL 기준 해당 동의 층 목록 조회
+     */
+    @Override
+    public List<FacilityLocationDTO> selectFacilityFloorList(String dongNo) {
+        return facilityMapper.selectFacilityFloorList(dongNo);
+    }
+
+    /**
+     * 시설 위치 호 목록 조회
+     *
+     * 처리 흐름
+     * 1. 화면에서 선택한 동번호와 층 전달
+     * 2. APT_DETAIL 기준 해당 동/층의 호 목록 조회
+     */
+    @Override
+    public List<FacilityLocationDTO> selectFacilityRoomList(String dongNo, String floor) {
+        return facilityMapper.selectFacilityRoomList(dongNo, floor);
+    }
+
+
 }

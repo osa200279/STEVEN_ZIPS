@@ -69,7 +69,13 @@ var FacilityGrid = (function () {
             ETC:  "기타시설",
             PARK: "주차장",
             FIRE: "소방시설",
-            COMM: "커뮤니티"
+            COMM: "커뮤니티",
+            GYM: "헬스장",
+            STUDY: "독서실",
+            MEET: "회의실",
+            GUEST: "게스트룸",
+            SENIOR: "경로당",
+            PUB_ETC: "기타 편의시설"
         };
 
         return row.facilityTyNm || fallbackMap[row.facilityTyCd] || row.facilityTyCd || "-";
@@ -125,25 +131,42 @@ var FacilityGrid = (function () {
     /**
      * 관리 버튼 렌더러
      *
-     * ADMIN : 상세 버튼만 표시
-     * MNGR  : 상세 + 수정 버튼 표시
+     * 일반시설
+     * - 상세 버튼
+     * - 수정 버튼
      *
-     * data-action / data-row-key 를 화면 공통 클릭 핸들러로 전달
-     * valueGetter로 facilityNo를 받아 field 중복 문제 해소
+     * 편의시설
+     * - 상세 버튼
+     * - 관리 이동 버튼
+     *
+     * 이유
+     * - 편의시설은 시설자산관리에서 수정하지 않고
+     *   편의시설관리 화면에서 운영시간·예약여부·사진 등을 함께 수정한다.
      */
     function actionRenderer(params) {
-        var facilityNo = escapeHtml(params.value || ""); // 시설번호 (관리 버튼 키값)
+        var row = params.data || {};                 // 현재 행 데이터
+        var facilityNo = escapeHtml(params.value || ""); // 시설번호
+        var isPublic = row.facilityKind === "PUBLIC";    // 편의시설 여부
 
         var html = '<div class="grid-actions">'
             + '<button type="button" class="btn btn-detail"'
-            + '  data-action="detail" data-row-key="' + facilityNo + '">'
+            + ' data-action="detail" data-row-key="' + facilityNo + '">'
             + '상세</button>';
 
-        /* ADMIN이 아닐 때만 수정 버튼 표시 */
+        /*
+         * ADMIN은 조회 전용
+         * - 상세 버튼만 표시
+         */
         if (!isAdminUser()) {
-            html += '<button type="button" class="btn btn-edit"'
-                + '  data-action="edit" data-row-key="' + facilityNo + '">'
-                + '수정</button>';
+
+            /*
+             * 일반시설은 시설자산관리에서 수정 가능
+             */
+            if (!isPublic) {
+                html += '<button type="button" class="btn btn-edit"'
+                    + ' data-action="edit" data-row-key="' + facilityNo + '">'
+                    + '수정</button>';
+            }
         }
 
         html += '</div>';

@@ -46,6 +46,7 @@ public class FacilityDTO {
     private String dongNo;           // 동 원본값, FACILITY.DONG_NO
     private String displayDongNo;    // 동 표시값, A1215003_1 -> 1
     private String locCn;            // 상세위치, FACILITY.LOC_CN
+    private Long fileGroupNo;        // 첨부파일그룹번호, 상세 사진 조회 기준
     private String useYn;          // 사용여부, FACILITY.USE_YN
     private String useYnNm;        // 사용여부명, 사용 가능/사용 불가
     private String useCheckNeedYn; // 사용여부 확인필요 여부, DB 컬럼 아님, USE_YN = 'N' + 최근 점검상태 DONE이면 Y

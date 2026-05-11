@@ -197,9 +197,9 @@
     <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
     <script src="${pageContext.request.contextPath}/js/manager/manager-agGrid.js"></script>
     <script src="${pageContext.request.contextPath}/js/manager/AgRenderer.js"></script>
-    <script src="${pageContext.request.contextPath}/js/manager/facility/mngr-facility-grid.js?v=facility-ui-20260511-02"></script>
-    <script src="${pageContext.request.contextPath}/js/manager/facility/mngr-facility.js?v=facility-ui-20260511-02"></script>
-</head>
+    <script src="${pageContext.request.contextPath}/js/manager/facility/mngr-facility-grid.js"></script>
+    <script src="${pageContext.request.contextPath}/js/manager/facility/mngr-facility-modal.js"></script>
+    <script src="${pageContext.request.contextPath}/js/manager/facility/mngr-facility.js"></script>
 <body>
 <div class="app-wrapper">
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
@@ -222,8 +222,8 @@
 
                 <%-- 시설종류 탭: 서버 API는 그대로 사용하고, JS에서 facilityKind 값만 바꿔 조회한다. --%>
                 <div class="facility-tab-row tab-bar" role="tablist" aria-label="시설종류 선택">
-                    <button type="button" class="facility-tab-btn tab-btn active" data-action="setFacilityTab" data-kind="FACILITY" id="facilityTabFacility">
-                        <span class="material-symbols-rounded">engineering</span>일반시설
+                    <button type="button" class="facility-tab-btn tab-btn active" data-action="setFacilityTab" data-kind="ALL" id="facilityTabAll">
+                        <span class="material-symbols-rounded">apartment</span>전체시설
                     </button>
                     <button type="button" class="facility-tab-btn tab-btn" data-action="setFacilityTab" data-kind="PUBLIC" id="facilityTabPublic">
                         <span class="material-symbols-rounded">groups</span>편의시설
@@ -242,7 +242,7 @@
                             - 통합검색: 시설번호 / 시설명 / 상세위치
                         --%>
                         <div class="facility-filter-grid">
-                            <div class="form-field"><label class="field-label">시설유형</label><select class="form-select" id="filterFacTy" name="facilityTyCd"><option value="">전체</option><option value="ELV">승강기</option><option value="WTR">급수시설</option><option value="ELC">전기시설</option><option value="GAS">가스시설</option><option value="FIRE">소방시설</option><option value="SEC">보안시설</option><option value="ETC">기타시설</option></select></div>
+                            <div class="form-field"><label class="field-label">시설유형</label><select class="form-select" id="filterFacTy" name="facilityTyCd"><%-- 시설유형 필터 옵션은 탭(전체시설/편의시설)에 따라 JS에서 다시 구성한다. --%><option value="">전체</option></select></div>
                             <div class="form-field"><label class="field-label">운영상태</label><select class="form-select" id="filterUseYn" name="useYn"><option value="">전체</option><option value="Y">사용 가능</option><option value="N">사용 불가</option></select></div>
                             <div class="form-field"><label class="field-label">동</label><select class="form-select" id="filterDong" name="dongNo"><option value="">전체</option><c:forEach var="dong" items="${dongList}"><option value="${dong.dongNo}">${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}</option></c:forEach><option value="_COMMON_">공용 위치</option></select></div>
                             <div class="form-field facility-search-field"><label class="field-label">시설 검색</label><div class="search-wrap"><span class="material-symbols-rounded">search</span><input type="text" class="form-input" id="filterKeyword" name="keyword" autocomplete="off" placeholder="시설번호 · 시설명 · 상세위치 검색"><div class="facility-search-suggest" id="facilitySuggestList"></div></div></div>
@@ -324,19 +324,61 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-row facility-location-row">
+                                            <%--
+                                                시설 위치 입력
+                                                - 공용 위치: 동/층/호 없이 상세위치만 입력
+                                                - 동 위치  : 동 선택 + 상세위치 입력
+                                                - 세대 위치: 동/층/호 선택 + 상세위치 입력, JS에서 상세위치 앞에 층/호를 자동 반영
+                                                - 실제 저장 컬럼은 기존 그대로 DONG_NO, LOC_CN만 사용
+                                            --%>
+                                            <div class="form-row cols-1">
                                                 <div class="form-field">
-                                                    <label class="field-label">동 <small style="font-weight:400;color:#9caa9e;font-size:10px;">(없으면 공용 위치)</small></label>
+                                                    <label class="field-label">위치구분 <span class="req">*</span></label>
+                                                    <select class="form-select" id="locationType">
+                                                        <option value="COMMON">공용 위치</option>
+                                                        <option value="DONG">동 위치</option>
+                                                        <option value="HOUSEHOLD">세대 위치</option>
+                                                    </select>
+                                                    <div class="field-help">세대 위치를 선택하면 동·층·호 선택값이 상세위치 앞에 자동으로 붙습니다.</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-row cols-1" id="dongLocationRow">
+                                                <div class="form-field">
+                                                    <label class="field-label">동</label>
                                                     <select class="form-select" id="dongNo" name="dongNo">
-                                                        <option value="">선택 (없음)</option>
+                                                        <option value="">선택</option>
                                                         <c:forEach var="dong" items="${dongList}">
-                                                            <option value="${dong.dongNo}">${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}</option>
+                                                            <option value="${dong.dongNo}">
+                                                                    ${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}
+                                                            </option>
                                                         </c:forEach>
                                                     </select>
                                                 </div>
+                                            </div>
+
+                                            <%-- 세대 위치 선택 시에만 노출되는 층/호 선택 영역 --%>
+                                            <div class="form-row cols-2" id="householdLocationRow" style="display:none;">
+                                                <div class="form-field">
+                                                    <label class="field-label">층</label>
+                                                    <select class="form-select" id="facilityFloor">
+                                                        <option value="">층 선택</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-field">
+                                                    <label class="field-label">호</label>
+                                                    <select class="form-select" id="facilityHo">
+                                                        <option value="">호 선택</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-row cols-1" id="facilityLocationDetailRow">
                                                 <div class="form-field">
                                                     <label class="field-label">상세위치</label>
-                                                    <input type="text" class="form-input" id="locCn" name="locCn" placeholder="예) 지하주차장 B2 A구역">
+                                                    <input type="text" class="form-input" id="locCn" name="locCn" placeholder="예) 1층 로비, 옥상, 지하주차장 B2 A구역">
+                                                    <div class="field-help">세대 위치 선택 시 층·호가 앞에 자동으로 붙습니다.</div>
                                                 </div>
                                             </div>
 
@@ -351,15 +393,16 @@
                                                 <div class="form-field">
                                                     <label class="field-label">시설유형 <span class="req">*</span></label>
                                                     <div class="facility-type-control">
-                                                        <select class="form-select" id="facilityTyCd" name="facilityTyCd" required>
+                                                        <select class="form-select" id="facilityTyCd" name="facilityTyCd">
+                                                            <%-- 등록/수정 모달은 일반시설 기준이다. 편의시설 등록·수정은 편의시설 관리 화면에서 처리한다. --%>
                                                             <option value="">선택</option>
-                                                            <option value="ELV">ELV · 승강기</option>
-                                                            <option value="WTR">WTR · 급수시설</option>
-                                                            <option value="ELC">ELC · 전기시설</option>
-                                                            <option value="GAS">GAS · 가스시설</option>
-                                                            <option value="FIRE">FIRE · 소방시설</option>
-                                                            <option value="SEC">SEC · 보안시설</option>
-                                                            <option value="ETC">ETC · 기타시설</option>
+                                                            <option value="ELV">승강기</option>
+                                                            <option value="WTR">급수시설</option>
+                                                            <option value="ELC">전기시설</option>
+                                                            <option value="GAS">가스시설</option>
+                                                            <option value="FIRE">소방시설</option>
+                                                            <option value="SEC">보안시설</option>
+                                                            <option value="ETC">기타시설</option>
                                                         </select>
                                                         <button type="button" class="btn btn-secondary btn-sm correction-inline-btn facility-edit-only" id="facilityCorrectionBtn" data-action="openCorrection">
                                                             <span class="material-symbols-rounded">edit_note</span>시설유형 정정
@@ -396,7 +439,8 @@
                                     <div class="facility-modal-col-right">
                                         <div class="facility-col-label">사진 &amp; 연결</div>
 
-                                        <div class="form-section">
+                                        <div class="form-section" id="facilityFileEditSection">
+                                            <%-- 일반시설 사진 등록/수정 영역: 편의시설일 때는 JS에서 숨기고 안내문을 보여준다. --%>
                                             <div class="form-section-title"><span class="material-symbols-rounded">image</span>시설 사진</div>
                                             <div class="file-upload-box">
                                                 <div class="file-upload-title"><span class="material-symbols-rounded">upload_file</span>사진 등록/추가</div>
@@ -411,6 +455,16 @@
                                                 <div class="file-preview-empty">기존 등록 사진은 수정 모드에서 표시됩니다.</div>
                                             </div>
                                             <input type="hidden" id="deleteFileUuids" name="deleteFileUuids">
+                                        </div>
+
+                                        <div class="form-section" id="publicFacilityFileGuide" style="display:none;">
+                                            <%-- 편의시설 사진은 편의시설 관리 화면에서만 수정하도록 역할을 분리한다. --%>
+                                            <div class="form-section-title"><span class="material-symbols-rounded">image</span>편의시설 사진</div>
+                                            <div class="notice-box">
+                                                <span class="material-symbols-rounded">info</span>
+                                                <div>편의시설 사진은 시설자산관리에서 수정하지 않습니다.<br>
+                                                    사진 등록·수정은 <a href="${pageContext.request.contextPath}/manager/publicFacilityList" style="color:#2e5c38;font-weight:700;">편의시설 관리</a>에서 진행하세요.</div>
+                                            </div>
                                         </div>
 
                                         <div class="form-section">
@@ -467,58 +521,6 @@
     </div>
 </div>
 
-<script>
-    /* ============================================================
-       시설 사진 선택/삭제 표시 보조 스크립트
-       - 실제 업로드/삭제 처리는 mngr-facility.js와 Controller/Service에서 처리
-       - 이 스크립트는 화면 깨짐 없이 파일 미리보기와 삭제대상 hidden 값만 관리
-    ============================================================ */
-    document.addEventListener("DOMContentLoaded", function () {
-        const fileInput = document.getElementById("facilityFiles");
-        const previewArea = document.getElementById("facilityFilePreview");
-        const deleteFileUuids = document.getElementById("deleteFileUuids");
 
-        if (fileInput && previewArea) {
-            fileInput.addEventListener("change", function () {
-                previewArea.innerHTML = "";
-
-                if (!fileInput.files || fileInput.files.length === 0) {
-                    previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>';
-                    return;
-                }
-
-                Array.from(fileInput.files).forEach(function (file) {
-                    const item = document.createElement("div");
-                    item.className = "file-preview-item";
-
-                    if (file.type && file.type.indexOf("image/") === 0) {
-                        const img = document.createElement("img");
-                        img.alt = file.name;
-                        img.src = URL.createObjectURL(file);
-                        item.appendChild(img);
-                    }
-
-                    const name = document.createElement("div");
-                    name.className = "file-preview-name";
-                    name.textContent = file.name;
-                    item.appendChild(name);
-
-                    previewArea.appendChild(item);
-                });
-            });
-        }
-
-        document.addEventListener("change", function (event) {
-            if (!event.target.classList.contains("js-delete-file-check")) return;
-
-            const checkedValues = Array.from(document.querySelectorAll(".js-delete-file-check:checked"))
-                .map(function (checkbox) { return checkbox.value; });
-
-            if (deleteFileUuids) {
-                deleteFileUuids.value = checkedValues.join(",");
-            }아니
-        });
-    });
-</script>
 </body>
 </html>

@@ -4,7 +4,7 @@ import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO;
 import org.springframework.web.multipart.MultipartFile;
-
+import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +42,8 @@ public interface IFacilityService {
      * - dongNo        : 동번호
      */
     List<FacilityDTO> selectFacilityViewList(Map<String, Object> paramMap);
+
+    int selectFacilityViewCount(Map<String, Object> paramMap);
 
     /**
      * 시설 화면 상세 조회
@@ -153,4 +155,29 @@ public interface IFacilityService {
      * 시설 등록 화면 동 선택 드롭다운용
      */
     List<FacilityVO> selectDongList(String mgmtOfcNo); // 관리사무소 번호
+
+    /**
+     * 시설유형 필터 목록 조회
+     * - FACILITY_TY 공통코드 기준
+     * - 편의시설 탭은 PUBLIC_FACILITY 연결 유형만 조회
+     */
+    List<Map<String, Object>> selectFacilityTypeList(Map<String, Object> paramMap);
+
+    /**
+     * 시설 위치 동 목록 조회
+     * 관리사무소 번호 기준으로 단지번호를 찾은 뒤 APT_UNIT 동 목록 조회
+     */
+    List<FacilityLocationDTO> selectFacilityUnitList(String mgmtOfcNo);
+
+    /**
+     * 시설 위치 층 목록 조회
+     * 선택한 동번호 기준으로 APT_DETAIL 층 목록 조회
+     */
+    List<FacilityLocationDTO> selectFacilityFloorList(String dongNo);
+
+    /**
+     * 시설 위치 호 목록 조회
+     * 선택한 동번호와 층 기준으로 APT_DETAIL 호 목록 조회
+     */
+    List<FacilityLocationDTO> selectFacilityRoomList(String dongNo, String floor);
 }

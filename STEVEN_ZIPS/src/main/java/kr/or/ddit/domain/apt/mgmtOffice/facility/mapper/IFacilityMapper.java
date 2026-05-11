@@ -49,6 +49,8 @@ public interface IFacilityMapper {
      */
     List<FacilityDTO> selectFacilityViewList(Map<String, Object> paramMap);
 
+    int selectFacilityViewCount(Map<String, Object> paramMap);
+
     /**
      * 시설 화면 상세 조회
      *
@@ -73,6 +75,15 @@ public interface IFacilityMapper {
     FacilityVO selectFacilityDetail(
             @Param("mgmtOfcNo") String mgmtOfcNo,   // 관리사무소 번호
             @Param("facilityNo") String facilityNo  // 시설번호
+    );
+
+    /**
+     * 시설유형 필터 목록 조회
+     * - FACILITY_TY 공통코드 기준
+     * - 편의시설 탭은 실제 PUBLIC_FACILITY 연결 유형만 조회
+     */
+    List<Map<String, Object>> selectFacilityTypeList(
+            Map<String, Object> paramMap
     );
 
     /**
@@ -167,4 +178,26 @@ public interface IFacilityMapper {
      * 시설 등록 화면 동 선택 드롭다운용
      */
     List<FacilityVO> selectDongList(String mgmtOfcNo); // 관리사무소 번호
+
+
+
+
+    /**
+     * 시설 위치 동 목록 조회
+     * APT_UNIT 기준 단지 내 동 목록 조회
+     */
+    List<kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO> selectFacilityUnitList(@Param("aptCmplexNo") String aptCmplexNo);
+
+    /**
+     * 시설 위치 층 목록 조회
+     * APT_DETAIL 기준 선택 동의 층 목록 조회
+     */
+    List<kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO> selectFacilityFloorList(@Param("dongNo") String dongNo);
+
+    /**
+     * 시설 위치 호 목록 조회
+     * APT_DETAIL 기준 선택 동/층의 호 목록 조회
+     */
+    List<kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO> selectFacilityRoomList(@Param("dongNo") String dongNo,
+                                                                                                   @Param("floor") String floor);
 }

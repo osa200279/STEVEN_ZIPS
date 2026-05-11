@@ -2,6 +2,7 @@ package kr.or.ddit.domain.apt.mgmtOffice.facility.controller;
 
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.service.IFacilityService;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -102,6 +103,41 @@ public class FacilityController {
         return ResponseEntity.ok(result);
     }
 
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/count/{mgmtOfcNo}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> selectFacilityCount(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(required = false, defaultValue = "ALL") String facilityKind,
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(required = false, defaultValue = "") String facilityTyCd,
+            @RequestParam(required = false, defaultValue = "") String useYn,
+            @RequestParam(required = false, defaultValue = "") String dongNo
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("mgmtOfcNo", mgmtOfcNo);
+            paramMap.put("facilityKind", facilityKind);
+            paramMap.put("keyword", keyword);
+            paramMap.put("facilityTyCd", facilityTyCd);
+            paramMap.put("useYn", useYn);
+            paramMap.put("dongNo", dongNo);
+
+            result.put("success", true);
+            result.put("count", facilityService.selectFacilityViewCount(paramMap));
+        } catch (Exception e) {
+            log.error("시설 목록 건수 조회 오류", e);
+
+            result.put("success", false);
+            result.put("message", "시설 목록 건수 조회 중 오류가 발생했습니다.");
+            result.put("count", 0);
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
     /**
      * 시설 상세 조회
      *
@@ -115,7 +151,7 @@ public class FacilityController {
      *
      * 사진 조회 기준
      * - 첨부파일은 FACILITY 테이블의 FILE_GROUP_NO 기준
-     * - FacilityDTO에는 FILE_GROUP_NO가 없으므로 기존 FacilityVO 상세 조회로 파일그룹번호만 별도 확인
+     * - FacilityVO.FILE_GROUP_NO 기준 첨부파일 조회
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/detail/{mgmtOfcNo}/{facilityNo}")
@@ -131,11 +167,9 @@ public class FacilityController {
             FacilityDTO detail = facilityService.selectFacilityViewDetail(mgmtOfcNo, facilityNo);
 
             /* 파일그룹번호 확인용 기존 FACILITY 상세 조회 */
-            FacilityVO savedFacility = facilityService.selectFacilityDetail(mgmtOfcNo, facilityNo);
-
-            /* 상세/수정 화면에서 출력할 기존 시설 사진 목록 */
+            /* 상세/수정 화면 기존 시설 사진 목록 */
             List<AttachFileVO> fileList = facilityService.selectFacilityFileList(
-                    savedFacility != null ? savedFacility.getFileGroupNo() : null
+                    detail != null ? detail.getFileGroupNo() : null
             );
 
             result.put("success", true);
@@ -451,4 +485,84 @@ public class FacilityController {
 
         return ResponseEntity.ok(result);
     }
+
+    /**
+     * 시설 위치 동 목록 조회
+     *
+     * 사용 위치
+     * - 시설 등록/수정 모달
+     * - 위치구분이 동 위치 또는 세대 위치일 때 동 select 출력
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @ResponseBody
+    @GetMapping("/location/units/{mgmtOfcNo}")
+    public List<FacilityLocationDTO> selectFacilityUnitList(@PathVariable String mgmtOfcNo) {
+        return facilityService.selectFacilityUnitList(mgmtOfcNo);
+    }
+
+    /**
+     * 시설 위치 층 목록 조회
+     *
+     * 사용 위치
+     * - 세대 위치 선택 후 동을 선택했을 때 층 select 출력
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @ResponseBody
+    @GetMapping("/location/floors/{mgmtOfcNo}")
+    public List<FacilityLocationDTO> selectFacilityFloorList(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam String dongNo
+    ) {
+        return facilityService.selectFacilityFloorList(dongNo);
+    }
+
+    /**
+     * 시설 위치 호 목록 조회
+     *
+     * 사용 위치
+     * - 세대 위치 선택 후 동/층을 선택했을 때 호 select 출력
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @ResponseBody
+    @GetMapping("/location/rooms/{mgmtOfcNo}")
+    public List<FacilityLocationDTO> selectFacilityRoomList(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam String dongNo,
+            @RequestParam String floor
+    ) {
+        return facilityService.selectFacilityRoomList(dongNo, floor);
+    }
+
+
+
+
+
+
+    /*
+     * 시설유형 필터 목록 조회
+     * - 전체시설 탭: FACILITY_TY 전체
+     * - 편의시설 탭: PUBLIC_FACILITY 연결 유형만
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @ResponseBody
+    @GetMapping("/type/list/{mgmtOfcNo}")
+    public Map<String, Object> selectFacilityTypeList(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(defaultValue = "ALL") String facilityKind
+    ) {
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("mgmtOfcNo", mgmtOfcNo);
+        paramMap.put("facilityKind", facilityKind);
+
+        List<Map<String, Object>> typeList =
+                facilityService.selectFacilityTypeList(paramMap);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("typeList", typeList);
+
+        return result;
+    }
+
 }
