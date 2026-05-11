@@ -1,10 +1,15 @@
 package kr.or.ddit.common.security;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import kr.or.ddit.common.util.TokenProvider;
+import kr.or.ddit.domain.member.vo.CustomUser;
+import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,34 +21,52 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 @Slf4j
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final RequestCache requestCache = new HttpSessionRequestCache();
-	
+
+	private final TokenProvider tokenProvider;
+
+	public CustomLoginSuccessHandler(TokenProvider tokenProvider) {
+		this.tokenProvider = tokenProvider;
+	}
+
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-
 		log.info("## CustomLoginSuccessHandler.onAuthenticationSuccess() 실행...!");
-		User user = (User) authentication.getPrincipal();
-		
+
+		CustomUser customUser = (CustomUser) authentication.getPrincipal();
+		MemberVO member = customUser.getMember();
+
+		// JWT 토큰 생성
+		long expiredTime = 1000 * 60 * 60 * 1;	// 토큰 만료시간 설정 : 1시간
+		Date expiry = new Date(System.currentTimeMillis() + expiredTime);	// 현재시간으로부터 +1시간 까지
+		String accessToken = tokenProvider.makeToken(expiry, member);
+		log.info("## 발급된 토큰 {}", accessToken);
+
+		// 리액트 접근용 쿠키 생성
+		Cookie jwtCookie = new Cookie("JWT", accessToken);
+		jwtCookie.setPath("/");
+		jwtCookie.setHttpOnly(false);
+		jwtCookie.setMaxAge(60 * 60 * 1);
+		response.addCookie(jwtCookie);
+
 		// 시큐리티 활성화된 사용자인지 체크
-		if(user.isEnabled()) {
-			log.info("## username : {}", user.getUsername());	// 인증된 사용자 아이디
-			log.info("## password : {}", user.getPassword());	// 인증된 사용자 비밀번호
-			Collection<GrantedAuthority> grantedAuthority = user.getAuthorities();
+		if(customUser.isEnabled()) {
+			log.info("## username : {}", customUser.getUsername());	// 인증된 사용자 아이디
+			log.info("## password : {}", customUser.getPassword());	// 인증된 사용자 비밀번호
+			Collection<GrantedAuthority> grantedAuthority = customUser.getAuthorities();
 		 	Iterator<GrantedAuthority> ite_authority = grantedAuthority.iterator();
 		 	while(ite_authority.hasNext()) {
 		 		GrantedAuthority authority = ite_authority.next();
 		 		log.info("## auth : {}", authority.getAuthority());	// 인증된 사용자 권한
 		 	}
 		}
-		
-		// SPRING_SECURITY_EXCEPTION으로 등록된 에러 정보를 삭제
-		clearAuthenticationAttribute(request);
 		
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
 		String targetUrl = "/";	// 기본 default target은 root
@@ -56,8 +79,10 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 				targetUrl = "/";
 			}
 		}
-		
 		log.info("## Login Success target URL : " + targetUrl);
+
+		// SPRING_SECURITY_EXCEPTION으로 등록된 에러 정보를 삭제
+		clearAuthenticationAttribute(request);
 		response.sendRedirect(targetUrl);
 	}
 

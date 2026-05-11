@@ -73,6 +73,11 @@ public class SecurityConfig {
             "/ztest/**"
     };
 
+    @Bean
+    public CustomLoginSuccessHandler customLoginSuccessHandler(){
+        return new CustomLoginSuccessHandler(tokenProvider);
+    }
+
     // 권한 계층 구조 설정 (ex. 최상위 ADMIN은 하위의 모든 권한을 포함(통과)한다)
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -117,11 +122,13 @@ public class SecurityConfig {
         http.securityMatcher("/api/react/**")
                 .authorizeHttpRequests(
                         authorize -> authorize
-                                .requestMatchers("/api/react/admin/**").hasRole("ADMIN")
-                                .anyRequest().permitAll()
+                                .requestMatchers("/api/react/adm/**").hasRole("ADMIN")  // 중앙관리자만 접근 가능한 URL
+                                .requestMatchers("/api/react/public/**").permitAll() // 권한 상관없이 접근 가능
+                                .anyRequest().authenticated()
                 );
 
-        http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider)
+                                , UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -140,7 +147,6 @@ public class SecurityConfig {
                          */
                         .requestMatchers(PASS_URL).permitAll()
                         .requestMatchers("/ws/**").permitAll()  // websocket 용입니다 by도선호
-                        .requestMatchers("/api/**").permitAll() // api용입니다(이거 한줄 지우셔도 됩니다..(도선호))
                         .requestMatchers(TEST_URL).permitAll()  // ⚠️⚠️테스트용 임시 허용 배포시 삭제할 것
                         .anyRequest().authenticated()   // 위의 것들(PASS_URL)을 제외한 모든 리퀘스트는 인증을 거쳐야한다는 설정
                 );
@@ -157,7 +163,7 @@ public class SecurityConfig {
                 // 실제 로그인을 검증할 폼데이터 수신 (컨트롤러)주소 (POST방식)
                 // 시큐리티가 이 주소로 들어오는 데이터를 가로채서 인증을 진행함
                 // 따라서 로그인 폼의 <form action="/login"> 과 반드시 일치해야함
-                .successHandler(new CustomLoginSuccessHandler())    // 로그인 성공시 후속처리 담당 핸들러
+                .successHandler(customLoginSuccessHandler())    // 로그인 성공시 후속처리 담당 핸들러
                 .failureHandler(new CustomLoginFailureHandler())    // 로그인 실패시 후속처리 담당 핸들러
         );
 

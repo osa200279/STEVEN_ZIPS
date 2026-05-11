@@ -11,25 +11,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
-@RequestMapping("/api/react/admin")
+@RequestMapping("/api/react/adm")
 public class AdmDashBoardRestController {
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/test")
-    public ResponseEntity<String> test(@AuthenticationPrincipal CustomUser customUser){
-        String auth = customUser.getMember().getAuthList().get(0).getAuth();
-        log.info("## auth:{}", auth);
-        return new ResponseEntity<>(auth , HttpStatus.OK);
-    }
-
-    @GetMapping("/home")
-    public ResponseEntity<String> home(@AuthenticationPrincipal CustomUser customUser){
+    // 리액트 페이지로 로그인한 관리자 정보를 넘김
+    @GetMapping("/info")
+    public ResponseEntity<?> getAdminInfo(@AuthenticationPrincipal CustomUser customUser){
+        if(customUser == null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 없습니다.");
+        }
         AdmVO adm = (AdmVO)customUser.getMember();
 
-        return new ResponseEntity<>(adm.getUserNo() , HttpStatus.OK);
-    }
+        log.info("## 리액트 레이아웃에서 관리자 정보 요청함: {}", adm.getUserNm());
 
+        return ResponseEntity.ok(adm);
+    }
 }

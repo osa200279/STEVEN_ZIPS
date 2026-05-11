@@ -379,7 +379,7 @@
 
         // 2026.05.11 수정: 중앙관리자 대시보드 리액트 페이지로 연결
         if (centralAdminBtn) centralAdminBtn.addEventListener("click", () => {
-            location.href = "http://localhost:7777";
+            location.href = "/adm/home";
         });
 
         if (logoutBtn) logoutBtn.addEventListener("click", () => {
