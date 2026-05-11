@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.facility.mapper.IFacilityMapper">
+
+    <!--
+        첨부파일 공통 resultMap
+        selectFacilityFile / selectFacilityFileList 양쪽 재사용
+        컬럼명(snake_case) → 필드명(camelCase) 매핑 정의
+    -->
+    <resultMap id="attachFileResultMap" type="kr.or.ddit.common.file.vo.AttachFileVO">
+        <result property="fileGroupNo"   column="file_group_no"/>   <!-- 파일그룹번호 -->
+        <result property="cat"           column="cat"/>             <!-- 파일 카테고리 -->
+        <result property="fileSaveUuid"  column="file_save_uuid"/>  <!-- 저장 UUID (복합 PK) -->
+        <result property="fileOgName"    column="file_og_name"/>    <!-- 원본 파일명 -->
+        <result property="filePath"      column="file_path"/>       <!-- 저장 경로 -->
+        <result property="fileExt"       column="file_ext"/>        <!-- 파일 확장자 -->
+        <result property="fileSize"      column="file_size"/>       <!-- 파일 크기 (byte) -->
+        <result property="mimeType"      column="mime_type"/>       <!-- MIME 타입 -->
+        <result property="regDt"         column="reg_dt"/>          <!-- 등록일시 -->
+        <result property="mdfDt"         column="mdf_dt"/>          <!-- 수정일시 -->
+        <result property="fileSortOrder" column="file_sort_order"/> <!-- 정렬 순서 -->
+        <result property="downCnt"       column="down_cnt"/>        <!-- 다운로드 횟수 -->
+        <result property="googleId"      column="google_id"/>       <!-- Google Drive 파일 ID -->
+    </resultMap>
+
+    <!--
+        시설 목록 조회
+        검색 조건: keyword(시설명·위치) / facilityTyCd(시설유형) / useYn(사용여부) / dongNo(동)
+        이용불가 시설의 최근 FAULT 점검이력(날짜·유형)을 LEFT JOIN으로 함께 조회
+        검침 연결 여부는 METER_HSTRY 기준
+    -->
+    <select id="selectFacilityList" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO">
+        select f.facility_no                                                    <!-- 시설번호 -->
+        , f.facility_ty_cd                                                 <!-- 시설유형코드 -->
+        , f.instl_dt                                                       <!-- 설치일자 -->
+        , f.facility_nm                                                    <!-- 시설명 -->
+        , f.apt_cmplex_no                                                  <!-- 단지번호 -->
+        , f.dong_no                                                        <!-- 동번호 -->
+        , f.loc_cn                                                         <!-- 상세위치 -->
+        , f.use_yn                                                         <!-- 사용여부 -->
+        , f.file_group_no                                                  <!-- 첨부파일그룹번호 -->
+        , cc.code_name          as facility_ty_nm                          <!-- 시설유형명 -->
+        , lf.chk_dt             as latest_fault_dt                         <!-- 최근 이상발견 점검일자 -->
+        , lf.chk_ty_cd          as latest_fault_ty_cd                      <!-- 최근 이상발견 점검유형 -->
+        , case when mh.facility_no is not null then 'Y' else 'N' end
+        as meter_linked_yn                         <!-- 검침 연결 여부 -->
+        from facility f
+        <!-- 시설유형명 조회용 공통코드 JOIN -->
+        left outer join common_code cc
+        on  cc.group_code_no = 'FACILITY_TY'
+        and cc.code_no_cd    = f.facility_ty_cd
+        <!-- 이용불가 시설의 최근 FAULT 점검이력 JOIN -->
+        left outer join (
+        select fch.facility_no
+        , fch.chk_dt
+        , fch.chk_ty_cd
+        from facility_check_hstry fch
+        where fch.chk_stts_cd = 'FAULT'
+        <!-- 시설별 가장 최근 FAULT 점검일자 기준 -->
+        and fch.chk_dt = (
+        select max(fch2.chk_dt)
+        from facility_check_hstry fch2
+        where fch2.facility_no = fch.facility_no
+        and fch2.chk_stts_cd = 'FAULT'
+        )
+        ) lf on lf.facility_no = f.facility_no
+        <!-- 검침 연결 여부 확인용 METER_HSTRY 중복 제거 서브쿼리 JOIN -->
+        left outer join (
+        select distinct facility_no
+        from meter_hstry
+        ) mh on mh.facility_no = f.facility_no
+        where f.apt_cmplex_no = (
+        <!-- 관리사무소 번호로 단지번호 확인 -->
+        select mo.apt_cmplex_no
+        from mgmt_office mo
+        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+        )
+        <!-- 시설명·상세위치 통합 검색 (대소문자 무시) -->
+        <if test="keyword != null and keyword != ''">
+            and (
+            lower(f.facility_no) like '%' || lower(#{keyword}) || '%'
+            or lower(f.facility_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(f.loc_cn)      like '%' || lower(#{keyword}) || '%'
+            )
+        </if>
+        <!-- 시설유형 필터 -->
+        <if test="facilityTyCd != null and facilityTyCd != ''">
+            and f.facility_ty_cd = #{facilityTyCd}
+        </if>
+        <!-- 사용여부 필터 -->
+        <if test="useYn != null and useYn != ''">
+            and f.use_yn = #{useYn}
+        </if>
+        <!-- 동 필터: _COMMON_ 이면 동 없는 공용 위치 시설만 -->
+        <if test="dongNo != null and dongNo != ''">
+            <choose>
+                <when test="dongNo == '_COMMON_'">
+                    and (f.dong_no is null or f.dong_no = '')
+                </when>
+                <otherwise>
+                    and f.dong_no = #{dongNo}
+                </otherwise>
+            </choose>
+        </if>
+        order by f.facility_no desc
+    </select>
+
+    <!--
+        시설 상세 조회
+        관리사무소 기준 단지번호로 접근 권한 확인
+        검침 연결 여부 포함
+    -->
+    <select id="selectFacilityDetail" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO">
+        select f.facility_no                                                    <!-- 시설번호 -->
+        , f.facility_ty_cd                                                 <!-- 시설유형코드 -->
+        , f.instl_dt                                                       <!-- 설치일자 -->
+        , f.facility_nm                                                    <!-- 시설명 -->
+        , f.apt_cmplex_no                                                  <!-- 단지번호 -->
+        , f.dong_no                                                        <!-- 동번호 -->
+        , f.loc_cn                                                         <!-- 상세위치 -->
+        , f.use_yn                                                         <!-- 사용여부 -->
+        , f.file_group_no                                                  <!-- 첨부파일그룹번호 -->
+        , cc.code_name          as facility_ty_nm                          <!-- 시설유형명 -->
+        , case when mh.facility_no is not null then 'Y' else 'N' end
+        as meter_linked_yn                         <!-- 검침 연결 여부 -->
+        from facility f
+        left outer join common_code cc
+        on  cc.group_code_no = 'FACILITY_TY'
+        and cc.code_no_cd    = f.facility_ty_cd
+        <!-- 검침 연결 여부 확인용 JOIN -->
+        left outer join (
+        select distinct facility_no
+        from meter_hstry
+        ) mh on mh.facility_no = f.facility_no
+        where f.facility_no   = #{facilityNo}
+        <!-- 관리사무소 기준 단지번호로 접근 권한 확인 -->
+        and f.apt_cmplex_no = (
+        select mo.apt_cmplex_no
+        from mgmt_office mo
+        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+        )
+    </select>
+
+    <!--
+        시설번호 생성
+        시퀀스 기반 FAC0001 형태
+    -->
+    <select id="getFacilityNo" resultType="string">
+        select 'FAC' || lpad(seq_facility.nextval, 4, '0')
+        from dual
+    </select>
+
+    <!--
+        관리사무소 기준 단지번호 조회
+        등록 시 화면 위변조 방지용 서버 기준값
+    -->
+    <select id="selectAptCmplexNoByMgmtOfcNo" resultType="string">
+        select apt_cmplex_no    <!-- 단지번호 -->
+        from mgmt_office
+        where mgmt_ofc_no = #{mgmtOfcNo}
+    </select>
+
+    <!--
+        시설 등록
+        use_yn 미전달 시 NVL로 'Y' 기본값 처리
+    -->
+    <insert id="insertFacility">
+        insert into facility (
+        facility_no       <!-- 시설번호 -->
+        , facility_ty_cd   <!-- 시설유형코드 -->
+        , instl_dt         <!-- 설치일자 -->
+        , facility_nm      <!-- 시설명 -->
+        , apt_cmplex_no    <!-- 단지번호 -->
+        , dong_no          <!-- 동번호 -->
+        , loc_cn           <!-- 상세위치 -->
+        , use_yn           <!-- 사용여부 -->
+        , file_group_no    <!-- 첨부파일그룹번호 -->
+        ) values (
+        #{facilityNo}
+        , #{facilityTyCd}
+        , #{instlDt}
+        , #{facilityNm}
+        , #{aptCmplexNo}
+        , #{dongNo}
+        , #{locCn}
+        , nvl(#{useYn}, 'Y')    <!-- 미전달 시 이용 가능(Y)으로 등록 -->
+        , #{fileGroupNo}
+        )
+    </insert>
+
+    <!--
+        시설 기본정보 수정
+        시설유형(facility_ty_cd) · 단지번호(apt_cmplex_no) · 동번호(dong_no) 수정 제외
+        시설유형 변경은 correctFacilityType 전용 쿼리로만 처리
+    -->
+    <update id="updateFacility">
+        update facility
+        set facility_nm   = #{facilityNm}      <!-- 시설명 -->
+        , instl_dt      = #{instlDt}         <!-- 설치일자 -->
+        , loc_cn        = #{locCn}           <!-- 상세위치 -->
+        , use_yn        = #{useYn}           <!-- 사용여부 -->
+        , file_group_no = #{fileGroupNo}     <!-- 첨부파일그룹번호 -->
+        where facility_no = #{facilityNo}
+    </update>
+
+    <!--
+        시설유형 정정
+        일반 수정과 분리된 전용 UPDATE
+        Service에서 계약·점검이력·검침기록 연결 여부 검증 후 호출
+    -->
+    <update id="correctFacilityType">
+        update facility
+        set facility_ty_cd = #{facilityTyCd}   <!-- 정정할 시설유형코드 -->
+        where facility_no  = #{facilityNo}
+    </update>
+
+    <!--
+        시설 사용여부 변경
+        삭제 대신 USE_YN 변경으로 처리
+        FAULT 판정 시 트리거(trg_facility_use_yn) 자동 N
+        복구(Y)는 관리자 수동 처리
+    -->
+    <update id="updateFacilityUseYn">
+        update facility
+        set use_yn = #{useYn}       <!-- Y: 이용 가능 / N: 이용 불가 -->
+        where facility_no = #{facilityNo}
+    </update>
+
+    <!--
+        시설 분류 정정 가능 여부 확인용 통합 조회
+        계약·점검이력·검침기록 연결 건수 합산
+        0이면 정정 가능 / 1 이상이면 정정 불가
+        기존 3번 개별 쿼리를 단일 쿼리로 통합
+    -->
+    <select id="selectFacilityLinkedCount" resultType="int">
+        select (
+        <!-- 연결된 계약 건수 -->
+        select count(*) from facility_contract    where facility_no = #{facilityNo}
+        ) + (
+        <!-- 연결된 점검이력 건수 -->
+        select count(*) from facility_check_hstry where facility_no = #{facilityNo}
+        ) + (
+        <!-- 연결된 검침기록 건수 (METER_HSTRY 기준) -->
+        select count(*) from meter_hstry          where facility_no = #{facilityNo}
+        ) as linked_cnt
+        from dual
+    </select>
+
+    <!--
+        이용불가 시설 통계 조회
+        현황 카드 표시용
+        disabled_total : 전체 이용불가 시설 수 (USE_YN = 'N')
+        disabled_today : 오늘 FAULT 판정으로 이용불가 처리된 시설 수
+                         FACILITY_CHECK_HSTRY.MDF_DT 기준
+    -->
+    <select id="selectDisabledStats" resultType="map">
+        select
+        count(distinct f.facility_no) as disabled_total    <!-- 전체 이용불가 수 -->
+        , count(distinct case
+        when trunc(fch.mdf_dt) = trunc(sysdate)
+        then fch.facility_no
+        end)                          as disabled_today    <!-- 오늘 FAULT 처리된 수 -->
+        from facility f
+        <!-- 오늘 FAULT 판정 건수 확인용 JOIN -->
+        left outer join facility_check_hstry fch
+        on  fch.facility_no = f.facility_no
+        and fch.chk_stts_cd = 'FAULT'
+        where f.use_yn        = 'N'
+        and f.apt_cmplex_no = (
+        select apt_cmplex_no
+        from mgmt_office
+        where mgmt_ofc_no = #{mgmtOfcNo}
+        )
+    </select>
+
+    <!--
+        시설 첨부파일 단건 조회
+        삭제 전 Google Drive ID 확인용
+        복합 PK: FILE_GROUP_NO + FILE_SAVE_UUID
+    -->
+    <select id="selectFacilityFile" resultMap="attachFileResultMap">
+        select *
+        from attach_file
+        where file_group_no  = #{fileGroupNo}
+          and file_save_uuid = #{fileSaveUuid}
+    </select>
+
+    <!--
+        시설 첨부파일 목록 조회
+        상세/수정 화면 기존 사진 출력용
+        등록순(file_sort_order) · 날짜순(reg_dt) 정렬
+    -->
+    <select id="selectFacilityFileList" resultMap="attachFileResultMap">
+        select *
+        from attach_file
+        where file_group_no = #{fileGroupNo}
+        order by file_sort_order, reg_dt
+    </select>
+
+    <!--
+        시설 첨부파일 삭제
+        Google Drive 휴지통 이동 후 호출
+        복합 PK: FILE_GROUP_NO + FILE_SAVE_UUID
+    -->
+    <delete id="deleteFacilityFile">
+        delete from attach_file
+        where file_group_no  = #{fileGroupNo}
+          and file_save_uuid = #{fileSaveUuid}
+    </delete>
+
+    <!--
+        동 목록 조회
+        APT_UNIT 기준 단지 내 동 목록
+        DISTINCT로 중복 제거
+        시설 등록 화면 동 선택 드롭다운용
+    -->
+    <select id="selectDongList" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO">
+        select distinct
+        dong_no   <!-- 동번호 -->
+        , dong_nm   <!-- 동이름 -->
+        from apt_unit
+        where apt_cmplex_no = (
+        select apt_cmplex_no
+        from mgmt_office
+        where mgmt_ofc_no = #{mgmtOfcNo}
+        )
+        and dong_no is not null
+        order by dong_no
+    </select>
+
+</mapper>
