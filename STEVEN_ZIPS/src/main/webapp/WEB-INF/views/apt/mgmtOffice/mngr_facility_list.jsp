@@ -266,8 +266,8 @@
                     <%-- 편의시설 안내: 시설자산 목록에서 함께 조회되며, 상세 관리는 편의시설 관리 화면에서 진행한다. --%>
                     <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid var(--line);background:#f8f9fb;font-size:12px;color:#6b7a6e;">
                         <span class="material-symbols-rounded" style="font-size:15px;color:#2e5c38;flex-shrink:0;">info</span>
-                        헬스장·독서실 등 편의시설도 이 목록에서 함께 조회됩니다.
-                        <a href="${pageContext.request.contextPath}/manager/publicFacilityList" style="color:#2e5c38;font-weight:700;text-decoration:none;margin-left:4px;">예약/운영 상세 관리 →</a>
+                        헬스장·독서실 등 편의시설에 대한 운영 관리는 편의시설 관리에서 진행합니다.
+                        <a href="${pageContext.request.contextPath}/manager/publicFacilityList" style="color:#2e5c38;font-weight:700;text-decoration:none;margin-left:4px;">편의시설 관리 →</a>
                     </div>
                 </div>
 
