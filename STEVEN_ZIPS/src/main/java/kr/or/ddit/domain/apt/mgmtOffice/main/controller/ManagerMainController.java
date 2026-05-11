@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IMgmtOfficeMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.ManagerPaginationVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.service.IFacilityService;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
@@ -31,6 +32,7 @@ public class ManagerMainController {
 
     // ADMIN/MNGR 접근 기준 및 화면 공통 모델 처리
     private final IManagerModelService managerAccessService;
+    private final IFacilityService facilityService;
 
     // ──/manager/main 진입─────────────────────────────────────
     // ADMIN은 관리사무소 선택 모달 표시
@@ -265,6 +267,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+        model.addAttribute("dongList", facilityService.selectDongList(mgmtOfcNo));
         return "apt/mgmtOffice/mngr_facility_list";
     }
 
