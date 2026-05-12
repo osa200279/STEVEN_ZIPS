@@ -31,6 +31,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {	// OncePer
 		log.info("# TokenAuthenticationFilter:doFilterInternal->Msg : Filter execution...!");
 		String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);	// 요청헤더의 authorization값을 가져옴
 		String token = getAccessToken(authorizationHeader);		// TokenAthenticationFilter의 내부메서드 getAccessToken으로 토큰 값 가져옴
+		log.info("###### 추출된 토큰 {}", token);
 		
 		if(token != null && tokenProvider.validToken(token)) {	// 토큰 값이 유효한지 검사
 			log.info("# TokenAuthenticationFilter:doFilterInternal->Msg :This is a valid token");

@@ -43,6 +43,7 @@ public class AdmDashBoardRestController {
     // 청약 신청 목록 조회
     @GetMapping("/aplct")
     public ResponseEntity<List<AplctDTO>> getAplctList(){
+        log.info("#####청약 신청 리스트 컨트롤러 진입!!");
         try {
             List<AplctDTO> list = aplctService.selectAplctList();
             log.info("#### 청약 리스트 : {}", list);

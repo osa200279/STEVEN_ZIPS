@@ -7,15 +7,17 @@ public class AplctDTO {
     private String aplctNo;
     private String annNo;
     private String userNo;
-    private String hoTyNo;
+    private String userId;
+    private String userNm;
     private String regDt;
     private String mdfDt;
     private String aplctSttsCd;
     private String aptCmplexNo;
+    private String hoTyNo;
     private String tyNm;
     private String exclusiveSize;
-    private String roomCnt;
-    private String bathCnt;
+    private int roomCnt;
+    private int bathroomCnt;
     private String imageFileNo;
     private String ttl;
 }
