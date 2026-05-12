@@ -111,7 +111,7 @@
                 <div class="submenu-inner">
 
                     <span class="sub-group-label">시설 관리</span>
-                    <a href="${ctx}/manager/facilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facilityList') ? 'active' : ''}">
+                    <a href="${ctx}/manager/facility/page${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">시설자산 관리</span>
                     </a>
@@ -232,7 +232,7 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">단지정보</span>
-                    <a href="${ctx}/manager/complex/edit${mgmtPath}"
+                    <a href="${ctx}/manager/complex/edit"
                        class="nav-item ${fn:contains(uri, '/manager/complex/edit') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 정보 수정</span>
