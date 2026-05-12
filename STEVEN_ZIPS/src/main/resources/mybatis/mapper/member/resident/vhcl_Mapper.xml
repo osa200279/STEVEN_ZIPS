@@ -31,11 +31,32 @@
         AND     USER_NO = #{userNo}
     </delete>
 
-    <select id="selectMyVhclList" resultType="kr.or.ddit.domain.member.resident.vo.RsidVhclVO">
-        SELECT  *
-        FROM    RSID_VHCL
-        WHERE   USER_NO = #{userNo}
-          AND   HO_NO LIKE #{aptCmplexNo}||'%'
+    <select id="selectMyVhclList"
+            parameterType="list"
+            resultType="kr.or.ddit.domain.member.resident.vo.RsidVhclVO">
+        SELECT      /*kr.or.ddit.domain.member.resident.mapper.IVhclMapper.selectMyVhclList*/
+        RSID_VHCL_NO
+        , VHCL_NM
+        , VHCL_NO
+        , USER_NO
+        , HO_NO
+        , VHCL_STTS_CD
+        , REG_DT
+        , VHCL_FILE_NO
+        FROM RSID_VHCL
+
+        WHERE HO_NO IN
+        <foreach collection="list"
+                 item="ho"
+                 open="("
+                 separator=","
+                 close=")">
+            #{ho}
+        </foreach>
+        ORDER BY
+        TO_NUMBER(REGEXP_SUBSTR(HO_NO, '[^_]+', 1, 2)),
+        TO_NUMBER(REGEXP_SUBSTR(HO_NO, '[^_]+', 1, 3)),
+        REG_DT DESC
     </select>
 
     <select id="selectMyRoomList" resultType="kr.or.ddit.common.webSocket.chat.vo.ChatRoomVO">
@@ -99,20 +120,20 @@
     <select id="countMyVhcl" resultType="int">
         SELECT  COUNT(*)
         FROM    rsid_vhcl
-        WHERE   user_no = #{userNo}
-        AND     ho_no   = #{hoNo}
+        WHERE   ho_no = #{hoNo}
     </select>
 
-    <select id="selectMyHoList" resultType="java.lang.String">
-        SELECT
-            HO_NO
-        FROM
-            HSHLD_HEAD
-        WHERE
-            USER_NO = #{userNo}
-        AND
-            INOUT_CD NOT IN ('OUT', 'MID')
+    <select id="selectMyHoList"
+            resultType="java.lang.String">
+
+        SELECT HO_NO
+        FROM HSHLD_HEAD
+        WHERE USER_NO = #{userNo}
+          AND HO_NO LIKE #{aptCmplexNo} || '%'
+          AND INOUT_CD NOT IN ('OUT', 'MID')
+
     </select>
+
 
     <select id="countVhclByHoList" parameterType="list" resultType="int">
         SELECT COUNT(*)

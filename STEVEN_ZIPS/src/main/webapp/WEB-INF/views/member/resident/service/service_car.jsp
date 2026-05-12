@@ -89,15 +89,16 @@
                     id="vhclNoFront"
                     class="fake-input"
                     style="width:120px;"
+                    maxlength="4"
                     placeholder="ex) 12가"
             />
-
             <input
                     id="vhclNoBack"
                     class="fake-input"
                     style="width:140px;"
                     maxlength="4"
                     placeholder="ex) 1234"
+                    oninput="this.value=this.value.replace(/[^0-9]/g,'')"
             />
         </div>
 

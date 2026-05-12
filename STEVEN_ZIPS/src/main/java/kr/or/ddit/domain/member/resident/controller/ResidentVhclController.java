@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +36,12 @@ public class ResidentVhclController {
     ) {
 
         String userNo = principal.getMember().getUserNo();
-        return residentVhclService.selectMyVhclList(userNo, aptCmplexNo);
+
+        // 현재 아파트에 속한 내 세대 차량 조회
+        return residentVhclService.selectMyVhclList(
+                userNo,
+                aptCmplexNo
+        );
     }
 
 
@@ -56,10 +60,16 @@ public class ResidentVhclController {
 
         String hoNo = aptCmplexNo + "_" + dong + "_" + ho;
 
-        boolean isExtra = residentVhclService.isExtraRequired(userNo, aptCmplexNo, hoNo);
+        boolean isExtra =
+                residentVhclService.isExtraRequired(
+                        userNo,
+                        aptCmplexNo,
+                        hoNo
+                );
 
         return isExtra ? "EXTRA_REQUIRED" : "OK";
     }
+
 
 
     @PostMapping("/register/{aptCmplexNo}")
@@ -79,12 +89,19 @@ public class ResidentVhclController {
         String userNo = principal.getMember().getUserNo();
 
         residentVhclService.registerVhcl(
-                userNo, aptCmplexNo, vhclNm, vhclNo,
-                dong, ho, file
+                userNo,
+                aptCmplexNo,
+                vhclNm,
+                vhclNo,
+                dong,
+                ho,
+                file
         );
 
         return "OK";
     }
+
+
 
     @DeleteMapping("/delete/{rsidVhclNo}")
     @ResponseBody
@@ -94,11 +111,12 @@ public class ResidentVhclController {
     ) {
 
         MemberVO user = customUser.getMember();
-        String userNo = user.getUserNo();
 
-        residentVhclService.deleteVhcl(rsidVhclNo, userNo);
+        residentVhclService.deleteVhcl(
+                rsidVhclNo,
+                user.getUserNo()
+        );
 
         return ResponseEntity.ok("SUCCESS");
     }
-
 }

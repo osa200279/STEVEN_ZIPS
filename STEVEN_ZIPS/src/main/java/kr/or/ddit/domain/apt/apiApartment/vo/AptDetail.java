@@ -21,7 +21,5 @@ public class AptDetail {
     private String convenientFacility;  // 편의시설?
     private String educationFacility;   // 교육시설
 
-
-
     private String useYn;
 }

@@ -6,8 +6,8 @@ import lombok.Data;
 public class AptDetailVO {
     private String hoNo;
     private int floor;
-    private String exclusiveSize;
-    private String empty;
+    private String hoTyNo;
+    private String hoSttsCd;
     private String imageNo;
     private String panoImageNo;
     private String dongNo;

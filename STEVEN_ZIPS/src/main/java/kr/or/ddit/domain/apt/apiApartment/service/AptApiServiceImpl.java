@@ -158,6 +158,8 @@ public class AptApiServiceImpl implements IAptApiService {
         List<AptUnitVO> aptUnitVOList = new ArrayList<>();
         List<AptDetailVO> aptDetailVOList = new ArrayList<>();
         List<AuthVO> authVOList = new ArrayList<>();
+        List<AptHoTyVO> aptHoTyVOList = new ArrayList<>();
+
 
         for (AptListItem listItem : AptItemList) {
 
@@ -198,6 +200,9 @@ public class AptApiServiceImpl implements IAptApiService {
             toAptDetailVO(aptDetailVOList, bassItem);
             /*      호 테이블 entity 구성 끝! */
 
+            /* 호 타입 구성*/
+            toAptHoTyVO(aptHoTyVOList, bassItem);
+
             entityList.add(toEntity(listItem, bassItem,detailItem));
         }
 
@@ -218,6 +223,7 @@ public class AptApiServiceImpl implements IAptApiService {
         batchInsert(managerVOList, aptMapper::insertManagerBatch);
         batchInsert(authVOList, aptMapper::insertAuthBatch);
         batchInsert(aptUnitVOList, aptMapper::insertAptUnitBatch);
+        batchInsert(aptHoTyVOList, aptMapper::insertAptHoTyBatch);
         batchInsert(aptDetailVOList, aptMapper::insertAptDetailBatch);
 
         for (AptInfraEntity infra : infraEntityList) {
@@ -586,7 +592,7 @@ public class AptApiServiceImpl implements IAptApiService {
                     aptDetail.setFloor(f);
                     aptDetail.setHo(String.valueOf(f*100 + h));
                     aptDetail.setHoNo(bassItem.getKaptCode()+"_"+i+"_"+(f*100+h));
-                    aptDetail.setExclusiveSize(maxKey);
+                    aptDetail.setHoTyNo(bassItem.getKaptCode() + "_1");
 
                     aptDetailVOList.add(aptDetail);
 
@@ -806,6 +812,46 @@ public class AptApiServiceImpl implements IAptApiService {
         log.info("최종 결과 수 : {}", result.size());
 
         return result;
+    }
+
+
+    private List<AptHoTyVO> toAptHoTyVO(
+            List<AptHoTyVO> aptHoTyVOList,
+            AptBass bassItem){
+
+        Map<String, Integer> map = new HashMap<>();
+
+        map.put("60", safeParseInt(bassItem.getKaptMparea60()));
+        map.put("85", safeParseInt(bassItem.getKaptMparea85()));
+        map.put("135", safeParseInt(bassItem.getKaptMparea135()));
+        map.put("136", safeParseInt(bassItem.getKaptMparea136()));
+
+        String maxKey = null;
+        int maxValue = Integer.MIN_VALUE;
+
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+
+            if (entry.getValue() > maxValue) {
+                maxValue = entry.getValue();
+                maxKey = entry.getKey();
+            }
+        }
+
+        AptHoTyVO hoTy = new AptHoTyVO();
+
+        hoTy.setHoTyNo(bassItem.getKaptCode() + "_1");
+        hoTy.setAptCmplexNo(bassItem.getKaptCode());
+
+        hoTy.setTypeNm("A타입");
+
+        hoTy.setExclusiveArea(maxKey);
+
+        hoTy.setRoomCnt(1);
+        hoTy.setBathroomCnt(1);
+
+        aptHoTyVOList.add(hoTy);
+
+        return aptHoTyVOList;
     }
 
 }

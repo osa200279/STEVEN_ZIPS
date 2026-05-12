@@ -121,15 +121,23 @@
     <insert id="insertAptDetailBatch">
         INSERT ALL
         <foreach collection="list" item="item">
+
             INTO APT_DETAIL(
-            HO_NO, FLOOR, EXCLUSIVE_SIZE, DONG_NO, HO
+            HO_NO,
+            FLOOR,
+            HO_TY_NO,
+            DONG_NO,
+            HO,
+            HO_STTS_CD
             ) VALUES (
             #{item.hoNo},
             #{item.floor},
-            #{item.exclusiveSize},
+            #{item.hoTyNo},
             #{item.dongNo},
-            #{item.ho}
+            #{item.ho},
+            'EMPTY'
             )
+
         </foreach>
         SELECT 1 FROM DUAL
     </insert>
@@ -146,6 +154,33 @@
             )
         </foreach>
         SELECT 1 FROM DUAL
+    </insert>
+    <insert id="insertAptHoTyBatch">
+
+        INSERT ALL
+
+        <foreach collection="list" item="item">
+
+            INTO APT_HO_TY(
+            DETAIL_TY_NO,
+            APT_CMPLEX_NO,
+            TYPE_NM,
+            EXCLUSE_AREA,
+            ROOM_CNT,
+            BATHROOM_CNT
+            ) VALUES (
+            #{item.hoTyNo},
+            #{item.aptCmplexNo},
+            #{item.typeNm},
+            #{item.exclusiveArea},
+            #{item.roomCnt},
+            #{item.bathroomCnt}
+            )
+
+        </foreach>
+
+        SELECT 1 FROM DUAL
+
     </insert>
 
     <select id="getMemberSeq" resultType="long" useCache="false">
@@ -203,20 +238,32 @@
            OR LON_VAL = 0
     </select>
 
-    <select id="selectAvailableUnits" resultType="kr.or.ddit.domain.apt.main.vo.AptDetailVO">
+    <select id="selectAvailableUnits"
+            resultType="kr.or.ddit.domain.apt.main.vo.AptDetailVO">
+
         SELECT
         D.HO_NO,
         D.HO,
         D.FLOOR,
+        D.HO_TY_NO,
         U.DONG_NO,
         U.APT_CMPLEX_NO
         FROM APT_DETAIL D
-        JOIN APT_UNIT U ON D.DONG_NO = U.DONG_NO
+        JOIN APT_UNIT U
+        ON D.DONG_NO = U.DONG_NO
+
         WHERE U.APT_CMPLEX_NO IN
-        <foreach collection="aptList" item="apt" open="(" separator="," close=")">
+
+        <foreach collection="aptList"
+                 item="apt"
+                 open="("
+                 separator=","
+                 close=")">
             #{apt}
         </foreach>
-        AND D.EMPTY = 'Y'
+
+        AND D.HO_STTS_CD = 'EMPTY'
+
     </select>
 
     <update id="updateLatLng">
@@ -229,8 +276,7 @@
 
     <update id="updateEmpty">
         UPDATE APT_DETAIL
-        SET
-            EMPTY = 'N'
+        SET HO_STTS_CD = 'LIVE'
         WHERE HO_NO = #{hoNo}
     </update>
 

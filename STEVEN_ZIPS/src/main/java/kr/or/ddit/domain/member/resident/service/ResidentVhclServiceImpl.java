@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,17 +31,11 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
     IAttachFileService attachFileService;
 
 
-    @Override
-    public List<RsidVhclVO> selectMyVhclList(String userNo, String aptCmplexNo) {
-
-        return vhclMapper.selectMyVhclList(userNo,aptCmplexNo);
-    }
-
     public boolean isExtraRequired(String userNo, String aptCmplexNo, String hoNo) {
 
         int freeCnt = vhclMapper.selectFreePkgCnt(aptCmplexNo);
 
-        int currentCnt = vhclMapper.countMyVhcl(userNo, hoNo);
+        int currentCnt = vhclMapper.countMyVhcl(hoNo);
 
         return currentCnt >= freeCnt;
     }
@@ -56,7 +51,9 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
             throw new RuntimeException("차량 없음");
         }
 
-        if (!vhcl.getUserNo().equals(userNo)) {
+        if (vhcl.getUserNo() == null ||
+                !vhcl.getUserNo().equals(userNo)) {
+
             throw new RuntimeException("삭제 권한 없음");
         }
 
@@ -159,6 +156,22 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
         }
         //insert 진행!
         vhclMapper.insertVhcl(vhcl);
+    }
+
+    @Override
+    public List<RsidVhclVO> selectMyVhclList(
+            String userNo,
+            String aptCmplexNo
+    ) {
+
+        List<String> hoList =
+                vhclMapper.selectMyHoList(userNo, aptCmplexNo);
+
+        if (hoList == null || hoList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return vhclMapper.selectMyVhclList(hoList);
     }
 
 }
