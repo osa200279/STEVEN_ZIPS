@@ -31,12 +31,27 @@ public class OfficeVhclServiceImpl implements IOfficeVhclService {
     }
 
     @Override
-    public List<RsidVhclVO> getVehicleList() {
-        return officeVhclMapper.getVehicleList();
+    public List<RsidVhclVO> getVehicleList(String mgmtOfcNo) {
+        return officeVhclMapper.getVehicleList(mgmtOfcNo);
+    }
+
+    @Override
+    public RsidVhclVO getVehicle(String rsidVhclNo) {
+        return officeVhclMapper.selectVehicleById(rsidVhclNo);
+    }
+
+    @Override
+    public int updateVehicle(RsidVhclVO vo, MultipartFile uploadFile) {
+        return officeVhclMapper.updateVehicle(vo);
     }
 
     @Override
     public int deleteVehicle(String rsidVhclNo) {
         return officeVhclMapper.deleteVehicle(rsidVhclNo);
+    }
+
+    @Override
+    public Map<String, Object> searchResident(Map<String, Object> param) {
+        return officeVhclMapper.searchResident(param);
     }
 }

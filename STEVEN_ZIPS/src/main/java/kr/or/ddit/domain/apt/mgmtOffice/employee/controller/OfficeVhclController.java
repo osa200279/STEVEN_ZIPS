@@ -1,17 +1,23 @@
 package kr.or.ddit.domain.apt.mgmtOffice.employee.controller;
 
 import kr.or.ddit.domain.apt.mgmtOffice.employee.service.IOfficeVhclService;
+import kr.or.ddit.domain.member.manager.vo.ManagerVO;
+import kr.or.ddit.domain.member.manager.vo.MngrVO;
+import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
+import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -21,31 +27,46 @@ public class OfficeVhclController {
 
     private final IOfficeVhclService officeVhclService;
 
-    /**
-     * 페이지 이동
-     */
     @PreAuthorize("hasRole('MNGR') and @authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/management/{mgmtOfcNo}")
-    public String residentAutoPage(@PathVariable String mgmtOfcNo, Model model) {
-
+    @GetMapping({"/management/{mgmtOfcNo}", "/list/{mgmtOfcNo}"})
+    public String vehicleList( @PathVariable("mgmtOfcNo") String mgmtOfcNo,
+                               Model model) {
+        List<RsidVhclVO> vehicleList = officeVhclService.getVehicleList(mgmtOfcNo);
 
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_resident_auto";
+        model.addAttribute("vehicleList", vehicleList);
+        model.addAttribute("totalCnt", vehicleList.size());
+        model.addAttribute("aprvCnt", vehicleList.stream()
+                .filter(vehicle -> "APRV".equals(vehicle.getVhclSttsCd()))
+                .count());
+
+        return "apt/mgmtOffice/resident/vehicle_list";
     }
 
-    /**
-     * 차량 직접 등록
-     */
+    @PreAuthorize("hasRole('MNGR')")
+    @GetMapping("/register/{mgmtOfcNo}")
+    public String registerPage(  @PathVariable("mgmtOfcNo") String mgmtOfcNo,
+                                 Model model) {
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+        return "apt/mgmtOffice/resident/vehicle_register";
+    }
+
+    @PreAuthorize("hasRole('MNGR')")
     @PostMapping("/register")
-    @ResponseBody
-    public ResponseEntity<String> registerVehicle(
+    public String registerVehicle(
+        @AuthenticationPrincipal CustomUser user,
             @RequestParam("userNo") String userNo,
             @RequestParam("hoNo") String hoNo,
             @RequestParam("vhclNo") String vhclNo,
             @RequestParam("vhclNm") String vhclNm,
+            @RequestParam("mgmtOfcNo") String mgmtOfcNo,
             @RequestParam(value = "uploadFile", required = false)
             MultipartFile uploadFile
+
     ) {
+
+        MngrVO mngrVO = (MngrVO) user.getMember();
+        String aptCmplexNo = mngrVO.getAptCmplexNo();
 
         try {
 
@@ -58,67 +79,156 @@ public class OfficeVhclController {
 
             vo.setVhclSttsCd("APRV");
 
+            officeVhclService.registerVehicle(vo, uploadFile);
 
-            int result = officeVhclService.registerVehicle(vo, uploadFile);
-
-            if (result > 0) {
-
-                return ResponseEntity.ok("등록 성공");
-            }
-
-            return ResponseEntity.badRequest().body("등록 실패");
+            return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
 
         } catch (Exception e) {
 
             log.error("차량 등록 실패", e);
 
-            return ResponseEntity.badRequest().body("등록 실패");
+            return "redirect:/manager/resident/auto/register/" + mgmtOfcNo;
         }
     }
 
     @PreAuthorize("hasRole('MNGR') and @authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/list/{mgmtOfcNo}")
-    public String getVehicleList(@PathVariable String mgmtOfcNo, Model model) {
+    @GetMapping("/detail/{mgmtOfcNo}/{rsidVhclNo}")
+    public String detailPage(
 
+
+            @PathVariable("mgmtOfcNo") String mgmtOfcNo,
+            @PathVariable("rsidVhclNo") String rsidVhclNo,
+            Model model
+    ) {
+        RsidVhclVO vehicle = officeVhclService.getVehicle(rsidVhclNo);
+        if (vehicle == null) {
+            return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
+        }
 
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_resident_auto";
+        model.addAttribute("vehicle", vehicle);
+        return "apt/mgmtOffice/resident/vehicle_detail";
     }
 
+    @PreAuthorize("hasRole('MNGR')")
+    @GetMapping("/update/{mgmtOfcNo}/{rsidVhclNo}")
+    public String updatePage(
+            @PathVariable("mgmtOfcNo") String mgmtOfcNo,
+            @PathVariable("rsidVhclNo") String rsidVhclNo,
+            Model model
+    ) {
+        RsidVhclVO vehicle = officeVhclService.getVehicle(rsidVhclNo);
+        if (vehicle == null) {
+            return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
+        }
 
-
-
-    @GetMapping("/list")
-    @ResponseBody
-    public List<RsidVhclVO> getVehicleList() {
-
-        return officeVhclService.getVehicleList();
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+        model.addAttribute("vehicle", vehicle);
+        return "apt/mgmtOffice/resident/vehicle_update";
     }
-    @PostMapping("/delete")
-    @ResponseBody
-    public ResponseEntity<String> deleteVehicle(
-            @RequestParam("rsidVhclNo") String rsidVhclNo
+
+    @PreAuthorize("hasRole('MNGR')")
+    @PostMapping("/update")
+    public String updateVehicle(
+
+            @RequestParam("rsidVhclNo") String rsidVhclNo,
+            @RequestParam("userNo") String userNo,
+            @RequestParam("hoNo") String hoNo,
+            @RequestParam("vhclNo") String vhclNo,
+            @RequestParam("vhclNm") String vhclNm,
+            @RequestParam("mgmtOfcNo") String mgmtOfcNo,
+            @RequestParam(value = "uploadFile", required = false)
+            MultipartFile uploadFile
+
     ) {
 
         try {
 
-            int result = officeVhclService.deleteVehicle(rsidVhclNo);
+            RsidVhclVO vo = new RsidVhclVO();
 
-            if (result > 0) {
+            vo.setRsidVhclNo(rsidVhclNo);
+            vo.setUserNo(userNo);
+            vo.setHoNo(hoNo);
+            vo.setVhclNo(vhclNo);
+            vo.setVhclNm(vhclNm);
 
-                return ResponseEntity.ok("삭제 성공");
-            }
+            vo.setVhclSttsCd("APRV");
 
-            return ResponseEntity.badRequest().body("삭제 실패");
+            officeVhclService.updateVehicle(vo, uploadFile);
+
+            return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
+
+        } catch (Exception e) {
+
+            log.error("차량 수정 실패", e);
+
+            return "redirect:/manager/resident/auto/update/"
+                    + mgmtOfcNo + "/"
+                    + rsidVhclNo;
+        }
+    }
+
+    @PreAuthorize("hasRole('MNGR')")
+    @PostMapping("/delete")
+    public String deleteVehicle(
+
+            @RequestParam("rsidVhclNo") String rsidVhclNo,
+            @RequestParam("mgmtOfcNo") String mgmtOfcNo
+
+    ) {
+
+        try {
+
+            officeVhclService.deleteVehicle(rsidVhclNo);
+
+            return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
 
         } catch (Exception e) {
 
             log.error("차량 삭제 실패", e);
 
-            return ResponseEntity.badRequest().body("삭제 실패");
+            return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
         }
     }
 
+
+
+    @ResponseBody
+    @GetMapping(value="/search", produces="application/json;charset=UTF-8")
+    public Map<String, Object> searchResident(
+
+            @AuthenticationPrincipal CustomUser user,
+
+            @RequestParam("mgmtOfcNo") String mgmtOfcNo,
+            @RequestParam("dongNo") String dongNo,
+            @RequestParam("hoNo") String hoNo,
+            @RequestParam("residentName") String residentName
+
+    ){
+
+        Map<String,Object> param = new HashMap<>();
+
+        String parsedDongNo = dongNo.replace("0", "");
+
+        MngrVO mngrVO = (MngrVO) user.getMember();
+
+        String aptCmplexNo = mngrVO.getAptCmplexNo();
+
+        String fullHoNo =
+                aptCmplexNo + "_"
+                        + parsedDongNo + "_"
+                        + hoNo;
+
+        param.put("hoNo", fullHoNo);
+        param.put("residentName", residentName);
+
+        Map<String,Object> result =
+                officeVhclService.searchResident(param);
+
+        System.out.println("조회 결과 = " + result);
+
+        return result;
+    }
 
 
 

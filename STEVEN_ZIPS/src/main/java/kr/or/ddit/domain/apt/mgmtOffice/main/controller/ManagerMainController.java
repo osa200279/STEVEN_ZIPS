@@ -247,7 +247,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_resident_auto";
+        return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
     }
 
     // 방문 차량 자동 처리

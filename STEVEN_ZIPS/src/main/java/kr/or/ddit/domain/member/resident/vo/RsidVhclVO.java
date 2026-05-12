@@ -12,6 +12,7 @@ public class RsidVhclVO {
     private String vhclSttsCd;
     private String vhclNm;
     private String vhclNo;
+    private String userNm;
     private String userNo;
     private String hoNo;
     private String vhclFileNo;

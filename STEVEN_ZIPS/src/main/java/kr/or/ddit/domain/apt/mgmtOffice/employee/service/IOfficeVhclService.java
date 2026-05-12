@@ -11,7 +11,13 @@ public interface IOfficeVhclService {
 
     int registerVehicle(RsidVhclVO vo, MultipartFile uploadFile);
 
-    List<RsidVhclVO> getVehicleList();
+    List<RsidVhclVO> getVehicleList(String mgmtOfcNo);
+
+    RsidVhclVO getVehicle(String rsidVhclNo);
+
+    int updateVehicle(RsidVhclVO vo, MultipartFile uploadFile);
 
     int deleteVehicle(String rsidVhclNo);
+
+    Map<String, Object> searchResident(Map<String, Object> param);
 }
