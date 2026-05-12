@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import kr.or.ddit.common.api.google.service.GoogleDriveService;
+import kr.or.ddit.common.file.mapper.IAttachFileMapper;
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -17,8 +19,22 @@ import java.util.UUID;
 public class OfficeVhclServiceImpl implements IOfficeVhclService {
 
     private final OfficeVhclMapper officeVhclMapper;
+
+    private final GoogleDriveService googleDriveService;
+    private final IAttachFileMapper attachFileMapper;
+
+
     @Override
-    public int registerVehicle(RsidVhclVO vo, MultipartFile uploadFile) {
+    public int registerVehicle(
+            RsidVhclVO vo,
+            MultipartFile uploadFile
+    ) {
+
+        System.out.println("uploadFile = " + uploadFile);
+
+        if(uploadFile != null){
+            System.out.println("파일명 = " + uploadFile.getOriginalFilename());
+        }
 
         vo.setRsidVhclNo(
                 UUID.randomUUID()
@@ -27,9 +43,62 @@ public class OfficeVhclServiceImpl implements IOfficeVhclService {
                         .substring(0, 20)
         );
 
+        if(uploadFile != null && !uploadFile.isEmpty()){
+
+            String originalFilename =
+                    uploadFile.getOriginalFilename();
+
+            String uuid =
+                    UUID.randomUUID()
+                            .toString()
+                            .replace("-", "");
+
+            String savedFileName =
+                    uuid + "_" + originalFilename;
+
+            String folderPath =
+                    "vehicle/" + vo.getUserNo();
+
+            String fullPath =
+                    folderPath + "/" + savedFileName;
+
+            String googleId = "";
+                    try {
+
+
+                        googleDriveService.uploadFile(
+                                uploadFile,
+                                folderPath,
+                                savedFileName
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+            long fileGroupNo =
+                    attachFileMapper.getSeqFileGroupNo();
+
+            AttachFileVO attachFile =
+                    AttachFileVO.fileSettings(
+                            uploadFile,
+                            fileGroupNo,
+                            "vehicle",
+                            savedFileName,
+                            googleId,
+                            fullPath,
+                            1
+                    );
+
+            attachFileMapper.insertAttachFile(attachFile);
+
+            vo.setVhclFileNo(
+                    fileGroupNo + "_" + savedFileName
+            );
+        }
+
+        System.out.println("저장될 파일번호 = " + vo.getVhclFileNo());
+
         return officeVhclMapper.insertVehicle(vo);
     }
-
     @Override
     public List<RsidVhclVO> getVehicleList(String mgmtOfcNo) {
         return officeVhclMapper.getVehicleList(mgmtOfcNo);

@@ -10,17 +10,19 @@
             VHCL_NO,
             VHCL_STTS_CD,
             USER_NO,
-            HO_NO
+            HO_NO,
+            VHCL_FILE_NO
         )
         VALUES
-        (
-            #{rsidVhclNo},
-            #{vhclNm},
-            #{vhclNo},
-            #{vhclSttsCd},
-            #{userNo},
-            #{hoNo}
-        )
+            (
+                #{rsidVhclNo},
+                #{vhclNm},
+                #{vhclNo},
+                #{vhclSttsCd},
+                #{userNo},
+                #{hoNo},
+                #{vhclFileNo}
+            )
     </insert>
 
     <select id="getVehicleList"
