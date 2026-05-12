@@ -8,7 +8,8 @@
   --text-primary: #111827;
   --text-secondary: #4b5563;
   --accent: #e9e2e2;
-  --sb-bg: #2f4158;   /* 사이드바 배경색 */
+  --sb-bg: #2f4158;
+  /* 사이드바 배경색 */
   --sb-icon: #fff4e4;
   --sb-label: #ffffff;
 }
@@ -70,8 +71,8 @@
 
 .nav-divider {
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.1); 
-  margin: 8px 10px; 
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 8px 10px;
 }
 
 .nav-item {
@@ -101,13 +102,19 @@
   gap: 12px;
 }
 
-.section-label{
+.sidebar-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.section-label {
   font-size: 11px;
   color: #a0cab6;
 }
 
-.luci-icon{
+.luci-icon {
   width: 18px;
   height: 18px;
 }
-

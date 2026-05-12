@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import requestApi from '../../util/api/requestApi';
+import { Outlet } from 'react-router-dom';
 
 const MainLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -37,7 +38,7 @@ const MainLayout = ({ children }) => {
           admInfo={admInfo}
         />
         <main className="main-content" style={{ flex: 1, padding: '28px' }}>
-          {children}
+          <Outlet context={{admInfo}} />
         </main>
       </div>
     </div>
