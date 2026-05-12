@@ -54,4 +54,16 @@ public class OfficeVhclServiceImpl implements IOfficeVhclService {
     public Map<String, Object> searchResident(Map<String, Object> param) {
         return officeVhclMapper.searchResident(param);
     }
+
+    @Override
+    public void updateVehicleStatus(
+            String rsidVhclNo,
+            String status
+    ){
+
+        officeVhclMapper.updateVehicleStatus(
+                rsidVhclNo,
+                status
+        );
+    }
 }

@@ -29,15 +29,35 @@ public class OfficeVhclController {
 
     @PreAuthorize("hasRole('MNGR') and @authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping({"/management/{mgmtOfcNo}", "/list/{mgmtOfcNo}"})
-    public String vehicleList( @PathVariable("mgmtOfcNo") String mgmtOfcNo,
-                               Model model) {
-        List<RsidVhclVO> vehicleList = officeVhclService.getVehicleList(mgmtOfcNo);
+    public String vehicleList(
+            @PathVariable("mgmtOfcNo") String mgmtOfcNo,
+            @AuthenticationPrincipal CustomUser user,
+            Model model) {
 
+        MngrVO mngrVO = (MngrVO) user.getMember();
+
+        String aptCmplexNo = mngrVO.getAptCmplexNo();
+
+        List<RsidVhclVO> vehicleList =
+                officeVhclService.getVehicleList(aptCmplexNo);
+
+        List<RsidVhclVO> waitList = vehicleList.stream()
+                .filter(v -> "WAIT".equals(v.getVhclSttsCd()))
+                .toList();
+
+        model.addAttribute("waitList", waitList);
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
         model.addAttribute("vehicleList", vehicleList);
         model.addAttribute("totalCnt", vehicleList.size());
         model.addAttribute("aprvCnt", vehicleList.stream()
                 .filter(vehicle -> "APRV".equals(vehicle.getVhclSttsCd()))
+                .count());
+        model.addAttribute("waitCnt", vehicleList.stream()
+                .filter(vehicle -> "WAIT".equals(vehicle.getVhclSttsCd()))
+                .count());
+
+        model.addAttribute("rjctCnt", vehicleList.stream()
+                .filter(vehicle -> "RJCT".equals(vehicle.getVhclSttsCd()))
                 .count());
 
         return "apt/mgmtOffice/resident/vehicle_list";
@@ -77,7 +97,7 @@ public class OfficeVhclController {
             vo.setVhclNo(vhclNo);
             vo.setVhclNm(vhclNm);
 
-            vo.setVhclSttsCd("APRV");
+            vo.setVhclSttsCd("WAIT");
 
             officeVhclService.registerVehicle(vo, uploadFile);
 
@@ -229,7 +249,39 @@ public class OfficeVhclController {
 
         return result;
     }
+    @PreAuthorize("hasRole('MNGR')")
+    @PostMapping("/approve")
+    public String approveVehicle(
 
+            @RequestParam("rsidVhclNo") String rsidVhclNo,
+            @RequestParam("mgmtOfcNo") String mgmtOfcNo
+
+    ){
+
+        officeVhclService.updateVehicleStatus(
+                rsidVhclNo,
+                "APRV"
+        );
+
+        return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
+    }
+
+    @PreAuthorize("hasRole('MNGR')")
+    @PostMapping("/reject")
+    public String rejectVehicle(
+
+            @RequestParam("rsidVhclNo") String rsidVhclNo,
+            @RequestParam("mgmtOfcNo") String mgmtOfcNo
+
+    ){
+
+        officeVhclService.updateVehicleStatus(
+                rsidVhclNo,
+                "RJCT"
+        );
+
+        return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
+    }
 
 
 }

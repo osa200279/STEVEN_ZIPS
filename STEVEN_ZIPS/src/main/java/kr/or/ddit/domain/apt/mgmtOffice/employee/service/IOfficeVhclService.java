@@ -20,4 +20,6 @@ public interface IOfficeVhclService {
     int deleteVehicle(String rsidVhclNo);
 
     Map<String, Object> searchResident(Map<String, Object> param);
+
+    void updateVehicleStatus(String rsidVhclNo, String status);
 }

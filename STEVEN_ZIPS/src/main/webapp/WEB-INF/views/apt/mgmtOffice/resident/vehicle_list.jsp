@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
@@ -194,7 +195,7 @@
                         </div>
 
                         <div>
-                            <div class="s-val">${submitCnt}</div>
+                            <div class="s-val">${waitCnt}</div>
                             <div class="s-label">승인 대기</div>
                         </div>
 
@@ -207,7 +208,7 @@
                         </div>
 
                         <div>
-                            <div class="s-val">${rejectCnt}</div>
+                            <div class="s-val">${rjctCnt}</div>
                             <div class="s-label">반려</div>
                         </div>
 
@@ -226,9 +227,9 @@
                                 name="stts">
 
                             <option value="">처리상태 전체</option>
-                            <option value="SUBMIT">승인대기</option>
+                            <option value="WAIT">승인대기</option>
                             <option value="APRV">승인완료</option>
-                            <option value="REJT">반려</option>
+                            <option value="RJCT">반려</option>
 
                         </select>
 
@@ -289,7 +290,7 @@
 
                                 <c:forEach items="${vehicleList}" var="item">
 
-                                    <c:if test="${item.vhclSttsCd eq 'SUBMIT'}">
+                                   <c:if test="${fn:contains(fn:trim(item.vhclSttsCd), 'WAIT')}">
 
                                         <tr>
 
@@ -457,15 +458,15 @@
 
                                                     <c:choose>
 
-                                                        <c:when test="${item.vhclSttsCd eq 'SUBMIT'}">
+                                                       <c:when test="${fn:trim(item.vhclSttsCd) eq 'WAIT'}">
                                                             <span class="badge badge-yellow">승인대기</span>
                                                         </c:when>
 
-                                                        <c:when test="${item.vhclSttsCd eq 'APRV'}">
+                                                       <c:when test="${fn:trim(item.vhclSttsCd) eq 'APRV'}">
                                                             <span class="badge badge-green">승인완료</span>
                                                         </c:when>
 
-                                                        <c:when test="${item.vhclSttsCd eq 'REJT'}">
+                                                     <c:when test="${fn:trim(item.vhclSttsCd) eq 'RJCT'}">
                                                             <span class="badge badge-red">반려</span>
                                                         </c:when>
 

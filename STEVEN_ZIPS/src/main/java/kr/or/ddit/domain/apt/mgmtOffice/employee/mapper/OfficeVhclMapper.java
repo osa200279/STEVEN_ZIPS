@@ -14,7 +14,8 @@ public interface OfficeVhclMapper {
 
     int insertVehicle(RsidVhclVO vo);
 
-    List<RsidVhclVO> getVehicleList(@Param("mgmtOfcNo") String mgmtOfcNo);
+    List<RsidVhclVO> getVehicleList(
+            @Param("aptCmplexNo") String aptCmplexNo);
 
     RsidVhclVO selectVehicleById(String rsidVhclNo);
 
@@ -23,4 +24,9 @@ public interface OfficeVhclMapper {
     int deleteVehicle(String rsidVhclNo);
 
     Map<String, Object> searchResident(Map<String, Object> param);
+
+    void updateVehicleStatus(
+            @Param("rsidVhclNo") String rsidVhclNo,
+            @Param("status") String status
+    );
 }
