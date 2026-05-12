@@ -67,6 +67,95 @@ public class PublicFacilityController {
         return "apt/mgmtOffice/facility/publicFacility/publicFacilityList";
     }
 
+
+    /**
+     * 공용시설 상세 화면
+     * - 목록 Grid의 상세 버튼에서 이동
+     * - DB 상세 조회 연결 전 화면 확인용
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/detail-page/{mgmtOfcNo}/{cmnFacilityNo}")
+    public String detailPage(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String cmnFacilityNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        // 헤더/사이드바 공통 화면값 세팅
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        // 상세 JSP 화면 확인용 번호 전달
+        model.addAttribute("cmnFacilityNo", cmnFacilityNo);
+
+        return "apt/mgmtOffice/facility/publicFacility/publicFacilityDetail";
+    }
+
+    /**
+     * 공용시설 수정 화면
+     * - 목록 Grid의 수정 버튼에서 이동
+     * - DB 상세 조회 연결 전 화면 확인용
+     */
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @GetMapping("/update-page/{mgmtOfcNo}/{cmnFacilityNo}")
+    public String updatePage(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String cmnFacilityNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        // 헤더/사이드바 공통 화면값 세팅
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        // 수정 JSP 화면 확인용 번호 전달
+        model.addAttribute("cmnFacilityNo", cmnFacilityNo);
+
+        return "apt/mgmtOffice/facility/publicFacility/publicFacilityUpdate";
+    }
+
+    /**
+     * 공용 아이템 상세 화면
+     * - 공용 아이템 탭 Grid의 상세 버튼에서 이동
+     * - DB 상세 조회 연결 전 화면 확인용
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/item/detail-page/{mgmtOfcNo}/{cmnFacilityItemNo}")
+    public String itemDetailPage(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String cmnFacilityItemNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        // 헤더/사이드바 공통 화면값 세팅
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        // 아이템 상세 JSP 화면 확인용 번호 전달
+        model.addAttribute("cmnFacilityItemNo", cmnFacilityItemNo);
+
+        return "apt/mgmtOffice/facility/publicFacility/item/publicFacilityItemDetail";
+    }
+
+    /**
+     * 공용 아이템 수정 화면
+     * - 공용 아이템 탭 Grid의 수정 버튼에서 이동
+     * - DB 상세 조회 연결 전 화면 확인용
+     */
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @GetMapping("/item/update-page/{mgmtOfcNo}/{cmnFacilityItemNo}")
+    public String itemUpdatePage(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String cmnFacilityItemNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        // 헤더/사이드바 공통 화면값 세팅
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        // 아이템 수정 JSP 화면 확인용 번호 전달
+        model.addAttribute("cmnFacilityItemNo", cmnFacilityItemNo);
+
+        return "apt/mgmtOffice/facility/publicFacility/item/publicFacilityItemUpdate";
+    }
+//
 //    /**
 //     * 공용시설 등록 화면
 //     * - 등록 폼 화면 이동
@@ -80,7 +169,7 @@ public class PublicFacilityController {
 //    ) {
 //        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo); // 헤더/사이드바 공통 화면값 세팅
 //
-//        return "apt/mgmtOffice/facility/publicfacility/publicFacilityRegister";
+//        return "apt/mgmtOffice/facility/publicFacility/publicFacilityRegister";
 //    }
 //
 //    /**
@@ -102,30 +191,30 @@ public class PublicFacilityController {
 //        return "redirect:/manager/publicFacility/list/" + mgmtOfcNo;
 //    }
 //
-//    /**
-//     * 공용시설 상세 화면
-//     * - 상세 데이터 조회 후 JSP 출력
-//     */
-//    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-//    @GetMapping("/detail/{mgmtOfcNo}/{cmnFacilityNo}")
-//    public String detail(
-//            @PathVariable String mgmtOfcNo,
-//            @PathVariable String cmnFacilityNo,
-//            @AuthenticationPrincipal CustomUser customUser,
-//            Model model
-//    ) {
-//        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo); // 헤더/사이드바 공통 화면값 세팅
-//
-//        Map<String, Object> paramMap = new HashMap<>(); // 상세 조회 조건 Map
-//        paramMap.put("mgmtOfcNo", mgmtOfcNo);           // 관리사무소 번호 조건
-//        paramMap.put("cmnFacilityNo", cmnFacilityNo);   // 공용시설 번호 조건
-//
-//        PublicFacilityVO detail = publicFacilityService.selectPublicFacilityDetail(paramMap); // 공용시설 상세 조회
-//
-//        model.addAttribute("detail", detail); // 상세 화면 데이터
-//
-//        return "apt/mgmtOffice/facility/publicfacility/publicFacilityDetail";
-//    }
+    /**
+     * 공용시설 상세 화면
+     * - 상세 데이터 조회 후 JSP 출력
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/detail/{mgmtOfcNo}/{cmnFacilityNo}")
+    public String detail(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String cmnFacilityNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo); // 헤더/사이드바 공통 화면값 세팅
+
+        Map<String, Object> paramMap = new HashMap<>(); // 상세 조회 조건 Map
+        paramMap.put("mgmtOfcNo", mgmtOfcNo);           // 관리사무소 번호 조건
+        paramMap.put("cmnFacilityNo", cmnFacilityNo);   // 공용시설 번호 조건
+
+      //  PublicFacilityVO detail = publicFacilityService.selectPublicFacilityDetail(paramMap); // 공용시설 상세 조회
+
+    //    model.addAttribute("detail", detail); // 상세 화면 데이터
+
+        return "apt/mgmtOffice/facility/publicFacility/publicFacilityDetail";
+    }
 //
 //    /**
 //     * 공용시설 수정 화면
