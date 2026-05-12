@@ -593,13 +593,16 @@
                 if (result.success) {
                     alert(result.message || "단지 정보가 수정되었습니다.");
 
-                    // 사이드바 주소 규칙과 맞추기 위해 저장 후에도 선택된 관리사무소 번호를 유지한다.
-                    var mgmtOfcNo = "${mgmtOfcNo}";
-                    var editUrl = "${pageContext.request.contextPath}/manager/complex/edit";
+                    <%--var mgmtOfcNo = "${mgmtOfcNo}";--%>
+                    <%--var editUrl = "${pageContext.request.contextPath}/manager/complex/edit";--%>
 
-                    if (mgmtOfcNo) {
-                        editUrl += "/" + encodeURIComponent(mgmtOfcNo);
-                    }
+                    <%--if (mgmtOfcNo) {--%>
+                    <%--    editUrl += "/" + encodeURIComponent(mgmtOfcNo);--%>
+                    <%--}--%>
+
+                    <%--location.href = editUrl;--%>
+
+                    var editUrl = "${pageContext.request.contextPath}/manager/complex/edit";
 
                     location.href = editUrl;
                 } else {
