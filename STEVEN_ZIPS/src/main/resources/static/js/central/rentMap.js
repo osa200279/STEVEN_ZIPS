@@ -5,7 +5,6 @@
 
 let rentListingList = [
     {
-        // RENT_LISTING
         rentLstgNo: "RENT001",
         rentTypeCd: "JEONSE",
         rentTypeNm: "전세",
@@ -17,7 +16,6 @@ let rentListingList = [
         rentTtl: "송파삼성래미안 전세 매물",
         rcrtBggnDt: "2026-05-01",
 
-        // APT_DETAIL
         floor: 10,
         ho: "1004",
         exclusiveSize: "84",
@@ -25,13 +23,11 @@ let rentListingList = [
         imageNo: null,
         panoImageNo: null,
 
-        // APT_UNIT
         dongNo: "DONG001",
         dongNm: "101동",
         dongMaxFloor: 15,
         dongUnitCnt: 120,
 
-        // APT_COMPLEX
         aptCmplexNo: "APT001",
         aptCmplexNm: "송파삼성래미안",
         bjdCd: "1171010100",
@@ -53,7 +49,53 @@ let rentListingList = [
         rprsntImgFileNo: null,
         dorojuso: "서울특별시 송파구 오금로32길 14",
 
-        // 화면 임시 이미지
+        imgUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200"
+    },
+    {
+        rentLstgNo: "RENT004",
+        rentTypeCd: "MONTHLY",
+        rentTypeNm: "월세",
+        dpstAmt: 3000,
+        mthlyRentAmt: 110,
+        rentLstgCn: "송파삼성래미안 단지 내 월세 매물입니다. 저층 선호 세대에 적합합니다.",
+        hoNo: "HO004",
+        rcrtEndDt: "2026-06-10",
+        rentTtl: "송파삼성래미안 월세 매물",
+        rcrtBggnDt: "2026-05-15",
+
+        floor: 5,
+        ho: "504",
+        exclusiveSize: "59",
+        empty: "Y",
+        imageNo: null,
+        panoImageNo: null,
+
+        dongNo: "DONG001",
+        dongNm: "101동",
+        dongMaxFloor: 15,
+        dongUnitCnt: 120,
+
+        aptCmplexNo: "APT001",
+        aptCmplexNm: "송파삼성래미안",
+        bjdCd: "1171010100",
+        sidoNm: "서울특별시",
+        sigunguNm: "송파구",
+        emdNm: "오금동",
+        latVal: 37.5052,
+        lonVal: 127.1121,
+        unitCnt: 845,
+        heatTyCd: "HT001",
+        ccCnt: "120",
+        pkgCnt: 964,
+        freePkgCnt: 1,
+        dongCnt: 13,
+        maxFloor: 25,
+        bldYr: "2001",
+        cnscoNm: "삼성물산",
+        imgFileNo: null,
+        rprsntImgFileNo: null,
+        dorojuso: "서울특별시 송파구 오금로32길 14",
+
         imgUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200"
     },
     {
@@ -155,12 +197,12 @@ let rentListingList = [
 let map;
 let markers = [];
 let selectedRentNo = null;
+let selectedAptCmplexNo = null;
 let currentType = "ALL";
 
 document.addEventListener("DOMContentLoaded", function () {
     initMap();
     bindEvents();
-    renderRentList();
     renderMarkers();
 });
 
@@ -169,6 +211,10 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 function initMap() {
     const mapContainer = document.getElementById("rentMap");
+
+    if (!mapContainer) {
+        return;
+    }
 
     const mapOption = {
         center: new kakao.maps.LatLng(37.5052, 127.1121),
@@ -180,14 +226,18 @@ function initMap() {
 
 /**
  * 검색어, 거래유형 필터 이벤트 연결
+ * 현재 rentMap.jsp에 필터 UI가 없으면 실행되지 않아도 문제 없음
  */
 function bindEvents() {
     const keywordInput = document.getElementById("rentKeyword");
 
     if (keywordInput) {
         keywordInput.addEventListener("input", function () {
-            renderRentList();
             renderMarkers();
+
+            if (selectedAptCmplexNo) {
+                selectComplex(selectedAptCmplexNo);
+            }
         });
     }
 
@@ -200,8 +250,11 @@ function bindEvents() {
             btn.classList.add("active");
             currentType = btn.dataset.type;
 
-            renderRentList();
             renderMarkers();
+
+            if (selectedAptCmplexNo) {
+                selectComplex(selectedAptCmplexNo);
+            }
         });
     });
 }
@@ -231,46 +284,188 @@ function getFilteredList() {
 }
 
 /**
- * 좌측 매물 리스트 렌더링
+ * 단지 번호 기준 매물 목록 조회
  */
-function renderRentList() {
-    const listEl = document.getElementById("rentList");
+function getRentListByComplex(aptCmplexNo) {
+    return getFilteredList().filter(function (item) {
+        return item.aptCmplexNo === aptCmplexNo;
+    });
+}
+
+/**
+ * 지도 마커용 단지 목록 생성
+ * 같은 단지에 매물이 여러 개 있어도 마커는 하나만 만든다.
+ */
+function getComplexMarkerList() {
+    const complexMap = {};
     const filteredList = getFilteredList();
+
+    filteredList.forEach(function (item) {
+        if (!complexMap[item.aptCmplexNo]) {
+            complexMap[item.aptCmplexNo] = {
+                aptCmplexNo: item.aptCmplexNo,
+                aptCmplexNm: item.aptCmplexNm,
+                latVal: item.latVal,
+                lonVal: item.lonVal,
+                rentCount: 0,
+                minMonthlyRentAmt: null,
+                maxDpstAmt: null,
+                firstRent: item
+            };
+        }
+
+        complexMap[item.aptCmplexNo].rentCount++;
+
+        if (item.rentTypeCd === "MONTHLY") {
+            if (
+                complexMap[item.aptCmplexNo].minMonthlyRentAmt == null ||
+                item.mthlyRentAmt < complexMap[item.aptCmplexNo].minMonthlyRentAmt
+            ) {
+                complexMap[item.aptCmplexNo].minMonthlyRentAmt = item.mthlyRentAmt;
+            }
+        }
+
+        if (
+            complexMap[item.aptCmplexNo].maxDpstAmt == null ||
+            item.dpstAmt > complexMap[item.aptCmplexNo].maxDpstAmt
+        ) {
+            complexMap[item.aptCmplexNo].maxDpstAmt = item.dpstAmt;
+        }
+    });
+
+    return Object.values(complexMap);
+}
+
+/**
+ * 지도 마커 렌더링
+ * 단지별 마커 1개씩 표시
+ */
+function renderMarkers() {
+    clearMarkers();
+
+    const complexList = getComplexMarkerList();
+
+    complexList.forEach(function (complex) {
+        if (complex.latVal == null || complex.lonVal == null) {
+            return;
+        }
+
+        const position = new kakao.maps.LatLng(complex.latVal, complex.lonVal);
+
+        const markerContent = `
+            <div class="rent-marker" onclick="selectComplex('${complex.aptCmplexNo}')">
+                ${getComplexMarkerText(complex)}
+            </div>
+        `;
+
+        const customOverlay = new kakao.maps.CustomOverlay({
+            position: position,
+            content: markerContent,
+            yAnchor: 1.3
+        });
+
+        customOverlay.setMap(map);
+        markers.push(customOverlay);
+    });
+}
+
+/**
+ * 단지 마커 문구
+ */
+function getComplexMarkerText(complex) {
+    if (complex.minMonthlyRentAmt != null) {
+        return "월세 월 " + formatMoneyShort(complex.minMonthlyRentAmt);
+    }
+
+    return "전세 " + formatMoneyShort(complex.maxDpstAmt);
+}
+
+/**
+ * 기존 지도 마커 제거
+ */
+function clearMarkers() {
+    markers.forEach(function (marker) {
+        marker.setMap(null);
+    });
+
+    markers = [];
+}
+
+/**
+ * 지도 마커 클릭 시 실행
+ * - 해당 단지의 매물 목록 패널 오픈
+ * - 첫 번째 매물 상세정보 표시
+ */
+function selectComplex(aptCmplexNo) {
+    const complexRentList = getRentListByComplex(aptCmplexNo);
+
+    if (complexRentList.length === 0) {
+        return;
+    }
+
+    selectedAptCmplexNo = aptCmplexNo;
+
+    const firstItem = complexRentList[0];
+
+    const page = document.querySelector(".rent-map-page");
+
+    if (page && page.classList.contains("panels-collapsed")) {
+        page.classList.remove("panels-collapsed");
+
+        setTimeout(function () {
+            if (map) {
+                map.relayout();
+            }
+        }, 260);
+    }
+
+    renderComplexRentList(firstItem, complexRentList);
+    selectRent(firstItem.rentLstgNo);
+
+    if (map && firstItem.latVal != null && firstItem.lonVal != null) {
+        map.panTo(new kakao.maps.LatLng(firstItem.latVal, firstItem.lonVal));
+    }
+}
+
+/**
+ * 선택한 단지의 매물 목록 렌더링
+ */
+function renderComplexRentList(complexInfo, complexRentList) {
+    const complexNameEl = document.getElementById("selectedComplexName");
+    const listEl = document.getElementById("complexRentList");
+
+    if (complexNameEl) {
+        complexNameEl.textContent =
+            complexInfo.aptCmplexNm + " · 총 " + complexRentList.length + "건";
+    }
 
     if (!listEl) {
         return;
     }
 
-    if (filteredList.length === 0) {
-        listEl.innerHTML = `
-            <div style="padding:24px; color:#667085;">
-                검색된 매물이 없습니다.
-            </div>
-        `;
-        return;
-    }
-
-    listEl.innerHTML = filteredList.map(function (item) {
+    listEl.innerHTML = complexRentList.map(function (item) {
         const activeClass = item.rentLstgNo === selectedRentNo ? "active" : "";
 
         return `
-            <article class="rent-card ${activeClass}" onclick="selectRent('${item.rentLstgNo}')">
-                <div class="rent-card-top">
+            <article class="complex-rent-card ${activeClass}"
+                     onclick="selectRent('${item.rentLstgNo}')">
+
+                <div class="complex-rent-card-top">
                     <span class="rent-type-badge">${item.rentTypeNm}</span>
                     <span style="font-size:12px; color:#667085;">
                         ${formatDate(item.rcrtEndDt)} 마감
                     </span>
                 </div>
 
-                <h3 class="rent-card-title">
+                <h3 class="complex-rent-title">
                     ${item.aptCmplexNm} ${item.dongNm}
                 </h3>
 
-                <p class="rent-card-price">
+                <p class="complex-rent-price">
                     ${formatPrice(item)}
                 </p>
 
-                <p class="rent-card-desc">
+                <p class="complex-rent-info">
                     ${item.exclusiveSize}㎡ · ${item.floor}층 · ${item.ho}호<br>
                     ${item.dorojuso}
                 </p>
@@ -280,19 +475,93 @@ function renderRentList() {
 }
 
 /**
- * 중앙 상세 패널 렌더링
+ * 매물 선택
+ * - 좌측 단지 매물 목록 클릭 시 실행
+ * - 가운데 상세 패널 변경
+ * - 지도 중심 이동
+ */
+function selectRent(rentLstgNo) {
+    const item = rentListingList.find(function (rent) {
+        return rent.rentLstgNo === rentLstgNo;
+    });
+
+    if (!item) {
+        return;
+    }
+
+    selectedRentNo = rentLstgNo;
+    selectedAptCmplexNo = item.aptCmplexNo;
+
+    const page = document.querySelector(".rent-map-page");
+
+    if (page && page.classList.contains("panels-collapsed")) {
+        page.classList.remove("panels-collapsed");
+
+        setTimeout(function () {
+            if (map) {
+                map.relayout();
+            }
+        }, 260);
+    }
+
+    renderDetail(item);
+
+    /*
+     * 왼쪽 단지 매물 목록의 active 상태 갱신
+     */
+    const complexRentList = getRentListByComplex(item.aptCmplexNo);
+
+    if (complexRentList.length > 0) {
+        renderComplexRentList(item, complexRentList);
+    }
+
+    if (map && item.latVal != null && item.lonVal != null) {
+        const moveLatLng = new kakao.maps.LatLng(item.latVal, item.lonVal);
+        map.panTo(moveLatLng);
+    }
+}
+
+/**
+ * 가운데 상세 패널 렌더링
  */
 function renderDetail(item) {
+    const heroEl = document.getElementById("rentDetailHero");
     const detailEl = document.getElementById("rentDetail");
 
     if (!detailEl) {
         return;
     }
 
+    if (heroEl) {
+        // 이미지 영역 자체도 강제로 패널 전체 폭 사용
+        heroEl.className = "rent-detail-hero-area";
+        heroEl.style.width = "100%";
+        heroEl.style.height = "200px";
+        heroEl.style.margin = "0";
+        heroEl.style.padding = "0";
+        heroEl.style.overflow = "hidden";
+        heroEl.style.flexShrink = "0";
+        heroEl.style.display = "block";
+
+        // img도 inline style로 강제 적용
+        heroEl.innerHTML = `
+        <img src="${item.imgUrl}"
+             alt="${item.aptCmplexNm}"
+             style="
+                 width:100%;
+                 height:100%;
+                 display:block;
+                 object-fit:cover;
+                 object-position:center center;
+                 margin:0;
+                 padding:0;
+                 border:0;
+             ">
+    `;
+    }
+
     detailEl.className = "";
     detailEl.innerHTML = `
-        <div class="rent-detail-hero" style="background-image:url('${item.imgUrl}')"></div>
-
         <div class="rent-detail-content">
             <span class="rent-type-badge">${item.rentTypeNm}</span>
 
@@ -379,105 +648,36 @@ function renderDetail(item) {
 }
 
 /**
- * 지도 마커 렌더링
+ * 단지 매물목록 + 상세 패널 닫기
  */
-function renderMarkers() {
-    clearMarkers();
+function closeRentPanels() {
+    const page = document.querySelector(".rent-map-page");
 
-    const filteredList = getFilteredList();
-
-    filteredList.forEach(function (item) {
-        if (item.latVal == null || item.lonVal == null) {
-            return;
-        }
-
-        const position = new kakao.maps.LatLng(item.latVal, item.lonVal);
-
-        const markerContent = `
-            <div class="rent-marker" onclick="selectRent('${item.rentLstgNo}')">
-                ${item.rentTypeNm} ${getMarkerPrice(item)}
-            </div>
-        `;
-
-        const customOverlay = new kakao.maps.CustomOverlay({
-            position: position,
-            content: markerContent,
-            yAnchor: 1.3
-        });
-
-        customOverlay.setMap(map);
-        markers.push(customOverlay);
-    });
-}
-
-/**
- * 기존 지도 마커 제거
- */
-function clearMarkers() {
-    markers.forEach(function (marker) {
-        marker.setMap(null);
-    });
-
-    markers = [];
-}
-
-/**
- * 매물 선택
- * - 좌측 리스트 / 지도 마커 클릭 시 실행
- * - 상세 패널이 닫혀 있으면 자동으로 다시 연다
- * - 중앙 상세 패널 변경
- * - 지도 중심 이동
- */
-function selectRent(rentLstgNo) {
-    const item = rentListingList.find(function (rent) {
-        return rent.rentLstgNo === rentLstgNo;
-    });
-
-    if (!item) {
+    if (!page) {
         return;
     }
 
-    selectedRentNo = rentLstgNo;
+    page.classList.add("panels-collapsed");
 
-    const page = document.querySelector(".rent-map-page");
-    const isCollapsed = page && page.classList.contains("detail-collapsed");
+    setTimeout(function () {
+        if (map) {
+            map.relayout();
 
-    /*
-     * 상세 패널이 닫혀 있으면
-     * 지도 마커 또는 리스트 클릭 시 자동으로 다시 연다.
-     */
-    if (isCollapsed) {
-        page.classList.remove("detail-collapsed");
+            if (selectedAptCmplexNo) {
+                const selectedItem = rentListingList.find(function (item) {
+                    return item.aptCmplexNo === selectedAptCmplexNo;
+                });
 
-        /*
-         * 그리드 폭이 바뀐 뒤 카카오맵을 다시 그려야
-         * 지도 타일이 깨지지 않는다.
-         */
-        setTimeout(function () {
-            if (map) {
-                map.relayout();
-
-                if (item.latVal != null && item.lonVal != null) {
-                    map.setCenter(new kakao.maps.LatLng(item.latVal, item.lonVal));
+                if (selectedItem && selectedItem.latVal != null && selectedItem.lonVal != null) {
+                    map.setCenter(new kakao.maps.LatLng(selectedItem.latVal, selectedItem.lonVal));
                 }
             }
-        }, 260);
-    }
-
-    renderRentList();
-    renderDetail(item);
-
-    if (map && item.latVal != null && item.lonVal != null) {
-        const moveLatLng = new kakao.maps.LatLng(item.latVal, item.lonVal);
-        map.panTo(moveLatLng);
-    }
+        }
+    }, 260);
 }
 
 /**
  * 가격 표시
- * RENT_LISTING 기준
- * - 전세: 보증금만 표시
- * - 월세: 보증금 / 월 임대료 표시
  */
 function formatPrice(item) {
     if (item.rentTypeCd === "JEONSE") {
@@ -489,21 +689,6 @@ function formatPrice(item) {
     }
 
     return formatMoney(item.dpstAmt);
-}
-
-/**
- * 지도 마커용 짧은 가격
- */
-function getMarkerPrice(item) {
-    if (item.rentTypeCd === "JEONSE") {
-        return formatMoneyShort(item.dpstAmt);
-    }
-
-    if (item.rentTypeCd === "MONTHLY") {
-        return "월 " + formatMoneyShort(item.mthlyRentAmt);
-    }
-
-    return formatMoneyShort(item.dpstAmt);
 }
 
 /**
@@ -568,7 +753,6 @@ function formatNumber(value) {
 
 /**
  * 날짜 표시
- * 하드코딩 문자열 또는 JSON Date 문자열 모두 대응
  */
 function formatDate(value) {
     if (value == null || value === "") {
@@ -601,38 +785,5 @@ function nvl(value, defaultValue) {
  * 상세 페이지 이동
  */
 function goRentDetail(rentLstgNo) {
-    // 나중에 상세 화면 만들고 해당 주소로 연결할 예정
     location.href = "/rent/detail/" + rentLstgNo;
-}
-
-/**
- * 상세 패널 닫기
- * - 가운데 상세 패널을 접고 지도 영역을 넓힌다.
- */
-function closeDetailPanel() {
-    const page = document.querySelector(".rent-map-page");
-
-    if (!page) {
-        return;
-    }
-
-    page.classList.add("detail-collapsed");
-
-    /*
-     * 카카오맵은 영역 크기가 바뀐 뒤 relayout()을 호출해야
-     * 지도 타일이 정상적으로 다시 그려진다.
-     */
-    setTimeout(function () {
-        if (map) {
-            map.relayout();
-
-            const selectedItem = rentListingList.find(function (item) {
-                return item.rentLstgNo === selectedRentNo;
-            });
-
-            if (selectedItem && selectedItem.latVal != null && selectedItem.lonVal != null) {
-                map.setCenter(new kakao.maps.LatLng(selectedItem.latVal, selectedItem.lonVal));
-            }
-        }
-    }, 260);
 }

@@ -6,15 +6,15 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>매물 정보 지도</title>
+  <title>임대 매물 지도</title>
 
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/rentMap.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/rentMap.css?v=20260512_3">
 </head>
 <body>
 
 <%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
 <%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 
 <div class="rent-map-wrap with-sidebar">
 
@@ -46,26 +46,47 @@
     </div>
   </section>
 
-  <!-- 지도 + 상세정보 영역 -->
-  <!-- 처음 진입 시 상세정보는 닫힌 상태 -->
-  <div class="rent-map-page detail-collapsed">
+  <!-- 지도 + 단지 매물목록 + 상세정보 영역 -->
+  <div class="rent-map-page panels-collapsed">
 
-    <!-- 상세 패널 -->
+    <!-- 좌측: 선택한 단지의 매물 목록 -->
+    <aside class="rent-complex-list-panel" id="rentComplexListPanel">
+
+      <div class="rent-complex-list-header">
+        <div>
+          <p class="rent-complex-list-label">선택 단지 매물</p>
+          <h2 id="selectedComplexName">단지를 선택해 주세요</h2>
+        </div>
+
+        <button type="button"
+                class="rent-panel-close-btn"
+                onclick="closeRentPanels()">
+          ×
+        </button>
+      </div>
+
+      <div id="complexRentList" class="complex-rent-list">
+        <div class="rent-empty-message">
+          지도 마커를 클릭하면 해당 단지의 매물 목록이 표시됩니다.
+        </div>
+      </div>
+    </aside>
+
+    <!-- 가운데: 선택한 매물 상세정보 -->
     <section class="rent-detail-panel" id="rentDetailPanel">
 
-      <button type="button"
-              class="rent-detail-close-floating-btn"
-              onclick="closeDetailPanel()">
-        ×
-      </button>
+      <div id="rentDetailHero" class="rent-detail-hero-area"></div>
 
-      <div id="rentDetail" class="rent-detail-empty">
-        <h3>매물을 선택해 주세요</h3>
-        <p>지도 마커를 클릭하면 상세 정보가 표시됩니다.</p>
+      <div class="rent-detail-scroll">
+        <div id="rentDetail" class="rent-detail-empty">
+          <h3>매물을 선택해 주세요</h3>
+          <p>왼쪽 매물 목록에서 항목을 클릭하면 상세정보가 표시됩니다.</p>
+        </div>
       </div>
+
     </section>
 
-    <!-- 지도 -->
+    <!-- 우측: 지도 -->
     <section class="rent-map-panel">
       <div id="rentMap"></div>
     </section>
@@ -74,6 +95,6 @@
 </div>
 
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46f7d3996e1205738757a1e4f1ed1f04"></script>
-<script src="${pageContext.request.contextPath}/js/central/rentMap.js"></script>
+<script src="${pageContext.request.contextPath}/js/central/rentMap.js?v=20260512_3"></script>
 </body>
 </html>

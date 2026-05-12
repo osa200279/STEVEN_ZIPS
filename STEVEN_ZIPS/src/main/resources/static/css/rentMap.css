@@ -13,31 +13,18 @@ body {
    전체 페이지 래퍼
    ========================= */
 .rent-map-wrap {
-    max-width: 1440px;
+    max-width: 1380px;
     margin: 0 auto;
-    padding: 88px 24px 32px;
+    padding: 88px 0 32px;
 }
 
-/*
- * 중앙 사이드바가 있는 화면용
- * central_sidebar가 왼쪽에 고정되어 있으므로
- * 본문도 사이드바 너비만큼 오른쪽으로 밀어준다.
- */
+/* 사이드바 있는 화면 */
 .rent-map-wrap.with-sidebar {
     max-width: none;
     width: calc(100% - 280px);
     margin-left: 280px;
     margin-right: 0;
-    padding: 88px 32px 32px;
-}
-
-@media (max-width: 1200px) {
-    .rent-map-wrap.with-sidebar {
-        width: 100%;
-        margin-left: 0;
-        padding-left: 20px;
-        padding-right: 20px;
-    }
+    padding: 88px 80px 32px;
 }
 
 /* =========================
@@ -123,11 +110,11 @@ body {
 }
 
 /* =========================
-   지도 + 상세정보 레이아웃
+   지도 + 단지매물목록 + 상세정보 레이아웃
    ========================= */
 .rent-map-page {
     display: grid;
-    grid-template-columns: 520px 1fr;
+    grid-template-columns: 290px 520px 1fr;
     height: calc(100vh - 250px);
     min-height: 680px;
     overflow: hidden;
@@ -138,27 +125,181 @@ body {
     transition: grid-template-columns 0.25s ease;
 }
 
-/* 처음 진입 / 상세 닫힘 상태: 지도만 넓게 */
-.rent-map-page.detail-collapsed {
-    grid-template-columns: 0 1fr;
+/* 처음 진입 / 닫힘 상태: 지도만 표시 */
+.rent-map-page.panels-collapsed {
+    grid-template-columns: 0 0 1fr;
 }
 
 /* =========================
-   상세 패널
+   좌측: 선택 단지 매물 목록 패널
    ========================= */
-.rent-detail-panel {
-    position: relative;
+.rent-complex-list-panel {
     background: #ffffff;
     border-right: 1px solid #e5e7eb;
     overflow-y: auto;
     transition: opacity 0.2s ease;
 }
 
-.rent-map-page.detail-collapsed .rent-detail-panel {
+.rent-map-page.panels-collapsed .rent-complex-list-panel {
     opacity: 0;
     pointer-events: none;
     overflow: hidden;
     border-right: none;
+}
+
+.rent-complex-list-header {
+    padding: 22px 22px 18px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    background: #ffffff;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.rent-complex-list-label {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #005f46;
+}
+
+.rent-complex-list-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 900;
+    color: #0b1f17;
+    word-break: keep-all;
+}
+
+.rent-panel-close-btn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: #f2f4f7;
+    color: #344054;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.rent-panel-close-btn:hover {
+    background: #005f46;
+    color: #ffffff;
+}
+
+.complex-rent-list {
+    padding: 14px;
+}
+
+.complex-rent-card {
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.complex-rent-card:hover,
+.complex-rent-card.active {
+    border-color: #005f46;
+    box-shadow: 0 8px 24px rgba(0, 95, 70, 0.12);
+}
+
+.complex-rent-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.complex-rent-title {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 900;
+    color: #0b1f17;
+}
+
+.complex-rent-price {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 900;
+    color: #005f46;
+}
+
+.complex-rent-info {
+    margin: 0;
+    font-size: 13px;
+    color: #667085;
+    line-height: 1.5;
+}
+
+.rent-empty-message {
+    padding: 24px;
+    color: #667085;
+    line-height: 1.6;
+}
+
+/* =========================
+   가운데: 매물 상세 패널
+   ========================= */
+.rent-detail-panel {
+    position: relative;
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    transition: opacity 0.2s ease;
+}
+
+.rent-map-page.panels-collapsed .rent-detail-panel {
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-right: none;
+}
+
+/* 이미지 영역은 패널 맨 위에 완전 밀착 */
+.rent-detail-hero-area {
+    width: 100%;
+    height: 200px;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    background: #eef2f0;
+    overflow: hidden;
+}
+
+.rent-detail-hero-area img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    margin: 0;
+    padding: 0;
+}
+
+/* 이미지 아래 상세정보만 스크롤 */
+.rent-detail-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+}
+
+#rentDetail {
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .rent-detail-empty {
@@ -166,13 +307,9 @@ body {
     color: #667085;
 }
 
-.rent-detail-hero {
-    height: 180px;
-    background-size: cover;
-    background-position: center;
-}
-
 .rent-detail-content {
+    width: 100%;
+    margin: 0;
     padding: 24px;
 }
 
@@ -237,31 +374,8 @@ body {
     cursor: pointer;
 }
 
-/* 상세 패널 닫기 버튼 */
-.rent-detail-close-floating-btn {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 100;
-    width: 38px;
-    height: 38px;
-    border: none;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.96);
-    color: #344054;
-    font-size: 28px;
-    line-height: 1;
-    cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-}
-
-.rent-detail-close-floating-btn:hover {
-    background: #005f46;
-    color: #ffffff;
-}
-
-.rent-map-page.detail-collapsed .rent-detail-close-floating-btn {
-    display: none;
+.rent-detail-btn:hover {
+    background: #004d39;
 }
 
 /* =========================
@@ -288,27 +402,34 @@ body {
     font-weight: 800;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
     white-space: nowrap;
+    cursor: pointer;
 }
 
 /* =========================
    반응형
    ========================= */
 @media (max-width: 1400px) {
-    .rent-map-wrap {
-        padding-left: 20px;
-        padding-right: 20px;
+    .rent-map-wrap.with-sidebar {
+        padding-left: 40px;
+        padding-right: 40px;
     }
 
     .rent-map-page {
-        grid-template-columns: 480px 1fr;
+        grid-template-columns: 320px 480px 1fr;
     }
 
-    .rent-map-page.detail-collapsed {
-        grid-template-columns: 0 1fr;
+    .rent-map-page.panels-collapsed {
+        grid-template-columns: 0 0 1fr;
     }
 }
 
 @media (max-width: 1200px) {
+    .rent-map-wrap.with-sidebar {
+        width: 100%;
+        margin-left: 0;
+        padding: 88px 20px 32px;
+    }
+
     .rent-map-top {
         flex-direction: column;
         gap: 16px;
@@ -322,7 +443,69 @@ body {
         grid-template-columns: 1fr;
     }
 
+    .rent-complex-list-panel,
     .rent-detail-panel {
         display: none;
     }
+}
+
+/* =========================================================
+   상세 패널 이미지 영역 최종 보정
+   - id 기준으로도 강제 적용
+   - 다른 공통 CSS가 img 또는 div를 덮어써도 밀리지 않게 처리
+   ========================================================= */
+
+.rent-detail-panel {
+    align-items: stretch !important;
+    padding: 0 !important;
+}
+
+#rentDetailHero,
+.rent-detail-hero-area {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    height: 200px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+    align-self: stretch !important;
+    overflow: hidden !important;
+    background: #eef2f0 !important;
+}
+
+#rentDetailHero img,
+.rent-detail-hero-area img {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+}
+
+.rent-detail-scroll {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+#rentDetail {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.rent-detail-content {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 24px !important;
 }

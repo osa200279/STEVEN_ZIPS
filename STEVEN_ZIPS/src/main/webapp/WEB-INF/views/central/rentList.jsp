@@ -30,12 +30,12 @@
 
     .rent-list-wrap {
       margin-left: 280px;
-      padding: 88px 40px 48px;
+      padding: 88px 100px 48px;
       min-height: 100vh;
     }
 
     .rent-list-container {
-      max-width: 1380px;
+      max-width: 1580px;
       margin: 0 auto;
     }
 
@@ -309,9 +309,9 @@
 
     @media (max-width: 1400px) {
       .rent-list-wrap {
-        margin-left: 0;
-        padding-left: 24px;
-        padding-right: 24px;
+        margin-left: 280px;
+        padding-left: 32px;
+        padding-right: 32px;
       }
 
       .rent-card-grid {
