@@ -50,22 +50,22 @@ public class CustomUserDetailsService implements UserDetailsService{
 			ResidentVO resident = residentMapper.selectOneResidentInfo(member.getUserNo());
 
 			if(resident != null && InoutCd.LIVE == resident.getInoutCd()){	// LIVE(입주중) 상태이면 입주민으로 판단
-				log.info("##입주중인 회원으로 확인됨! : {}", resident);
-				// BeanUtils.copyProperties(source, target) source와 target의 공통된 필드를 매핑해서 target에 복사(같은 이름 필드끼리 자동맵핑)
+				log.info("## 입주중인 회원으로 확인됨! : {}", resident);
+				// copyProperties(source, target) source와 target의 공통된 필드를 매핑해서 target에 복사(같은 이름 필드끼리 자동맵핑)
 				BeanUtils.copyProperties(member, resident);
 				member = resident;	// 다형성 이용 (업캐스팅)
 			}
 		}else if("ROLE_MNGR".equals(auth)){
 			MngrVO mngr = mngrMapper.selectOneMngrInfo(member.getUserNo());
 			if(mngr != null){
-				log.info("##단지관리자로 확인됨 : {}", mngr);
+				log.info("## 단지관리자로 확인됨 : {}", mngr);
 				BeanUtils.copyProperties(member, mngr);
 				member = mngr;
 			}
 		}else if("ROLE_ADMIN".equals(auth)){
 			AdmVO adm = admMapper.selectOneAdmInfo(member.getUserNo()) ;
 			if(adm != null){
-				log.info("##중앙관리자로 확인됨 : {}", adm);
+				log.info("## 중앙관리자로 확인됨 : {}", adm);
 				BeanUtils.copyProperties(member, adm);
 				member = adm;
 			}

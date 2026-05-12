@@ -28,6 +28,7 @@ public class AdmDashBoardRestController {
     private IAplctService aplctService;
 
     // 리액트 페이지로 로그인한 관리자 정보를 넘김
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/info")
     public ResponseEntity<?> getAdminInfo(@AuthenticationPrincipal CustomUser customUser){
         if(customUser == null){
@@ -41,12 +42,13 @@ public class AdmDashBoardRestController {
     }
 
     // 청약 신청 목록 조회
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/aplct")
     public ResponseEntity<List<AplctDTO>> getAplctList(){
-        log.info("#####청약 신청 리스트 컨트롤러 진입!!");
+        // log.info("#####청약 신청 리스트 컨트롤러 진입!!");
         try {
             List<AplctDTO> list = aplctService.selectAplctList();
-            log.info("#### 청약 리스트 : {}", list);
+            // log.info("##### 청약 리스트 : {}", list);
             if(list.isEmpty()){
                 return ResponseEntity.noContent().build();
             }
