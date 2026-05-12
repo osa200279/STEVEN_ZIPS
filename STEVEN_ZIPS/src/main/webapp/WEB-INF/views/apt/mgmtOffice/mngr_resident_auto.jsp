@@ -769,19 +769,20 @@
                 tbody.innerHTML = data.map(function (r, i) {
                     var isPending = r.stts === 'SUBMIT';
                     return '<tr class="' + (isPending ? 'row-pending' : '') + '">'
-                        + '<td class="col-check"><input type="checkbox" class="rqst-check row-check" data-id="' + r.id + '"></td>'
-                        + '<td class="td-bold">' + r.userNm + '</td>'
-                        + '<td>' + r.dong + ' ' + r.ho + '</td>'
+                        + '<td class="col-check"><input type="checkbox" class="rqst-check row-check" data-id="' +r.rsidVhclNo + '"></td>'
+                        + '<td class="td-bold">' + (r.userNo || '-') + '</td>'
+                        + '<td>' + (r.hoNo || '-') + '</td>'
+
                         + '<td class="col-center">' + vhclTyBadge(r.vhclTyCd) + '</td>'
                         + '<td>' + r.vhclNm + '</td>'
                         + '<td class="td-mono">' + r.vhclNo + '</td>'
                         + '<td class="col-center">' + r.regDt + '</td>'
                         + '<td class="col-center">' + sttsBadge(r.stts) + '</td>'
                         + '<td class="col-manage"><div class="grid-actions">'
-                        + '<button type="button" class="btn btn-xs btn-detail" data-action="rqstDetail" data-id="' + r.id + '">상세</button>'
+                        + '<button type="button" class="btn btn-xs btn-detail" data-action="rqstDetail" data-id="' + r.rsidVhclNo + '">상세</button>'
                         + (isPending
-                            ? '<button type="button" class="btn btn-xs btn-edit" data-action="approveOne" data-id="' + r.id + '">승인</button>'
-                            + '<button type="button" class="btn btn-xs btn-delete" data-action="openRejectOne" data-id="' + r.id + '">반려</button>'
+                            ? '<button type="button" class="btn btn-xs btn-edit" data-action="approveOne" data-id="' + r.rsidVhclNo + '">승인</button>'
+                            + '<button type="button" class="btn btn-xs btn-delete" data-action="openRejectOne" data-id="' + r.rsidVhclNo+ '">반려</button>'
                             : '')
                         + '</div></td>'
                         + '</tr>';
@@ -803,12 +804,11 @@
                 }
 
                 tbody.innerHTML = data.map(function (r, i) {
-                    var regTypeBadge = r.regType === 'ONLINE'
-                        ? '<span class="badge badge-blue">온라인</span>'
-                        : '<span class="badge badge-gray">직접등록</span>';
+                    var regTypeBadge =
+                        '<span class="badge badge-gray">직접등록</span>';
                     return '<tr>'
-                        + '<td class="td-bold">' + r.userNm + '</td>'
-                        + '<td>' + r.dong + ' ' + r.ho + '</td>'
+                        + '<td class="td-bold">' + (r.userNo || '-') + '</td>'
+                        + '<td>' + (r.hoNo || '-') + '</td>'
                         + '<td class="col-center">' + vhclTyBadge(r.vhclTyCd) + '</td>'
                         + '<td>' + r.vhclNm + '</td>'
                         + '<td class="td-mono">' + r.vhclNo + '</td>'
@@ -817,7 +817,7 @@
                         + '<td class="col-manage"><div class="grid-actions">'
                         + '<button type="button" class="btn btn-xs btn-detail" data-action="allDetail" data-idx="' + i + '">상세</button>'
                         + '<button type="button" class="btn btn-xs btn-edit"   data-action="allEdit"   data-idx="' + i + '">수정</button>'
-                        + '<button type="button" class="btn btn-xs btn-delete" data-action="openDelete" data-src="all" data-id="' + r.id + '">삭제</button>'
+                        + '<button type="button" class="btn btn-xs btn-delete" data-action="openDelete" data-src="all" data-id="' +r.rsidVhclNo + '">삭제</button>'
                         + '</div></td>'
                         + '</tr>';
                 }).join('');
@@ -906,12 +906,12 @@
             // 신청 상세 모달
             function openRqstDetail(id) {
                 var r = rqstData.find(function (x) {
-                    return x.id === id;
+                    return x.rsidVhclNo === id;
                 });
                 if (!r) return;
                 currentRqstIdx = id;
 
-                document.getElementById('rqstModalTitle').textContent = '차량 신청 상세 · ' + r.id;
+                document.getElementById('rqstModalTitle').textContent = '차량 신청 상세 · ' + r.rsidVhclNo;
 
                 document.getElementById('rqstDetailGrid').innerHTML =
                     di('신청자 · USER_NM', r.userNm)
@@ -1015,7 +1015,7 @@
                 deleteTargetArr = src === 'all' ? allData : rqstData;
 
                 var target = deleteTargetArr.find(function (r) {
-                    return r.id === id;
+                    return r.rsidVhclNo=== id;
                 });
 
                 if (!target) {
@@ -1037,7 +1037,7 @@
             function approveById(id) {
 
                 var r = rqstData.find(function (x) {
-                    return x.id === id;
+                    return x.rsidVhclNo === id;
                 });
 
                 if (!r) return;
@@ -1051,14 +1051,14 @@
 
                 // 이미 등록되어 있는지 확인
                 var exists = allData.some(function (v) {
-                    return v.id === r.id;
+                    return v.rsidVhclNo === r.rsidVhclNo;
                 });
 
                 // 없을 때만 추가
                 if (!exists) {
 
                     allData.push({
-                        id: r.id,
+                        rsidVhclNo: r.rsidVhclNo,
                         userNm: r.userNm,
                         dong: r.dong,
                         ho: r.ho,
@@ -1172,7 +1172,7 @@
                 }
                 rejectTargetIds.forEach(function (id) {
                     var r = rqstData.find(function (x) {
-                        return x.id === id;
+                        return x.rsidVhclNo === id;
                     });
                     if (r) {
                         r.stts = 'REJT';
@@ -1222,7 +1222,7 @@
 
                         formData.append(
                             "rsidVhclNo",
-                            allData[currentRegIdx].id
+                            allData[currentRegIdx].rsidVhclNo
                         );
                     }
 
@@ -1290,7 +1290,7 @@
                     return;
                 }
                 const target = deleteTargetArr[deleteTargetIdx];
-                if (!target || !target.id) {
+                if (!target || !target.rsidVhclNo) {
                     alert('삭제 대상 정보가 없습니다.');
                     return;
                 }
@@ -1301,8 +1301,7 @@
 
                     const formData = new FormData();
 
-                    formData.append("rsidVhclNo", target.id);
-
+                    formData.append("rsidVhclNo", target.rsidVhclNo);
                     const response = await fetch(
                         CONTEXT_PATH + '/manager/resident/auto/delete',
                         {
@@ -1337,11 +1336,44 @@
                     if (e.target === el) closeModal(id);
                 });
             });
-            renderRqst(rqstData);
-            loadVehicleList();
+
+
+        async function loadVehicleList() {
+
+            try {
+
+                const response = await fetch(
+                    CONTEXT_PATH + '/manager/resident/auto/list'
+                );
+
+                if (!response.ok) {
+
+                    throw new Error('목록 조회 실패');
+                }
+
+                const data = await response.json();
+
+                allData = data;
+
+                renderAll(allData);
+
+                updateStats();
+
+            } catch (e) {
+
+                console.error(e);
+
+                alert('차량 목록 조회 실패');
+            }
+        }
+
+        renderRqst(rqstData);
+
+        loadVehicleList();
+
         })();
     </script>
-
+</html>
     </main>
 </div>
 

@@ -30,7 +30,7 @@ public class OfficeVhclController {
 
 
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
-        return "apt/mgmtOffice/employee/mngr_resident_auto";
+        return "apt/mgmtOffice/mngr_resident_auto";
     }
 
     /**
@@ -85,6 +85,15 @@ public class OfficeVhclController {
         return "apt/mgmtOffice/mngr_resident_auto";
     }
 
+
+
+
+    @GetMapping("/list")
+    @ResponseBody
+    public List<RsidVhclVO> getVehicleList() {
+
+        return officeVhclService.getVehicleList();
+    }
     @PostMapping("/delete")
     @ResponseBody
     public ResponseEntity<String> deleteVehicle(
