@@ -80,6 +80,17 @@ const Applicant = () => {
             , exclusiveSize: '45㎡'
             , aplcntSttsCd: 'SUBMIT'
         },
+        {
+            aplcntNo: '20260412_5_A001'
+            , userId: 'peng9'
+            , userNm: '펭구'
+            , annNo: 'ANN03'
+            , annNm: '한빛아파트 2차 분양'
+            , aptCmplexNo: 'A013123'
+            , hoTyCd: 'B타입'
+            , exclusiveSize: '45㎡'
+            , aplcntSttsCd: 'SUBMIT'
+        },
     ]);
 
     return (
