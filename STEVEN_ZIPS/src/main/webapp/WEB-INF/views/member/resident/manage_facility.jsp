@@ -99,6 +99,8 @@
             <span class="chip">정기점검</span>
             <span class="chip">상태 모니터링</span>
             <span class="chip">관리비 납부 연결</span>
+
+
           </div>
         </section>
         <section class="stats-grid">
@@ -111,30 +113,50 @@
           </c:forEach>
         </section>
 
-        <tbody>
-        <c:choose>
-          <c:when test="${not empty historyList}">
-            <c:forEach var="history" items="${historyList}">
-              <tr>
-                <td>${history.chkDt}</td>
-                <td>${history.facilityNm}</td>
-                <td>${history.chkCn}</td>
-                <td>
-                  <span class="badge ok">${history.chkSttsCd}</span>
-                </td>
-                <td>${history.picNm}</td>
-              </tr>
-            </c:forEach>
-          </c:when>
-          <c:otherwise>
+        <section class="card">
+          <div class="section-hd">
+            <h3>시설 점검 상세 이력</h3>
+            <span>총 ${totalRecord}건</span>
+          </div>
+
+          <table class="data-table">
+            <thead>
             <tr>
-              <td colspan="5" style="text-align:center; padding:40px;">
-                등록된 시설 점검 이력이 없습니다.
-              </td>
+              <th>점검일</th>
+              <th>시설명</th>
+              <th>점검내용</th>
+              <th>상태</th>
+              <th>담당자</th>
             </tr>
-          </c:otherwise>
-        </c:choose>
-        </tbody>
+            </thead>
+
+            <tbody>
+            <c:choose>
+              <c:when test="${not empty historyList}">
+                <c:forEach var="history" items="${historyList}">
+                  <tr>
+                    <td>${history.chkDt}</td>
+                    <td>${history.facilityNm}</td>
+                    <td>${history.chkCn}</td>
+                    <td>
+                      <span class="badge ok">${history.chkSttsCd}</span>
+                    </td>
+                    <td>${history.picNm}</td>
+                  </tr>
+                </c:forEach>
+              </c:when>
+
+              <c:otherwise>
+                <tr>
+                  <td colspan="5" style="text-align:center; padding:40px;">
+                    등록된 시설 점검 이력이 없습니다.
+                  </td>
+                </tr>
+              </c:otherwise>
+            </c:choose>
+            </tbody>
+          </table>
+        </section>
 
         <%-- 페이징 처리 --%>
         <c:if test="${totalPage > 1}">
