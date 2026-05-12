@@ -2,6 +2,8 @@ package kr.or.ddit.domain.apt.main.controller;
 
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
+import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
+import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +26,17 @@ public class AptComplexController {
     @Autowired
     private IAptComplexService aptComplexService;
 
+    @Autowired
+    private IManagerModelService managerModelService;
+
     // 단지 정보 화면
-    @GetMapping("/complex/edit")
-    public String complexEdit(Authentication authentication, Model model) {
+    // 단지 정보 수정 화면
+    @GetMapping({"/complex/edit", "/complex/edit/{mgmtOfcNo}"}) // URL 호환
+    public String complexEdit(
+            @PathVariable(required = false) String mgmtOfcNo,
+            Authentication authentication,
+            Model model
+    ) {
 
 //        log.info("단지정보수정 요청 aptCmplexNo");
 //        AptComplexVO aptComplexVO = aptComplexService.selectAptComplex(aptCmplexNo);
@@ -41,7 +51,11 @@ public class AptComplexController {
 
         MemberVO member = customUser.getMember();
 
-        String userNo = member.getUserNo();
+        String userNo = member.getUserNo(); // 로그인 사용자 번호
+        String viewMgmtOfcNo = mgmtOfcNo != null && !mgmtOfcNo.isBlank()
+                ? mgmtOfcNo
+                : member instanceof MngrVO ? ((MngrVO) member).getMgmtOfcNo() : null;
+        managerModelService.addManagerViewModel(model, customUser, viewMgmtOfcNo); // 공통 화면 모델
 
         log.info("로그인 사용자 번호 = {}", userNo);
 
@@ -51,14 +65,14 @@ public class AptComplexController {
 
         if (aptCmplexNo == null || aptCmplexNo.trim().isEmpty()) {
             model.addAttribute("message", "해당 계정에 연결된 단지 정보가 없습니다.");
-            return "manager/mngr_complex_error";
+            return "accessError";
         }
 
         AptComplexVO aptComplexVO = aptComplexService.selectAptComplex(aptCmplexNo);
 
         model.addAttribute("complex", aptComplexVO);
 
-        return "manager/mngr_complex_edit";
+        return "apt/mgmtOffice/mngr_complex_edit";
     }
 
     // 단지 정보 수정
@@ -74,7 +88,9 @@ public class AptComplexController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            String userNo = authentication.getName();
+            CustomUser customUser = (CustomUser) authentication.getPrincipal();
+            MemberVO member = customUser.getMember();
+            String userNo = member.getUserNo(); // 로그인 사용자 번호
 
             String aptCmplexNo = aptComplexService.selectManagerAptCmplexNo(userNo);
 
