@@ -14,7 +14,17 @@ public interface IResidentFacilityService {
 
     List<ResidentFacilityHistoryDTO> getFacilityStatusCardList(String aptCmplexNo);
 
-    List<ResidentFacilityHistoryDTO> getFacilityHistoryList(String aptCmplexNo, int startRow, int endRow);
+    /*
+     * 입주민이 본인 단지의 시설 목록을 확인하기 위한 조회
+     */
+    List<FacilityInfoDTO> getResidentFacilityInfoList(String aptCmplexNo, String facilityTyCd);
 
-    int getFacilityHistoryCount(String aptCmplexNo);
+    List<ResidentFacilityHistoryDTO> getFacilityHistoryList(
+            String aptCmplexNo,
+            String facilityTyCd,
+            int startRow,
+            int endRow
+    );
+
+    int getFacilityHistoryCount(String aptCmplexNo, String facilityTyCd);
 }

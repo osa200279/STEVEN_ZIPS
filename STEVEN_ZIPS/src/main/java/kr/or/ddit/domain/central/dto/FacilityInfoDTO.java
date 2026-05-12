@@ -38,7 +38,7 @@ public class FacilityInfoDTO {
     private String emdNm;          // 읍면동명
     private String dorojuso;       // 도로명주소
 
-    private String heatTy;         // 난방방식
+    private String heatTyCd;       // 난방방식코드
     private String cnscoNm;        // 시공사명
 
     private String unitRange;   // 세대수 구간

@@ -5,6 +5,7 @@ import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO;
 import kr.or.ddit.domain.member.resident.mapper.IResidentFacilityMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,12 +38,47 @@ public class ResidentFacilityServiceImpl implements IResidentFacilityService {
     }
 
     @Override
-    public List<ResidentFacilityHistoryDTO> getFacilityHistoryList(String aptCmplexNo, int startRow, int endRow) {
-        return residentFacilityMapper.selectFacilityHistoryList(aptCmplexNo, startRow, endRow);
+    public List<FacilityInfoDTO> getResidentFacilityInfoList(String aptCmplexNo, String facilityTyCd) {
+
+        /*
+         * facilityTyCd
+         * → 시설유형 검색 조건.
+         *
+         * 왜 필요?
+         * → JSP 셀렉트박스에서 선택한 시설유형만 조회하기 위해 사용한다.
+         */
+        return residentFacilityMapper.selectResidentFacilityInfoList(aptCmplexNo, facilityTyCd);
     }
 
     @Override
-    public int getFacilityHistoryCount(String aptCmplexNo) {
-        return residentFacilityMapper.selectFacilityHistoryCount(aptCmplexNo);
+    public List<ResidentFacilityHistoryDTO> getFacilityHistoryList(
+            String aptCmplexNo,
+            String facilityTyCd,
+            int startRow,
+            int endRow
+    ) {
+
+        /*
+         * 시설 점검 상세 이력도 시설유형으로 필터링해야 하므로
+         * aptCmplexNo만 넘기면 부족하다.
+         */
+        return residentFacilityMapper.selectFacilityHistoryList(
+                aptCmplexNo,
+                facilityTyCd,
+                startRow,
+                endRow
+        );
     }
+
+    @Override
+    public int getFacilityHistoryCount(String aptCmplexNo, String facilityTyCd) {
+
+        /*
+         * 페이징 전체 개수도 검색조건과 동일해야 한다.
+         * 목록은 필터링했는데 count는 전체를 세면 페이지 수가 틀어진다.
+         */
+        return residentFacilityMapper.selectFacilityHistoryCount(aptCmplexNo, facilityTyCd);
+    }
+
+
 }

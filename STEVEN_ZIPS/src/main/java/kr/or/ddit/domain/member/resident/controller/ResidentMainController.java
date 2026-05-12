@@ -107,6 +107,7 @@ public class ResidentMainController {
             @AuthenticationPrincipal CustomUser customUser,
             @PathVariable String aptCmplexNo,
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") int currentPage,
+            @RequestParam(value = "facilityTyCd", required = false) String facilityTyCd,
             Model model
     ) {
         /*
@@ -128,13 +129,26 @@ public class ResidentMainController {
         int startRow = (currentPage - 1) * screenSize + 1;
         int endRow = currentPage * screenSize;
 
-        int totalRecord = residentFacilityService.getFacilityHistoryCount(aptCmplexNo);
+        int totalRecord = residentFacilityService.getFacilityHistoryCount(aptCmplexNo, facilityTyCd);
         int totalPage = (int) Math.ceil((double) totalRecord / screenSize);
 
         List<ResidentFacilityHistoryDTO> statusCardList =
                 residentFacilityService.getFacilityStatusCardList(aptCmplexNo);
+
+        /*
+         * 입주민 시설관리이력 화면용 단지 기본정보
+         */
+        FacilityInfoDTO facilityAptInfo = residentFacilityService.getAptInfo(aptCmplexNo);
+
+        /*
+         * 입주민 화면에 보여줄 단지 시설 목록
+         */
+        List<FacilityInfoDTO> facilityInfoList =
+                residentFacilityService.getResidentFacilityInfoList(aptCmplexNo, facilityTyCd);
+
         List<ResidentFacilityHistoryDTO> historyList =
-                residentFacilityService.getFacilityHistoryList(aptCmplexNo, startRow, endRow);
+                residentFacilityService.getFacilityHistoryList(aptCmplexNo, facilityTyCd, startRow, endRow);
+
 
         /* 입주민 아파트 헤더레이아웃 */
         AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
@@ -146,6 +160,10 @@ public class ResidentMainController {
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("totalPage", totalPage);
         model.addAttribute("totalRecord", totalRecord);
+
+        model.addAttribute("facilityAptInfo", facilityAptInfo);
+        model.addAttribute("facilityInfoList", facilityInfoList);
+        model.addAttribute("facilityTyCd", facilityTyCd);
 
         return "member/resident/manage_facility";
     }

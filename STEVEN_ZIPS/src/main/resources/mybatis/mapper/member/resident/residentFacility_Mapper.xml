@@ -47,63 +47,92 @@
 
     </select>
 
+    <select id="selectResidentFacilityInfoList"
+            resultType="kr.or.ddit.domain.central.dto.FacilityInfoDTO">
+
+        /* IResidentFacilityMapper.selectResidentFacilityInfoList */
+
+        SELECT f.facility_no     facilityNo      /* 시설번호 */
+        , f.facility_ty_cd  facilityTyCd    /* 시설유형코드 */
+        , f.facility_nm     facilityNm      /* 시설명 */
+        , f.dong_no         dongNo          /* 동번호 */
+        , f.loc_cn          locCn           /* 위치설명 */
+        , f.use_yn          useYn           /* 사용여부 */
+        FROM facility f
+        WHERE f.apt_cmplex_no = #{aptCmplexNo}
+        AND NVL(f.use_yn, 'Y') = 'Y'
+
+        <if test="facilityTyCd != null and facilityTyCd != ''">
+            AND f.facility_ty_cd = #{facilityTyCd}
+        </if>
+
+        ORDER BY f.facility_ty_cd ASC
+        , f.facility_nm ASC
+
+    </select>
+
     <select id="selectFacilityStatusCardList"
             resultType="kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO">
         /* IResidentFacilityMapper.selectFacilityStatusCardList */
-        SELECT *
-        FROM (
-                 SELECT facility_no      facilityNo
-                      , facility_nm      facilityNm
-                      , facility_ty_cd   facilityTyCd
-                      , chk_dt           chkDt
-                      , chk_stts_cd      chkSttsCd
-                      , chk_cn           chkCn
-                      , partner_nm       partnerNm
-                      , rn
-                 FROM (
-                          SELECT f.facility_no
-                               , f.facility_nm
-                               , f.facility_ty_cd
-                               , TO_CHAR(fch.chk_dt, 'YYYY-MM-DD') chk_dt
-                               , fch.chk_stts_cd
-                               , fch.chk_cn
-                               , p.partner_nm
-                               , ROW_NUMBER() OVER (
-                              PARTITION BY f.facility_no
-                              ORDER BY fch.chk_dt DESC, fch.reg_dt DESC
-                              ) rn
-                          FROM facility f
-                                   LEFT JOIN facility_check_hstry fch
-                                             ON f.facility_no = fch.facility_no
-                                   LEFT JOIN partner p
-                                             ON fch.partner_no = p.partner_no
-                          WHERE f.apt_cmplex_no = #{aptCmplexNo}
-                            AND NVL(f.use_yn, 'Y') = 'Y'
-                      )
-                 WHERE rn = 1
-                 ORDER BY chk_dt DESC NULLS LAST
-             )
-        WHERE ROWNUM &lt;= 4
+
+        SELECT f.facility_no                         facilityNo       /* 시설번호 */
+             , f.facility_nm                         facilityNm       /* 시설명 */
+             , f.facility_ty_cd                      facilityTyCd     /* 시설유형코드 */
+             , TO_CHAR(fch.chk_dt, 'YYYY-MM-DD')     chkDt            /* 최근 점검일 */
+             , NVL(fch.chk_stts_cd, '점검대기')       chkSttsCd        /* 점검상태 */
+             , NVL(fch.chk_cn, '최근 점검 이력 없음') chkCn             /* 점검내용 */
+             , fch.chk_ty_cd                         chkTyCd          /* 점검유형코드 */
+             , p.partner_nm                          partnerNm        /* 협력업체명 */
+             , NVL(p.pic_nm, p.partner_nm)           picNm            /* 담당자명 */
+        FROM facility f
+                 LEFT JOIN (
+            SELECT fac_chk_hstry_no
+                 , facility_no
+                 , partner_no
+                 , chk_dt
+                 , chk_stts_cd
+                 , chk_cn
+                 , chk_ty_cd
+                 , reg_dt
+                 , ROW_NUMBER() OVER (
+                PARTITION BY facility_no
+                ORDER BY chk_dt DESC NULLS LAST
+                    , reg_dt DESC NULLS LAST
+                    , fac_chk_hstry_no DESC
+                ) rn
+            FROM facility_check_hstry
+        ) fch
+                           ON f.facility_no = fch.facility_no
+                               AND fch.rn = 1
+                 LEFT JOIN partner p
+                           ON fch.partner_no = p.partner_no
+        WHERE f.apt_cmplex_no = #{aptCmplexNo}
+          AND NVL(f.use_yn, 'Y') = 'Y'
+        ORDER BY f.facility_ty_cd
+               , f.facility_nm
+
     </select>
 
+    <!-- 시설 상세 이력  -->
     <select id="selectFacilityHistoryList"
             resultType="kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO">
         /* IResidentFacilityMapper.selectFacilityHistoryList */
+
         SELECT *
         FROM (
                  SELECT rownum rn
                       , a.*
                  FROM (
-                          SELECT fch.fac_chk_hstry_no facChkHstryNo
-                               , f.facility_no         facilityNo
-                               , f.facility_nm         facilityNm
-                               , f.facility_ty_cd      facilityTyCd
-                               , TO_CHAR(fch.chk_dt, 'YYYY-MM-DD') chkDt
-                               , fch.chk_stts_cd       chkSttsCd
-                               , fch.chk_cn            chkCn
-                               , fch.chk_ty_cd         chkTyCd
-                               , p.partner_nm          partnerNm
-                               , NVL(p.pic_nm, p.partner_nm) picNm
+                          SELECT fch.fac_chk_hstry_no       facChkHstryNo   /* 시설점검이력번호 */
+                               , f.facility_no              facilityNo      /* 시설번호 */
+                               , f.facility_nm              facilityNm      /* 시설명 */
+                               , f.facility_ty_cd           facilityTyCd    /* 시설유형코드 */
+                               , TO_CHAR(fch.chk_dt, 'YYYY-MM-DD') chkDt    /* 점검일 */
+                               , fch.chk_stts_cd            chkSttsCd       /* 점검상태코드 */
+                               , fch.chk_cn                 chkCn           /* 점검내용 */
+                               , fch.chk_ty_cd              chkTyCd         /* 점검유형코드 */
+                               , p.partner_nm               partnerNm       /* 협력업체명 */
+                               , NVL(p.pic_nm, p.partner_nm) picNm          /* 담당자명 */
                           FROM facility_check_hstry fch
                                    JOIN facility f
                                         ON fch.facility_no = f.facility_no
@@ -111,11 +140,19 @@
                                              ON fch.partner_no = p.partner_no
                           WHERE f.apt_cmplex_no = #{aptCmplexNo}
                             AND NVL(f.use_yn, 'Y') = 'Y'
-                          ORDER BY fch.chk_dt DESC, fch.reg_dt DESC
+
+                            <if test="facilityTyCd != null and facilityTyCd != ''">
+                                AND f.facility_ty_cd = #{facilityTyCd}
+                            </if>
+
+                          ORDER BY fch.chk_dt DESC NULLS LAST
+                                 , fch.reg_dt DESC NULLS LAST
+                                 , fch.fac_chk_hstry_no DESC
                       ) a
                  WHERE rownum &lt;= #{endRow}
              )
         WHERE rn &gt;= #{startRow}
+
     </select>
 
     <select id="selectFacilityHistoryCount" resultType="int">
@@ -126,6 +163,10 @@
                       ON fch.facility_no = f.facility_no
         WHERE f.apt_cmplex_no = #{aptCmplexNo}
           AND NVL(f.use_yn, 'Y') = 'Y'
+
+            <if test="facilityTyCd != null and facilityTyCd != ''">
+                AND f.facility_ty_cd = #{facilityTyCd}
+            </if>
     </select>
 
 </mapper>
