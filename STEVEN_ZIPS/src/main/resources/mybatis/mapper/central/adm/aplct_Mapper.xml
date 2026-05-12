@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.admin.mapper.IAplctMapper">
+    <select id="selectAplctList" resultType="kr.or.ddit.domain.central.admin.dto.AplctDTO">
+        select a.APLCT_NO
+               ,a.ANN_NO
+               ,a.USER_NO
+               ,a.USER_ID
+               ,a.HO_TY_NO
+               ,a.REG_DT
+               ,a.MDF_DT
+               ,a.APLCT_STTS_CD
+               ,h.APT_CMPLEX_NO
+               ,h.TY_NM
+               ,h.EXCLUSIVE_SIZE
+               ,h.ROOM_CNT
+               ,h.BATH_CNT
+               ,h.IMAGE_FILE_NO
+               ,b.TTL
+        from APLCT a
+        inner join APT_HO_TY h on(a.HO_TY_NO = h.HO_TY_NO)
+        inner join CENTER_ANN_BOARD_POST b on(b.ANN_NO = a.ANN_NO)
+        inner join MEMBER m on(m.USER_NO = a.USER_NO)
+    </select>
+</mapper>

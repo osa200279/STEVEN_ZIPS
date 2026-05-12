@@ -15,7 +15,7 @@ public class AdmJspToReactController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/home")
-    public String home(@AuthenticationPrincipal CustomUser customUser){
+    public String home(){
         return "redirect:http://localhost:7777";
     }
 

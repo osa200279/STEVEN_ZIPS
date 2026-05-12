@@ -37,7 +37,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+											Authentication authentication) throws IOException, ServletException {
 		log.info("## CustomLoginSuccessHandler.onAuthenticationSuccess() 실행...!");
 
 		CustomUser customUser = (CustomUser) authentication.getPrincipal();
