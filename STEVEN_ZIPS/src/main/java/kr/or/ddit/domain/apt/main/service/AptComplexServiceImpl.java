@@ -43,6 +43,13 @@ public class AptComplexServiceImpl implements IAptComplexService {
         return aptComplexMapper.selectManagerAptCmplexNo(userNo);
     }
 
+
+    /*mgmtOfc 번호로 aptComplexVO 가져오는 메서드 입니다 by도선호*/
+    @Override
+    public AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo) {
+        return aptComplexMapper.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+    }
+
     @Override
     @Transactional
     public int updateAptComplex(AptComplexVO aptComplexVO) {

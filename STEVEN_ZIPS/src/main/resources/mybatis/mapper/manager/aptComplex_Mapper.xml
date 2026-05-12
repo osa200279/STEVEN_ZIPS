@@ -115,5 +115,37 @@
         )
         WHERE RN &gt;= #{pagingVO.startRow}
     </select>
+    <select id="selectMgmtOfcNoAptComplex" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
+        SELECT
+            apt_cmplex_no
+            , apt_cmplex_nm
+            , bjd_cd
+            , sido_nm
+            , sigungu_nm
+            , emd_nm
+            , lat_val
+            , lon_val
+            , unit_cnt
+            , bld_yr
+            , cnsco_nm
+            , img_file_no
+            , rprsnt_img_file_no
+            , heat_ty
+            , pkg_cnt
+            , max_floor
+            , free_pkg_cnt
+            , dong_cnt
+            , dorojuso
+            , cc_cnt
+        FROM
+            apt_complex
+        WHERE
+            apt_cmplex_no = (
+                SELECT  apt_cmplex_no
+                FROM    mgmt_office
+                WHERE   mgmt_ofc_no = #{mgmtOfcNo}
+            )
+    </select>
+
 
 </mapper>

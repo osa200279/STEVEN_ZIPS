@@ -1,5 +1,8 @@
 package kr.or.ddit.domain.apt.mgmtOffice.main.controller;
 
+import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
+import kr.or.ddit.domain.apt.main.service.IAptComplexService;
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IMgmtOfficeMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.ManagerPaginationVO;
@@ -9,6 +12,7 @@ import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,6 +37,9 @@ public class ManagerMainController {
     // ADMIN/MNGR 접근 기준 및 화면 공통 모델 처리
     private final IManagerModelService managerAccessService;
     private final IFacilityService facilityService;
+
+    @Autowired
+    private IAptComplexService aptComplexService;
 
     // ──/manager/main 진입─────────────────────────────────────
     // ADMIN은 관리사무소 선택 모달 표시
@@ -381,6 +388,25 @@ public class ManagerMainController {
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
         return "apt/mgmtOffice/mngr_accountArrears";
+    }
+
+
+    // 단지 정보 수정페이지
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping({"/complex/edit/{mgmtOfcNo}"})
+    public String complexEdit(
+            @PathVariable String mgmtOfcNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+
+        // mgmtOfcNo 로 아파트 정보 가져오는 메서드
+        AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+        model.addAttribute("complex",aptComplexVO);
+        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        return "apt/mgmtOffice/mngr_complex_edit";
     }
 
 }

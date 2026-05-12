@@ -8,6 +8,7 @@ import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,63 +21,15 @@ import java.util.Map;
 
 @Slf4j
 @Controller
-@RequestMapping("/manager")
+@RequestMapping("/manager/edit")
+@PreAuthorize("hasRole('MNGR')")
 public class AptComplexController {
 
     @Autowired
     private IAptComplexService aptComplexService;
 
-    @Autowired
-    private IManagerModelService managerModelService;
-
-    // 단지 정보 화면
-    // 단지 정보 수정 화면
-    @GetMapping({"/complex/edit", "/complex/edit/{mgmtOfcNo}"}) // URL 호환
-    public String complexEdit(
-            @PathVariable(required = false) String mgmtOfcNo,
-            Authentication authentication,
-            Model model
-    ) {
-
-//        log.info("단지정보수정 요청 aptCmplexNo");
-//        AptComplexVO aptComplexVO = aptComplexService.selectAptComplex(aptCmplexNo);
-////        List<AptDetailVO> detailList = (List<AptDetailVO>) aptComplexService.selectAptDetailList(aptCmplexNo);
-//
-//        model.addAttribute("complex", aptComplexVO);
-////        model.addAttribute("detailList", detailList);
-//
-//        return "manager/mngr_complex_edit";
-
-        CustomUser customUser = (CustomUser) authentication.getPrincipal();
-
-        MemberVO member = customUser.getMember();
-
-        String userNo = member.getUserNo(); // 로그인 사용자 번호
-        String viewMgmtOfcNo = mgmtOfcNo != null && !mgmtOfcNo.isBlank()
-                ? mgmtOfcNo
-                : member instanceof MngrVO ? ((MngrVO) member).getMgmtOfcNo() : null;
-        managerModelService.addManagerViewModel(model, customUser, viewMgmtOfcNo); // 공통 화면 모델
-
-        log.info("로그인 사용자 번호 = {}", userNo);
-
-        String aptCmplexNo = aptComplexService.selectManagerAptCmplexNo(userNo);
-
-        log.info("관리소장 소속 단지번호 = {}", aptCmplexNo);
-
-        if (aptCmplexNo == null || aptCmplexNo.trim().isEmpty()) {
-            model.addAttribute("message", "해당 계정에 연결된 단지 정보가 없습니다.");
-            return "accessError";
-        }
-
-        AptComplexVO aptComplexVO = aptComplexService.selectAptComplex(aptCmplexNo);
-
-        model.addAttribute("complex", aptComplexVO);
-
-        return "apt/mgmtOffice/mngr_complex_edit";
-    }
-
     // 단지 정보 수정
-
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @PostMapping("/complex/update")
     @ResponseBody
     public Map<String, Object> updateComplex(

@@ -12,7 +12,6 @@ public interface IAptComplexService {
 
    /* public AptComplexVO selectAptDetailList(String aptCmplexNo);*/
 
-   String selectManagerAptCmplexNo(String userNo);
 
    int updateAptComplex(AptComplexVO aptComplexVO);
 
@@ -30,4 +29,7 @@ public interface IAptComplexService {
                                         String sidoNm,
                                         String keyword);
 
+   String selectManagerAptCmplexNo(String mgmtOfcNo);
+
+   AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo);
 }

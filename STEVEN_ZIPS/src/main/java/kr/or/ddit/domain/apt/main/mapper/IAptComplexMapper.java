@@ -27,4 +27,5 @@ public interface IAptComplexMapper {
                                          @Param("sidoNm") String sidoNm,
                                          @Param("keyword") String keyword);
 
+    AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo);
 }

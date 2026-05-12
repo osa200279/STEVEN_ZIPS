@@ -232,7 +232,7 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">단지정보</span>
-                    <a href="${ctx}/manager/complex/edit"
+                    <a href="${ctx}/manager/complex/edit/${mgmtOfcNo}"
                        class="nav-item ${fn:contains(uri, '/manager/complex/edit') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 정보 수정</span>
