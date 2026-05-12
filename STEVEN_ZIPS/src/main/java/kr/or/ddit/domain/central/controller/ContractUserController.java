@@ -3,11 +3,11 @@ package kr.or.ddit.domain.central.controller;
 import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
 import kr.or.ddit.domain.central.service.IContractUserService;
-import kr.or.ddit.domain.central.vo.ContractUserVO;
 import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -28,6 +28,7 @@ public class ContractUserController {
 
     @Autowired
     private IAnnouncementService announcementService;
+
 
     @GetMapping("/list.do")
     public String contractList() {
@@ -101,18 +102,27 @@ public class ContractUserController {
     }
 
     @PreAuthorize("hasRole('MEMBER')")
+    @GetMapping("/noticeList.json")
+    @ResponseBody
+    public List<AnnouncementDTO> contractNoticeListJson(AnnouncementDTO searchVO) {
+        return announcementService.selectAnnouncementList(searchVO);
+    }
+
+    @PreAuthorize("hasRole('MEMBER')")
     @ResponseBody
     @PostMapping("/request.do")
-    public Map<String, Object> contractRequest(@RequestBody RentCtrtVO rentCtrtVO,
+    public Map<String, Object> contractRequest(@RequestBody Map<String, Object> params,
                                                @AuthenticationPrincipal CustomUser principal){
-
-        String userNo = principal.getMember().getUserNo();
-        rentCtrtVO.setUserNo(userNo);
-        contractUserService.insertRentCtrt(rentCtrtVO);
         Map<String, Object> result = new HashMap<>();
-        result.put("success", true);
+        try {
+            params.put("userNo", principal.getMember().getUserNo());
+            contractUserService.insertAplct(params);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("계약 신청 오류: {}", e.getMessage());
+            result.put("success", false);
+        }
         return result;
-
     }
 
     @PreAuthorize("hasRole('MEMBER')")
@@ -121,10 +131,13 @@ public class ContractUserController {
             @RequestParam("annNo") String annNo,
             @AuthenticationPrincipal CustomUser principal,
             Model model) {
+        contractUserService.updateInqCnt(annNo);
         AnnouncementDTO announcement = announcementService.selectAnnouncement(annNo);
-        log.info("annNo: {}", annNo);
-        log.info("announcement: {}", announcement);
+        List<Map<String, Object>> excluseArea = contractUserService.selectExcluseAreaDetail(announcement.getAptCmplexNo());
+        log.info("aptCmplexNo: {}", announcement.getAptCmplexNo());  // 추가
+        log.info("excluseArea: {}", excluseArea);  // 추가
         model.addAttribute("announcement", announcement);
+        model.addAttribute("excluseArea", excluseArea);
         model.addAttribute("principal", principal);
         return "central/contract/contractNoticeDetail";
     }
@@ -136,7 +149,8 @@ public class ContractUserController {
             Model model
     ) {
         String userNo = principal.getMember().getUserNo();
-        List<ContractUserVO> list = contractUserService.selectContractDoc(userNo);
+        List<Map<String, Object>> list = contractUserService.selectAplctList(userNo);
+        log.info("aplctList: {}", list);
         model.addAttribute("list", list);
         return "central/contract/contractAList";
     }
@@ -153,7 +167,15 @@ public class ContractUserController {
         return result;
     }
 
-
+    @PreAuthorize("hasRole('MEMBER')")
+    @PutMapping("/cancel.do")
+    @ResponseBody
+    public Map<String, Object> cancelContract(@RequestBody Map<String, Object> params) {
+        contractUserService.cancelContract((String) params.get("aplctNo"));
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        return result;
+    }
 
     /*@GetMapping("/history.do")
     public String contractHistory() {

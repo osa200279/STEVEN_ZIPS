@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -22,8 +23,20 @@ public class ContractUserServiceImpl implements IContractUserService {
 
     @Autowired
     private IContractUserMapper contractUserMapper;
+
+    @Override
+    public List<Map<String, Object>> selectAplctList(String userNo) {
+        return contractUserMapper.selectAplctList(userNo);
+    }
+
+    @Override
+    public void cancelContract(String aplctNo) {
+        contractUserMapper.cancelContract(aplctNo);
+    }
+
     @Autowired
     private GoogleDriveService googleDriveService;
+
     @Autowired
     private IAttachFileMapper iAttachFileMapper;
 
@@ -78,6 +91,27 @@ public class ContractUserServiceImpl implements IContractUserService {
         // ctrt_id는 rentCtrtNo와 동일하게 세팅 (selectKey 실행 후)
         contractUserMapper.insertRentCtrtVO(rentCtrtVO);
         rentCtrtVO.setCtrtId(rentCtrtVO.getRentCtrtNo());
+    }
+
+    @Transactional
+    @Override
+    public void updateInqCnt(String annNo) {
+        contractUserMapper.updateInqCnt(annNo);
+    }
+
+    @Override
+    public List<Map<String, Object>> selectExcluseAreaDetail(String aptCmplexNo) {
+        return contractUserMapper.selectExcluseAreaDetail(aptCmplexNo);
+    }
+
+    @Transactional
+    @Override
+    public void insertAplct(Map<String, Object> params) {
+        log.info("params: {}", params);
+        String hoTyNo = contractUserMapper.selectHoTyNo(params);
+        log.info("hoTyNo: {}", hoTyNo);
+        params.put("hoTyNo", hoTyNo);
+        contractUserMapper.insertAplct(params);
     }
 
 
