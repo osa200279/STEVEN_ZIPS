@@ -29,71 +29,71 @@
 
     <style>
 
-        #vhclPage .tab-bar{
-            display:flex;
-            gap:10px;
-            margin-bottom:18px;
+        #vhclPage .tab-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
         }
 
 
-#vhclPage .tab-btn{
-    border:none;
-    background:none;
-    padding:0 0 12px;
-    color:#888;
-    font-size:15px;
-    font-weight:700;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    border-bottom:2px solid transparent;
-}
+        #vhclPage .tab-btn {
+            border: none;
+            background: none;
+            padding: 0 0 12px;
+            color: #888;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 2px solid transparent;
+        }
 
-        #vhclPage .tab-btn.active{
+        #vhclPage .tab-btn.active {
 
         }
 
-        #vhclPage .tab-panel{
-            display:none;
+        #vhclPage .tab-panel {
+            display: none;
         }
 
-        #vhclPage .tab-panel.active{
-            display:block;
+        #vhclPage .tab-panel.active {
+            display: block;
         }
 
-        #vhclPage .filter-select{
-            width:140px;
+        #vhclPage .filter-select {
+            width: 140px;
         }
 
-        #vhclPage .filter-keyword{
-            width:280px;
+        #vhclPage .filter-keyword {
+            width: 280px;
         }
 
-        #vhclPage .col-center{
-            text-align:center !important;
+        #vhclPage .col-center {
+            text-align: center !important;
         }
 
-        #vhclPage .col-manage{
-            text-align:center !important;
-            width:220px;
+        #vhclPage .col-manage {
+            text-align: center !important;
+            width: 220px;
         }
 
-        #vhclPage .grid-actions{
-            display:inline-flex;
-            gap:6px;
-            align-items:center;
-            flex-wrap:wrap;
+        #vhclPage .grid-actions {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
-        #vhclPage .table-wrap{
-            overflow:auto;
+        #vhclPage .table-wrap {
+            overflow: auto;
         }
 
-        #vhclPage .empty-row{
-            text-align:center !important;
-            padding:50px !important;
-            color:var(--text-tertiary);
+        #vhclPage .empty-row {
+            text-align: center !important;
+            padding: 50px !important;
+            color: var(--text-tertiary);
         }
 
     </style>
@@ -290,7 +290,7 @@
 
                                 <c:forEach items="${vehicleList}" var="item">
 
-                                   <c:if test="${fn:contains(fn:trim(item.vhclSttsCd), 'WAIT')}">
+                                    <c:if test="${fn:contains(fn:trim(item.vhclSttsCd), 'WAIT')}">
 
                                         <tr>
 
@@ -311,10 +311,6 @@
 
                                                 <div class="grid-actions">
 
-                                                    <a href="${pageContext.request.contextPath}/manager/resident/auto/detail/${mgmtOfcNo}/${item.rsidVhclNo}"
-                                                       class="btn btn-xs btn-detail">
-                                                        상세
-                                                    </a>
 
                                                     <form method="post"
                                                           action="${pageContext.request.contextPath}/manager/resident/auto/approve"
@@ -458,15 +454,15 @@
 
                                                     <c:choose>
 
-                                                       <c:when test="${fn:trim(item.vhclSttsCd) eq 'WAIT'}">
+                                                        <c:when test="${fn:trim(item.vhclSttsCd) eq 'WAIT'}">
                                                             <span class="badge badge-yellow">승인대기</span>
                                                         </c:when>
 
-                                                       <c:when test="${fn:trim(item.vhclSttsCd) eq 'APRV'}">
+                                                        <c:when test="${fn:trim(item.vhclSttsCd) eq 'APRV'}">
                                                             <span class="badge badge-green">승인완료</span>
                                                         </c:when>
 
-                                                     <c:when test="${fn:trim(item.vhclSttsCd) eq 'RJCT'}">
+                                                        <c:when test="${fn:trim(item.vhclSttsCd) eq 'RJCT'}">
                                                             <span class="badge badge-red">반려</span>
                                                         </c:when>
 
@@ -478,15 +474,70 @@
 
                                                     <div class="grid-actions">
 
-                                                        <a href="${pageContext.request.contextPath}/manager/resident/auto/detail/${mgmtOfcNo}/${item.rsidVhclNo}"
-                                                           class="btn btn-xs btn-detail">
-                                                            상세
-                                                        </a>
 
                                                         <a href="${pageContext.request.contextPath}/manager/resident/auto/update/${mgmtOfcNo}/${item.rsidVhclNo}"
                                                            class="btn btn-xs btn-edit">
-                                                            수정
-                                                        </a>
+                                                            수정</a>
+
+
+                                                        <c:choose>
+
+                                                            <c:when test="${fn:trim(item.vhclSttsCd) eq 'APRV'}">
+
+                                                                <form method="post"
+                                                                      action="${pageContext.request.contextPath}/manager/resident/auto/reject"
+                                                                      style="display:inline;">
+
+                                                                    <sec:csrfInput/>
+
+                                                                    <input type="hidden"
+                                                                           name="rsidVhclNo"
+                                                                           value="${item.rsidVhclNo}">
+
+                                                                    <input type="hidden"
+                                                                           name="mgmtOfcNo"
+                                                                           value="${mgmtOfcNo}">
+
+                                                                    <button type="submit"
+                                                                            class="btn btn-xs btn-delete">
+
+                                                                        반려변경
+
+                                                                    </button>
+
+                                                                </form>
+
+                                                            </c:when>
+
+                                                            <c:when test="${fn:trim(item.vhclSttsCd) eq 'RJCT'}">
+
+                                                                <form method="post"
+                                                                      action="${pageContext.request.contextPath}/manager/resident/auto/approve"
+                                                                      style="display:inline;">
+
+                                                                    <sec:csrfInput/>
+
+                                                                    <input type="hidden"
+                                                                           name="rsidVhclNo"
+                                                                           value="${item.rsidVhclNo}">
+
+                                                                    <input type="hidden"
+                                                                           name="mgmtOfcNo"
+                                                                           value="${mgmtOfcNo}">
+
+                                                                    <button type="submit"
+                                                                            class="btn btn-xs btn-primary">
+
+                                                                        승인변경
+
+                                                                    </button>
+
+                                                                </form>
+
+                                                            </c:when>
+
+                                                        </c:choose>
+
 
                                                         <form method="post"
                                                               action="${pageContext.request.contextPath}/manager/resident/auto/delete"

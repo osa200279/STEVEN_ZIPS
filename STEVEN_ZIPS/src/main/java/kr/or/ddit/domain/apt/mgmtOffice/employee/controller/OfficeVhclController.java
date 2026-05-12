@@ -172,7 +172,6 @@ public class OfficeVhclController {
             vo.setVhclNo(vhclNo);
             vo.setVhclNm(vhclNm);
 
-            vo.setVhclSttsCd("APRV");
 
             officeVhclService.updateVehicle(vo, uploadFile);
 

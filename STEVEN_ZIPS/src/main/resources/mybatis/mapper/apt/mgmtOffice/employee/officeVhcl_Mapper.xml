@@ -73,7 +73,6 @@
         SET
             VHCL_NM = #{vhclNm},
             VHCL_NO = #{vhclNo},
-            VHCL_STTS_CD = #{vhclSttsCd},
             USER_NO = #{userNo},
             HO_NO = #{hoNo},
             MDF_DT = SYSDATE
