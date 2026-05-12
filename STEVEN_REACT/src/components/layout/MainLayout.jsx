@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import requestApi from '../../util/api/requestApi';
-import { Outlet } from 'react-router-dom';
 
 const MainLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);

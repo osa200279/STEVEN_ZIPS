@@ -1,0 +1,55 @@
+.stts-apply{
+    background-color: #ffd000 ;
+    color: #000005;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 'bold';
+}
+
+.stts-pass{
+    background-color: #008800 ;
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 'bold';
+}
+
+.stts-reject{
+    background-color: #d81111 ;
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 'bold';
+}
+
+.check{
+    padding: 2px 8px;
+    color: rgb(15, 92, 0);
+}
+
+.reject{
+    padding: 2px 8px;
+    color: rgb(223, 0, 0);
+}
+
+.btn-pass{
+    margin-top: 5px;
+    border: 1px;
+    border-radius: 5px;
+    padding: 0px;
+    padding-top: 2px;
+    background-color: rgb(179, 228, 181);
+    height: 27px;
+    width: 27px;
+}
+
+.btn-reject{
+    margin-top: 5px;
+    border: 1px;
+    border-radius: 5px;
+    padding: 0px;
+    padding-top: 2px;
+    background-color: rgb(255, 212, 212);
+    height: 27px;
+    width: 27px;
+}

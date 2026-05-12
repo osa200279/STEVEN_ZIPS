@@ -1,4 +1,4 @@
-import { Blocks, Building2, ChevronDown, ChevronRight, Files, FileSearchCorner, IdCardLanyard, MapPinHouse, Megaphone, MessageCircleQuestionMark, NotebookPen, ScrollText, SquareUserRound, Users } from 'lucide-react';
+import { Blocks, Book, Building2, ChartSpline, ChevronDown, ChevronRight, FileOutput, Files, FileSearchCorner, IdCardLanyard, MapPinHouse, Megaphone, MessageCircleQuestionMark, NotebookPen, ScrollText, SquareUserRound, UserRoundPlus, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -14,13 +14,20 @@ const MENU_DATA = [
     ]
   },
   {
-    id: 'member',
-    label: '회원 · 계약',
+    id: 'contract',
+    label: '계약',
     items: [
-      { to: '/adm/member', label: '회원 관리', icon: <Users className='luci-icon' /> },
-      { to: '/adm/resident', label: '입주민 관리', icon: <SquareUserRound className='luci-icon' /> },
-      { to: '/adm/ctrt', label: '계약 관리', icon: <Blocks className='luci-icon' /> },
+      { to: '/adm/applicant', label: '청약 신청 관리', icon: <FileOutput className='luci-icon' /> },
+      { to: '/adm/ctrt', label: '계약 관리', icon: <ScrollText className='luci-icon' /> },
       { to: '/adm/ctrt-forms', label: '계약 서식 관리', icon: <Files className='luci-icon' /> },
+    ]
+  },
+  {
+    id: 'member',
+    label: '회원',
+    items: [
+      { to: '/adm/member', label: '일반 회원 관리', icon: <Users className='luci-icon' /> },
+      { to: '/adm/resident', label: '입주민 관리', icon: <SquareUserRound className='luci-icon' /> },
     ]
   },
   {
@@ -29,6 +36,21 @@ const MENU_DATA = [
     items: [
       { to: '/adm/ann', label: '공고 관리', icon: <Megaphone className='luci-icon' /> },
       { to: '/adm/inqry', label: '문의 관리', icon: <MessageCircleQuestionMark className='luci-icon' /> },
+    ]
+  },
+  {
+    id: 'staff',
+    label: '직원',
+    items: [
+      { to: '/adm/staff', label: '직원 계정 관리', icon: <IdCardLanyard className='luci-icon' /> },
+      { to: '/adm/mgmtOfc/account', label: '하위 관리자 생성 요청', icon: <UserRoundPlus className='luci-icon' /> },
+    ]
+  },
+  {
+    id: 'analytics',
+    label: '통계 · 수치',
+    items: [
+      { to: '/adm/analytics', label: '통계', icon: <ChartSpline className='luci-icon' /> },
     ]
   },
 ];
