@@ -61,13 +61,13 @@
                 <div class="flex items-center gap-1.5 text-xs text-slate-400">
                     <span>Home</span><span>›</span>
                     <span>계약관리</span><span>›</span>
-                    <a href="/contract/noticeList.do" class="hover:text-primary-container transition-colors">계약공고</a>
+                    <a href="/contract/notice.do" class="hover:text-primary-container transition-colors">계약공고</a>
                     <span>›</span>
                     <span class="text-[#004830] font-semibold">공고문</span>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <a href="/contract/noticeList.do"
+                <a href="/contract/notice.do"
                    class="flex items-center gap-1.5 text-sm text-slate-600 border border-slate-300 px-4 py-2 rounded bg-white hover:bg-slate-50 transition-colors">
                     목록
                 </a>
@@ -214,7 +214,7 @@
 
         <!-- 하단 버튼 -->
         <div class="flex justify-between py-2">
-            <a href="/contract/noticeList.do"
+            <a href="/contract/notice.do"
                class="flex items-center gap-2 px-6 py-2.5 bg-white border border-slate-300 text-sm text-slate-600 hover:bg-slate-50 transition-colors rounded">
                 <span class="material-symbols-outlined text-[16px]">arrow_back</span> 목록으로
             </a>

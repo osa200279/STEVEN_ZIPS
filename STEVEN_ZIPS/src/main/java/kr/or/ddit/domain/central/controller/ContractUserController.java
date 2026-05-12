@@ -7,7 +7,6 @@ import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -29,7 +28,6 @@ public class ContractUserController {
     @Autowired
     private IAnnouncementService announcementService;
 
-
     @GetMapping("/list.do")
     public String contractList() {
 
@@ -41,12 +39,10 @@ public class ContractUserController {
         return "central/contract/contractNotice"; // JSP 이름
     }*/
 
-
     @GetMapping("/apply.do")
     public String contractApply() {
         return "central/contract/contractApply";
     }
-
 
     /*@PostMapping("/apply.do")
     public String applyContract(
@@ -91,7 +87,7 @@ public class ContractUserController {
     // 컨트롤러에서 rentCtrtNo 파라미터 제거
 
     @PreAuthorize("hasRole('MEMBER')")
-    @GetMapping("/noticeList.do")
+    @GetMapping("/notice.do")
     public String contractNoticeList(AnnouncementDTO searchVO, Model model) {
         List<AnnouncementDTO> list = announcementService.selectAnnouncementList(searchVO);
         if (!list.isEmpty()) {
@@ -102,7 +98,7 @@ public class ContractUserController {
     }
 
     @PreAuthorize("hasRole('MEMBER')")
-    @GetMapping("/noticeList.json")
+    @GetMapping("/notice.json")
     @ResponseBody
     public List<AnnouncementDTO> contractNoticeListJson(AnnouncementDTO searchVO) {
         return announcementService.selectAnnouncementList(searchVO);
@@ -188,9 +184,7 @@ public class ContractUserController {
         NoticeVO notice = noticeService.getNoticeDetail(annNo);
         model.addAttribute("notice", notice);
 
-
         return "central/contract/contractNoticeDetail"; // 상세 JSP
     }*/
-
 
 }

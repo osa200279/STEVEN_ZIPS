@@ -160,7 +160,7 @@
     ============================================= */
     async function fetchList(params = {}) {
         try {
-            const res = await fetch('/contract/noticeList.json?' + new URLSearchParams(params));
+            const res = await fetch('/contract/notice.json?' + new URLSearchParams(params));
             if (!res.ok) throw new Error('서버 오류');
             return await res.json();
         } catch (e) {

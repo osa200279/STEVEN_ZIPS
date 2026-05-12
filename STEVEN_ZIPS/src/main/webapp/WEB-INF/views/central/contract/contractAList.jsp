@@ -175,7 +175,7 @@
             <div class="bg-white rounded-2xl shadow-sm border border-[#eef2eb] p-16 text-center">
                 <span class="material-symbols-outlined text-[48px] text-slate-200 mb-4 block">inbox</span>
                 <p class="text-slate-400 text-sm mb-6">신청 내역이 없습니다.</p>
-                <a href="/contract/noticeList.do"
+                <a href="/contract/notice.do"
                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#004830] text-white text-sm font-bold rounded-full hover:bg-[#226046] transition-all">
                     공고 목록 보기
                 </a>
