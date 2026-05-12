@@ -118,7 +118,7 @@
     </select>
 
     <select id="selectRentListingByAptCmplexNo" parameterType="string" resultType="map">
-        SELECT ht.excluse_area
+        SELECT ht.EXCLUSIVE_SIZE
              , ht.room_cnt
              , ht.bathroom_cnt
              , rl.dpst_amt
@@ -135,7 +135,7 @@
         WHERE au.apt_cmplex_no = #{aptCmplexNo}
     </select>
     <select id="selectExcluseAreaDetail" parameterType="string" resultType="map">
-        SELECT ht.excluse_area  AS excluseArea
+        SELECT ht.EXCLUSIVE_SIZE  AS exclusiveSize
              , ht.room_cnt      AS roomCnt
              , ht.bathroom_cnt  AS bathroomCnt
              , ht.image_file_no AS imageFileNo
@@ -146,7 +146,7 @@
         SELECT ho_ty_no
         FROM apt_ho_ty
         WHERE apt_cmplex_no = #{aptCmplexNo}
-          AND excluse_area = #{excluseArea}
+          AND EXCLUSIVE_SIZE = #{exclusiveSize}
           AND ROWNUM = 1
     </select>
     <select id="selectAplctList" resultType="map" parameterType="string">
@@ -154,7 +154,7 @@
              , a.ann_no
              , a.aplct_stts_cd
              , a.reg_dt
-             , aht.excluse_area
+             , aht.EXCLUSIVE_SIZE
              , cab.ttl
              , ac.apt_cmplex_nm
         FROM aplct a

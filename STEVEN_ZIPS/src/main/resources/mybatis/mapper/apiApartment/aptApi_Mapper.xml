@@ -106,11 +106,11 @@
         INSERT ALL
         <foreach collection="list" item="item">
             INTO APT_UNIT(
-            DONG_NO, DONG_NM, FLOOR, UNIT_CNT, APT_CMPLEX_NO
+            DONG_NO, DONG_NM, MAX_FLOOR, UNIT_CNT, APT_CMPLEX_NO
             ) VALUES (
             #{item.dongNo},
             #{item.dongNm},
-            #{item.floor},
+            #{item.maxFloor},
             #{item.unitCnt},
             #{item.aptCmplexNo}
             )
@@ -162,17 +162,17 @@
         <foreach collection="list" item="item">
 
             INTO APT_HO_TY(
-            DETAIL_TY_NO,
+            HO_TY_NO,
             APT_CMPLEX_NO,
             TYPE_NM,
-            EXCLUSE_AREA,
+            EXCLUSIVE_SIZE,
             ROOM_CNT,
             BATHROOM_CNT
             ) VALUES (
             #{item.hoTyNo},
             #{item.aptCmplexNo},
             #{item.typeNm},
-            #{item.exclusiveArea},
+            #{item.exclusiveSize},
             #{item.roomCnt},
             #{item.bathroomCnt}
             )

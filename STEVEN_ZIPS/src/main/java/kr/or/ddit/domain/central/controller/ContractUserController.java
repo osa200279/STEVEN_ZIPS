@@ -129,11 +129,11 @@ public class ContractUserController {
             Model model) {
         contractUserService.updateInqCnt(annNo);
         AnnouncementDTO announcement = announcementService.selectAnnouncement(annNo);
-        List<Map<String, Object>> excluseArea = contractUserService.selectExcluseAreaDetail(announcement.getAptCmplexNo());
+        List<Map<String, Object>> exclusiveSize = contractUserService.selectExcluseAreaDetail(announcement.getAptCmplexNo());
         log.info("aptCmplexNo: {}", announcement.getAptCmplexNo());  // 추가
-        log.info("excluseArea: {}", excluseArea);  // 추가
+        log.info("exclusiveSize: {}", exclusiveSize);  // 추가
         model.addAttribute("announcement", announcement);
-        model.addAttribute("excluseArea", excluseArea);
+        model.addAttribute("exclusiveSize", exclusiveSize);
         model.addAttribute("principal", principal);
         return "central/contract/contractNoticeDetail";
     }

@@ -12,7 +12,7 @@ public class AptHoTyVO {
     // 타입명
     private String typeNm;
     // 전용면적
-    private String exclusiveArea;
+    private String exclusiveSize;
     // 방 개수
     private Integer roomCnt;
     // 욕실 개수

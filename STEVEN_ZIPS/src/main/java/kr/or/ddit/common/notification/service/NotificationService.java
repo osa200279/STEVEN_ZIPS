@@ -16,8 +16,7 @@ public class NotificationService {
             NotificationDTO notification
     ) {
 
-        String destination =
-                "/sub/notification/" + userNo;
+        String destination = "/sub/notification/" + userNo;
 
         messagingTemplate.convertAndSend(
                 destination,

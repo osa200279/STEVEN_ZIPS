@@ -157,11 +157,11 @@
                     </thead>
                     <tbody>
                     <c:choose>
-                        <c:when test="${not empty excluseArea}">
-                            <c:forEach var="item" items="${excluseArea}">
+                        <c:when test="${not empty exclusiveSize}">
+                            <c:forEach var="item" items="${exclusiveSize}">
                                 <tr>
-                                    <td class="type-cell">${item.EXCLUSEAREA}형</td>
-                                    <td>${item.EXCLUSEAREA}㎡</td>
+                                    <td class="type-cell">${item.exclusiveSize}형</td>
+                                    <td>${item.exclusiveSize}㎡</td>
                                     <td>${item.ROOMCNT}개</td>
                                 </tr>
                             </c:forEach>
@@ -263,8 +263,8 @@
             <div>
                 <label class="block text-xs text-slate-500 mb-1">전용면적 <span class="text-red-400">*</span></label>
                 <select id="exclusiveSizeSelect" class="w-full px-3 py-2 border border-slate-200 text-sm rounded focus:outline-none focus:border-[#004830]">
-                    <c:forEach var="item" items="${excluseArea}">
-                        <option value="${item.EXCLUSEAREA}">${item.EXCLUSEAREA}㎡</option>
+                    <c:forEach var="item" items="${exclusiveSize}">
+                        <option value="${item.exclusiveSize}">${item.exclusiveSize}㎡</option>
                     </c:forEach>
                 </select>
             </div>
@@ -310,7 +310,7 @@
                 const data = {
                     annNo: document.querySelector('#annNo').value,
                     aptCmplexNo: document.querySelector('#aptCmplexNo').value,
-                    excluseArea: document.querySelector('#exclusiveSizeSelect').value
+                    ExclusiveSize: document.querySelector('#exclusiveSizeSelect').value
                 };
                 fetch('/contract/request.do', {
                     method: 'POST',

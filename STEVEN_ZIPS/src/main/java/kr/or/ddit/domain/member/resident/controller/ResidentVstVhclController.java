@@ -44,12 +44,9 @@ public class ResidentVstVhclController {
     @ResponseBody
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     public PaginationInfoVO<VstVhclRsvtVO> selectVisitList(
-
             @PathVariable String aptCmplexNo,
-
             @RequestParam(defaultValue = "1")
             int currentPage,
-
             @AuthenticationPrincipal CustomUser principal
     ){
 
@@ -73,9 +70,7 @@ public class ResidentVstVhclController {
     public ResponseEntity<String> deleteVisit(
 
             @PathVariable String aptCmplexNo,
-
             @PathVariable String rsvtNo,
-
             @AuthenticationPrincipal CustomUser principal
     ){
 

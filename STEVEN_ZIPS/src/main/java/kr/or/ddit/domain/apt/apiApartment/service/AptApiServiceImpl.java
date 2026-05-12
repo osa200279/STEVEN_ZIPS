@@ -844,7 +844,7 @@ public class AptApiServiceImpl implements IAptApiService {
 
         hoTy.setTypeNm("A타입");
 
-        hoTy.setExclusiveArea(maxKey);
+        hoTy.setExclusiveSize(maxKey);
 
         hoTy.setRoomCnt(1);
         hoTy.setBathroomCnt(1);
