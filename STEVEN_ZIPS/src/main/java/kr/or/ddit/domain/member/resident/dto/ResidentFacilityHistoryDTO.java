@@ -1,6 +1,9 @@
 package kr.or.ddit.domain.member.resident.dto;
 
+import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * 입주민 시설관리이력 DTO
@@ -30,12 +33,22 @@ public class ResidentFacilityHistoryDTO {
 
 
     /*
-     * 단지 표시용 주소 문자열
-     * → JSP 상단 헤더에서
-     * "서울시 강남구 역삼동 ..."
-     * 형태로 한 줄 출력하기 위해 사용.
+     * 단지 기본정보 객체
+     * → apt_headerLayout.jsp에서
+     *   ${aptInfo.aptComplexInfo}를 apt 변수에 담고,
+     *   ${apt.aptCmplexNo}, ${apt.aptCmplexNm}처럼 사용하기 때문.
      */
-    private String aptComplexInfo;
+    private FacilityInfoDTO aptComplexInfo;
+
+    /*
+     * 관리사무소 정보
+     */
+    private String mgmtOfficeInfo;
+
+    /*
+     * 공고 목록
+     */
+    private List<FacilityInfoDTO> annBoardPostInfoList;
 
 
 

@@ -141,7 +141,7 @@
           <div class="facility-pagination">
             <c:forEach begin="1" end="${totalPage}" var="page">
               <a class="page-link ${currentPage eq page ? 'active' : ''}"
-                 href="${pageContext.request.contextPath}/resident/manage/facility?aptCmplexNo=${aptCmplexNo}&currentPage=${page}">
+                 href="${pageContext.request.contextPath}/resident/manage/facility/${aptCmplexNo}?currentPage=${page}">
                   ${page}
               </a>
             </c:forEach>

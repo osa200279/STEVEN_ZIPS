@@ -2,6 +2,8 @@ package kr.or.ddit.domain.central.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 단지 시설정보 DTO
  *
@@ -35,7 +37,6 @@ public class FacilityInfoDTO {
     private String sigunguNm;      // 시군구명
     private String emdNm;          // 읍면동명
     private String dorojuso;       // 도로명주소
-
 
     private String heatTy;         // 난방방식
     private String cnscoNm;        // 시공사명
@@ -131,6 +132,13 @@ public class FacilityInfoDTO {
     private String welfareInfra;        // 복지시설
     private String convenienceInfra;    // 생활편의시설
 
-
+    /*
+     * 단지 표시용 문자열
+     * → apt_headerLayout.jsp 에서
+     *   ${aptInfo.aptComplexInfo} 를 사용해서
+     */
+    private String aptComplexInfo;
+    private String mgmtOfficeInfo; // 관리사무소 정보
+    private List<?> annBoardPostInfoList;
 
 }

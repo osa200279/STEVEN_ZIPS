@@ -23,38 +23,27 @@
         /* IResidentFacilityMapper.selectAptInfo */
 
         SELECT ac.apt_cmplex_no  aptCmplexNo      /* 단지번호 */
-             , ac.apt_cmplex_nm  aptCmplexNm     /* 단지명 */
+             , ac.apt_cmplex_nm  aptCmplexNm      /* 단지명 */
+             , mo.mgmt_ofc_nm    mgmtOfficeInfo   /* 관리사무소 정보 */
 
-            /*
-             * 헤더 출력용 단지 주소 문자열
-             *
-             * 주의:
-             * → MyBatis XML 주석 안에서도 달러 중괄호 표현식은 파라미터로 해석될 수 있다.
-             * → 그래서 JSP EL 표현식은 XML 주석에 직접 쓰지 않는다.
-             */
-             , ac.sido_nm
-            || ' '
-            || ac.sigungu_nm
-            || ' '
-            || ac.emd_nm
-            || ' '
-            || ac.dorojuso    aptComplexInfo  /* 헤더 출력용 주소 */
-
-             , ac.sido_nm        sidoNm          /* 시도명 */
-             , ac.sigungu_nm     sigunguNm       /* 시군구명 */
-             , ac.emd_nm         emdNm           /* 읍면동명 */
-             , ac.dorojuso       dorojuso        /* 도로명주소 */
-             , ac.heat_ty        heatTy          /* 난방방식 */
-             , ac.cnsco_nm       cnscoNm         /* 시공사명 */
-             , ac.unit_cnt       unitCnt         /* 세대수 */
-             , ac.dong_cnt       dongCnt         /* 동수 */
-             , ac.pkg_cnt        pkgCnt          /* 주차가능대수 */
-             , ac.free_pkg_cnt   freePkgCnt      /* 세대당 무료주차대수 */
-             , ac.max_floor      maxFloor        /* 최고층수 */
-             , ac.cc_cnt         ccCnt           /* CCTV 수 */
-             , ac.bld_yr         bldYr           /* 준공년도 */
+             , ac.sido_nm        sidoNm           /* 시도명 */
+             , ac.sigungu_nm     sigunguNm        /* 시군구명 */
+             , ac.emd_nm         emdNm            /* 읍면동명 */
+             , ac.dorojuso       dorojuso         /* 도로명주소 */
+             , ac.heat_ty        heatTy           /* 난방방식 */
+             , ac.cnsco_nm       cnscoNm          /* 시공사명 */
+             , ac.unit_cnt       unitCnt          /* 세대수 */
+             , ac.dong_cnt       dongCnt          /* 동수 */
+             , ac.pkg_cnt        pkgCnt           /* 주차가능대수 */
+             , ac.free_pkg_cnt   freePkgCnt       /* 세대당 무료주차대수 */
+             , ac.max_floor      maxFloor         /* 최고층수 */
+             , ac.cc_cnt         ccCnt            /* CCTV 수 */
+             , ac.bld_yr         bldYr            /* 준공년도 */
         FROM apt_complex ac
-        WHERE ac.apt_cmplex_no = #{aptCmplexNo}   /* 조회할 단지번호 */
+                 LEFT JOIN mgmt_office mo
+                           ON ac.apt_cmplex_no = mo.apt_cmplex_no
+                               AND NVL(mo.use_yn, 'Y') = 'Y'
+        WHERE ac.apt_cmplex_no = #{aptCmplexNo}
 
     </select>
 

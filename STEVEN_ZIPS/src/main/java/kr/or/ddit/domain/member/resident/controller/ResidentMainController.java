@@ -101,10 +101,10 @@ public class ResidentMainController {
 
     /* 입주민 시설관리이력 */
     @PreAuthorize("hasRole('RESIDENT')")
-    @GetMapping("/manage/facility")
+    @GetMapping("/manage/facility/{aptCmplexNo}")
     public String manageFacility(
             @AuthenticationPrincipal CustomUser customUser,
-            @RequestParam(value = "aptCmplexNo", required = false) String aptCmplexNo,
+            @PathVariable String aptCmplexNo,
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") int currentPage,
             Model model
     ) {
@@ -130,14 +130,16 @@ public class ResidentMainController {
         int totalRecord = residentFacilityService.getFacilityHistoryCount(aptCmplexNo);
         int totalPage = (int) Math.ceil((double) totalRecord / screenSize);
 
-        FacilityInfoDTO aptInfo = residentFacilityService.getAptInfo(aptCmplexNo);
         List<ResidentFacilityHistoryDTO> statusCardList =
                 residentFacilityService.getFacilityStatusCardList(aptCmplexNo);
         List<ResidentFacilityHistoryDTO> historyList =
                 residentFacilityService.getFacilityHistoryList(aptCmplexNo, startRow, endRow);
 
+        /* 입주민 아파트 헤더레이아웃 */
+        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
+        model.addAttribute("aptInfo", aptCommonDTO);
         model.addAttribute("aptCmplexNo", aptCmplexNo);
-        model.addAttribute("aptInfo", aptInfo);
+
         model.addAttribute("statusCardList", statusCardList);
         model.addAttribute("historyList", historyList);
         model.addAttribute("currentPage", currentPage);
