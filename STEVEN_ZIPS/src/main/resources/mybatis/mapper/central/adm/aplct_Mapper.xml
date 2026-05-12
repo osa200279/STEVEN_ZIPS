@@ -5,7 +5,8 @@
         select a.APLCT_NO
                ,a.ANN_NO
                ,a.USER_NO
-               ,a.USER_ID
+               ,m.USER_ID
+               ,m.USER_NM
                ,a.HO_TY_NO
                ,a.REG_DT
                ,a.MDF_DT
@@ -14,7 +15,7 @@
                ,h.TY_NM
                ,h.EXCLUSIVE_SIZE
                ,h.ROOM_CNT
-               ,h.BATH_CNT
+               ,h.BATHROOM_CNT
                ,h.IMAGE_FILE_NO
                ,b.TTL
         from APLCT a

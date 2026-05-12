@@ -40,10 +40,12 @@ public class AdmDashBoardRestController {
         return ResponseEntity.ok(adm);
     }
 
+    // 청약 신청 목록 조회
     @GetMapping("/aplct")
     public ResponseEntity<List<AplctDTO>> getAplctList(){
         try {
             List<AplctDTO> list = aplctService.selectAplctList();
+            log.info("#### 청약 리스트 : {}", list);
             if(list.isEmpty()){
                 return ResponseEntity.noContent().build();
             }
