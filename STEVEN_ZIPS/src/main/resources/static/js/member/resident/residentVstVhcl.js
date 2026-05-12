@@ -1,5 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    const body = document.body;
+
+    const memberType = body.dataset.memberType;
+
+    const isResident = memberType === "ResidentVO";
+
     const modal = document.getElementById("visitModal");
 
     const openModalBtn =
@@ -69,6 +75,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
 
     openModalBtn.addEventListener("click", () => {
+
+        if (!isResident) {
+
+            alert("입주민만 사용 가능한 기능입니다.");
+
+            return;
+        }
+
         modal.classList.add("active");
     });
 

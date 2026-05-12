@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
 import java.util.List;
 
 @Slf4j
@@ -191,21 +192,37 @@ public class ResidentMainController {
     public String serviceCar(
             @AuthenticationPrincipal CustomUser principal,
             @PathVariable String aptCmplexNo,
-            Model model) {
+            Model model
+    ) {
 
-        ResidentVO resident = (ResidentVO) principal.getMember();
-        String userNo = resident.getUserNo();
+        MemberVO member = principal.getMember();
 
-        List<MyAptVO> aptList = resident.getMyAptList().stream()
-                .filter(apt -> apt.getAptCmplexNo().equals(aptCmplexNo))
-                .toList();
+        String userNo = member.getUserNo();
 
-        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
+        List<MyAptVO> aptList = List.of();
+
+        if (member instanceof ResidentVO resident) {
+
+            aptList = resident.getMyAptList().stream()
+                    .filter(apt ->
+                            apt.getAptCmplexNo().equals(aptCmplexNo)
+                    )
+                    .toList();
+        }
+
+        AptMainPageDTO.ResponseDto aptCommonDTO =
+                aptComplexService.selectAptCommonDTO(aptCmplexNo);
+
         model.addAttribute("aptInfo", aptCommonDTO);
 
         model.addAttribute("userNo", userNo);
         model.addAttribute("aptCmplexNo", aptCmplexNo);
         model.addAttribute("aptList", aptList);
+
+        model.addAttribute(
+                "memberType",
+                member.getClass().getSimpleName()
+        );
 
         return "member/resident/service/service_car";
     }
@@ -213,13 +230,22 @@ public class ResidentMainController {
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/service/visitor/{aptCmplexNo}")
     public String serviceVisitor(
-            @PathVariable String aptCmplexNo
-            ,Model model
+            @AuthenticationPrincipal CustomUser principal,
+            @PathVariable String aptCmplexNo,
+            Model model
     ) {
 
-        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
+        AptMainPageDTO.ResponseDto aptCommonDTO =
+                aptComplexService.selectAptCommonDTO(aptCmplexNo);
+
         model.addAttribute("aptInfo", aptCommonDTO);
 
+        MemberVO member = principal.getMember();
+
+        model.addAttribute(
+                "memberType",
+                member.getClass().getSimpleName()
+        );
 
         return "member/resident/service/service_visitor";
     }

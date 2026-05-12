@@ -9,7 +9,11 @@ document.addEventListener("DOMContentLoaded", function () {
     initRegister();
 
     initDelete();
-});
+
+
+const memberType = body.dataset.memberType;
+
+const isResident = memberType === "ResidentVO";
 
 let isSubmitting = false;
 
@@ -41,6 +45,14 @@ function initModal(){
 
     document.getElementById("openModalBtn")
         .addEventListener("click", () => {
+
+            if (!isResident) {
+
+                alert("입주민만 사용 가능한 기능입니다.");
+
+                return;
+            }
+
             vhclModal.classList.add("active");
         });
 
@@ -541,3 +553,5 @@ function resetButton() {
 
     registerBtn.innerText = "차량 등록";
 }
+
+});

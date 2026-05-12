@@ -25,7 +25,8 @@ public class ResidentVhclController {
     private IResidentVhclService residentVhclService;
 
     /**
-     * 내 차량 조회
+     * 차량 목록 조회
+     * - 입주민 / 관리사무소 / 관리자 모두 접근 가능
      */
     @GetMapping("/myVhcl/{aptCmplexNo}")
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
@@ -35,20 +36,22 @@ public class ResidentVhclController {
             @AuthenticationPrincipal CustomUser principal
     ) {
 
-        String userNo = principal.getMember().getUserNo();
+        MemberVO member = principal.getMember();
 
-        // 현재 아파트에 속한 내 세대 차량 조회
         return residentVhclService.selectMyVhclList(
-                userNo,
+                member.getUserNo(),
                 aptCmplexNo
         );
     }
 
 
-
+    /**
+     * 추가 차량 여부 체크
+     * - 입주민만 가능
+     */
     @PostMapping("/check/{aptCmplexNo}")
     @ResponseBody
-    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
     public String checkVhcl(
             @AuthenticationPrincipal CustomUser principal,
             @PathVariable String aptCmplexNo,
@@ -56,13 +59,13 @@ public class ResidentVhclController {
             @RequestParam String ho
     ) {
 
-        String userNo = principal.getMember().getUserNo();
+        MemberVO member = principal.getMember();
 
         String hoNo = aptCmplexNo + "_" + dong + "_" + ho;
 
         boolean isExtra =
                 residentVhclService.isExtraRequired(
-                        userNo,
+                        member.getUserNo(),
                         aptCmplexNo,
                         hoNo
                 );
@@ -71,10 +74,13 @@ public class ResidentVhclController {
     }
 
 
-
+    /**
+     * 차량 등록
+     * - 입주민만 가능
+     */
     @PostMapping("/register/{aptCmplexNo}")
     @ResponseBody
-    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
     public String registerVhcl(
             @AuthenticationPrincipal CustomUser principal,
             @PathVariable String aptCmplexNo,
@@ -86,10 +92,10 @@ public class ResidentVhclController {
             @RequestPart(required = false) MultipartFile file
     ) throws IOException {
 
-        String userNo = principal.getMember().getUserNo();
+        MemberVO member = principal.getMember();
 
         residentVhclService.registerVhcl(
-                userNo,
+                member.getUserNo(),
                 aptCmplexNo,
                 vhclNm,
                 vhclNo,
@@ -102,19 +108,23 @@ public class ResidentVhclController {
     }
 
 
-
+    /**
+     * 차량 삭제
+     * - 입주민만 가능
+     */
     @DeleteMapping("/delete/{rsidVhclNo}")
     @ResponseBody
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> deleteVhcl(
             @PathVariable String rsidVhclNo,
             @AuthenticationPrincipal CustomUser customUser
     ) {
 
-        MemberVO user = customUser.getMember();
+        MemberVO member = customUser.getMember();
 
         residentVhclService.deleteVhcl(
                 rsidVhclNo,
-                user.getUserNo()
+                member.getUserNo()
         );
 
         return ResponseEntity.ok("SUCCESS");

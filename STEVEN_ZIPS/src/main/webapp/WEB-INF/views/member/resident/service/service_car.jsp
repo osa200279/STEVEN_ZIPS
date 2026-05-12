@@ -17,6 +17,7 @@
 <body
         data-apt-cmplex-no="${aptCmplexNo}"
         data-user-no="${userNo}"
+        data-member-type="${memberType}"
 >
 <%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
 <div class="main-shell">

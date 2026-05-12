@@ -13,7 +13,9 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/apt/apt.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/member/resident/residentVstVhcl.css">
 </head>
-<body>
+<body
+        data-member-type="${memberType}"
+>
 <%@ include file="/WEB-INF/views/include/apt_headerLayout.jsp" %>
 
 <div class="main-shell">
