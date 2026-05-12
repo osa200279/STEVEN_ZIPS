@@ -111,6 +111,8 @@ public interface IFacilityMapper {
      */
     int updateFacility(FacilityVO facilityVO);
 
+    int updateFacilityFileGroupNo(FacilityVO facilityVO);
+
     /**
      * 시설유형 정정
      * 일반 수정과 분리된 전용 UPDATE

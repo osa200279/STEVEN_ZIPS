@@ -22,7 +22,16 @@ import java.util.UUID;
 
 /**
  * 시설 Service 구현체
- * FACILITY 기본 CRUD + 시설 화면 조회 + 사진 업로드/삭제 + 이용불가 통계
+ *
+ * 역할
+ * - FACILITY 기본 CRUD
+ * - 시설 화면 조회
+ * - 시설 사진 업로드/삭제
+ * - 시설유형 정정
+ * - 위치 조회
+ *
+ * 저장 방식
+ * - 시설 등록/수정과 사진 처리를 같은 요청 안에서 동기 처리
  */
 @Slf4j
 @Service
@@ -30,47 +39,47 @@ import java.util.UUID;
 public class FacilityServiceImpl implements IFacilityService {
 
     @Autowired
-    private IFacilityMapper facilityMapper;         // 시설 Mapper
+    private IFacilityMapper facilityMapper; // 시설 Mapper
 
     @Autowired
-    private IAttachFileMapper attachFileMapper;     // 공통 첨부파일 Mapper
+    private IAttachFileMapper attachFileMapper; // 공통 첨부파일 Mapper
 
     @Autowired
-    private GoogleDriveService googleDriveService;  // Google Drive 업로드·삭제
+    private GoogleDriveService googleDriveService; // Google Drive Service
 
     /**
      * 시설 목록 조회
      */
     @Override
     public List<FacilityVO> selectFacilityList(Map<String, Object> paramMap) {
+        /* 시설 목록 반환 */
         return facilityMapper.selectFacilityList(paramMap);
     }
 
     /**
      * 시설 화면 목록 조회
-     *
-     * FACILITY 기준 전체 시설 조회
-     * PUBLIC_FACILITY 연결 여부로 일반시설/편의시설 구분
-     * 목록 화면 표시와 버튼 분기용 DTO 반환
      */
     @Override
     public List<FacilityDTO> selectFacilityViewList(Map<String, Object> paramMap) {
+        /* 시설 화면 목록 반환 */
         return facilityMapper.selectFacilityViewList(paramMap);
     }
 
+    /**
+     * 시설 화면 목록 건수 조회
+     */
     @Override
     public int selectFacilityViewCount(Map<String, Object> paramMap) {
+        /* 시설 화면 목록 건수 반환 */
         return facilityMapper.selectFacilityViewCount(paramMap);
     }
 
     /**
      * 시설 화면 상세 조회
-     *
-     * FACILITY.FACILITY_NO 기준 단건 조회
-     * 편의시설이면 PUBLIC_FACILITY 요약 정보 포함
      */
     @Override
     public FacilityDTO selectFacilityViewDetail(String mgmtOfcNo, String facilityNo) {
+        /* 시설 화면 상세 반환 */
         return facilityMapper.selectFacilityViewDetail(mgmtOfcNo, facilityNo);
     }
 
@@ -79,31 +88,30 @@ public class FacilityServiceImpl implements IFacilityService {
      */
     @Override
     public FacilityVO selectFacilityDetail(String mgmtOfcNo, String facilityNo) {
+        /* 시설 상세 반환 */
         return facilityMapper.selectFacilityDetail(mgmtOfcNo, facilityNo);
     }
 
     /**
      * 시설 첨부파일 목록 조회
-     * fileGroupNo 없는 시설은 사진 없음으로 처리
      */
     @Override
     public List<AttachFileVO> selectFacilityFileList(Long fileGroupNo) {
-        /* 파일그룹번호 없으면 빈 목록 반환 */
+        /* 파일그룹번호 없음 */
         if (fileGroupNo == null) {
-            return List.of();
+            return new ArrayList<>();
         }
 
+        /* 시설 첨부파일 목록 반환 */
         return facilityMapper.selectFacilityFileList(fileGroupNo);
     }
 
     /**
      * 이용불가 시설 통계 조회
-     * 현황 카드 표시용
-     * 반환 키: DISABLED_TOTAL(전체) / DISABLED_TODAY(오늘 FAULT 판정)
-     * 이후 시설상태통계로 확장 가능 // 지금은 이용불가만
      */
     @Override
     public Map<String, Object> selectDisabledStats(String mgmtOfcNo) {
+        /* 이용불가 시설 통계 반환 */
         return facilityMapper.selectDisabledStats(mgmtOfcNo);
     }
 
@@ -111,9 +119,8 @@ public class FacilityServiceImpl implements IFacilityService {
      * 시설유형 필터 목록 조회
      */
     @Override
-    public List<Map<String, Object>> selectFacilityTypeList(
-            Map<String, Object> paramMap
-    ) {
+    public List<Map<String, Object>> selectFacilityTypeList(Map<String, Object> paramMap) {
+        /* 시설유형 필터 목록 반환 */
         return facilityMapper.selectFacilityTypeList(paramMap);
     }
 
@@ -121,11 +128,11 @@ public class FacilityServiceImpl implements IFacilityService {
      * 시설 등록
      *
      * 처리 순서
-     * 1. 시설번호 채번 (시퀀스 기반 FAC0001)
-     * 2. 단지번호 서버 기준 세팅 (화면 위변조 방지)
-     * 3. 사용여부 기본값 처리
-     * 4. 사진 업로드
-     * 5. FACILITY INSERT
+     * 1. 시설번호 채번
+     * 2. 단지번호 세팅
+     * 3. 사용여부 기본값 세팅
+     * 4. 시설 사진 업로드
+     * 5. FACILITY 등록
      */
     @Override
     public boolean insertFacility(
@@ -134,32 +141,35 @@ public class FacilityServiceImpl implements IFacilityService {
             MultipartFile[] facilityFiles,
             String userNo
     ) {
-        /* 시설번호 채번 및 세팅 */
-        String facilityNo = facilityMapper.getFacilityNo();  // 생성된 시설번호
+        /* 시설번호 채번 */
+        String facilityNo = facilityMapper.getFacilityNo();
         facilityVO.setFacilityNo(facilityNo);
 
-        /* 서버 기준 단지번호 세팅 (화면 위변조 방지) */
-        String aptCmplexNo = facilityMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo); // 단지번호
+        /* 단지번호 세팅 */
+        String aptCmplexNo = facilityMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
         facilityVO.setAptCmplexNo(aptCmplexNo);
 
-        /* 사용여부 기본값: 미전달 시 이용 가능(Y) */
+        /* 사용여부 기본값 */
         if (facilityVO.getUseYn() == null || facilityVO.getUseYn().isBlank()) {
             facilityVO.setUseYn("Y");
         }
 
-        /* 사진 업로드 (파일 없으면 내부에서 바로 리턴) */
+        /* 시설 사진 업로드 */
         uploadFacilityFiles(facilityVO, facilityFiles, userNo);
 
+        /* 시설 기본정보 등록 */
         return facilityMapper.insertFacility(facilityVO) > 0;
     }
 
     /**
      * 시설 수정
      *
-     * 수정 가능 항목: 시설명 · 설치일자 · 상세위치 · 사용여부 · 사진
-     * 수정 제외 항목: 시설유형 · 단지번호 · 동번호
-     *
-     * deleteFileUuids: 삭제할 FILE_SAVE_UUID 목록 (쉼표 구분)
+     * 처리 순서
+     * 1. 기존 시설 조회
+     * 2. 단지번호/시설유형/파일그룹번호 보정
+     * 3. 기존 사진 삭제
+     * 4. 신규 사진 업로드
+     * 5. FACILITY 기본정보 수정
      */
     @Override
     public boolean updateFacility(
@@ -169,277 +179,316 @@ public class FacilityServiceImpl implements IFacilityService {
             String deleteFileUuids,
             String userNo
     ) {
-        /* 기존 시설 조회 (보정값 확보용) */
+        /* 기존 시설 조회 */
         FacilityVO savedFacility = facilityMapper.selectFacilityDetail(
                 mgmtOfcNo,
                 facilityVO.getFacilityNo()
-        ); // 기존 저장된 시설 정보
+        );
 
+        /* 기존 시설 없음 */
         if (savedFacility == null) {
             return false;
         }
 
-        /* 파일 경로 생성에 필요한 기존 값 보정 */
-        facilityVO.setAptCmplexNo(savedFacility.getAptCmplexNo()); // 단지번호
-        facilityVO.setFacilityTyCd(savedFacility.getFacilityTyCd()); // 시설유형코드
+        /* 단지번호 보정 */
+        facilityVO.setAptCmplexNo(savedFacility.getAptCmplexNo());
 
-        /* 파일그룹번호: 화면에서 미전달 시 기존 값 유지 */
+        /* 시설유형 보정 */
+        facilityVO.setFacilityTyCd(savedFacility.getFacilityTyCd());
+
+        /* 파일그룹번호 보정 */
         if (facilityVO.getFileGroupNo() == null) {
             facilityVO.setFileGroupNo(savedFacility.getFileGroupNo());
         }
 
-        /* 기존 사진 삭제 (Google Drive 휴지통 이동 + ATTACH_FILE 삭제) */
-        if (deleteFileUuids != null && !deleteFileUuids.isBlank()) {
-            for (String fileSaveUuid : deleteFileUuids.split(",")) {
-                if (fileSaveUuid == null || fileSaveUuid.isBlank()) continue;
-
-                /* 삭제 파라미터 구성 */
-                Map<String, Object> param = new HashMap<>();
-                param.put("fileGroupNo",  facilityVO.getFileGroupNo()); // 파일그룹번호
-                param.put("fileSaveUuid", fileSaveUuid.trim());         // 저장 UUID
-
-                deleteFacilityFile(param);
-            }
-        }
+        /* 기존 사진 삭제 */
+        deleteFacilityFiles(facilityVO.getFileGroupNo(), deleteFileUuids);
 
         /* 신규 사진 업로드 */
         uploadFacilityFiles(facilityVO, facilityFiles, userNo);
 
-        /* 기본정보 수정 (SQL에서 시설유형·단지번호·동번호 제외) */
+        /* 시설 기본정보 수정 */
         return facilityMapper.updateFacility(facilityVO) > 0;
     }
 
     /**
      * 시설유형 정정 가능 여부 조회
-     *
-     * 정정 버튼 클릭 시 실제 변경 전 먼저 호출되는 조회 전용 메서드
-     * 연결 데이터 없으면 true (정정 가능) / 있으면 false (정정 불가)
-     * selectFacilityLinkedCount 단일 쿼리로 계약·점검이력·검침기록 합산 확인
      */
     @Override
     public boolean checkFacilityTypeCorrection(String mgmtOfcNo, FacilityVO facilityVO) {
-        /* 연결 데이터 건수 합산 조회 */
+        /* 시설 연결 데이터 건수 */
         int linkedCnt = facilityMapper.selectFacilityLinkedCount(facilityVO.getFacilityNo());
 
-        /* 0이면 정정 가능 */
+        /* 연결 데이터 없음 여부 */
         return linkedCnt == 0;
     }
 
     /**
      * 시설유형 정정
-     *
-     * 계약·점검이력·검침기록 중 하나라도 연결되어 있으면 정정 불가
-     * 단일 통합 쿼리로 3번 DB 왕복을 1번으로 처리
      */
     @Override
     public boolean correctFacilityType(String mgmtOfcNo, FacilityVO facilityVO) {
-        /* 연결 데이터 건수 합산 조회 */
-        int linkedCnt = facilityMapper.selectFacilityLinkedCount(facilityVO.getFacilityNo()); // 연결 건수 합계
+        /* 시설 연결 데이터 건수 */
+        int linkedCnt = facilityMapper.selectFacilityLinkedCount(facilityVO.getFacilityNo());
 
-        /* 연결 데이터 존재 시 정정 불가 */
+        /* 연결 데이터 존재 */
         if (linkedCnt > 0) {
             return false;
         }
 
+        /* 시설유형 정정 */
         return facilityMapper.correctFacilityType(facilityVO) > 0;
     }
 
     /**
      * 시설 사용여부 변경
-     * 삭제 대신 USE_YN 변경
-     * FAULT 판정 시 트리거(trg_facility_use_yn) 자동 N
-     * 복구(Y)는 관리자 수동 호출
      */
     @Override
     public boolean updateFacilityUseYn(String mgmtOfcNo, FacilityVO facilityVO) {
+        /* 시설 사용여부 변경 */
         return facilityMapper.updateFacilityUseYn(facilityVO) > 0;
     }
 
     /**
      * 시설 첨부파일 삭제
-     *
-     * 처리 순서
-     * 1. FILE_GROUP_NO + FILE_SAVE_UUID 기준 ATTACH_FILE 조회
-     * 2. Google Drive 파일 휴지통 이동
-     * 3. ATTACH_FILE 레코드 삭제
      */
     @Override
     public boolean deleteFacilityFile(Map<String, Object> param) {
         try {
-            /* 파일그룹번호 (ATTACH_FILE 복합 PK 첫 번째) */
+            /* 파일그룹번호 */
             Long fileGroupNo = Long.valueOf(String.valueOf(param.get("fileGroupNo")));
 
-            /* 저장 UUID (ATTACH_FILE 복합 PK 두 번째) */
+            /* 저장 UUID */
             String fileSaveUuid = String.valueOf(param.get("fileSaveUuid"));
 
             /* 삭제 대상 파일 조회 */
-            AttachFileVO file = facilityMapper.selectFacilityFile(fileGroupNo, fileSaveUuid); // 조회된 파일 정보
+            AttachFileVO file = facilityMapper.selectFacilityFile(fileGroupNo, fileSaveUuid);
 
+            /* 삭제 대상 파일 없음 */
             if (file == null) {
                 return false;
             }
 
-            /* Google Drive 휴지통 이동 (경로 아닌 googleId 기준) */
-            Drive drive = googleDriveService.getDriveService(); // Drive 서비스 객체
+            /* Google Drive 객체 */
+            Drive drive = googleDriveService.getDriveService();
+
+            /* Google Drive 휴지통 이동 */
             googleDriveService.moveToTrash(drive, file.getGoogleId());
 
+            /* ATTACH_FILE 삭제 */
             return facilityMapper.deleteFacilityFile(fileGroupNo, fileSaveUuid) > 0;
-
         } catch (Exception e) {
+            /* 시설 파일 삭제 오류 로그 */
             log.error("시설 파일 삭제 오류", e);
+
+            /* 트랜잭션 롤백용 RuntimeException */
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
     /**
      * 동 목록 조회
-     * 시설 등록 화면 동 선택 드롭다운용
      */
     @Override
     public List<FacilityVO> selectDongList(String mgmtOfcNo) {
+        /* 시설 동 목록 반환 */
         return facilityMapper.selectDongList(mgmtOfcNo);
     }
 
     /**
-     * 시설 첨부파일 업로드 (등록·수정 공통)
+     * 시설 위치 동 목록 조회
+     */
+    @Override
+    public List<FacilityLocationDTO> selectFacilityUnitList(String mgmtOfcNo) {
+        /* 관리사무소 기준 단지번호 */
+        String aptCmplexNo = facilityMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
+
+        /* 시설 위치 동 목록 반환 */
+        return facilityMapper.selectFacilityUnitList(aptCmplexNo);
+    }
+
+    /**
+     * 시설 위치 층 목록 조회
+     */
+    @Override
+    public List<FacilityLocationDTO> selectFacilityFloorList(String dongNo) {
+        /* 시설 위치 층 목록 반환 */
+        return facilityMapper.selectFacilityFloorList(dongNo);
+    }
+
+    /**
+     * 시설 위치 호 목록 조회
+     */
+    @Override
+    public List<FacilityLocationDTO> selectFacilityRoomList(String dongNo, String floor) {
+        /* 시설 위치 호 목록 반환 */
+        return facilityMapper.selectFacilityRoomList(dongNo, floor);
+    }
+
+    /**
+     * 시설 사진 삭제 목록 처리
+     */
+    private void deleteFacilityFiles(Long fileGroupNo, String deleteFileUuids) {
+        /* 삭제 대상 없음 */
+        if (fileGroupNo == null || deleteFileUuids == null || deleteFileUuids.isBlank()) {
+            return;
+        }
+
+        /* 삭제 UUID 반복 처리 */
+        for (String fileSaveUuid : deleteFileUuids.split(",")) {
+            /* 빈 UUID 제외 */
+            if (fileSaveUuid == null || fileSaveUuid.isBlank()) {
+                continue;
+            }
+
+            /* 삭제 파라미터 */
+            Map<String, Object> param = new HashMap<>();
+            param.put("fileGroupNo", fileGroupNo);
+            param.put("fileSaveUuid", fileSaveUuid.trim());
+
+            /* 시설 사진 삭제 */
+            deleteFacilityFile(param);
+        }
+    }
+
+    /**
+     * 시설 첨부파일 업로드
      *
      * 처리 순서
-     * 1. 업로드할 파일 없으면 종료
-     * 2. 파일그룹번호 없으면 신규 채번
+     * 1. 업로드 파일 존재 확인
+     * 2. 파일그룹번호 채번
      * 3. Google Drive 업로드
-     * 4. ATTACH_FILE INSERT
-     *
-     * 중간 실패 시 이미 업로드된 파일을 Google Drive 휴지통으로 롤백
+     * 4. ATTACH_FILE 등록
+     * 5. 업로드 실패 시 Google Drive 롤백
      */
     private void uploadFacilityFiles(
             FacilityVO facilityVO,
             MultipartFile[] facilityFiles,
             String userNo
     ) {
-        /* 업로드할 파일 없으면 종료 */
+        /* 업로드 파일 없음 */
         if (facilityFiles == null || facilityFiles.length == 0) {
             return;
         }
 
-        /* 롤백용 업로드 완료 Google Drive ID 목록 */
+        /* Google Drive 롤백 대상 ID 목록 */
         List<String> uploadedGoogleIds = new ArrayList<>();
 
-        /* catch 블록에서도 필요하므로 try 밖 선언 */
+        /* Google Drive 객체 */
         Drive drive = null;
 
         try {
-            drive = googleDriveService.getDriveService(); // Drive 서비스 객체
+            /* Google Drive 객체 생성 */
+            drive = googleDriveService.getDriveService();
 
-            /* 파일그룹번호: 없으면 신규 채번 */
-            Long fileGroupNo = facilityVO.getFileGroupNo(); // 파일그룹번호
+            /* 파일그룹번호 */
+            Long fileGroupNo = facilityVO.getFileGroupNo();
+
+            /* 파일그룹번호 신규 채번 */
             if (fileGroupNo == null) {
                 fileGroupNo = attachFileMapper.getSeqFileGroupNo();
                 facilityVO.setFileGroupNo(fileGroupNo);
             }
 
-            int size = facilityFiles.length; // 업로드 파일 수
+            /* 업로드 파일 수 */
+            int size = facilityFiles.length;
 
-            /* ATTACH_FILE INSERT용 VO 배열 */
+            /* ATTACH_FILE 등록 대상 배열 */
             AttachFileVO[] files = new AttachFileVO[size];
 
             for (int i = 0; i < size; i++) {
-                if (facilityFiles[i] == null || facilityFiles[i].isEmpty()) continue;
+                /* 빈 파일 제외 */
+                if (facilityFiles[i] == null || facilityFiles[i].isEmpty()) {
+                    continue;
+                }
 
-                String originalFilename = facilityFiles[i].getOriginalFilename(); // 원본 파일명
-                String uuid             = UUID.randomUUID().toString().replace("-", ""); // 중복 방지 UUID
-                String savedFileName    = uuid + "_" + originalFilename; // 저장 파일명 (FILE_SAVE_UUID)
+                /* 원본 파일명 */
+                String originalFilename = facilityFiles[i].getOriginalFilename();
+
+                /* 저장 UUID */
+                String uuid = UUID.randomUUID().toString().replace("-", "");
+
+                /* 저장 파일명 */
+                String savedFileName = uuid + "_" + originalFilename;
 
                 /* Google Drive 폴더 경로 */
                 String folderPath = "apt/facility/"
-                        + userNo                         + "/"
-                        + facilityVO.getAptCmplexNo()    + "/"
-                        + facilityVO.getFacilityTyCd()   + "/"
+                        + userNo + "/"
+                        + facilityVO.getAptCmplexNo() + "/"
+                        + facilityVO.getFacilityTyCd() + "/"
                         + facilityVO.getFacilityNo();
 
-                String fullPath = folderPath + "/" + savedFileName; // DB 저장용 전체 경로
+                /* DB 저장용 전체 경로 */
+                String fullPath = folderPath + "/" + savedFileName;
 
-                /* Google Drive 업로드 (반환값: 파일 식별 ID) */
+
+                /* Google Drive 업로드 시작 시간 */
+                long uploadStartTime = System.currentTimeMillis();
+
+                /* Google Drive 업로드 */
                 String googleId = googleDriveService.uploadFile(
                         facilityFiles[i],
                         folderPath,
                         savedFileName
-                ); // Google Drive 파일 ID
+                );
 
+                /* Google Drive 업로드 소요 시간 로그 */
+                log.info("시설 사진 Google Drive 업로드 소요시간: {}ms, fileName={}",
+                        System.currentTimeMillis() - uploadStartTime,
+                        originalFilename
+                );
+
+                /* Google Drive 롤백 대상 추가 */
                 uploadedGoogleIds.add(googleId);
 
-                /* ATTACH_FILE INSERT용 VO 생성 */
+                /* 첨부파일 VO 생성 */
                 files[i] = AttachFileVO.fileSettings(
                         facilityFiles[i],
                         fileGroupNo,
-                        "시설사진",     // 파일 카테고리
+                        "시설사진",
                         savedFileName,
                         googleId,
                         fullPath,
-                        i               // 정렬 순서
+                        i
                 );
             }
 
-            /* ATTACH_FILE INSERT */
+            /* 첨부파일 DB 등록 */
             for (AttachFileVO file : files) {
+                /* 빈 배열 요소 제외 */
                 if (file != null) {
                     attachFileMapper.insertAttachFile(file);
                 }
             }
-
         } catch (Exception e) {
+            /* 시설 파일 업로드 오류 로그 */
             log.error("시설 파일 업로드 오류", e);
 
-            /* 업로드 완료된 파일 Google Drive 롤백 */
-            if (drive != null && !uploadedGoogleIds.isEmpty()) {
-                for (String googleId : uploadedGoogleIds) {
-                    try {
-                        googleDriveService.moveToTrash(drive, googleId);
-                    } catch (Exception ex) {
-                        log.error("시설 파일 롤백 실패 googleId={}", googleId, ex);
-                    }
-                }
-            }
+            /* Google Drive 업로드 롤백 */
+            rollbackUploadedFiles(drive, uploadedGoogleIds);
 
+            /* 트랜잭션 롤백용 RuntimeException */
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
     /**
-     * 시설 위치 동 목록 조회
-     *
-     * 처리 흐름
-     * 1. 관리사무소 번호로 단지번호 조회
-     * 2. 단지번호 기준 APT_UNIT 동 목록 조회
+     * Google Drive 업로드 롤백
      */
-    @Override
-    public List<FacilityLocationDTO> selectFacilityUnitList(String mgmtOfcNo) {
-        String aptCmplexNo = facilityMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
-        return facilityMapper.selectFacilityUnitList(aptCmplexNo);
+    private void rollbackUploadedFiles(Drive drive, List<String> uploadedGoogleIds) {
+        /* 롤백 대상 없음 */
+        if (drive == null || uploadedGoogleIds == null || uploadedGoogleIds.isEmpty()) {
+            return;
+        }
+
+        for (String googleId : uploadedGoogleIds) {
+            try {
+                /* Google Drive 휴지통 이동 */
+                googleDriveService.moveToTrash(drive, googleId);
+            } catch (Exception e) {
+                /* Google Drive 롤백 실패 로그 */
+                log.error("시설 파일 롤백 실패 googleId={}", googleId, e);
+            }
+        }
     }
-
-    /**
-     * 시설 위치 층 목록 조회
-     *
-     * 처리 흐름
-     * 1. 화면에서 선택한 동번호 전달
-     * 2. APT_DETAIL 기준 해당 동의 층 목록 조회
-     */
-    @Override
-    public List<FacilityLocationDTO> selectFacilityFloorList(String dongNo) {
-        return facilityMapper.selectFacilityFloorList(dongNo);
-    }
-
-    /**
-     * 시설 위치 호 목록 조회
-     *
-     * 처리 흐름
-     * 1. 화면에서 선택한 동번호와 층 전달
-     * 2. APT_DETAIL 기준 해당 동/층의 호 목록 조회
-     */
-    @Override
-    public List<FacilityLocationDTO> selectFacilityRoomList(String dongNo, String floor) {
-        return facilityMapper.selectFacilityRoomList(dongNo, floor);
-    }
-
-
 }

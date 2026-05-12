@@ -115,7 +115,7 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">시설자산 관리</span>
                     </a>
-                    <a href="${ctx}/manager/publicFacilityList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacilityList') ? 'active' : ''}">
+                    <a href="${ctx}/manager/publicFacility/list${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacilityList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">편의시설 관리</span>
                     </a>

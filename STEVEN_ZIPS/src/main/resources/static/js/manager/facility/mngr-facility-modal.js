@@ -384,6 +384,42 @@ var FacilityModal = (function () {
 
         if (!formData.get("instlDt")) formData.delete("instlDt");
         if (deleteFileUuids) formData.set("deleteFileUuids", deleteFileUuids.value || "");
+        formData.delete("facilityFiles");
+        formData.delete("deleteFileUuids");
+
+        return formData;
+    }
+
+    function hasFileSyncWork() {
+        var fileInput       = document.getElementById("facilityFiles");
+        var deleteFileUuids = document.getElementById("deleteFileUuids");
+
+        return !!(
+            (fileInput && fileInput.files && fileInput.files.length > 0)
+            || (deleteFileUuids && deleteFileUuids.value)
+        );
+    }
+
+    function makeFacilityFileFormData(facilityNo) {
+        var fileInput       = document.getElementById("facilityFiles");
+        var deleteFileUuids = document.getElementById("deleteFileUuids");
+        var formData        = new FormData();
+
+        formData.set("facilityNo", facilityNo);
+
+        if (state().currentFacility && state().currentFacility.fileGroupNo) {
+            formData.set("fileGroupNo", state().currentFacility.fileGroupNo);
+        }
+
+        if (deleteFileUuids) {
+            formData.set("deleteFileUuids", deleteFileUuids.value || "");
+        }
+
+        if (fileInput && fileInput.files) {
+            Array.from(fileInput.files).forEach(function (file) {
+                formData.append("facilityFiles", file);
+            });
+        }
 
         return formData;
     }
@@ -412,6 +448,7 @@ var FacilityModal = (function () {
 
         try {
             var formData = makeFacilityFormData();
+            var savedFacilityNo = state().currentFacilityNo;
 
             if (isEdit && state().correctionUnlocked) {
                 await util().postJson(
@@ -423,11 +460,30 @@ var FacilityModal = (function () {
                 );
                 util().alertMessage("시설유형이 정정되었습니다.");
             } else if (isEdit) {
-                await util().postForm(util().apiUrl("update/" + encodeURIComponent(util().mgmtOfcNo())), formData);
+                // 기존 방식: 기본정보와 파일을 한 번에 전송
+                // await util().postForm(util().apiUrl("update/" + encodeURIComponent(util().mgmtOfcNo())), formData);
+                var updateResult = await util().postForm(util().apiUrl("update/" + encodeURIComponent(util().mgmtOfcNo())), formData);
+                savedFacilityNo = updateResult.facilityNo || savedFacilityNo;
                 util().alertMessage("시설 정보가 수정되었습니다.");
             } else {
-                await util().postForm(util().apiUrl("insert/" + encodeURIComponent(util().mgmtOfcNo())), formData);
+                // 기존 방식: 기본정보와 파일을 한 번에 전송
+                // await util().postForm(util().apiUrl("insert/" + encodeURIComponent(util().mgmtOfcNo())), formData);
+                var insertResult = await util().postForm(util().apiUrl("insert/" + encodeURIComponent(util().mgmtOfcNo())), formData);
+                savedFacilityNo = insertResult.facilityNo;
                 util().alertMessage("시설이 등록되었습니다.");
+            }
+
+            if (savedFacilityNo && hasFileSyncWork()) {
+                util().alertMessage("시설 정보가 저장되었습니다. 사진 처리를 이어서 진행합니다.");
+                util().postForm(
+                    util().apiUrl("file/sync/" + encodeURIComponent(util().mgmtOfcNo())),
+                    makeFacilityFileFormData(savedFacilityNo)
+                ).then(function () {
+                    return util().loadFacilityList();
+                }).catch(function (fileError) {
+                    console.error(fileError);
+                    util().alertMessage(fileError.message || "사진 처리 중 오류가 발생했습니다.");
+                });
             }
 
             closeModal("facilityModal");

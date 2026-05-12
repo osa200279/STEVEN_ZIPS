@@ -269,18 +269,18 @@ public class ManagerMainController {
         return "apt/mgmtOffice/mngr_visit_auto";
     }
 
-    // 시설 목록
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/facilityList/{mgmtOfcNo}")
-    public String facilityList(
-            @PathVariable String mgmtOfcNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
-    ) {
-        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        model.addAttribute("dongList", facilityService.selectDongList(mgmtOfcNo));
-        return "apt/mgmtOffice/mngr_facility_list";
-    }
+//    // 시설 목록
+//    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+//    @GetMapping("facility/facilityList/{mgmtOfcNo}")
+//    public String facilityList(
+//            @PathVariable String mgmtOfcNo,
+//            @AuthenticationPrincipal CustomUser customUser,
+//            Model model
+//    ) {
+//        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+//        model.addAttribute("dongList", facilityService.selectDongList(mgmtOfcNo));
+//        return "apt/mgmtOffice/facility/mngr_facility_list";
+//    }
 
     // 공용 시설
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
