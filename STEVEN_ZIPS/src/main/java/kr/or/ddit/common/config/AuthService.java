@@ -35,7 +35,7 @@ public class AuthService {
             return isOwner;
         }else if(member instanceof MngrVO mngr){
 
-            boolean isManager = mngr.getMgmtOfcNo().equals(target);
+            boolean isManager = mngr.getMgmtOfcNo().equals(target) || mngr.getAptCmplexNo().equals(target);
 
             if(!isManager) log.info("권한 없는 단지 접근 시도 유저 : {}", mngr.getUserId());
 
