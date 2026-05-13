@@ -48,39 +48,6 @@ public class AptComplexController {
     ) {
         Map<String, Object> result = new HashMap<>();
 
-        try {
-            CustomUser customUser = (CustomUser) authentication.getPrincipal();
-            MemberVO member = customUser.getMember();
-            String userNo = member.getUserNo(); // 로그인 사용자 번호
-
-            String aptCmplexNo = aptComplexService.selectManagerAptCmplexNo(userNo);
-
-
-            if (aptCmplexNo == null || aptCmplexNo.trim().isEmpty()) {
-                result.put("success", false);
-                result.put("message", "로그인 계정에 연결된 단지 정보가 없습니다.");
-                return result;
-            }
-
-            aptComplexVO.setAptCmplexNo(aptCmplexNo);
-
-            int updateCnt = aptComplexService.updateAptComplex(aptComplexVO);
-
-            if (updateCnt > 0) {
-                result.put("success", true);
-                result.put("message", "단지 정보가 수정되었습니다.");
-            } else {
-                result.put("success", false);
-                result.put("message", "수정된 데이터가 없습니다.");
-            }
-
-        } catch (Exception e) {
-            log.error("단지 정보 수정 중 오류", e);
-
-            result.put("success", false);
-            result.put("message", "단지 정보 수정 중 오류가 발생했습니다.");
-        }
-
         return result;
     }
 }
