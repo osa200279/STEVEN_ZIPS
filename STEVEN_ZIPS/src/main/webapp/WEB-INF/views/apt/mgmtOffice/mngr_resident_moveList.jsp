@@ -583,8 +583,10 @@
               moveOutDt: document.getElementById("moveOutDt").value
             };
 
+            var method = currentMode === "edit" ? "PUT" : "POST";
+
             var response = await fetch(apiBase, {
-              method: "POST",
+              method: method,
               headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json",

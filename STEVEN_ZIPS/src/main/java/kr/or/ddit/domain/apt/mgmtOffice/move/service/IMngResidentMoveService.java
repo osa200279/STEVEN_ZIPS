@@ -13,4 +13,6 @@ public interface IMngResidentMoveService {
     MngResidentMoveVO selectResidentMoveDetail(String mgmtOfcNo, String userNo);
 
     Map<String, Object> saveResidentMove(MngResidentMoveVO vo);
+
+    Map<String, Object> updateResidentMove(MngResidentMoveVO vo);
 }

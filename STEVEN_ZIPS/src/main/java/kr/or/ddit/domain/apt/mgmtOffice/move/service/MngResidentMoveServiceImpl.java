@@ -65,6 +65,37 @@ public class MngResidentMoveServiceImpl implements IMngResidentMoveService {
         return result;
     }
 
+    @Override
+    @Transactional
+    public Map<String, Object> updateResidentMove(MngResidentMoveVO vo) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (!StringUtils.hasText(vo.getUserNo())) {
+            result.put("success", false);
+            result.put("message", "사용자 번호가 필요합니다.");
+            return result;
+        }
+
+        if (!StringUtils.hasText(vo.getHoNo())) {
+            result.put("success", false);
+            result.put("message", "호실 정보가 필요합니다.");
+            return result;
+        }
+
+        normalizeMoveDates(vo);
+
+        int affected = residentMoveMapper.updateResidentMove(vo);
+
+        result.put("success", affected > 0);
+        result.put("affectedRows", affected);
+        result.put("message",
+                affected > 0 ? "입주/퇴거 정보가 수정되었습니다."
+                        : "수정에 실패했습니다.");
+
+        return result;
+    }
+
     private void normalizeMoveDates(MngResidentMoveVO vo) {
         if (!StringUtils.hasText(vo.getMoveStatus())) {
             vo.setMoveStatus("WAIT");

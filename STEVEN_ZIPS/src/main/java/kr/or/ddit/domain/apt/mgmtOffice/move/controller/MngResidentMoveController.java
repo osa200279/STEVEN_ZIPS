@@ -36,7 +36,9 @@ public class MngResidentMoveController {
             @RequestParam(required = false, defaultValue = "") String moveOutEnd,
             @AuthenticationPrincipal CustomUser user
     ) {
+
         MngResidentMoveSearchDTO searchDTO = new MngResidentMoveSearchDTO();
+
         searchDTO.setMgmtOfcNo(mgmtOfcNo);
         searchDTO.setDong(dong);
         searchDTO.setHo(ho);
@@ -48,15 +50,22 @@ public class MngResidentMoveController {
         searchDTO.setMoveOutStart(moveOutStart);
         searchDTO.setMoveOutEnd(moveOutEnd);
 
-        List<MngResidentMoveVO> list = residentMoveService.selectResidentMoveList(searchDTO);
+        List<MngResidentMoveVO> list =
+                residentMoveService.selectResidentMoveList(searchDTO);
 
         Map<String, Object> result = new HashMap<>();
+
         result.put("list", list);
         result.put("count", list.size());
-        result.put("waitCnt", list.stream().filter(row -> "WAIT".equals(row.getMoveStatus())).count());
-        result.put("liveCnt", list.stream().filter(row -> "LIVE".equals(row.getMoveStatus())).count());
-        result.put("outCnt", list.stream().filter(row -> "OUT".equals(row.getMoveStatus())).count());
-        result.put("midCnt", list.stream().filter(row -> "MID".equals(row.getMoveStatus())).count());
+        result.put("waitCnt",
+                list.stream().filter(row -> "WAIT".equals(row.getMoveStatus())).count());
+        result.put("liveCnt",
+                list.stream().filter(row -> "LIVE".equals(row.getMoveStatus())).count());
+        result.put("outCnt",
+                list.stream().filter(row -> "OUT".equals(row.getMoveStatus())).count());
+        result.put("midCnt",
+                list.stream().filter(row -> "MID".equals(row.getMoveStatus())).count());
+
         return ResponseEntity.ok(result);
     }
 
@@ -67,10 +76,14 @@ public class MngResidentMoveController {
             @PathVariable String userNo,
             @AuthenticationPrincipal CustomUser user
     ) {
-        MngResidentMoveVO detail = residentMoveService.selectResidentMoveDetail(mgmtOfcNo, userNo);
+
+        MngResidentMoveVO detail =
+                residentMoveService.selectResidentMoveDetail(mgmtOfcNo, userNo);
+
         if (detail == null) {
             return ResponseEntity.notFound().build();
         }
+
         return ResponseEntity.ok(detail);
     }
 
@@ -81,8 +94,30 @@ public class MngResidentMoveController {
             @RequestBody MngResidentMoveVO vo,
             @AuthenticationPrincipal CustomUser user
     ) {
+
         vo.setMgmtOfcNo(mgmtOfcNo);
-        Map<String, Object> result = residentMoveService.saveResidentMove(vo);
+
+        Map<String, Object> result =
+                residentMoveService.saveResidentMove(vo);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PreAuthorize("hasAnyRole('MNGR', 'ADMIN') and @authService.hasAccess(principal, #mgmtOfcNo)")
+    @PutMapping("/{mgmtOfcNo}/{userNo}")
+    public ResponseEntity<Map<String, Object>> updateResidentMove(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String userNo,
+            @RequestBody MngResidentMoveVO vo,
+            @AuthenticationPrincipal CustomUser user
+    ) {
+
+        vo.setMgmtOfcNo(mgmtOfcNo);
+        vo.setUserNo(userNo);
+
+        Map<String, Object> result =
+                residentMoveService.updateResidentMove(vo);
+
         return ResponseEntity.ok(result);
     }
 }
