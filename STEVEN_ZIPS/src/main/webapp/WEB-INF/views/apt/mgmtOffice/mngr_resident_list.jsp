@@ -318,7 +318,20 @@
                         document.getElementById("userEml").value = row.userEml || "";
                         document.getElementById("userNo").value = row.userNo || "";
                         document.getElementById("complexName").value = row.complexName || "";
-                        document.getElementById("dong").value = row.dong || "";
+
+                        const dongValue = row.dong || "";
+
+                        document.getElementById("dong").value =
+                            dongValue.includes("_")
+                                ? dongValue.split("_").pop()
+                                : dongValue;
+
+
+
+
+
+
+
                         document.getElementById("ho").value = row.ho || "";
                         document.getElementById("householdType").value = householdText(row.householdType);
                         document.getElementById("moveStatus").value = moveStatusText(row.moveStatus);
