@@ -6,6 +6,8 @@ import kr.or.ddit.domain.apt.board.ann.vo.AptAnnBoardPostVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.mapper.IAptComplexMapper;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
+import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
+import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IMgmtOfficeMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.MgmtOfficeVO;
 import org.springframework.beans.BeanUtils;
@@ -44,10 +46,27 @@ public class AptComplexServiceImpl implements IAptComplexService {
     }
 
 
-    /*mgmtOfc 번호로 aptComplexVO 가져오는 메서드 입니다 by도선호*/
+    /*mgmtOfc 번호로 aptComplexVO 가져오는 메서드 입니다 도선호*/
     @Override
     public AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo) {
         return aptComplexMapper.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+    }
+
+    @Override
+    public List<AptDetailGridDTO> selectComplexList(String mgmtOfcNo) {
+
+        // mgmt 번호로 아파트 vo 가져오기
+        AptComplexVO aptComplexVO = selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+        // 관리사무소에 연결된 단지가 없는 경우
+        if (aptComplexVO == null) {
+            return List.of();
+        }
+
+        String aptCmplexNo = aptComplexVO.getAptCmplexNo();
+
+
+        return aptComplexMapper.selectComplexList(aptCmplexNo);
     }
 
     @Override

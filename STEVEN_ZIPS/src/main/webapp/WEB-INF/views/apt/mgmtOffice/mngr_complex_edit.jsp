@@ -27,6 +27,12 @@
 
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/mgmtOfc/mngr_complex_edit.css">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
 </head>
 
 <body>
@@ -46,7 +52,10 @@
                 <!-- =====================================================
                      메인 컨텐츠
                 ===================================================== -->
-                <div class="unit-manage-wrap">
+                <div class="unit-manage-wrap"
+                     data-mgmt-ofc-no="${mgmtOfcNo}"
+                     data-apt-cmplex-no="${complex.aptCmplexNo}"
+                     data-apt-cmplex-nm="${complex.aptCmplexNm}">
 
                     <!-- =====================================================
                          상단 구조 설정
@@ -224,51 +233,54 @@
                         <!-- =====================================================
                              우측 테이블 영역
                         ====================================================== -->
+
                         <div class="unit-table-panel">
 
                             <!-- 상단 액션 -->
                             <div class="unit-table-top">
 
+                                <!-- 좌측 -->
                                 <div class="unit-table-actions">
 
                                     <button type="button"
-                                            class="btn btn-secondary">
+                                            class="btn btn-secondary"
+                                            id="btnOpenTypeDrawer">
 
-                                        선택 호 비활성화
-
-                                    </button>
-
-                                    <button type="button"
-                                            class="btn btn-secondary">
-
-                                        선택 호 활성화
+                                        평형 타입 관리
 
                                     </button>
 
                                 </div>
 
+                                <!-- 우측 -->
                                 <div class="unit-bulk-type">
 
-                                    <select class="form-select">
+                                    <select class="form-select"
+                                            id="hoTypeSelect">
 
-                                        <option>
+                                        <option value="">
+                                            평형 선택
+                                        </option>
+
+                                        <option value="84A">
                                             84A
                                         </option>
 
-                                        <option>
+                                        <option value="84B">
                                             84B
                                         </option>
 
-                                        <option>
+                                        <option value="59A">
                                             59A
                                         </option>
 
                                     </select>
 
                                     <button type="button"
-                                            class="btn btn-primary">
+                                            class="btn btn-primary"
+                                            id="btnApplyHoType">
 
-                                        평형 일괄 적용
+                                        선택 호 평형 적용
 
                                     </button>
 
@@ -276,25 +288,19 @@
 
                             </div>
 
-                            <!-- 필터 영역 -->
-                            <div class="unit-filter-box">
 
-                                ag-grid 로 필터
-
-                            </div>
-
-                            <!-- AG GRID 영역 -->
+                            <!-- GRID -->
                             <div class="unit-table-area">
 
-                                <div class="unit-table-placeholder">
-
-                                    아파트 호 목록 가져오기
-
+                                <div id="unitGrid"
+                                     class="ag-theme-alpine unit-grid">
                                 </div>
 
                             </div>
 
                         </div>
+
+
 
                     </section>
 

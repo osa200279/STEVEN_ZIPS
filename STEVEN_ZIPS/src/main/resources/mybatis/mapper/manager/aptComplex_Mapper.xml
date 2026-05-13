@@ -148,4 +148,43 @@
     </select>
 
 
+    <select id="selectComplexList" resultType="kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO">
+
+    SELECT
+        D.HO_NO,
+        D.DONG_NO,
+
+        U.DONG_NM,
+
+        D.FLOOR,
+        D.HO,
+
+        D.HO_TY_NO,
+
+        T.TY_NM,
+
+        D.HO_STTS_CD,
+
+        D.IMAGE_NO,
+        D.PANO_IMAGE_NO
+
+    FROM APT_DETAIL D
+
+             JOIN APT_UNIT U
+                  ON D.DONG_NO = U.DONG_NO
+
+             LEFT JOIN APT_HO_TY T
+                       ON D.HO_TY_NO = T.HO_TY_NO
+
+    WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+      AND D.HO_STTS_CD != 'REMOVE'
+
+    ORDER BY
+        U.DONG_NM ASC,
+        D.FLOOR DESC,
+        D.HO ASC
+
+    </select>
+
+
 </mapper>

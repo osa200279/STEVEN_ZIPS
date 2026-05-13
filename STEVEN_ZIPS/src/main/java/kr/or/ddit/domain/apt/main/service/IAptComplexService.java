@@ -3,6 +3,8 @@ package kr.or.ddit.domain.apt.main.service;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
+import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
+import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 
 import java.util.List;
 
@@ -32,4 +34,8 @@ public interface IAptComplexService {
    String selectManagerAptCmplexNo(String mgmtOfcNo);
 
    AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo);
+
+
+   // mgmtOfc 번호로 일치하는 아파트의 AptDetailGridDTO List 가져오는 메서드
+   List<AptDetailGridDTO> selectComplexList(String mgmtOfcNo);
 }

@@ -412,4 +412,13 @@ public class ResidentMainController {
     public String statsApartment() {
         return "member/resident/stats_apartment";
     }
+
+    @GetMapping("/service/moving/in")
+    public String seriveMove() {
+        return "member/resident/service/service_move_in";
+    }
+
+
 }
+
+

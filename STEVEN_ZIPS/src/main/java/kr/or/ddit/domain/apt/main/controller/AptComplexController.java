@@ -1,40 +1,33 @@
 package kr.or.ddit.domain.apt.main.controller;
 
-import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
-import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
-import kr.or.ddit.domain.member.manager.vo.MngrVO;
-import kr.or.ddit.domain.member.vo.CustomUser;
-import kr.or.ddit.domain.member.vo.MemberVO;
+import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
-@RequestMapping("/manager/edit")
+@RequestMapping("/manager/complex")
 @PreAuthorize("hasRole('MNGR')")
 public class AptComplexController {
 
     @Autowired
     private IAptComplexService aptComplexService;
 
-/*    @GetMapping
+    @GetMapping("/list/{mgmtOfcNo}")
     @ResponseBody
-    public List<AptComplexVO> selectComplexList(
+    public List<AptDetailGridDTO> selectComplexList(
             @PathVariable String mgmtOfcNo
     ) {
 
-        return *//*aptComplexService.selectComplexList(mgmtOfcNo)*//*;
-    }*/
-
+        return aptComplexService.selectComplexList(mgmtOfcNo);
+    }
 }

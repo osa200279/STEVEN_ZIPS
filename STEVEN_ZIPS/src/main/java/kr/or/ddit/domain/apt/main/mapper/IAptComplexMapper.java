@@ -3,6 +3,8 @@ package kr.or.ddit.domain.apt.main.mapper;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
+import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
+import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,4 +30,6 @@ public interface IAptComplexMapper {
                                          @Param("keyword") String keyword);
 
     AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo);
+
+    List<AptDetailGridDTO> selectComplexList(String aptCmplexNo);
 }
