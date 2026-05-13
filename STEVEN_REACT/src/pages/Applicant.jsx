@@ -83,6 +83,7 @@ const Applicant = () => {
                     )
                 }
             },
+            filter:false,
             width: 120
         },
     ], []);
@@ -142,15 +143,15 @@ const Applicant = () => {
 
             if(response.status === 200 && response.data > 0){
                 alert(`${response.data}건의 처리가 완료되었습니다.`);
-
+                
                 setRowData(prevData => 
                     prevData.map(item => 
                         validTargetNos.includes(item.aplctNo) ?
-                            { ...item, aplctSttsCd }
-                            : item 
+                        { ...item, aplctSttsCd }
+                        : item 
                     )
                 );
-
+                
                 ag.deselectAll();
             }
         } catch (error) {
