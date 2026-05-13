@@ -588,7 +588,7 @@ function appendSortOrderToFormData(formData){
     formData.append(
         "complexSortOrder",
         JSON.stringify(
-            complexFileState.layout.map(item => ({
+            complexFileState.complex.map(item => ({
                 fileKey: item.fileKey,
                 fileType: item.fileType,
                 fileSaveUuid: item.fileSaveUuid || null,
