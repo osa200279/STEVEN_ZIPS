@@ -128,7 +128,6 @@
       <section class="detail-card">
         <div class="section-title-row">
           <h3>단지 정보</h3>
-          <a href="#" class="small-link">서울시 건축물 대장 정보 &gt;</a>
         </div>
 
         <div class="info-table">

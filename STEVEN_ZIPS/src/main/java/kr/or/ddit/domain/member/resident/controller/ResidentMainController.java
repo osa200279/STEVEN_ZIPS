@@ -63,38 +63,6 @@ public class ResidentMainController {
         return "member/resident/myApt";
     }
 
-    /**
-     * @author 이윤진
-     * @param authentication 로그인 한 사용자 정보를 가져오기 위한 객체
-     * @param model
-     * @return 관리사무소 소개 페이지
-     */
-    @GetMapping("/manage/intro")
-    public String manageIntro(Authentication authentication, Model model) {
-
-        // 1. 로그인 여부 체크
-        if (authentication == null || !authentication.isAuthenticated()) {
-            model.addAttribute("message", "로그인이 필요합니다.");
-            model.addAttribute("redirectUrl", "/login");
-            return "member/resident/resident_auth_error";
-        }
-
-        // 2. 입주민 권한 체크
-        boolean isResident = authentication.getAuthorities().stream()
-                .anyMatch(auth -> "ROLE_RESIDENT".equals(auth.getAuthority()));
-
-        // 3. 입주민이 아니면 진입 불가
-        if (!isResident) {
-            model.addAttribute("message", "입주민 권한으로 로그인 해 주세요!");
-            model.addAttribute("redirectUrl", "/login.do");
-            return "member/resident/resident_auth_error";
-        }
-
-        // 4. 정상 접근
-        // office, aptInfo는 HeaderModelAdvice가 자동으로 model에 넣어줌
-        return "member/resident/manage_intro";
-    }
-
     @GetMapping("/manage/operation")
     public String manageOperation() {
         return "member/resident/manage_operation";

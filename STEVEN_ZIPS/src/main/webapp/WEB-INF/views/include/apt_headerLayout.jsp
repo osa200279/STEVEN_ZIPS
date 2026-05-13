@@ -56,10 +56,10 @@
             </svg>
             </span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/resident/manage/intro">관리사무소 소개</a>
+                <a href="${pageContext.request.contextPath}/apt/main/${apt.aptCmplexNo}/aptInfo">우리아파트</a>
+                <a href="${pageContext.request.contextPath}/apt/main/${apt.aptCmplexNo}/intro">관리사무소 소개</a>
                 <a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>
                 <a href="${pageContext.request.contextPath}/resident/manage/facility/${apt.aptCmplexNo}">시설관리이력</a>
-                <a href="${pageContext.request.contextPath}/resident/manage/favorite">즐겨찾기</a>
             </div>
         </div>
 

@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,45 @@ public class AptController {
         model.addAttribute("aptInfo", aptMainPageDTO);
 
         return "apt-main";
+    }
+
+    /**
+     * @author 이윤진
+     * @param aptCmplexNo
+     * @param model
+     * @return 우리아파트 페이지
+     */
+    @GetMapping("/main/{aptCmplexNo}/aptInfo")
+    public String aptInfo(@PathVariable String aptCmplexNo, Model model) {
+
+        // 아파트 메인페이지 DTO정보 가져오기
+        AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
+
+        model.addAttribute("aptInfo", aptMainPageDTO);
+
+        return "apt/aptInfo";
+    }
+    /**
+     * @author 이윤진
+     * @param authentication 로그인 한 사용자 정보를 가져오기 위한 객체
+     * @param model
+     * @return 관리사무소 소개 페이지
+     */
+    @GetMapping("/main/{aptCmplexNo}/intro")
+    public String mgmtOfficeIntro(@PathVariable String aptCmplexNo, Authentication authentication, Model model) {
+
+        // 1. 로그인 여부 체크
+        if (authentication == null || !authentication.isAuthenticated()) {
+            model.addAttribute("message", "로그인이 필요합니다.");
+            model.addAttribute("redirectUrl", "/login");
+            return "member/resident/resident_auth_error";
+        }
+
+        // 2. 아파트 메인페이지 DTO정보 가져오기
+        AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
+
+        model.addAttribute("aptInfo", aptMainPageDTO);
+        return "apt/mgmtOffice_intro";
     }
 
 }
