@@ -56,7 +56,7 @@
           <a href="${pageContext.request.contextPath}/">HOME</a>
           <span>›</span>
           <a href="javascript:void(0);">입주민게시판</a>
-          <span>›</span>
+          <span>›</span>t
           <span class="cur">자유게시판</span>
         </div>
         <h1 class="page-title">자유게시판</h1>
@@ -77,13 +77,7 @@
               <a href="${pageContext.request.contextPath}/resident/board/free/write/${aptCmplexNo}">글쓰기</a>
             </div>
           </div>
-          <div class="menu-card">
-            <h4>상세보기</h4>
-            <p>게시글 본문과 댓글을 확인하는 상세 화면입니다.</p>
-            <div class="menu-links">
-              <a href="${pageContext.request.contextPath}/resident/board/free/detail/${aptCmplexNo}">상세</a>
-            </div>
-          </div>
+
         </section>
 
       </div>
