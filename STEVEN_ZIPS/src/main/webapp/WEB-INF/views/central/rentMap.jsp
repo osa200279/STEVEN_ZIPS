@@ -9,7 +9,7 @@
   <title>임대 매물 지도</title>
 
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/rentMap.css?v=20260512_3">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/central/rentMap.css">
 </head>
 <body>
 
