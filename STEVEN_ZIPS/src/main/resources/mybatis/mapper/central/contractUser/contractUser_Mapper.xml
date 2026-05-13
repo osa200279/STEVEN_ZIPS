@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.mapper.IContractUserMapper">
+
+    <!-- userNo로 rentCtrtNo 조회 -->
+    <select id="selectRentCtrtNo" parameterType="string" resultType="string">
+        SELECT rent_ctrt_no
+        FROM rent_ctrt
+        WHERE user_no = #{userNo}
+        ORDER BY reg_dt DESC
+            FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 제출서류 insert -->
+    <insert id="insertContractDoc" parameterType="kr.or.ddit.domain.central.vo.ContractUserVO">
+        <selectKey keyProperty="sbmsnDocNo" resultType="string" order="BEFORE">
+            SELECT seq_sbmsn_doc.nextval
+            FROM dual
+        </selectKey>
+        INSERT INTO sbmsn_doc (
+        sbmsn_doc_no
+        ,sbmsn_doc_ty_cd
+        ,sbmsn_doc_stts_cd
+        ,atch_file_id
+        ,rent_ctrt_no
+        ) VALUES (
+        #{sbmsnDocNo}
+        ,#{sbmsnDocTyCd}
+        ,#{sbmsnDocSttsCd}
+        ,#{atchFileId}
+        ,#{rentCtrtNo}
+        )
+    </insert>
+    <insert id="insertRentCtrtVO" parameterType="kr.or.ddit.domain.central.vo.RentCtrtVO">
+        <selectKey keyProperty="rentCtrtNo" resultType="string" order="BEFORE">
+            SELECT seq_rent_ctrt.nextval
+            FROM dual
+        </selectKey>
+        INSERT INTO rent_ctrt (
+        rent_ctrt_no
+        ,rent_lstg_no
+        ,ctrt_id
+        ,mvin_yn
+        ,ctrt_stts_cd
+        ,reg_dt
+        ,user_no
+        ,rentor_nm
+        ,rentor_telno
+        ,agnt_nm
+        ,agnt_telno
+        ,spcl_stpltn_cn
+        ) VALUES (
+        #{rentCtrtNo}
+        ,#{rentLstgNo}
+        ,#{rentCtrtNo}
+        ,'N'
+        ,'SUB'
+        ,SYSDATE
+        ,#{userNo}
+        ,#{rentorNm}
+        ,#{rentorTelno}
+        ,#{agntNm}
+        ,#{agntTelno}
+        ,#{spclStpltnCn}
+        )
+    </insert>
+    <insert id="insertAplct" parameterType="map">
+        <selectKey keyProperty="aplctNo" resultType="string" order="BEFORE">
+            SELECT TO_CHAR(SYSDATE, 'YYMMDD') || '_' ||
+            #{userNo} || '_' ||
+            LPAD(NVL(
+            (SELECT COUNT(*) + 1 FROM aplct
+            WHERE aplct_no LIKE TO_CHAR(SYSDATE, 'YYMMDD') || '_' || #{userNo} || '%')
+            , 1), 2, '0')
+            FROM dual
+        </selectKey>
+        INSERT INTO aplct (
+        aplct_no
+        , ho_ty_no
+        , ann_no
+        , user_no
+        , aplct_stts_cd
+        , reg_dt
+        ) VALUES (
+        #{aplctNo}
+        , #{hoTyNo}
+        , #{annNo}
+        , #{userNo}
+        , 'SUBMIT'
+        , SYSDATE
+        )
+    </insert>
+
+
+    <!-- userNo로 제출서류 조회 -->
+    <select id="selectContractDoc" parameterType="string" resultType="kr.or.ddit.domain.central.vo.ContractUserVO">
+        SELECT sd.sbmsn_doc_no
+             , sd.sbmsn_doc_ty_cd
+             , sd.sbmsn_doc_stts_cd
+             , sd.rjct_rsn_cn
+             , sd.atch_file_id
+             , sd.rent_ctrt_no
+             , rc.ctrt_stts_cd
+        FROM sbmsn_doc sd
+                 INNER JOIN rent_ctrt rc ON sd.rent_ctrt_no = rc.rent_ctrt_no
+        WHERE rc.user_no = #{userNo}
+        ORDER BY sd.reg_dt DESC
+    </select>
+
+
+    <select id="selectRentLstgNo" parameterType="string" resultType="string">
+        SELECT rl.rent_lstg_no
+        FROM rent_listing rl
+                 INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+                 INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
+        WHERE au.apt_cmplex_no = #{aptCmplexNo}
+          AND ROWNUM = 1
+    </select>
+
+    <select id="selectRentListingByAptCmplexNo" parameterType="string" resultType="map">
+        SELECT ht.EXCLUSIVE_SIZE
+             , ht.room_cnt
+             , ht.bathroom_cnt
+             , rl.dpst_amt
+             , rl.mthly_rent_amt
+             , au.unit_cnt
+             , ac.apt_cmplex_nm
+             , ac.dorojuso
+             , au.dong_nm
+        FROM rent_listing rl
+                 INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+                 INNER JOIN apt_ho_ty ht ON ad.ho_ty_no = ht.ho_ty_no
+                 INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
+                 INNER JOIN apt_complex ac ON au.apt_cmplex_no = ac.apt_cmplex_no
+        WHERE au.apt_cmplex_no = #{aptCmplexNo}
+    </select>
+    <select id="selectExcluseAreaDetail" parameterType="string" resultType="map">
+        SELECT ht.EXCLUSIVE_SIZE  AS exclusiveSize
+             , ht.room_cnt      AS roomCnt
+             , ht.bathroom_cnt  AS bathroomCnt
+             , ht.image_file_no AS imageFileNo
+        FROM apt_ho_ty ht
+        WHERE ht.apt_cmplex_no = #{aptCmplexNo}
+    </select>
+    <select id="selectHoTyNo" resultType="string" parameterType="map">
+        SELECT ho_ty_no
+        FROM apt_ho_ty
+        WHERE apt_cmplex_no = #{aptCmplexNo}
+          AND EXCLUSIVE_SIZE = #{exclusiveSize}
+          AND ROWNUM = 1
+    </select>
+    <select id="selectAplctList" resultType="map" parameterType="string">
+        SELECT a.aplct_no
+             , a.ann_no
+             , a.aplct_stts_cd
+             , a.reg_dt
+             , aht.EXCLUSIVE_SIZE
+             , cab.ttl
+             , ac.apt_cmplex_nm
+        FROM aplct a
+                 INNER JOIN apt_ho_ty aht on a.ho_ty_no = aht.ho_ty_no
+                 INNER JOIN center_ann_board_post cab on a.ann_no = cab.ann_no
+                 INNER JOIN apt_complex ac on ac.apt_cmplex_no = aht.apt_cmplex_no
+        WHERE a.user_no = #{userNo}
+        ORDER BY a.reg_dt DESC
+
+    </select>
+    <update id="updateInqCnt" parameterType="string">
+        UPDATE center_ann_board_post
+        SET inq_cnt = NVL(inq_cnt, 0) + 1
+        WHERE ann_no = #{annNo}
+    </update>
+    <update id="cancelContract" parameterType="string">
+        UPDATE aplct
+        SET aplct_stts_cd = 'CANCEL'
+        WHERE aplct_no = #{aplctNo}
+    </update>
+
+
+</mapper>

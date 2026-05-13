@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.admin.mapper.CentralMapper">
+
+    <sql id="contractSearch">
+        <if test="type != null and type != ''">
+            and rl.rent_type_cd = #{type}
+        </if>
+        <if test="user != null and user != ''">
+            and m.user_id like '%' || #{user} || '%'
+        </if>
+        <if test="status != null and status != ''">
+            and rc.ctrt_stts_cd = #{status}
+        </if>
+        <if test="ctrtNo != null and ctrtNo != ''">
+            and rc.rent_ctrt_no = #{ctrtNo}
+
+        </if>
+        <if test="expiry != null and expiry != ''">
+            <choose>
+                <when test="expiry == 'expired'">
+                    AND rc.MVOUT_DT &lt; SYSDATE
+                </when>
+                <otherwise>
+                    AND rc.MVOUT_DT BETWEEN SYSDATE AND SYSDATE + ${expiry}
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <insert id="insertContract" parameterType="kr.or.ddit.domain.central.admin.vo.RentContractVO">
+        <selectKey keyProperty="rentCtrtNo" resultType="String" order="BEFORE">
+            SELECT TO_CHAR(SEQ_RENT_CTRT.NEXTVAL) FROM DUAL
+        </selectKey>
+        INSERT INTO RENT_CTRT (
+        RENT_CTRT_NO,
+        RENT_LSTG_NO,
+        CTRT_ID,
+        MVIN_YN,
+        MVIN_DT,
+        MVOUT_DT,
+        MVOUT_CMPL_DT,
+        REG_DT,
+        MDF_DT,
+        CTRT_STTS_CD,
+        CTRT_AMT,
+        MID_PAY_AMT,
+        BAL_AMT,
+        DPST_AMT,
+        MTHLY_RENT_AMT,
+        USER_NO
+        ) VALUES (
+        #{rentCtrtNo},
+        #{rentLstgNo},
+        #{ctrtId},
+        #{mvinYn},
+        <choose>
+            <when test="mvinDt != null and mvinDt != ''">TO_DATE(#{mvinDt}, 'YYYY-MM-DD')</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        <choose>
+            <when test="mvoutDt != null and mvoutDt != ''">TO_DATE(#{mvoutDt}, 'YYYY-MM-DD')</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        <choose>
+            <when test="mvoutCmplDt != null and mvoutCmplDt != ''">TO_DATE(#{mvoutCmplDt}, 'YYYY-MM-DD')</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        SYSDATE,
+        SYSDATE,
+        #{ctrtSttsCd},
+        #{ctrtAmt},
+        #{midPayAmt},
+        #{balAmt},
+        #{dpstAmt},
+        #{mthlyRentAmt},
+        #{userNo}
+        )
+    </insert>
+
+    <insert id="contractFormInsert" parameterType="kr.or.ddit.domain.central.admin.vo.ContractFormVO">
+        <selectKey keyProperty="frmNo" resultType="string" order="BEFORE">
+            select SEQ_CNTRCT_FRM.nextval
+            from dual
+        </selectKey>
+        insert into cntrct_frm(
+        frm_no, apt_cmplex_no, frm_nm, rent_type_cd, reg_dt, mdf_dt, file_no
+        )values(
+        #{frmNo}, #{aptCmplexNo}, #{frmNm}, #{rentTypeCd}, sysdate, sysdate, #{fileNo}
+        )
+    </insert>
+
+    <delete id="contractFormDelete" parameterType="string">
+        delete from CNTRCT_FRM
+        where FRM_NO = #{frmNo}
+    </delete>
+
+    <select id="selectContractCount"
+            parameterType="kr.or.ddit.common.model.PaginationInfoVO"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM RENT_CTRT rc
+        JOIN MEMBER m ON m.USER_NO = rc.USER_NO
+        JOIN RENT_LISTING rl ON rl.RENT_LSTG_NO = rc.RENT_LSTG_NO
+        LEFT JOIN (
+        SELECT user_no, apt_cmplex_no
+        FROM (
+        SELECT rr.USER_NO, rr.APT_CMPLEX_NO,
+        ROW_NUMBER() OVER (PARTITION BY rr.USER_NO ORDER BY rr.RCPT_DT DESC) AS rn
+        FROM RESIDENT_RQST rr
+        )
+        WHERE rn = 1
+        ) rr1 ON rr1.USER_NO = rc.USER_NO
+        LEFT JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = rr1.APT_CMPLEX_NO
+        WHERE 1=1
+        <include refid="contractSearch"/>
+    </select>
+
+    <select id="selectContractList"
+            parameterType="kr.or.ddit.common.model.PaginationInfoVO"
+            resultType="kr.or.ddit.domain.central.admin.vo.ContractVO">
+        SELECT *
+        FROM (
+        SELECT
+        ROW_NUMBER() OVER (ORDER BY rc.REG_DT DESC) AS rn,
+        rc.RENT_CTRT_NO  AS rentCtrtNo,
+        rl.RENT_TYPE_CD  AS rentTypeCd,
+        m.USER_ID        AS userId,
+        ac.APT_CMPLEX_NM AS aptCmplexNm,
+        to_char(rc.MVIN_DT, 'YYYY-MM-DD')       AS mvinDt,
+        to_char(rc.MVOUT_DT, 'YYYY-MM-DD')     AS mvoutDt,
+        rc.REG_DT       AS regDt,
+        rc.CTRT_STTS_CD  AS ctrtSttsCd
+        FROM RENT_CTRT rc
+        JOIN MEMBER m        ON m.USER_NO      = rc.USER_NO
+        JOIN RENT_LISTING rl ON rl.RENT_LSTG_NO = rc.RENT_LSTG_NO
+        LEFT JOIN (
+        SELECT user_no, apt_cmplex_no
+        FROM (
+        SELECT rr.USER_NO, rr.APT_CMPLEX_NO,
+        ROW_NUMBER() OVER (PARTITION BY rr.USER_NO ORDER BY rr.RCPT_DT DESC) AS rn
+        FROM RESIDENT_RQST rr
+        )
+        WHERE rn = 1
+        ) rr1 ON rr1.USER_NO = rc.USER_NO
+        LEFT JOIN APT_COMPLEX ac ON ac.APT_CMPLEX_NO = rr1.APT_CMPLEX_NO
+        WHERE 1=1
+        <include refid="contractSearch"/>
+        )
+        WHERE rn BETWEEN #{startRow} AND #{endRow}
+    </select>
+    <select id="selectOneContract" resultType="kr.or.ddit.domain.central.admin.vo.ContractVO" parameterType="string">
+        select rc.RENT_CTRT_NO as rentCtrtNo,
+               rc.RENT_LSTG_NO as rentLstgNo,
+               m.USER_ID as userId,
+               m.USER_NO as userNo,
+               rc.CTRT_ID as ctrtId,
+               rc.CTRT_STTS_CD as ctrtSttsCd,
+               rl.RENT_TYPE_CD as rentTypeCd,
+               ac.apt_cmplex_nm as aptCmplexNm,
+               rc.ctrt_amt as ctrtAmt,
+               rc.DPST_AMT as dpstAmt,
+               to_char(rc.MVIN_DT, 'YYYY-MM-DD') AS mvinDt,
+               to_char(rc.MVOUT_DT, 'YYYY-MM-DD') as mvoutDt,
+               to_char(rc.REG_DT, 'YYYY-MM-DD') as regDt
+        from RENT_CTRT rc
+                 inner join member m on rc.USER_NO = m.user_no
+                 inner join RENT_LISTING rl on rc.rent_lstg_no = rl.RENT_LSTG_NO
+                 left join (
+            select user_no, APT_CMPLEX_NO
+            from (
+                     select user_no, apt_cmplex_no,
+                            row_number() over (partition by USER_NO order by RCPT_DT desc) rn
+                     from RESIDENT_RQST
+                 )
+
+            where rn = 1
+        ) rr1 on rr1.USER_NO = rc.USER_NO
+                 left join apt_complex ac on ac.APT_CMPLEX_NO = rr1.APT_CMPLEX_NO
+        where rc.RENT_CTRT_NO = #{rentCtrtNo}
+    </select>
+    <select id="contractForm" resultType="kr.or.ddit.domain.central.admin.vo.ContractAptVO">
+        select APT_CMPLEX_NO, APT_CMPLEX_NM
+        from APT_COMPLEX
+        order by APT_CMPLEX_NO asc
+    </select>
+
+
+
+    <sql id="contractFormSearch">
+        <if test="frmNm != null and frmNm != ''">
+            and cf.frm_nm like '%' || #{frmNm} || '%'
+        </if>
+        <if test="rentTypeCd != null and rentTypeCd != ''">
+            and cf.rent_type_cd = #{rentTypeCd}
+        </if>
+        <if test="aptCmplexNo != null and aptCmplexNo != ''">
+            and ac.apt_cmplex_no = #{aptCmplexNo}
+        </if>
+    </sql>
+
+    <select id="selectContractFormCount" resultType="int" parameterType="kr.or.ddit.common.model.PaginationInfoVO">
+        select count(*)
+        from CNTRCT_FRM cf
+        join APT_COMPLEX ac on ac.APT_CMPLEX_NO = cf.APT_CMPLEX_NO
+        where 1=1
+        <include refid="contractFormSearch"/>
+    </select>
+    <select id="SelectContractFormList" resultType="kr.or.ddit.domain.central.admin.vo.ContractFormVO" parameterType="kr.or.ddit.common.model.PaginationInfoVO">
+        select *
+        from(
+        select
+        row_number() over (order by cf.REG_DT desc ) as rn,
+        cf.frm_no as frmNo,
+        cf.frm_nm as frmNm,
+        cf.apt_cmplex_no as aptCmplexNo,
+        ac.apt_cmplex_nm as aptCmplexNm,
+        cf.rent_type_cd as rentTypeCd,
+        to_char(cf.reg_dt, 'YYYY-MM-DD') as regDt
+        from CNTRCT_FRM CF
+        inner join apt_complex ac on ac.APT_CMPLEX_NO = cf.APT_CMPLEX_NO
+        where 1=1
+
+        <include refid="contractFormSearch"/>
+        )
+        where rn between #{startRow} and #{endRow}
+    </select>
+    <select id="selectOneContractForm" resultType="kr.or.ddit.domain.central.admin.vo.ContractFormVO" parameterType="string">
+        SELECT
+            cf.FRM_NO        AS frmNo,
+            cf.FRM_NM        AS frmNm,
+            cf.APT_CMPLEX_NO AS aptCmplexNo,
+            ac.APT_CMPLEX_NM AS aptCmplexNm,
+            cf.RENT_TYPE_CD  AS rentTypeCd,
+            TO_CHAR(cf.REG_DT, 'YYYY-MM-DD') AS regDt,
+            cf.FILE_NO       AS fileNo
+        FROM CNTRCT_FRM cf
+                 inner join APT_COMPLEX ac ON ac.APT_CMPLEX_NO = cf.APT_CMPLEX_NO
+        WHERE cf.FRM_NO = #{frmNo}
+    </select>
+    <select id="selectContractDocList" resultType="kr.or.ddit.domain.central.admin.vo.ContractDocVO">
+        select *
+        from ()
+    </select>
+
+    <sql id="contractDocSearch">
+        <if test="sbmsnDocNo != null and  != 'sbmsnDocNo'" >
+            and sd.sbmsn_doc_No like '%' || #{sbmsnDocNo} || '%'
+        </if>
+        <if test="sbmsnDocTyCd != null and sbmsnDocTyCd != ''" >
+            and sd.sbmsn_doc_ty_cd = #{sbmsnDocTyCd}
+        </if>
+        <if test="rentTypeCd != null and rentTypeCd != ''" >
+            and sd.rent_type_cd = #{rentTypeCd}
+        </if>
+    </sql>
+    <select id="selectContractDocCount" resultType="int" parameterType="kr.or.ddit.domain.central.admin.vo.ContractDocVO">
+        SELECT COUNT(*)
+        FROM SBMSN_DOC sd
+        left join RENT_CTRT rc on sd.RENT_CTRT_NO = rc.RENT_CTRT_NO
+        left join RENT_LISTING rl on rl.RENT_LSTG_NO = rc.RENT_LSTG_NO
+        where 1=1
+        <include refid="contractSearch"/>
+    </select>
+
+
+    <update id="updateContract" parameterType="kr.or.ddit.domain.central.admin.vo.RentContractVO">
+        UPDATE RENT_CTRT SET
+        RENT_LSTG_NO = #{rentLstgNo},
+        CTRT_ID = #{ctrtId},
+        MVIN_DT =
+        <choose>
+            <when test="mvinDt != null and mvinDt != ''">TO_DATE(#{mvinDt}, 'YYYY-MM-DD')</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        MVOUT_DT =
+        <choose>
+            <when test="mvoutDt != null and mvoutDt != ''">TO_DATE(#{mvoutDt}, 'YYYY-MM-DD')</when>
+            <otherwise>NULL</otherwise>
+        </choose>,
+        CTRT_AMT = #{ctrtAmt},
+        DPST_AMT = #{dpstAmt},
+        MDF_DT = SYSDATE
+        WHERE RENT_CTRT_NO = #{rentCtrtNo}
+    </update>
+
+    <update id="contractModifyStatus" parameterType="kr.or.ddit.domain.central.admin.vo.ContractVO">
+        UPDATE RENT_CTRT
+        SET CTRT_STTS_CD = #{status}
+        WHERE RENT_CTRT_NO = #{rentCtrtNo}
+    </update>
+
+    <update id="contractFormUpdate" parameterType="kr.or.ddit.domain.central.admin.vo.ContractFormVO">
+        update CNTRCT_FRM
+        set FRM_NM = #{frmNm},
+            RENT_TYPE_CD = #{rentTypeCd},
+            MDF_DT = sysdate,
+            APT_CMPLEX_NO = #{aptCmplexNo}
+        where FRM_NO = #{frmNo}
+    </update>
+
+
+</mapper>

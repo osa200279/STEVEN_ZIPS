@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
     initComplexEditPage();
 });
 
+const complexFileState = {
+    layout: [],
+    complex: []
+};
+
 /* =========================================================
    메인 초기화
 ========================================================= */
@@ -19,8 +24,11 @@ function initComplexEditPage() {
     bindFileAddButtons();
     bindFileInputs();
 
+    loadExistFiles();
+
     initSortable();
 }
+
 
 /* =========================================================
    이벤트 바인딩
@@ -50,14 +58,19 @@ function bindEvents() {
    폼 초기화
 ========================================================= */
 
-function resetForm() {
+async function resetForm() {
 
     document.getElementById("complexEditForm").reset();
 
-    document.getElementById("mainImgPreview").innerHTML = "";
-    document.getElementById("complexImgPreview").innerHTML = "";
+    complexFileState.layout = [];
+    complexFileState.complex = [];
 
-    document.getElementById("mainImgFileInput").value = "";
+    renderFileList("layout");
+    renderFileList("complex");
+
+    await loadExistFiles();
+
+    document.getElementById("layoutFileInput").value = "";
     document.getElementById("complexImgFileInput").value = "";
 }
 
@@ -115,6 +128,9 @@ function saveComplex() {
 
     const formData = new FormData(form);
 
+    appendFilesToFormData(formData);
+    appendSortOrderToFormData(formData);
+
     const csrfToken =
         document.querySelector("meta[name='_csrf']");
 
@@ -168,41 +184,6 @@ function saveComplex() {
         });
 }
 
-/* =========================================================
-   이미지 미리보기 생성
-========================================================= */
-
-function createPreviewItem(src) {
-
-    const wrap = document.createElement("div");
-
-    wrap.className = "complex-preview-item";
-
-    const img = document.createElement("img");
-
-    img.src = src;
-    img.className = "complex-preview-img";
-
-    const removeBtn = document.createElement("button");
-
-    removeBtn.type = "button";
-    removeBtn.className = "complex-preview-remove";
-
-    removeBtn.innerHTML =
-        '<span class="material-symbols-rounded">close</span>';
-
-    removeBtn.addEventListener("click", function () {
-
-        wrap.remove();
-    });
-
-    wrap.appendChild(img);
-    wrap.appendChild(removeBtn);
-
-    return wrap;
-}
-
-
 const syncButton =
     document.getElementById("btnSyncAddress");
 
@@ -252,8 +233,8 @@ function bindFileInputs() {
 
             console.log("배치도", files);
 
-            renderSelectedFiles(
-                "layoutFileList",
+            handleSelectedFiles(
+                "layout",
                 files
             );
         });
@@ -266,8 +247,8 @@ function bindFileInputs() {
 
             console.log("단지사진", files);
 
-            renderSelectedFiles(
-                "complexImageFileList",
+            handleSelectedFiles(
+                "complex",
                 files
             );
         });
@@ -277,74 +258,172 @@ function bindFileInputs() {
    파일 리스트 렌더링
 ========================================================= */
 
-function renderSelectedFiles(listId, files) {
+/**
+ * 여러개의 file 을 for문돌려서 순서대로 add하기 위해서 만듬
+ * add 후에 랜더링 해서 순서대로 띄워줌
+ * @param category 배치도인지, 단지 사진인지 구분용 파라메타
+ * @param files 파일들 정보
+ */
+function handleSelectedFiles(category, files) {
 
-    const list =
-        document.getElementById(listId);
+    files.forEach(function(file){
 
-    files.forEach(function (file) {
+        addNewFile(category, file);
 
-        const item =
-            createFileItem(file);
+    });
 
-        list.appendChild(item);
+    renderFileList(category);
+}
+
+/**
+ * 신규 파일 추가
+ * @param category 배치도인지, 단지사진인지 구분용 파라메타
+ * @param file 파일정보
+ */
+function addNewFile(category, file) {
+
+    const targetList =
+        complexFileState[category];
+
+    targetList.push({
+        fileKey: "new_" + crypto.randomUUID(),
+        fileType: "new",
+        file: file,
+        fileOgName: file.name,
+        fileSortOrder: targetList.length
     });
 }
 
-/* =========================================================
-   파일 아이템 생성
-========================================================= */
+/**
+ * 파일 랜더링용 함수 순서대로 띄워줘야하기에
+ * @param category 배치도인지 단지사진인지 구분용
+ */
+function renderFileList(category) {
 
-function createFileItem(file) {
+    const listEl = getListElement(category);
+
+    listEl.innerHTML = "";
+
+    complexFileState[category]
+        .forEach(function(fileItem, index){
+
+            fileItem.fileSortOrder = index;
+
+            const itemEl =
+                createFileItemElement(category, fileItem);
+
+            listEl.appendChild(itemEl);
+        });
+}
+
+
+
+
+function createFileItemElement(category, fileItem) {
 
     const item = document.createElement("div");
 
     item.className = "complex-file-item";
 
+    item.dataset.fileKey = fileItem.fileKey;
+    item.dataset.fileType = fileItem.fileType;
+
+    item.dataset.fileGroupNo =
+        fileItem.fileGroupNo || "";
+
+    item.dataset.fileSaveUuid =
+        fileItem.fileSaveUuid || "";
+
+    item.dataset.googleId =
+        fileItem.googleId || "";
+
+    item.dataset.fileSortOrder =
+        fileItem.fileSortOrder;
+
+    let previewUrl = "";
+
+    if(fileItem.fileType === "new"){
+        previewUrl =
+            URL.createObjectURL(fileItem.file);
+
+    }else{
+        previewUrl =
+            fileItem.filePath;
+    }
+
     item.innerHTML = `
 
-        <div class="complex-file-name">
+    <div class="complex-file-main">
 
-            <span class="material-symbols-rounded">
-                image
-            </span>
+        <div class="complex-thumb-wrap">
 
-            <span class="complex-file-name-text">
-                ${file.name}
-            </span>
+            <img src="${previewUrl}"
+                 class="complex-thumb-img">
 
         </div>
 
-        <button type="button"
-                class="complex-file-remove">
+        <div class="complex-file-info">
 
-            <span class="material-symbols-rounded">
-                close
-            </span>
+            <div class="complex-file-name">
+                ${fileItem.fileOgName}
+            </div>
 
-        </button>
+        </div>
 
-    `;
+    </div>
 
-    const previewUrl = URL.createObjectURL(file);
+    <button type="button"
+            class="complex-file-remove">
 
-    const preview = document.createElement("div");
+        <span class="material-symbols-rounded">
+            close
+        </span>
 
-    preview.className = "complex-thumb-preview";
-
-    preview.innerHTML = `
-    <img src="${previewUrl}">
+    </button>
 `;
 
-    item.appendChild(preview);
-
     item.querySelector(".complex-file-remove")
-        .addEventListener("click", function () {
+        .addEventListener("click", function(){
 
-            item.remove();
+            removeFile(category, fileItem.fileKey);
+
         });
 
     return item;
+}
+
+
+/**
+ *
+ * @param category
+ * @returns {HTMLElement|null}
+ */
+function getListElement(category) {
+
+    if(category === "layout"){
+        return document.getElementById("layoutFileList");
+    }
+
+    if(category === "complex"){
+        return document.getElementById("complexImageFileList");
+    }
+
+    return null;
+}
+
+
+/**
+ * 파일삭제용
+ * @param category
+ * @param fileKey
+ */
+function removeFile(category, fileKey){
+
+    complexFileState[category] =
+        complexFileState[category]
+            .filter(item => item.fileKey !== fileKey);
+
+    renderFileList(category);
 }
 
 /* =========================================================
@@ -358,7 +437,11 @@ function initSortable() {
         document.getElementById("layoutFileList"),
         {
             animation: 150,
-            ghostClass: "sortable-ghost"
+            ghostClass: "sortable-ghost",
+            onEnd: function () {
+
+                syncSortOrder("layout");
+            }
         }
     );
 
@@ -367,7 +450,150 @@ function initSortable() {
         document.getElementById("complexImageFileList"),
         {
             animation: 150,
-            ghostClass: "sortable-ghost"
+            ghostClass: "sortable-ghost",
+            onEnd: function () {
+
+                syncSortOrder("complex");
+            }
         }
+    );
+}
+
+async function loadExistFiles() {
+
+    try{
+
+        const response =
+            await fetch(
+                CONTEXT_PATH
+                + "/manager/complex/files/"
+                + MGMT_OFC_NO
+            );
+
+        const result =
+            await response.json();
+
+        loadExistFileItems(
+            "layout",
+            result.layoutFiles || []
+        );
+
+        loadExistFileItems(
+            "complex",
+            result.complexFiles || []
+        );
+
+    }catch(error){
+
+        console.error(error);
+    }
+}
+
+function loadExistFileItems(category, files){
+
+    files.forEach(function(file){
+
+        complexFileState[category].push({
+
+            fileKey:
+                "old_" + file.fileSaveUuid,
+
+            fileType: "old",
+
+            fileGroupNo:
+            file.fileGroupNo,
+
+            fileSaveUuid:
+            file.fileSaveUuid,
+
+            googleId:
+            file.googleId,
+
+            fileOgName:
+            file.fileOgName,
+
+            filePath:
+            file.filePath,
+
+            fileSortOrder:
+            file.fileSortOrder
+        });
+
+    });
+
+    renderFileList(category);
+}
+
+function syncSortOrder(category){
+
+    const listEl =
+        getListElement(category);
+
+    const orderedKeys =
+        Array.from(
+            listEl.querySelectorAll(".complex-file-item")
+        ).map(el => el.dataset.fileKey);
+
+    complexFileState[category]
+        .sort((a, b) => {
+
+            return orderedKeys.indexOf(a.fileKey)
+                - orderedKeys.indexOf(b.fileKey);
+        });
+
+    renderFileList(category);
+}
+
+function appendFilesToFormData(formData){
+
+    complexFileState.layout
+        .forEach(function(fileItem){
+
+            if(fileItem.fileType === "new"){
+
+                formData.append(
+                    "layoutFiles",
+                    fileItem.file
+                );
+            }
+        });
+
+    complexFileState.complex
+        .forEach(function(fileItem){
+
+            if(fileItem.fileType === "new"){
+
+                formData.append(
+                    "complexImgFiles",
+                    fileItem.file
+                );
+            }
+        });
+}
+
+function appendSortOrderToFormData(formData){
+
+    formData.append(
+        "layoutSortOrder",
+        JSON.stringify(
+            complexFileState.layout.map(item => ({
+                fileKey: item.fileKey,
+                fileType: item.fileType,
+                fileSaveUuid: item.fileSaveUuid || null,
+                fileSortOrder: item.fileSortOrder
+            }))
+        )
+    );
+
+    formData.append(
+        "complexSortOrder",
+        JSON.stringify(
+            complexFileState.layout.map(item => ({
+                fileKey: item.fileKey,
+                fileType: item.fileType,
+                fileSaveUuid: item.fileSaveUuid || null,
+                fileSortOrder: item.fileSortOrder
+            }))
+        )
     );
 }

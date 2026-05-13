@@ -66,14 +66,15 @@
                            name="rprsntImgFileNo"
                            value="${complex.rprsntImgFileNo}">
 
-                    <!-- 삭제 파일 목록 -->
+
+                    <!-- 정렬 순서 -->
                     <input type="hidden"
-                           id="deleteLayoutFiles"
-                           name="deleteLayoutFiles">
+                           id="layoutSortOrder"
+                           name="layoutSortOrder">
 
                     <input type="hidden"
-                           id="deleteComplexFiles"
-                           name="deleteComplexFiles">
+                           id="complexSortOrder"
+                           name="complexSortOrder">
 
 
                     <div class="panel">
@@ -320,8 +321,8 @@
                     </div>
 
                     <!-- =====================================================
-     섹션 4. 단지 이미지
-===================================================== -->
+                         섹션 4. 단지 이미지
+                    ===================================================== -->
                     <div class="panel">
 
                         <div class="panel-header">
@@ -359,9 +360,22 @@
 
                                         </div>
 
+                                        <!--
+                                            JS 렌더링 구조
+
+                                            <div class="complex-file-item"
+                                                 data-file-key=""
+                                                 data-file-type=""
+                                                 data-file-group-no=""
+                                                 data-file-no=""
+                                                 data-google-file-id=""
+                                                 data-sort-order="">
+                                            </div>
+                                        -->
+
                                         <input type="file"
                                                id="layoutFileInput"
-                                               name="layoutFiles"
+                                               name="layoutFiles[]"
                                                accept="image/*"
                                                multiple
                                                style="display:none;">
@@ -369,7 +383,8 @@
                                         <div class="complex-file-box">
 
                                             <div class="complex-file-list"
-                                                 id="layoutFileList">
+                                                 id="layoutFileList"
+                                                 data-file-category="layout">
 
                                             </div>
 
@@ -397,9 +412,23 @@
                                             </button>
                                         </div>
 
+                                        <!--
+                                            JS 렌더링 구조
+
+                                            <div class="complex-file-item"
+                                                 data-file-key=""
+                                                 data-file-type=""
+                                                 data-file-group-no=""
+                                                 data-file-no=""
+                                                 data-google-file-id=""
+                                                 data-sort-order="">
+                                            </div>
+                                        -->
+
+
                                         <input type="file"
                                                id="complexImgFileInput"
-                                               name="complexImgFiles"
+                                               name="complexImgFiles[]"
                                                accept="image/*"
                                                multiple
                                                style="display:none;">
@@ -407,7 +436,8 @@
                                         <div class="complex-file-box">
 
                                             <div class="complex-file-list sortable-list"
-                                                 id="complexImageFileList">
+                                                 id="complexImageFileList"
+                                                 data-file-category="complex">
 
                                             </div>
 
@@ -423,7 +453,10 @@
 
                     </div>
 
-
+                    <input type="hidden"
+                           id="isImageChanged"
+                           name="isImageChanged"
+                           value="N">
 
                     <!-- =====================================================
                          하단 버튼
