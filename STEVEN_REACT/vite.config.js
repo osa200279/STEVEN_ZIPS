@@ -7,13 +7,5 @@ export default defineConfig({
   server: {
     port:7777,
     host: true, // 외부 노출 허용
-
-    proxy:{
-      '/api':{
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
   }
 })
