@@ -38,10 +38,11 @@ public class FacilityInfoDTO {
     private String emdNm;          // 읍면동명
     private String dorojuso;       // 도로명주소
 
-    private String heatTyCd;       // 난방방식코드
+    private String heatTy;         // 난방방식코드
+
     private String cnscoNm;        // 시공사명
 
-    private String unitRange;   // 세대수 구간
+    private String unitRange;      // 세대수 구간
     private Integer unitCnt;       // 세대수
     private Integer dongCnt;       // 동 수
     private Integer pkgCnt;        // 총 주차대수

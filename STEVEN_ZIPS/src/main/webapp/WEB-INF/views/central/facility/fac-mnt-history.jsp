@@ -369,6 +369,10 @@
               class="facility-search-form">
             <%-- 단지카드 페이징 처리 --%>
             <input type="hidden" name="currentPage" id="currentPage" value="${pagingVO.currentPage}" />
+
+            <%-- 시설사항 표 페이징 처리 --%>
+            <input type="hidden" name="facilityPage" id="facilityPage" value="${facilityPage}" />
+
             <%-- 조회 버튼을 눌렀는지 Controller에 전달 --%>
             <input type="hidden" name="searchYn" value="Y"/>
 
@@ -443,7 +447,7 @@
                         <div class="facility-card-grid">
                             <c:forEach var="apt" items="${aptCardList}">
                                 <a class="facility-card ${dto.aptCmplexNo eq apt.aptCmplexNo ? 'is-selected' : ''}"
-                                   href="${pageContext.request.contextPath}/facility/history.do?searchYn=Y&sidoNm=${dto.sidoNm}&sigunguNm=${dto.sigunguNm}&unitRange=${dto.unitRange}&keyword=${dto.keyword}&currentPage=${pagingVO.currentPage}&aptCmplexNo=${apt.aptCmplexNo}">
+                                   href="${pageContext.request.contextPath}/facility/history.do?searchYn=Y&sidoNm=${dto.sidoNm}&sigunguNm=${dto.sigunguNm}&unitRange=${dto.unitRange}&keyword=${dto.keyword}&currentPage=${pagingVO.currentPage}&aptCmplexNo=${apt.aptCmplexNo}&facilityPage=1">
 
                                     <div class="facility-card-top">
                                 <span class="facility-card-badge">
@@ -588,6 +592,39 @@
                     <section class="facility-section">
                         <h2 class="facility-section-title">시설사항</h2>
 
+                        <div style="display:flex; gap:10px; margin-bottom:16px;">
+                            <input type="text"
+                                   id="facilityNmSearch"
+                                   class="search-input"
+                                   placeholder="시설명 검색"
+                                   style="max-width:220px;">
+
+                            <input type="text"
+                                   id="facilityTySearch"
+                                   class="search-input"
+                                   placeholder="시설유형 검색"
+                                   style="max-width:220px;">
+
+                            <input type="text"
+                                   id="facilityLocSearch"
+                                   class="search-input"
+                                   placeholder="상세위치 검색"
+                                   style="max-width:220px;">
+
+                            <button type="button"
+                                    id="facilitySearchBtn"
+                                    class="search-button">
+                                검색
+                            </button>
+
+                            <button type="button"
+                                    id="facilityResetBtn"
+                                    class="search-button"
+                                    style="background:#64748b;">
+                                초기화
+                            </button>
+                        </div>
+
                         <table class="facility-table" id="facilitySortTable">
                             <thead>
                             <tr>
@@ -606,7 +643,6 @@
                             <tbody>
                             <c:choose>
                                 <c:when test="${not empty facilityInfoList}">
-
                                     <%--
                                         prevFacilityNo
                                         → 바로 이전에 출력한 시설번호를 저장하는 변수.
@@ -625,7 +661,10 @@
                                             이전에 출력한 facilityNo와 다를 때만 출력한다.
                                         --%>
                                         <c:if test="${not empty item.facilityNo and item.facilityNo ne prevFacilityNo}">
-                                            <tr>
+                                            <tr class="facility-row"
+                                                data-facility-nm="${item.facilityNm}"
+                                                data-facility-ty="${item.facilityTyCd}"
+                                                data-facility-loc="${item.locCn}">
                                                 <td>${item.facilityNm}</td>
                                                 <%-- 시설유형코드 -> 한글로 변환 --%>
                                                 <td>${item.facilityTyCd}</td>
@@ -685,6 +724,10 @@
                             </c:choose>
                             </tbody>
                         </table>
+
+                        <div class="facility-pagination">
+                            <ul class="pagination" id="facilityClientPagination"></ul>
+                        </div>
                     </section>
 
 
@@ -810,6 +853,8 @@
             document.querySelector(".facility-search-form").dataset.paging = "Y";
             document.querySelector(".facility-search-form").submit();
         }
+
+
     });
 
     /*
@@ -877,6 +922,142 @@
     });
 
     /*
+ * 시설사항 표 검색 + 클라이언트 페이징
+ *
+ * 클라이언트 검색이란?
+ * → 서버를 다시 호출하지 않고, 화면에 이미 출력된 tr만 대상으로 검색하는 방식.
+ *
+ * 왜 사용?
+ * → 검색 버튼을 눌러도 화면 전체가 새로고침되지 않고,
+ *   시설사항 표 데이터만 필터링된다.
+ */
+    (function() {
+
+        const pageSize = 5; // 한 페이지에 보여줄 시설사항 개수
+        let currentFacilityPage = 1;
+
+        const rows = Array.from(document.querySelectorAll("#facilitySortTable tbody .facility-row"));
+        const pagination = document.getElementById("facilityClientPagination");
+
+        const facilityNmSearch = document.getElementById("facilityNmSearch");
+        const facilityTySearch = document.getElementById("facilityTySearch");
+        const facilityLocSearch = document.getElementById("facilityLocSearch");
+
+        const facilitySearchBtn = document.getElementById("facilitySearchBtn");
+        const facilityResetBtn = document.getElementById("facilityResetBtn");
+
+        let filteredRows = rows;
+
+        if (!pagination || rows.length === 0) {
+            return;
+        }
+
+        function applySearch() {
+            const nmKeyword = facilityNmSearch.value.trim();
+            const tyKeyword = facilityTySearch.value.trim();
+            const locKeyword = facilityLocSearch.value.trim();
+
+            /*
+             * filter란?
+             * → 조건에 맞는 데이터만 남기는 배열 함수.
+             *
+             * 여기서는 시설명/시설유형/상세위치가 검색어와 맞는 tr만 남긴다.
+             */
+            filteredRows = rows.filter(function(row) {
+                const facilityNm = row.dataset.facilityNm || "";
+                const facilityTy = row.dataset.facilityTy || "";
+                const facilityLoc = row.dataset.facilityLoc || "";
+
+                const matchNm = nmKeyword === "" || facilityNm.includes(nmKeyword);
+                const matchTy = tyKeyword === "" || facilityTy.includes(tyKeyword);
+                const matchLoc = locKeyword === "" || facilityLoc.includes(locKeyword);
+
+                return matchNm && matchTy && matchLoc;
+            });
+
+            renderFacilityRows(1);
+        }
+
+        function renderFacilityRows(page) {
+            currentFacilityPage = page;
+
+            rows.forEach(function(row) {
+                row.style.display = "none";
+            });
+
+            const startIndex = (page - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+
+            filteredRows.forEach(function(row, index) {
+                if (index >= startIndex && index < endIndex) {
+                    row.style.display = "";
+                }
+            });
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            pagination.innerHTML = "";
+
+            const totalPage = Math.ceil(filteredRows.length / pageSize);
+
+            if (totalPage <= 1) {
+                return;
+            }
+
+            addPageButton("<", currentFacilityPage - 1, currentFacilityPage === 1);
+
+            let startPage = Math.floor((currentFacilityPage - 1) / 5) * 5 + 1;
+            let endPage = Math.min(startPage + 4, totalPage);
+
+            for (let i = startPage; i <= endPage; i++) {
+                addPageButton(i, i, false, i === currentFacilityPage);
+            }
+
+            addPageButton(">", currentFacilityPage + 1, currentFacilityPage === totalPage);
+        }
+
+        function addPageButton(text, page, disabled, active) {
+            const li = document.createElement("li");
+            li.className = "page-item" + (active ? " active" : "");
+
+            const a = document.createElement("a");
+            a.href = "#";
+            a.className = "page-link";
+            a.textContent = text;
+
+            if (disabled) {
+                a.style.pointerEvents = "none";
+                a.style.opacity = "0.4";
+            } else {
+                a.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    renderFacilityRows(page);
+                });
+            }
+
+            li.appendChild(a);
+            pagination.appendChild(li);
+        }
+
+        facilitySearchBtn.addEventListener("click", function() {
+            applySearch();
+        });
+
+        facilityResetBtn.addEventListener("click", function() {
+            facilityNmSearch.value = "";
+            facilityTySearch.value = "";
+            facilityLocSearch.value = "";
+
+            filteredRows = rows;
+            renderFacilityRows(1);
+        });
+
+        renderFacilityRows(1);
+    })();
+
+    /*
      * 검색 버튼 클릭 시 항상 1페이지부터 조회
      *
      * 왜 필요?
@@ -901,6 +1082,86 @@
             document.getElementById("currentPage").value = "1";
         });
 
+    /*
+ * 시설사항 표 클라이언트 페이징
+ *
+ * 클라이언트 페이징이란?
+ * → 서버를 다시 호출하지 않고, 이미 화면에 있는 tr만 숨기고 보여주는 방식.
+ *
+ * 왜 사용?
+ * → 페이지 번호를 눌러도 화면 전체 새로고침 없이 표 데이터만 바뀐다.
+ */
+    (function() {
+
+        const pageSize = 5; // 한 페이지에 보여줄 시설사항 개수
+        let currentFacilityPage = 1;
+
+        const rows = Array.from(document.querySelectorAll("#facilitySortTable tbody .facility-row"));
+        const pagination = document.getElementById("facilityClientPagination");
+
+        if (!pagination || rows.length === 0) {
+            return;
+        }
+
+        const totalPage = Math.ceil(rows.length / pageSize);
+
+        function renderFacilityRows(page) {
+            currentFacilityPage = page;
+
+            rows.forEach(function(row, index) {
+                const startIndex = (page - 1) * pageSize;
+                const endIndex = startIndex + pageSize;
+
+                row.style.display = index >= startIndex && index < endIndex ? "" : "none";
+            });
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            pagination.innerHTML = "";
+
+            if (totalPage <= 1) {
+                return;
+            }
+
+            addPageButton("<", currentFacilityPage - 1, currentFacilityPage === 1);
+
+            let startPage = Math.floor((currentFacilityPage - 1) / 5) * 5 + 1;
+            let endPage = Math.min(startPage + 4, totalPage);
+
+            for (let i = startPage; i <= endPage; i++) {
+                addPageButton(i, i, false, i === currentFacilityPage);
+            }
+
+            addPageButton(">", currentFacilityPage + 1, currentFacilityPage === totalPage);
+        }
+
+        function addPageButton(text, page, disabled, active) {
+            const li = document.createElement("li");
+            li.className = "page-item" + (active ? " active" : "");
+
+            const a = document.createElement("a");
+            a.href = "#";
+            a.className = "page-link";
+            a.textContent = text;
+
+            if (disabled) {
+                a.style.pointerEvents = "none";
+                a.style.opacity = "0.4";
+            } else {
+                a.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    renderFacilityRows(page);
+                });
+            }
+
+            li.appendChild(a);
+            pagination.appendChild(li);
+        }
+
+        renderFacilityRows(1);
+    })();
 </script>
 
 </body>

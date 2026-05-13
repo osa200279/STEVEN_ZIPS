@@ -14,6 +14,7 @@ import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.central.service.IFacilityInfoService;
 import kr.or.ddit.common.model.PaginationInfoVO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -42,6 +43,7 @@ public class FacilityHistoryController {
         List<FacilityHistoryVO> list = facilityHistoryService.getFacilityHistoryList();
 
         List<FacilityInfoDTO> facilityInfoList = null;
+        List<FacilityInfoDTO> facilityPageList = null; // 시설사항 표에 실제로 보여줄 5개 목록
         FacilityInfoDTO aptInfo = null;
         List<FacilityInfoDTO> aptCardList = null;
 
@@ -88,6 +90,48 @@ public class FacilityHistoryController {
 
             try {
                 facilityInfoList = facilityInfoService.getFacilityInfoList(dto);
+
+                /*
+                 * 시설사항 전용 페이징
+                 *
+                 * screenSize = 5
+                 * → 시설사항 표에 한 페이지당 5개만 보여준다.
+                 *
+                 * blockSize = 5
+                 * → 페이지 번호를 1 2 3 4 5 형태로 5개씩 보여준다.
+                 */
+                PaginationInfoVO<FacilityInfoDTO> facilityPagingVO = new PaginationInfoVO<>(5, 5);
+                facilityPagingVO.setCurrentPage(facilityPage);
+
+                if (facilityInfoList != null && !facilityInfoList.isEmpty()) {
+
+                    /*
+                     * totalRecord
+                     * → 전체 시설 개수.
+                     */
+                    facilityPagingVO.setTotalRecord(facilityInfoList.size());
+
+                    /*
+                     * subList용 index 계산
+                     *
+                     * subList는 0부터 시작한다.
+                     * 예) 1페이지: 0 ~ 5 전
+                     * 예) 2페이지: 5 ~ 10 전
+                     */
+                    int startIndex = (facilityPage - 1) * 5;
+                    int endIndex = Math.min(startIndex + 5, facilityInfoList.size());
+
+                    facilityPageList = facilityInfoList.subList(startIndex, endIndex);
+
+                    aptInfo = facilityInfoList.get(0);
+
+                } else {
+                    detailMessage = "조회된 데이터가 없습니다.";
+                }
+
+                model.addAttribute("facilityPagingVO", facilityPagingVO);
+                model.addAttribute("facilityPageList", facilityPageList);
+                model.addAttribute("facilityPage", facilityPage);
 
                 if (facilityInfoList != null && !facilityInfoList.isEmpty()) {
                     aptInfo = facilityInfoList.get(0);
