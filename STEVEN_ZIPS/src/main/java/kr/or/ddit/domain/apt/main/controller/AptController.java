@@ -31,7 +31,6 @@ public class AptController {
 
         // 아파트 메인페이지 DTO정보 가져오기
         AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
-
         model.addAttribute("aptInfo", aptMainPageDTO);
 
         return "apt-main";

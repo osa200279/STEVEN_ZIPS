@@ -7,4 +7,6 @@ import java.util.List;
 public interface IAplctService {
 
     List<AplctDTO> selectAplctList();
+
+    int approveAplct(List<String> aplctNos, String aplctSttsCd);
 }

@@ -1,6 +1,7 @@
 package kr.or.ddit.common.config;
 
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletResponse;
 import kr.or.ddit.common.filter.TokenAuthenticationFilter;
 import kr.or.ddit.common.security.CustomAccessDeniedHandler;
 import kr.or.ddit.common.security.CustomLoginFailureHandler;
@@ -125,6 +126,12 @@ public class SecurityConfig {
                                 .requestMatchers("/api/react/adm/**").hasRole("ADMIN")  // 중앙관리자만 접근 가능한 URL
                                 .requestMatchers("/api/react/public/**").permitAll() // 권한 상관없이 접근 가능
                                 .anyRequest().authenticated()
+                )
+                .exceptionHandling(handler -> handler
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED)) // 401
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN))    // 403
                 );
 
         http.addFilterBefore(new TokenAuthenticationFilter(tokenProvider)

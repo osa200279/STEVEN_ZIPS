@@ -10,12 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @CrossOrigin(origins = "http://localhost:7777")
@@ -56,5 +54,19 @@ public class AdmDashBoardRestController {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    // 청약 신청 처리(업데이트)
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/aplct/upd")
+    public ResponseEntity<Integer> updAplct(@RequestBody Map<String, Object> params) {
+
+        String aplctSttsCd = (String) params.get("aplctSttsCd");
+        List<String> aplctNos = (List<String>) params.get("aplctNos");
+
+        int cnt = aplctService.approveAplct(aplctNos, aplctSttsCd);
+
+        return cnt > 0 ? ResponseEntity.ok(cnt)
+                : ResponseEntity.badRequest().body(0);
     }
 }
