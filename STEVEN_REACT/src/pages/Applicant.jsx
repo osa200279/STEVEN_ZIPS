@@ -4,7 +4,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Check, X } from 'lucide-react';
 import requestApi, { getCookie } from '../util/api/requestApi';
 import axios from 'axios';
-import '../styles/applicant.css'
+import '../styles/ag-grid.css'
 
 const Applicant = () => {
     const { admInfo } = useOutletContext();
