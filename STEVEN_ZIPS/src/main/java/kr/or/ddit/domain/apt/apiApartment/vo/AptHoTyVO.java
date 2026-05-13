@@ -10,7 +10,7 @@ public class AptHoTyVO {
     // 아파트 단지 번호
     private String aptCmplexNo;
     // 타입명
-    private String typeNm;
+    private String tyNm;
     // 전용면적
     private String exclusiveSize;
     // 방 개수

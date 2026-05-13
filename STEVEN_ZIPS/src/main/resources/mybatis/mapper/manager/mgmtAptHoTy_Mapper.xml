@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IMgmtAptHoTyMapper">
+
+    <select id="selectHoTypeList" resultType="kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyVO">
+
+        SELECT  /*kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IMgmtAptHoTyMapper.selectHoTypeList*/
+                HO_TY_NO
+               ,APT_CMPLEX_NO
+               ,TY_NM
+               ,EXCLUSIVE_SIZE
+               ,ROOM_CNT
+               ,BATHROOM_CNT
+               ,IMAGE_FILE_NO
+        FROM APT_HO_TY
+        WHERE APT_CMPLEX_NO = #{aptCmplexNo}
+        ORDER BY TY_NM
+
+    </select>
+</mapper>

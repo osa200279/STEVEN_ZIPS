@@ -19,6 +19,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/vhcl")
+@PreAuthorize("hasRole('RESIDENT')")
 public class ResidentVhclController {
 
     @Autowired

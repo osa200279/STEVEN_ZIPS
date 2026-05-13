@@ -164,14 +164,14 @@
             INTO APT_HO_TY(
             HO_TY_NO,
             APT_CMPLEX_NO,
-            TYPE_NM,
+            TY_NM,
             EXCLUSIVE_SIZE,
             ROOM_CNT,
             BATHROOM_CNT
             ) VALUES (
             #{item.hoTyNo},
             #{item.aptCmplexNo},
-            #{item.typeNm},
+            #{item.tyNm},
             #{item.exclusiveSize},
             #{item.roomCnt},
             #{item.bathroomCnt}

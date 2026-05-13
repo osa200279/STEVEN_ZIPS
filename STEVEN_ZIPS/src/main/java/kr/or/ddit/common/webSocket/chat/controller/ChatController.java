@@ -18,6 +18,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/residentChat")
+@PreAuthorize("hasRole('RESIDENT')")
 public class ChatController {
 
     @Autowired

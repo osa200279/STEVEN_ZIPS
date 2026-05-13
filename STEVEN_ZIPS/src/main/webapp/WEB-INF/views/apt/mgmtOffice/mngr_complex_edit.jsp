@@ -28,6 +28,8 @@
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/mgmtOfc/mngr_complex_edit.css">
 
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/member/resident/residentVhcl.css">
+
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
 
@@ -313,6 +315,297 @@
     </div>
 
 </div>
+
+
+<!-- =====================================================
+     평형 타입 Drawer
+===================================================== -->
+<div class="ho-type-drawer"
+     id="hoTypeDrawer">
+
+    <!-- 헤더 -->
+    <div class="ho-type-drawer-header">
+
+        <div>
+
+            <h3 class="ho-type-drawer-title">
+                평형 타입 관리
+            </h3>
+
+            <p class="ho-type-drawer-desc">
+                단지에서 사용하는 평형 타입을 관리할 수 있습니다.
+            </p>
+
+        </div>
+
+        <button type="button"
+                class="drawer-close-btn"
+                id="btnCloseTypeDrawer">
+
+            <span class="material-symbols-rounded">
+                close
+            </span>
+
+        </button>
+
+    </div>
+
+    <!-- 리스트 영역 -->
+    <div class="ho-type-drawer-body">
+
+        <!-- 타입 카드 -->
+        <div class="ho-type-card">
+
+            <div class="ho-type-card-top">
+
+                <div>
+
+                    <strong class="ho-type-name">
+                        84A
+                    </strong>
+
+                    <p class="ho-type-size">
+                        전용 84㎡
+                    </p>
+
+                </div>
+
+                <span class="ho-type-count">
+                    사용중 45세대
+                </span>
+
+            </div>
+
+            <div class="ho-type-card-info">
+
+                방 3 · 욕실 2
+
+            </div>
+
+            <div class="ho-type-card-actions">
+
+                <button type="button"
+                        class="btn btn-sm btn-secondary">
+
+                    수정
+
+                </button>
+
+                <button type="button"
+                        class="btn btn-sm btn-danger">
+
+                    삭제
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 하단 -->
+    <div class="ho-type-drawer-footer">
+
+        <button type="button"
+                class="btn btn-primary w-full"
+                id="btnOpenTypeModal">
+
+            + 새 평형 타입 추가
+
+        </button>
+
+    </div>
+
+</div>
+
+<!-- Drawer 배경 -->
+<div class="drawer-backdrop"
+     id="drawerBackdrop">
+</div>
+
+<!-- =====================================================
+     평형 타입 추가 모달
+===================================================== -->
+<div class="ho-type-modal"
+     id="hoTypeModal">
+
+    <div class="ho-type-modal-content">
+
+        <!-- 헤더 -->
+        <div class="ho-type-modal-header">
+
+            <div>
+
+                <h3 class="ho-type-modal-title">
+                    새 평형 타입 추가
+                </h3>
+
+                <p class="ho-type-modal-desc">
+                    단지에서 사용할 평형 타입 정보를 등록합니다.
+                </p>
+
+            </div>
+
+            <button type="button"
+                    class="drawer-close-btn"
+                    id="btnCloseTypeModal">
+
+                <span class="material-symbols-rounded">
+                    close
+                </span>
+
+            </button>
+
+        </div>
+
+        <!-- 바디 -->
+        <div class="ho-type-modal-body">
+
+            <div class="ho-type-inline-grid">
+
+                <!-- 타입명 -->
+                <div class="form-field">
+
+                    <label class="field-label">
+                        타입명
+                    </label>
+
+                    <input type="text"
+                           class="form-input"
+                           placeholder="예: 84A">
+
+                </div>
+
+                <!-- 전용면적 -->
+                <div class="form-field">
+
+                    <label class="field-label">
+                        전용면적
+                    </label>
+
+                    <input type="number"
+                           class="form-input"
+                           placeholder="84">
+
+                </div>
+
+            </div>
+
+
+            <!-- 방/욕실 -->
+            <div class="ho-type-inline-grid">
+
+                <div class="form-field">
+
+                    <label class="field-label">
+                        방 수
+                    </label>
+
+                    <input type="number"
+                           class="form-input"
+                           placeholder="3">
+
+                </div>
+
+                <div class="form-field">
+
+                    <label class="field-label">
+                        욕실 수
+                    </label>
+
+                    <input type="number"
+                           class="form-input"
+                           placeholder="2">
+
+                </div>
+
+            </div>
+
+            <!-- 이미지 업로드 -->
+            <div class="form-field">
+
+                <label class="field-label">
+                    도면 이미지
+                </label>
+
+                <div id="hoUploadBox"
+                     class="upload-box">
+
+                    <input
+                            type="file"
+                            id="hoTypeImage"
+                            hidden
+                            accept="image/*">
+
+                    <!-- 기본 상태 -->
+                    <div class="upload-content">
+
+                        <div class="plus">
+                            +
+                        </div>
+
+                        <div class="text">
+                            파일을 드래그하거나 클릭하여 업로드
+                        </div>
+
+                    </div>
+
+                    <!-- 썸네일 -->
+                    <div id="hoPreviewCard"
+                         class="preview-card">
+
+                        <img
+                                id="hoPreviewImg"
+                                class="preview-img">
+
+                        <button
+                                type="button"
+                                id="hoRemoveBtn"
+                                class="remove-btn">
+
+                            ×
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- 푸터 -->
+        <div class="ho-type-modal-footer">
+
+            <button type="button"
+                    class="btn btn-secondary"
+                    id="btnCancelTypeModal">
+
+                취소
+
+            </button>
+
+            <button type="button"
+                    class="btn btn-primary">
+
+                평형 타입 추가
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 모달 배경 -->
+<div class="ho-type-modal-backdrop"
+     id="hoTypeModalBackdrop">
+</div>
+
+
 
 <script src="${pageContext.request.contextPath}/js/mgmtOfc/mngr_complex_edit.js"></script>
 

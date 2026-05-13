@@ -842,7 +842,7 @@ public class AptApiServiceImpl implements IAptApiService {
         hoTy.setHoTyNo(bassItem.getKaptCode() + "_1");
         hoTy.setAptCmplexNo(bassItem.getKaptCode());
 
-        hoTy.setTypeNm("A타입");
+        hoTy.setTyNm("A타입");
 
         hoTy.setExclusiveSize(maxKey);
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Controller
 @RequestMapping("/resident/vstVhcl")
+@PreAuthorize("hasRole('RESIDENT')")
 public class ResidentVstVhclController {
 
     @Autowired
