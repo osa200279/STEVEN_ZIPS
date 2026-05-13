@@ -78,7 +78,7 @@
             <span>생활지원서비스<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/resident/service/moving">전입/전출신고</a>
+                <a href="${pageContext.request.contextPath}/resident/service/moving/${aptCmplexNo}">전입/전출신고</a>
                 <a href="/resident/service/car/${aptCmplexNo}">차량등록</a>
                 <a href="${pageContext.request.contextPath}/resident/service/visitor/${aptCmplexNo}">방문차량등록</a>
                 <a href="${pageContext.request.contextPath}/resident/service/facility">공용시설예약</a>
@@ -109,8 +109,8 @@
             <span>입주민게시판<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/resident/board/notice">공지사항</a>
-                <a href="${pageContext.request.contextPath}/resident/board/free">자유게시판</a>
+                <a href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}">공지사항</a>
+                <a href="${pageContext.request.contextPath}/resident/board/free/${aptCmplexNo}">자유게시판</a>
                 <a href="${pageContext.request.contextPath}/resident/board/chat/${aptCmplexNo}">그룹채팅방</a>
             </div>
         </div>
@@ -199,7 +199,7 @@
             <div class="all-menu-section">
                 <div class="all-menu-section-title">입주민게시판</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/resident/board/notice">공지사항</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}">공지사항</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/board/free">자유게시판</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/board/chat">그룹채팅방</a></li>
                 </ul>

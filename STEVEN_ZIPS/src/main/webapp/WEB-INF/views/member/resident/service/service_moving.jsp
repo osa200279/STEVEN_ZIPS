@@ -645,17 +645,17 @@
             <section class="menu-grid">
                 <div class="menu-card"><h4>전입신고</h4>
                     <p>입주신고서 작성을 위한 기본 정보를 입력합니다.</p>
-                    <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/in">전입신고
+                    <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/in/${aptCmplexNo}">전입신고
                         화면</a></div>
                 </div>
                 <div class="menu-card"><h4>전출신고</h4>
                     <p>전출 예정일과 정산 정보를 포함한 전출신고를 작성합니다.</p>
-                    <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/out">전출신고
+                    <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/out/${aptCmplexNo}">전출신고
                         화면</a></div>
                 </div>
                 <div class="menu-card"><h4>전출 시 관리비 정산</h4>
                     <p>공용관리비와 세대관리비 항목을 확인하고 최종 정산합니다.</p>
-                    <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/settlement">정산
+                    <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/settlement/${aptCmplexNo}">정산
                         화면</a></div>
                 </div>
             </section>

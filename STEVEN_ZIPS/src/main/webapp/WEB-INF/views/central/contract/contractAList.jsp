@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -26,8 +27,8 @@
 <main class="ml-80 p-8 pt-28">
 
     <div class="mb-6">
-        <h1 class="text-xl font-bold text-[#004830] mb-1">청약 신청 조회</h1>
-        <p class="text-sm text-slate-400">내가 신청한 청약 내역을 확인할 수 있습니다.</p>
+        <h1 class="text-xl font-bold text-[#004830] mb-1">계약 신청 조회</h1>
+        <p class="text-sm text-slate-400">내가 신청한 계약 내역을 확인할 수 있습니다.</p>
     </div>
 
     <c:choose>
@@ -62,7 +63,7 @@
                                         <span class="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">${aplct.APLCT_STTS_CD}</span>
                                     </c:otherwise>
                                 </c:choose>
-                                <p class="text-xs text-slate-400">${aplct.REG_DT} 신청</p>
+                                <p class="text-xs text-slate-400">${fn:replace(aplct.REG_DT, '-', '.')} 신청</p>
                             </div>
                         </div>
                     </div>
@@ -78,7 +79,11 @@
                             </p>
                             <div class="space-y-2 text-sm">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-slate-400 w-20 flex-shrink-0">단지명</span>
+                                    <span class="text-slate-400 w-20 flex-shrink-0">공고명</span>
+                                    <span class="text-slate-700">${aplct.TTL}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-slate-400 w-20 flex-shrink-0">아파트 단지</span>
                                     <span class="font-medium text-slate-700">${aplct.APT_CMPLEX_NM}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -86,12 +91,12 @@
                                     <span class="text-slate-700">${aplct.ANN_NO}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-slate-400 w-20 flex-shrink-0">전용면적</span>
-                                    <span class="text-slate-700">${aplct.EXCLUSE_AREA}㎡</span>
+                                    <span class="text-slate-400 w-20 flex-shrink-0">타입</span>
+                                    <span class="text-slate-700">${aplct.TY_NM}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-slate-400 w-20 flex-shrink-0">공고명</span>
-                                    <span class="text-slate-700">${aplct.TTL}</span>
+                                    <span class="text-slate-400 w-20 flex-shrink-0">전용면적</span>
+                                    <span class="text-slate-700">${aplct.EXCLUSIVE_SIZE}㎡</span>
                                 </div>
                             </div>
                         </div>
@@ -109,7 +114,7 @@
                                     </div>
                                     <div class="pb-4">
                                         <p class="text-sm font-semibold text-[#226046]">신청 완료</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">청약 신청이 완료되었습니다.</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">계약 신청이 완료되었습니다.</p>
                                     </div>
                                 </div>
 

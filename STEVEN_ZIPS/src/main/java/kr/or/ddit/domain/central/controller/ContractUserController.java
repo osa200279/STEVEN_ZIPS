@@ -1,5 +1,7 @@
 package kr.or.ddit.domain.central.controller;
 
+import kr.or.ddit.common.file.mapper.IAttachFileMapper;
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
 import kr.or.ddit.domain.central.service.IContractUserService;
@@ -27,6 +29,8 @@ public class ContractUserController {
 
     @Autowired
     private IAnnouncementService announcementService;
+    @Autowired
+    private IAttachFileMapper iAttachFileMapper;
 
     @GetMapping("/list.do")
     public String contractList() {
@@ -129,7 +133,14 @@ public class ContractUserController {
             Model model) {
         contractUserService.updateInqCnt(annNo);
         AnnouncementDTO announcement = announcementService.selectAnnouncement(annNo);
+
         List<Map<String, Object>> exclusiveSize = contractUserService.selectExcluseAreaDetail(announcement.getAptCmplexNo());
+
+        if (announcement.getAtchFileId() != null) {
+            List<AttachFileVO> fileList = iAttachFileMapper.selecAttachFileList(announcement.getAtchFileId());
+            model.addAttribute("fileList", fileList);
+        }
+
         log.info("aptCmplexNo: {}", announcement.getAptCmplexNo());  // 추가
         log.info("exclusiveSize: {}", exclusiveSize);  // 추가
         model.addAttribute("announcement", announcement);

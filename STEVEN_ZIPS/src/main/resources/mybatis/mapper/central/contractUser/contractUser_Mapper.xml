@@ -118,9 +118,11 @@
     </select>
 
     <select id="selectRentListingByAptCmplexNo" parameterType="string" resultType="map">
-        SELECT ht.EXCLUSIVE_SIZE
-             , ht.room_cnt
-             , ht.bathroom_cnt
+        SELECT aht.EXCLUSIVE_SIZE
+             , aht.HO_TY_NO
+             , aht.TY_NM
+             , aht.room_cnt
+             , aht.bathroom_cnt
              , rl.dpst_amt
              , rl.mthly_rent_amt
              , au.unit_cnt
@@ -129,23 +131,30 @@
              , au.dong_nm
         FROM rent_listing rl
                  INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
-                 INNER JOIN apt_ho_ty ht ON ad.ho_ty_no = ht.ho_ty_no
+                 INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
                  INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
                  INNER JOIN apt_complex ac ON au.apt_cmplex_no = ac.apt_cmplex_no
         WHERE au.apt_cmplex_no = #{aptCmplexNo}
     </select>
     <select id="selectExcluseAreaDetail" parameterType="string" resultType="map">
-        SELECT ht.EXCLUSIVE_SIZE  AS exclusiveSize
-             , ht.room_cnt      AS roomCnt
-             , ht.bathroom_cnt  AS bathroomCnt
-             , ht.image_file_no AS imageFileNo
-        FROM apt_ho_ty ht
-        WHERE ht.apt_cmplex_no = #{aptCmplexNo}
+        SELECT aht.EXCLUSIVE_SIZE
+             , aht.TY_NM
+             , aht.room_cnt
+             , aht.bathroom_cnt
+             , aht.image_file_no
+             , rl.DPST_AMT
+             , rl.MTHLY_RENT_AMT
+        FROM apt_ho_ty aht
+                 INNER JOIN apt_detail ad ON aht.ho_ty_no = ad.ho_ty_no
+                 INNER JOIN rent_listing rl ON ad.ho_no = rl.ho_no
+        WHERE aht.apt_cmplex_no = #{aptCmplexNo}
+        GROUP BY aht.EXCLUSIVE_SIZE, aht.TY_NM, aht.room_cnt, aht.bathroom_cnt, aht.image_file_no, rl.DPST_AMT, rl.MTHLY_RENT_AMT
     </select>
     <select id="selectHoTyNo" resultType="string" parameterType="map">
         SELECT ho_ty_no
         FROM apt_ho_ty
         WHERE apt_cmplex_no = #{aptCmplexNo}
+          AND TY_NM = #{tyNm}
           AND EXCLUSIVE_SIZE = #{exclusiveSize}
           AND ROWNUM = 1
     </select>
@@ -154,6 +163,7 @@
              , a.ann_no
              , a.aplct_stts_cd
              , a.reg_dt
+             , aht.ty_nm
              , aht.EXCLUSIVE_SIZE
              , cab.ttl
              , ac.apt_cmplex_nm
@@ -175,6 +185,5 @@
         SET aplct_stts_cd = 'CANCEL'
         WHERE aplct_no = #{aplctNo}
     </update>
-
 
 </mapper>

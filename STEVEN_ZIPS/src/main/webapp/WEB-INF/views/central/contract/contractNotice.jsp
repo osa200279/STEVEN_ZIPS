@@ -102,7 +102,7 @@
             </div>
             <div class="flex gap-3">
                 <input id="searchTtl" class="flex-1 bg-[#f1f3ef] border-none rounded-lg py-4 px-5 text-sm"
-                       placeholder="공고명 또는 아파트명을 입력하세요" type="text"/>
+                       placeholder="공고명 또는 아파트 단지를 입력하세요" type="text"/>
                 <button onclick="searchList()"
                         class="bg-[#6F7F3F] text-white px-10 py-4 rounded-lg font-bold hover:bg-[#5f6e35] transition-all">
                     검색
@@ -127,7 +127,7 @@
                 <tr>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">번호</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-left">공고명</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">단지</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">아파트 단지</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">첨부</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">게시일</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">마감일</th>
@@ -198,8 +198,8 @@
                         '<td class="px-6 py-5 text-sm text-slate-800 text-left">' + ann.ttl + '</td>' +
                         '<td class="px-6 py-5 text-sm text-slate-600 text-center">' + (ann.aptCmplexNm || '') + '</td>' +
                         '<td class="px-6 py-5 text-center">' + (ann.hasFileYn === 'Y' ? '<span class="material-symbols-outlined text-slate-400 text-[20px]">attachment</span>' : '') + '</td>' +
-                        '<td class="px-6 py-5 text-sm text-slate-500 text-center">' + (ann.rcrtBgngDt || '') + '</td>' +
-                        '<td class="px-6 py-5 text-sm text-slate-500 text-center">' + (ann.rcrtEndDt || '') + '</td>' +
+                        '<td class="px-6 py-5 text-sm text-slate-500 text-center">' + (ann.rcrtBgngDt ? ann.rcrtBgngDt.replace(/-/g, '.') : '') + '</td>' +
+                        '<td class="px-6 py-5 text-sm text-slate-500 text-center">' + (ann.rcrtEndDt ? ann.rcrtEndDt.replace(/-/g, '.') : '') + '</td>' +
                         '<td class="px-6 py-5 text-center">' + statusBadge + '</td>' +
                         '<td class="px-6 py-5 text-sm text-slate-400 text-center">' + (ann.inqCnt || 0) + '</td>';
 

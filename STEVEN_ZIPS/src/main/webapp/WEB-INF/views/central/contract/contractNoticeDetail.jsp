@@ -94,8 +94,8 @@
             </div>
             <div class="px-8 py-3 bg-[#f8faf6] flex items-center gap-8 text-sm text-slate-500 border-b border-slate-200">
                 <span>공고번호 : <strong class="text-slate-700">${announcement.annNo}</strong></span>
-                <span>공고일 : <strong class="text-slate-700">${announcement.pblancBgngDt}</strong></span>
-                <span>단지 : <strong class="text-slate-700">${announcement.aptCmplexNm}</strong></span>
+                <span>공고일 : <strong class="text-slate-700">${fn:replace(announcement.pblancBgngDt, '-', '.')}</strong></span>
+                <span>아파트 단지 : <strong class="text-slate-700">${announcement.aptCmplexNm}</strong></span>
                 <span class="ml-auto flex items-center gap-1 text-xs text-slate-400">
                     <span class="material-symbols-outlined text-[14px]">visibility</span> ${announcement.inqCnt}
                 </span>
@@ -112,7 +112,7 @@
                 <table class="info-table">
                     <tr>
                         <th style="width:120px">모집기간</th>
-                        <td>${announcement.rcrtBgngDt} ~ ${announcement.rcrtEndDt}</td>
+                        <td>${fn:replace(announcement.rcrtBgngDt, '-', '.')} ~ ${fn:replace(announcement.rcrtEndDt, '-', '.')}</td>
                         <th style="width:120px">공급세대수</th>
                         <td>${announcement.supplyDisplay}</td>
                     </tr>
@@ -121,19 +121,6 @@
                         <td>${announcement.totalUnitCnt}세대</td>
                         <th>주소</th>
                         <td>${announcement.dorojuso}</td>
-                    </tr>
-                    <tr>
-                        <th>제출서류</th>
-                        <td colspan="3">
-                            <c:choose>
-                                <c:when test="${not empty announcement.sbmsnDoc}">
-                                    ${announcement.sbmsnDoc}
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="text-slate-400">-</span>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
                     </tr>
                 </table>
             </div>
@@ -153,6 +140,9 @@
                         <th>타입</th>
                         <th>전용면적(㎡)</th>
                         <th>방 수</th>
+                        <th>욕실 수</th>
+                        <th>임대보증금(원)</th>
+                        <th>월임대료(원)</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -160,15 +150,18 @@
                         <c:when test="${not empty exclusiveSize}">
                             <c:forEach var="item" items="${exclusiveSize}">
                                 <tr>
-                                    <td class="type-cell">${item.exclusiveSize}형</td>
-                                    <td>${item.exclusiveSize}㎡</td>
-                                    <td>${item.ROOMCNT}개</td>
+                                    <td class="type-cell">${item.TY_NM}</td>
+                                    <td>${item.EXCLUSIVE_SIZE}㎡</td>
+                                    <td>${item.ROOM_CNT}개</td>
+                                    <td>${item.BATHROOM_CNT}개</td>
+                                    <td>${item.DPST_AMT}</td>
+                                    <td>${item.MTHLY_RENT_AMT}</td>
                                 </tr>
                             </c:forEach>
                         </c:when>
                         <c:otherwise>
                             <tr>
-                                <td colspan="5" class="py-10 text-slate-400">공급정보가 없습니다.</td>
+                                <td colspan="6" class="py-10 text-slate-400">공급정보가 없습니다.</td>
                             </tr>
                         </c:otherwise>
                     </c:choose>
@@ -221,7 +214,7 @@
             <c:if test="${announcement.statusNm == '진행중'}">
                 <button onclick="openApplyModal()"
                         class="flex items-center gap-2 px-8 py-2.5 bg-[#004830] text-white text-sm font-bold hover:bg-[#226046] transition-all rounded">
-                    청약 신청하기
+                    신청하기
                 </button>
             </c:if>
         </div>
@@ -229,11 +222,11 @@
     </main>
 </div>
 
-<!-- 청약 신청 모달 -->
+<!-- 계약 신청 모달 -->
 <div id="applyModal" class="modal-overlay">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-            <h2 class="text-base font-bold text-[#004830]">청약 신청</h2>
+            <h2 class="text-base font-bold text-[#004830]">계약 신청</h2>
             <button onclick="closeApplyModal()" class="text-slate-400 hover:text-slate-600">
                 <span class="material-symbols-outlined">close</span>
             </button>
@@ -244,7 +237,7 @@
             <div class="bg-[#f8faf6] border border-slate-200 rounded p-4">
                 <p class="text-xs text-slate-500 mb-1">신청 공고</p>
                 <p class="text-sm font-bold text-[#004830] mb-0.5">${announcement.ttl}</p>
-                <p class="text-xs text-slate-500">${announcement.aptCmplexNm} | 모집마감 : ${announcement.rcrtEndDt}</p>
+                <p class="text-xs text-slate-500">${announcement.aptCmplexNm} | 모집마감 : ${fn:replace(announcement.rcrtEndDt, '-', '.')}</p>
             </div>
 
             <!-- 신청자 정보 -->
@@ -260,20 +253,19 @@
                            class="w-full px-3 py-2 border border-slate-200 bg-slate-50 text-sm text-slate-500 cursor-not-allowed rounded"/>
                 </div>
             </div>
-            <div>
-                <label class="block text-xs text-slate-500 mb-1">전용면적 <span class="text-red-400">*</span></label>
+            <div class="w-1/2">
+                <label class="block text-xs text-slate-500 mb-1">타입</label>
                 <select id="exclusiveSizeSelect" class="w-full px-3 py-2 border border-slate-200 text-sm rounded focus:outline-none focus:border-[#004830]">
                     <c:forEach var="item" items="${exclusiveSize}">
-                        <option value="${item.exclusiveSize}">${item.exclusiveSize}㎡</option>
+                        <option value="${item.TY_NM}" data-exclusive="${item.EXCLUSIVE_SIZE}">${item.TY_NM}</option>
                     </c:forEach>
                 </select>
             </div>
-
         </div>
 
         <div class="flex justify-end gap-2 px-6 py-4 border-t border-slate-200 bg-slate-50 rounded-b-xl">
             <button onclick="closeApplyModal()" class="px-5 py-2 bg-white border border-slate-300 text-sm text-slate-600 rounded hover:bg-slate-50 transition-colors">취소</button>
-            <button onclick="submitApply()" class="px-6 py-2 bg-[#004830] text-white text-sm font-bold rounded hover:bg-[#226046] transition-all">청약 신청하기</button>
+            <button onclick="submitApply()" class="px-6 py-2 bg-[#004830] text-white text-sm font-bold rounded hover:bg-[#226046] transition-all">계약 신청</button>
         </div>
     </div>
 </div>
@@ -303,14 +295,16 @@
 
     function submitApply() {
         Swal.fire({
-            icon: 'question', title: '청약 신청하시겠습니까?', text: '신청 후 심사 결과를 기다려주세요.',
+            icon: 'question', title: '신청하시겠습니까?', text: '신청 후 심사 결과를 기다려주세요.',
             confirmButtonColor: '#004830', confirmButtonText: '신청하기', showCancelButton: true, cancelButtonText: '취소'
         }).then(result => {
             if (result.isConfirmed) {
+                const select = document.querySelector('#exclusiveSizeSelect');
                 const data = {
                     annNo: document.querySelector('#annNo').value,
                     aptCmplexNo: document.querySelector('#aptCmplexNo').value,
-                    ExclusiveSize: document.querySelector('#exclusiveSizeSelect').value
+                    tyNm: select.value,
+                    exclusiveSize: select.options[select.selectedIndex].dataset.exclusive
                 };
                 fetch('/contract/request.do', {
                     method: 'POST',
@@ -321,7 +315,7 @@
                     body: JSON.stringify(data)
                 }).then(res => res.json()).then(result => {
                     if (result.success) {
-                        Swal.fire({icon: 'success', title: '청약 신청 완료', text: '심사 결과를 기다려주세요.', confirmButtonColor: '#004830'})
+                        Swal.fire({icon: 'success', title: '계약 신청 완료', text: '심사 결과를 기다려주세요.', confirmButtonColor: '#004830'})
                             .then(() => window.location.href = '/contract/history.do');
                     } else {
                         Swal.fire({icon: 'error', title: '오류', text: '신청 중 오류가 발생했습니다.', confirmButtonColor: '#004830'});
