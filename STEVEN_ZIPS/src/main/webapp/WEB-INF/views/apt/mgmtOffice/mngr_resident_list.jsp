@@ -351,7 +351,26 @@
                             }
                         },
                         { headerName: "단지명", field: "complexName", width: 180 },
-                        { headerName: "동", field: "dong", width: 100 },
+
+
+
+                        {
+                            headerName: "동",
+                            field: "dong",
+                            width: 100,
+                            valueGetter: function (params) {
+                                const dong = params.data.dong || "";
+
+                                if (!dong.includes("_")) {
+                                    return dong;
+                                }
+
+                                return dong.split("_").pop();
+                            }
+                        },
+
+
+
                         { headerName: "호", field: "ho", width: 110 },
                         {
                             headerName: "세대 구분",
