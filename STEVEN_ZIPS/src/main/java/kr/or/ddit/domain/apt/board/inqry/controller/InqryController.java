@@ -35,7 +35,7 @@ public class InqryController {
 
         PaginationInfoVO<InqryDTO> pagingVO = new PaginationInfoVO<>();
 
-        pagingVO.setScreenSize(2);
+        pagingVO.setScreenSize(5);
         pagingVO.setCurrentPage(currentPage);
 
         int totalRecord = inqryService.getTotalCount(
