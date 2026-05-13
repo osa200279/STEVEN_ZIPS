@@ -7,6 +7,7 @@ import requestApi from '../../util/api/requestApi';
 const MainLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [admInfo, setAdmInfo] = useState(null); // 관리자 정보를 담을 상태
+  const [pageInfo, setPageInfo] = useState({parent:"", current:""});
 
   useEffect(() => {
     // 1. 페이지 로드 시 관리자 정보 요청 (JWT는 인터셉터가 알아서 챙김)
@@ -26,19 +27,17 @@ const MainLayout = ({ children }) => {
 
   return (
     <div id="wrapper">
-      <Sidebar 
-        isCollapsed={isCollapsed} 
-        toggleSidebar={() => setIsCollapsed(!isCollapsed)} 
-        admInfo={admInfo} 
-      />
+      <Sidebar
+        isCollapsed={isCollapsed}
+        toggleSidebar={() => setIsCollapsed(!isCollapsed)}
+        admInfo={admInfo} />
       <div className="main-wrap" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Header 
-          parent="대시보드"
-          current="홈" 
-          admInfo={admInfo}
-        />
+        <Header
+          parent={pageInfo.parent}
+          current={pageInfo.current}
+          admInfo={admInfo} />
         <main className="main-content" style={{ flex: 1, padding: '28px' }}>
-          <Outlet context={{admInfo}} />
+          <Outlet context={{ admInfo, setPageInfo }} />
         </main>
       </div>
     </div>

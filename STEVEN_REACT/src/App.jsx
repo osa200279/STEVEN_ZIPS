@@ -18,7 +18,6 @@ function App() {
     const token = getCookie('JWT');
 
     if (!token) {
-      console.log("###### 권한 체크 들어옴");
       // 쿠키가 없으면 윈도우 창 자체를 JSP 로그인 페이지로 이동
       window.location.href = "http://localhost:8080/login.do";
       return null; // 이동 중에는 아무것도 렌더링하지 않음
