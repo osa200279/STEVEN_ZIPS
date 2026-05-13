@@ -53,7 +53,7 @@ public class MngResidentMoveServiceImpl implements IMngResidentMoveService {
         normalizeMoveDates(vo);
 
         int affected;
-        if (residentMoveMapper.countResidentMoveByUserNo(vo.getUserNo()) > 0) {
+        if (residentMoveMapper.countResidentMoveByKey(vo.getUserNo(), vo.getHoNo()) > 0) {
             affected = residentMoveMapper.updateResidentMove(vo);
         } else {
             affected = residentMoveMapper.insertResidentMove(vo);

@@ -17,7 +17,10 @@ public interface IMngResidentMoveMapper {
             @Param("userNo") String userNo
     );
 
-    int countResidentMoveByUserNo(@Param("userNo") String userNo);
+    int countResidentMoveByKey(
+            @Param("userNo") String userNo,
+            @Param("hoNo") String hoNo
+    );
 
     int insertResidentMove(MngResidentMoveVO vo);
 
