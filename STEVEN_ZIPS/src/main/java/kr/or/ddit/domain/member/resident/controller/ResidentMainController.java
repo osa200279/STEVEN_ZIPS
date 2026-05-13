@@ -6,6 +6,7 @@ import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtOfficeService;
 import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO;
 import kr.or.ddit.domain.member.resident.service.IResidentFacilityService;
+import kr.or.ddit.domain.member.resident.service.IResidentMoveService;
 import kr.or.ddit.domain.member.resident.vo.MyAptVO;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -13,7 +14,6 @@ import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import kr.or.ddit.common.model.PaginationInfoVO;
 
-import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -39,6 +39,9 @@ public class ResidentMainController {
 
     @Autowired
     private IResidentFacilityService residentFacilityService;
+
+    @Autowired
+    private IResidentMoveService residentMoveService;
 
     /**
      * 내 아파트 목록 조회 컨트롤러
@@ -257,10 +260,119 @@ public class ResidentMainController {
     /* =========================
      * 생활지원서비스
      * ========================= */
-    @GetMapping("/service/moving")
-    public String serviceMoving() {
+
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/service/moving/{aptCmplexNo}")
+    public String serviceMoving(
+            @PathVariable String aptCmplexNo,
+            @AuthenticationPrincipal CustomUser principal,
+            Model model) {
+
+        MemberVO memberVO = principal.getMember();
+        String userNo = memberVO.getUserNo();
+        List<MyAptVO> aptList = List.of();
+
+        if (memberVO instanceof ResidentVO resident) {
+
+            aptList = resident.getMyAptList().stream()
+                    .filter(apt ->
+                            apt.getAptCmplexNo().equals(aptCmplexNo)
+                    )
+                    .toList();
+        }
+
+        AptMainPageDTO.ResponseDto aptCommonDTO =
+                aptComplexService.selectAptCommonDTO(aptCmplexNo);
+
+        model.addAttribute("aptInfo", aptCommonDTO);
+
+        model.addAttribute("userNo", userNo);
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
+        model.addAttribute("aptList", aptList);
+
+        model.addAttribute(
+                "memberType",
+                memberVO.getClass().getSimpleName()
+        );
         return "member/resident/service/service_moving";
     }
+
+    @GetMapping("/service/moving/in/{aptCmplexNo}")
+    public String seriveMoveIn(@PathVariable String aptCmplexNo,
+                               @AuthenticationPrincipal CustomUser principal,
+                               Model model) {
+        MemberVO memberVO = principal.getMember();
+        String userNo = memberVO.getUserNo();
+        List<Map<String, Object>> hoList = residentMoveService.selectHoList(userNo, aptCmplexNo);
+
+        model.addAttribute("hoList", hoList);
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
+        model.addAttribute("principal", principal);
+        return "member/resident/service/service_move_in";
+    }
+
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/service/moving/out/{aptCmplexNo}")
+    public String seriveMoveOut(@PathVariable String aptCmplexNo,
+                                @AuthenticationPrincipal CustomUser principal,
+                                Model model) {
+        MemberVO memberVO = principal.getMember();
+        String userNo = memberVO.getUserNo();
+        List<MyAptVO> aptList = List.of();
+
+        if (memberVO instanceof ResidentVO resident) {
+            aptList = resident.getMyAptList().stream()
+                    .filter(apt -> apt.getAptCmplexNo().equals(aptCmplexNo))
+                    .toList();
+        }
+
+        AptMainPageDTO.ResponseDto aptCommonDTO =
+                aptComplexService.selectAptCommonDTO(aptCmplexNo);
+
+        List<Map<String, Object>> hoList = residentMoveService.selectHoList(userNo, aptCmplexNo);
+
+        model.addAttribute("aptInfo", aptCommonDTO);
+        model.addAttribute("userNo", userNo);
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
+        model.addAttribute("aptList", aptList);
+        model.addAttribute("hoList", hoList);
+        model.addAttribute("principal", principal);
+        model.addAttribute("memberType", memberVO.getClass().getSimpleName());
+        return "member/resident/service/service_move_out";
+    }
+
+    @GetMapping("/service/moving/settlement")
+    public String seriveMoveSettlement(@PathVariable String aptCmplexNo,
+                                       @AuthenticationPrincipal CustomUser principal,
+                                       Model model) {
+        MemberVO memberVO = principal.getMember();
+        String userNo = memberVO.getUserNo();
+        List<MyAptVO> aptList = List.of();
+
+        if (memberVO instanceof ResidentVO resident) {
+
+            aptList = resident.getMyAptList().stream()
+                    .filter(apt ->
+                            apt.getAptCmplexNo().equals(aptCmplexNo)
+                    )
+                    .toList();
+        }
+        AptMainPageDTO.ResponseDto aptCommonDTO =
+                aptComplexService.selectAptCommonDTO(aptCmplexNo);
+
+        model.addAttribute("aptInfo", aptCommonDTO);
+
+        model.addAttribute("userNo", userNo);
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
+        model.addAttribute("aptList", aptList);
+
+        model.addAttribute(
+                "memberType",
+                memberVO.getClass().getSimpleName()
+        );
+        return "member/resident/service/service_move_settlement";
+    }
+
 
 
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
@@ -421,38 +533,50 @@ public class ResidentMainController {
     /* =========================
      * 입주민게시판
      * ========================= */
-    @GetMapping("/board/notice")
-    public String boardNotice() {
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/board/notice/{aptCmplexNo}")
+    public String boardNotice(@PathVariable String aptCmplexNo, Model model) {
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
         return "member/resident/board/board_notice";
     }
 
-    @GetMapping("/board/free")
-    public String boardFree() {
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/board/free/{aptCmplexNo}")
+    public String boardFree(@PathVariable String aptCmplexNo, Model model) {
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
         return "member/resident/board/board_free";
     }
 
-    @GetMapping("/board/free/list")
-    public String boardFreeList() {
-        return "member/resident/board/board_free_list";
-    }
-
-    @GetMapping("/board/free/write")
-    public String boardFreeWrite() {
-        return "member/resident/board/board_free_write";
-    }
-
-    @GetMapping("/board/free/detail")
-    public String boardFreeDetail() {
-        return "member/resident/board/board_free_detail";
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/board/free/list/{aptCmplexNo}")
+    public String boardFreeList(@PathVariable String aptCmplexNo, Model model) {
+        return "redirect:/resident/boardFreeList/" + aptCmplexNo;
     }
 
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
-    @GetMapping("/board/chat/{aptCmplexNo}")
-    public String boardChat(@AuthenticationPrincipal CustomUser principal
-            ,@PathVariable String aptCmplexNo
-            ,Model model
-            ) {
+    @GetMapping("/board/free/write/{aptCmplexNo}")
+    public String boardFreeWrite(@PathVariable String aptCmplexNo, Model model) {
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
+        return "member/resident/board/board_free_write";
+    }
 
+    /*@PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/board/free/detail/{postNo}/{aptCmplexNo}")
+    public String boardFreeDetail(@PathVariable String aptCmplexNo,
+                                  @PathVariable String postNo, Model model,
+                                  @AuthenticationPrincipal CustomUser principal
+                                 ) {
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
+        model.addAttribute("postNo", postNo);
+        return "member/resident/board/board_free_detail";
+    }*/
+
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/board/chat/{aptCmplexNo}")
+    public String boardChat(@AuthenticationPrincipal CustomUser principal,
+                            @PathVariable String aptCmplexNo,
+                            Model model
+            ) {
         model.addAttribute("userNo", principal.getMember().getUserNo());
         model.addAttribute("aptCmplexNo",aptCmplexNo);
 
@@ -471,18 +595,7 @@ public class ResidentMainController {
         return "member/resident/stats_apartment";
     }
 
-    @GetMapping("/service/moving/in")
-    public String seriveMoveIn() {
-        return "member/resident/service/service_move_in";
-    }
-    @GetMapping("/service/moving/out")
-    public String seriveMoveOut() {
-        return "member/resident/service/service_move_out";
-    }
-    @GetMapping("/service/moving/settlement")
-    public String seriveMoveSettlement() {
-        return "member/resident/service/service_move_settlement";
-    }
+
 
 
 }
