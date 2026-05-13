@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('RESIDENT')")
+@PreAuthorize("hasAnyRole('MEMBER', 'RESIDENT', 'MNGR', 'ADMIN')")
 @RequestMapping("/apt/board/inqry")
 public class InqryController {
 
@@ -55,16 +56,19 @@ public class InqryController {
         pagingVO.setDataList(list);
 
         model.addAttribute("pagingVO", pagingVO);
+        model.addAttribute("adminMode", isAdminOrManager(auth));
 
         return "apt/inqry/inqryList";
     }
 
     @GetMapping("/writeForm.do")
+    @PreAuthorize("hasAnyRole('MEMBER', 'RESIDENT')")
     public String writeForm() {
         return "apt/inqry/inqryListDetail";
     }
 
     @PostMapping("/writeProc.do")
+    @PreAuthorize("hasAnyRole('MEMBER', 'RESIDENT')")
     public String writeProc(
             InqryDTO dto,
             Authentication auth,
@@ -86,6 +90,7 @@ public class InqryController {
     }
 
     @GetMapping("/updateForm.do")
+    @PreAuthorize("hasAnyRole('MEMBER', 'RESIDENT')")
     public String updateForm(
             @RequestParam String postNo,
             Authentication auth,
@@ -107,6 +112,7 @@ public class InqryController {
     }
 
     @PostMapping("/updateProc.do")
+    @PreAuthorize("hasAnyRole('MEMBER', 'RESIDENT')")
     public String updateProc(
             InqryDTO dto,
             Authentication auth,
@@ -139,6 +145,7 @@ public class InqryController {
     }
 
     @GetMapping("/delete.do")
+    @PreAuthorize("hasAnyRole('MEMBER', 'RESIDENT')")
     public String deleteInqry(
             @RequestParam String postNo,
             Authentication auth
@@ -153,6 +160,45 @@ public class InqryController {
         );
 
         return "redirect:/apt/board/inqry/list.do";
+    }
+
+    @GetMapping("/replyForm.do")
+    @PreAuthorize("hasAnyRole('MNGR', 'ADMIN')")
+    public String replyForm(
+            @RequestParam String postNo,
+            Authentication auth,
+            Model model
+    ) {
+        InqryDTO inqry = inqryService.detailForAdmin(postNo);
+
+        model.addAttribute("inqry", inqry);
+        model.addAttribute("adminMode", true);
+
+        return "apt/inqry/inqryListDetail";
+    }
+
+    @PostMapping("/replyProc.do")
+    @PreAuthorize("hasAnyRole('MNGR', 'ADMIN')")
+    public String replyProc(
+            @RequestParam String postNo,
+            @RequestParam String ansCn,
+            Authentication auth,
+            RedirectAttributes ra
+    ) {
+        CustomUser customUser = (CustomUser) auth.getPrincipal();
+        MemberVO user = customUser.getMember();
+
+        inqryService.replyInqry(postNo, ansCn, user.getUserNo());
+        ra.addFlashAttribute("msg", "replyOk");
+
+        return "redirect:/apt/board/inqry/replyForm.do?postNo=" + postNo;
+    }
+
+    private boolean isAdminOrManager(Authentication auth) {
+        return auth != null && auth.getAuthorities().stream()
+                .anyMatch(authority ->
+                        "ROLE_ADMIN".equals(authority.getAuthority())
+                                || "ROLE_MNGR".equals(authority.getAuthority()));
     }
 }
 

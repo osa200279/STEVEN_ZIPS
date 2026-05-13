@@ -3,31 +3,64 @@
 
 <mapper namespace="kr.or.ddit.domain.apt.board.inqry.mapper.IInqryMapper">
 
+    <sql id="latestAnswerJoin">
+        LEFT JOIN (
+            SELECT *
+            FROM (
+                SELECT
+                    c.post_no,
+                    c.cmt_no,
+                    c.cmt_cn,
+                    c.reg_dttm,
+                    c.mdf_dttm,
+                    c.user_no,
+                    m.user_nm,
+                    ROW_NUMBER() OVER (PARTITION BY c.post_no ORDER BY c.reg_dttm DESC, c.cmt_no DESC) AS rn
+                FROM apt_board_comment c
+                LEFT JOIN member m
+                    ON m.user_no = c.user_no
+                WHERE c.del_yn = 'N'
+            )
+            WHERE rn = 1
+        ) ans
+            ON ans.post_no = abp.post_no
+    </sql>
+
     <select id="getList"
             resultType="kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO">
-        /* IInqryMapper.getList */
         SELECT *
         FROM (
                  SELECT
                      ROW_NUMBER() OVER (ORDER BY abp.reg_dttm DESC) rnum
-                      , abp.post_no       postNo       /* 게시글번호 */
-                      , abp.board_no      boardNo      /* 게시판번호 */
-                      , abp.ttl           ttl          /* 제목 */
-                      , abp.cn            cn           /* 내용 */
-                      , abp.wrtr_id       wrtrId       /* 작성자아이디 */
-                      , abp.prrt_cd       prrtCd       /* 문의유형코드 */
-                      , abp.reg_dttm      regDttm      /* 등록일시 */
-                      , abp.mdf_dttm      mdfDttm      /* 수정일시 */
-                      , abp.inq_cnt       inqCnt       /* 조회수 */
-                      , abp.del_yn        delYn        /* 삭제여부 */
-                      , abp.atch_file_id  atchFileId   /* 첨부파일아이디 */
-                      , abp.opn_yn        opnYn        /* 공개여부 */
-                      , abi.apt_cmplex_no aptCmplexNo  /* 아파트단지번호 */
-                      , abi.board_ty_cd   boardTyCd    /* 게시판유형코드 */
-                      , abi.board_nm      boardNm      /* 게시판명 */
+                      , abp.post_no       postNo
+                      , abp.board_no      boardNo
+                      , abp.ttl           ttl
+                      , abp.cn            cn
+                      , abp.wrtr_id       wrtrId
+                      , wm.user_nm        wrtrNm
+                      , abp.prrt_cd       prrtCd
+                      , abp.reg_dttm      regDttm
+                      , abp.mdf_dttm      mdfDttm
+                      , abp.inq_cnt       inqCnt
+                      , abp.del_yn        delYn
+                      , abp.atch_file_id  atchFileId
+                      , abp.opn_yn        opnYn
+                      , abi.apt_cmplex_no aptCmplexNo
+                      , abi.board_ty_cd   boardTyCd
+                      , abi.board_nm      boardNm
+                      , CASE WHEN ans.cmt_no IS NULL THEN 'N' ELSE 'Y' END ansYn
+                      , ans.cmt_no        ansCmtNo
+                      , ans.cmt_cn        ansCn
+                      , ans.reg_dttm      ansRegDttm
+                      , ans.mdf_dttm      ansMdfDttm
+                      , ans.user_no       ansUserNo
+                      , ans.user_nm       ansUserNm
                  FROM apt_board_post abp
                           JOIN apt_board_instance abi
                                ON abp.board_no = abi.board_no
+                          LEFT JOIN member wm
+                               ON wm.user_id = abp.wrtr_id
+                          <include refid="latestAnswerJoin"/>
                 WHERE abi.board_ty_cd = #{boardTyCd}
                   AND abi.use_yn = 'Y'
                   AND abp.del_yn = 'N'
@@ -45,7 +78,6 @@
 
     <select id="getBoardNo"
             resultType="string">
-        /* IInqryMapper.getBoardNo */
         SELECT MAX(abi.board_no)
         FROM apt_board_instance abi
         WHERE TRIM(abi.apt_cmplex_no) = TRIM(#{aptCmplexNo})
@@ -55,7 +87,6 @@
 
     <select id="getCommonBoardNo"
             resultType="string">
-        /* IInqryMapper.getCommonBoardNo */
         SELECT MAX(abi.board_no)
         FROM apt_board_instance abi
         WHERE TRIM(abi.board_ty_cd) = TRIM(#{boardTyCd})
@@ -64,20 +95,19 @@
 
     <insert id="insertInqry"
             parameterType="kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO">
-        /* IInqryMapper.insertInqry */
         INSERT INTO apt_board_post (
-                                     post_no          /* 게시글번호 */
-                                   , board_no         /* 게시판번호 */
-                                   , ttl              /* 제목 */
-                                   , cn               /* 내용 */
-                                   , wrtr_id          /* 작성자ID */
-                                   , prrt_cd          /* 문의유형코드 */
-                                   , reg_dttm         /* 등록일시 */
-                                   , mdf_dttm         /* 수정일시 */
-                                   , inq_cnt          /* 조회수 */
-                                   , del_yn           /* 삭제여부 */
-                                   , atch_file_id     /* 첨부파일ID */
-                                   , opn_yn           /* 공개여부 */
+                                     post_no
+                                   , board_no
+                                   , ttl
+                                   , cn
+                                   , wrtr_id
+                                   , prrt_cd
+                                   , reg_dttm
+                                   , mdf_dttm
+                                   , inq_cnt
+                                   , del_yn
+                                   , atch_file_id
+                                   , opn_yn
         ) VALUES (
                    'IQ' || TO_CHAR(SYSDATE, 'YYMMDDHH24MISS')
                  , #{boardNo}
@@ -95,7 +125,6 @@
     </insert>
 
     <update id="deleteInqry">
-        /* IInqryMapper.deleteInqry */
         UPDATE apt_board_post abp
         SET abp.del_yn = 'Y'
           , abp.mdf_dttm = SYSDATE
@@ -113,7 +142,6 @@
 
     <select id="getTotalCount"
             resultType="int">
-        /* IInqryMapper.getTotalCount */
         SELECT COUNT(*)
         FROM apt_board_post abp
                  JOIN apt_board_instance abi
@@ -133,11 +161,10 @@
 
     <select id="getResidentInfo"
             resultType="kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO">
-        /* IInqryMapper.getResidentInfo */
         SELECT
-            hh.user_no        userNo        /* 사용자번호 */
-             , hh.ho_no          hoNo          /* 세대번호 */
-             , au.apt_cmplex_no  aptCmplexNo   /* 아파트단지번호 */
+            hh.user_no        userNo
+             , hh.ho_no          hoNo
+             , au.apt_cmplex_no  aptCmplexNo
         FROM hshld_head hh
                  JOIN apt_detail ad
                       ON hh.ho_no = ad.ho_no
@@ -147,18 +174,15 @@
           AND ROWNUM = 1
     </select>
 
-
     <select id="detail"
             resultType="kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO">
-
-        /* IInqryMapper.detail */
-
         SELECT
             abp.post_no       postNo
              , abp.board_no      boardNo
              , abp.ttl           ttl
              , abp.cn            cn
              , abp.wrtr_id       wrtrId
+             , wm.user_nm        wrtrNm
              , abp.prrt_cd       prrtCd
              , abp.reg_dttm      regDttm
              , abp.mdf_dttm      mdfDttm
@@ -166,18 +190,125 @@
              , abp.del_yn        delYn
              , abp.atch_file_id  atchFileId
              , abp.opn_yn        opnYn
+             , CASE WHEN ans.cmt_no IS NULL THEN 'N' ELSE 'Y' END ansYn
+             , ans.cmt_no        ansCmtNo
+             , ans.cmt_cn        ansCn
+             , ans.reg_dttm      ansRegDttm
+             , ans.mdf_dttm      ansMdfDttm
+             , ans.user_no       ansUserNo
+             , ans.user_nm       ansUserNm
         FROM apt_board_post abp
+                 LEFT JOIN member wm
+                           ON wm.user_id = abp.wrtr_id
+                 <include refid="latestAnswerJoin"/>
         WHERE abp.post_no = #{postNo}
           AND abp.wrtr_id = #{userId}
           AND abp.del_yn = 'N'
-
     </select>
 
+    <select id="detailForAdmin"
+            resultType="kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO">
+        SELECT
+            abp.post_no       postNo
+             , abp.board_no      boardNo
+             , abp.ttl           ttl
+             , abp.cn            cn
+             , abp.wrtr_id       wrtrId
+             , wm.user_nm        wrtrNm
+             , abp.prrt_cd       prrtCd
+             , abp.reg_dttm      regDttm
+             , abp.mdf_dttm      mdfDttm
+             , abp.inq_cnt       inqCnt
+             , abp.del_yn        delYn
+             , abp.atch_file_id  atchFileId
+             , abp.opn_yn        opnYn
+             , CASE WHEN ans.cmt_no IS NULL THEN 'N' ELSE 'Y' END ansYn
+             , ans.cmt_no        ansCmtNo
+             , ans.cmt_cn        ansCn
+             , ans.reg_dttm      ansRegDttm
+             , ans.mdf_dttm      ansMdfDttm
+             , ans.user_no       ansUserNo
+             , ans.user_nm       ansUserNm
+        FROM apt_board_post abp
+                 LEFT JOIN member wm
+                           ON wm.user_id = abp.wrtr_id
+                 <include refid="latestAnswerJoin"/>
+        WHERE abp.post_no = #{postNo}
+          AND abp.del_yn = 'N'
+    </select>
+
+    <select id="getLatestAnswer"
+            resultType="kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO">
+        SELECT
+            c.cmt_no   ansCmtNo
+             , c.cmt_cn   ansCn
+             , c.reg_dttm ansRegDttm
+             , c.mdf_dttm ansMdfDttm
+             , c.user_no  ansUserNo
+             , m.user_nm  ansUserNm
+             , 'Y'        ansYn
+        FROM (
+                 SELECT c.*,
+                        ROW_NUMBER() OVER (ORDER BY c.reg_dttm DESC, c.cmt_no DESC) rn
+                 FROM apt_board_comment c
+                 WHERE c.post_no = #{postNo}
+                   AND c.del_yn = 'N'
+             ) c
+                 LEFT JOIN member m
+                           ON m.user_no = c.user_no
+        WHERE c.rn = 1
+    </select>
+
+    <select id="findAnswerCmtNo"
+            resultType="string">
+        SELECT c.cmt_no
+        FROM (
+                 SELECT c.cmt_no,
+                        ROW_NUMBER() OVER (ORDER BY c.reg_dttm DESC, c.cmt_no DESC) rn
+                 FROM apt_board_comment c
+                 WHERE c.post_no = #{postNo}
+                   AND c.del_yn = 'N'
+             ) c
+        WHERE c.rn = 1
+    </select>
+
+    <insert id="insertAnswer" parameterType="kr.or.ddit.domain.apt.board.inqry.dto.InqryDTO">
+        <selectKey keyProperty="ansCmtNo" resultType="string" order="BEFORE">
+            SELECT seq_board_comment.nextval FROM dual
+        </selectKey>
+        INSERT INTO apt_board_comment (
+            cmt_no
+           ,post_no
+           ,cmt_group
+           ,cmt_cn
+           ,cmt_sort_ord
+           ,reg_dttm
+           ,mdf_dttm
+           ,del_yn
+           ,user_no
+        ) VALUES (
+            #{ansCmtNo}
+           ,#{postNo}
+           ,#{ansCmtNo}
+           ,#{ansCn}
+           ,0
+           ,SYSDATE
+           ,SYSDATE
+           ,'N'
+           ,#{ansUserNo}
+        )
+    </insert>
+
+    <update id="updateAnswer">
+        UPDATE apt_board_comment
+        SET cmt_cn = #{cmtCn}
+          , mdf_dttm = SYSDATE
+          , user_no = #{userNo}
+        WHERE cmt_no = #{cmtNo}
+          AND del_yn = 'N'
+    </update>
 
     <update id="updateInqry">
-
-        /* IInqryMapper.updateInqry */
-
         UPDATE apt_board_post
         SET ttl       = #{dto.ttl}
           , cn        = #{dto.cn}
@@ -187,9 +318,6 @@
         WHERE post_no   = #{dto.postNo}
           AND wrtr_id   = #{userId}
           AND del_yn    = 'N'
-
     </update>
 
-
 </mapper>
-

@@ -40,6 +40,26 @@ public interface IInqryMapper {
             @Param("userId") String userId
     );
 
+    InqryDTO detailForAdmin(
+            @Param("postNo") String postNo
+    );
+
+    InqryDTO getLatestAnswer(
+            @Param("postNo") String postNo
+    );
+
+    String findAnswerCmtNo(
+            @Param("postNo") String postNo
+    );
+
+    int insertAnswer(InqryDTO dto);
+
+    int updateAnswer(
+            @Param("cmtNo") String cmtNo,
+            @Param("cmtCn") String cmtCn,
+            @Param("userNo") String userNo
+    );
+
     int updateInqry(
             @Param("dto") InqryDTO dto,
             @Param("userNo") String userNo,

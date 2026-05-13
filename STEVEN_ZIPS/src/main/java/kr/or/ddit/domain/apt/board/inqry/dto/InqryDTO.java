@@ -30,4 +30,13 @@ public class InqryDTO {
 
     private String userNo;       // 사용자번호
     private String hoNo;         // 세대번호
+    private String wrtrNm;       // 작성자명
+
+    private String ansCmtNo;     // 답변댓글번호
+    private String ansCn;        // 답변내용
+    private Date ansRegDttm;     // 답변등록일시
+    private Date ansMdfDttm;     // 답변수정일시
+    private String ansUserNo;    // 답변작성자번호
+    private String ansUserNm;    // 답변작성자명
+    private String ansYn;        // 답변여부
 }

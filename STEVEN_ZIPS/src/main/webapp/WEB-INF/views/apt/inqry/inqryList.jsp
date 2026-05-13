@@ -160,28 +160,39 @@
           <div class="text-base font-semibold text-gray-900">
             ${inqry.ttl}
           </div>
+          <div class="text-sm text-gray-500 mt-1">
+            작성자 : ${inqry.wrtrNm}
+            <c:if test="${not empty inqry.wrtrId}">
+              <span class="text-gray-300">(${inqry.wrtrId})</span>
+            </c:if>
+          </div>
         </div>
 
         <div class="flex items-center gap-3 flex-shrink-0">
           <div class="flex flex-col items-end gap-1">
-
-<%--            <c:choose>--%>
-<%--              <c:when test="${inqry.cvplSttsCd eq '접수'}">--%>
-<%--                <span class="status-pill bg-yellow-100 text-yellow-700">접수</span>--%>
-<%--              </c:when>--%>
-<%--              <c:when test="${inqry.cvplSttsCd eq '처리중'}">--%>
-<%--                <span class="status-pill bg-yellow-100 text-yellow-700">처리중</span>--%>
-<%--              </c:when>--%>
-<%--              <c:otherwise>--%>
-<%--                <span class="status-pill bg-[#dfe5cb] text-[#3f4c15]">처리완료</span>--%>
-<%--              </c:otherwise>--%>
-<%--            </c:choose>--%>
-
-              <span class="status-pill bg-[#dfe5cb] text-[#3f4c15]">등록완료</span>
+            <c:choose>
+              <c:when test="${inqry.ansYn eq 'Y'}">
+                <span class="status-pill bg-[#dfe5cb] text-[#3f4c15]">답변완료</span>
+              </c:when>
+              <c:otherwise>
+                <span class="status-pill bg-yellow-100 text-yellow-700">답변대기</span>
+              </c:otherwise>
+            </c:choose>
 
             <div class="text-xs text-gray-400">
               <fmt:formatDate value="${inqry.regDttm}" pattern="yyyy.MM.dd"/>
             </div>
+
+            <c:if test="${adminMode}">
+              <button type="button"
+                      onclick="replyInqry('${inqry.postNo}')"
+                      class="text-xs text-[#6F7F3F] hover:underline mt-1">
+                <c:choose>
+                  <c:when test="${inqry.ansYn eq 'Y'}">답변수정</c:when>
+                  <c:otherwise>답변하기</c:otherwise>
+                </c:choose>
+              </button>
+            </c:if>
 
            <c:if test="${inqry.wrtrId eq sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal.member.userId}">
 
@@ -214,9 +225,34 @@
       <div class="detail mt-5 border-t border-gray-100 pt-5">
         <div class="flex gap-4">
           <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">👤</div>
-          <p class="text-sm text-gray-700 leading-relaxed pt-1">
-            ${inqry.cn}
-          </p>
+          <div class="flex-1">
+            <p class="text-sm text-gray-700 leading-relaxed pt-1">
+              ${inqry.cn}
+            </p>
+
+            <c:if test="${inqry.ansYn eq 'Y'}">
+              <div class="mt-4 rounded-2xl border border-[#dfe5cb] bg-[#f7faf3] p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <strong class="text-sm text-[#3f4c15]">관리자 답변</strong>
+                  <span class="text-xs text-gray-400">
+                    <fmt:formatDate value="${inqry.ansRegDttm}" pattern="yyyy.MM.dd HH:mm"/>
+                  </span>
+                </div>
+                <div class="text-sm text-gray-700 leading-relaxed">
+                  ${inqry.ansCn}
+                </div>
+                <div class="text-xs text-gray-400 mt-2">
+                  작성자 : ${inqry.ansUserNm}
+                </div>
+              </div>
+            </c:if>
+
+            <c:if test="${inqry.ansYn ne 'Y'}">
+              <div class="mt-4 rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-sm text-gray-400">
+                아직 관리자가 답변을 등록하지 않았습니다.
+              </div>
+            </c:if>
+          </div>
         </div>
       </div>
 
@@ -290,6 +326,13 @@
 
     location.href =
             '${pageContext.request.contextPath}/apt/board/inqry/updateForm.do?postNo=' + postNo;
+  }
+
+  function replyInqry(postNo) {
+    event.stopPropagation();
+
+    location.href =
+            '${pageContext.request.contextPath}/apt/board/inqry/replyForm.do?postNo=' + postNo;
   }
 
 </script>

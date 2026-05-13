@@ -17,5 +17,9 @@ public interface IInqryService {
     InqryDTO detail(String postNo, String userNo, String userId);
 
     void updateInqry(InqryDTO dto, String userNo, String userId);
+
+    InqryDTO detailForAdmin(String postNo);
+
+    void replyInqry(String postNo, String cmtCn, String userNo);
 }
 

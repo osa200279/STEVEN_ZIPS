@@ -183,6 +183,17 @@ public class InqryServiceImpl implements IInqryService {
     }
 
     @Override
+    public InqryDTO detailForAdmin(String postNo) {
+        InqryDTO dto = inqryMapper.detailForAdmin(postNo);
+
+        if (dto == null) {
+            throw new RuntimeException("존재하지 않거나 접근 권한이 없습니다.");
+        }
+
+        return dto;
+    }
+
+    @Override
     public void updateInqry(InqryDTO dto, String userNo, String userId) {
 
         /*
@@ -196,6 +207,29 @@ public class InqryServiceImpl implements IInqryService {
 
         if (result <= 0) {
             throw new RuntimeException("수정에 실패했습니다.");
+        }
+    }
+
+    @Override
+    public void replyInqry(String postNo, String cmtCn, String userNo) {
+        if (cmtCn == null || cmtCn.trim().isEmpty()) {
+            throw new RuntimeException("답변 내용을 입력하세요.");
+        }
+
+        String answerCmtNo = inqryMapper.findAnswerCmtNo(postNo);
+
+        if (answerCmtNo == null || answerCmtNo.isBlank()) {
+            InqryDTO answer = new InqryDTO();
+            answer.setPostNo(postNo);
+            answer.setAnsCn(cmtCn.trim());
+            answer.setAnsUserNo(userNo);
+            inqryMapper.insertAnswer(answer);
+            return;
+        }
+
+        int updated = inqryMapper.updateAnswer(answerCmtNo, cmtCn.trim(), userNo);
+        if (updated <= 0) {
+            throw new RuntimeException("답변 등록에 실패했습니다.");
         }
     }
 
