@@ -116,11 +116,11 @@ public class MemberController {
      * 회원정보 수정 컨트롤러
      * @author 박진아
      * @param member
-     * @param profileImage
+     * @param profileImagedlrj
      * @param customUser
      * @return
      */
-    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasAnyRole('MEMBER', 'RESIDENT')")
     @PostMapping("/updateSimple")
     public String updateMember(MemberVO member,
                                @RequestParam(value="profileImage", required=false) MultipartFile profileImage,

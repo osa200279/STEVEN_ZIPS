@@ -15,7 +15,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping("/board/notice")
+@RequestMapping({"/board/notice", "/apt/board/notice"})
 public class NoticeController {
 
     @Autowired
@@ -45,7 +45,7 @@ public class NoticeController {
         return "central/board/notice/notice";
     }
 
-    @GetMapping("/notice/detail.do")
+    @GetMapping({"/detail.do", "/notice/detail.do"})
     public String noticeDetail(String annNo, Model model) {
 
 

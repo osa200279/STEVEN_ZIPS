@@ -52,13 +52,11 @@ public class InqryServiceImpl implements IInqryService {
     */
         InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
 
-        if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
-            throw new RuntimeException("입주민 단지 정보를 찾을 수 없습니다.");
-        }
+        String aptCmplexNo = residentInfo != null ? residentInfo.getAptCmplexNo() : null;
 
         return inqryMapper.getList(
                 wrtrId,
-                residentInfo.getAptCmplexNo(),
+                aptCmplexNo,
                 BOARD_TY_CD_INQRY,
                 startRow,
                 endRow
@@ -124,14 +122,12 @@ public class InqryServiceImpl implements IInqryService {
 
         InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
 
-        if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
-            throw new RuntimeException("입주민 단지 정보를 찾을 수 없습니다.");
-        }
+        String aptCmplexNo = residentInfo != null ? residentInfo.getAptCmplexNo() : null;
 
         inqryMapper.deleteInqry(
                 postNo,
                 wrtrId,
-                residentInfo.getAptCmplexNo(),
+                aptCmplexNo,
                 BOARD_TY_CD_INQRY
         );
     }
@@ -157,13 +153,11 @@ public class InqryServiceImpl implements IInqryService {
     */
         InqryDTO residentInfo = inqryMapper.getResidentInfo(userNo);
 
-        if (residentInfo == null || residentInfo.getAptCmplexNo() == null) {
-            throw new RuntimeException("입주민 단지 정보를 찾을 수 없습니다.");
-        }
+        String aptCmplexNo = residentInfo != null ? residentInfo.getAptCmplexNo() : null;
 
         return inqryMapper.getTotalCount(
                 wrtrId,
-                residentInfo.getAptCmplexNo(),
+                aptCmplexNo,
                 BOARD_TY_CD_INQRY
         );
     }
