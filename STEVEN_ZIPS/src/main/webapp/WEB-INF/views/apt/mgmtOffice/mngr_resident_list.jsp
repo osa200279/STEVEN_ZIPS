@@ -1,6 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,16 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>입주민 목록</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet"/>
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/ag-grid.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/ag-theme-alpine.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-agGrid.css">
+    <script src="${pageContext.request.contextPath}/js/manager/ag-grid-community.min.js"></script>
 
     <style>
         #residentGrid .ag-header-cell-label,
@@ -28,11 +27,13 @@
         #residentGrid .resident-cell-left {
             justify-content: flex-start;
         }
+
+        .resident-actions {
+            display: flex;
+            justify-content: center;
+        }
     </style>
-
-    <script src="${pageContext.request.contextPath}/js/manager/ag-grid-community.min.js"></script>
 </head>
-
 <body>
 <div class="app-wrapper">
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
@@ -41,13 +42,11 @@
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
 
         <main class="main-content">
-
             <div class="office-page" id="residentListPage">
-
                 <div class="page-header">
                     <div class="page-title-block">
                         <h2>입주민 목록</h2>
-                        <p>동·호수, 세대구분, 입주 상태 기준으로 입주민 정보를 조회합니다.</p>
+                        <p>세대 정보와 입주 상태를 기준으로 입주민을 조회합니다.</p>
                     </div>
                 </div>
 
@@ -58,68 +57,57 @@
                             검색 조건
                         </h3>
                     </div>
-
                     <div class="panel-body">
-
                         <div class="form-row cols-3">
                             <div class="form-field">
                                 <label class="field-label">단지명</label>
                                 <select class="form-select" id="filterComplex">
                                     <option value="">전체</option>
-                                    <option value="우리집아파트">우리집아파트</option>
+                                    <option value="${aptCmplexNm}">${aptCmplexNm}</option>
                                 </select>
                             </div>
-
                             <div class="form-field">
                                 <label class="field-label">동</label>
-                                <input type="text" class="form-input" id="filterDong" placeholder="예: 101동">
+                                <input type="text" class="form-input" id="filterDong" placeholder="예: 101">
                             </div>
-
                             <div class="form-field">
-                                <label class="field-label">호수</label>
-                                <input type="text" class="form-input" id="filterHo" placeholder="예: 302호">
+                                <label class="field-label">호</label>
+                                <input type="text" class="form-input" id="filterHo" placeholder="예: 1001">
                             </div>
                         </div>
 
                         <div class="form-row cols-3">
                             <div class="form-field">
-                                <label class="field-label">세대구분</label>
+                                <label class="field-label">세대 구분</label>
                                 <select class="form-select" id="filterHouseholdType">
                                     <option value="">전체</option>
                                     <option value="HEAD">세대주</option>
                                     <option value="MEMBER">세대원</option>
                                 </select>
                             </div>
-
                             <div class="form-field">
-                                <label class="field-label">입주상태</label>
+                                <label class="field-label">입주 상태</label>
                                 <select class="form-select" id="filterMoveStatus">
                                     <option value="">전체</option>
-                                    <option value="IN">입주</option>
-                                    <option value="OUT">전출</option>
+                                    <option value="LIVE">입주중</option>
+                                    <option value="OUT">퇴거</option>
                                 </select>
                             </div>
-
                             <div class="form-field">
-                                <label class="field-label">이름/연락처</label>
-                                <div class="search-wrap">
-                                    <span class="material-symbols-rounded">search</span>
-                                    <input type="text" class="form-input" id="filterKeyword" placeholder="이름 또는 연락처 검색">
-                                </div>
+                                <label class="field-label">검색어</label>
+                                <input type="text" class="form-input" id="filterKeyword" placeholder="이름, 연락처, 이메일">
                             </div>
                         </div>
 
                         <div class="form-row cols-3">
                             <div class="form-field">
-                                <label class="field-label">입주일 시작</label>
+                                <label class="field-label">입주 시작</label>
                                 <input type="date" class="form-input" id="filterMoveInStart">
                             </div>
-
                             <div class="form-field">
-                                <label class="field-label">입주일 종료</label>
+                                <label class="field-label">입주 종료</label>
                                 <input type="date" class="form-input" id="filterMoveInEnd">
                             </div>
-
                             <div class="form-field">
                                 <label class="field-label">&nbsp;</label>
                                 <div class="page-actions">
@@ -134,7 +122,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
@@ -146,7 +133,6 @@
                         </h3>
                         <span class="list-count" id="residentCount">0건</span>
                     </div>
-
                     <div class="manager-grid-wrap">
                         <div id="residentGrid" class="ag-theme-alpine manager-ag-grid grid-size-10"></div>
                     </div>
@@ -154,119 +140,86 @@
 
                 <div class="modal-overlay" id="residentModal">
                     <div class="modal modal-lg">
-                        <form id="residentForm">
-                            <input type="hidden" id="residentNo" name="residentNo">
-
-                            <div class="modal-header primary" id="residentModalHeader">
-                                <h3 class="modal-title" id="residentModalTitle">입주민 상세</h3>
-                                <button type="button" class="modal-close" data-modal-close>
-                                    <span class="material-symbols-rounded">close</span>
-                                </button>
-                            </div>
-
-                            <div class="modal-body">
-
-                                <div class="form-section">
-                                    <div class="form-section-title">
-                                        <span class="material-symbols-rounded">person</span>
-                                        기본 정보
+                        <div class="modal-header primary">
+                            <h3 class="modal-title">입주민 상세</h3>
+                            <button type="button" class="modal-close" data-modal-close>
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <span class="material-symbols-rounded">person</span>
+                                    기본 정보
+                                </div>
+                                <div class="form-row cols-2">
+                                    <div class="form-field">
+                                        <label class="field-label">이름</label>
+                                        <input type="text" class="form-input readonly-box" id="userNm" readonly>
                                     </div>
-
-                                    <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label">이름</label>
-                                            <input type="text" class="form-input" id="userNm" readonly>
-                                        </div>
-
-                                        <div class="form-field">
-                                            <label class="field-label">연락처</label>
-                                            <input type="text" class="form-input" id="telno" readonly>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label">이메일</label>
-                                            <input type="text" class="form-input" id="userEml" readonly>
-                                        </div>
-
-                                        <div class="form-field">
-                                            <label class="field-label">회원번호</label>
-                                            <input type="text" class="form-input" id="userNo" readonly>
-                                        </div>
+                                    <div class="form-field">
+                                        <label class="field-label">연락처</label>
+                                        <input type="text" class="form-input readonly-box" id="telno" readonly>
                                     </div>
                                 </div>
-
-                                <div class="form-section">
-                                    <div class="form-section-title">
-                                        <span class="material-symbols-rounded">home</span>
-                                        세대 정보
+                                <div class="form-row cols-2">
+                                    <div class="form-field">
+                                        <label class="field-label">이메일</label>
+                                        <input type="text" class="form-input readonly-box" id="userEml" readonly>
                                     </div>
-
-                                    <div class="form-row cols-3">
-                                        <div class="form-field">
-                                            <label class="field-label">단지명</label>
-                                            <input type="text" class="form-input editable-field" id="complexName">
-                                        </div>
-
-                                        <div class="form-field">
-                                            <label class="field-label">동</label>
-                                            <input type="text" class="form-input editable-field" id="dong">
-                                        </div>
-
-                                        <div class="form-field">
-                                            <label class="field-label">호수</label>
-                                            <input type="text" class="form-input editable-field" id="ho">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-row cols-3">
-                                        <div class="form-field">
-                                            <label class="field-label">세대구분</label>
-                                            <select class="form-select editable-field" id="householdType">
-                                                <option value="HEAD">세대주</option>
-                                                <option value="MEMBER">세대원</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-field">
-                                            <label class="field-label">입주상태</label>
-                                            <select class="form-select editable-field" id="moveStatus">
-                                                <option value="IN">입주</option>
-                                                <option value="OUT">전출</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-field">
-                                            <label class="field-label">입주일</label>
-                                            <input type="date" class="form-input editable-field" id="moveInDate">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label">퇴거일</label>
-                                            <input type="date" class="form-input editable-field" id="moveOutDate">
-                                        </div>
-
-                                        <div class="form-field">
-                                            <label class="field-label">비고</label>
-                                            <input type="text" class="form-input editable-field" id="rmrkCn">
-                                        </div>
+                                    <div class="form-field">
+                                        <label class="field-label">회원번호</label>
+                                        <input type="text" class="form-input readonly-box" id="userNo" readonly>
                                     </div>
                                 </div>
-
                             </div>
 
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-modal-close>닫기</button>
-                                <button type="button" class="btn btn-primary" id="btnChangeEditMode">수정하기</button>
-                                <button type="submit" class="btn btn-primary" id="btnSaveResident" style="display:none;">저장</button>
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <span class="material-symbols-rounded">home</span>
+                                    세대 정보
+                                </div>
+                                <div class="form-row cols-2">
+                                    <div class="form-field">
+                                        <label class="field-label">단지명</label>
+                                        <input type="text" class="form-input readonly-box" id="complexName" readonly>
+                                    </div>
+                                    <div class="form-field">
+                                        <label class="field-label">입주 상태</label>
+                                        <input type="text" class="form-input readonly-box" id="moveStatus" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row cols-3">
+                                    <div class="form-field">
+                                        <label class="field-label">동</label>
+                                        <input type="text" class="form-input readonly-box" id="dong" readonly>
+                                    </div>
+                                    <div class="form-field">
+                                        <label class="field-label">호</label>
+                                        <input type="text" class="form-input readonly-box" id="ho" readonly>
+                                    </div>
+                                    <div class="form-field">
+                                        <label class="field-label">세대 구분</label>
+                                        <input type="text" class="form-input readonly-box" id="householdType" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row cols-2">
+                                    <div class="form-field">
+                                        <label class="field-label">입주일</label>
+                                        <input type="text" class="form-input readonly-box" id="moveInDate" readonly>
+                                    </div>
+                                    <div class="form-field">
+                                        <label class="field-label">퇴거일</label>
+                                        <input type="text" class="form-input readonly-box" id="moveOutDate" readonly>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                        </div>
+                        <div class="page-footer">
+                            <button type="button" class="btn btn-secondary" data-modal-close>닫기</button>
+                        </div>
                     </div>
                 </div>
-
             </div>
 
             <script>
@@ -275,216 +228,133 @@
                     if (!page || page.dataset.bound === "true") return;
                     page.dataset.bound = "true";
 
-                    const residentRowData = [
-                        {
-                            residentNo: 1,
-                            userNo: "U001",
-                            complexName: "우리집아파트",
-                            dong: "101동",
-                            ho: "302호",
-                            userNm: "김민수",
-                            telno: "010-1234-5678",
-                            userEml: "minsu@example.com",
-                            householdType: "HEAD",
-                            moveStatus: "IN",
-                            moveInDate: "2026-04-01",
-                            moveOutDate: "",
-                            rmrkCn: ""
-                        },
-                        {
-                            residentNo: 2,
-                            userNo: "U002",
-                            complexName: "우리집아파트",
-                            dong: "102동",
-                            ho: "804호",
-                            userNm: "이서연",
-                            telno: "010-9876-5432",
-                            userEml: "seoyeon@example.com",
-                            householdType: "MEMBER",
-                            moveStatus: "IN",
-                            moveInDate: "2026-04-10",
-                            moveOutDate: "",
-                            rmrkCn: "세대원"
-                        }
-                    ];
+                    const mgmtOfcNo = "${mgmtOfcNo}";
+                    const defaultComplexName = "${aptCmplexNm}";
+                    const ctx = "${pageContext.request.contextPath}";
+                    const residentApiUrl = ctx + "/manager/resident/list/api/" + encodeURIComponent(mgmtOfcNo);
+
+                    const residentGridEl = document.getElementById("residentGrid");
+                    const residentModal = document.getElementById("residentModal");
+                    const residentCount = document.getElementById("residentCount");
 
                     let residentGridApi = null;
 
-                    function moveStatusBadge(value) {
-                        if (value === "IN") {
-                            return '<span class="grid-badge status-active">입주</span>';
-                        }
+                    function setResidentCount(count) {
+                        residentCount.textContent = count + "건";
+                    }
 
-                        if (value === "OUT") {
-                            return '<span class="grid-badge status-inactive">전출</span>';
-                        }
+                    function householdText(value) {
+                        if (value === "HEAD") return "세대주";
+                        if (value === "MEMBER") return "세대원";
+                        return "-";
+                    }
 
-                        return '<span class="grid-badge gray">-</span>';
+                    function moveStatusText(value) {
+                        if (value === "LIVE") return "입주중";
+                        if (value === "OUT") return "퇴거";
+                        return "-";
+                    }
+
+                    function badgeHtml(cls, text) {
+                        return '<span class="grid-badge ' + cls + '">' + text + '</span>';
                     }
 
                     function householdBadge(value) {
-                        if (value === "HEAD") {
-                            return '<span class="grid-badge duty-head">세대주</span>';
-                        }
-
-                        if (value === "MEMBER") {
-                            return '<span class="grid-badge duty-adm">세대원</span>';
-                        }
-
+                        if (value === "HEAD") return badgeHtml("duty-head", "세대주");
+                        if (value === "MEMBER") return badgeHtml("duty-adm", "세대원");
                         return '<span class="grid-badge gray">-</span>';
                     }
 
-                    function setResidentCount(count) {
-                        document.getElementById("residentCount").textContent = count + "건";
+                    function moveStatusBadge(value) {
+                        if (value === "LIVE") return badgeHtml("status-active", "입주중");
+                        if (value === "OUT") return badgeHtml("status-inactive", "퇴거");
+                        return '<span class="grid-badge gray">-</span>';
                     }
 
-                    function getFilteredRows() {
-                        const complex = document.getElementById("filterComplex").value;
-                        const dong = document.getElementById("filterDong").value.trim();
-                        const ho = document.getElementById("filterHo").value.trim();
-                        const householdType = document.getElementById("filterHouseholdType").value;
-                        const moveStatus = document.getElementById("filterMoveStatus").value;
-                        const moveInStart = document.getElementById("filterMoveInStart").value;
-                        const moveInEnd = document.getElementById("filterMoveInEnd").value;
-                        const keyword = document.getElementById("filterKeyword").value.trim();
+                    function getFilters() {
+                        return {
+                            complexName: document.getElementById("filterComplex").value.trim(),
+                            dong: document.getElementById("filterDong").value.trim(),
+                            ho: document.getElementById("filterHo").value.trim(),
+                            householdType: document.getElementById("filterHouseholdType").value,
+                            moveStatus: document.getElementById("filterMoveStatus").value,
+                            keyword: document.getElementById("filterKeyword").value.trim(),
+                            moveInStart: document.getElementById("filterMoveInStart").value,
+                            moveInEnd: document.getElementById("filterMoveInEnd").value
+                        };
+                    }
 
-                        return residentRowData.filter(function (row) {
-                            return (!complex || row.complexName === complex)
-                                && (!dong || row.dong.indexOf(dong) > -1)
-                                && (!ho || row.ho.indexOf(ho) > -1)
-                                && (!householdType || row.householdType === householdType)
-                                && (!moveStatus || row.moveStatus === moveStatus)
-                                && (!moveInStart || row.moveInDate >= moveInStart)
-                                && (!moveInEnd || row.moveInDate <= moveInEnd)
-                                && (!keyword || row.userNm.indexOf(keyword) > -1 || row.telno.indexOf(keyword) > -1);
+                    function buildQueryString(filters) {
+                        const params = new URLSearchParams();
+                        Object.keys(filters).forEach(function (key) {
+                            if (filters[key]) params.set(key, filters[key]);
                         });
+                        return params.toString();
                     }
 
-                    function searchResidents() {
-                        const filteredRows = getFilteredRows();
+                    async function loadResidentRows() {
+                        const queryString = buildQueryString(getFilters());
+                        const url = queryString ? residentApiUrl + "?" + queryString : residentApiUrl;
 
-                        if (residentGridApi) {
-                            residentGridApi.setGridOption("rowData", filteredRows);
+                        try {
+                            const response = await fetch(url);
+                            if (!response.ok) throw new Error("입주민 목록 조회 실패");
+
+                            const data = await response.json();
+                            const rows = data.list || [];
+
+                            if (residentGridApi) residentGridApi.setGridOption("rowData", rows);
+                            setResidentCount(data.count ?? rows.length);
+                        } catch (error) {
+                            console.error(error);
+                            if (residentGridApi) residentGridApi.setGridOption("rowData", []);
+                            setResidentCount(0);
                         }
-
-                        setResidentCount(filteredRows.length);
                     }
 
-                    function resetResidentFilter() {
-                        [
-                            "filterComplex",
-                            "filterDong",
-                            "filterHo",
-                            "filterHouseholdType",
-                            "filterMoveStatus",
-                            "filterMoveInStart",
-                            "filterMoveInEnd",
-                            "filterKeyword"
-                        ].forEach(function (id) {
-                            document.getElementById(id).value = "";
-                        });
-
-                        searchResidents();
-                    }
-
-                    function setModalMode(mode) {
-                        const isEdit = mode === "edit";
-
-                        document.getElementById("residentModalTitle").textContent = isEdit ? "입주민 정보 수정" : "입주민 상세";
-
-                        document.querySelectorAll("#residentModal .editable-field").forEach(function (el) {
-                            el.disabled = !isEdit;
-                            el.readOnly = !isEdit;
-                        });
-
-                        document.getElementById("btnChangeEditMode").style.display = isEdit ? "none" : "inline-flex";
-                        document.getElementById("btnSaveResident").style.display = isEdit ? "inline-flex" : "none";
-                    }
-
-                    function fillResidentForm(row) {
-                        document.getElementById("residentNo").value = row.residentNo || "";
-                        document.getElementById("userNo").value = row.userNo || "";
+                    function openResidentModal(row) {
                         document.getElementById("userNm").value = row.userNm || "";
                         document.getElementById("telno").value = row.telno || "";
                         document.getElementById("userEml").value = row.userEml || "";
+                        document.getElementById("userNo").value = row.userNo || "";
                         document.getElementById("complexName").value = row.complexName || "";
                         document.getElementById("dong").value = row.dong || "";
                         document.getElementById("ho").value = row.ho || "";
-                        document.getElementById("householdType").value = row.householdType || "MEMBER";
-                        document.getElementById("moveStatus").value = row.moveStatus || "IN";
+                        document.getElementById("householdType").value = householdText(row.householdType);
+                        document.getElementById("moveStatus").value = moveStatusText(row.moveStatus);
                         document.getElementById("moveInDate").value = row.moveInDate || "";
                         document.getElementById("moveOutDate").value = row.moveOutDate || "";
-                        document.getElementById("rmrkCn").value = row.rmrkCn || "";
-                    }
-
-                    function openResidentModal(row, mode) {
-                        fillResidentForm(row);
-                        setModalMode(mode);
-                        document.getElementById("residentModal").classList.add("open");
+                        residentModal.classList.add("open");
                     }
 
                     function closeModal() {
-                        document.getElementById("residentModal").classList.remove("open");
-                    }
-
-                    function saveResident() {
-                        const residentNo = Number(document.getElementById("residentNo").value);
-
-                        const target = residentRowData.find(function (row) {
-                            return row.residentNo === residentNo;
-                        });
-
-                        if (!target) return;
-
-                        target.complexName = document.getElementById("complexName").value;
-                        target.dong = document.getElementById("dong").value;
-                        target.ho = document.getElementById("ho").value;
-                        target.householdType = document.getElementById("householdType").value;
-                        target.moveStatus = document.getElementById("moveStatus").value;
-                        target.moveInDate = document.getElementById("moveInDate").value;
-                        target.moveOutDate = document.getElementById("moveOutDate").value;
-                        target.rmrkCn = document.getElementById("rmrkCn").value;
-
-                        searchResidents();
-                        closeModal();
-                        alert("입주민 세대 정보가 수정되었습니다.");
+                        residentModal.classList.remove("open");
                     }
 
                     const columnDefs = [
                         {
                             headerName: "입주민",
                             field: "userNm",
-                            width: 210,
-                            minWidth: 210,
+                            minWidth: 220,
                             cellClass: "resident-cell-left",
                             cellRenderer: function (params) {
+                                const name = params.data.userNm || "-";
+                                const tel = params.data.telno || "-";
                                 return ''
                                     + '<div class="avatar-row">'
-                                    + '  <div class="avatar avatar-sm">' + (params.data.userNm || "-").charAt(0) + '</div>'
+                                    + '  <div class="avatar avatar-sm">' + name.charAt(0) + '</div>'
                                     + '  <div class="avatar-info">'
-                                    + '    <div class="name">' + (params.data.userNm || "-") + '</div>'
-                                    + '    <div class="sub">' + (params.data.telno || "-") + '</div>'
+                                    + '    <div class="name">' + name + '</div>'
+                                    + '    <div class="sub">' + tel + '</div>'
                                     + '  </div>'
                                     + '</div>';
                             }
                         },
+                        { headerName: "단지명", field: "complexName", width: 180 },
+                        { headerName: "동", field: "dong", width: 100 },
+                        { headerName: "호", field: "ho", width: 110 },
                         {
-                            headerName: "단지명",
-                            field: "complexName",
-                            width: 150
-                        },
-                        {
-                            headerName: "동",
-                            field: "dong",
-                            width: 100
-                        },
-                        {
-                            headerName: "호수",
-                            field: "ho",
-                            width: 110
-                        },
-                        {
-                            headerName: "세대구분",
+                            headerName: "세대 구분",
                             field: "householdType",
                             width: 120,
                             cellRenderer: function (params) {
@@ -492,29 +362,24 @@
                             }
                         },
                         {
-                            headerName: "입주상태",
+                            headerName: "입주 상태",
                             field: "moveStatus",
                             width: 120,
                             cellRenderer: function (params) {
                                 return moveStatusBadge(params.value);
                             }
                         },
+                        { headerName: "입주일", field: "moveInDate", width: 130 },
                         {
-                            headerName: "입주일",
-                            field: "moveInDate",
-                            width: 130
-                        },
-                        {
-                            headerName: "관리",
-                            field: "residentNo",
-                            width: 150,
+                            headerName: "상세",
+                            field: "userNo",
+                            width: 140,
                             sortable: false,
                             filter: false,
                             cellRenderer: function () {
                                 return ''
-                                    + '<div class="grid-actions">'
+                                    + '<div class="resident-actions">'
                                     + '  <button type="button" class="btn btn-xs btn-detail" data-action="detail">상세</button>'
-                                    + '  <button type="button" class="btn btn-xs btn-edit" data-action="edit">수정</button>'
                                     + '</div>';
                             }
                         }
@@ -523,7 +388,7 @@
                     const gridOptions = {
                         theme: "legacy",
                         columnDefs: columnDefs,
-                        rowData: residentRowData,
+                        rowData: [],
                         defaultColDef: {
                             sortable: true,
                             filter: true,
@@ -533,55 +398,44 @@
                         pagination: true,
                         paginationPageSize: 10,
                         paginationPageSizeSelector: [10, 20, 50],
-                        rowHeight: 46,
+                        rowHeight: 48,
                         headerHeight: 42,
                         suppressCellFocus: true,
-
                         onGridReady: function (params) {
                             residentGridApi = params.api;
-                            setResidentCount(residentRowData.length);
+                            loadResidentRows();
                         },
-
                         onCellClicked: function (event) {
                             const detailBtn = event.event.target.closest('[data-action="detail"]');
-                            const editBtn = event.event.target.closest('[data-action="edit"]');
-
-                            if (detailBtn) {
-                                openResidentModal(event.data, "detail");
-                            }
-
-                            if (editBtn) {
-                                openResidentModal(event.data, "edit");
-                            }
+                            if (detailBtn) openResidentModal(event.data);
                         }
                     };
 
-                    const gridDiv = document.getElementById("residentGrid");
-
-                    if (gridDiv && window.agGrid) {
-                        agGrid.createGrid(gridDiv, gridOptions);
+                    if (residentGridEl && window.agGrid) {
+                        agGrid.createGrid(residentGridEl, gridOptions);
                     }
 
-                    document.getElementById("btnSearchResident").addEventListener("click", searchResidents);
-                    document.getElementById("btnResetResidentFilter").addEventListener("click", resetResidentFilter);
-
-                    document.getElementById("btnChangeEditMode").addEventListener("click", function () {
-                        setModalMode("edit");
-                    });
-
-                    document.getElementById("residentForm").addEventListener("submit", function (e) {
-                        e.preventDefault();
-                        saveResident();
+                    document.getElementById("filterComplex").value = defaultComplexName;
+                    document.getElementById("btnSearchResident").addEventListener("click", loadResidentRows);
+                    document.getElementById("btnResetResidentFilter").addEventListener("click", function () {
+                        document.getElementById("filterComplex").value = defaultComplexName;
+                        document.getElementById("filterDong").value = "";
+                        document.getElementById("filterHo").value = "";
+                        document.getElementById("filterHouseholdType").value = "";
+                        document.getElementById("filterMoveStatus").value = "";
+                        document.getElementById("filterKeyword").value = "";
+                        document.getElementById("filterMoveInStart").value = "";
+                        document.getElementById("filterMoveInEnd").value = "";
+                        loadResidentRows();
                     });
 
                     page.addEventListener("click", function (event) {
-                        if (event.target.closest("[data-modal-close]") || event.target.classList.contains("modal-overlay")) {
+                        if (event.target.closest("[data-modal-close]") || event.target === residentModal) {
                             closeModal();
                         }
                     });
                 })();
             </script>
-
         </main>
     </div>
 </div>
