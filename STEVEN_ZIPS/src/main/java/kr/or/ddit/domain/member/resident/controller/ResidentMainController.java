@@ -414,8 +414,16 @@ public class ResidentMainController {
     }
 
     @GetMapping("/service/moving/in")
-    public String seriveMove() {
+    public String seriveMoveIn() {
         return "member/resident/service/service_move_in";
+    }
+    @GetMapping("/service/moving/out")
+    public String seriveMoveOut() {
+        return "member/resident/service/service_move_out";
+    }
+    @GetMapping("/service/moving/settlement")
+    public String seriveMoveSettlement() {
+        return "member/resident/service/service_move_settlement";
     }
 
 
