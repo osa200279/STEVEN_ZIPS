@@ -52,6 +52,11 @@
 
         /* IResidentFacilityMapper.selectResidentFacilityInfoList */
 
+        SELECT *
+        FROM (
+        SELECT rownum rn
+        , a.*
+        FROM (
         SELECT f.facility_no     facilityNo      /* 시설번호 */
         , f.facility_ty_cd  facilityTyCd    /* 시설유형코드 */
         , f.facility_nm     facilityNm      /* 시설명 */
@@ -66,9 +71,40 @@
             AND f.facility_ty_cd = #{facilityTyCd}
         </if>
 
-        ORDER BY f.facility_ty_cd ASC
-        , f.facility_nm ASC
+        <if test="facilityNm != null and facilityNm != ''">
+            AND f.facility_nm LIKE '%' || #{facilityNm} || '%'
+        </if>
 
+        <if test="locCn != null and locCn != ''">
+            AND f.loc_cn LIKE '%' || #{locCn} || '%'
+        </if>
+
+        ORDER BY ${sortColumn} ${sortOrder}
+        ) a
+        WHERE rownum &lt;= #{endRow}
+        )
+        WHERE rn &gt;= #{startRow}
+
+    </select>
+
+    <!-- 총 갯수 표시와 페이징 계산용 -->
+    <select id="selectResidentFacilityInfoCount" resultType="int">
+        SELECT COUNT(*)
+        FROM facility f
+        WHERE f.apt_cmplex_no = #{aptCmplexNo}
+        AND NVL(f.use_yn, 'Y') = 'Y'
+
+        <if test="facilityTyCd != null and facilityTyCd != ''">
+            AND f.facility_ty_cd = #{facilityTyCd}
+        </if>
+
+        <if test="facilityNm != null and facilityNm != ''">
+            AND f.facility_nm LIKE '%' || #{facilityNm} || '%'
+        </if>
+
+        <if test="locCn != null and locCn != ''">
+            AND f.loc_cn LIKE '%' || #{locCn} || '%'
+        </if>
     </select>
 
     <select id="selectFacilityStatusCardList"

@@ -126,6 +126,11 @@ public class FacilityInfoDTO {
     private int startRow;    // 페이징 시작 row
     private int endRow;      // 페이징 끝 row
 
+    /* 시설정보 페이징 */
+    private int facilityStartRow;   // 시설정보 페이징 시작 번호
+    private int facilityEndRow;     // 시설정보 페이징 끝 번호
+    private int facilityTotalCount; // 시설정보 전체 개수
+
     /* 주변 인프라 */
     private String educationInfra;      // 교육시설
     private String transitInfo;         // 교통정보 = 교통노선정보 + 교통접근성
@@ -140,5 +145,8 @@ public class FacilityInfoDTO {
     private String aptComplexInfo;
     private String mgmtOfficeInfo; // 관리사무소 정보
     private List<?> annBoardPostInfoList;
+
+
+
 
 }

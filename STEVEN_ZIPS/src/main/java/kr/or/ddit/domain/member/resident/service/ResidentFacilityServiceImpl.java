@@ -5,7 +5,6 @@ import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO;
 import kr.or.ddit.domain.member.resident.mapper.IResidentFacilityMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,17 +37,43 @@ public class ResidentFacilityServiceImpl implements IResidentFacilityService {
     }
 
     @Override
-    public List<FacilityInfoDTO> getResidentFacilityInfoList(String aptCmplexNo, String facilityTyCd) {
-
-        /*
-         * facilityTyCd
-         * → 시설유형 검색 조건.
-         *
-         * 왜 필요?
-         * → JSP 셀렉트박스에서 선택한 시설유형만 조회하기 위해 사용한다.
-         */
-        return residentFacilityMapper.selectResidentFacilityInfoList(aptCmplexNo, facilityTyCd);
+    public List<FacilityInfoDTO> getResidentFacilityInfoList(
+            String aptCmplexNo,
+            String facilityTyCd,
+            String facilityNm,
+            String locCn,
+            String sortColumn,
+            String sortOrder,
+            int startRow,
+            int endRow
+    ) {
+        return residentFacilityMapper.selectResidentFacilityInfoList(
+                aptCmplexNo,
+                facilityTyCd,
+                facilityNm,
+                locCn,
+                sortColumn,
+                sortOrder,
+                startRow,
+                endRow
+        );
     }
+
+    @Override
+    public int getResidentFacilityInfoCount(
+            String aptCmplexNo,
+            String facilityTyCd,
+            String facilityNm,
+            String locCn
+    ) {
+        return residentFacilityMapper.selectResidentFacilityInfoCount(
+                aptCmplexNo,
+                facilityTyCd,
+                facilityNm,
+                locCn
+        );
+    }
+
 
     @Override
     public List<ResidentFacilityHistoryDTO> getFacilityHistoryList(

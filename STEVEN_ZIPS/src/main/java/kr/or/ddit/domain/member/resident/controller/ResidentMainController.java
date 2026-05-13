@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import kr.or.ddit.common.model.PaginationInfoVO;
 
 import java.security.Principal;
 import java.util.List;
@@ -76,6 +77,13 @@ public class ResidentMainController {
             @PathVariable String aptCmplexNo,
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") int currentPage,
             @RequestParam(value = "facilityTyCd", required = false) String facilityTyCd,
+            @RequestParam(value = "facilityPage", required = false, defaultValue = "1") int facilityPage,
+            @RequestParam(value = "facilityNm", required = false) String facilityNm,
+            @RequestParam(value = "locCn", required = false) String locCn,
+            @RequestParam(value = "sortColumn", required = false, defaultValue = "facility_ty_cd") String sortColumn,
+            @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") String sortOrder,
+            @RequestParam(value = "historySortColumn", required = false, defaultValue = "chk_dt") String historySortColumn,
+            @RequestParam(value = "historySortOrder", required = false, defaultValue = "DESC") String historySortOrder,
             Model model
     ) {
         /*
@@ -111,8 +119,71 @@ public class ResidentMainController {
         /*
          * 입주민 화면에 보여줄 단지 시설 목록
          */
+
+        /*
+         * 정렬 컬럼 검증
+         * → 사용자가 임의로 이상한 컬럼명을 보내면 SQL 오류가 날 수 있다.
+         * → 허용한 컬럼명만 ORDER BY에 사용한다.
+         */
+        switch (sortColumn) {
+            case "facility_ty_cd":
+            case "facility_nm":
+            case "dong_no":
+            case "loc_cn":
+                break;
+            default:
+                sortColumn = "facility_ty_cd";
+        }
+
+        /*
+         * 정렬 방향 검증
+         * → ASC 또는 DESC만 허용한다.
+         */
+        if (!"DESC".equalsIgnoreCase(sortOrder)) {
+            sortOrder = "ASC";
+        } else {
+            sortOrder = "DESC";
+        }
+
+        /*
+         * 시설정보 전체 개수
+         * → 총 몇 건인지 표시하고, 전체 페이지 수 계산에 사용한다.
+         */
+        int facilityTotalRecord = residentFacilityService.getResidentFacilityInfoCount(
+                aptCmplexNo,
+                facilityTyCd,
+                facilityNm,
+                locCn
+        );
+
+        /*
+         * PaginationInfoVO
+         * screenSize = 5
+         * → 한 페이지에 시설정보 5개씩 출력.
+         * blockSize = 5
+         * → 페이지 번호를 1 2 3 4 5 단위로 출력.
+         */
+        PaginationInfoVO<FacilityInfoDTO> facilityPagingVO = new PaginationInfoVO<>(5, 5);
+        facilityPagingVO.setTotalRecord(facilityTotalRecord);
+        facilityPagingVO.setCurrentPage(facilityPage);
+
+        /*
+         * 입주민 화면에 보여줄 단지 시설 목록
+         * → 검색조건 + 정렬조건 + 페이징 범위를 같이 넘긴다.
+         */
         List<FacilityInfoDTO> facilityInfoList =
-                residentFacilityService.getResidentFacilityInfoList(aptCmplexNo, facilityTyCd);
+                residentFacilityService.getResidentFacilityInfoList(
+                        aptCmplexNo,
+                        facilityTyCd,
+                        facilityNm,
+                        locCn,
+                        sortColumn,
+                        sortOrder,
+                        facilityPagingVO.getStartRow(),
+                        facilityPagingVO.getEndRow()
+                );
+
+        facilityPagingVO.setDataList(facilityInfoList);
 
         List<ResidentFacilityHistoryDTO> historyList =
                 residentFacilityService.getFacilityHistoryList(aptCmplexNo, facilityTyCd, startRow, endRow);
@@ -132,6 +203,25 @@ public class ResidentMainController {
         model.addAttribute("facilityAptInfo", facilityAptInfo);
         model.addAttribute("facilityInfoList", facilityInfoList);
         model.addAttribute("facilityTyCd", facilityTyCd);
+
+        /*
+         * 시설정보 페이징 객체
+         * → JSP에서 총 건수, 현재 페이지, 시작/끝 페이지를 사용할 수 있다.
+         */
+        model.addAttribute("facilityPagingVO", facilityPagingVO);
+        model.addAttribute("facilityTotalRecord", facilityPagingVO.getTotalRecord());
+        model.addAttribute("facilityTotalPage", facilityPagingVO.getTotalPage());
+        model.addAttribute("facilityPage", facilityPagingVO.getCurrentPage());
+
+        /*
+         * 시설정보 검색/페이징/정렬 값을 JSP로 다시 넘긴다.
+         * 왜 필요?
+         * → 검색 후에도 입력값, 현재 페이지, 정렬 상태를 화면에 유지하기 위해.
+         */
+        model.addAttribute("facilityNm", facilityNm);
+        model.addAttribute("locCn", locCn);
+        model.addAttribute("sortColumn", sortColumn);
+        model.addAttribute("sortOrder", sortOrder);
 
         return "member/resident/manage_facility";
     }

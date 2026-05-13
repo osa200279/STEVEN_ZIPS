@@ -32,6 +32,7 @@ public class FacilityHistoryController {
     public String facilityHistory(
             FacilityInfoDTO dto,
             @RequestParam(value = "searchYn", required = false) String searchYn,
+            @RequestParam(value = "facilityPage", defaultValue = "1") int facilityPage,
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") int currentPage,
             Model model
     ) {

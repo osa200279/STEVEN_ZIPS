@@ -33,11 +33,24 @@ public interface IResidentFacilityMapper {
     int selectFacilityHistoryCount(@Param("aptCmplexNo") String aptCmplexNo,
                                    @Param("facilityTyCd") String facilityTyCd);
 
-    /*
-     * 입주민 시설관리이력 화면 - 단지 시설 목록 조회
-     */
+
     List<FacilityInfoDTO> selectResidentFacilityInfoList(
             @Param("aptCmplexNo") String aptCmplexNo,
-            @Param("facilityTyCd") String facilityTyCd
+            @Param("facilityTyCd") String facilityTyCd,
+            @Param("facilityNm") String facilityNm,
+            @Param("locCn") String locCn,
+            @Param("sortColumn") String sortColumn,
+            @Param("sortOrder") String sortOrder,
+            @Param("startRow") int startRow,
+            @Param("endRow") int endRow
     );
+
+    int selectResidentFacilityInfoCount(
+            @Param("aptCmplexNo") String aptCmplexNo,
+            @Param("facilityTyCd") String facilityTyCd,
+            @Param("facilityNm") String facilityNm,
+            @Param("locCn") String locCn
+    );
+
+
 }

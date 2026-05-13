@@ -112,76 +112,6 @@
       border-color: var(--green-dark);
     }
 
-    /* 주요 시설 점검 카드 영역 */
-    .status-card-wrap {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr); /* 한 줄에 5개 */
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    /* JS로 숨길 카드 */
-    .status-card-item.is-hidden {
-      display: none;
-    }
-
-    /* 초록 박스 안 페이징 */
-    .status-card-pagination {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 18px;
-    }
-
-    .status-card-page-btn {
-      min-width: 28px;
-      height: 28px;
-      border: 1px solid rgba(255,255,255,0.4);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .status-card-page-btn.active {
-      background: #fff;
-      color: var(--green-dark);
-    }
-
-    /* 주요 시설 점검 카드 영역 */
-    .status-card-wrap {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr); /* 한 줄에 5개 */
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    /* JS로 숨길 카드 */
-    .status-card-item.is-hidden {
-      display: none;
-    }
-
-    /* 초록 박스 안 페이징 */
-    .status-card-pagination {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 18px;
-    }
-
-    .status-card-page-btn {
-      min-width: 28px;
-      height: 28px;
-      border: 1px solid rgba(255,255,255,0.4);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-    }
 
     .status-card-page-btn.active {
       background: #fff;
@@ -273,6 +203,78 @@
       margin-bottom: 12px;
       color: var(--text-dark);
     }
+
+    /* 주요 시설 점검 현황 전체 박스 높이 축소 */
+    .hero-card {
+      padding: 18px 28px 16px;
+      margin-bottom: 16px;
+    }
+
+    /* 제목 크기 축소 */
+    .hero-card h2 {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    /* 설명 문구 크기 축소 */
+    .hero-card p {
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+
+
+    /* 시설 카드 세로 크기 축소 */
+    .status-card-wrap .stat-card {
+      min-height: 88px;
+      padding: 14px 18px;
+    }
+
+    /* 시설명 글씨 */
+    .status-card-wrap .stat-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #253028;
+      margin-bottom: 8px;
+      letter-spacing: -0.2px;
+    }
+
+    /* DONE, FAULT, ING, 점검대기 글씨 */
+    .status-card-wrap .stat-value {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    /* 최근 점검일 글씨 */
+    .status-card-wrap .stat-sub {
+      font-size: 11px;
+    }
+
+    /* 최근 점검 이력 없음 */
+    .status-empty {
+      color: #9ca3af !important;
+    }
+
+    /* 점검대기 */
+    .status-wait {
+      color: #c28b1e !important;
+    }
+
+    /* 점검중 */
+    .status-ing {
+      color: #4f6b95 !important;
+    }
+
+    /* 점검완료 */
+    .status-done {
+      color: #2d3130 !important;
+    }
+
+    /* 이상발견 */
+    .status-fault {
+      color: #b45454 !important;
+    }
   </style>
 
 </head>
@@ -302,14 +304,36 @@
                 <div class="stat-card status-card-item">
                   <div class="stat-label">${card.facilityNm}</div>
 
-                  <div class="stat-value">
+                    <%-- 점검 상태별 색상 클래스 적용--%>
+                  <c:set var="statusClass" value="status-empty" />
+
+                  <c:choose>
+                    <c:when test="${card.chkSttsCd eq 'WAIT'}">
+                      <c:set var="statusClass" value="status-wait" />
+                    </c:when>
+
+                    <c:when test="${card.chkSttsCd eq 'ING'}">
+                      <c:set var="statusClass" value="status-ing" />
+                    </c:when>
+
+                    <c:when test="${card.chkSttsCd eq 'DONE'}">
+                      <c:set var="statusClass" value="status-done" />
+                    </c:when>
+
+                    <c:when test="${card.chkSttsCd eq 'FAULT'}">
+                      <c:set var="statusClass" value="status-fault" />
+                    </c:when>
+                  </c:choose>
+
+                  <div class="stat-value ${statusClass}">
+                      <%-- 점검상태 코드 한글 변환
+                      --%>
                     <c:choose>
-                      <c:when test="${not empty card.chkSttsCd}">
-                        ${card.chkSttsCd}
-                      </c:when>
-                      <c:otherwise>
-                        점검대기
-                      </c:otherwise>
+                      <c:when test="${card.chkSttsCd eq 'WAIT'}">점검대기</c:when>
+                      <c:when test="${card.chkSttsCd eq 'ING'}">점검중</c:when>
+                      <c:when test="${card.chkSttsCd eq 'DONE'}">점검완료</c:when>
+                      <c:when test="${card.chkSttsCd eq 'FAULT'}">이상발견</c:when>
+                      <c:otherwise>최근이력없음</c:otherwise>
                     </c:choose>
                   </div>
 
@@ -331,12 +355,40 @@
 
         <section class="card">
           <div class="section-hd">
-            <h3>우리 단지 시설정보</h3>
-            <span>${facilityAptInfo.aptCmplexNm}</span>
+
+            <%-- 제목 + 단지명 영역 --%>
+            <div>
+              <h3 style="margin-bottom:4px;">
+                우리 단지 시설정보
+              </h3>
+
+              <%-- 단지명
+                   왜 분리?
+                   → 제목 바로 아래에 단지명을 보여주기 위해.
+              --%>
+              <div style="font-size:13px; color:#6b7280; font-weight:600;">
+                ${facilityAptInfo.aptCmplexNm}
+              </div>
+            </div>
+
+            <%-- 시설정보 총 건수 --%>
+            <div style="text-align:right;">
+        <span style="font-size:12px; color:#7b837d;">
+            총 ${facilityTotalRecord}건
+        </span>
+            </div>
+
           </div>
             <form method="get"
                   action="${pageContext.request.contextPath}/resident/manage/facility/${aptCmplexNo}"
                   style="display:flex; gap:10px; margin-bottom:16px;">
+
+              <%-- 정렬 조건
+                   sortColumn: 어떤 컬럼으로 정렬할지
+                   sortOrder : ASC=오름차순, DESC=내림차순  --%>
+              <input type="hidden" name="sortColumn" id="sortColumn" value="${sortColumn}">
+              <input type="hidden" name="sortOrder" id="sortOrder" value="${sortOrder}">
+              <input type="hidden" name="facilityPage" id="facilityPage" value="${facilityPage}">
 
               <%-- facilityTyCd란?
                    → 시설유형코드.
@@ -345,7 +397,7 @@
                 <option value="">전체 시설유형</option>
                 <option value="ELV" ${facilityTyCd eq 'ELV' ? 'selected' : ''}>엘리베이터</option>
                 <option value="GYM" ${facilityTyCd eq 'GYM' ? 'selected' : ''}>피트니스센터</option>
-                <option value="SECURITY" ${facilityTyCd eq 'SECURITY' ? 'selected' : ''}>보안시설</option>
+                <option value="SEC" ${facilityTyCd eq 'SEC' ? 'selected' : ''}>보안시설</option>
                 <option value="PLAY" ${facilityTyCd eq 'PLAY' ? 'selected' : ''}>어린이 놀이시설</option>
                 <option value="STUDY" ${facilityTyCd eq 'STUDY' ? 'selected' : ''}>독서실</option>
                 <option value="PARK" ${facilityTyCd eq 'PARK' ? 'selected' : ''}>입주민 주차장</option>
@@ -360,14 +412,29 @@
               </select>
 
               <button type="submit" class="btn-main" style="min-width:80px;">조회</button>
+
+                <input type="text"
+                       name="facilityNm"
+                       class="fake-input"
+                       value="${facilityNm}"
+                       placeholder="시설명 검색"
+                       style="max-width:220px;">
+
+                <input type="text"
+                       name="locCn"
+                       class="fake-input"
+                       value="${locCn}"
+                       placeholder="상세위치 검색"
+                       style="max-width:220px;">
+
             </form>
           <table class="data-table">
             <thead>
             <tr>
-              <th>시설유형</th>
-              <th>시설명</th>
-              <th>위치</th>
-              <th>상세위치</th>
+              <th class="sortable-th" data-column="facility_ty_cd">시설유형</th>
+              <th class="sortable-th" data-column="facility_nm">시설명</th>
+              <th class="sortable-th" data-column="dong_no">위치</th>
+              <th class="sortable-th" data-column="loc_cn">상세위치</th>
             </tr>
             </thead>
 
@@ -458,6 +525,23 @@
             </c:choose>
             </tbody>
           </table>
+
+          <%-- 시설정보 페이징
+     왜 필요?
+     → 시설정보가 많아질 때 한 화면에 전부 보여주지 않고
+       페이지 단위로 나누어 보여주기 위해 사용.
+--%>
+          <c:if test="${facilityTotalPage > 1}">
+            <div class="facility-pagination">
+              <c:forEach begin="1" end="${facilityTotalPage}" var="page">
+                <a class="page-link ${facilityPage eq page ? 'active' : ''}"
+                   href="${pageContext.request.contextPath}/resident/manage/facility/${aptCmplexNo}?facilityPage=${page}&facilityTyCd=${facilityTyCd}&facilityNm=${facilityNm}&locCn=${locCn}&sortColumn=${sortColumn}&sortOrder=${sortOrder}">
+                    ${page}
+                </a>
+              </c:forEach>
+            </div>
+          </c:if>
+
         </section>
 
         <section class="card">
@@ -486,7 +570,25 @@
                     <td>${history.facilityNm}</td>
                     <td>${history.chkCn}</td>
                     <td>
-                      <span class="badge ok">${history.chkSttsCd}</span>
+                        <%-- 점검상태 코드별 배지 표시
+                        --%>
+                      <c:choose>
+                        <c:when test="${history.chkSttsCd eq 'WAIT'}">
+                          <span class="badge wait">점검대기</span>
+                        </c:when>
+                        <c:when test="${history.chkSttsCd eq 'ING'}">
+                          <span class="badge info">점검중</span>
+                        </c:when>
+                        <c:when test="${history.chkSttsCd eq 'DONE'}">
+                          <span class="badge ok">점검완료</span>
+                        </c:when>
+                        <c:when test="${history.chkSttsCd eq 'FAULT'}">
+                          <span class="badge danger">이상발견</span>
+                        </c:when>
+                        <c:otherwise>
+                          <span class="badge wait">점검대기</span>
+                        </c:otherwise>
+                      </c:choose>
                     </td>
                     <td>${history.picNm}</td>
                   </tr>
@@ -574,6 +676,31 @@
         }
 
         showPage(1);
+
+        /*
+ * 시설정보 테이블 정렬
+ * 왜 사용?
+ * → 사용자가 시설유형, 시설명, 위치, 상세위치 제목을 누르면
+ *   해당 기준으로 오름차순/내림차순 조회하기 위해 사용.
+ */
+        document.querySelectorAll(".sortable-th").forEach(function (th) {
+          th.addEventListener("click", function () {
+            const clickedColumn = this.dataset.column;
+            const sortColumnInput = document.getElementById("sortColumn");
+            const sortOrderInput = document.getElementById("sortOrder");
+            const facilityPageInput = document.getElementById("facilityPage");
+
+            if (sortColumnInput.value === clickedColumn) {
+              sortOrderInput.value = sortOrderInput.value === "ASC" ? "DESC" : "ASC";
+            } else {
+              sortColumnInput.value = clickedColumn;
+              sortOrderInput.value = "ASC";
+            }
+
+            facilityPageInput.value = "1";
+            this.closest("section").querySelector("form").submit();
+          });
+        });
       });
     </script>
 </body>
