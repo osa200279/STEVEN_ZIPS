@@ -1,0 +1,16 @@
+package kr.or.ddit.domain.apt.mgmtOffice.move.service;
+
+import kr.or.ddit.domain.apt.mgmtOffice.move.dto.MngResidentMoveSearchDTO;
+import kr.or.ddit.domain.apt.mgmtOffice.move.vo.MngResidentMoveVO;
+
+import java.util.List;
+import java.util.Map;
+
+public interface IMngResidentMoveService {
+
+    List<MngResidentMoveVO> selectResidentMoveList(MngResidentMoveSearchDTO searchDTO);
+
+    MngResidentMoveVO selectResidentMoveDetail(String mgmtOfcNo, String userNo);
+
+    Map<String, Object> saveResidentMove(MngResidentMoveVO vo);
+}

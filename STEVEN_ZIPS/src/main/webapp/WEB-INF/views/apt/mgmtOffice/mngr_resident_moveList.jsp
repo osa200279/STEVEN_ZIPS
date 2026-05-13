@@ -8,25 +8,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>관리사무소</title>
+  <title>입주/퇴거 관리</title>
   <sec:csrfMetaTags/>
 
-  <!-- 외부 글꼴 / 아이콘 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet" />
 
-  <!-- 공통 레이아웃 / 관리사무소 공통 CSS -->
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
 
-  <!-- AG Grid 공통 CSS / JS -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/ag-grid.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/ag-theme-alpine.css">
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-agGrid.css">
-
-  <!-- 입주/퇴거 관리 화면 전용 정렬 CSS -->
   <style>
     #residentMoveTable {
       table-layout: fixed;
@@ -41,12 +33,7 @@
     }
 
     #residentMoveTable .td-name {
-      text-align: center;
       font-weight: 700;
-    }
-
-    #residentMoveTable .td-tel {
-      letter-spacing: -0.02em;
     }
 
     #residentMoveTable .td-empty {
@@ -71,12 +58,27 @@
       align-items: center;
       gap: 6px;
     }
+
+    .move-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .move-summary .badge {
+      min-width: 92px;
+      justify-content: center;
+    }
+
+    .modal-body .form-help {
+      margin-top: 6px;
+      color: var(--text-tertiary);
+      font-size: 12px;
+    }
   </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
-  <script src="${pageContext.request.contextPath}/js/manager/ag-grid-community.min.js"></script>
   <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
-  <script src="${pageContext.request.contextPath}/js/manager/manager-agGrid.js"></script>
 </head>
 
 <body>
@@ -88,22 +90,38 @@
 
     <main class="main-content">
       <div class="office-page" id="residentMovePage">
+        <script>
+          window.__MGMT_OFC_NO__ = "<c:out value='${mgmtOfcNo}'/>";
+          window.__CONTEXT_PATH__ = "<c:out value='${pageContext.request.contextPath}'/>";
+          window.__APT_COMPLEX_NM__ = "<c:out value='${aptCmplexNm}'/>";
+        </script>
 
         <div class="page-header">
           <div class="page-title-block">
             <h2>입주/퇴거 관리</h2>
-            <p>세대별 입주 및 퇴거 내역을 조회하고 처리 상태를 관리합니다.</p>
+            <p>세대의 입주, 퇴거, 세대주 상태와 입주일, 퇴거일을 관리합니다.</p>
           </div>
 
           <div class="page-actions">
+            <button type="button" class="btn btn-secondary" data-action="reload">
+              <span class="material-symbols-rounded">refresh</span>
+              새로고침
+            </button>
             <button type="button" class="btn btn-primary" data-action="openRegister">
               <span class="material-symbols-rounded">add</span>
-              입주 등록
+              입주/퇴거 등록
             </button>
           </div>
         </div>
 
-        <!-- 검색 조건 -->
+        <div class="move-summary" id="moveSummary">
+          <span class="badge badge-gray">전체 0건</span>
+          <span class="badge badge-yellow">입주대기 0건</span>
+          <span class="badge badge-green">입주 0건</span>
+          <span class="badge badge-red">퇴거 0건</span>
+          <span class="badge badge-blue">중도퇴거 0건</span>
+        </div>
+
         <div class="panel">
           <div class="panel-header">
             <h3 class="panel-title">
@@ -115,8 +133,8 @@
           <div class="panel-body">
             <div class="form-row cols-3">
               <div class="form-field">
-                <label class="field-label">입퇴거 상태</label>
-                <select class="form-select" id="filterOccpSt">
+                <label class="field-label">입주 상태</label>
+                <select class="form-select" id="filterMoveStatus">
                   <option value="">전체</option>
                   <option value="WAIT">입주대기</option>
                   <option value="LIVE">입주</option>
@@ -136,24 +154,24 @@
 
               <div class="form-field">
                 <label class="field-label">동</label>
-                <input type="text" class="form-input" id="filterDong" placeholder="예: 101동">
+                <input type="text" class="form-input" id="filterDong" placeholder="예: 101">
               </div>
             </div>
 
             <div class="form-row cols-3">
               <div class="form-field">
                 <label class="field-label">호수</label>
-                <input type="text" class="form-input" id="filterHo" placeholder="예: 1203호">
+                <input type="text" class="form-input" id="filterHo" placeholder="예: 1203">
               </div>
 
               <div class="form-field">
                 <label class="field-label">입주일 시작</label>
-                <input type="date" class="form-input" id="filterStartDate">
+                <input type="date" class="form-input" id="filterMoveInStart">
               </div>
 
               <div class="form-field">
                 <label class="field-label">입주일 종료</label>
-                <input type="date" class="form-input" id="filterEndDate">
+                <input type="date" class="form-input" id="filterMoveInEnd">
               </div>
             </div>
 
@@ -162,7 +180,7 @@
                 <label class="field-label">검색어</label>
                 <div class="input-with-btn">
                   <input type="text" class="form-input" id="filterKeyword"
-                         placeholder="입주민명, 연락처를 입력하세요.">
+                         placeholder="입주민명, 연락처, 호수, 동">
                   <button type="button" class="btn btn-primary" data-action="search">검색</button>
                   <button type="button" class="btn btn-secondary" data-action="resetFilter">초기화</button>
                 </div>
@@ -171,7 +189,6 @@
           </div>
         </div>
 
-        <!-- 목록 -->
         <div class="panel">
           <div class="panel-header">
             <h3 class="panel-title">
@@ -194,7 +211,6 @@
                 <col class="col-move-out">
                 <col class="col-action">
               </colgroup>
-
               <thead>
               <tr>
                 <th>상태</th>
@@ -208,24 +224,57 @@
                 <th>관리</th>
               </tr>
               </thead>
-
               <tbody id="moveTableBody"></tbody>
             </table>
           </div>
         </div>
 
-        <!-- 등록/상세/수정 모달 -->
         <div class="modal-overlay" id="residentMoveModal">
           <div class="modal modal-md">
-            <div class="modal-header primary" id="residentMoveModalHeader">
-              <h3 class="modal-title" id="residentMoveModalTitle">입주 등록</h3>
+            <div class="modal-header primary">
+              <h3 class="modal-title" id="residentMoveModalTitle">입주/퇴거 등록</h3>
               <button type="button" class="modal-close" data-action="closeModal">
                 <span class="material-symbols-rounded">close</span>
               </button>
             </div>
 
             <form id="residentMoveForm">
+              <input type="hidden" name="mgmtOfcNo" id="mgmtOfcNo" value="${mgmtOfcNo}">
               <div class="modal-body">
+                <div class="form-section">
+                  <div class="form-section-title">
+                    <span class="material-symbols-rounded">person</span>
+                    주민 정보
+                  </div>
+
+                  <div class="form-row cols-2">
+                    <div class="form-field">
+                      <label class="field-label">사용자 번호 <span class="req">*</span></label>
+                      <input type="text" class="form-input" name="userNo" id="userNo" placeholder="예: U10000001">
+                    </div>
+
+                    <div class="form-field">
+                      <label class="field-label">입주민명</label>
+                      <input type="text" class="form-input" name="userNm" id="userNm" readonly>
+                    </div>
+                  </div>
+
+                  <div class="form-row cols-2">
+                    <div class="form-field">
+                      <label class="field-label">연락처</label>
+                      <input type="text" class="form-input" name="userTelno" id="userTelno" readonly>
+                    </div>
+
+                    <div class="form-field">
+                      <label class="field-label">세대주 여부</label>
+                      <select class="form-select" name="headYn" id="headYn">
+                        <option value="Y">세대주</option>
+                        <option value="N">세대원</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="form-section">
                   <div class="form-section-title">
                     <span class="material-symbols-rounded">home</span>
@@ -235,78 +284,62 @@
                   <div class="form-row cols-2">
                     <div class="form-field">
                       <label class="field-label">동 <span class="req">*</span></label>
-                      <input type="text" class="form-input" name="dong" placeholder="예: 101동">
+                      <input type="text" class="form-input" name="dong" id="dong" placeholder="예: 101">
                     </div>
 
                     <div class="form-field">
                       <label class="field-label">호수 <span class="req">*</span></label>
-                      <input type="text" class="form-input" name="ho" placeholder="예: 1203호">
+                      <input type="text" class="form-input" name="hoNo" id="hoNo" placeholder="예: A101-1203">
                     </div>
                   </div>
                 </div>
 
                 <div class="form-section">
                   <div class="form-section-title">
-                    <span class="material-symbols-rounded">person</span>
-                    입주민 정보
+                    <span class="material-symbols-rounded">update</span>
+                    입주/퇴거 상태
                   </div>
 
                   <div class="form-row cols-2">
                     <div class="form-field">
-                      <label class="field-label">입주민명 <span class="req">*</span></label>
-                      <input type="text" class="form-input" name="residentName">
-                    </div>
-
-                    <div class="form-field">
-                      <label class="field-label">연락처</label>
-                      <input type="text" class="form-input" name="telno" placeholder="010-0000-0000">
-                    </div>
-                  </div>
-
-                  <div class="form-row cols-2">
-                    <div class="form-field">
-                      <label class="field-label">세대주 여부</label>
-                      <select class="form-select" name="headYn">
-                        <option value="Y">세대주</option>
-                        <option value="N">세대원</option>
-                      </select>
-                    </div>
-
-                    <div class="form-field">
-                      <label class="field-label">입퇴거 상태 <span class="req">*</span></label>
-                      <select class="form-select" name="occpSt">
+                      <label class="field-label">상태 <span class="req">*</span></label>
+                      <select class="form-select" name="inoutCd" id="inoutCd">
                         <option value="WAIT">입주대기</option>
                         <option value="LIVE">입주</option>
                         <option value="OUT">퇴거</option>
                         <option value="MID">중도퇴거</option>
                       </select>
                     </div>
+
+                    <div class="form-field">
+                      <label class="field-label">단지명</label>
+                      <input type="text" class="form-input" id="complexName" readonly>
+                    </div>
                   </div>
 
                   <div class="form-row cols-2">
                     <div class="form-field">
                       <label class="field-label">입주일</label>
-                      <input type="date" class="form-input" name="moveInDt">
+                      <input type="date" class="form-input" name="moveInDt" id="moveInDt">
                     </div>
 
                     <div class="form-field">
                       <label class="field-label">퇴거일</label>
-                      <input type="date" class="form-input" name="moveOutDt">
+                      <input type="date" class="form-input" name="moveOutDt" id="moveOutDt">
                     </div>
                   </div>
+
+                  <div class="form-help">사용자 번호와 호수는 필수입니다. 상태에 따라 입주일과 퇴거일이 자동으로 보정됩니다.</div>
                 </div>
               </div>
 
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-action="closeModal">닫기</button>
-                <button type="button" class="btn btn-primary" id="residentMoveEditBtn"
-                        data-action="changeToEdit">수정하기</button>
+                <button type="button" class="btn btn-secondary" data-action="closeModal">취소</button>
                 <button type="submit" class="btn btn-primary" id="residentMoveSaveBtn">저장</button>
               </div>
             </form>
           </div>
         </div>
-
       </div>
 
       <script>
@@ -315,183 +348,264 @@
           if (!page || page.dataset.bound === "true") return;
           page.dataset.bound = "true";
 
+          var mgmtOfcNo = window.__MGMT_OFC_NO__ || "";
+          var contextPath = window.__CONTEXT_PATH__ || "";
+          var apiBase = contextPath + "/manager/resident/move/api/" + mgmtOfcNo;
+
           var modal = document.getElementById("residentMoveModal");
           var form = document.getElementById("residentMoveForm");
           var modalTitle = document.getElementById("residentMoveModalTitle");
-          var saveBtn = document.getElementById("residentMoveSaveBtn");
-          var editBtn = document.getElementById("residentMoveEditBtn");
           var tbody = document.getElementById("moveTableBody");
           var listCount = document.getElementById("moveListCount");
+          var summary = document.getElementById("moveSummary");
+          var saveBtn = document.getElementById("residentMoveSaveBtn");
+          var currentDetail = null;
+          var currentMode = "register";
 
-          /* DB 연결 전 화면 확인용 샘플 데이터 */
-          var rowData = [
-            {
-              dong: "101동",
-              ho: "1203호",
-              residentName: "김민준",
-              telno: "010-1234-5678",
-              headYn: "Y",
-              occpSt: "LIVE",
-              moveInDt: "2026-05-14",
-              moveOutDt: ""
-            },
-            {
-              dong: "102동",
-              ho: "803호",
-              residentName: "이서연",
-              telno: "010-9876-5432",
-              headYn: "N",
-              occpSt: "OUT",
-              moveInDt: "2024-03-01",
-              moveOutDt: "2026-05-20"
-            }
-          ];
+          var csrfTokenEl = document.querySelector('meta[name="_csrf"]');
+          var csrfHeaderEl = document.querySelector('meta[name="_csrf_header"]');
+          var csrfToken = csrfTokenEl ? csrfTokenEl.getAttribute("content") : "";
+          var csrfHeader = csrfHeaderEl ? csrfHeaderEl.getAttribute("content") : "X-CSRF-TOKEN";
 
-          var OCCP_ST_TEXT = {
+          var STATUS_TEXT = {
             WAIT: "입주대기",
             LIVE: "입주",
             OUT: "퇴거",
             MID: "중도퇴거"
           };
 
-          var OCCP_ST_BADGE = {
+          var STATUS_CLASS = {
             WAIT: "badge-yellow",
             LIVE: "badge-green",
             OUT: "badge-gray",
-            MID: "badge-red"
+            MID: "badge-blue"
           };
 
-          function occpBadge(code) {
-            return '<span class="badge ' + (OCCP_ST_BADGE[code] || "badge-gray") + '">'
-                    + (OCCP_ST_TEXT[code] || "-")
-                    + '</span>';
+          function esc(value) {
+            if (value === null || value === undefined) return "";
+            return String(value)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#39;");
+          }
+
+          function badge(text, css) {
+            return '<span class="badge ' + css + '">' + esc(text) + '</span>';
+          }
+
+          function statusBadge(code, label) {
+            return badge(label || STATUS_TEXT[code] || "-", STATUS_CLASS[code] || "badge-gray");
           }
 
           function headBadge(yn) {
-            if (yn === "Y") {
-              return '<span class="badge badge-blue">세대주</span>';
-            }
-            return '<span class="badge badge-gray">세대원</span>';
+            return yn === "Y"
+              ? badge("세대주", "badge-blue")
+              : badge("세대원", "badge-gray");
           }
 
-          function renderTable(data) {
-            listCount.textContent = data.length + "건";
+          function collectFilters() {
+            return {
+              dong: document.getElementById("filterDong").value.trim(),
+              ho: document.getElementById("filterHo").value.trim(),
+              moveStatus: document.getElementById("filterMoveStatus").value,
+              headYn: document.getElementById("filterHeadYn").value,
+              keyword: document.getElementById("filterKeyword").value.trim(),
+              moveInStart: document.getElementById("filterMoveInStart").value,
+              moveInEnd: document.getElementById("filterMoveInEnd").value
+            };
+          }
 
-            if (data.length === 0) {
+          function updateSummary(payload) {
+            var list = payload.list || [];
+            var waitCnt = payload.waitCnt || 0;
+            var liveCnt = payload.liveCnt || 0;
+            var outCnt = payload.outCnt || 0;
+            var midCnt = payload.midCnt || 0;
+            summary.innerHTML =
+              '<span class="badge badge-gray">전체 ' + list.length + '건</span>' +
+              '<span class="badge badge-yellow">입주대기 ' + waitCnt + '건</span>' +
+              '<span class="badge badge-green">입주 ' + liveCnt + '건</span>' +
+              '<span class="badge badge-red">퇴거 ' + outCnt + '건</span>' +
+              '<span class="badge badge-blue">중도퇴거 ' + midCnt + '건</span>';
+          }
+
+          function renderTable(list) {
+            listCount.textContent = list.length + "건";
+
+            if (!list.length) {
               tbody.innerHTML =
-                      '<tr>' +
-                      '<td colspan="9" class="td-empty">조회된 내역이 없습니다.</td>' +
-                      '</tr>';
+                '<tr><td colspan="9" class="td-empty">조회된 입주/퇴거 내역이 없습니다.</td></tr>';
               return;
             }
 
-            tbody.innerHTML = data.map(function (row, idx) {
-              return '<tr>'
-                      + '<td>' + occpBadge(row.occpSt) + '</td>'
-                      + '<td>' + row.dong + '</td>'
-                      + '<td>' + row.ho + '</td>'
-                      + '<td class="td-name">' + row.residentName + '</td>'
-                      + '<td class="td-tel">' + (row.telno || "-") + '</td>'
-                      + '<td>' + headBadge(row.headYn) + '</td>'
-                      + '<td>' + (row.moveInDt || "-") + '</td>'
-                      + '<td>' + (row.moveOutDt || "-") + '</td>'
-                      + '<td>'
-                      + '<div class="grid-actions">'
-                      + '<button type="button" class="btn btn-xs btn-detail" data-action="detail" data-idx="' + idx + '">상세</button>'
-                      + '<button type="button" class="btn btn-xs btn-edit" data-action="edit" data-idx="' + idx + '">수정</button>'
-                      + '</div>'
-                      + '</td>'
-                      + '</tr>';
+            tbody.innerHTML = list.map(function (row) {
+              return [
+                "<tr>",
+                "<td>" + statusBadge(row.moveStatus, row.inoutNm) + "</td>",
+                "<td>" + esc(row.dong || "-") + "</td>",
+                "<td>" + esc(row.ho || "-") + "</td>",
+                "<td class=\"td-name\">" + esc(row.userNm || "-") + "</td>",
+                "<td>" + esc(row.userTelno || "-") + "</td>",
+                "<td>" + headBadge(row.headYn) + "</td>",
+                "<td>" + esc(row.moveInDt || "-") + "</td>",
+                "<td>" + esc(row.moveOutDt || "-") + "</td>",
+                "<td>",
+                "<div class=\"grid-actions\">",
+                "<button type=\"button\" class=\"btn btn-xs btn-detail\" data-action=\"detail\" data-user-no=\"" + esc(row.userNo) + "\">상세</button>",
+                "<button type=\"button\" class=\"btn btn-xs btn-edit\" data-action=\"edit\" data-user-no=\"" + esc(row.userNo) + "\">수정</button>",
+                "</div>",
+                "</td>",
+                "</tr>"
+              ].join("");
             }).join("");
           }
 
-          function getFiltered() {
-            var occpSt = document.getElementById("filterOccpSt").value;
-            var headYn = document.getElementById("filterHeadYn").value;
-            var dong = document.getElementById("filterDong").value.trim();
-            var ho = document.getElementById("filterHo").value.trim();
-            var startDate = document.getElementById("filterStartDate").value;
-            var endDate = document.getElementById("filterEndDate").value;
-            var keyword = document.getElementById("filterKeyword").value.trim();
-
-            return rowData.filter(function (row) {
-              return (!occpSt || row.occpSt === occpSt)
-                      && (!headYn || row.headYn === headYn)
-                      && (!dong || row.dong.indexOf(dong) > -1)
-                      && (!ho || row.ho.indexOf(ho) > -1)
-                      && (!startDate || row.moveInDt >= startDate)
-                      && (!endDate || row.moveInDt <= endDate)
-                      && (!keyword
-                              || row.residentName.indexOf(keyword) > -1
-                              || row.telno.indexOf(keyword) > -1);
-            });
-          }
-
-          function resetFilter() {
-            [
-              "filterOccpSt",
-              "filterHeadYn",
-              "filterDong",
-              "filterHo",
-              "filterStartDate",
-              "filterEndDate",
-              "filterKeyword"
-            ].forEach(function (id) {
-              document.getElementById(id).value = "";
-            });
-
-            renderTable(rowData);
-          }
-
-          function openModal(mode, idx) {
+          function resetForm() {
             form.reset();
-            setFormDisabled(false);
-
+            document.getElementById("mgmtOfcNo").value = mgmtOfcNo;
+            document.getElementById("complexName").value = window.__APT_COMPLEX_NM__ || "";
+            document.getElementById("userNo").readOnly = false;
+            document.getElementById("userNm").readOnly = true;
+            document.getElementById("userTelno").readOnly = true;
+            document.getElementById("dong").readOnly = false;
+            document.getElementById("hoNo").readOnly = false;
+            document.getElementById("inoutCd").disabled = false;
+            document.getElementById("headYn").disabled = false;
+            document.getElementById("moveInDt").readOnly = false;
+            document.getElementById("moveOutDt").readOnly = false;
             saveBtn.style.display = "inline-flex";
-            editBtn.style.display = "none";
-            editBtn.removeAttribute("data-idx");
-
-            if (mode === "register") {
-              modalTitle.textContent = "입주 등록";
-            }
-
-            if (mode === "detail" && idx !== undefined) {
-              modalTitle.textContent = "입주/퇴거 상세";
-              fillForm(rowData[idx]);
-              setFormDisabled(true);
-
-              saveBtn.style.display = "none";
-              editBtn.style.display = "inline-flex";
-              editBtn.dataset.idx = idx;
-            }
-
-            if (mode === "edit" && idx !== undefined) {
-              modalTitle.textContent = "입주/퇴거 수정";
-              fillForm(rowData[idx]);
-            }
-
-            modal.classList.add("open");
           }
 
           function fillForm(row) {
-            form.dong.value = row.dong || "";
-            form.ho.value = row.ho || "";
-            form.residentName.value = row.residentName || "";
-            form.telno.value = row.telno || "";
-            form.headYn.value = row.headYn || "Y";
-            form.occpSt.value = row.occpSt || "WAIT";
-            form.moveInDt.value = row.moveInDt || "";
-            form.moveOutDt.value = row.moveOutDt || "";
+            document.getElementById("userNo").value = row.userNo || "";
+            document.getElementById("userNm").value = row.userNm || "";
+            document.getElementById("userTelno").value = row.userTelno || "";
+            document.getElementById("dong").value = row.dong || "";
+            document.getElementById("hoNo").value = row.hoNo || row.ho || "";
+            document.getElementById("inoutCd").value = row.moveStatus || row.inoutCd || "WAIT";
+            document.getElementById("headYn").value = row.headYn || "N";
+            document.getElementById("moveInDt").value = row.moveInDt || "";
+            document.getElementById("moveOutDt").value = row.moveOutDt || "";
+            document.getElementById("complexName").value = row.complexName || window.__APT_COMPLEX_NM__ || "";
           }
 
-          function setFormDisabled(disabled) {
-            form.querySelectorAll("input, select").forEach(function (el) {
-              el.disabled = disabled;
+          function setDetailMode() {
+            document.getElementById("userNo").readOnly = true;
+            document.getElementById("userNm").readOnly = true;
+            document.getElementById("userTelno").readOnly = true;
+            document.getElementById("dong").readOnly = true;
+            document.getElementById("hoNo").readOnly = true;
+            document.getElementById("inoutCd").disabled = true;
+            document.getElementById("headYn").disabled = true;
+            document.getElementById("moveInDt").readOnly = true;
+            document.getElementById("moveOutDt").readOnly = true;
+            saveBtn.style.display = "none";
+          }
+
+          function openModal(mode) {
+            currentMode = mode;
+            resetForm();
+            if (mode === "register") {
+              modalTitle.textContent = "입주/퇴거 등록";
+              modal.classList.add("open");
+              return;
+            }
+            if (mode === "edit") {
+              modalTitle.textContent = "입주/퇴거 수정";
+              modal.classList.add("open");
+              return;
+            }
+            if (mode === "detail") {
+              modalTitle.textContent = "입주/퇴거 상세";
+              modal.classList.add("open");
+            }
+          }
+
+          async function fetchList() {
+            var filters = collectFilters();
+            var query = new URLSearchParams(filters);
+            var response = await fetch(apiBase + "?" + query.toString(), {
+              headers: {
+                "Accept": "application/json"
+              }
             });
+
+            if (!response.ok) {
+              throw new Error("목록 조회에 실패했습니다.");
+            }
+
+            return response.json();
+          }
+
+          async function loadList() {
+            try {
+              var payload = await fetchList();
+              updateSummary(payload);
+              renderTable(payload.list || []);
+            } catch (err) {
+              console.error(err);
+              tbody.innerHTML = '<tr><td colspan="9" class="td-empty">목록을 불러오지 못했습니다.</td></tr>';
+              listCount.textContent = "0건";
+            }
+          }
+
+          async function loadDetail(userNo, mode) {
+            var response = await fetch(apiBase + "/" + encodeURIComponent(userNo), {
+              headers: {
+                "Accept": "application/json"
+              }
+            });
+
+            if (!response.ok) {
+              throw new Error("상세 조회에 실패했습니다.");
+            }
+
+            currentDetail = await response.json();
+            openModal(mode);
+            fillForm(currentDetail);
+            if (mode === "detail") {
+              setDetailMode();
+            }
+          }
+
+          async function saveForm() {
+            var payload = {
+              userNo: document.getElementById("userNo").value.trim(),
+              userNm: document.getElementById("userNm").value.trim(),
+              userTelno: document.getElementById("userTelno").value.trim(),
+              dong: document.getElementById("dong").value.trim(),
+              hoNo: document.getElementById("hoNo").value.trim(),
+              inoutCd: document.getElementById("inoutCd").value,
+              headYn: document.getElementById("headYn").value,
+              moveInDt: document.getElementById("moveInDt").value,
+              moveOutDt: document.getElementById("moveOutDt").value
+            };
+
+            var response = await fetch(apiBase, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                [csrfHeader]: csrfToken
+              },
+              body: JSON.stringify(payload)
+            });
+
+            var result = await response.json();
+            if (!response.ok || result.success === false) {
+              throw new Error(result.message || "저장에 실패했습니다.");
+            }
+
+            modal.classList.remove("open");
+            await loadList();
+            alert(result.message || "저장되었습니다.");
           }
 
           function closeModal() {
             modal.classList.remove("open");
+            currentDetail = null;
           }
 
           page.addEventListener("click", function (e) {
@@ -499,15 +613,53 @@
             if (!btn) return;
 
             var action = btn.dataset.action;
-            var idx = btn.dataset.idx !== undefined ? Number(btn.dataset.idx) : undefined;
+            var userNo = btn.dataset.userNo;
 
-            if (action === "openRegister") openModal("register");
-            if (action === "detail") openModal("detail", idx);
-            if (action === "edit") openModal("edit", idx);
-            if (action === "changeToEdit") openModal("edit", Number(editBtn.dataset.idx));
-            if (action === "closeModal") closeModal();
-            if (action === "search") renderTable(getFiltered());
-            if (action === "resetFilter") resetFilter();
+            if (action === "reload") {
+              loadList();
+            }
+            if (action === "openRegister") {
+              currentDetail = null;
+              openModal("register");
+            }
+            if (action === "search") {
+              loadList();
+            }
+            if (action === "resetFilter") {
+              ["filterMoveStatus", "filterHeadYn", "filterDong", "filterHo", "filterMoveInStart", "filterMoveInEnd", "filterKeyword"]
+                .forEach(function (id) {
+                  document.getElementById(id).value = "";
+                });
+              loadList();
+            }
+            if (action === "closeModal") {
+              closeModal();
+            }
+            if (action === "detail" && userNo) {
+              loadDetail(userNo, "detail").catch(function (err) {
+                console.error(err);
+                alert(err.message || "상세 조회에 실패했습니다.");
+              });
+            }
+            if (action === "edit" && userNo) {
+              loadDetail(userNo, "edit")
+                .then(function () {
+                  saveBtn.style.display = "inline-flex";
+                  document.getElementById("userNo").readOnly = true;
+                  document.getElementById("userNm").readOnly = true;
+                  document.getElementById("userTelno").readOnly = true;
+                  document.getElementById("dong").readOnly = false;
+                  document.getElementById("hoNo").readOnly = false;
+                  document.getElementById("inoutCd").disabled = false;
+                  document.getElementById("headYn").disabled = false;
+                  document.getElementById("moveInDt").readOnly = false;
+                  document.getElementById("moveOutDt").readOnly = false;
+                })
+                .catch(function (err) {
+                  console.error(err);
+                  alert(err.message || "수정 화면을 열지 못했습니다.");
+                });
+            }
           });
 
           modal.addEventListener("click", function (e) {
@@ -518,11 +670,13 @@
 
           form.addEventListener("submit", function (e) {
             e.preventDefault();
-            alert("저장 처리 연결 예정입니다.");
-            closeModal();
+            saveForm().catch(function (err) {
+              console.error(err);
+              alert(err.message || "저장에 실패했습니다.");
+            });
           });
 
-          renderTable(rowData);
+          loadList();
         })();
       </script>
     </main>
