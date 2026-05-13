@@ -54,7 +54,7 @@
                                         <span class="inline-block px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-bold">당첨</span>
                                     </c:when>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'LOSER'}">
-                                        <span class="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">낙첨</span>
+                                        <span class="inline-block px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-xs font-bold">낙첨</span>
                                     </c:when>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'CANCEL'}">
                                         <span class="inline-block px-3 py-1 rounded-full bg-red-50 text-red-500 text-xs font-bold">취소</span>
@@ -108,6 +108,8 @@
                                 진행 상태
                             </p>
                             <div class="space-y-4">
+
+                                <!-- 1단계: 신청 완료 (항상 done) -->
                                 <div class="status-step done">
                                     <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-[#226046] text-white">
                                         <span class="material-symbols-outlined text-[14px]">check</span>
@@ -118,6 +120,7 @@
                                     </div>
                                 </div>
 
+                                <!-- 2단계: 추첨 (WINNER or LOSER일 때 done) -->
                                 <div class="status-step ${aplct.APLCT_STTS_CD == 'WINNER' || aplct.APLCT_STTS_CD == 'LOSER' ? 'done' : ''}">
                                     <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
                                         ${aplct.APLCT_STTS_CD == 'WINNER' || aplct.APLCT_STTS_CD == 'LOSER' ? 'bg-[#226046] text-white' : 'bg-slate-100 text-slate-400'}">
@@ -129,9 +132,12 @@
                                     </div>
                                 </div>
 
-                                <div class="status-step">
+                                <!-- 3단계: 결과 (WINNER or LOSER일 때 done) -->
+                                <div class="status-step ${aplct.APLCT_STTS_CD == 'WINNER' || aplct.APLCT_STTS_CD == 'LOSER' ? 'done' : ''}">
                                     <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
-                                        ${aplct.APLCT_STTS_CD == 'WINNER' ? 'bg-green-500 text-white' : aplct.APLCT_STTS_CD == 'LOSER' ? 'bg-slate-300 text-white' : 'bg-slate-100 text-slate-400'}">
+                                        ${aplct.APLCT_STTS_CD == 'WINNER' ? 'bg-green-500 text-white'
+                                        : aplct.APLCT_STTS_CD == 'LOSER' ? 'bg-amber-400 text-white'
+                                        : 'bg-slate-100 text-slate-400'}">
                                         <span class="material-symbols-outlined text-[14px]">check</span>
                                     </div>
                                     <div>
@@ -141,7 +147,7 @@
                                                 <p class="text-xs text-slate-400 mt-0.5">축하합니다! 당첨되었습니다.</p>
                                             </c:when>
                                             <c:when test="${aplct.APLCT_STTS_CD == 'LOSER'}">
-                                                <p class="text-sm font-semibold text-slate-400">낙첨</p>
+                                                <p class="text-sm font-semibold text-amber-600">낙첨</p>
                                                 <p class="text-xs text-slate-400 mt-0.5">아쉽게도 낙첨되었습니다.</p>
                                             </c:when>
                                             <c:when test="${aplct.APLCT_STTS_CD == 'CANCEL'}">
@@ -155,6 +161,7 @@
                                         </c:choose>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
