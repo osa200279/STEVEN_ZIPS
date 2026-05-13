@@ -449,6 +449,7 @@ body{
                     </div>
 
                     <form method="post"
+                          id="vehicleRegisterForm"
                           enctype="multipart/form-data"
                           action="${pageContext.request.contextPath}/manager/resident/auto/register">
 
@@ -648,6 +649,7 @@ body{
                            id="uploadFile"
                            name="uploadFile"
                            accept=".jpg,.jpeg,.png,.pdf"
+                           required
                            hidden>
 
                 </label>
@@ -696,6 +698,7 @@ body{
 
 const uploadFile = document.getElementById('uploadFile');
 const uploadPreview = document.getElementById('uploadPreview');
+const vehicleRegisterForm = document.getElementById('vehicleRegisterForm');
 
 uploadFile.addEventListener('change', function(){
 
@@ -707,6 +710,13 @@ uploadFile.addEventListener('change', function(){
 
     }
 
+});
+
+vehicleRegisterForm.addEventListener('submit', function(event) {
+    if (!uploadFile.files || uploadFile.files.length === 0) {
+        event.preventDefault();
+        alert('차량등록증을 업로드해 주세요.');
+    }
 });
 
 document.getElementById('residentSearchBtn')

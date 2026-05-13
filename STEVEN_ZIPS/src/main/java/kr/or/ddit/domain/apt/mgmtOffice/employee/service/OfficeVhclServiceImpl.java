@@ -62,18 +62,16 @@ public class OfficeVhclServiceImpl implements IOfficeVhclService {
             String fullPath =
                     folderPath + "/" + savedFileName;
 
-            String googleId = "";
-                    try {
-
-
-                        googleDriveService.uploadFile(
-                                uploadFile,
-                                folderPath,
-                                savedFileName
-                        );
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            String googleId;
+            try {
+                googleId = googleDriveService.uploadFile(
+                        uploadFile,
+                        folderPath,
+                        savedFileName
+                );
+            } catch (Exception e) {
+                throw new RuntimeException("차량등록증 Google Drive 업로드 실패", e);
+            }
             long fileGroupNo =
                     attachFileMapper.getSeqFileGroupNo();
 

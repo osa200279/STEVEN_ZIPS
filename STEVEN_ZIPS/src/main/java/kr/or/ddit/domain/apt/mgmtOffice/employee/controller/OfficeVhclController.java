@@ -1,9 +1,7 @@
 package kr.or.ddit.domain.apt.mgmtOffice.employee.controller;
 
 import kr.or.ddit.domain.apt.mgmtOffice.employee.service.IOfficeVhclService;
-import kr.or.ddit.domain.member.manager.vo.ManagerVO;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
-import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
@@ -84,9 +82,11 @@ public class OfficeVhclController {
             MultipartFile uploadFile
 
     ) {
-
-        MngrVO mngrVO = (MngrVO) user.getMember();
-        String aptCmplexNo = mngrVO.getAptCmplexNo();
+        if (uploadFile == null || uploadFile.isEmpty()) {
+            log.warn("차량등록증 없이 차량 등록 요청: mgmtOfcNo={}, userNo={}, vhclNo={}",
+                    mgmtOfcNo, userNo, vhclNo);
+            return "redirect:/manager/resident/auto/register/" + mgmtOfcNo;
+        }
 
         try {
 
@@ -105,7 +105,7 @@ public class OfficeVhclController {
 
         } catch (Exception e) {
 
-            log.error("차량 등록 실패", e);
+            log.error("李⑤웾 ?깅줉 ?ㅽ뙣", e);
 
             return "redirect:/manager/resident/auto/register/" + mgmtOfcNo;
         }
@@ -161,7 +161,6 @@ public class OfficeVhclController {
             MultipartFile uploadFile
 
     ) {
-
         try {
 
             RsidVhclVO vo = new RsidVhclVO();
@@ -179,7 +178,7 @@ public class OfficeVhclController {
 
         } catch (Exception e) {
 
-            log.error("차량 수정 실패", e);
+            log.error("李⑤웾 ?섏젙 ?ㅽ뙣", e);
 
             return "redirect:/manager/resident/auto/update/"
                     + mgmtOfcNo + "/"
@@ -204,7 +203,7 @@ public class OfficeVhclController {
 
         } catch (Exception e) {
 
-            log.error("차량 삭제 실패", e);
+            log.error("李⑤웾 ??젣 ?ㅽ뙣", e);
 
             return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
         }
@@ -244,7 +243,7 @@ public class OfficeVhclController {
         Map<String,Object> result =
                 officeVhclService.searchResident(param);
 
-        System.out.println("조회 결과 = " + result);
+        System.out.println("議고쉶 寃곌낵 = " + result);
 
         return result;
     }
@@ -284,3 +283,5 @@ public class OfficeVhclController {
 
 
 }
+
+
