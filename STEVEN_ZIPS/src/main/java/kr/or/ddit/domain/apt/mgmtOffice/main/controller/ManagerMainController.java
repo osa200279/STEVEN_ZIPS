@@ -1,6 +1,5 @@
 package kr.or.ddit.domain.apt.mgmtOffice.main.controller;
 
-import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IMgmtOfficeMapper;
@@ -405,6 +404,27 @@ public class ManagerMainController {
 
         model.addAttribute("complex",aptComplexVO);
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        return "apt/mgmtOffice/mngr_building_layout_edit";
+    }
+
+    // 단지 정보 수정페이지
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping({"/complex/editt/{mgmtOfcNo}"})
+    public String complexEditt(
+            @PathVariable String mgmtOfcNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+
+        // mgmtOfcNo 로 아파트 정보 가져오는 메서드
+        AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+        model.addAttribute("complex",aptComplexVO);
+        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+        System.out.println("mgmtOfcNo = " + mgmtOfcNo);
+        System.out.println("aptComplexVO = " + aptComplexVO);
+
 
         return "apt/mgmtOffice/mngr_complex_edit";
     }

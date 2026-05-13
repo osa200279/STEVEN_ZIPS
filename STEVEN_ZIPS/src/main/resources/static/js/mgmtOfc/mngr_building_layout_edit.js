@@ -160,14 +160,18 @@ const hoTypeDrawer =
 const drawerBackdrop =
     document.querySelector("#drawerBackdrop");
 
-// 열기
-btnOpenTypeDrawer.addEventListener("click", () => {
+const hoTypeList = document.querySelector("#hoTypeList");
+
+btnOpenTypeDrawer.addEventListener("click", async () => {
 
     hoTypeDrawer.classList.add("open");
 
     drawerBackdrop.classList.add("show");
 
+    await loadHoTypeList();
+
 });
+
 
 // 닫기
 btnCloseTypeDrawer.addEventListener("click", closeTypeDrawer);
@@ -305,5 +309,189 @@ hoRemoveBtn.addEventListener("click", e => {
     hoUploadContent.style.display = "flex";
 
 });
+
+// ======================================
+// 평형 타입 목록 조회
+// ======================================
+
+async function loadHoTypeList(){
+
+    try{
+
+        const response = await fetch(
+            `/manager/ho-type/list/${mgmtOfcNo}`
+        );
+
+        if(!response.ok){
+            throw new Error("평형 타입 조회 실패");
+        }
+
+        const data = await response.json();
+
+        console.log(data);
+
+        renderHoTypeList(data);
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+}
+
+// ======================================
+// 평형 타입 렌더링
+// ======================================
+
+function renderHoTypeList(list){
+
+    if(!list || list.length === 0){
+
+        hoTypeList.innerHTML = `
+    <div class="empty-message">
+        등록된 평형 타입이 없습니다.
+</div>
+    `;
+
+        return;
+    }
+
+    hoTypeList.innerHTML = list.map(item => `
+
+    <div class="ho-type-card">
+
+        <div class="ho-type-card-top">
+
+        <div>
+
+        <strong class="ho-type-name">
+        ${item.tyNm}
+</strong>
+
+    <p class="ho-type-size">
+        전용 ${item.exclusiveSize}㎡
+    </p>
+
+</div>
+
+</div>
+
+    <div class="ho-type-card-info">
+
+        방 ${item.roomCnt} · 욕실 ${item.bathroomCnt}
+
+    </div>
+
+    <div class="ho-type-card-actions">
+
+        <button type="button"
+                class="btn btn-sm btn-secondary">
+
+            수정
+
+        </button>
+
+        <button type="button"
+                class="btn btn-sm btn-danger">
+
+            삭제
+
+        </button>
+
+    </div>
+
+</div>
+
+    `).join("");
+
+}
+
+// ======================================
+// 평형 타입 등록
+// ======================================
+
+const btnInsertHoType =
+    document.querySelector("#btnInsertHoType");
+
+btnInsertHoType.addEventListener("click", insertHoType);
+
+async function insertHoType(){
+
+    try{
+
+        const formData = new FormData();
+
+        formData.append(
+            "mgmtOfcNo",
+            mgmtOfcNo
+        );
+
+        formData.append(
+            "tyNm",
+            document.querySelector("#tyNm").value
+        );
+
+        formData.append(
+            "exclsvUseAr",
+            document.querySelector("#exclsvUseAr").value
+        );
+
+        formData.append(
+            "roomCnt",
+            document.querySelector("#roomCnt").value
+        );
+
+        formData.append(
+            "bathroomCnt",
+            document.querySelector("#bathroomCnt").value
+        );
+
+        // 이미지
+        const imageFile =
+            hoTypeImage.files[0];
+
+        if(imageFile){
+
+            formData.append(
+                "imageFile",
+                imageFile
+            );
+
+        }
+
+        const response = await fetch(
+            "/manager/ho-type/insert",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        if(!response.ok){
+            throw new Error("평형 타입 등록 실패");
+        }
+
+        const result = await response.json();
+
+        console.log(result);
+
+        alert("등록 완료");
+
+        closeTypeModal();
+
+        await loadHoTypeList();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("등록 실패");
+
+    }
+
+}
+
+
 
 });

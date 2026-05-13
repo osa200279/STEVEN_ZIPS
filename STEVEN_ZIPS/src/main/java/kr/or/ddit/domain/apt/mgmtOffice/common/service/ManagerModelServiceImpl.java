@@ -61,7 +61,6 @@ public class ManagerModelServiceImpl implements IManagerModelService {
         // 관리사무소 번호가 있으면 화면 표시용 관리사무소 정보 조회
         if (mgmtOfcNo != null && !mgmtOfcNo.isBlank()) {
             MgmtOfficeVO office = mgmtOfficeMapper.selectMgmtOfficeByMgmtOfcNo(mgmtOfcNo);
-
             // 조회된 관리사무소 정보가 있으면 화면 표시용 이름 세팅
             if (office != null) {
                 // 사이드바/헤더 JSP는 ${office.*}를 기준으로 현재 조회 중인 관리사무소명을 표시한다.
