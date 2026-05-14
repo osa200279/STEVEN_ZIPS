@@ -56,11 +56,11 @@
           <a href="${pageContext.request.contextPath}/">HOME</a>
           <span>›</span>
           <a href="javascript:void(0);">입주민게시판</a>
-          <span>›</span>t
+          <span>›</span>
           <span class="cur">자유게시판</span>
         </div>
         <h1 class="page-title">자유게시판</h1>
-        <p class="page-desc">메뉴 진입용 화면입니다. 목록, 글쓰기, 상세보기 화면으로 이동할 수 있도록 구성했습니다.</p>
+        <p class="page-desc">메뉴 진입용 화면입니다. 목록, 글쓰기, 상세보기 화면으로 이동할 수 있습니다.</p>
 
         <section class="menu-grid">
           <div class="menu-card">
