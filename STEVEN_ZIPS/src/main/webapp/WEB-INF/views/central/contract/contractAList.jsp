@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -13,14 +13,11 @@
     <style>
         body { font-family: 'Manrope', sans-serif; background-color: #f8faf6; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-
-        /* 진행상태 선 */
         .status-step { display: flex; align-items: flex-start; gap: 12px; position: relative; }
-        .status-step:not(:last-child)::after {
-            content: ''; position: absolute; left: 11px; top: 24px;
-            width: 2px; height: calc(100% + 8px); background: #e2e8e0;
-        }
-        .status-step.done::after { background: #226046; }
+        .status-step:not(:last-child)::after { content: ''; position: absolute; left: 11px; top: 26px; width: 2px; height: calc(100% - 4px); background: #e2e8e0; }
+        .status-step.done:not(:last-child)::after { background: #226046; }
+        .status-step.done-end::after { background: #e2e8e0 !important; }
+        .status-step.done-submit:not(:last-child)::after { background: #e2e8e0; }
     </style>
 </head>
 <body class="bg-[#f8faf6] text-[#191c1a]">
@@ -39,7 +36,6 @@
     <c:choose>
         <c:when test="${not empty list}">
             <c:forEach var="aplct" items="${list}">
-
                 <div class="bg-white rounded-2xl shadow-sm border border-[#eef2eb] mb-5 overflow-hidden">
                     <div class="h-1 w-full bg-gradient-to-r from-[#004830] via-[#226046] to-[#95d4b3]"></div>
 
@@ -56,7 +52,13 @@
                                         <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold">신청완료</span>
                                     </c:when>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'WINNER'}">
-                                        <span class="inline-block px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-bold">당첨</span>
+                                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold">서류 제출 필요</span>
+                                    </c:when>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'SUPPLEMENT'}">
+                                        <span class="inline-block px-3 py-1 rounded-full bg-orange-50 text-orange-500 text-xs font-bold">서류 보완 필요</span>
+                                    </c:when>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'QUALIFIED'}">
+                                        <span class="inline-block px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-bold">검증 완료</span>
                                     </c:when>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'LOSER'}">
                                         <span class="inline-block px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-xs font-bold">낙첨</span>
@@ -68,7 +70,6 @@
                                         <span class="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">${aplct.APLCT_STTS_CD}</span>
                                     </c:otherwise>
                                 </c:choose>
-                                    <%-- 신청일 .0 제거: 앞 16자(yyyy.MM.dd HH:mm)만 표시 --%>
                                 <p class="text-xs text-slate-400">${fn:substring(fn:replace(aplct.REG_DT, '-', '.'), 0, 16)} 신청</p>
                             </div>
                         </div>
@@ -115,96 +116,124 @@
                             </p>
                             <div class="space-y-4">
 
-                                    <%-- 1단계: 신청 완료
-                                         취소면 선 회색(done 없음), 나머지는 초록(done)
-                                    --%>
-                                <div class="status-step ${aplct.APLCT_STTS_CD != 'CANCEL' ? 'done' : ''}">
-                                    <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-[#226046] text-white">
-                                        <span class="material-symbols-outlined text-[14px]">check</span>
-                                    </div>
-                                    <div class="pb-4">
-                                        <p class="text-sm font-semibold text-[#226046]">신청 완료</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">계약 신청이 완료되었습니다.</p>
-                                    </div>
-                                </div>
-
-                                    <%-- 2단계: 추첨
-                                         WINNER/LOSER → 초록 done
-                                         SUBMIT/CANCEL → 회색 비활성
-                                    --%>
+                                    <%-- 1단계: 신청 완료 --%>
                                 <c:choose>
-                                    <c:when test="${aplct.APLCT_STTS_CD == 'WINNER' || aplct.APLCT_STTS_CD == 'LOSER'}">
-                                        <div class="status-step done">
-                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-[#226046] text-white">
-                                                <span class="material-symbols-outlined text-[14px]">check</span>
-                                            </div>
-                                            <div class="pb-4">
-                                                <p class="text-sm font-semibold text-[#226046]">추첨</p>
-                                                <p class="text-xs text-slate-400 mt-0.5">추첨이 완료되었습니다.</p>
-                                            </div>
-                                        </div>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="status-step">
-                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-slate-100 text-slate-400">
-                                                <span class="material-symbols-outlined text-[14px]">check</span>
-                                            </div>
-                                            <div class="pb-4">
-                                                <p class="text-sm font-semibold text-slate-400">추첨</p>
-                                                <p class="text-xs text-slate-400 mt-0.5">
-                                                    <c:choose>
-                                                        <c:when test="${aplct.APLCT_STTS_CD == 'CANCEL'}">신청 취소로 추첨 대상이 아닙니다.</c:when>
-                                                        <c:otherwise>추첨 결과를 기다려주세요.</c:otherwise>
-                                                    </c:choose>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-
-                                    <%-- 3단계: 최종 결과 --%>
-                                <c:choose>
-                                    <c:when test="${aplct.APLCT_STTS_CD == 'WINNER'}">
-                                        <div class="status-step done">
-                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-green-500 text-white">
-                                                <span class="material-symbols-outlined text-[14px]">check</span>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm font-semibold text-green-600">당첨</p>
-                                                <p class="text-xs text-slate-400 mt-0.5">축하합니다! 당첨되었습니다.</p>
-                                            </div>
-                                        </div>
-                                    </c:when>
-                                    <c:when test="${aplct.APLCT_STTS_CD == 'LOSER'}">
-                                        <div class="status-step done">
-                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-amber-400 text-white">
-                                                <span class="material-symbols-outlined text-[14px]">remove</span>
-                                            </div>
-                                            <div>
-                                                <p class="text-sm font-semibold text-amber-600">낙첨</p>
-                                                <p class="text-xs text-slate-400 mt-0.5">아쉽게도 낙첨되었습니다.</p>
-                                            </div>
-                                        </div>
-                                    </c:when>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'CANCEL'}">
-                                        <div class="status-step">
+                                        <div class="status-step done-end">
                                             <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-red-400 text-white">
                                                 <span class="material-symbols-outlined text-[14px]">close</span>
                                             </div>
-                                            <div>
+                                            <div class="pb-4">
                                                 <p class="text-sm font-semibold text-red-400">취소</p>
                                                 <p class="text-xs text-slate-400 mt-0.5">신청이 취소되었습니다.</p>
                                             </div>
                                         </div>
                                     </c:when>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'LOSER'}">
+                                        <div class="status-step done-end">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-amber-400 text-white">
+                                                <span class="material-symbols-outlined text-[14px]">remove</span>
+                                            </div>
+                                            <div class="pb-4">
+                                                <p class="text-sm font-semibold text-amber-500">낙첨</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">아쉽게도 낙첨되었습니다.</p>
+                                            </div>
+                                        </div>
+                                    </c:when>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'SUBMIT'}">
+                                        <div class="status-step done-submit">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-[#226046] text-white">
+                                                <span class="material-symbols-outlined text-[14px]">check</span>
+                                            </div>
+                                            <div class="pb-4">
+                                                <p class="text-sm font-semibold text-[#226046]">신청 완료</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">계약 신청이 완료되었습니다.</p>
+                                            </div>
+                                        </div>
+                                    </c:when>
                                     <c:otherwise>
+                                        <div class="status-step done">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-[#226046] text-white">
+                                                <span class="material-symbols-outlined text-[14px]">check</span>
+                                            </div>
+                                            <div class="pb-4">
+                                                <p class="text-sm font-semibold text-[#226046]">신청 완료</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">계약 신청이 완료되었습니다.</p>
+                                            </div>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                    <%-- 2단계: 서류 제출 --%>
+                                <c:choose>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'QUALIFIED'}">
+                                        <div class="status-step done">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-[#226046] text-white">
+                                                <span class="material-symbols-outlined text-[14px]">check</span>
+                                            </div>
+                                            <div class="pb-4">
+                                                <p class="text-sm font-semibold text-[#226046]">서류 제출 완료</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">서류가 확인되었습니다.</p>
+                                            </div>
+                                        </div>
+                                    </c:when>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'WINNER'}">
+                                        <div class="status-step done-end">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-blue-400 text-white">
+                                                <span class="material-symbols-outlined text-[14px]">upload_file</span>
+                                            </div>
+                                            <div class="pb-4">
+                                                <p class="text-sm font-semibold text-blue-500">서류 제출 필요</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">서류를 제출해 주세요.</p>
+                                            </div>
+                                        </div>
+                                    </c:when>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'SUPPLEMENT'}">
+                                        <div class="status-step done-end">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-orange-400 text-white">
+                                                <span class="material-symbols-outlined text-[14px]">warning</span>
+                                            </div>
+                                            <div class="pb-4">
+                                                <p class="text-sm font-semibold text-orange-500">서류 보완 필요</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">제출한 서류를 보완해 주세요.</p>
+                                            </div>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <%-- SUBMIT, LOSER, CANCEL --%>
                                         <div class="status-step">
-                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-slate-100 text-slate-400">
-                                                <span class="material-symbols-outlined text-[14px]">hourglass_empty</span>
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-slate-100 text-slate-300">
+                                                <span class="material-symbols-outlined text-[14px]">upload_file</span>
+                                            </div>
+                                            <div class="pb-4">
+                                                <p class="text-sm font-semibold text-slate-300">서류 제출</p>
+                                                <p class="text-xs text-slate-300 mt-0.5">해당 없음</p>
+                                            </div>
+                                        </div>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                    <%-- 3단계: 검증 완료 --%>
+                                <c:choose>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'QUALIFIED'}">
+                                        <div class="status-step">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-[#004830] text-white">
+                                                <span class="material-symbols-outlined text-[14px]">verified</span>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-semibold text-slate-400">결과 대기</p>
-                                                <p class="text-xs text-slate-400 mt-0.5">추첨 결과를 기다려주세요.</p>
+                                                <p class="text-sm font-semibold text-[#004830]">검증 완료</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">계약을 진행할 수 있습니다.</p>
+                                            </div>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="status-step">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-slate-100 text-slate-300">
+                                                <span class="material-symbols-outlined text-[14px]">verified</span>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-slate-300">검증 완료</p>
+                                                <p class="text-xs text-slate-300 mt-0.5">서류 검토 후 완료됩니다.</p>
                                             </div>
                                         </div>
                                     </c:otherwise>
@@ -226,7 +255,7 @@
                                 신청 취소
                             </button>
                         </c:if>
-                        <c:if test="${aplct.APLCT_STTS_CD == 'WINNER'}">
+                        <c:if test="${aplct.APLCT_STTS_CD == 'WINNER' || aplct.APLCT_STTS_CD == 'SUPPLEMENT'}">
                             <a href="/contract/submitDoc.do?aplctNo=${aplct.APLCT_NO}"
                                class="px-5 py-2 bg-[#004830] text-white rounded-full text-sm font-semibold hover:bg-[#226046] transition-colors">
                                 서류 제출
@@ -234,7 +263,6 @@
                         </c:if>
                     </div>
                 </div>
-
             </c:forEach>
         </c:when>
         <c:otherwise>
