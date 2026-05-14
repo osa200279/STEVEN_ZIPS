@@ -28,7 +28,7 @@
         .col-ttl { text-align:left   !important; max-width:400px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         .col-wrt { text-align:center !important; width:110px; }
         .col-dt  { text-align:center !important; width:150px; }
-        .col-inq { text-align:right  !important; width:80px; }
+        .col-inq { text-align:center  !important; width:80px; }
         .fake-input,.fake-select,.fake-textarea {width:100%;border:1px solid #d8ddd4;background:#fff;border-radius:10px;padding:11px 13px;font-size:13px;color:var(--text-dark);box-sizing:border-box;}
         .inline-fields {display:flex;gap:10px;flex-wrap:wrap;}
         .btn-main,.btn-sub,.btn-danger,.btn-ghost {display:inline-flex;align-items:center;justify-content:center;min-width:120px;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;border:none;cursor:pointer;box-sizing:border-box;} .btn-main {background:var(--green-dark);color:#fff;} .btn-sub {background:#edf5ef;color:var(--green-dark);} .btn-danger {background:#b64444;color:#fff;} .btn-ghost {background:#fff;color:var(--text-mid);border:1px solid var(--border);}
