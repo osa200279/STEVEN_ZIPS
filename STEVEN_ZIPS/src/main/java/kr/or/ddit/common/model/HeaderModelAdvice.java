@@ -1,4 +1,4 @@
-﻿package kr.or.ddit.common.model;
+package kr.or.ddit.common.model;
 
 import kr.or.ddit.common.util.CurrentAptResolver;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;

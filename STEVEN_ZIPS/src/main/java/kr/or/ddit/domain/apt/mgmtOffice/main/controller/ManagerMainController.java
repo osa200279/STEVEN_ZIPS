@@ -1,4 +1,4 @@
-﻿package kr.or.ddit.domain.apt.mgmtOffice.main.controller;
+package kr.or.ddit.domain.apt.mgmtOffice.main.controller;
 
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
@@ -344,55 +344,6 @@ public class ManagerMainController {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
         return "apt/mgmtOffice/mngr_partner_list";
     }
-
-    // 관리비 부과
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/bill/charge/{mgmtOfcNo}")
-    public String billCharge(
-            @PathVariable String mgmtOfcNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
-    ) {
-        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_billCharge";
-    }
-
-    // 고지서 발행
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/bill/issue/{mgmtOfcNo}")
-    public String billIssue(
-            @PathVariable String mgmtOfcNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
-    ) {
-        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_billIssue";
-    }
-
-    // 관리비 항목 요약
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/bill/item-summary/{mgmtOfcNo}")
-    public String billItemSummary(
-            @PathVariable String mgmtOfcNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
-    ) {
-        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_billItemSummary";
-    }
-
-    // 연체 관리
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/account/arrears/{mgmtOfcNo}")
-    public String accountArrears(
-            @PathVariable String mgmtOfcNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
-    ) {
-        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_accountArrears";
-    }
-
 
     // 단지 정보 수정페이지
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
