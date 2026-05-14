@@ -27,13 +27,21 @@
     </select>
 
     <update id="updateAplctStatus">
-        update APLCT
-           set APLCT_STTS_CD = #{aplctSttsCd}
-             , MDF_DT = sysdate
-         where APLCT_NO in
-         <foreach collection="aplctNos" item="no" open="(" separator="," close=")">
-            #{no}
-         </foreach>
+<!--        update APLCT-->
+<!--           set APLCT_STTS_CD = #{aplctSttsCd}-->
+<!--             , MDF_DT = sysdate-->
+<!--         where APLCT_NO in-->
+<!--         <foreach collection="aplctNos" item="no" open="(" separator="," close=")">-->
+<!--            #{no}-->
+<!--         </foreach>-->
+<!--        BEGIN-->
+<!--        <foreach collection="aplctMapList" item="item" separator=";">-->
+<!--            update APLCT-->
+<!--               set APLCT_STTS_CD = #{item.aplctSttsCd},-->
+<!--                   UPD_DT = SYSDATE-->
+<!--             where APLCT_NO = #{item.aplctNo};-->
+<!--        </foreach>-->
+<!--        ; END;-->
     </update>
 
 </mapper>

@@ -61,12 +61,16 @@ public class AdmDashBoardRestController {
     @PutMapping("/aplct/upd")
     public ResponseEntity<Integer> updAplct(@RequestBody Map<String, Object> params) {
 
-        String aplctSttsCd = (String) params.get("aplctSttsCd");
-        List<String> aplctNos = (List<String>) params.get("aplctNos");
+        List<Map<String,Object>> updateList = (List<Map<String, Object>>)params.get("aplctMapList");
 
-        int cnt = aplctService.approveAplct(aplctNos, aplctSttsCd);
+        // String aplctSttsCd = (String) map.get("aplctSttsCd");
+        // List<String> aplctNos = (List<String>) params.get("aplctNos");
 
-        return cnt > 0 ? ResponseEntity.ok(cnt)
-                : ResponseEntity.badRequest().body(0);
+         int cnt = aplctService.approveAplct(updateList);
+
+        // return cnt > 0 ? ResponseEntity.ok(cnt)
+        //: ResponseEntity.badRequest().body(0);
+
+        return null;
     }
 }

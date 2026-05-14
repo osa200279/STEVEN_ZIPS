@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Transactional(rollbackFor = Exception.class)
 @Service
@@ -20,8 +21,8 @@ public class AplctServiceImpl implements IAplctService {
     }
 
     @Override
-    public int approveAplct(List<String> aplctNos, String aplctSttsCd) {
-        return aplctMapper.updateAplctStatus(aplctNos, aplctSttsCd);
+    public int approveAplct(List<Map<String, Object>> updateList) {
+        return aplctMapper.updateAplctStatus(updateList);
     }
 
 }

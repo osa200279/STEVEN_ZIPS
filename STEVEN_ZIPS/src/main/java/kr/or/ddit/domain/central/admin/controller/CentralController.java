@@ -108,6 +108,7 @@ public class CentralController {
     public String contractForm() {
         return "redirect:/centralAdmin/contractFormList.do";
     }
+
     @GetMapping("/contractDoc.do")
     public String contractDocForm(){
         return "centralAdmin/contractDoc";
