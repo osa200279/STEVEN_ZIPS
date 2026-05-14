@@ -1,7 +1,6 @@
 package kr.or.ddit.domain.central.admin.controller;
 
 import kr.or.ddit.common.model.PaginationInfoVO;
-import kr.or.ddit.domain.central.admin.service.CentralService;
 import kr.or.ddit.domain.central.admin.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +20,7 @@ import java.util.Map;
 @RequestMapping("/centralAdmin")
 public class CentralController {
 
-    private final CentralService service;
+
 
     @GetMapping("/dashboard")
     public String dashboardForm() {
@@ -54,10 +53,10 @@ public class CentralController {
     }
 
     // 호환(오타/이전 링크) 경로 방어: /centralAdmin/contractManagement → 계약목록으로 이동
-    @GetMapping("/contractManagement")
+    /*@GetMapping("/contractManagement")
     public String contractManagementAlias() {
         return "redirect:/centralAdmin/contractList.do";
-    }
+    }*/
 
     @GetMapping("/ai")
     public String aiForm() {
@@ -105,14 +104,14 @@ public class CentralController {
         return "centralAdmin/mngrRqstAprv";
     }
 
-    @GetMapping("/contractForm.do")
+    /*@GetMapping("/contractForm.do")
     public String contractForm() {
         return "redirect:/centralAdmin/contractFormList.do";
     }
     @GetMapping("/contractDoc.do")
     public String contractDocForm(){
         return "centralAdmin/contractDoc";
-    }
+    }*/
 
 /* 못 씀
     @GetMapping("/contractList.do")
@@ -199,7 +198,7 @@ public class CentralController {
     }
 */
 
-    @PostMapping("/contractInsert.do")
+    /*@PostMapping("/contractInsert.do")
     public String contractInsert(ContractVO contractVO,
                                  MultipartFile contractFile,
                                  MultipartFile idFile,
@@ -275,7 +274,7 @@ public class CentralController {
             service.deleteContractForm(frmNo);
         }
         return "redirect:/centralAdmin/contractFormList.do";
-    }
+    }*/
 
 /*
     // 작성자 : 오수아
