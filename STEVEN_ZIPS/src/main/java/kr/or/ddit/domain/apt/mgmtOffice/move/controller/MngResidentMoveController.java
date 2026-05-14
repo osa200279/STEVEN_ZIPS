@@ -70,15 +70,20 @@ public class MngResidentMoveController {
     }
 
     @PreAuthorize("hasAnyRole('MNGR', 'ADMIN') and @authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/{mgmtOfcNo}/{userNo}")
+    @GetMapping("/{mgmtOfcNo}/{userNo}/{hoNo}")
     public ResponseEntity<MngResidentMoveVO> selectResidentMoveDetail(
             @PathVariable String mgmtOfcNo,
             @PathVariable String userNo,
+            @PathVariable String hoNo,
             @AuthenticationPrincipal CustomUser user
     ) {
 
         MngResidentMoveVO detail =
-                residentMoveService.selectResidentMoveDetail(mgmtOfcNo, userNo);
+                residentMoveService.selectResidentMoveDetail(
+                        mgmtOfcNo,
+                        userNo,
+                        hoNo
+                );
 
         if (detail == null) {
             return ResponseEntity.notFound().build();
@@ -102,21 +107,47 @@ public class MngResidentMoveController {
 
         return ResponseEntity.ok(result);
     }
-
     @PreAuthorize("hasAnyRole('MNGR', 'ADMIN') and @authService.hasAccess(principal, #mgmtOfcNo)")
-    @PutMapping("/{mgmtOfcNo}/{userNo}")
+    @PutMapping("/{mgmtOfcNo}/{userNo}/{hoNo}")
     public ResponseEntity<Map<String, Object>> updateResidentMove(
             @PathVariable String mgmtOfcNo,
             @PathVariable String userNo,
+            @PathVariable String hoNo,
             @RequestBody MngResidentMoveVO vo,
             @AuthenticationPrincipal CustomUser user
     ) {
 
         vo.setMgmtOfcNo(mgmtOfcNo);
         vo.setUserNo(userNo);
+        vo.setHoNo(hoNo);
 
         Map<String, Object> result =
                 residentMoveService.updateResidentMove(vo);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/member/{userNo}")
+    public ResponseEntity<Map<String, Object>> getMemberInfo(
+            @PathVariable String userNo
+    ) {
+
+        MngResidentMoveVO member =
+                residentMoveService.selectMemberInfo(userNo);
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (member == null) {
+
+            result.put("success", false);
+            result.put("message", "존재하지 않는 사용자입니다.");
+
+            return ResponseEntity.ok(result);
+        }
+
+        result.put("success", true);
+        result.put("userNm", member.getUserNm());
+        result.put("userTelno", member.getUserTelno());
 
         return ResponseEntity.ok(result);
     }

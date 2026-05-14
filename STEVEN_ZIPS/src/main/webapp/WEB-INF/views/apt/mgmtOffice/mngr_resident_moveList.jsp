@@ -334,8 +334,25 @@
               </div>
 
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-action="closeModal">취소</button>
-                <button type="submit" class="btn btn-primary" id="residentMoveSaveBtn">저장</button>
+                <button type="button"
+                        class="btn btn-danger"
+                        id="moveOutBtn"
+                        data-action="moveOut"
+                        style="display:none;">
+                  퇴거 처리
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-action="closeModal">
+                  취소
+                </button>
+
+                <button type="submit"
+                        class="btn btn-primary"
+                        id="residentMoveSaveBtn">
+                  저장
+                </button>
               </div>
             </form>
           </div>
@@ -347,7 +364,7 @@
           var page = document.getElementById("residentMovePage");
           if (!page || page.dataset.bound === "true") return;
           page.dataset.bound = "true";
-
+          var moveOutBtn = document.getElementById("moveOutBtn");
           var mgmtOfcNo = window.__MGMT_OFC_NO__ || "";
           var contextPath = window.__CONTEXT_PATH__ || "";
           var apiBase = contextPath + "/manager/resident/move/api/" + mgmtOfcNo;
@@ -359,8 +376,19 @@
           var listCount = document.getElementById("moveListCount");
           var summary = document.getElementById("moveSummary");
           var saveBtn = document.getElementById("residentMoveSaveBtn");
+          var moveStatusSelect = document.getElementById("inoutCd");
+          var moveInInput = document.getElementById("moveInDt");
+          var moveOutInput = document.getElementById("moveOutDt");
+          var userNoInput = document.getElementById("userNo");
+          var moveInField = moveInInput.closest(".form-field");
+          var moveOutField = moveOutInput.closest(".form-field");
+          var moveStatusHelp = document.createElement("div");
           var currentDetail = null;
           var currentMode = "register";
+
+          var currentHoNo = null;
+
+          var detailModeLocked = false;
 
           var csrfTokenEl = document.querySelector('meta[name="_csrf"]');
           var csrfHeaderEl = document.querySelector('meta[name="_csrf_header"]');
@@ -403,6 +431,44 @@
             return yn === "Y"
               ? badge("세대주", "badge-blue")
               : badge("세대원", "badge-gray");
+          }
+
+          moveStatusHelp.className = "form-help";
+          moveStatusHelp.id = "moveStatusHelp";
+          moveStatusSelect.parentNode.appendChild(moveStatusHelp);
+
+          function getMoveStatusHelp(status) {
+            if (status === "WAIT") return "입주 전 상태입니다. 날짜는 저장 시 자동으로 비워집니다.";
+            if (status === "LIVE") return "입주 상태는 입주일만 관리합니다.";
+            if (status === "OUT") return "퇴거 상태는 입주일과 퇴거일을 함께 관리합니다.";
+            if (status === "MID") return "중도퇴거는 입주일과 퇴거일을 함께 관리합니다.";
+            return "";
+          }
+
+          function syncMoveFields() {
+            var status = moveStatusSelect.value;
+            var isWait = status === "WAIT";
+            var isLive = status === "LIVE";
+            var isOut = status === "OUT";
+            var isMid = status === "MID";
+
+            moveStatusHelp.textContent = getMoveStatusHelp(status);
+            moveInField.style.display = isWait ? "none" : "";
+            moveOutField.style.display = (isWait || isLive) ? "none" : "";
+
+            moveInInput.readOnly = detailModeLocked || isWait;
+            moveOutInput.readOnly = detailModeLocked || isWait || isLive;
+
+            if (!detailModeLocked) {
+              if (isWait) {
+                moveInInput.value = "";
+                moveOutInput.value = "";
+              } else if (isLive) {
+                moveOutInput.value = "";
+              } else if (!isOut && !isMid) {
+                moveOutInput.value = "";
+              }
+            }
           }
 
           function collectFilters() {
@@ -453,8 +519,15 @@
                 "<td>" + esc(row.moveOutDt || "-") + "</td>",
                 "<td>",
                 "<div class=\"grid-actions\">",
-                "<button type=\"button\" class=\"btn btn-xs btn-detail\" data-action=\"detail\" data-user-no=\"" + esc(row.userNo) + "\">상세</button>",
-                "<button type=\"button\" class=\"btn btn-xs btn-edit\" data-action=\"edit\" data-user-no=\"" + esc(row.userNo) + "\">수정</button>",
+                "<button type=\"button\" class=\"btn btn-xs btn-detail\" " +
+                "data-action=\"detail\" " +
+                "data-user-no=\"" + esc(row.userNo) + "\" " +
+                "data-ho-no=\"" + esc(row.hoNo) + "\">상세</button>",
+
+                "<button type=\"button\" class=\"btn btn-xs btn-edit\" " +
+                "data-action=\"edit\" " +
+                "data-user-no=\"" + esc(row.userNo) + "\" " +
+                "data-ho-no=\"" + esc(row.hoNo) + "\">수정</button>",
                 "</div>",
                 "</td>",
                 "</tr>"
@@ -463,7 +536,11 @@
           }
 
           function resetForm() {
+            currentHoNo = null;
+            detailModeLocked = false;
             form.reset();
+
+
             document.getElementById("mgmtOfcNo").value = mgmtOfcNo;
             document.getElementById("complexName").value = window.__APT_COMPLEX_NM__ || "";
             document.getElementById("userNo").readOnly = false;
@@ -471,11 +548,16 @@
             document.getElementById("userTelno").readOnly = true;
             document.getElementById("dong").readOnly = false;
             document.getElementById("hoNo").readOnly = false;
-            document.getElementById("inoutCd").disabled = false;
+            moveStatusSelect.disabled = false;
             document.getElementById("headYn").disabled = false;
-            document.getElementById("moveInDt").readOnly = false;
-            document.getElementById("moveOutDt").readOnly = false;
+            moveInInput.readOnly = false;
+            moveOutInput.readOnly = false;
             saveBtn.style.display = "inline-flex";
+
+
+
+            moveOutBtn.style.display = "none";
+            syncMoveFields();
           }
 
           function fillForm(row) {
@@ -484,24 +566,30 @@
             document.getElementById("userTelno").value = row.userTelno || "";
             document.getElementById("dong").value = row.dong || "";
             document.getElementById("hoNo").value = row.hoNo || row.ho || "";
-            document.getElementById("inoutCd").value = row.moveStatus || row.inoutCd || "WAIT";
+            currentHoNo = row.hoNo || row.ho || "";
+            moveStatusSelect.value = row.moveStatus || row.inoutCd || "WAIT";
             document.getElementById("headYn").value = row.headYn || "N";
-            document.getElementById("moveInDt").value = row.moveInDt || "";
-            document.getElementById("moveOutDt").value = row.moveOutDt || "";
+            moveInInput.value = row.moveInDt || "";
+            moveOutInput.value = row.moveOutDt || "";
             document.getElementById("complexName").value = row.complexName || window.__APT_COMPLEX_NM__ || "";
+            syncMoveFields();
           }
 
           function setDetailMode() {
+            detailModeLocked = true;
             document.getElementById("userNo").readOnly = true;
             document.getElementById("userNm").readOnly = true;
             document.getElementById("userTelno").readOnly = true;
             document.getElementById("dong").readOnly = true;
             document.getElementById("hoNo").readOnly = true;
-            document.getElementById("inoutCd").disabled = true;
+            moveStatusSelect.disabled = true;
             document.getElementById("headYn").disabled = true;
-            document.getElementById("moveInDt").readOnly = true;
-            document.getElementById("moveOutDt").readOnly = true;
             saveBtn.style.display = "none";
+            syncMoveFields();
+            moveOutBtn.style.display =
+                    moveStatusSelect.value === "LIVE"
+                            ? "inline-flex"
+                            : "none";
           }
 
           function openModal(mode) {
@@ -551,8 +639,13 @@
             }
           }
 
-          async function loadDetail(userNo, mode) {
-            var response = await fetch(apiBase + "/" + encodeURIComponent(userNo), {
+          async function loadDetail(userNo, hoNo, mode) {
+            var response = await fetch(
+                    apiBase + "/"
+                    + encodeURIComponent(userNo)
+                    + "/"
+                    + encodeURIComponent(hoNo),
+                    {
               headers: {
                 "Accept": "application/json"
               }
@@ -568,24 +661,43 @@
             if (mode === "detail") {
               setDetailMode();
             }
+            syncMoveFields();
           }
 
           async function saveForm() {
+            var moveStatus = moveStatusSelect.value;
+            var moveInDate = moveInInput.value;
+            var moveOutDate = moveOutInput.value;
+
+// 퇴거일 삭제 시 자동으로 입주 상태 변경
+            if (moveStatus === "OUT" && !moveOutDate) {
+              moveStatus = "LIVE";
+            }
+
             var payload = {
               userNo: document.getElementById("userNo").value.trim(),
               userNm: document.getElementById("userNm").value.trim(),
               userTelno: document.getElementById("userTelno").value.trim(),
               dong: document.getElementById("dong").value.trim(),
               hoNo: document.getElementById("hoNo").value.trim(),
-              inoutCd: document.getElementById("inoutCd").value,
+              inoutCd: moveStatus,
               headYn: document.getElementById("headYn").value,
-              moveInDt: document.getElementById("moveInDt").value,
-              moveOutDt: document.getElementById("moveOutDt").value
+              moveInDt: moveInDate,
+              moveOutDt: moveOutDate
             };
 
             var method = currentMode === "edit" ? "PUT" : "POST";
 
-            var response = await fetch(apiBase, {
+            var requestUrl = apiBase;
+
+            if (method === "PUT") {
+              requestUrl += "/"
+                      + encodeURIComponent(payload.userNo)
+                      + "/"
+                      + encodeURIComponent(currentHoNo || payload.hoNo);
+            }
+
+            var response = await fetch(requestUrl, {
               method: method,
               headers: {
                 "Content-Type": "application/json",
@@ -616,6 +728,8 @@
 
             var action = btn.dataset.action;
             var userNo = btn.dataset.userNo;
+            var hoNo = btn.dataset.hoNo;
+
 
             if (action === "reload") {
               loadList();
@@ -638,29 +752,36 @@
               closeModal();
             }
             if (action === "detail" && userNo) {
-              loadDetail(userNo, "detail").catch(function (err) {
+              loadDetail(userNo, hoNo, "detail").catch(function (err) {
                 console.error(err);
                 alert(err.message || "상세 조회에 실패했습니다.");
               });
             }
             if (action === "edit" && userNo) {
-              loadDetail(userNo, "edit")
-                .then(function () {
-                  saveBtn.style.display = "inline-flex";
-                  document.getElementById("userNo").readOnly = true;
-                  document.getElementById("userNm").readOnly = true;
-                  document.getElementById("userTelno").readOnly = true;
-                  document.getElementById("dong").readOnly = false;
-                  document.getElementById("hoNo").readOnly = false;
-                  document.getElementById("inoutCd").disabled = false;
-                  document.getElementById("headYn").disabled = false;
-                  document.getElementById("moveInDt").readOnly = false;
-                  document.getElementById("moveOutDt").readOnly = false;
-                })
-                .catch(function (err) {
+              loadDetail(userNo, hoNo, "edit").catch(function (err) {
                   console.error(err);
                   alert(err.message || "수정 화면을 열지 못했습니다.");
                 });
+            }
+            if (action === "moveOut") {
+
+              detailModeLocked = false;
+
+              currentMode = "edit";
+
+              moveStatusSelect.disabled = false;
+
+              moveOutInput.readOnly = false;
+
+              saveBtn.style.display = "inline-flex";
+              moveOutBtn.style.display = "none";
+              moveStatusSelect.value = "OUT";
+              syncMoveFields();
+              moveOutInput.value = new Date()
+                      .toISOString()
+                      .split("T")[0];
+
+
             }
           });
 
@@ -678,6 +799,62 @@
             });
           });
 
+
+          userNoInput.addEventListener("blur", async function () {
+
+            var userNo = userNoInput.value.trim();
+
+            if (!userNo) {
+              return;
+            }
+
+            try {
+
+              var response = await fetch(
+                      apiBase + "/member/" + encodeURIComponent(userNo),
+                      {
+                        headers: {
+                          "Accept": "application/json"
+                        }
+                      }
+              );
+
+              var result = await response.json();
+
+              if (!result.success) {
+
+                document.getElementById("userNm").value = "";
+                document.getElementById("userTelno").value = "";
+
+                alert(result.message || "사용자를 찾을 수 없습니다.");
+                return;
+              }
+
+              document.getElementById("userNm").value = result.userNm || "";
+              document.getElementById("userTelno").value = result.userTelno || "";
+
+            } catch (err) {
+
+              console.error(err);
+              alert("사용자 조회에 실패했습니다.");
+            }
+          });
+
+
+
+          moveStatusSelect.addEventListener("change", function () {
+            syncMoveFields();
+          });
+          moveOutInput.addEventListener("change", function () {
+
+            if (!moveOutInput.value &&
+                    moveStatusSelect.value === "OUT") {
+
+              moveStatusSelect.value = "LIVE";
+
+              syncMoveFields();
+            }
+          });
           loadList();
         })();
       </script>

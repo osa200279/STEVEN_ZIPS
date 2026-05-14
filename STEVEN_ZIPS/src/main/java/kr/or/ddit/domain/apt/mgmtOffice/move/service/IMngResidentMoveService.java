@@ -10,9 +10,15 @@ public interface IMngResidentMoveService {
 
     List<MngResidentMoveVO> selectResidentMoveList(MngResidentMoveSearchDTO searchDTO);
 
-    MngResidentMoveVO selectResidentMoveDetail(String mgmtOfcNo, String userNo);
+    MngResidentMoveVO selectResidentMoveDetail(
+            String mgmtOfcNo,
+            String userNo,
+            String hoNo
+    );
 
     Map<String, Object> saveResidentMove(MngResidentMoveVO vo);
 
     Map<String, Object> updateResidentMove(MngResidentMoveVO vo);
+
+    MngResidentMoveVO selectMemberInfo(String userNo);
 }

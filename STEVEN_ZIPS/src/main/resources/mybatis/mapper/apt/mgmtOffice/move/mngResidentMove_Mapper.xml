@@ -157,12 +157,14 @@
                  INNER JOIN MGMT_OFFICE MO ON MO.APT_CMPLEX_NO = AC.APT_CMPLEX_NO
         WHERE MO.MGMT_OFC_NO = #{mgmtOfcNo}
           AND M.USER_NO = #{userNo}
+          AND HH.HO_NO = #{hoNo}
     </select>
 
     <select id="countResidentMoveByKey" parameterType="map" resultType="int">
         SELECT COUNT(*)
         FROM HSHLD_HEAD
         WHERE USER_NO = #{userNo}
+          AND HO_NO = #{hoNo}
     </select>
 
     <insert id="insertResidentMove">
@@ -200,6 +202,7 @@
     <update id="updateResidentMove">
         UPDATE HSHLD_HEAD
         <set>
+
             <if test="hoNo != null and hoNo != ''">
                 HO_NO = #{hoNo},
             </if>
@@ -208,23 +211,46 @@
                 INOUT_CD = #{inoutCd},
             </if>
 
-            <if test="moveInDt != null and moveInDt != ''">
-                MOVE_IN_DT = TO_DATE(#{moveInDt}, 'YYYY-MM-DD'),
-            </if>
+            <choose>
+                <when test="moveInDt != null and moveInDt != ''">
+                    MOVE_IN_DT = TO_DATE(#{moveInDt}, 'YYYY-MM-DD'),
+                </when>
+                <otherwise>
+                    MOVE_IN_DT = NULL,
+                </otherwise>
+            </choose>
 
-            <if test="moveOutDt != null and moveOutDt != ''">
-                MOVE_OUT_DT = TO_DATE(#{moveOutDt}, 'YYYY-MM-DD'),
-            </if>
+            <choose>
+                <when test="moveOutDt != null and moveOutDt != ''">
+                    MOVE_OUT_DT = TO_DATE(#{moveOutDt}, 'YYYY-MM-DD'),
+                </when>
+                <otherwise>
+                    MOVE_OUT_DT = NULL,
+                </otherwise>
+            </choose>
 
             <if test="headYn != null and headYn != ''">
                 HEAD_YN = #{headYn},
             </if>
+
         </set>
 
         WHERE USER_NO = #{userNo}
+        AND HO_NO = #{hoNo}
     </update>
 
+    <select id="selectMemberInfo"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.move.vo.MngResidentMoveVO">
 
+        SELECT
+            USER_NO AS userNo,
+            USER_NM AS userNm,
+            USER_TELNO AS userTelno
+        FROM MEMBER
+        WHERE USER_NO = #{userNo}
+
+    </select>
 
 
 </mapper>

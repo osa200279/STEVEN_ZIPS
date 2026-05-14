@@ -10,11 +10,14 @@ import java.util.List;
 @Mapper
 public interface IMngResidentMoveMapper {
 
-    List<MngResidentMoveVO> selectResidentMoveList(MngResidentMoveSearchDTO searchDTO);
+    List<MngResidentMoveVO> selectResidentMoveList(
+            MngResidentMoveSearchDTO searchDTO
+    );
 
     MngResidentMoveVO selectResidentMoveDetail(
             @Param("mgmtOfcNo") String mgmtOfcNo,
-            @Param("userNo") String userNo
+            @Param("userNo") String userNo,
+            @Param("hoNo") String hoNo
     );
 
     int countResidentMoveByKey(
@@ -25,4 +28,8 @@ public interface IMngResidentMoveMapper {
     int insertResidentMove(MngResidentMoveVO vo);
 
     int updateResidentMove(MngResidentMoveVO vo);
+
+    MngResidentMoveVO selectMemberInfo(
+            @Param("userNo") String userNo
+    );
 }

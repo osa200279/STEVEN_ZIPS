@@ -30,8 +30,16 @@ public class MngResidentMoveServiceImpl implements IMngResidentMoveService {
     }
 
     @Override
-    public MngResidentMoveVO selectResidentMoveDetail(String mgmtOfcNo, String userNo) {
-        return residentMoveMapper.selectResidentMoveDetail(mgmtOfcNo, userNo);
+    public MngResidentMoveVO selectResidentMoveDetail(
+            String mgmtOfcNo,
+            String userNo,
+            String hoNo
+    ) {
+        return residentMoveMapper.selectResidentMoveDetail(
+                mgmtOfcNo,
+                userNo,
+                hoNo
+        );
     }
 
     @Override
@@ -96,28 +104,50 @@ public class MngResidentMoveServiceImpl implements IMngResidentMoveService {
         return result;
     }
 
+    @Override
+    public MngResidentMoveVO selectMemberInfo(String userNo) {
+        return residentMoveMapper.selectMemberInfo(userNo);
+    }
     private void normalizeMoveDates(MngResidentMoveVO vo) {
-        if (!StringUtils.hasText(vo.getMoveStatus())) {
-            vo.setMoveStatus("WAIT");
-        }
+
         if (!StringUtils.hasText(vo.getInoutCd())) {
-            vo.setInoutCd(vo.getMoveStatus());
+            vo.setInoutCd("WAIT");
         }
+
+        // 상태 동기화
+        vo.setMoveStatus(vo.getInoutCd());
+
         if (!StringUtils.hasText(vo.getHeadYn())) {
             vo.setHeadYn("N");
         }
 
         String today = LocalDate.now().format(DATE_FMT);
 
-        if ("LIVE".equals(vo.getInoutCd()) && !StringUtils.hasText(vo.getMoveInDt())) {
-            vo.setMoveInDt(today);
-        }
-        if ("OUT".equals(vo.getInoutCd()) && !StringUtils.hasText(vo.getMoveOutDt())) {
-            vo.setMoveOutDt(today);
+        // 입주 상태
+        if ("LIVE".equals(vo.getInoutCd())) {
+
+            if (!StringUtils.hasText(vo.getMoveInDt())) {
+                vo.setMoveInDt(today);
+            }
+
+            vo.setMoveOutDt(null);
         }
 
-        if (!StringUtils.hasText(vo.getMoveStatus())) {
-            vo.setMoveStatus(vo.getInoutCd());
+        // 퇴거 상태
+        if ("OUT".equals(vo.getInoutCd())) {
+
+            if (!StringUtils.hasText(vo.getMoveInDt())) {
+                vo.setMoveInDt(today);
+            }
+
+            if (!StringUtils.hasText(vo.getMoveOutDt())) {
+                vo.setMoveOutDt(today);
+            }
+        }
+        // 입주대기
+        if ("WAIT".equals(vo.getInoutCd())) {
+            vo.setMoveInDt(null);
+            vo.setMoveOutDt(null);
         }
     }
 }
