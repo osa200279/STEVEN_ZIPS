@@ -54,7 +54,7 @@
         <div class="px-8 py-5 flex items-center justify-between">
             <div>
                 <p class="text-xs text-slate-400 mb-1">신청번호</p>
-                <p class="text-xl font-bold text-[#004830]">260514_t_700_01</p>
+                <p class="text-xl font-bold text-[#004830]">${aplct.}</p>
             </div>
             <c:choose>
                 <c:when test="${status == 'SUBMIT'}"><span class="badge bg-blue-50 text-blue-600">신청완료</span></c:when>
