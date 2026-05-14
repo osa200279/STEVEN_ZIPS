@@ -111,6 +111,13 @@
 
         </choose>
 
+        <if test="searchType != null and searchType != ''">
+            AND (
+                APT_CMPLEX_NM LIKE '%' || #{searchType} || '%'
+                OR DOROJUSO LIKE '%' || #{searchType} || '%'
+            )
+        </if>
+
         <if test="searchVO != null and searchVO.sidoNm != null and searchVO.sidoNm != ''">
             AND SIDO_NM = #{searchVO.sidoNm}
         </if>
@@ -226,6 +233,13 @@
             </when>
 
         </choose>
+
+        <if test="searchType != null and searchType != ''">
+            AND (
+                APT_CMPLEX_NM LIKE '%' || #{searchType} || '%'
+                OR DOROJUSO LIKE '%' || #{searchType} || '%'
+            )
+        </if>
 
         <if test="searchVO != null and searchVO.sidoNm != null and searchVO.sidoNm != ''">
             AND SIDO_NM = #{searchVO.sidoNm}

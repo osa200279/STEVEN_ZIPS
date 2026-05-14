@@ -12,7 +12,7 @@ public interface ICentralAptComplexMapper {
 
     int selectAptComplexCount(
             @Param("searchWord") String searchWord,
-            @Param("keyword") String keyword,
+            @Param("searchType") String searchType,
             @Param("searchVO") AptComplexVO searchVO
 
     );
@@ -20,6 +20,7 @@ public interface ICentralAptComplexMapper {
     // 아파트 단지 목록 조회 (페이징)
     List<AptComplexVO> selectAptComplexList(
             @Param("searchWord") String searchWord,
+            @Param("searchType") String searchType,
             @Param("startRow") int startRow,
             @Param("endRow") int endRow,
             @Param("searchVO") AptComplexVO searchVO

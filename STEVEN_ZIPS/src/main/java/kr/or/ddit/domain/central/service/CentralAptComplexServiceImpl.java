@@ -20,6 +20,7 @@ public class CentralAptComplexServiceImpl implements ICentralAptComplexService {
     ) {
         return aptComplexMapper.selectAptComplexList(
                 pagingVO.getSearchWord(),
+                pagingVO.getSearchType(),
                 pagingVO.getStartRow(),
                 pagingVO.getEndRow(),
                 pagingVO.getSearchVO()
