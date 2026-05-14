@@ -42,31 +42,31 @@ const Applicant = () => {
         {
             field: 'aplctSttsCd', headerName: '상태',
             valueFormatter: (p) => {
-                if (p.value === 'SUBMIT') return '대기';
+                if (p.value === 'SUBMIT') return '청약 신청';
                 if (p.value === 'WINNER') return '서류 제출 필요';
                 if (p.value === 'LOSER') return '반려';
                 if (p.value === 'CANCEL') return '취소';
                 if (p.value === 'SUPPLEMENT') return '서류 보완 필요';
-                if (p.value === 'QUALIFIED') return '검증 완료';
+                if (p.value === 'QUALIFIED') return '승인';
                 return p.value;
             },
             // 2. 필터가 작동할 때 참조할 값을 정의 (화면에 보이는 값 기준)
             filterValueGetter: (p) => {
-                if (p.data.aplctSttsCd === 'SUBMIT') return '대기';
+                if (p.data.aplctSttsCd === 'SUBMIT') return '청약 신청';
                 if (p.data.aplctSttsCd === 'WINNER') return '서류 제출 필요';
                 if (p.data.aplctSttsCd === 'LOSER') return '반려';
                 if (p.data.aplctSttsCd === 'CANCEL') return '취소';
                 if (p.data.aplctSttsCd === 'SUPPLEMENT') return '서류 보완 필요';
-                if (p.data.aplctSttsCd === 'QUALIFIED') return '검증 완료';
+                if (p.data.aplctSttsCd === 'QUALIFIED') return '승인';
                 return p.data.aplctSttsCd;
             },
             cellRenderer: (p) => {
-                if (p.value === 'SUBMIT') return <span className="stts-apply">대기</span>;
+                if (p.value === 'SUBMIT') return <span className="stts-apply">청약 신청</span>;
                 if (p.value === 'WINNER') return <span className="stts-apply">서류 제출 필요</span>;
                 if (p.value === 'LOSER') return <span className="stts-reject">반려</span>;
                 if (p.value === 'CANCEL') return <span className="stts-reject">취소</span>;
                 if (p.value === 'SUPPLEMENT') return <span className="stts-apply">서류 보완 필요</span>;
-                if (p.value === 'QUALIFIED') return <span className="stts-pass">검증 완료</span>;
+                if (p.value === 'QUALIFIED') return <span className="stts-pass">승인</span>;
                 return <span>{p.value}</span>; // 기본값
             },
             width: 140
@@ -74,8 +74,7 @@ const Applicant = () => {
         {
             field: 'aplctSttsCd', headerName: '관리',
             cellRenderer: (p) => {
-                if (p.value === 'SUBMIT'
-                    || p.value === 'SUPPLEMENT') {
+                if (p.value === 'SUBMIT') {
                     return (
                         <div>
                             <button title='승인' className='btn-pass' onClick={() => updStts(p, true)}>
@@ -87,15 +86,17 @@ const Applicant = () => {
                             </button>
                         </div>
                     )
-                } else if (p.value === ('WINNER')) {
+                } else if (p.value === 'WINNER'
+                            || p.value === 'SUPPLEMENT'
+                        ) {
                     return (
                         <div>
                             <button title='승인' className='btn-pass' onClick={() => updStts(p, true)}>
                                 <Check className='check' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                             &nbsp;&nbsp;
-                            <button title='보완' className='btn-reject' onClick={() => supplement(p)}>
-                                <Triangle className='reject' style={{ marginTop: '0px', padding: '0px', color: 'yellow', backgroundColor: 'grey' }} size={24} />
+                            <button title='보완' className='btn-supplement' onClick={() => supplement(p)}>
+                                <Triangle className='supplement' style={{ marginTop: '0px', padding: '0px'}} size={24} />
                             </button>
                             &nbsp;&nbsp;
                             <button title='반려' className='btn-reject' onClick={() => updStts(p, false)}>
@@ -155,7 +156,7 @@ const Applicant = () => {
                 alert("선택된 항목 중 처리 가능한 '대기'건이 없습니다.");
                 return;
             }
-            confirmMsg = `현재 선택된 ${selectedNodes.length}개의 행 중에 처리대기 건이 ${aplctMapList.length}개 있습니다. \n일괄 ${actionNm} 처리하시겠습니까?`;
+            confirmMsg = `현재 선택된 ${selectedNodes.length}개의 목록 중 ${actionNm} 가능 건이 ${aplctMapList.length}개 있습니다. \n일괄 ${actionNm} 처리하시겠습니까?`;
         } else {
             // 선택된 행이 없거나 1개만 선택된 경우 (단일 처리)
             const currentStts = p.data.aplctSttsCd;
@@ -194,7 +195,7 @@ const Applicant = () => {
 
         if (selectedNodes && selectedNodes.length > 1 && isCurrentNodeSelected) {
             // 상태 변경 버튼이 활성화된한 아이들만 필터
-            const validNodes = selectedNodes.filter(node => ['SUBMIT', 'WINNER', 'SUPPLEMENT'].includes(node.data.aplctSttsCd));
+            const validNodes = selectedNodes.filter(node => ['WINNER', 'SUPPLEMENT'].includes(node.data.aplctSttsCd));
 
             aplctMapList = validNodes.map(node => {
                 const currentStts = node.data.aplctSttsCd;
@@ -210,7 +211,7 @@ const Applicant = () => {
                 alert("선택된 항목 중 처리 가능한 '대기'건이 없습니다.");
                 return;
             }
-            confirmMsg = `현재 선택된 ${selectedNodes.length}개의 행 중에 처리대기 건이 ${aplctMapList.length}개 있습니다. \n일괄 ${actionNm} 처리하시겠습니까?`;
+            confirmMsg = `현재 선택된 ${selectedNodes.length}개의 목록 중 ${aplctMapList.length}개 서류 보완 요청 처리가능합니다. \n일괄 ${actionNm} 처리하시겠습니까?`;
 
         } else {
             // 선택된 행이 없거나 1개만 선택된 경우 (단일 처리)
@@ -243,8 +244,8 @@ const Applicant = () => {
                 aplctMapList: aplctMapList
             });
 
-            if (response.status === 200 && response.data > 0) {
-                alert(`${response.data}건의 처리가 완료되었습니다.`);
+            if (response.status === 200) {
+                alert(`${aplctMapList.length}건의 처리가 완료되었습니다.`);
 
                 const updateMap = new Map(aplctMapList.map(obj => [obj.aplctNo, obj.aplctSttsCd]));
 
@@ -255,6 +256,7 @@ const Applicant = () => {
                             : item
                     )
                 );
+
                 if (agApi && typeof agApi.deselectAll === 'function') {
                     agApi.deselectAll();
                 }

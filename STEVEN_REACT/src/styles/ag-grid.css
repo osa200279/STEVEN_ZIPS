@@ -32,6 +32,11 @@
     color: rgb(223, 0, 0);
 }
 
+.supplement {
+    padding: 2px 8px;
+    color: grey;
+}
+
 .btn-pass {
     margin-top: 5px;
     border: 1px;
@@ -61,9 +66,28 @@
     height: 27px;
     width: 27px;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .btn-reject:hover {
     background-color: rgb(255, 150, 150);
     border: 1px solid #ff4d4d;
+}
+
+.btn-supplement {
+    margin-top: 5px;
+    border: 1px;
+    border-radius: 5px;
+    padding: 0px;
+    padding-top: 2px;
+    background-color: rgb(255, 255, 120);
+    height: 27px;
+    width: 27px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-supplement:hover {
+    background-color: rgb(255, 238, 0);
+    border: 1px solid #494800;
 }
