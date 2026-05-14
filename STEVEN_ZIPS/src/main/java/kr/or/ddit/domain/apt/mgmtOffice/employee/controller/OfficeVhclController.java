@@ -178,7 +178,7 @@ public class OfficeVhclController {
 
         } catch (Exception e) {
 
-            log.error("李⑤웾 ?섏젙 ?ㅽ뙣", e);
+
 
             return "redirect:/manager/resident/auto/update/"
                     + mgmtOfcNo + "/"
@@ -203,7 +203,7 @@ public class OfficeVhclController {
 
         } catch (Exception e) {
 
-            log.error("李⑤웾 ??젣 ?ㅽ뙣", e);
+
 
             return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
         }
@@ -230,6 +230,8 @@ public class OfficeVhclController {
 
         MngrVO mngrVO = (MngrVO) user.getMember();
 
+
+
         String aptCmplexNo = mngrVO.getAptCmplexNo();
 
         String fullHoNo =
@@ -243,7 +245,7 @@ public class OfficeVhclController {
         Map<String,Object> result =
                 officeVhclService.searchResident(param);
 
-        System.out.println("議고쉶 寃곌낵 = " + result);
+
 
         return result;
     }
