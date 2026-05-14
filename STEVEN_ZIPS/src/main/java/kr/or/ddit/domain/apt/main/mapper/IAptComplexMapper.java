@@ -32,4 +32,6 @@ public interface IAptComplexMapper {
     AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo);
 
     List<AptDetailGridDTO> selectComplexList(String aptCmplexNo);
+
+    String selectOneAptCmplexByMgmtOfcNo(String mgmtOfcNo);
 }

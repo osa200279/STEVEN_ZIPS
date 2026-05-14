@@ -70,6 +70,11 @@ public class AptComplexServiceImpl implements IAptComplexService {
     }
 
     @Override
+    public String selectOneAptCmplexByMgmtOfcNo(String mgmtOfcNo) {
+        return aptComplexMapper.selectOneAptCmplexByMgmtOfcNo(mgmtOfcNo);
+    }
+
+    @Override
     @Transactional
     public int updateAptComplex(AptComplexVO aptComplexVO) {
         return aptComplexMapper.updateAptComplex(aptComplexVO);

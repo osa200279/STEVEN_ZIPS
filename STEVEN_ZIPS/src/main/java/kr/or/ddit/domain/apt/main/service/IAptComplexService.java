@@ -38,4 +38,6 @@ public interface IAptComplexService {
 
    // mgmtOfc 번호로 일치하는 아파트의 AptDetailGridDTO List 가져오는 메서드
    List<AptDetailGridDTO> selectComplexList(String mgmtOfcNo);
+
+   String selectOneAptCmplexByMgmtOfcNo(String mgmtOfcNo);
 }
