@@ -200,15 +200,14 @@ public class CentralController {
 */
 
     @PostMapping("/contractInsert.do")
-    public String contractInsert(RentContractVO rentContractVO,
+    public String contractInsert(ContractVO contractVO,
                                  MultipartFile contractFile,
                                  MultipartFile idFile,
                                  MultipartFile etcFile,
                                  Model model) throws Exception {
-        // RENT_CTRT.CTRT_STTS_CD는 코드값(SUB/APR/RJC) 기준으로 처리
-        rentContractVO.setCtrtSttsCd("SUB");
-        rentContractVO.setMvinYn("N");
-        service.insertContract(rentContractVO, new MultipartFile[]{contractFile, idFile, etcFile});
+        contractVO.setCtrtSttsCd("SUB");
+        contractVO.setMvinYn("N");
+        service.insertContract(contractVO, new MultipartFile[]{contractFile, idFile, etcFile});
         return "redirect:/centralAdmin/contractList.do";
     }
 
@@ -234,11 +233,11 @@ public class CentralController {
     }
 
     @PostMapping("/contractUpdate.do")
-    public String contractUpdate(RentContractVO rentContractVO,
+    public String contractUpdate(ContractVO contractVO,
                                  MultipartFile contractFile,
                                  MultipartFile idFile,
                                  MultipartFile etcFile) throws Exception {
-        service.updateContract(rentContractVO, new MultipartFile[]{contractFile, idFile, etcFile});
+        service.updateContract(contractVO, new MultipartFile[]{contractFile, idFile, etcFile});
         return "redirect:/centralAdmin/contractList.do";
     }
     

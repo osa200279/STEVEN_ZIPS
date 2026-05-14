@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 
+// 계약 관리 페이지용 VO
 @Data
 public class ContractVO {
 

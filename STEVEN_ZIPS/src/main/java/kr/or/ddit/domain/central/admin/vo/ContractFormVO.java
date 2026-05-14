@@ -3,6 +3,7 @@ package kr.or.ddit.domain.central.admin.vo;
 import lombok.Data;
 
 
+// 계약 서류 페이지용 VO
 @Data
 public class ContractFormVO {
 

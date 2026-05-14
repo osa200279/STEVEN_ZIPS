@@ -38,7 +38,7 @@ public class CentralServiceImpl implements CentralService {
     private final IAttachFileMapper attachFileMapper;
 
     @Override
-    public void insertContract(RentContractVO vo, MultipartFile[] files) throws Exception {
+    public void insertContract(ContractVO vo, MultipartFile[] files) throws Exception {
 
         // 1. 계약 INSERT
         mapper.insertContract(vo);
@@ -80,7 +80,7 @@ public class CentralServiceImpl implements CentralService {
     }
 
     @Override
-    public void updateContract(RentContractVO vo, MultipartFile[] files) throws Exception {
+    public void updateContract(ContractVO vo, MultipartFile[] files) throws Exception {
         mapper.updateContract(vo);
 
         String[] cats = {"계약서", "신분증", "추가서류"};
@@ -154,7 +154,7 @@ public class CentralServiceImpl implements CentralService {
     }
 
     @Override
-    public List<ContractAptVO> contractForm(Model model) {
+    public List<ContractFormVO> contractForm(Model model) {
         return mapper.contractForm(model);
     }
 

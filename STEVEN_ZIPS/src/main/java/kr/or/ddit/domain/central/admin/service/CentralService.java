@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface CentralService {
-    void insertContract(RentContractVO vo, MultipartFile[] files) throws Exception;
+    void insertContract(ContractVO vo, MultipartFile[] files) throws Exception;
 
     int selectContractCount(PaginationInfoVO<ContractVO> pagingVO);
 
@@ -17,7 +17,7 @@ public interface CentralService {
 
     ContractVO selectOneContract(String ctrtNo);
 
-    void updateContract(RentContractVO vo, MultipartFile[] files) throws Exception;
+    void updateContract(ContractVO vo, MultipartFile[] files) throws Exception;
 
     void contractModifyStatus(String rentCtrtNo, String status);
 
@@ -25,7 +25,7 @@ public interface CentralService {
 
     void deleteContractForm(String frmNo);
 
-    List<ContractAptVO> contractForm(Model model);
+    List<ContractFormVO> contractForm(Model model);
 
     int selectContractFormCount(PaginationInfoVO<ContractFormVO> pagingVO);
 

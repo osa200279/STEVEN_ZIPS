@@ -15,11 +15,11 @@ public interface CentralMapper {
 
     List<ContractVO> selectContractList(PaginationInfoVO<ContractVO> pagingVO);
 
-    void insertContract(RentContractVO rentContractVO);
+    void insertContract(ContractVO contractVO);
 
     ContractVO selectOneContract(String ctrtNo);
 
-    int updateContract(RentContractVO rentContractVO);
+    int updateContract(ContractVO contractVO);
 
     void contractModifyStatus(@Param("rentCtrtNo") String rentCtrtNo, @Param("status") String status);
 
@@ -27,7 +27,7 @@ public interface CentralMapper {
 
     void contractFormDelete(@Param("frmNo") String frmNo);
 
-    List<ContractAptVO> contractForm(Model model);
+    List<ContractFormVO> contractForm(Model model);
 
     int selectContractFormCount(PaginationInfoVO<ContractFormVO> pagingVO);
 

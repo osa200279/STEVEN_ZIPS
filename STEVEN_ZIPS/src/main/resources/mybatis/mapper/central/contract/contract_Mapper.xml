@@ -28,7 +28,7 @@
         </if>
     </sql>
 
-    <insert id="insertContract" parameterType="kr.or.ddit.domain.central.admin.vo.RentContractVO">
+    <insert id="insertContract" parameterType="kr.or.ddit.domain.central.admin.vo.ContractVO">
         <selectKey keyProperty="rentCtrtNo" resultType="String" order="BEFORE">
             SELECT TO_CHAR(SEQ_RENT_CTRT.NEXTVAL) FROM DUAL
         </selectKey>
@@ -179,7 +179,7 @@
                  left join apt_complex ac on ac.APT_CMPLEX_NO = rr1.APT_CMPLEX_NO
         where rc.RENT_CTRT_NO = #{rentCtrtNo}
     </select>
-    <select id="contractForm" resultType="kr.or.ddit.domain.central.admin.vo.ContractAptVO">
+    <select id="contractForm" resultType="kr.or.ddit.domain.central.admin.vo.ContractFormVO">
         select APT_CMPLEX_NO, APT_CMPLEX_NM
         from APT_COMPLEX
         order by APT_CMPLEX_NO asc
@@ -264,7 +264,7 @@
     </select>
 
 
-    <update id="updateContract" parameterType="kr.or.ddit.domain.central.admin.vo.RentContractVO">
+    <update id="updateContract" parameterType="kr.or.ddit.domain.central.admin.vo.ContractVO">
         UPDATE RENT_CTRT SET
         RENT_LSTG_NO = #{rentLstgNo},
         CTRT_ID = #{ctrtId},
