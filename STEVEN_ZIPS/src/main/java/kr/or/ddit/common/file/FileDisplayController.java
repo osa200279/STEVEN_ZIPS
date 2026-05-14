@@ -77,7 +77,7 @@ public class FileDisplayController {
             InputStream is = driveService.files().get(googleId).executeMediaAsInputStream();
 
             // 파일 읽는 통로 생성 : 한번에 가져오는게 아닌 8KB단위(표준 크기)로 가져옴
-            BufferedInputStream bis = new BufferedInputStream(is, 8192);
+            BufferedInputStream bis = new BufferedInputStream(is, 65536);
             Resource resource = new InputStreamResource(bis);
 
             // 한글 파일명 인코딩 처리
