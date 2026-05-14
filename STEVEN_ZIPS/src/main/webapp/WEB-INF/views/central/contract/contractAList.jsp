@@ -44,7 +44,7 @@
                         <div class="flex items-center justify-between">
                             <div class="space-y-1">
                                 <p class="text-xs text-slate-400">신청번호</p>
-                                <p class="text-lg font-bold text-[#004830]">${aplct.APLCT_NO}</p>
+                                <a href="/central/contract/"><p class="text-lg font-bold text-[#004830]">${aplct.APLCT_NO}</p></a>
                             </div>
                             <div class="text-right space-y-1">
                                 <c:choose>
