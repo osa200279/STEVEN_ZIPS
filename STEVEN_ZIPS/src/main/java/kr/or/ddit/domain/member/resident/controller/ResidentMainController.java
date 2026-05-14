@@ -80,7 +80,39 @@ public class ResidentMainController {
         return "member/resident/manage_operation";
     }
 
-    /* 입주민 시설관리이력 */
+
+    /**
+     * 입주민 시설관리이력 조회
+     * @author 김보라
+     *
+     * @param customUser 로그인 사용자 인증 객체
+     * @param aptCmplexNo 아파트 단지 번호
+     *
+     * @param currentPage 점검이력 현재 페이지 번호
+     * @param facilityTyCd 시설 유형 코드
+     * @param facilityPage 시설 목록 현재 페이지 번호
+     * @param facilityNm 시설명 검색어
+     * @param locCn 위치 검색어
+     * @param dongNo 동 번호 검색조건
+     * @param keyword 점검이력 통합 검색어
+     *
+     * @param historyChkDt 점검일 검색조건
+     * @param historyFacilityNm 점검 시설명 검색조건
+     * @param historyChkCn 점검내용 검색조건
+     * @param historyChkStts 점검상태 검색조건
+     * @param historyPicNm 담당자 검색조건
+     *
+     * @param sortColumn 시설정보 정렬 컬럼
+     * @param sortOrder 시설정보 정렬 방향
+     *
+     * @param historySortColumn 점검이력 정렬 컬럼
+     * @param historySortOrder 점검이력 정렬 방향
+     *
+     * @param model JSP 화면 전달 객체
+     *
+     * @return manage_facility.jsp
+     * 입주민 시설정보 및 시설 점검이력 화면 반환
+     */
     @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/manage/facility/{aptCmplexNo}")
     public String manageFacility(
@@ -104,8 +136,6 @@ public class ResidentMainController {
             @RequestParam(value = "historySortOrder", required = false, defaultValue = "DESC") String historySortOrder,
             Model model
     ) {
-
-
 
         /*
          * @PreAuthorize("hasRole('RESIDENT')")
@@ -318,6 +348,22 @@ public class ResidentMainController {
         return "member/resident/manage_facility";
     }
 
+
+    /**
+     * 입주민 시설정보 목록 AJAX 조회 컨트롤러
+     *
+     * @author 김보라
+     * @param aptCmplexNo 아파트 단지 번호
+     * @param facilityPage 시설 목록 현재 페이지 번호
+     * @param facilityTyCd 시설 유형 코드
+     * @param facilityNm 시설명 검색어
+     * @param locCn 위치 검색어
+     * @param dongNo 동 번호 검색조건
+     * @param sortColumn 정렬 컬럼명
+     * @param sortOrder 정렬 방향(ASC / DESC)
+     *
+     * @return 시설 목록 및 페이징 정보 JSON 반환
+     */
     @ResponseBody
     @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/manage/facility/{aptCmplexNo}/facility/list")
@@ -331,8 +377,19 @@ public class ResidentMainController {
             @RequestParam(value = "sortColumn", defaultValue = "facility_ty_cd") String sortColumn,
             @RequestParam(value = "sortOrder", defaultValue = "ASC") String sortOrder
     ) {
+
+        /*
+         * 한 페이지에 출력할 시설 개수
+         * → 시설정보 5개씩 조회
+         */
         int pageSize = 5;
 
+        /*
+         * 정렬 컬럼 검증
+         *
+         * 왜 사용?
+         * → 사용자가 URL에 임의 컬럼명을 넣는 것을 방지.
+         */
         switch (sortColumn) {
             case "facility_ty_cd":
             case "facility_nm":
@@ -343,10 +400,20 @@ public class ResidentMainController {
                 sortColumn = "facility_ty_cd";
         }
 
+        /*
+         * 정렬 방향 검증
+         * → ASC 또는 DESC만 허용.
+         */
         sortOrder = "DESC".equalsIgnoreCase(sortOrder) ? "DESC" : "ASC";
 
         PaginationInfoVO<FacilityInfoDTO> pagingVO = new PaginationInfoVO<>(5, 5);
 
+        /*
+         * 시설정보 전체 개수 조회
+         *
+         * 왜 사용?
+         * → 전체 페이지 수 계산 및 페이징 처리에 사용.
+         */
         int totalRecord = residentFacilityService.getResidentFacilityInfoCount(
                 aptCmplexNo,
                 facilityTyCd,
@@ -355,9 +422,17 @@ public class ResidentMainController {
                 locCn
         );
 
+        /*
+         * 현재 페이지 및 전체 건수 설정
+         */
         pagingVO.setTotalRecord(totalRecord);
         pagingVO.setCurrentPage(facilityPage);
 
+        /*
+         * 시설 목록 조회
+         *
+         * 검색조건 + 정렬조건 + 페이징 범위를 함께 전달한다.
+         */
         List<FacilityInfoDTO> facilityInfoList =
                 residentFacilityService.getResidentFacilityInfoList(
                         aptCmplexNo,
@@ -371,8 +446,17 @@ public class ResidentMainController {
                         pagingVO.getEndRow()
                 );
 
+        /*
+         * AJAX 응답 데이터 생성
+         *
+         * Map<String, Object>
+         * → JSON 형태로 변환되어 프론트로 전달된다.
+         */
         Map<String, Object> result = new HashMap<>();
         result.put("facilityInfoList", facilityInfoList);
+        /*
+         * 현재 페이지 번호
+         */
         result.put("facilityPage", facilityPage);
         result.put("facilityTotalPage", pagingVO.getTotalPage());
         result.put("facilityTotalRecord", totalRecord);
@@ -380,9 +464,24 @@ public class ResidentMainController {
         return result;
     }
 
-    /*
-     * 시설 점검 상세 이력 비동기 목록 조회
+    /**
+     * 시설 점검 상세 이력 AJAX 조회 컨트롤러
+     * 비동기(AJAX) 방식으로 조회
+     * @author 김보라
+     * @param aptCmplexNo 아파트 단지 번호
+     * @param currentPage 현재 페이지 번호
      *
+     * @param historyChkStartDt 점검 시작일 검색조건
+     * @param historyChkEndDt 점검 종료일 검색조건
+     * @param historyFacilityNm 시설명 검색조건
+     * @param historyChkCn 점검내용 검색조건
+     * @param historyChkStts 점검상태 검색조건
+     * @param historyPicNm 담당자 검색조건
+     *
+     * @param sortColumn 정렬 컬럼명
+     * @param sortOrder 정렬 방향(ASC / DESC)
+     *
+     * @return 시설 점검이력 목록 및 페이징 정보 JSON 반환
      */
     @ResponseBody
     @PreAuthorize("hasRole('RESIDENT')")
@@ -400,9 +499,22 @@ public class ResidentMainController {
             @RequestParam(value = "sortOrder", defaultValue = "DESC") String sortOrder
     ) {
         int screenSize = 5;
+        /*
+         * Oracle 페이징용 시작 ROW 번호
+         */
         int startRow = (currentPage - 1) * screenSize + 1;
+        /*
+         * Oracle 페이징용 끝 ROW 번호
+         */
         int endRow = currentPage * screenSize;
 
+        /*
+         * 정렬 컬럼 검증
+         *
+         * 왜 사용?
+         * → 사용자가 URL에 임의 컬럼명을 넣는 것을 방지.
+         * → SQL 오류 및 SQL Injection 예방 목적.
+         */
         switch (sortColumn) {
             case "chk_dt":
             case "facility_nm":
@@ -417,6 +529,10 @@ public class ResidentMainController {
         sortOrder = "ASC".equalsIgnoreCase(sortOrder) ? "ASC" : "DESC";
 
         ResidentFacilityHistoryDTO dto = new ResidentFacilityHistoryDTO();
+
+        /*
+         * 검색조건 설정
+         */
         dto.setAptCmplexNo(aptCmplexNo);
         dto.setHistoryChkStartDt(historyChkStartDt);
         dto.setHistoryChkEndDt(historyChkEndDt);
@@ -424,18 +540,38 @@ public class ResidentMainController {
         dto.setHistoryChkCn(historyChkCn);
         dto.setHistoryChkStts(historyChkStts);
         dto.setHistoryPicNm(historyPicNm);
+        /*
+         * 정렬조건 설정
+         */
         dto.setSortColumn(sortColumn);
         dto.setSortOrder(sortOrder);
+        /*
+         * 페이징 범위 설정
+         */
         dto.setStartRow(startRow);
         dto.setEndRow(endRow);
 
-
+        /*
+         * 시설 점검이력 전체 개수 조회
+         *
+         * 왜 사용?
+         * → 전체 페이지 수 계산에 사용.
+         */
         int totalRecord = residentFacilityService.getFacilityHistoryCount(dto);
+        /*
+         * 전체 페이지 수 계산
+         */
         int totalPage = (int) Math.ceil((double) totalRecord / screenSize);
 
+        /*
+         * 시설 점검이력 목록 조회
+         */
         List<ResidentFacilityHistoryDTO> historyList =
                 residentFacilityService.getFacilityHistoryList(dto);
 
+        /*
+         * AJAX 응답용 JSON 데이터 생성
+         */
         Map<String, Object> result = new HashMap<>();
         result.put("historyList", historyList);
         result.put("totalRecord", totalRecord);
@@ -746,9 +882,18 @@ public class ResidentMainController {
         return "member/resident/survey/survey_list";
     }
 
-    /* =========================
-     * 입주민게시판
-     * ========================= */
+
+    /**
+     * 입주민 공지게시판 조회
+     * @author 김보라
+     * @param aptCmplexNo
+     * @param currentPage
+     * @param searchTtl
+     * @param searchStartDt
+     * @param searchEndDt
+     * @param model
+     * @return board_notice.jsp 입주민 공지게시판
+     */
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/board/notice/{aptCmplexNo}")
     public String boardNotice(
@@ -759,14 +904,9 @@ public class ResidentMainController {
             @RequestParam(value = "searchEndDt", required = false) String searchEndDt,
             Model model
     ) {
-        /*
-         * currentPage
-         * → 현재 페이지 번호.
-         * 왜 사용?
-         * → 공지사항 목록을 한 번에 전부 보여주지 않고 페이지 단위로 나누기 위해.
-         */
-
         PaginationInfoVO<ResidentNoticeBoardDTO> pagingVO = new PaginationInfoVO<>(10, 5);
+        // 10: 한 페이지에 10개 출력
+        // 5: 페이지 번호를 5개 단위로 출력
 
         ResidentNoticeBoardDTO searchDTO = new ResidentNoticeBoardDTO();
         searchDTO.setAptCmplexNo(aptCmplexNo);
@@ -776,8 +916,8 @@ public class ResidentMainController {
 
         int totalRecord = residentNoticeBoardService.selectResidentBoardNoticeCount(searchDTO);
 
-        pagingVO.setCurrentPage(currentPage);
         pagingVO.setTotalRecord(totalRecord);
+        pagingVO.setCurrentPage(currentPage);
 
         searchDTO.setStartRow(pagingVO.getStartRow());
         searchDTO.setEndRow(pagingVO.getEndRow());
@@ -790,11 +930,10 @@ public class ResidentMainController {
         model.addAttribute("aptCmplexNo", aptCmplexNo);
         model.addAttribute("noticeList", noticeList);
         model.addAttribute("pagingVO", pagingVO);
+        model.addAttribute("searchDTO", searchDTO);
+        model.addAttribute("pagingHTML", pagingVO.getPagingHTML());
 
-        model.addAttribute("currentPage", currentPage);
         model.addAttribute("totalRecord", totalRecord);
-        model.addAttribute("totalPage", pagingVO.getTotalPage());
-
         model.addAttribute("searchTtl", searchTtl);
         model.addAttribute("searchStartDt", searchStartDt);
         model.addAttribute("searchEndDt", searchEndDt);

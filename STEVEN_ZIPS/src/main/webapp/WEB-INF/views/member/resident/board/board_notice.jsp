@@ -43,6 +43,93 @@
     .process-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:14px;} .process-step {padding:18px 14px;border-radius:14px;border:1px solid var(--border);background:#fff;text-align:center;} .process-step.active {background:#eef8f0;border-color:#b8d9c0;}
     @media (max-width:1200px){.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid{grid-template-columns:repeat(2,1fr)} .grid-2,.grid-2.equal,.chat-layout{grid-template-columns:1fr} .label-grid{grid-template-columns:140px 1fr}}
     @media (max-width:900px){.main-shell{flex-direction:column}.content-area{padding:24px 18px 48px}.page-content-wrap{max-width:100%}.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid,.seat-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:120px 1fr}.label-grid{grid-template-columns:120px 1fr}}
+
+    /* 검색 영역 */
+    .notice-search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+
+    /* 날짜 input 고정 */
+    .notice-search-date {
+      width: 220px;      /* 날짜는 고정 */
+      flex: 0 0 220px;
+    }
+
+    /* 제목 검색만 늘어나게 */
+    .notice-search-keyword {
+      flex: 1;
+      min-width: 260px;
+      max-width: 420px;  /* 최대 너비 제한 */
+    }
+
+    /* input 공통 */
+    .notice-search-input {
+      width: 100%;
+      height: 64px;
+      padding: 0 28px;
+      border: none;
+      border-radius: 32px;
+      background: #f0f3ef;
+      font-size: 20px;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    /* 검색 버튼 */
+    .notice-search-btn {
+      width: 138px;
+      flex: 0 0 138px;
+    }
+
+    /* 초기화 버튼 */
+    .notice-reset-btn {
+      width: 138px;
+    }
+
+    .notice-paging-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .pagination {
+      display: flex;
+      gap: 8px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .page-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-mid);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .page-item.active .page-link {
+      background: var(--green-dark);
+      color: #fff;
+      border-color: var(--green-dark);
+    }
+
+    .page-item.disabled .page-link {
+      color: #aaa;
+      cursor: default;
+    }
   </style>
 
 </head>
@@ -65,24 +152,25 @@
         <form method="get"
               action="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}"
               class="notice-search-wrap">
-
-          <input type="text"
-                 name="searchTtl"
-                 class="notice-search-input"
-                 placeholder="제목 검색"
-                 value="${searchTtl}" />
+          <input type="hidden" name="currentPage" value="${pagingVO.currentPage}">
 
           <input type="date"
                  name="searchStartDt"
                  class="notice-search-input notice-search-date"
-                 value="${searchStartDt}" />
+                 value="${searchStartDt}">
 
           <span class="notice-search-tilde">~</span>
 
           <input type="date"
                  name="searchEndDt"
                  class="notice-search-input notice-search-date"
-                 value="${searchEndDt}" />
+                 value="${searchEndDt}">
+
+          <input type="text"
+                 name="searchTtl"
+                 class="notice-search-input notice-search-keyword"
+                 placeholder="제목 검색"
+                 value="${searchDTO.searchTtl}">
 
           <button type="submit"
                   class="notice-search-btn">
@@ -97,7 +185,7 @@
 
         <section class="panel">
           <div class="section-hd">
-            <h3>공지사항 목록</h3>
+            <h3>공지사항</h3>
             <span>총 ${totalRecord}건</span>
           </div>
 
@@ -140,24 +228,8 @@
             </tbody>
           </table>
 
-          <div class="btn-row">
-            <c:if test="${currentPage > 1}">
-              <a class="btn-ghost"
-                 href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}?currentPage=${currentPage - 1}&searchTtl=${searchTtl}&searchStartDt=${searchStartDt}&searchEndDt=${searchEndDt}">
-                이전
-              </a>
-            </c:if>
-
-            <span style="display:flex;align-items:center;font-size:13px;color:var(--text-mid);font-weight:700;">
-      ${currentPage} / ${totalPage}
-    </span>
-
-            <c:if test="${currentPage < totalPage}">
-              <a class="btn-ghost"
-                 href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}?currentPage=${currentPage + 1}&searchTtl=${searchTtl}&searchStartDt=${searchStartDt}&searchEndDt=${searchEndDt}">
-                다음
-              </a>
-            </c:if>
+          <div class="notice-paging-wrap">
+            ${pagingHTML}
           </div>
         </section>
 
@@ -165,5 +237,25 @@
     </main>
   </div>
   <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const pagingLinks = document.querySelectorAll(".pagination .page-link");
+
+      pagingLinks.forEach(function (link) {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          const page = this.dataset.page;
+          if (!page) return;
+
+          const form = document.querySelector(".notice-search-wrap");
+          const pageInput = form.querySelector("input[name='currentPage']");
+
+          pageInput.value = page;
+          form.submit();
+        });
+      });
+    });
+  </script>
 </body>
 </html>
