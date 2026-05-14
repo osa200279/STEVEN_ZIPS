@@ -40,20 +40,31 @@ const Applicant = () => {
         { field: 'tyNm', headerName: '호 타입', width: 105 },
         { field: 'exclusiveSize', headerName: '전용 면적(㎡)', width: 130 },
         {
+            field: 'files', headerName: '제출 서류'
+            , cellRenderer: (p) => {
+                if (p) return <span assName="">X</span>;
+                else return <span><button>보기</button></span>; // 기본값
+            }
+            , filter: false
+            , width: 110
+        },
+        {
             field: 'aplctSttsCd', headerName: '상태',
             valueFormatter: (p) => {
                 if (p.value === 'SUBMIT') return '청약 신청';
-                if (p.value === 'WINNER') return '서류 제출 필요';
+                if (p.value === 'WINNER') return '서류 제출 요청';
+                if (p.value === 'INSPECTION') return '서류 검토 필요';
                 if (p.value === 'LOSER') return '반려';
                 if (p.value === 'CANCEL') return '취소';
-                if (p.value === 'SUPPLEMENT') return '서류 보완 필요';
+                if (p.value === 'SUPPLEMENT') return '서류 보완 요청';
                 if (p.value === 'QUALIFIED') return '승인';
                 return p.value;
             },
             // 2. 필터가 작동할 때 참조할 값을 정의 (화면에 보이는 값 기준)
             filterValueGetter: (p) => {
                 if (p.data.aplctSttsCd === 'SUBMIT') return '청약 신청';
-                if (p.data.aplctSttsCd === 'WINNER') return '서류 제출 필요';
+                if (p.data.aplctSttsCd === 'WINNER') return '서류 제출 요청';
+                if (p.data.aplctSttsCd === 'INSPECTION') return '서류 검토 필요';
                 if (p.data.aplctSttsCd === 'LOSER') return '반려';
                 if (p.data.aplctSttsCd === 'CANCEL') return '취소';
                 if (p.data.aplctSttsCd === 'SUPPLEMENT') return '서류 보완 필요';
@@ -62,10 +73,11 @@ const Applicant = () => {
             },
             cellRenderer: (p) => {
                 if (p.value === 'SUBMIT') return <span className="stts-apply">청약 신청</span>;
-                if (p.value === 'WINNER') return <span className="stts-apply">서류 제출 필요</span>;
+                if (p.value === 'WINNER') return <span className="stts-apply">서류 제출 요청</span>;
+                if (p.value === 'INSPECTION') return <span className="stts-apply">서류 검토 필요</span>;
                 if (p.value === 'LOSER') return <span className="stts-reject">반려</span>;
                 if (p.value === 'CANCEL') return <span className="stts-reject">취소</span>;
-                if (p.value === 'SUPPLEMENT') return <span className="stts-apply">서류 보완 필요</span>;
+                if (p.value === 'SUPPLEMENT') return <span className="stts-apply">서류 보완 요청</span>;
                 if (p.value === 'QUALIFIED') return <span className="stts-pass">승인</span>;
                 return <span>{p.value}</span>; // 기본값
             },
@@ -86,9 +98,16 @@ const Applicant = () => {
                             </button>
                         </div>
                     )
-                } else if (p.value === 'WINNER'
-                            || p.value === 'SUPPLEMENT'
-                        ) {
+                } else if (p.value === 'WINNER') {
+                    return (
+                        <div>
+                            <button title='반려' className='btn-reject' onClick={() => updStts(p, false)}>
+                                <X className='reject' style={{ marginTop: '0px', padding: '0px' }} size={24} />
+                            </button>
+                        </div>
+                    )
+                } else if (p.value === 'SUPPLEMENT'
+                    || p.value === 'INSPECTION') {
                     return (
                         <div>
                             <button title='승인' className='btn-pass' onClick={() => updStts(p, true)}>
@@ -96,7 +115,7 @@ const Applicant = () => {
                             </button>
                             &nbsp;&nbsp;
                             <button title='보완' className='btn-supplement' onClick={() => supplement(p)}>
-                                <Triangle className='supplement' style={{ marginTop: '0px', padding: '0px'}} size={24} />
+                                <Triangle className='supplement' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                             &nbsp;&nbsp;
                             <button title='반려' className='btn-reject' onClick={() => updStts(p, false)}>
@@ -125,6 +144,7 @@ const Applicant = () => {
     }), []);
 
     // isApproval => true or false
+    // 승인 거절
     const updStts = async (p, isApproval) => {
         const ag = p.api;
         const selectedNodes = ag.getSelectedNodes();
@@ -138,13 +158,25 @@ const Applicant = () => {
 
         if (selectedNodes && selectedNodes.length > 1 && isCurrentNodeSelected) {
             // 상태 변경 버튼이 활성화된한 아이들만 필터
-            const validNodes = selectedNodes.filter(node => ['SUBMIT', 'WINNER', 'SUPPLEMENT'].includes(node.data.aplctSttsCd));
+            const validNodes = selectedNodes.filter(node => {
+                return isApproval ? ['SUBMIT', 'SUPPLEMENT', 'INSPECTION'].includes(node.data.aplctSttsCd)
+                    : ['SUBMIT', 'WINNER', 'SUPPLEMENT', 'INSPECTION'].includes(node.data.aplctSttsCd)
+            });
 
             aplctMapList = validNodes.map(node => {
                 const currentStts = node.data.aplctSttsCd;
-                const nextStts = currentStts === 'SUBMIT'
-                    ? (isApproval ? 'WINNER' : 'LOSER')
-                    : (isApproval ? 'QUALIFIED' : 'LOSER');
+                let nextStts;
+                if (currentStts === 'SUBMIT') {
+                    nextStts = isApproval ? 'WINNER' : 'LOSER';
+                } else if (currentStts === 'WINNER' && !isApproval) {      
+                    nextStts = 'LOSER';
+                } else if (currentStts === 'WINNER' && isApproval) {    // 위 필터에서 거르지만 방어코드
+                    return false;
+                } else if (currentStts === 'SUPPLEMENT') {
+                    nextStts = isApproval ? 'INSPECTION' : 'LOSER';
+                } else if (currentStts === 'INSPECTION') {
+                    nextStts = isApproval ? 'QUALIFIED' : 'LOSER';
+                }
 
                 return {
                     aplctNo: node.data.aplctNo,
@@ -160,18 +192,26 @@ const Applicant = () => {
         } else {
             // 선택된 행이 없거나 1개만 선택된 경우 (단일 처리)
             const currentStts = p.data.aplctSttsCd;
-            if (['SUBMIT', 'WINNER', 'SUPPLEMENT'].includes(currentStts)) {
-                const nextStts = currentStts === 'SUBMIT'
-                    ? (isApproval ? 'WINNER' : 'LOSER')
-                    : (isApproval ? 'QUALIFIED' : 'LOSER');
-
+            if (['SUBMIT', 'WINNER', 'SUPPLEMENT', 'INSPECTION'].includes(currentStts)) {
+                let nextStts;
+                if (currentStts === 'SUBMIT') {
+                    nextStts = isApproval ? 'WINNER' : 'LOSER';
+                } else if (currentStts === 'WINNER' && !isApproval) {   
+                    nextStts = 'LOSER';
+                } else if (currentStts === 'WINNER' && isApproval) {    // 위 조건식에서 거르지만 방어코드
+                    return false;
+                } else if (currentStts === 'SUPPLEMENT') {
+                    nextStts = isApproval ? 'INSPECTION' : 'LOSER';
+                } else if (currentStts === 'INSPECTION') {
+                    nextStts = isApproval ? 'QUALIFIED' : 'LOSER';
+                }
                 aplctMapList.push({
                     aplctNo: p.data.aplctNo,
                     aplctSttsCd: nextStts
                 });
                 confirmMsg = `신청번호 ${p.data.aplctNo} 항목을 ${actionNm}하시겠습니까?`;
             } else {
-                alert(`${actionNm} 가능한 상태가 아닙니다.`);
+                alert(`${actionNm}요청 처리를 가능한 상태가 아닙니다.`);
                 return;
             }
         }
@@ -195,7 +235,7 @@ const Applicant = () => {
 
         if (selectedNodes && selectedNodes.length > 1 && isCurrentNodeSelected) {
             // 상태 변경 버튼이 활성화된한 아이들만 필터
-            const validNodes = selectedNodes.filter(node => ['WINNER', 'SUPPLEMENT'].includes(node.data.aplctSttsCd));
+            const validNodes = selectedNodes.filter(node => ['SUPPLEMENT', 'INSPECTION'].includes(node.data.aplctSttsCd));
 
             aplctMapList = validNodes.map(node => {
                 const currentStts = node.data.aplctSttsCd;
@@ -216,7 +256,7 @@ const Applicant = () => {
         } else {
             // 선택된 행이 없거나 1개만 선택된 경우 (단일 처리)
             const currentStts = p.data.aplctSttsCd;
-            if (['SUBMIT', 'WINNER', 'SUPPLEMENT'].includes(currentStts)) {
+            if (['SUPPLEMENT', 'INSPECTION'].includes(currentStts)) {
                 const nextStts = 'SUPPLEMENT';
 
                 aplctMapList.push({
@@ -234,7 +274,7 @@ const Applicant = () => {
 
         updSttsRequest(aplctMapList, ag);
     }
-    
+
     // 백엔드 업데이트 요청
     const updSttsRequest = async (aplctMapList, agApi) => {
         if (!aplctMapList || aplctMapList.length === 0) return;
@@ -245,7 +285,7 @@ const Applicant = () => {
             });
 
             if (response.status === 200) {
-                alert(`${aplctMapList.length}건의 처리가 완료되었습니다.`);
+                alert(`${aplctMapList.length}건의 요청 처리가 완료되었습니다.`);
 
                 const updateMap = new Map(aplctMapList.map(obj => [obj.aplctNo, obj.aplctSttsCd]));
 
@@ -261,7 +301,7 @@ const Applicant = () => {
                     agApi.deselectAll();
                 }
             }
-        }catch(error){
+        } catch (error) {
             console.log(error);
             alert("처리 중 오류가 발생했습니다.");
         }

@@ -32,10 +32,10 @@ const MainLayout = ({ children }) => {
         toggleSidebar={() => setIsCollapsed(!isCollapsed)}
         admInfo={admInfo} />
       <div className="main-wrap" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Header
+        {/* <Header
           parent={pageInfo.parent}
           current={pageInfo.current}
-          admInfo={admInfo} />
+          admInfo={admInfo} /> */}
         <main className="main-content" style={{ flex: 1, padding: '28px' }}>
           <Outlet context={{ admInfo, setPageInfo }} />
         </main>
