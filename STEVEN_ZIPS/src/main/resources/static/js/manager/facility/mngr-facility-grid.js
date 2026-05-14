@@ -93,18 +93,16 @@ var FacilityGrid = (function () {
             WTR: "급수시설",
             ELC: "전기시설",
             GAS: "가스시설",
-            PLAY: "놀이터",
             SEC: "보안시설",
             ETC: "기타시설",
-            PARK: "주차장",
-            FIRE: "소방시설",
-            COMM: "커뮤니티",
-            GYM: "헬스장",
-            STUDY: "독서실",
             MEET: "회의실",
-            GUEST: "게스트룸",
-            SENIOR: "경로당",
-            PUB_ETC: "기타 편의시설"
+            PARK: "입주민주차장",
+            PLAY: "놀이시설",
+            COMM: "커뮤니티시설",
+            FIRE: "소방시설",
+            GYM: "피트니스센터",
+            STUDY: "독서실",
+            PARKING: "방문차량주차구역"
         };
 
         /* DB에서 조회된 시설유형명 우선 사용 */
@@ -128,6 +126,20 @@ var FacilityGrid = (function () {
         var typeText = getFacilityTypeText(row);
 
         return badge("badge-blue", typeText);
+    }
+
+    function publicOperationRenderer(params) {
+        var row = params.data || {};
+        var isPublicType = row.facilityKind === "PUBLIC";
+        var isRegistered = row.publicOperRegisteredYn === "Y" || !!row.cmnFacilityNo;
+
+        if (!isPublicType) {
+            return '<span class="td-empty">-</span>';
+        }
+
+        return isRegistered
+            ? badge("badge-teal", "운영등록")
+            : badge("badge-gray", "운영미등록");
     }
 
     /**
@@ -288,6 +300,14 @@ var FacilityGrid = (function () {
                 cellRenderer: facilityTypeRenderer
             },
             {
+                headerName: "운영관리",
+                field: "publicOperRegisteredYn",
+                width: 105,
+                minWidth: 85,
+                cellClass: "cell-center",
+                cellRenderer: publicOperationRenderer
+            },
+            {
                 headerName: "활성여부",
                 field: "useYn",
                 width: 95,
@@ -443,6 +463,7 @@ var FacilityGrid = (function () {
                 "facilityNo",
                 "facilityNm",
                 "facilityTyCd",
+                "publicOperRegisteredYn",
                 "useYn",
                 "dongNo",
                 "locCn",

@@ -14,15 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -165,7 +157,9 @@ public class FacilityController {
             @RequestParam(required = false, defaultValue = "") String keyword,
             @RequestParam(required = false, defaultValue = "") String facilityTyCd,
             @RequestParam(required = false, defaultValue = "") String useYn,
-            @RequestParam(required = false, defaultValue = "") String dongNo
+            @RequestParam(required = false, defaultValue = "") String dongNo,
+            @RequestParam(required = false, defaultValue = "") String instlStartDt,
+            @RequestParam(required = false, defaultValue = "") String instlEndDt
     ) {
         /* JSON 응답 Map */
         Map<String, Object> result = new HashMap<>();
@@ -179,6 +173,8 @@ public class FacilityController {
             paramMap.put("facilityTyCd", facilityTyCd);
             paramMap.put("useYn", useYn);
             paramMap.put("dongNo", dongNo);
+            paramMap.put("instlStartDt", instlStartDt);
+            paramMap.put("instlEndDt", instlEndDt);
 
             /* 시설 목록 조회 */
             List<FacilityDTO> list = facilityService.selectFacilityViewList(paramMap);
@@ -212,7 +208,9 @@ public class FacilityController {
             @RequestParam(required = false, defaultValue = "") String keyword,
             @RequestParam(required = false, defaultValue = "") String facilityTyCd,
             @RequestParam(required = false, defaultValue = "") String useYn,
-            @RequestParam(required = false, defaultValue = "") String dongNo
+            @RequestParam(required = false, defaultValue = "") String dongNo,
+            @RequestParam(required = false, defaultValue = "") String instlStartDt,
+            @RequestParam(required = false, defaultValue = "") String instlEndDt
     ) {
         /* JSON 응답 Map */
         Map<String, Object> result = new HashMap<>();
@@ -226,6 +224,8 @@ public class FacilityController {
             paramMap.put("facilityTyCd", facilityTyCd);
             paramMap.put("useYn", useYn);
             paramMap.put("dongNo", dongNo);
+            paramMap.put("instlStartDt", instlStartDt);
+            paramMap.put("instlEndDt", instlEndDt);
 
             /* 시설 목록 건수 조회 */
             int count = facilityService.selectFacilityViewCount(paramMap);

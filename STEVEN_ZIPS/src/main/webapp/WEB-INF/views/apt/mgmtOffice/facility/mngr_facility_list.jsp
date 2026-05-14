@@ -67,7 +67,7 @@
         /* 검색 */
         #facilityPage .facility-filter-panel { overflow:visible; }
         #facilityPage .facility-filter-panel .panel-body { overflow:visible; }
-        #facilityPage .facility-filter-grid { display:grid; grid-template-columns:1fr 1fr 1fr minmax(280px,1.4fr) auto; gap:10px; align-items:end; }
+        #facilityPage .facility-filter-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr minmax(280px,1.4fr) auto; gap:10px; align-items:end; }
         #facilityPage .facility-search-field { position:relative; min-width:0; z-index:20; }
         #facilityPage .search-wrap { position:relative; width:100%; }
         #facilityPage .search-wrap .material-symbols-rounded { position:absolute; left:9px; top:50%; transform:translateY(-50%); font-size:15px; color:#9caa9e; pointer-events:none; }
@@ -219,6 +219,10 @@
                                     <option value="_COMMON_">공용 위치</option>
                                 </select>
                             </div>
+                            <div class="form-field">
+                                <label class="field-label">설치일자</label>
+                                <input type="date" class="form-input" id="filterInstlDt" name="instlDt">
+                            </div>
                             <div class="form-field facility-search-field">
                                 <label class="field-label">시설 검색</label>
                                 <div class="search-wrap">
@@ -369,7 +373,7 @@
          * - 편의시설로 취급할 시설유형 코드 목록
          * - 전체시설 탭에서는 이 코드들을 각각 보여주지 않고 “편의시설” 옵션 하나로 합친다.
          */
-        var PUBLIC_TYPE_CODES = ["PLAY", "GYM", "STUDY", "MEET", "GUEST", "SENIOR", "PUB_ETC"];
+        var PUBLIC_TYPE_CODES = ["MEET", "PARK", "PLAY", "COMM", "GYM", "STUDY", "PARKING"];
 
         /* ============================================================
            2. 공통 함수
@@ -459,7 +463,14 @@
                 headers: getCsrfHeaders()
             });
 
-            var data = await response.json();
+            var text = await response.text();
+            var data = {};
+
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch (e) {
+                throw new Error("서버 응답을 JSON으로 해석할 수 없습니다. 관리자에게 서버 로그 확인을 요청하세요.");
+            }
 
             if (!response.ok || data.success === false) {
                 throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
@@ -539,6 +550,7 @@
             if (el("filterDong").value) {
                 params.append("dongNo", el("filterDong").value);
             }
+            appendInstallDateParams(params);
             if (el("filterKeyword").value.trim()) {
                 params.append("keyword", el("filterKeyword").value.trim());
             }
@@ -546,11 +558,26 @@
             return params;
         }
 
+        /**
+         * 설치일자 조건 추가
+         * - 화면에서는 날짜 하나만 선택한다.
+         * - 서버 검색 조건은 기존 범위 파라미터를 재사용한다.
+         */
+        function appendInstallDateParams(params) {
+            var instlDt = el("filterInstlDt").value;
+
+            if (instlDt) {
+                params.append("instlStartDt", instlDt);
+                params.append("instlEndDt", instlDt);
+            }
+        }
+
         /** 검색 조건 초기화 후 목록 재조회 */
         function resetSearch() {
             el("filterFacTy").value = "";
             el("filterUseYn").value = "";
             el("filterDong").value = "";
+            el("filterInstlDt").value = "";
             el("filterKeyword").value = "";
 
             closeSuggestList();
@@ -568,6 +595,7 @@
             var typeSelect = el("filterFacTy");
             var useYnSelect = el("filterUseYn");
             var dongSelect = el("filterDong");
+            var instlDt = el("filterInstlDt").value;
             var keyword = el("filterKeyword").value.trim();
 
             labels.push("시설종류: " + (currentTab === "PUBLIC" ? "편의시설" : "전체시설"));
@@ -580,6 +608,9 @@
             }
             if (dongSelect.value) {
                 labels.push("동: " + dongSelect.options[dongSelect.selectedIndex].text);
+            }
+            if (instlDt) {
+                labels.push("설치일자: " + instlDt);
             }
             if (keyword) {
                 labels.push("검색어: " + keyword);
@@ -1056,7 +1087,11 @@
                 return;
             }
 
-            if (event.target.id === "filterUseYn" || event.target.id === "filterDong") {
+            if (
+                event.target.id === "filterUseYn" ||
+                event.target.id === "filterDong" ||
+                event.target.id === "filterInstlDt"
+            ) {
                 closeSuggestList();
                 loadFacilityList();
             }

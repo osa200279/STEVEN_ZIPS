@@ -148,6 +148,48 @@
             #facilityPage .detail-info-row  { grid-template-columns: 1fr; }
             #facilityPage .file-preview-list { grid-template-columns: 1fr; }
         }
+
+
+        /* 이미지 클릭 확대 공통 */
+        #facilityPage .js-image-preview {
+            cursor: zoom-in;
+        }
+
+        .image-preview-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(0, 0, 0, .76);
+        }
+
+        .image-preview-modal.is-open {
+            display: flex;
+        }
+
+        .image-preview-modal img {
+            max-width: 92vw;
+            max-height: 88vh;
+            object-fit: contain;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .image-preview-close {
+            position: absolute;
+            top: 22px;
+            right: 28px;
+            border: 0;
+            background: transparent;
+            color: #fff;
+            font-size: 38px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
     </style>
 
     <script>
@@ -266,7 +308,8 @@
                                         <div>
                                             편의시설의 예약 가능 여부, 운영시간, 이용 안내 등 운영 정보는
                                             <strong>공용시설 관리 화면</strong>에서 별도로 관리합니다.<br>
-                                            <a href="${pageContext.request.contextPath}/manager/publicFacilityList/${mgmtOfcNo}">
+                                            <a href="${pageContext.request.contextPath}/manager/publicFacility/list/${mgmtOfcNo}"
+                                               id="publicFacilityNoticeLink">
                                                 운영관리 바로가기 →
                                             </a>
                                         </div>
@@ -289,32 +332,103 @@
         </main>
     </div>
 </div>
-
+<!-- 이미지 확대 모달 -->
+<div id="imagePreviewModal" class="image-preview-modal">
+    <button type="button" id="imagePreviewCloseBtn" class="image-preview-close" aria-label="이미지 확대 닫기">×</button>
+    <img id="imagePreviewLargeImg" src="" alt="확대 이미지">
+</div>
 <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
 <script>
+    /* ============================================================
+       시설 상세 화면 스크립트
+
+       역할
+       - 시설 상세 API 조회
+       - 시설 기본정보/위치정보/사진/연결정보 렌더링
+       - 시설 사진 클릭 확대 모달 처리
+       - 목록/수정 화면 이동 처리
+
+       이미지 확대 방식
+       - 사진 HTML 생성 시 onclick 속성 직접 부여
+       - window.openFacilityImagePreview(this.src) 직접 호출
+       - 닫기 버튼/검은 배경/ESC 키로 모달 닫기
+    ============================================================ */
     (function () {
+        /* ============================================================
+           1. 기본 설정값
+        ============================================================ */
+
+        /* JSP에서 내려준 화면 설정 객체 */
         var config = window.facilityPageConfig || {};
+
+        /* 프로젝트 context path 값 */
         var contextPath = config.contextPath || "";
+
+        /* 현재 관리사무소 번호 값 */
         var mgmtOfcNo = config.mgmtOfcNo || "";
+
+        /* 현재 시설 번호 값 */
         var facilityNo = config.facilityNo || "";
+
+        /* 관리자 권한 여부 값 */
         var isAdmin = config.isAdmin === true || config.isAdmin === "true";
 
+        /* ============================================================
+           2. 공통 유틸 함수
+        ============================================================ */
+
+        /**
+         * 시설 API 주소 생성
+         * - /manager/facility 하위 API 호출 주소 생성
+         */
         function apiUrl(path) {
+            /* API 기본 주소와 세부 경로 결합값 */
             return contextPath + "/manager/facility/" + path;
         }
 
+        /**
+         * 목록 화면 주소 생성
+         * - 상세 화면의 목록 버튼 이동 주소 생성
+         */
         function listUrl() {
+            /* 관리사무소 번호 포함 목록 주소값 */
             return contextPath + "/manager/facility/page/" + encodeURIComponent(mgmtOfcNo);
         }
 
+        /**
+         * 알림 메시지 출력
+         * - 공통 showAlert 함수가 있으면 공통 알림 사용
+         * - 없으면 기본 alert 사용
+         */
         function alertMessage(message) {
-            if (typeof showAlert === "function") { showAlert(message); return; }
+            /* 공통 알림 함수 존재 여부 */
+            var hasCommonAlert = typeof showAlert === "function";
+
+            /* 공통 알림 출력 처리 */
+            if (hasCommonAlert) {
+                showAlert(message);
+                return;
+            }
+
+            /* 기본 알림 출력 처리 */
             alert(message);
         }
 
+        /**
+         * HTML 특수문자 변환
+         * - 문자열 기반 HTML 생성 시 XSS 방지 처리
+         */
         function escapeHtml(value) {
-            if (value == null) return "";
-            return String(value)
+            /* 빈 값 방어 처리 */
+            if (value == null) {
+                return "";
+            }
+
+            /* 문자열 변환값 */
+            var text = String(value);
+
+            /* HTML 특수문자 치환값 */
+            return text
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
@@ -322,193 +436,655 @@
                 .replace(/'/g, "&#39;");
         }
 
+        /**
+         * 날짜 표시값 변환
+         * - yyyy-MM-dd 형태의 앞 10자리만 표시
+         */
         function formatDate(value) {
-            return value ? String(value).slice(0, 10) : "";
+            /* 날짜 값 없음 처리 */
+            if (!value) {
+                return "";
+            }
+
+            /* 날짜 문자열 앞 10자리 반환값 */
+            return String(value).slice(0, 10);
         }
 
+        /**
+         * 동 번호 표시값 변환
+         * - 내부 키 값에 언더바가 있으면 뒤쪽 실제 동 번호만 표시
+         * - 값이 없으면 공용 위치로 표시
+         */
         function formatDongNo(value) {
-            if (value == null || value === "") return "공용";
+            /* 공용 위치 표시 처리 */
+            if (value == null || value === "") {
+                return "공용";
+            }
+
+            /* 동 번호 문자열값 */
             var text = String(value);
+
+            /* 마지막 언더바 위치값 */
             var idx = text.lastIndexOf("_");
+
+            /* 표시용 동 번호값 */
             return idx > -1 ? text.slice(idx + 1) : text;
         }
 
+        /**
+         * 배지 HTML 생성
+         * - 시설유형/활성여부 표시용 span 생성
+         */
         function badge(cls, text) {
-            return '<span class="badge ' + cls + '">' + escapeHtml(text) + '</span>';
+            /* 배지 클래스명 */
+            var badgeClass = cls;
+
+            /* 배지 표시 문구 */
+            var badgeText = escapeHtml(text);
+
+            /* 배지 HTML 반환값 */
+            return '<span class="badge ' + badgeClass + '">' + badgeText + '</span>';
         }
 
+        /**
+         * 활성여부 배지 HTML 생성
+         * - N이면 비활성 배지
+         * - 그 외에는 활성 배지
+         */
         function useYnBadge(useYn) {
-            return useYn === "N" ? badge("badge-use-n", "비활성") : badge("badge-use-y", "활성");
+            /* 비활성 여부값 */
+            var isDisabled = useYn === "N";
+
+            /* 활성여부 배지 반환값 */
+            return isDisabled ? badge("badge-use-n", "비활성") : badge("badge-use-y", "활성");
         }
 
+        /**
+         * 상세 테이블 행 HTML 생성
+         * - 라벨과 값을 th/td 한 줄로 생성
+         */
         function tableRow(label, value) {
-            var safeValue = value == null || value === "" ? '<span class="detail-empty">-</span>' : value;
+            /* 빈 값 표시 HTML */
+            var emptyHtml = '<span class="detail-empty">-</span>';
+
+            /* 실제 표시값 */
+            var safeValue = value == null || value === "" ? emptyHtml : value;
+
+            /* 테이블 행 HTML 반환값 */
             return '<tr><th>' + escapeHtml(label) + '</th><td>' + safeValue + '</td></tr>';
         }
 
+        /**
+         * 상세 응답에서 시설 객체 추출
+         * - detail, facility, result 자체 순서로 사용
+         */
         function getResultFacility(result) {
-            return result.detail || result.facility || result || {};
+            /* 응답 기본값 */
+            var data = result || {};
+
+            /* 시설 상세 객체 반환값 */
+            return data.detail || data.facility || data;
         }
 
+        /**
+         * 첨부파일 이미지 주소 추출
+         * - viewUrl/fileUrl/googleId 순서로 표시 주소 생성
+         */
         function getFileImageUrl(file) {
-            if (file.viewUrl) return file.viewUrl;
-            if (file.fileUrl) return file.fileUrl;
-            if (file.googleId) return contextPath + "/file/display/" + encodeURIComponent(file.googleId);
+            /* 파일 객체 기본값 */
+            var targetFile = file || {};
+
+            /* viewUrl 우선 사용 처리 */
+            if (targetFile.viewUrl) {
+                return targetFile.viewUrl;
+            }
+
+            /* fileUrl 보조 사용 처리 */
+            if (targetFile.fileUrl) {
+                return targetFile.fileUrl;
+            }
+
+            /* googleId 기반 표시 URL 생성 처리 */
+            if (targetFile.googleId) {
+                return contextPath + "/file/display/" + encodeURIComponent(targetFile.googleId);
+            }
+
+            /* 이미지 주소 없음 반환값 */
             return "";
         }
 
+        /**
+         * CSRF 헤더 생성
+         * - Spring Security csrf meta 태그 기준 헤더 구성
+         */
         function getCsrfHeaders() {
+            /* CSRF 토큰 meta 요소 */
             var tokenMeta = document.querySelector('meta[name="_csrf"]');
+
+            /* CSRF 헤더명 meta 요소 */
             var headerMeta = document.querySelector('meta[name="_csrf_header"]');
+
+            /* 요청 헤더 객체 */
             var headers = {};
-            if (tokenMeta && headerMeta) { headers[headerMeta.content] = tokenMeta.content; }
+
+            /* CSRF meta 존재 시 헤더 추가 처리 */
+            if (tokenMeta && headerMeta) {
+                headers[headerMeta.content] = tokenMeta.content;
+            }
+
+            /* 헤더 객체 반환값 */
             return headers;
         }
 
+        /**
+         * GET JSON 요청 처리
+         * - 시설 상세 API 호출 처리
+         * - 실패 응답 메시지 예외 처리
+         */
         async function getJson(url) {
-            var response = await fetch(url, { method: "GET", headers: getCsrfHeaders() });
+            /* 서버 응답 객체 */
+            var response = await fetch(url, {
+                method: "GET",
+                headers: getCsrfHeaders()
+            });
+
+            /* JSON 응답 데이터 */
             var data = await response.json();
-            if (!response.ok || data.success === false) {
+
+            /* 실패 응답 여부 */
+            var isFail = !response.ok || data.success === false;
+
+            /* 실패 응답 예외 처리 */
+            if (isFail) {
                 throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
             }
+
+            /* 성공 데이터 반환값 */
             return data;
         }
 
+        /* ============================================================
+           3. 이미지 확대 모달 함수
+        ============================================================ */
+
+        /**
+         * 이미지 확대 모달 열기 처리
+         * - 사진 img onclick에서 직접 호출되는 전역 함수
+         * - 전달받은 이미지 주소를 큰 이미지 영역에 반영
+         */
+        window.openFacilityImagePreview = function (imgSrc) {
+            /* 이미지 확대 모달 요소 */
+            var modal = document.getElementById("imagePreviewModal");
+
+            /* 확대 이미지 요소 */
+            var largeImg = document.getElementById("imagePreviewLargeImg");
+
+            /* 필수 요소 존재 여부 */
+            var hasRequiredElement = modal && largeImg && imgSrc;
+
+            /* 필수 요소 없음 방어 처리 */
+            if (!hasRequiredElement) {
+                return;
+            }
+
+            /* 확대 이미지 주소 반영 처리 */
+            largeImg.src = imgSrc;
+
+            /* 모달 표시 클래스 추가 처리 */
+            modal.classList.add("is-open");
+        };
+
+        /**
+         * 이미지 확대 모달 닫기 처리
+         * - 닫기 버튼/배경 클릭/ESC 입력에서 공통 사용
+         * - 큰 이미지 주소 초기화 처리
+         */
+        window.closeFacilityImagePreview = function () {
+            /* 이미지 확대 모달 요소 */
+            var modal = document.getElementById("imagePreviewModal");
+
+            /* 확대 이미지 요소 */
+            var largeImg = document.getElementById("imagePreviewLargeImg");
+
+            /* 필수 요소 존재 여부 */
+            var hasRequiredElement = modal && largeImg;
+
+            /* 필수 요소 없음 방어 처리 */
+            if (!hasRequiredElement) {
+                return;
+            }
+
+            /* 모달 표시 클래스 제거 처리 */
+            modal.classList.remove("is-open");
+
+            /* 확대 이미지 주소 초기화 처리 */
+            largeImg.src = "";
+        };
+
+        /**
+         * 이미지 확대 모달 닫기 이벤트 연결 처리
+         * - 닫기 버튼 클릭 처리
+         * - 검은 배경 클릭 처리
+         * - ESC 키 입력 처리
+         */
+        function bindImagePreviewModal() {
+            /* 이미지 확대 모달 요소 */
+            var modal = document.getElementById("imagePreviewModal");
+
+            /* 닫기 버튼 요소 */
+            var closeBtn = document.getElementById("imagePreviewCloseBtn");
+
+            /* 필수 요소 존재 여부 */
+            var hasRequiredElement = modal && closeBtn;
+
+            /* 필수 요소 없음 방어 처리 */
+            if (!hasRequiredElement) {
+                return;
+            }
+
+            /* 닫기 버튼 클릭 이벤트 연결 처리 */
+            closeBtn.addEventListener("click", function () {
+                window.closeFacilityImagePreview();
+            });
+
+            /* 검은 배경 클릭 이벤트 연결 처리 */
+            modal.addEventListener("click", function (event) {
+                /* 배경 클릭 여부 */
+                var isBackdropClick = event.target === modal;
+
+                /* 이미지 클릭 시 닫힘 방지 처리 */
+                if (!isBackdropClick) {
+                    return;
+                }
+
+                /* 모달 닫기 처리 */
+                window.closeFacilityImagePreview();
+            });
+
+            /* ESC 키 입력 이벤트 연결 처리 */
+            document.addEventListener("keydown", function (event) {
+                /* ESC 키 여부 */
+                var isEscapeKey = event.key === "Escape";
+
+                /* ESC 외 키 입력 방어 처리 */
+                if (!isEscapeKey) {
+                    return;
+                }
+
+                /* 모달 닫기 처리 */
+                window.closeFacilityImagePreview();
+            });
+        }
+
+        /* ============================================================
+           4. 상세 화면 렌더링 함수
+        ============================================================ */
+
+        /**
+         * 시설 사진 렌더링 처리
+         * - 등록된 시설 사진 목록 출력
+         * - 이미지 태그에 onclick 직접 부여
+         */
         function renderDetailFiles(files) {
+            /* 시설 사진 목록 영역 */
             var area = document.getElementById("detailFileList");
+
+            /* 사진 목록 없음 처리 */
             if (!files || files.length === 0) {
                 area.innerHTML = '<div class="file-preview-empty">등록된 사진이 없습니다.</div>';
                 return;
             }
+
+            /* 사진 목록 HTML 생성 처리 */
             area.innerHTML = files.map(function (file) {
+                /* 이미지 표시 주소 */
                 var imgUrl = getFileImageUrl(file);
+
+                /* 이미지 파일명 */
                 var name = file.fileOgName || file.fileSaveUuid || "시설사진";
+
+                /* 이미지 URL HTML 변환값 */
+                var safeImgUrl = escapeHtml(imgUrl);
+
+                /* 이미지 파일명 HTML 변환값 */
+                var safeName = escapeHtml(name);
+
+                /* 이미지 태그 HTML */
+                var imgHtml = imgUrl
+                    ? '<img class="js-image-preview" src="' + safeImgUrl + '" alt="' + safeName + '" onclick="window.openFacilityImagePreview(this.src)">'
+                    : '';
+
+                /* 이미지 카드 HTML 반환값 */
                 return '<div class="file-preview-item">'
-                    + (imgUrl ? '<img src="' + escapeHtml(imgUrl) + '" alt="' + escapeHtml(name) + '">' : '')
-                    + '<div class="file-preview-name">' + escapeHtml(name) + '</div>'
+                    + imgHtml
+                    + '<div class="file-preview-name">' + safeName + '</div>'
                     + '</div>';
             }).join("");
         }
 
+        /**
+         * 최근 계약 정보 렌더링 처리
+         * - 계약 정보가 없으면 빈 메시지 출력
+         * - 계약번호/계약명/종료일 표시
+         */
         function renderLatestContract(contract) {
+            /* 최근 계약 영역 */
             var area = document.getElementById("detailContBody");
+
+            /* 계약 정보 없음 처리 */
             if (!contract) {
                 area.innerHTML = '<div class="ds-empty">등록된 계약이 없습니다.</div>';
                 return;
             }
+
+            /* 계약번호 표시값 */
+            var contNo = escapeHtml(contract.contNo || "-");
+
+            /* 계약명 표시값 */
+            var contNm = escapeHtml(contract.contNm || "-");
+
+            /* 계약 종료일 표시값 */
+            var contEndDt = escapeHtml(formatDate(contract.contEndDt) || "-");
+
+            /* 최근 계약 HTML 출력 처리 */
             area.innerHTML = '<div class="ds-row">'
-                + '<span class="ds-no">' + escapeHtml(contract.contNo || "-") + '</span>'
-                + '<span class="ds-nm">' + escapeHtml(contract.contNm || "-") + '</span>'
-                + '<span class="ds-dt">' + escapeHtml(formatDate(contract.contEndDt) || "-") + '</span>'
+                + '<span class="ds-no">' + contNo + '</span>'
+                + '<span class="ds-nm">' + contNm + '</span>'
+                + '<span class="ds-dt">' + contEndDt + '</span>'
                 + '</div>';
         }
 
+        /**
+         * 최근 점검이력 렌더링 처리
+         * - 최대 3건까지 표시
+         * - 점검이력이 없으면 빈 메시지 출력
+         */
         function renderRecentChecks(checks) {
+            /* 최근 점검 영역 */
             var area = document.getElementById("detailChkBody");
+
+            /* 점검 목록 없음 처리 */
             if (!checks || checks.length === 0) {
                 area.innerHTML = '<div class="ds-empty">점검이력이 없습니다.</div>';
                 return;
             }
+
+            /* 최근 점검 3건 HTML 출력 처리 */
             area.innerHTML = checks.slice(0, 3).map(function (check) {
+                /* 점검번호 표시값 */
+                var checkNo = escapeHtml(check.facChkHstryNo || "-");
+
+                /* 점검내용 표시값 */
+                var checkCn = escapeHtml(check.chkCn || "-");
+
+                /* 점검일자 표시값 */
+                var checkDt = escapeHtml(formatDate(check.chkDt) || "-");
+
+                /* 점검 행 HTML 반환값 */
                 return '<div class="ds-row">'
-                    + '<span class="ds-no">' + escapeHtml(check.facChkHstryNo || "-") + '</span>'
-                    + '<span class="ds-nm">' + escapeHtml(check.chkCn || "-") + '</span>'
-                    + '<span class="ds-dt">' + escapeHtml(formatDate(check.chkDt) || "-") + '</span>'
+                    + '<span class="ds-no">' + checkNo + '</span>'
+                    + '<span class="ds-nm">' + checkCn + '</span>'
+                    + '<span class="ds-dt">' + checkDt + '</span>'
                     + '</div>';
             }).join("");
         }
 
+        /**
+         * 검침 연결 정보 렌더링 처리
+         * - 검침 연결 정보가 없으면 빈 메시지 출력
+         * - 작업번호/업체명 표시
+         */
         function renderMeterInfo(meter) {
+            /* 검침 연결 영역 */
             var area = document.getElementById("detailMeterBody");
+
+            /* 검침 정보 없음 처리 */
             if (!meter) {
                 area.innerHTML = '<div class="ds-empty">검침 연결 정보가 없습니다.</div>';
                 return;
             }
+
+            /* 검침번호 표시값 */
+            var meterNo = escapeHtml(meter.meterWrkNo || meter.meterHstryNo || "-");
+
+            /* 검침 업체명 표시값 */
+            var meterName = escapeHtml(meter.partnerNm || meter.providerNm || "검침 연결");
+
+            /* 검침 연결 HTML 출력 처리 */
             area.innerHTML = '<div class="ds-row">'
-                + '<span class="ds-no">' + escapeHtml(meter.meterWrkNo || meter.meterHstryNo || "-") + '</span>'
-                + '<span class="ds-nm">' + escapeHtml(meter.partnerNm || meter.providerNm || "검침 연결") + '</span>'
+                + '<span class="ds-no">' + meterNo + '</span>'
+                + '<span class="ds-nm">' + meterName + '</span>'
                 + '<span class="ds-dt">-</span>'
                 + '</div>';
         }
 
+        /**
+         * 시설 기본정보 렌더링 처리
+         * - 시설번호/시설명/시설유형/활성여부 표시
+         */
         function renderFacilityInfo(facility) {
-            document.getElementById("detailFacilityInfoBody").innerHTML = ""
+            /* 시설 정보 테이블 본문 영역 */
+            var area = document.getElementById("detailFacilityInfoBody");
+
+            /* 시설유형 표시값 */
+            var facilityTypeText = facility.facilityTyNm || facility.facilityTyCd || "-";
+
+            /* 시설 정보 HTML 출력 처리 */
+            area.innerHTML = ""
                 + tableRow("시설번호", escapeHtml(facility.facilityNo))
                 + tableRow("시설명", escapeHtml(facility.facilityNm))
-                + tableRow("시설유형", badge("badge-blue", facility.facilityTyNm || facility.facilityTyCd || "-"))
+                + tableRow("시설유형", badge("badge-blue", facilityTypeText))
                 + tableRow("활성여부", useYnBadge(facility.useYn));
         }
 
+        /**
+         * 위치 정보 렌더링 처리
+         * - 위치구분/동/상세위치/설치일자 표시
+         */
         function renderLocationInfo(facility) {
-            document.getElementById("detailLocationInfoBody").innerHTML = ""
-                + tableRow("위치구분", escapeHtml(facility.dongNo ? "동 위치" : "공용 위치"))
-                + tableRow("동", escapeHtml(formatDongNo(facility.dongNo)))
-                + tableRow("상세위치", escapeHtml(facility.locCn || "-"))
-                + tableRow("설치일자", escapeHtml(formatDate(facility.instlDt) || "-"));
+            /* 위치 정보 테이블 본문 영역 */
+            var area = document.getElementById("detailLocationInfoBody");
+
+            /* 위치구분 표시값 */
+            var locationTypeText = facility.dongNo ? "동 위치" : "공용 위치";
+
+            /* 동 표시값 */
+            var dongText = formatDongNo(facility.dongNo);
+
+            /* 상세위치 표시값 */
+            var locText = facility.locCn || "-";
+
+            /* 설치일자 표시값 */
+            var installDateText = formatDate(facility.instlDt) || "-";
+
+            /* 위치 정보 HTML 출력 처리 */
+            area.innerHTML = ""
+                + tableRow("위치구분", escapeHtml(locationTypeText))
+                + tableRow("동", escapeHtml(dongText))
+                + tableRow("상세위치", escapeHtml(locText))
+                + tableRow("설치일자", escapeHtml(installDateText));
         }
 
+        /**
+         * 비활성 안내 렌더링 처리
+         * - 시설 useYn이 N일 때만 안내 영역 표시
+         */
         function renderDisabledNotice(facility) {
+            /* 비활성 안내 영역 */
             var section = document.getElementById("detailDisabledSection");
+
+            /* 비활성 안내 내용 영역 */
             var reason = document.getElementById("detailDisabledReason");
-            if (facility.useYn !== "N") {
+
+            /* 활성 상태 여부 */
+            var isActive = facility.useYn !== "N";
+
+            /* 활성 상태 안내 숨김 처리 */
+            if (isActive) {
                 section.style.display = "none";
                 reason.innerHTML = "";
                 return;
             }
+
+            /* 비활성 안내 표시 처리 */
             section.style.display = "flex";
+
+            /* 비활성 안내 문구 출력 처리 */
             reason.innerHTML = "이 시설은 현재 <strong>비활성</strong> 상태입니다. 기존 점검·계약·검침 연결 정보는 유지됩니다.";
         }
 
+        /**
+         * 편의시설 운영관리 안내 렌더링 처리
+         * - 편의시설일 때만 운영관리 안내 표시
+         */
         function renderPublicFacilityNotice(facility) {
+            /* 편의시설 안내 영역 */
             var notice = document.getElementById("publicFacilityNotice");
-            if (!notice) return;
+            var link = document.getElementById("publicFacilityNoticeLink");
 
-            /* 편의시설일 때만 운영관리 안내 표시 */
-            notice.style.display = facility.facilityKind === "PUBLIC" ? "flex" : "none";
+            /* 안내 영역 없음 방어 처리 */
+            if (!notice) {
+                return;
+            }
+
+            /* 편의시설 여부 */
+            var isPublicFacility = facility.facilityKind === "PUBLIC";
+
+            /* 편의시설 안내 표시 처리 */
+            notice.style.display = isPublicFacility ? "flex" : "none";
+
+            if (!isPublicFacility || !link) {
+                return;
+            }
+
+            /*
+             * 편의시설 운영관리 바로가기 상태별 분기
+             * - 운영관리 등록 전: 기존 시설자산 선택 등록 화면으로 이동
+             * - 운영관리 등록 후: 해당 공용시설 운영정보 수정 화면으로 이동
+             */
+            if (facility.publicOperRegisteredYn === "Y" && facility.cmnFacilityNo) {
+                link.href = contextPath + "/manager/publicFacility/update-page/"
+                    + encodeURIComponent(mgmtOfcNo) + "/"
+                    + encodeURIComponent(facility.cmnFacilityNo);
+                link.textContent = "등록된 운영관리 수정하기 →";
+                return;
+            }
+
+            link.href = contextPath + "/manager/publicFacility/register/"
+                + encodeURIComponent(mgmtOfcNo) + "?facilityNo="
+                + encodeURIComponent(facility.facilityNo || "");
+            link.textContent = "운영관리 등록하기 →";
         }
 
+        /**
+         * 수정 버튼 이벤트 연결 처리
+         * - 관리자 권한은 수정 버튼 없음/조회 전용 처리
+         * - 일반 관리자는 수정 화면으로 이동 처리
+         */
         function bindEditButton(facility) {
+            /* 수정 버튼 요소 */
             var editBtn = document.getElementById("detailEditBtnTop");
-            if (!editBtn || isAdmin) return;
 
-            /* 상세 화면 공통 수정 버튼 문구 */
+            /* 수정 버튼 없음 또는 관리자 여부 */
+            var cannotEdit = !editBtn || isAdmin;
+
+            /* 수정 불가 상태 방어 처리 */
+            if (cannotEdit) {
+                return;
+            }
+
+            /* 수정 버튼 문구 지정 처리 */
             editBtn.textContent = "수정";
 
-            /* 시설 수정 화면 이동 */
+            /* 수정 버튼 클릭 이벤트 연결 처리 */
             editBtn.onclick = function () {
-                location.href = contextPath + "/manager/facility/update-page/"
+                /* 수정 화면 이동 주소 */
+                var updateUrl = contextPath + "/manager/facility/update-page/"
                     + encodeURIComponent(mgmtOfcNo) + "/"
                     + encodeURIComponent(facility.facilityNo);
+
+                /* 수정 화면 이동 처리 */
+                location.href = updateUrl;
             };
         }
 
+        /**
+         * 시설 상세 전체 렌더링 처리
+         * - API 응답을 화면 각 영역에 분배 처리
+         */
         function renderDetail(result) {
+            /* 시설 상세 객체 */
             var facility = getResultFacility(result);
+
+            /* 화면 제목 지정 처리 */
             document.getElementById("detailModalTitle").textContent = "시설 상세";
+
+            /* 비활성 안내 렌더링 처리 */
             renderDisabledNotice(facility);
+
+            /* 시설 기본정보 렌더링 처리 */
             renderFacilityInfo(facility);
+
+            /* 위치 정보 렌더링 처리 */
             renderLocationInfo(facility);
+
+            /* 시설 사진 렌더링 처리 */
             renderDetailFiles(result.fileList || result.attachFileList || facility.fileList || []);
+
+            /* 최근 계약 렌더링 처리 */
             renderLatestContract(result.latestContract || null);
+
+            /* 최근 점검이력 렌더링 처리 */
             renderRecentChecks(result.recentCheckList || []);
+
+            /* 검침 연결 렌더링 처리 */
             renderMeterInfo(result.meterInfo || null);
+
+            /* 편의시설 안내 렌더링 처리 */
             renderPublicFacilityNotice(facility);
+
+            /* 수정 버튼 이벤트 연결 처리 */
             bindEditButton(facility);
         }
 
+        /* ============================================================
+           5. 초기 실행
+        ============================================================ */
+
+        /**
+         * DOM 로딩 후 초기화 처리
+         * - 이미지 모달 닫기 이벤트 연결
+         * - 목록 버튼 이벤트 연결
+         * - 시설 상세 API 조회 실행
+         */
         document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("backToListBtnTop").addEventListener("click", function () {
+            /* 이미지 확대 모달 이벤트 연결 처리 */
+            bindImagePreviewModal();
+
+            /* 목록 버튼 요소 */
+            var backBtn = document.getElementById("backToListBtnTop");
+
+            /* 목록 버튼 클릭 이벤트 연결 처리 */
+            backBtn.addEventListener("click", function () {
                 location.href = listUrl();
             });
 
-            getJson(apiUrl("detail/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facilityNo)))
+            /* 상세 조회 API 주소 */
+            var detailApiUrl = apiUrl("detail/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facilityNo));
+
+            /* 상세 조회 실행 및 화면 렌더링 처리 */
+            getJson(detailApiUrl)
                 .then(renderDetail)
                 .catch(function (err) {
+                    /* 오류 로그 출력 처리 */
                     console.error(err);
+
+                    /* 오류 알림 출력 처리 */
                     alertMessage(err.message || "상세 정보를 불러오지 못했습니다.");
                 });
         });
     })();
 </script>
+
 </body>
 </html>

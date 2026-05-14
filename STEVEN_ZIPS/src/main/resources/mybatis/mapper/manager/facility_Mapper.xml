@@ -5,13 +5,13 @@
 
     <!-- [공통] 편의시설 확정 시설유형코드 목록 -->
     <sql id="publicfacilitytypecodes">
+        'MEET',
+        'PARK',
         'PLAY',
+        'COMM',
         'GYM',
         'STUDY',
-        'MEET',
-        'GUEST',
-        'SENIOR',
-        'PUB_ETC'
+        'PARKING'
     </sql>
 
     <!-- [공통] 관리사무소 번호로 단지번호를 찾는 서브쿼리 -->
@@ -39,34 +39,51 @@
         f.file_group_no
     </sql>
 
+    <!-- [공통] 화면 조회용 기본 컬럼 목록 -->
+    <sql id="facilityviewbasecolumns">
+        f.facility_no,
+        f.facility_ty_cd,
+        TO_CHAR(f.instl_dt, 'YYYY-MM-DD') AS instl_dt,
+        f.apt_cmplex_no,
+        f.dong_no,
+        f.loc_cn,
+        f.use_yn,
+        f.file_group_no
+    </sql>
+
     <!-- [공통] 화면 표시용 확장 컬럼 (가공 로직 포함) -->
     <sql id="facilityviewcolumns">
         CASE
-            WHEN pf.cmn_facility_no IS NOT NULL
-            THEN 'PUBLIC'
-            ELSE 'FACILITY'
+        WHEN f.facility_ty_cd IN (<include refid="publicfacilitytypecodes"/>)
+        THEN 'PUBLIC'
+        ELSE 'FACILITY'
         END AS facility_kind,
         CASE
-            WHEN pf.cmn_facility_no IS NOT NULL
-            THEN '편의시설'
-            ELSE '일반시설'
+        WHEN f.facility_ty_cd IN (<include refid="publicfacilitytypecodes"/>)
+        THEN '편의시설'
+        ELSE '일반시설'
         END AS facility_kind_nm,
         NVL(pf.cmn_facility_nm, f.facility_nm) AS facility_nm,
         cc.code_name AS facility_ty_nm,
         CASE
-            WHEN INSTR(f.dong_no, '_') > 0
-            THEN SUBSTR(f.dong_no, INSTR(f.dong_no, '_') + 1)
-            ELSE f.dong_no
+        WHEN INSTR(f.dong_no, '_') > 0
+        THEN SUBSTR(f.dong_no, INSTR(f.dong_no, '_') + 1)
+        ELSE f.dong_no
         END AS display_dong_no,
         CASE
-            WHEN f.use_yn = 'Y' THEN '사용 가능'
-            WHEN f.use_yn = 'N' THEN '사용 불가'
-            ELSE '-'
+        WHEN f.use_yn = 'Y' THEN '사용 가능'
+        WHEN f.use_yn = 'N' THEN '사용 불가'
+        ELSE '-'
         END AS use_yn_nm,
         pf.cmn_facility_no,
         pf.cmn_facility_nm,
         pf.cmn_facility_rsv_yn,
-        pf.cmn_facility_opr_hr
+        pf.cmn_facility_opr_hr,
+        CASE
+        WHEN pf.cmn_facility_no IS NOT NULL
+        THEN 'Y'
+        ELSE 'N'
+        END AS public_oper_registered_yn
     </sql>
 
     <!-- [공통] 시설 조회용 필수 JOIN 문 -->
@@ -85,10 +102,10 @@
         <if test="facilityKind != null and facilityKind != '' and facilityKind != 'ALL'">
             <choose>
                 <when test="facilityKind == 'PUBLIC'">
-                    AND pf.cmn_facility_no IS NOT NULL
+                    AND f.facility_ty_cd IN (<include refid="publicfacilitytypecodes"/>)
                 </when>
                 <when test="facilityKind == 'FACILITY'">
-                    AND pf.cmn_facility_no IS NULL
+                    AND f.facility_ty_cd NOT IN (<include refid="publicfacilitytypecodes"/>)
                 </when>
             </choose>
         </if>
@@ -102,6 +119,12 @@
         </if>
         <if test="facilityTyCd != null and facilityTyCd != ''">
             AND f.facility_ty_cd = #{facilityTyCd}
+        </if>
+        <if test="instlStartDt != null and instlStartDt != ''">
+            AND f.instl_dt &gt;= TO_DATE(#{instlStartDt}, 'YYYY-MM-DD')
+        </if>
+        <if test="instlEndDt != null and instlEndDt != ''">
+            AND f.instl_dt &lt; TO_DATE(#{instlEndDt}, 'YYYY-MM-DD') + 1
         </if>
         <if test="useYn != null and useYn != ''">
             AND f.use_yn = #{useYn}
@@ -187,7 +210,7 @@
     <!-- 시설 화면 목록 조회 (DTO 확장형태) -->
     <select id="selectFacilityViewList" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO">
         SELECT
-        <include refid="facilitybasecolumns"/>,
+        <include refid="facilityviewbasecolumns"/>,
         <include refid="facilityviewcolumns"/>
         FROM
         facility f
@@ -209,9 +232,44 @@
     </select>
 
     <!-- 시설 화면 상세 조회 -->
+    <!-- 시설유형 필터 목록 조회 -->
+    <select id="selectFacilityTypeList" parameterType="map" resultType="map">
+        SELECT DISTINCT
+        f.facility_ty_cd AS code,
+        cc.code_name AS code_nm,
+        CASE
+        WHEN f.facility_ty_cd IN (<include refid="publicfacilitytypecodes"/>)
+        THEN 'PUBLIC'
+        ELSE 'FACILITY'
+        END AS facility_kind
+        FROM
+        facility f
+        LEFT OUTER JOIN public_facility pf
+        ON pf.facility_no = f.facility_no
+        LEFT OUTER JOIN common_code cc
+        ON cc.group_code_no = 'FACILITY_TY'
+        AND cc.code_no_cd = f.facility_ty_cd
+        WHERE
+        f.apt_cmplex_no = <include refid="subqueryaptcmplexno"/>
+        <if test="facilityKind != null and facilityKind != '' and facilityKind != 'ALL'">
+            <choose>
+                <when test="facilityKind == 'PUBLIC'">
+                    AND f.facility_ty_cd IN (<include refid="publicfacilitytypecodes"/>)
+                </when>
+                <when test="facilityKind == 'FACILITY'">
+                    AND f.facility_ty_cd NOT IN (<include refid="publicfacilitytypecodes"/>)
+                </when>
+            </choose>
+        </if>
+        ORDER BY
+        facility_kind,
+        code_nm,
+        code
+    </select>
+
     <select id="selectFacilityViewDetail" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO">
         SELECT
-        <include refid="facilitybasecolumns"/>,
+        <include refid="facilityviewbasecolumns"/>,
         <include refid="facilityviewcolumns"/>
         FROM
         facility f

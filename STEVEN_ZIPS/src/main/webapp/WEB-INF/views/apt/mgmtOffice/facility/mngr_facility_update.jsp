@@ -69,6 +69,21 @@
         #facilityPage .file-meta { margin-top:2px; font-size:11px; color:#9caa9e; }
         #facilityPage .file-delete-check { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#7f1d1d; font-weight:700; }
         #facilityPage .file-delete-check input { width:14px; height:14px; }
+
+        /* 이미지 클릭 확대 공통 */
+        #facilityPage .js-image-preview { cursor:zoom-in; }
+
+        /* 이미지 확대 모달 배경 */
+        .image-preview-modal { display:none; position:fixed; inset:0; z-index:2147483647; align-items:center; justify-content:center; padding:24px; background:rgba(0,0,0,.76); }
+
+        /* 이미지 확대 모달 표시 상태 */
+        .image-preview-modal.is-open { display:flex !important; }
+
+        /* 이미지 확대 모달 큰 이미지 */
+        .image-preview-modal img { max-width:92vw; max-height:88vh; object-fit:contain; border-radius:6px; background:#fff; }
+
+        /* 이미지 확대 모달 닫기 버튼 */
+        .image-preview-close { position:absolute; top:22px; right:28px; border:0; background:transparent; color:#fff; font-size:38px; line-height:1; cursor:pointer; }
         @media (max-width:760px) {
             .facility-modal-cols { grid-template-columns:1fr; }
             .facility-modal-col-left { padding-right:0; border-right:none; border-bottom:1px solid var(--line,#d7dce2); padding-bottom:16px; margin-bottom:16px; }
@@ -135,20 +150,24 @@
                                                 <div class="facility-type-control">
                                                     <select class="form-select" id="facilityTyCd" name="facilityTyCd" disabled>
                                                         <option value="">선택</option>
-                                                        <option value="ELV">승강기</option>
-                                                        <option value="WTR">급수시설</option>
-                                                        <option value="ELC">전기시설</option>
-                                                        <option value="GAS">가스시설</option>
-                                                        <option value="FIRE">소방시설</option>
-                                                        <option value="SEC">보안시설</option>
-                                                        <option value="ETC">기타시설</option>
-                                                        <option value="PLAY">놀이터</option>
-                                                        <option value="GYM">헬스장</option>
-                                                        <option value="STUDY">독서실</option>
-                                                        <option value="MEET">회의실</option>
-                                                        <option value="GUEST">게스트하우스</option>
-                                                        <option value="SENIOR">경로당</option>
-                                                        <option value="PUB_ETC">기타 편의시설</option>
+                                                        <optgroup label="일반시설">
+                                                            <option value="ELV">승강기</option>
+                                                            <option value="WTR">급수시설</option>
+                                                            <option value="ELC">전기시설</option>
+                                                            <option value="GAS">가스시설</option>
+                                                            <option value="FIRE">소방시설</option>
+                                                            <option value="SEC">보안시설</option>
+                                                            <option value="ETC">기타시설</option>
+                                                        </optgroup>
+                                                        <optgroup label="편의시설">
+                                                            <option value="MEET">회의실</option>
+                                                            <option value="PARK">입주민주차장</option>
+                                                            <option value="PLAY">놀이시설</option>
+                                                            <option value="COMM">커뮤니티시설</option>
+                                                            <option value="GYM">피트니스센터</option>
+                                                            <option value="STUDY">독서실</option>
+                                                            <option value="PARKING">방문차량주차구역</option>
+                                                        </optgroup>
                                                     </select>
                                                     <button type="button" class="btn btn-secondary btn-sm" id="facilityCorrectionBtn">
                                                         <span class="material-symbols-rounded">edit_note</span>정정
@@ -270,6 +289,13 @@
         </main>
     </div>
 </div>
+
+<%-- 이미지 확대 모달: 기존 등록 사진과 새 선택 사진 공통 확대 영역 --%>
+<div id="imagePreviewModal" class="image-preview-modal">
+    <button type="button" id="imagePreviewCloseBtn" class="image-preview-close" aria-label="이미지 확대 닫기">×</button>
+    <img id="imagePreviewLargeImg" src="" alt="확대 이미지">
+</div>
+
 <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
 <script>
     (function () {
@@ -453,26 +479,163 @@
             getEl("publicFacilityFileGuide").style.display = isPublicFacility ? "" : "none";
         }
 
+        /**
+         * 파일 이미지 URL 반환
+         * - viewUrl 우선 사용 처리
+         * - fileUrl 보조 사용 처리
+         * - googleId 기반 표시 URL 생성 처리
+         */
         function getFileImageUrl(file) {
+            /* viewUrl 우선 반환값 */
             if (file.viewUrl) return file.viewUrl;
+
+            /* fileUrl 보조 반환값 */
             if (file.fileUrl) return file.fileUrl;
+
+            /* Google Drive 파일 표시 URL 반환값 */
             if (file.googleId) return contextPath + "/file/display/" + encodeURIComponent(file.googleId);
+
+            /* 이미지 URL 없음 반환값 */
             return "";
         }
 
+        /**
+         * 이미지 확대 모달 열기 처리
+         * - 기존 등록 사진 썸네일 클릭 처리
+         * - 새로 선택한 사진 미리보기 클릭 처리
+         */
+        window.openFacilityImagePreview = function (imgSrc) {
+            /* 이미지 확대 모달 요소 */
+            var modal = document.getElementById("imagePreviewModal");
+
+            /* 확대 이미지 요소 */
+            var largeImg = document.getElementById("imagePreviewLargeImg");
+
+            /* 필수 요소 존재 여부 */
+            var hasRequiredElement = modal && largeImg && imgSrc;
+
+            /* 필수 요소 없음 방어 처리 */
+            if (!hasRequiredElement) return;
+
+            /* 확대 이미지 주소 반영 처리 */
+            largeImg.src = imgSrc;
+
+            /* 모달 표시 클래스 추가 처리 */
+            modal.classList.add("is-open");
+        };
+
+        /**
+         * 이미지 확대 모달 닫기 처리
+         * - 닫기 버튼 클릭 처리
+         * - 검은 배경 클릭 처리
+         * - ESC 키 입력 처리
+         */
+        window.closeFacilityImagePreview = function () {
+            /* 이미지 확대 모달 요소 */
+            var modal = document.getElementById("imagePreviewModal");
+
+            /* 확대 이미지 요소 */
+            var largeImg = document.getElementById("imagePreviewLargeImg");
+
+            /* 필수 요소 존재 여부 */
+            var hasRequiredElement = modal && largeImg;
+
+            /* 필수 요소 없음 방어 처리 */
+            if (!hasRequiredElement) return;
+
+            /* 모달 표시 클래스 제거 처리 */
+            modal.classList.remove("is-open");
+
+            /* 확대 이미지 주소 초기화 처리 */
+            largeImg.src = "";
+        };
+
+        /**
+         * 이미지 확대 모달 이벤트 연결 처리
+         * - 닫기 버튼 이벤트 연결
+         * - 검은 배경 이벤트 연결
+         * - ESC 키 이벤트 연결
+         */
+        function bindImagePreviewModal() {
+            /* 이미지 확대 모달 요소 */
+            var modal = document.getElementById("imagePreviewModal");
+
+            /* 닫기 버튼 요소 */
+            var closeBtn = document.getElementById("imagePreviewCloseBtn");
+
+            /* 필수 요소 존재 여부 */
+            var hasRequiredElement = modal && closeBtn;
+
+            /* 필수 요소 없음 방어 처리 */
+            if (!hasRequiredElement) return;
+
+            /* 닫기 버튼 클릭 이벤트 연결 처리 */
+            closeBtn.addEventListener("click", function () {
+                window.closeFacilityImagePreview();
+            });
+
+            /* 검은 배경 클릭 이벤트 연결 처리 */
+            modal.addEventListener("click", function (event) {
+                /* 검은 배경 직접 클릭 여부 */
+                var isBackdropClick = event.target === modal;
+
+                /* 확대 이미지 클릭 닫힘 방지 처리 */
+                if (!isBackdropClick) return;
+
+                /* 모달 닫기 처리 */
+                window.closeFacilityImagePreview();
+            });
+
+            /* ESC 키 이벤트 연결 처리 */
+            document.addEventListener("keydown", function (event) {
+                /* ESC 키 여부 */
+                var isEscapeKey = event.key === "Escape";
+
+                /* ESC 외 키 입력 방어 처리 */
+                if (!isEscapeKey) return;
+
+                /* 모달 닫기 처리 */
+                window.closeFacilityImagePreview();
+            });
+        }
+
+        /**
+         * 기존 등록 사진 렌더링 처리
+         * - 서버에서 조회된 기존 파일 목록 표시
+         * - 사진 썸네일 클릭 시 확대 모달 표시
+         */
         function renderExistingFiles(files) {
+            /* 기존 등록 사진 목록 영역 */
             var area = getEl("facilityFileManageList");
+
+            /* 영역 없음 또는 편의시설 모드 방어 처리 */
             if (!area || isPublicFacility) return;
+
+            /* 기존 등록 사진 없음 처리 */
             if (!files || files.length === 0) {
                 area.innerHTML = '<div class="file-preview-empty">기존 등록 사진이 없습니다.</div>';
                 return;
             }
+
+            /* 기존 등록 사진 HTML 생성 처리 */
             area.innerHTML = files.map(function (file) {
+                /* 이미지 표시 주소 */
                 var imgUrl = getFileImageUrl(file);
+
+                /* 이미지 파일명 */
                 var name = file.fileOgName || file.fileSaveUuid || "시설사진";
+
+                /* 삭제 처리용 파일 UUID */
                 var uuid = file.fileSaveUuid || "";
+
+                /* 기존 사진 썸네일 HTML */
+                var imageHtml = imgUrl
+                    ? '<img class="file-thumb js-image-preview" src="' + imgUrl + '" alt="' + name + '" onclick="window.openFacilityImagePreview(this.src)">'
+                    : '<div class="file-thumb"></div>';
+
+                /* 기존 사진 행 HTML 반환값 */
                 return '<div class="file-manage-row">'
-                    + (imgUrl ? '<img class="file-thumb" src="' + imgUrl + '" alt="' + name + '">' : '<div class="file-thumb"></div>')
+                    + imageHtml
                     + '<div class="file-info"><div class="file-name">' + name + '</div><div class="file-meta">' + (file.fileExt || "image") + '</div></div>'
                     + '<label class="file-delete-check"><input type="checkbox" class="js-delete-file-check" value="' + uuid + '">삭제</label>'
                     + '</div>';
@@ -540,27 +703,74 @@
             renderExistingFiles(fileList);
         }
 
+        /**
+         * 새 선택 사진 미리보기 렌더링 처리
+         * - 파일 input으로 선택한 이미지 목록 표시
+         * - 선택 직후 미리보기 클릭 시 확대 모달 표시
+         */
         function previewSelectedFiles() {
+            /* 파일 input 요소 */
             var fileInput = getEl("facilityFiles");
+
+            /* 새 선택 사진 미리보기 영역 */
             var previewArea = getEl("facilityFilePreview");
+
+            /* 미리보기 영역 초기화 처리 */
             previewArea.innerHTML = "";
+
+            /* 선택 파일 없음 처리 */
             if (!fileInput.files || fileInput.files.length === 0) {
                 previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>';
                 return;
             }
+
+            /* 선택 파일 목록 순회 처리 */
             Array.from(fileInput.files).forEach(function (file) {
+                /* 미리보기 카드 요소 */
                 var item = document.createElement("div");
+
+                /* 미리보기 카드 클래스 지정 처리 */
                 item.className = "file-preview-item";
-                if (file.type && file.type.indexOf("image/") === 0) {
+
+                /* 이미지 파일 여부 */
+                var isImageFile = file.type && file.type.indexOf("image/") === 0;
+
+                /* 이미지 파일 미리보기 생성 처리 */
+                if (isImageFile) {
+                    /* 미리보기 이미지 요소 */
                     var img = document.createElement("img");
+
+                    /* 확대 대상 클래스 지정 처리 */
+                    img.className = "js-image-preview";
+
+                    /* 이미지 대체 텍스트 지정 처리 */
                     img.alt = file.name;
+
+                    /* 임시 미리보기 URL 생성 처리 */
                     img.src = URL.createObjectURL(file);
+
+                    /* 미리보기 이미지 클릭 확대 처리 */
+                    img.addEventListener("click", function () {
+                        window.openFacilityImagePreview(this.src);
+                    });
+
+                    /* 미리보기 카드에 이미지 추가 처리 */
                     item.appendChild(img);
                 }
+
+                /* 파일명 표시 요소 */
                 var name = document.createElement("div");
+
+                /* 파일명 클래스 지정 처리 */
                 name.className = "file-preview-name";
+
+                /* 파일명 텍스트 지정 처리 */
                 name.textContent = file.name;
+
+                /* 미리보기 카드에 파일명 추가 처리 */
                 item.appendChild(name);
+
+                /* 미리보기 영역에 카드 추가 처리 */
                 previewArea.appendChild(item);
             });
         }
@@ -593,7 +803,13 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
+            /* 이미지 확대 모달 닫기 이벤트 연결 처리 */
+            bindImagePreviewModal();
+
+            /* 화면 기본 이벤트 연결 처리 */
             bindEvents();
+
+            /* 시설 수정 정보 조회 및 기존 사진 렌더링 처리 */
             loadFacilityDetail().catch(function (err) {
                 console.error(err);
                 alertMessage(err.message || "시설 수정 정보를 불러오지 못했습니다.");

@@ -131,20 +131,24 @@
                                                 <label class="field-label">시설유형 <span class="req">*</span></label>
                                                 <select class="form-select" id="facilityTyCd" name="facilityTyCd" required>
                                                     <option value="">선택</option>
-                                                    <option value="ELV">승강기</option>
-                                                    <option value="WTR">급수시설</option>
-                                                    <option value="ELC">전기시설</option>
-                                                    <option value="GAS">가스시설</option>
-                                                    <option value="FIRE">소방시설</option>
-                                                    <option value="SEC">보안시설</option>
-                                                    <option value="ETC">기타시설</option>
-                                                    <option value="PLAY">놀이터</option>
-                                                    <option value="GYM">헬스장</option>
-                                                    <option value="STUDY">독서실</option>
-                                                    <option value="MEET">회의실</option>
-                                                    <option value="GUEST">게스트하우스</option>
-                                                    <option value="SENIOR">경로당</option>
-                                                    <option value="PUB_ETC">기타 편의시설</option>
+                                                    <optgroup label="일반시설">
+                                                        <option value="ELV">승강기</option>
+                                                        <option value="WTR">급수시설</option>
+                                                        <option value="ELC">전기시설</option>
+                                                        <option value="GAS">가스시설</option>
+                                                        <option value="FIRE">소방시설</option>
+                                                        <option value="SEC">보안시설</option>
+                                                        <option value="ETC">기타시설</option>
+                                                    </optgroup>
+                                                    <optgroup label="편의시설">
+                                                        <option value="MEET">회의실</option>
+                                                        <option value="PARK">입주민주차장</option>
+                                                        <option value="PLAY">놀이시설</option>
+                                                        <option value="COMM">커뮤니티시설</option>
+                                                        <option value="GYM">피트니스센터</option>
+                                                        <option value="STUDY">독서실</option>
+                                                        <option value="PARKING">방문차량주차구역</option>
+                                                    </optgroup>
                                                 </select>
                                             </div>
                                         </div>

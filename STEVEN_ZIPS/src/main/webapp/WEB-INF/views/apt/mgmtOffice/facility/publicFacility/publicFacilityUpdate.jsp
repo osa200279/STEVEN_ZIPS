@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>공용시설 수정</title>
+    <title>편의시설(공용) 수정</title>
     <sec:csrfMetaTags/>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -50,28 +50,30 @@
         .facility-modal-col-right { padding-left:20px; }
         .facility-col-label { font-size:11px; font-weight:800; color:#8a9a8e; letter-spacing:.5px; text-transform:uppercase; padding-bottom:8px; border-bottom:1px solid var(--line,#d7dce2); margin-bottom:14px; }
 
-        /* 사진 그리드 */
-        #publicFacilityUpdatePage .img-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px; }
-        #publicFacilityUpdatePage .img-cell {
-            aspect-ratio:4/3; border-radius:6px; overflow:hidden;
-            border:1px solid var(--line); background:var(--surface-sub);
-            display:flex; align-items:center; justify-content:center;
-            cursor:pointer; position:relative; transition:.12s;
-        }
-        #publicFacilityUpdatePage .img-cell:hover { border-color:var(--accent); }
-        #publicFacilityUpdatePage .img-cell img { width:100%; height:100%; object-fit:cover; }
-        #publicFacilityUpdatePage .img-placeholder { display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--text-ter); font-size:11px; }
-        #publicFacilityUpdatePage .img-placeholder .material-symbols-rounded { font-size:22px; }
-        #publicFacilityUpdatePage .img-del {
-            position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%;
-            background:rgba(0,0,0,.5); color:#fff; display:none;
-            align-items:center; justify-content:center; cursor:pointer; font-size:13px;
-        }
-        #publicFacilityUpdatePage .img-cell:hover .img-del { display:flex; }
-        #publicFacilityUpdatePage .img-existing-label { position:absolute; left:6px; bottom:6px; padding:3px 6px; border-radius:999px; background:rgba(0,0,0,.52); color:#fff; font-size:10px; }
-        #publicFacilityUpdatePage .delete-file-wrap { margin-top:9px; padding:9px 10px; border:1px solid var(--line); border-radius:6px; background:#fafcfb; }
-        #publicFacilityUpdatePage .delete-file-title { margin-bottom:7px; font-size:11px; font-weight:800; color:var(--text-sec); }
-        #publicFacilityUpdatePage .delete-file-item { display:flex; align-items:center; gap:6px; margin-top:5px; font-size:11px; color:var(--text-sec); }
+        /* 사진 업로드: register 화면과 동일한 파일 선택 + 미리보기 구조 */
+        #publicFacilityUpdatePage .file-upload-box { border:1px dashed var(--line); border-radius:4px; padding:12px; background:#fafcfb; }
+        #publicFacilityUpdatePage .file-upload-title { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:var(--text-sec); }
+        #publicFacilityUpdatePage .file-upload-title .material-symbols-rounded { font-size:16px; color:var(--accent); }
+        #publicFacilityUpdatePage .file-upload-desc { font-size:11px; color:var(--text-ter); line-height:1.5; }
+        #publicFacilityUpdatePage .file-preview-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:10px; }
+        #publicFacilityUpdatePage .file-preview-item { position:relative; min-height:92px; border:1px solid var(--line); border-radius:4px; background:#fff; overflow:hidden; }
+        #publicFacilityUpdatePage .file-preview-item img { width:100%; height:92px; object-fit:cover; display:block; cursor:zoom-in; }
+        #publicFacilityUpdatePage .file-preview-name { padding:6px 7px; font-size:11px; color:var(--text-sec); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-top:1px solid var(--line); }
+        #publicFacilityUpdatePage .file-preview-empty { padding:13px; border:1px solid var(--line); border-radius:4px; background:#fff; font-size:12px; color:var(--text-ter); }
+        #publicFacilityUpdatePage .file-manage-list { display:flex; flex-direction:column; gap:7px; margin-bottom:8px; }
+        #publicFacilityUpdatePage .file-manage-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--line); border-radius:4px; background:#fff; }
+        #publicFacilityUpdatePage .file-thumb { width:48px; height:48px; border-radius:4px; border:1px solid var(--line); object-fit:cover; background:#f4f7f4; flex-shrink:0; cursor:zoom-in; }
+        #publicFacilityUpdatePage .file-thumb-empty { display:flex; align-items:center; justify-content:center; color:var(--text-ter); font-size:11px; }
+        #publicFacilityUpdatePage .file-info { min-width:0; flex:1; }
+        #publicFacilityUpdatePage .file-name { font-size:12px; font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #publicFacilityUpdatePage .file-meta { margin-top:2px; font-size:11px; color:var(--text-ter); }
+        #publicFacilityUpdatePage .file-delete-check { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#7f1d1d; font-weight:700; }
+        #publicFacilityUpdatePage .file-delete-check input { width:14px; height:14px; }
+        #publicFacilityUpdatePage .item-table { width:100%; border-collapse:collapse; border-top:1px solid var(--line); margin-top:8px; }
+        #publicFacilityUpdatePage .item-table th,
+        #publicFacilityUpdatePage .item-table td { padding:8px 9px; border-bottom:1px solid var(--line); font-size:12px; text-align:left; }
+        #publicFacilityUpdatePage .item-table th { color:var(--text-ter); font-weight:800; background:var(--surface-sub); }
+        #publicFacilityUpdatePage .item-empty { text-align:center; color:var(--text-ter); padding:14px 0; }
 
         @media (max-width:760px) {
             .facility-modal-cols { grid-template-columns:1fr; }
@@ -93,18 +95,22 @@
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
     <div class="main-wrap">
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
+        <c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/publicFacility/list/${mgmtOfcNo}" />
+        <c:set var="activeSidebarParent" value="시설·공사 관리" />
+        <c:set var="activeSidebarCurrent" value="편의시설(공용) 관리" />
+        <%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
         <main class="main-content">
             <div class="office-page" id="publicFacilityUpdatePage">
                 <div class="page-header">
                     <div class="page-title-block">
-                        <h2>공용시설 수정</h2>
-                        <p>시설자산(FACILITY)과 공용시설(PUBLIC_FACILITY) 정보를 수정합니다.</p>
+                        <h2>편의시설(공용) 수정</h2>
+                        <p>시설자산(FACILITY)과 편의시설(공용) 운영정보(PUBLIC_FACILITY)를 수정합니다.</p>
                     </div>
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
-                        <h3 class="panel-title"><span class="material-symbols-rounded">edit_square</span>공용시설 정보 수정</h3>
+                        <h3 class="panel-title"><span class="material-symbols-rounded">edit_square</span>편의시설(공용) 정보 수정</h3>
                     </div>
 
                     <%-- 수정 흐름: FACILITY UPDATE → PUBLIC_FACILITY UPDATE --%>
@@ -116,12 +122,14 @@
                         <input type="hidden" name="cmnFacilityNo" value="${detail.cmnFacilityNo}">
                         <input type="hidden" name="mgmtOfcNo" value="${mgmtOfcNo}">
                         <input type="hidden" name="fileGroupNo" value="${detail.fileGroupNo}">
+                        <%-- 삭제할 기존 사진 UUID 목록: submit 직전에 JS에서 콤마 문자열로 세팅 --%>
+                        <input type="hidden" id="deleteFileUuids" name="deleteFileUuids" value="">
 
                         <div class="panel-body">
                             <div class="form-section" style="margin-bottom:14px;">
                                 <div class="notice-box">
                                     <span class="material-symbols-rounded">info</span>
-                                    <div>공용시설 수정 시 시설자산 기본정보와 공용시설 운영정보가 함께 저장됩니다.<br>
+                                    <div>편의시설(공용) 수정 시 시설자산 기본정보와 편의시설(공용) 운영정보가 함께 저장됩니다.<br>
                                         사진 삭제가 필요한 경우 우측의 기존 사진 삭제 항목을 선택한 뒤 저장하세요.</div>
                                 </div>
                             </div>
@@ -150,7 +158,7 @@
                                                     <option value="">선택 안 함</option>
                                                     <c:forEach var="dong" items="${dongList}">
                                                         <option value="${dong.dongNo}" <c:if test="${detail.dongNo eq dong.dongNo}">selected</c:if>>
-                                                            ${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}
+                                                                ${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}
                                                         </option>
                                                     </c:forEach>
                                                 </select>
@@ -169,24 +177,15 @@
                                     <%-- PUBLIC_FACILITY 운영정보 --%>
                                     <div class="form-section">
                                         <div class="form-section-title">
-                                            <span class="material-symbols-rounded">meeting_room</span>공용시설 운영정보
+                                            <span class="material-symbols-rounded">meeting_room</span>편의시설(공용) 운영정보
                                         </div>
 
-                                        <%-- 공용시설명 + 시설상태: 한 줄 --%>
-                                        <div class="form-row cols-2">
+                                        <%-- 공용시설명: PUBLIC_FACILITY 운영명 --%>
+                                        <div class="form-row cols-1">
                                             <div class="form-field">
-                                                <label class="field-label">공용시설명 <span class="req">*</span></label>
+                                                <label class="field-label">편의시설(공용)명 <span class="req">*</span></label>
                                                 <input type="text" class="form-input" id="updCmnNm" name="cmnFacilityNm" value="${detail.cmnFacilityNm}" placeholder="예) 헬스장" required>
-                                            </div>
-                                            <div class="form-field">
-                                                <label class="field-label">시설 상태</label>
-                                                <%-- 공통코드: PUBLIC_FACILITY_STTS --%>
-                                                <select class="form-select" id="updStts" name="cmnFacilitySttsCd">
-                                                    <option value="OPEN" <c:if test="${detail.cmnFacilitySttsCd eq 'OPEN'}">selected</c:if>>사용가능</option>
-                                                    <option value="USE" <c:if test="${detail.cmnFacilitySttsCd eq 'USE'}">selected</c:if>>사용중</option>
-                                                    <option value="REPAIR" <c:if test="${detail.cmnFacilitySttsCd eq 'REPAIR'}">selected</c:if>>점검중</option>
-                                                    <option value="CLOSE" <c:if test="${detail.cmnFacilitySttsCd eq 'CLOSE'}">selected</c:if>>사용중지</option>
-                                                </select>
+                                                <p class="field-help">운영현황은 편의시설 자원 상태 집계로 표시되므로 이 화면에서는 직접 수정하지 않습니다.</p>
                                             </div>
                                         </div>
 
@@ -194,14 +193,14 @@
                                         <div class="form-row cols-2">
                                             <div class="form-field">
                                                 <label class="field-label">예약 가능 여부</label>
-                                                <select class="form-select" id="updRsvYn" name="rsvYn">
-                                                    <option value="Y" <c:if test="${detail.rsvYn eq 'Y'}">selected</c:if>>예약 가능</option>
-                                                    <option value="N" <c:if test="${detail.rsvYn eq 'N'}">selected</c:if>>예약 불가</option>
+                                                <select class="form-select" id="updRsvYn" name="cmnFacilityRsvYn">
+                                                    <option value="Y" <c:if test="${detail.cmnFacilityRsvYn eq 'Y'}">selected</c:if>>예약 가능</option>
+                                                    <option value="N" <c:if test="${detail.cmnFacilityRsvYn eq 'N'}">selected</c:if>>예약 불가</option>
                                                 </select>
                                             </div>
                                             <div class="form-field">
                                                 <label class="field-label">이용요금 (원)</label>
-                                                <input type="number" class="form-input" id="updAmt" name="cmnAmt" value="${detail.cmnAmt}" placeholder="0 (무료)" min="0">
+                                                <input type="number" class="form-input" id="updAmt" name="cmnFacilityAmt" value="${detail.cmnFacilityAmt}" placeholder="0 (무료)" min="0">
                                             </div>
                                         </div>
 
@@ -209,7 +208,7 @@
                                         <div class="form-row cols-1">
                                             <div class="form-field">
                                                 <label class="field-label">운영시간</label>
-                                                <input type="text" class="form-input" id="updOprHr" name="oprHr" value="${detail.oprHr}" placeholder="예) 06:00~22:00 (평일) / 08:00~20:00 (주말)">
+                                                <input type="text" class="form-input" id="updOprHr" name="cmnFacilityOprHr" value="${detail.cmnFacilityOprHr}" placeholder="예) 06:00~22:00 (평일) / 08:00~20:00 (주말)">
                                             </div>
                                         </div>
 
@@ -217,7 +216,7 @@
                                         <div class="form-row cols-1">
                                             <div class="form-field">
                                                 <label class="field-label">시설 안내</label>
-                                                <textarea class="form-textarea" id="updCn" name="cmnCn" rows="3" placeholder="시설 이용 안내사항을 입력하세요.">${detail.cmnCn}</textarea>
+                                                <textarea class="form-textarea" id="updCn" name="cmnFacilityCn" rows="3" placeholder="시설 이용 안내사항을 입력하세요.">${detail.cmnFacilityCn}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -229,46 +228,60 @@
 
                                     <div class="form-section">
                                         <div class="form-section-title">
-                                            <span class="material-symbols-rounded">photo_library</span>사진 수정
+                                            <span class="material-symbols-rounded">image</span>시설 사진
                                             <small style="font-weight:400;color:var(--text-ter);font-size:11px;">기존 사진 확인 · 새 사진 추가</small>
                                         </div>
 
-                                        <%-- 기존 사진 미리보기 + 새 사진 미리보기 슬롯 --%>
-                                        <div class="img-grid" id="updImgGrid">
-                                            <c:forEach var="file" items="${fileList}" varStatus="st">
-                                                <c:if test="${st.index lt 4}">
-                                                    <div class="img-cell existing-img-cell" data-slot="${st.index}">
-                                                        <img src="${pageContext.request.contextPath}/file/view/${file.fileSaveUuid}" alt="${file.fileOgName}">
-                                                        <span class="img-existing-label">기존 사진</span>
-                                                    </div>
-                                                </c:if>
-                                            </c:forEach>
-                                            <c:forEach begin="${fn:length(fileList)}" end="3" var="slot">
-                                                <div class="img-cell" data-slot="${slot}" data-action="clickImgSlot">
-                                                    <div class="img-placeholder"><span class="material-symbols-rounded">add_photo_alternate</span>사진 추가</div>
-                                                </div>
-                                            </c:forEach>
+                                        <%-- 기존 사진 목록: 표시 URL은 googleId, 삭제 값은 fileSaveUuid 사용 --%>
+                                        <div class="file-manage-list" id="updFileManageList">
+                                            <c:choose>
+                                                <c:when test="${not empty fileList}">
+                                                    <c:forEach var="file" items="${fileList}">
+                                                        <div class="file-manage-row">
+                                                            <c:choose>
+                                                                <c:when test="${not empty file.googleId}">
+                                                                    <img class="file-thumb js-image-preview"
+                                                                         src="${pageContext.request.contextPath}/file/display/${file.googleId}"
+                                                                         alt="${file.fileOgName}">
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <div class="file-thumb file-thumb-empty">이미지 없음</div>
+                                                                </c:otherwise>
+                                                            </c:choose>
+
+                                                            <div class="file-info">
+                                                                <div class="file-name">${file.fileOgName}</div>
+                                                                <div class="file-meta">${empty file.fileExt ? 'image' : file.fileExt}</div>
+                                                            </div>
+
+                                                            <label class="file-delete-check">
+                                                                <input type="checkbox" class="js-delete-file-check" value="${file.fileSaveUuid}">
+                                                                삭제
+                                                            </label>
+                                                        </div>
+                                                    </c:forEach>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <div class="file-preview-empty">기존 등록 사진이 없습니다.</div>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
 
-                                        <%-- 실제 파일 input: img-cell 클릭 시 트리거 --%>
-                                        <input type="file" id="updImgInput" name="facilityFiles" accept="image/*" multiple style="display:none;">
-                                        <p style="margin-top:8px;font-size:11px;color:var(--text-ter);">빈 슬롯을 클릭하여 새 사진을 추가하세요.</p>
-
-                                        <%-- 기존 사진 삭제 선택값 --%>
-                                        <c:if test="${not empty fileList}">
-                                            <div class="delete-file-wrap">
-                                                <div class="delete-file-title">기존 사진 삭제 선택</div>
-                                                <c:forEach var="file" items="${fileList}">
-                                                    <label class="delete-file-item">
-                                                        <input type="checkbox" name="deleteFileNoList" value="${file.fileNo}">
-                                                        <span>${file.fileOgName}</span>
-                                                    </label>
-                                                </c:forEach>
+                                        <%-- 새 사진 추가: register 화면과 같은 input multiple 전송 방식 --%>
+                                        <div class="file-upload-box">
+                                            <div class="file-upload-title">
+                                                <span class="material-symbols-rounded">upload_file</span>사진 추가
                                             </div>
-                                        </c:if>
+                                            <div class="file-upload-desc" style="margin-top:3px;margin-bottom:8px;">이미지 파일을 여러 장 선택할 수 있습니다.</div>
+                                            <input type="file" class="form-input" id="updImgInput" name="facilityFiles" accept="image/*" multiple>
+                                            <div class="file-preview-list" id="updImgGrid" style="margin-top:8px;">
+                                                <div class="file-preview-empty">선택된 사진이 없습니다.</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="page-actions" style="justify-content:flex-end;margin-top:14px;">
@@ -284,6 +297,7 @@
 </div>
 
 <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
+<script src="${pageContext.request.contextPath}/js/manager/common-image-viewer.js"></script>
 <script>
     (function () {
         /* 화면 설정 객체 */
@@ -298,12 +312,6 @@
         /* 공용시설 번호 */
         var cmnFacilityNo = config.cmnFacilityNo || "";
 
-        /* 사진 파일 배열 */
-        var imgFiles = [null, null, null, null];
-
-        /* 현재 선택 슬롯 번호 */
-        var currentSlot = 0;
-
         /* 요소 조회 함수 */
         function getEl(id) {
             return document.getElementById(id);
@@ -311,7 +319,7 @@
 
         /* 목록 주소 생성 함수 */
         function listUrl() {
-            return contextPath + "/manager/publicFacilityList";
+            return contextPath + "/manager/publicFacility/list/" + encodeURIComponent(mgmtOfcNo);
         }
 
         /* 상세 주소 생성 함수 */
@@ -325,83 +333,137 @@
             else alert(msg);
         }
 
-        /* 사진 슬롯 렌더링 함수 */
-        function renderSlot(slot, file) {
-            var grid = getEl("updImgGrid");
-            var cell = grid ? grid.querySelector('[data-slot="' + slot + '"]') : null;
-            if (!cell) return;
+        /* 삭제 UUID 갱신 함수 */
+        function updateDeleteFileUuids() {
+            var hidden = getEl("deleteFileUuids");
+            var checked = Array.from(document.querySelectorAll(".js-delete-file-check:checked"))
+                .map(function (box) { return box.value; })
+                .filter(Boolean);
 
-            if (file) {
-                var url = URL.createObjectURL(file);
-                cell.innerHTML = '<img src="' + url + '" alt="사진 ' + (slot + 1) + '">'
-                    + '<span class="img-del" data-action="delImg" data-slot="' + slot + '">✕</span>';
-            } else {
-                cell.innerHTML = '<div class="img-placeholder">'
-                    + '<span class="material-symbols-rounded">add_photo_alternate</span>사진 추가</div>';
+            if (hidden) {
+                hidden.value = checked.join(",");
             }
         }
 
-        /* 사진 그리드 클릭 처리 함수 */
-        function handleImgGridClick(e) {
-            var del = e.target.closest('[data-action="delImg"]');
-            var cell = e.target.closest('[data-slot]');
+        /* 새 사진 미리보기 렌더링 함수 */
+        function previewSelectedFiles() {
+            var fileInput = getEl("updImgInput");
+            var previewArea = getEl("updImgGrid");
 
-            if (del) {
-                var delSlot = Number(del.dataset.slot);
-                imgFiles[delSlot] = null;
-                renderSlot(delSlot, null);
+            if (!fileInput || !previewArea) {
                 return;
             }
 
-            /* 기존 사진 슬롯은 삭제 체크박스로만 관리 */
-            if (cell && cell.classList.contains("existing-img-cell")) {
-                alertMessage("기존 사진은 아래 삭제 선택 후 저장하거나, 빈 슬롯에 새 사진을 추가하세요.");
+            previewArea.innerHTML = "";
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>';
                 return;
             }
 
-            if (cell) {
-                currentSlot = Number(cell.dataset.slot);
-                getEl("updImgInput").click();
-            }
-        }
+            Array.from(fileInput.files).forEach(function (file) {
+                var item = document.createElement("div");
+                item.className = "file-preview-item";
 
-        /* 파일 선택 처리 함수 */
-        function handleImgInputChange() {
-            var file = this.files[0];
-            if (!file) return;
+                if (file.type && file.type.indexOf("image/") === 0) {
+                    var img = document.createElement("img");
+                    img.alt = file.name;
+                    img.src = URL.createObjectURL(file);
 
-            imgFiles[currentSlot] = file;
-            renderSlot(currentSlot, file);
-            this.value = "";
+                    if (window.CommonImageViewer) {
+                        img.addEventListener("click", function () {
+                            CommonImageViewer.openUrl(this.src);
+                        });
+                    }
+
+                    item.appendChild(img);
+                }
+
+                var name = document.createElement("div");
+                name.className = "file-preview-name";
+                name.textContent = file.name;
+                item.appendChild(name);
+
+                previewArea.appendChild(item);
+            });
         }
 
         /* 저장 전 검증 함수 */
-        function validateUpdate(event) {
+        function validateUpdate() {
+            updateDeleteFileUuids();
+
             if (!getEl("updFacilityNm").value.trim()) {
-                event.preventDefault();
                 alertMessage("시설명을 입력하세요.");
-                return;
+                return false;
             }
 
             if (!getEl("updCmnNm").value.trim()) {
-                event.preventDefault();
-                alertMessage("공용시설명을 입력하세요.");
+                alertMessage("편의시설(공용)명을 입력하세요.");
+                return false;
             }
+
+            return true;
+        }
+
+        /* 저장 요청 함수 */
+        function submitUpdate(event) {
+            event.preventDefault();
+
+            var form = getEl("updateForm");
+            if (!form || !validateUpdate()) {
+                return;
+            }
+
+            form.submit();
+            return;
+
+            fetch(form.action, {
+                method: "POST",
+                body: new FormData(form),
+                credentials: "same-origin"
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error("수정 요청 실패");
+                    }
+                    return response.json();
+                })
+                .then(function (result) {
+                    if (!result || result.success !== true) {
+                        alertMessage(result && result.message ? result.message : "편의시설(공용) 수정에 실패했습니다.");
+                        return;
+                    }
+
+                    alertMessage(result.message || "편의시설(공용)이 수정되었습니다.");
+                    location.href = detailUrl();
+                })
+                .catch(function () {
+                    alertMessage("편의시설(공용) 수정 중 오류가 발생했습니다.");
+                });
         }
 
         /* 이벤트 연결 함수 */
         function bindEvents() {
-            getEl("updateForm").addEventListener("submit", validateUpdate);
-            getEl("updImgGrid").addEventListener("click", handleImgGridClick);
-            getEl("updImgInput").addEventListener("change", handleImgInputChange);
+            getEl("updateForm").addEventListener("submit", submitUpdate);
+            getEl("updImgInput").addEventListener("change", previewSelectedFiles);
+
+            document.addEventListener("change", function (e) {
+                if (e.target.classList.contains("js-delete-file-check")) {
+                    updateDeleteFileUuids();
+                }
+            });
 
             getEl("moveDetailBtn").addEventListener("click", function () {
-                location.href = detailUrl();
+                history.back();
             });
 
             getEl("backToListBtn").addEventListener("click", function () {
                 location.href = listUrl();
             });
+
+            if (window.CommonImageViewer && typeof window.CommonImageViewer.bind === "function") {
+                window.CommonImageViewer.bind("#updFileManageList");
+            }
         }
 
         /* 초기 실행 함수 */

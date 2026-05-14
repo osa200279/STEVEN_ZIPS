@@ -2,7 +2,6 @@ package kr.or.ddit.domain.apt.mgmtOffice.facility.dto;
 
 import lombok.Data;
 
-import java.util.Date;
 
 /**
  * 시설 조회 DTO
@@ -41,7 +40,7 @@ public class FacilityDTO {
     private String facilityTyCd;     // 시설유형코드, FACILITY.FACILITY_TY_CD
     private String facilityTyNm;     // 시설유형명, COMMON_CODE.FACILITY_TY의 CODE_NAME
 
-    private Date instlDt;            // 설치일자, FACILITY.INSTL_DT
+    private String instlDt;          // 설치일자, FACILITY.INSTL_DT
     private String aptCmplexNo;      // 아파트단지번호, FACILITY.APT_CMPLEX_NO
     private String dongNo;           // 동 원본값, FACILITY.DONG_NO
     private String displayDongNo;    // 동 표시값, A1215003_1 -> 1
@@ -60,5 +59,6 @@ public class FacilityDTO {
     private String cmnFacilityNm;    // 편의시설명, PUBLIC_FACILITY.CMN_FACILITY_NM
     private String cmnFacilityRsvYn; // 예약가능여부, PUBLIC_FACILITY.CMN_FACILITY_RSV_YN
     private String cmnFacilityOprHr; // 운영시간, PUBLIC_FACILITY.CMN_FACILITY_OPR_HR
+    private String publicOperRegisteredYn; // 편의시설 운영관리 등록여부, PUBLIC_FACILITY 연결 여부
 
 }

@@ -101,7 +101,7 @@
         <%-- ═══════════════════════════════════════════════════════
              시설·공사 관리
         ════════════════════════════════════════════════════════ --%>
-        <details class="nav-group" ${fn:contains(uri, '/manager/facility') or fn:contains(uri, '/manager/publicFacilityList') or fn:contains(uri, '/manager/checkHistory') or fn:contains(uri, '/manager/contract') ? 'open="open"' : ''}>
+        <details class="nav-group" ${fn:contains(uri, '/manager/facility') or fn:contains(uri, '/manager/publicFacility') or fn:contains(uri, '/manager/checkHistory') or fn:contains(uri, '/manager/contract') ? 'open="open"' : ''}>
             <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">apartment</span>
                 <span class="cat-label">시설·공사 관리</span>
@@ -111,13 +111,13 @@
                 <div class="submenu-inner">
 
                     <span class="sub-group-label">시설 관리</span>
-                    <a href="${ctx}/manager/facility/page${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facilityList') ? 'active' : ''}">
+                    <a href="${ctx}/manager/facility/page${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facility/page') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">시설자산 관리</span>
                     </a>
-                    <a href="${ctx}/manager/publicFacility/list${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacilityList') ? 'active' : ''}">
+                    <a href="${ctx}/manager/publicFacility/list${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacility') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">편의시설 관리</span>
+                        <span class="nav-text">편의시설(공용) 관리</span>
                     </a>
 
                     <%-- 공사·점검 --%>
@@ -232,12 +232,12 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">단지정보</span>
-                    <a href="${ctx}/manager/complex/edit/${mgmtOfcNo}"
+                    <a href="${ctx}/manager/complex/editt/${mgmtOfcNo}"
                        class="nav-item ${fn:contains(uri, '/manager/complex/edit') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 기본정보 관리</span>
                     </a>
-                    <a href="${ctx}/manager/complex/buildingLayOut/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
+                    <a href="${ctx}/manager/complex/edit/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 구조 관리</span>
                     </a>
