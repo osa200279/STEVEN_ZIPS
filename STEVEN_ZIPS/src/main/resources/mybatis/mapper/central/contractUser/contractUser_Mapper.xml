@@ -91,7 +91,6 @@
         )
     </insert>
 
-
     <!-- userNo로 제출서류 조회 -->
     <select id="selectContractDoc" parameterType="string" resultType="kr.or.ddit.domain.central.vo.ContractUserVO">
         SELECT sd.sbmsn_doc_no
@@ -106,7 +105,6 @@
         WHERE rc.user_no = #{userNo}
         ORDER BY sd.reg_dt DESC
     </select>
-
 
     <select id="selectRentLstgNo" parameterType="string" resultType="string">
         SELECT rl.rent_lstg_no
@@ -135,10 +133,11 @@
         WHERE au.apt_cmplex_no = #{aptCmplexNo}
     </select>
     <select id="selectExcluseAreaDetail" parameterType="string" resultType="map">
-        SELECT ht.EXCLUSIVE_SIZE  AS exclusiveSize
-             , ht.room_cnt      AS roomCnt
-             , ht.bathroom_cnt  AS bathroomCnt
-             , ht.image_file_no AS imageFileNo
+        SELECT ht.exclusive_size
+             , ht.ty_nm
+             , ht.room_cnt
+             , ht.bathroom_cnt
+             , ht.image_file_no
         FROM apt_ho_ty ht
         WHERE ht.apt_cmplex_no = #{aptCmplexNo}
     </select>
@@ -146,7 +145,7 @@
         SELECT ho_ty_no
         FROM apt_ho_ty
         WHERE apt_cmplex_no = #{aptCmplexNo}
-          AND EXCLUSIVE_SIZE = #{exclusiveSize}
+          AND exclusive_size = #{exclusiveSize}
           AND ROWNUM = 1
     </select>
     <select id="selectAplctList" resultType="map" parameterType="string">
@@ -154,8 +153,9 @@
              , a.ann_no
              , a.aplct_stts_cd
              , a.reg_dt
-             , aht.EXCLUSIVE_SIZE
+             , aht.exclusive_size
              , cab.ttl
+             , aht.ty_nm
              , ac.apt_cmplex_nm
         FROM aplct a
                  INNER JOIN apt_ho_ty aht on a.ho_ty_no = aht.ho_ty_no
@@ -175,6 +175,5 @@
         SET aplct_stts_cd = 'CANCEL'
         WHERE aplct_no = #{aplctNo}
     </update>
-
 
 </mapper>

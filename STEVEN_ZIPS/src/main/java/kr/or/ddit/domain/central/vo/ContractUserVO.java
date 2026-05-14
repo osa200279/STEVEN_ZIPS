@@ -16,4 +16,5 @@ public class ContractUserVO {
     private String atchFileId;
     private String rentCtrtNo;
     private String ctrtSttsCd;  // 계약상태코드
+    private String tyNm;
 }

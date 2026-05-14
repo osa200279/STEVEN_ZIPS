@@ -148,14 +148,14 @@
                     <tbody>
                     <c:choose>
                         <c:when test="${not empty exclusiveSize}">
-                            <c:forEach var="item" items="${exclusiveSize}">
+                            <c:forEach var="apt" items="${exclusiveSize}">
                                 <tr>
-                                    <td class="type-cell">${item.TY_NM}</td>
-                                    <td>${item.EXCLUSIVE_SIZE}㎡</td>
-                                    <td>${item.ROOM_CNT}개</td>
-                                    <td>${item.BATHROOM_CNT}개</td>
-                                    <td>${item.DPST_AMT}</td>
-                                    <td>${item.MTHLY_RENT_AMT}</td>
+                                    <td class="type-cell">${apt.TY_NM}</td>
+                                    <td>${apt.EXCLUSIVE_SIZE}㎡</td>
+                                    <td>${apt.ROOM_CNT}개</td>
+                                    <td>${apt.BATHROOM_CNT}개</td>
+                                    <td>${apt.DPST_AMT}</td>
+                                    <td>${apt.MTHLY_RENT_AMT}</td>
                                 </tr>
                             </c:forEach>
                         </c:when>
@@ -256,8 +256,8 @@
             <div class="w-1/2">
                 <label class="block text-xs text-slate-500 mb-1">타입</label>
                 <select id="exclusiveSizeSelect" class="w-full px-3 py-2 border border-slate-200 text-sm rounded focus:outline-none focus:border-[#004830]">
-                    <c:forEach var="item" items="${exclusiveSize}">
-                        <option value="${item.TY_NM}" data-exclusive="${item.EXCLUSIVE_SIZE}">${item.TY_NM}</option>
+                    <c:forEach var="apt" items="${exclusiveSize}">
+                        <option value="${apt.TY_NM}" data-exclusive="${apt.EXCLUSIVE_SIZE}">${apt.TY_NM}</option>
                     </c:forEach>
                 </select>
             </div>
