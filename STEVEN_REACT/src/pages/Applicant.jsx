@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { AgGridReact } from 'ag-grid-react';
 import { useOutletContext } from 'react-router-dom';
-import { Check, X } from 'lucide-react';
+import { Check, Triangle, X } from 'lucide-react';
 import requestApi, { getCookie } from '../util/api/requestApi';
 import axios from 'axios';
 import '../styles/ag-grid.css'
@@ -15,7 +15,7 @@ const Applicant = () => {
             try {
 
                 const response = await requestApi.get('/api/react/adm/aplct');
-                
+
                 if (Array.isArray(response.data)) {
                     setRowData(response.data);
                 } else {
@@ -43,47 +43,69 @@ const Applicant = () => {
             field: 'aplctSttsCd', headerName: '상태',
             valueFormatter: (p) => {
                 if (p.value === 'SUBMIT') return '대기';
-                if (p.value === 'WINNER') return '승인';
+                if (p.value === 'WINNER') return '서류 제출 필요';
                 if (p.value === 'LOSER') return '반려';
                 if (p.value === 'CANCEL') return '취소';
+                if (p.value === 'SUPPLEMENT') return '서류 보완 필요';
+                if (p.value === 'QUALIFIED') return '검증 완료';
                 return p.value;
             },
             // 2. 필터가 작동할 때 참조할 값을 정의 (화면에 보이는 값 기준)
             filterValueGetter: (p) => {
                 if (p.data.aplctSttsCd === 'SUBMIT') return '대기';
-                if (p.data.aplctSttsCd === 'WINNER') return '승인';
+                if (p.data.aplctSttsCd === 'WINNER') return '서류 제출 필요';
                 if (p.data.aplctSttsCd === 'LOSER') return '반려';
                 if (p.data.aplctSttsCd === 'CANCEL') return '취소';
+                if (p.data.aplctSttsCd === 'SUPPLEMENT') return '서류 보완 필요';
+                if (p.data.aplctSttsCd === 'QUALIFIED') return '검증 완료';
                 return p.data.aplctSttsCd;
             },
             cellRenderer: (p) => {
                 if (p.value === 'SUBMIT') return <span className="stts-apply">대기</span>;
-                if (p.value === 'WINNER') return <span className="stts-pass">승인</span>;
+                if (p.value === 'WINNER') return <span className="stts-apply">서류 제출 필요</span>;
                 if (p.value === 'LOSER') return <span className="stts-reject">반려</span>;
                 if (p.value === 'CANCEL') return <span className="stts-reject">취소</span>;
+                if (p.value === 'SUPPLEMENT') return <span className="stts-apply">서류 보완 필요</span>;
+                if (p.value === 'QUALIFIED') return <span className="stts-pass">검증 완료</span>;
                 return <span>{p.value}</span>; // 기본값
             },
-            width: 110
+            width: 140
         },
         {
             field: 'aplctSttsCd', headerName: '관리',
             cellRenderer: (p) => {
-                if (p.value === 'SUBMIT') {
-
+                if (p.value === 'SUBMIT'
+                    || p.value === 'SUPPLEMENT') {
                     return (
                         <div>
-                            <button className='btn-pass' onClick={() => updStts(p, true)}>
+                            <button title='승인' className='btn-pass' onClick={() => updStts(p, true)}>
                                 <Check className='check' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                             &nbsp;&nbsp;
-                            <button className='btn-reject' onClick={() => updStts(p, false)}>
+                            <button title='반려' className='btn-reject' onClick={() => updStts(p, false)}>
+                                <X className='reject' style={{ marginTop: '0px', padding: '0px' }} size={24} />
+                            </button>
+                        </div>
+                    )
+                } else if (p.value === ('WINNER')) {
+                    return (
+                        <div>
+                            <button title='승인' className='btn-pass' onClick={() => updStts(p, true)}>
+                                <Check className='check' style={{ marginTop: '0px', padding: '0px' }} size={24} />
+                            </button>
+                            &nbsp;&nbsp;
+                            <button title='보완' className='btn-reject' onClick={() => supplement(p)}>
+                                <Triangle className='reject' style={{ marginTop: '0px', padding: '0px', color: 'yellow', backgroundColor: 'grey' }} size={24} />
+                            </button>
+                            &nbsp;&nbsp;
+                            <button title='반려' className='btn-reject' onClick={() => updStts(p, false)}>
                                 <X className='reject' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                         </div>
                     )
                 }
             },
-            filter:false,
+            filter: false,
             width: 120
         },
     ], []);
@@ -101,61 +123,145 @@ const Applicant = () => {
         resizable: true
     }), []);
 
-    const updStts = async (p , isApproval) => {
+    // isApproval => true or false
+    const updStts = async (p, isApproval) => {
         const ag = p.api;
         const selectedNodes = ag.getSelectedNodes();
-        const aplctSttsCd = isApproval ? 'WINNER' : 'LOSER' ;
-        const actionNm = isApproval? '승인' : '반려';
+        const actionNm = isApproval ? '승인' : '반려';
 
-        let validTargetNos = [];
+        let aplctMapList = [];
         let confirmMsg = "";
 
         // 현재 클릭한 행이 선택된 행들 중에 포함되어 있는지 확인
         const isCurrentNodeSelected = selectedNodes.some(node => node.data.aplctNo === p.data.aplctNo);
 
-        if(selectedNodes && selectedNodes.length > 1 && isCurrentNodeSelected){
-            const validNodes = selectedNodes.filter(node => node.data.aplctSttsCd === 'SUBMIT')
-            validTargetNos = validNodes.map(node => node.data.aplctNo);
-            
-            if(validTargetNos.length === 0){
+        if (selectedNodes && selectedNodes.length > 1 && isCurrentNodeSelected) {
+            // 상태 변경 버튼이 활성화된한 아이들만 필터
+            const validNodes = selectedNodes.filter(node => ['SUBMIT', 'WINNER', 'SUPPLEMENT'].includes(node.data.aplctSttsCd));
+
+            aplctMapList = validNodes.map(node => {
+                const currentStts = node.data.aplctSttsCd;
+                const nextStts = currentStts === 'SUBMIT'
+                    ? (isApproval ? 'WINNER' : 'LOSER')
+                    : (isApproval ? 'QUALIFIED' : 'LOSER');
+
+                return {
+                    aplctNo: node.data.aplctNo,
+                    aplctSttsCd: nextStts
+                };
+            });
+
+            if (aplctMapList.length === 0) {
                 alert("선택된 항목 중 처리 가능한 '대기'건이 없습니다.");
                 return;
             }
-
-            confirmMsg = `현재 선택된 ${selectedNodes.length}개의 행 중에 처리대기 건이 ${validTargetNos.length}개 있습니다. \n일괄 ${actionNm} 처리하시겠습니까?`;
-        }else {
+            confirmMsg = `현재 선택된 ${selectedNodes.length}개의 행 중에 처리대기 건이 ${aplctMapList.length}개 있습니다. \n일괄 ${actionNm} 처리하시겠습니까?`;
+        } else {
             // 선택된 행이 없거나 1개만 선택된 경우 (단일 처리)
-            if(p.data.aplctSttsCd !== 'SUBMIT'){
-                alert("이미 처리가 완료된 항목입니다.");
+            const currentStts = p.data.aplctSttsCd;
+            if (['SUBMIT', 'WINNER', 'SUPPLEMENT'].includes(currentStts)) {
+                const nextStts = currentStts === 'SUBMIT'
+                    ? (isApproval ? 'WINNER' : 'LOSER')
+                    : (isApproval ? 'QUALIFIED' : 'LOSER');
+
+                aplctMapList.push({
+                    aplctNo: p.data.aplctNo,
+                    aplctSttsCd: nextStts
+                });
+                confirmMsg = `신청번호 ${p.data.aplctNo} 항목을 ${actionNm}하시겠습니까?`;
+            } else {
+                alert(`${actionNm} 가능한 상태가 아닙니다.`);
                 return;
             }
-            validTargetNos = [p.data.aplctNo];
-            confirmMsg = `해당 신청 건을 ${actionNm} 처리하시겠습니까?`
         }
 
-        if(!window.confirm(confirmMsg)) return;
+        if (!window.confirm(confirmMsg)) return;
+
+        updSttsRequest(aplctMapList, ag);
+    };
+
+    // 보완 요청 버튼 기능
+    const supplement = async (p) => {
+        const ag = p.api;
+        const selectedNodes = ag.getSelectedNodes();
+        const actionNm = '보완';
+
+        let aplctMapList = [];
+        let confirmMsg = "";
+
+        // 현재 클릭한 행이 선택된 행들 중에 포함되어 있는지 확인
+        const isCurrentNodeSelected = selectedNodes.some(node => node.data.aplctNo === p.data.aplctNo);
+
+        if (selectedNodes && selectedNodes.length > 1 && isCurrentNodeSelected) {
+            // 상태 변경 버튼이 활성화된한 아이들만 필터
+            const validNodes = selectedNodes.filter(node => ['SUBMIT', 'WINNER', 'SUPPLEMENT'].includes(node.data.aplctSttsCd));
+
+            aplctMapList = validNodes.map(node => {
+                const currentStts = node.data.aplctSttsCd;
+                const nextStts = 'SUPPLEMENT';
+
+                return {
+                    aplctNo: node.data.aplctNo,
+                    aplctSttsCd: nextStts
+                };
+            });
+
+            if (aplctMapList.length === 0) {
+                alert("선택된 항목 중 처리 가능한 '대기'건이 없습니다.");
+                return;
+            }
+            confirmMsg = `현재 선택된 ${selectedNodes.length}개의 행 중에 처리대기 건이 ${aplctMapList.length}개 있습니다. \n일괄 ${actionNm} 처리하시겠습니까?`;
+
+        } else {
+            // 선택된 행이 없거나 1개만 선택된 경우 (단일 처리)
+            const currentStts = p.data.aplctSttsCd;
+            if (['SUBMIT', 'WINNER', 'SUPPLEMENT'].includes(currentStts)) {
+                const nextStts = 'SUPPLEMENT';
+
+                aplctMapList.push({
+                    aplctNo: p.data.aplctNo,
+                    aplctSttsCd: nextStts
+                });
+                confirmMsg = `신청번호 ${p.data.aplctNo} 항목을 ${actionNm}요청 처리 하시겠습니까?`;
+            } else {
+                alert(`${actionNm} 가능한 상태가 아닙니다.`);
+                return;
+            }
+        }
+
+        if (!window.confirm(confirmMsg)) return;
+
+        updSttsRequest(aplctMapList, ag);
+    }
+    
+    // 백엔드 업데이트 요청
+    const updSttsRequest = async (aplctMapList, agApi) => {
+        if (!aplctMapList || aplctMapList.length === 0) return;
 
         try {
             const response = await requestApi.put(`/api/react/adm/aplct/upd`, {
-                aplctNos : validTargetNos,
-                aplctSttsCd
+                aplctMapList: aplctMapList
             });
 
-            if(response.status === 200 && response.data > 0){
+            if (response.status === 200 && response.data > 0) {
                 alert(`${response.data}건의 처리가 완료되었습니다.`);
-                
-                setRowData(prevData => 
-                    prevData.map(item => 
-                        validTargetNos.includes(item.aplctNo) ?
-                        { ...item, aplctSttsCd }
-                        : item 
+
+                const updateMap = new Map(aplctMapList.map(obj => [obj.aplctNo, obj.aplctSttsCd]));
+
+                setRowData(prevData =>
+                    prevData.map(item =>
+                        updateMap.has(item.aplctNo)
+                            ? { ...item, aplctSttsCd: updateMap.get(item.aplctNo) }
+                            : item
                     )
                 );
-                
-                ag.deselectAll();
+                if (agApi && typeof agApi.deselectAll === 'function') {
+                    agApi.deselectAll();
+                }
             }
-        } catch (error) {
+        }catch(error){
             console.log(error);
+            alert("처리 중 오류가 발생했습니다.");
         }
     };
 

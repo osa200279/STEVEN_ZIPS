@@ -7,7 +7,7 @@ import requestApi from '../../util/api/requestApi';
 const MainLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [admInfo, setAdmInfo] = useState(null); // 관리자 정보를 담을 상태
-  const [pageInfo, setPageInfo] = useState({parent:"", current:""});
+  const [pageInfo, setPageInfo] = useState({ parent: "", current: "" });
 
   useEffect(() => {
     // 1. 페이지 로드 시 관리자 정보 요청 (JWT는 인터셉터가 알아서 챙김)
