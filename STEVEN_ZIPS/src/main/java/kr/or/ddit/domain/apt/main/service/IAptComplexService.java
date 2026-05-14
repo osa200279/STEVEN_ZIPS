@@ -5,6 +5,7 @@ import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
+import kr.or.ddit.domain.apt.main.vo.ComplexEditDTO;
 
 import java.util.List;
 
@@ -14,8 +15,6 @@ public interface IAptComplexService {
 
    /* public AptComplexVO selectAptDetailList(String aptCmplexNo);*/
 
-
-   int updateAptComplex(AptComplexVO aptComplexVO);
 
    // 헤더, 푸터 용 DTO 셀렉트
    AptMainPageDTO.ResponseDto selectAptCommonDTO(String aptCmplexNo);
@@ -30,8 +29,6 @@ public interface IAptComplexService {
    List<AptComplexVO> selectMainAptList(PaginationInfoVO<AptComplexVO> pagingVO,
                                         String sidoNm,
                                         String keyword);
-
-   String selectManagerAptCmplexNo(String mgmtOfcNo);
 
    AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo);
 

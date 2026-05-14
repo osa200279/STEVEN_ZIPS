@@ -1,5 +1,7 @@
 "use strict";
 
+
+
 /* =========================================================
    초기 실행
 ========================================================= */
@@ -12,19 +14,20 @@ const complexFileState = {
     layout: [],
     complex: []
 };
-
+let layoutSortable = null;
+let complexSortable = null;
 /* =========================================================
    메인 초기화
 ========================================================= */
 
-function initComplexEditPage() {
+async function initComplexEditPage() {
 
     bindEvents();
 
     bindFileAddButtons();
     bindFileInputs();
 
-    loadExistFiles();
+    await loadComplexDetail();
 
     initSortable();
 }
@@ -35,15 +38,6 @@ function initComplexEditPage() {
 ========================================================= */
 
 function bindEvents() {
-
-    document.getElementById("btnSaveComplex")
-        ?.addEventListener("click", saveComplex);
-
-    document.getElementById("btnResetComplex")
-        ?.addEventListener("click", resetForm);
-
-    document.getElementById("btnResetComplexBottom")
-        ?.addEventListener("click", resetForm);
 
     document.getElementById("complexEditForm")
         ?.addEventListener("submit", function (event) {
@@ -65,68 +59,23 @@ async function resetForm() {
     complexFileState.layout = [];
     complexFileState.complex = [];
 
-    renderFileList("layout");
-    renderFileList("complex");
-
-    await loadExistFiles();
+    await loadComplexDetail();
 
     document.getElementById("layoutFileInput").value = "";
     document.getElementById("complexImgFileInput").value = "";
 }
 
 /* =========================================================
-   유효성 검사
-========================================================= */
-
-function validateForm() {
-
-    const sidoNm = document.getElementById("sidoNm").value.trim();
-    const sigunguNm = document.getElementById("sigunguNm").value.trim();
-    const emdNm = document.getElementById("emdNm").value.trim();
-
-    if (!sidoNm) {
-
-        alert("시도명을 입력하세요.");
-
-        document.getElementById("sidoNm").focus();
-
-        return false;
-    }
-
-    if (!sigunguNm) {
-
-        alert("시군구명을 입력하세요.");
-
-        document.getElementById("sigunguNm").focus();
-
-        return false;
-    }
-
-    if (!emdNm) {
-
-        alert("읍면동명을 입력하세요.");
-
-        document.getElementById("emdNm").focus();
-
-        return false;
-    }
-
-    return true;
-}
-
-/* =========================================================
    저장
 ========================================================= */
 
-function saveComplex() {
+async function saveComplex() {
 
-    if (!validateForm()) {
-        return;
-    }
+    const form =
+        document.getElementById("complexEditForm");
 
-    const form = document.getElementById("complexEditForm");
-
-    const formData = new FormData(form);
+    const formData =
+        new FormData(form);
 
     appendFilesToFormData(formData);
     appendSortOrderToFormData(formData);
@@ -141,47 +90,62 @@ function saveComplex() {
 
     if (csrfToken && csrfHeader) {
 
-        headers[csrfHeader.getAttribute("content")]
-            = csrfToken.getAttribute("content");
+        headers[
+            csrfHeader.getAttribute("content")
+            ] = csrfToken.getAttribute("content");
     }
 
-    fetch(
-        CONTEXT_PATH + "/manager/complex/update/" + MGMT_OFC_NO,
-        {
-            method: "POST",
-            headers: headers,
-            body: formData
+    try {
+
+        const response =
+            await fetch(
+                CONTEXT_PATH
+                + "/manager/complex/update/"
+                + MGMT_OFC_NO,
+                {
+                    method: "POST",
+                    headers: headers,
+                    body: formData
+                }
+            );
+
+        if(!response.ok){
+            throw new Error(
+                "서버 응답 오류 : "
+                + response.status
+            );
         }
-    )
-        .then(function (response) {
 
-            if (!response.ok) {
+        const result =
+            await response.json();
 
-                throw new Error("서버 응답 오류 : " + response.status);
-            }
+        if(result.success){
 
-            return response.json();
-        })
-        .then(function (result) {
+            alert(
+                result.message
+                || "단지 정보가 수정되었습니다."
+            );
 
-            if (result.success) {
 
-                alert(result.message || "단지 정보가 수정되었습니다.");
+            complexFileState.layout = [];
+            complexFileState.complex = [];
 
-                location.href =
-                    CONTEXT_PATH + "/manager/complex/edit/" + MGMT_OFC_NO;
+            await loadComplexDetail();
 
-            } else {
+        }else{
 
-                alert(result.message || "수정 중 오류가 발생했습니다.");
-            }
-        })
-        .catch(function (error) {
+            alert(
+                result.message
+                || "수정 중 오류가 발생했습니다."
+            );
+        }
 
-            console.error(error);
+    } catch(error){
 
-            alert("저장 요청 중 오류가 발생했습니다.");
-        });
+        console.error(error);
+
+        alert("저장 요청 중 오류가 발생했습니다.");
+    }
 }
 
 const syncButton =
@@ -282,6 +246,8 @@ function handleSelectedFiles(category, files) {
  */
 function addNewFile(category, file) {
 
+    document.getElementById("isImageChanged").value = "Y";
+
     const targetList =
         complexFileState[category];
 
@@ -348,39 +314,41 @@ function createFileItemElement(category, fileItem) {
 
     }else{
         previewUrl =
-            fileItem.filePath;
+            CONTEXT_PATH
+            + "/file/display/"
+            + fileItem.googleId;
     }
 
     item.innerHTML = `
 
     <div class="complex-file-main">
-
-        <div class="complex-thumb-wrap">
-
-            <img src="${previewUrl}"
-                 class="complex-thumb-img">
-
-        </div>
-
+    
         <div class="complex-file-info">
-
+    
             <div class="complex-file-name">
+    
                 ${fileItem.fileOgName}
+    
+                <div class="complex-thumb-hover">
+                    <img src="${previewUrl}"
+                         class="complex-thumb-img">
+                </div>
+    
             </div>
-
+    
         </div>
-
+    
     </div>
-
+    
     <button type="button"
             class="complex-file-remove">
-
+    
         <span class="material-symbols-rounded">
             close
         </span>
-
+    
     </button>
-`;
+    `;
 
     item.querySelector(".complex-file-remove")
         .addEventListener("click", function(){
@@ -419,6 +387,8 @@ function getListElement(category) {
  */
 function removeFile(category, fileKey){
 
+    document.getElementById("isImageChanged").value = "Y";
+
     complexFileState[category] =
         complexFileState[category]
             .filter(item => item.fileKey !== fileKey);
@@ -432,8 +402,15 @@ function removeFile(category, fileKey){
 
 function initSortable() {
 
-    // 배치도
-    Sortable.create(
+    if(layoutSortable){
+        layoutSortable.destroy();
+    }
+
+    if(complexSortable){
+        complexSortable.destroy();
+    }
+
+    layoutSortable = Sortable.create(
         document.getElementById("layoutFileList"),
         {
             animation: 150,
@@ -445,8 +422,7 @@ function initSortable() {
         }
     );
 
-    // 단지사진
-    Sortable.create(
+    complexSortable = Sortable.create(
         document.getElementById("complexImageFileList"),
         {
             animation: 150,
@@ -459,37 +435,9 @@ function initSortable() {
     );
 }
 
-async function loadExistFiles() {
-
-    try{
-
-        const response =
-            await fetch(
-                CONTEXT_PATH
-                + "/manager/complex/files/"
-                + MGMT_OFC_NO
-            );
-
-        const result =
-            await response.json();
-
-        loadExistFileItems(
-            "layout",
-            result.layoutFiles || []
-        );
-
-        loadExistFileItems(
-            "complex",
-            result.complexFiles || []
-        );
-
-    }catch(error){
-
-        console.error(error);
-    }
-}
-
 function loadExistFileItems(category, files){
+
+    complexFileState[category] = [];
 
     files.forEach(function(file){
 
@@ -526,6 +474,8 @@ function loadExistFileItems(category, files){
 
 function syncSortOrder(category){
 
+    document.getElementById("isImageChanged").value = "Y";
+
     const listEl =
         getListElement(category);
 
@@ -540,8 +490,6 @@ function syncSortOrder(category){
             return orderedKeys.indexOf(a.fileKey)
                 - orderedKeys.indexOf(b.fileKey);
         });
-
-    renderFileList(category);
 }
 
 function appendFilesToFormData(formData){
@@ -573,7 +521,7 @@ function appendFilesToFormData(formData){
 
 function appendSortOrderToFormData(formData){
 
-    formData.append(
+    formData.set(
         "layoutSortOrder",
         JSON.stringify(
             complexFileState.layout.map(item => ({
@@ -585,7 +533,7 @@ function appendSortOrderToFormData(formData){
         )
     );
 
-    formData.append(
+    formData.set(
         "complexSortOrder",
         JSON.stringify(
             complexFileState.complex.map(item => ({
@@ -596,4 +544,165 @@ function appendSortOrderToFormData(formData){
             }))
         )
     );
+}
+
+async function loadComplexDetail() {
+
+    try {
+
+        const response =
+            await fetch(
+                CONTEXT_PATH
+                + "/manager/complex/detail/"
+                + MGMT_OFC_NO
+            );
+
+        if(!response.ok){
+            throw new Error("상세조회 실패");
+        }
+
+        const result =
+            await response.json();
+
+        renderComplexDetail(result);
+
+        loadExistFileItems(
+            "layout",
+            result.layoutFiles || []
+        );
+
+        loadExistFileItems(
+            "complex",
+            result.complexFiles || []
+        );
+
+    } catch(error) {
+
+        console.error(error);
+
+        alert("단지 정보를 불러오지 못했습니다.");
+    }
+
+    document.getElementById("isImageChanged").value = "N";
+}
+
+function renderComplexDetail(detail) {
+
+    const complex = detail.complex;
+
+    /*
+        기본 정보
+     */
+    setValue(
+        "aptCmplexNo",
+        complex.aptCmplexNo
+    );
+
+    setValue(
+        "aptCmplexNm",
+        complex.aptCmplexNm
+    );
+
+    setValue(
+        "bjdCd",
+        complex.bjdCd
+    );
+
+    setValue(
+        "latVal",
+        complex.latVal
+    );
+
+    setValue(
+        "lonVal",
+        complex.lonVal
+    );
+
+    setValue(
+        "sidoNm",
+        complex.sidoNm
+    );
+
+    setValue(
+        "sigunguNm",
+        complex.sigunguNm
+    );
+
+    setValue(
+        "emdNm",
+        complex.emdNm
+    );
+
+    setValue(
+        "dorojuso",
+        complex.dorojuso
+    );
+
+    /*
+        단지 현황
+     */
+    setValue(
+        "unitCnt",
+        complex.unitCnt
+    );
+
+    setValue(
+        "dongCnt",
+        complex.dongCnt
+    );
+
+    setValue(
+        "maxFloor",
+        complex.maxFloor
+    );
+
+    setValue(
+        "pkgCnt",
+        complex.pkgCnt
+    );
+
+    setValue(
+        "freePkgCnt",
+        complex.freePkgCnt
+    );
+
+    setValue(
+        "ccCnt",
+        complex.ccCnt
+    );
+
+    setValue(
+        "bldYr",
+        complex.bldYr
+    );
+
+    setValue(
+        "cnscoNm",
+        complex.cnscoNm
+    );
+
+    document.getElementById("heatTy").value =
+        complex.heatTy || "";
+
+    setValue(
+        "imgFileNo",
+        complex.imgFileNo
+    );
+
+    setValue(
+        "rprsntImgFileNo",
+        complex.rprsntImgFileNo
+    );
+}
+
+function setValue(id, value) {
+
+    const element =
+        document.getElementById(id);
+
+    if(!element){
+        return;
+    }
+
+    element.value = value || "";
 }

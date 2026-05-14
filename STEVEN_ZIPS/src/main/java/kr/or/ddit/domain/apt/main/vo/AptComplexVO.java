@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/*db 테이블과 1:1 매칭되는 vo 입니다*/
 @Data
 public class AptComplexVO {
     private String aptCmplexNo;     // kAptCode

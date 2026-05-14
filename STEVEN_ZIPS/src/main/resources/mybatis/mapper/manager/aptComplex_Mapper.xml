@@ -10,7 +10,7 @@
         where apt_cmplex_no = #{aptCmplexNo}
     </select>
 
-    <update id="updateAptComplex" parameterType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
+    <update id="updateComplex" parameterType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
 
         UPDATE APT_COMPLEX
         SET BJD_CD             = #{bjdCd},
@@ -34,17 +34,6 @@
         WHERE APT_CMPLEX_NO    = #{aptCmplexNo}
 
     </update>
-
-    <select id="selectManagerAptCmplexNo" parameterType="string" resultType="string">
-
-        SELECT MO.APT_CMPLEX_NO
-          FROM MANAGER M
-          JOIN MGMT_OFFICE MO
-            ON M.MGMT_OFC_NO = MO.MGMT_OFC_NO
-         WHERE M.USER_NO = #{userNo}
-           AND MO.USE_YN = 'Y'
-
-    </select>
 
     <select id="selectAptMainDTO"
             parameterType="string"

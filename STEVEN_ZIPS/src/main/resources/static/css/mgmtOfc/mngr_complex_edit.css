@@ -539,3 +539,33 @@
 .sortable-chosen .complex-thumb-preview{
     display: none !important;
 }
+
+.complex-file-name{
+    position: relative;
+}
+
+.complex-thumb-hover{
+    display: none;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    z-index: 100;
+
+    width: 220px;
+    padding: 6px;
+
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.complex-file-name:hover .complex-thumb-hover{
+    display: block;
+}
+
+.complex-thumb-img{
+    width: 100%;
+    border-radius: 8px;
+}

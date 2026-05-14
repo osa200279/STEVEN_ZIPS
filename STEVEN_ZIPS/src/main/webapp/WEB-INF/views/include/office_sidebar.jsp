@@ -237,7 +237,7 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 기본정보 관리</span>
                     </a>
-                    <a href="${ctx}/manager/complex/edit/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
+                    <a href="${ctx}/manager/complex/edit/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/comlex/buildingLayOut') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 구조 관리</span>
                     </a>

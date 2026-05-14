@@ -52,30 +52,17 @@
                     ===================================================== -->
 
                     <input type="hidden"
-                           id="aptCmplexNo"
-                           name="aptCmplexNo"
-                           value="${complex.aptCmplexNo}">
-
-                    <input type="hidden"
                            id="imgFileNo"
                            name="imgFileNo"
-                           value="${complex.imgFileNo}">
+                           >
 
                     <input type="hidden"
                            id="rprsntImgFileNo"
                            name="rprsntImgFileNo"
-                           value="${complex.rprsntImgFileNo}">
+                           >
 
 
                     <!-- 정렬 순서 -->
-                    <input type="hidden"
-                           id="layoutSortOrder"
-                           name="layoutSortOrder">
-
-                    <input type="hidden"
-                           id="complexSortOrder"
-                           name="complexSortOrder">
-
 
                     <div class="panel">
 
@@ -100,23 +87,28 @@
                                                class="form-input"
                                                id="aptCmplexNm"
                                                name="aptCmplexNm"
-                                               value="${complex.aptCmplexNm}">
+                                               >
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">단지번호</label>
 
-                                        <div class="info-value">
-                                            ${complex.aptCmplexNo}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="aptCmplexNo"
+                                               name="aptCmplexNo"
+                                               readonly>
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">법정동코드</label>
 
-                                        <div class="info-value">
-                                            ${complex.bjdCd}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="bjdCd"
+                                               name="bjdCd"
+
+                                               readonly>
                                     </div>
 
                                 </div>
@@ -127,17 +119,23 @@
                                     <div class="form-field">
                                         <label class="field-label">위도</label>
 
-                                        <div class="info-value">
-                                            ${complex.latVal}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="latVal"
+                                               name="latVal"
+
+                                               readonly>
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">경도</label>
 
-                                        <div class="info-value">
-                                            ${complex.lonVal}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="lonVal"
+                                               name="lonVal"
+
+                                               readonly>
                                     </div>
 
                                 </div>
@@ -148,25 +146,37 @@
                                     <div class="form-field">
                                         <label class="field-label">시도</label>
 
-                                        <div class="info-value">
-                                            ${complex.sidoNm}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="sidoNm"
+                                               name="sidoNm"
+
+                                               readonly>
+
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">시군구</label>
 
-                                        <div class="info-value">
-                                            ${complex.sigunguNm}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="sigunguNm"
+                                               name="sigunguNm"
+
+                                               readonly>
+
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">읍면동</label>
 
-                                        <div class="info-value">
-                                            ${complex.emdNm}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="emdNm"
+                                               name="emdNm"
+
+                                               readonly>
+
                                     </div>
 
                                 </div>
@@ -180,9 +190,12 @@
 
                                         <div class="address-inline-group">
 
-                                            <div class="info-value flex-1" id="dorojuso">
-                                                ${complex.dorojuso}
-                                            </div>
+                                            <input type="text"
+                                                   class="form-input readonly-input flex-1"
+                                                   id="dorojuso"
+                                                   name="dorojuso"
+
+                                                   readonly>
 
                                             <button type="button"
                                                     class="btn btn-address-sync"
@@ -222,25 +235,36 @@
                                     <div class="form-field">
                                         <label class="field-label">세대 수</label>
 
-                                        <div class="info-value info-center">
-                                            ${complex.unitCnt}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="unitCnt"
+                                               name="unitCnt"
+
+                                               readonly>
+
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">동 수</label>
 
-                                        <div class="info-value info-center">
-                                            ${complex.dongCnt}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="dongCnt"
+                                               name="dongCnt"
+
+                                               readonly>
+
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">최대 층수</label>
 
-                                        <div class="info-value info-center">
-                                            ${complex.maxFloor}
-                                        </div>
+                                        <input type="text"
+                                               class="form-input readonly-input"
+                                               id="maxFloor"
+                                               name="maxFloor"
+
+                                               readonly>
                                     </div>
 
                                 </div>
@@ -252,7 +276,7 @@
                                                class="form-input"
                                                id="pkgCnt"
                                                name="pkgCnt"
-                                               value="${complex.pkgCnt}"
+
                                                min="0"
                                                placeholder="예: 600">
                                     </div>
@@ -263,7 +287,7 @@
                                                class="form-input"
                                                id="freePkgCnt"
                                                name="freePkgCnt"
-                                               value="${complex.freePkgCnt}"
+
                                                min="0"
                                                placeholder="예: 1">
                                     </div>
@@ -274,7 +298,7 @@
                                                class="form-input"
                                                id="ccCnt"
                                                name="ccCnt"
-                                               value="${complex.ccCnt}"
+
                                                placeholder="예: 32">
                                     </div>
                                 </div>
@@ -286,21 +310,22 @@
                                                class="form-input"
                                                id="bldYr"
                                                name="bldYr"
-                                               value="${complex.bldYr}"
+
                                                maxlength="8"
                                                placeholder="예: 20050301">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label">난방 방식</label>
-                                        <select class="form-select" id="heatTy" name="heatTy">
+                                        <select class="form-select"
+                                                id="heatTy"
+                                                name="heatTy">
+
                                             <option value="">선택</option>
-                                            <option value="중앙난방" ${complex.heatTy eq '중앙난방' ? 'selected' : ''}>중앙난방
-                                            </option>
-                                            <option value="개별난방" ${complex.heatTy eq '개별난방' ? 'selected' : ''}>개별난방
-                                            </option>
-                                            <option value="지역난방" ${complex.heatTy eq '지역난방' ? 'selected' : ''}>지역난방
-                                            </option>
+                                            <option value="중앙난방">중앙난방</option>
+                                            <option value="개별난방">개별난방</option>
+                                            <option value="지역난방">지역난방</option>
+
                                         </select>
                                     </div>
                                 </div>
@@ -312,7 +337,7 @@
                                                class="form-input"
                                                id="cnscoNm"
                                                name="cnscoNm"
-                                               value="${complex.cnscoNm}"
+
                                                placeholder="예: 현대건설">
                                     </div>
                                 </div>
@@ -375,7 +400,6 @@
 
                                         <input type="file"
                                                id="layoutFileInput"
-                                               name="layoutFiles[]"
                                                accept="image/*"
                                                multiple
                                                style="display:none;">
@@ -428,7 +452,6 @@
 
                                         <input type="file"
                                                id="complexImgFileInput"
-                                               name="complexImgFiles[]"
                                                accept="image/*"
                                                multiple
                                                style="display:none;">
@@ -482,7 +505,7 @@
 </div>
 <script>
     const CONTEXT_PATH = "${pageContext.request.contextPath}";
-    const MGMT_OFC_NO = "${office.mgmtOfcNo}";
+    const MGMT_OFC_NO = "${office != null ? office.mgmtOfcNo : ''}";
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/mgmtOfc/mngr_complex_edit.js"></script>

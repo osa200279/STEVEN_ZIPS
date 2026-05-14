@@ -1,5 +1,7 @@
 package kr.or.ddit.domain.apt.main.service;
 
+import kr.or.ddit.common.file.service.IAttachFileService;
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.board.ann.mapper.IAptAnnBoardPostMapper;
 import kr.or.ddit.domain.apt.board.ann.vo.AptAnnBoardPostVO;
@@ -8,18 +10,28 @@ import kr.or.ddit.domain.apt.main.mapper.IAptComplexMapper;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
+import kr.or.ddit.domain.apt.main.vo.ComplexEditDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IMgmtOfficeMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.MgmtOfficeVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class AptComplexServiceImpl implements IAptComplexService {
+
+    @Autowired
+    private IAttachFileService attachFileService;
 
     @Autowired
     private IAptComplexMapper aptComplexMapper;
@@ -40,18 +52,14 @@ public class AptComplexServiceImpl implements IAptComplexService {
         return aptComplexMapper.selectAptDetailList(aptCmplexNo);
     }*/
 
-    @Override
-    public String selectManagerAptCmplexNo(String userNo) {
-        return aptComplexMapper.selectManagerAptCmplexNo(userNo);
-    }
 
-
-    /*mgmtOfc 번호로 aptComplexVO 가져오는 메서드 입니다 도선호*/
+    /* mgmtOfc 번호로 aptComplexVO 가져오는 메서드 입니다 도선호*/
     @Override
     public AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo) {
         return aptComplexMapper.selectMgmtOfcNoAptComplex(mgmtOfcNo);
     }
 
+    /* 단지구조관리 페이지에서 사용할 DTO를 뽑아오는 메서드입니다.*/
     @Override
     public List<AptDetailGridDTO> selectComplexList(String mgmtOfcNo) {
 
@@ -72,12 +80,6 @@ public class AptComplexServiceImpl implements IAptComplexService {
     @Override
     public String selectOneAptCmplexByMgmtOfcNo(String mgmtOfcNo) {
         return aptComplexMapper.selectOneAptCmplexByMgmtOfcNo(mgmtOfcNo);
-    }
-
-    @Override
-    @Transactional
-    public int updateAptComplex(AptComplexVO aptComplexVO) {
-        return aptComplexMapper.updateAptComplex(aptComplexVO);
     }
 
     /**

@@ -5,6 +5,7 @@ import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
+import kr.or.ddit.domain.apt.main.vo.ComplexEditDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,10 +16,6 @@ public interface IAptComplexMapper {
     AptComplexVO selectAptComplex(String aptCmplexNo);   // 단지 1건 조회
 
 //  AptComplexVO selectAptDetailList(String aptCmplexNo);    // 단지 세대/호실 목록 조회
-
-    int updateAptComplex(AptComplexVO aptComplexVO); // 단지 정보 수정
-
-    String selectManagerAptCmplexNo(String userId);
 
     List<String> selectSidoList();
 
@@ -32,6 +29,9 @@ public interface IAptComplexMapper {
     AptComplexVO selectMgmtOfcNoAptComplex(String mgmtOfcNo);
 
     List<AptDetailGridDTO> selectComplexList(String aptCmplexNo);
+
+    void updateComplex(ComplexEditDTO.SaveRequest request);
+
 
     String selectOneAptCmplexByMgmtOfcNo(String mgmtOfcNo);
 }
