@@ -41,16 +41,13 @@ const Applicant = () => {
         { field: 'tyNm', headerName: '호 타입', width: 105 },
         { field: 'exclusiveSize', headerName: '전용 면적(㎡)', width: 130 },
         {
-            field: 'files', headerName: '제출 서류'
+            field: 'imageFileNo', headerName: '제출 서류'
             , cellRenderer: (p) => {
-                const hasFiles = p.value && (Array.isArray(p.value) ? p.value.length > 0 : true);
-
-                if (!hasFiles) {
-                    return <span className="text-gray-400">없음</span>;
-                }
+                if (p) return <span className="text-gray-400">없음</span>;
+            
                 return (
                     <span>
-                        <button className="btn-view" onClick={() => onRowClicked(p)}>
+                        <button onClick={() => openModal(p)}>
                             보기
                         </button>
                     </span>
@@ -321,8 +318,8 @@ const Applicant = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
 
-    // 2. 행 클릭 시 모달 열기 함수
-    const onRowClicked = (params) => {
+    // 클릭 시 모달 열기 함수
+    const openModal = (params) => {
         setSelectedApplicant(params.data);
         setIsModalOpen(true);
     };
