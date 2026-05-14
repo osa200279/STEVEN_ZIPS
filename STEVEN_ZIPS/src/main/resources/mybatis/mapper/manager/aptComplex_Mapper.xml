@@ -185,6 +185,10 @@
         D.HO ASC
 
     </select>
-
+    <select id="selectOneAptCmplexByMgmtOfcNo" resultType="java.lang.String" parameterType="string">
+        select APT_CMPLEX_NO
+        from MGMT_OFFICE
+        where MGMT_OFC_NO = #{mgmtOfcNo}
+    </select>
 
 </mapper>

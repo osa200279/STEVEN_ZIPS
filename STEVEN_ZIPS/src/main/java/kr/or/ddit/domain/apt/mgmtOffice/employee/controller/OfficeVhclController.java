@@ -1,9 +1,14 @@
 package kr.or.ddit.domain.apt.mgmtOffice.employee.controller;
 
+import kr.or.ddit.common.config.AuthService;
+import kr.or.ddit.domain.apt.main.service.IAptComplexService;
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.mgmtOffice.employee.service.IOfficeVhclService;
+import kr.or.ddit.domain.member.admin.vo.AdmVO;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
+import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +29,8 @@ import java.util.Map;
 public class OfficeVhclController {
 
     private final IOfficeVhclService officeVhclService;
+    private final AuthService authService;
+    private final IAptComplexService aptComplexService;
 
     @PreAuthorize("hasRole('MNGR') and @authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping({"/management/{mgmtOfcNo}", "/list/{mgmtOfcNo}"})
@@ -32,9 +39,7 @@ public class OfficeVhclController {
             @AuthenticationPrincipal CustomUser user,
             Model model) {
 
-        MngrVO mngrVO = (MngrVO) user.getMember();
-
-        String aptCmplexNo = mngrVO.getAptCmplexNo();
+        String aptCmplexNo = aptComplexService.selectOneAptCmplexByMgmtOfcNo(mgmtOfcNo);
 
         List<RsidVhclVO> vehicleList =
                 officeVhclService.getVehicleList(aptCmplexNo);
@@ -211,6 +216,7 @@ public class OfficeVhclController {
 
 
 
+    @PreAuthorize("hasRole('MNGR') and @authService.hasAccess(principal, #mgmtOfcNo)")
     @ResponseBody
     @GetMapping(value="/search", produces="application/json;charset=UTF-8")
     public Map<String, Object> searchResident(
@@ -225,14 +231,9 @@ public class OfficeVhclController {
     ){
 
         Map<String,Object> param = new HashMap<>();
-
         String parsedDongNo = dongNo.replace("0", "");
 
-        MngrVO mngrVO = (MngrVO) user.getMember();
-
-
-
-        String aptCmplexNo = mngrVO.getAptCmplexNo();
+        String aptCmplexNo = aptComplexService.selectOneAptCmplexByMgmtOfcNo(mgmtOfcNo);
 
         String fullHoNo =
                 aptCmplexNo + "_"
@@ -249,7 +250,7 @@ public class OfficeVhclController {
 
         return result;
     }
-    @PreAuthorize("hasRole('MNGR')")
+    @PreAuthorize("hasRole('MNGR') and @authService.hasAccess(principal, #mgmtOfcNo)")
     @PostMapping("/approve")
     public String approveVehicle(
 
@@ -266,7 +267,7 @@ public class OfficeVhclController {
         return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
     }
 
-    @PreAuthorize("hasRole('MNGR')")
+    @PreAuthorize("hasRole('MNGR') and @authService.hasAccess(principal, #mgmtOfcNo)")
     @PostMapping("/reject")
     public String rejectVehicle(
 
