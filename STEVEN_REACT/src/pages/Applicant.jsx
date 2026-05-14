@@ -3,6 +3,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { useOutletContext } from 'react-router-dom';
 import { Check, Triangle, X } from 'lucide-react';
 import requestApi, { getCookie } from '../util/api/requestApi';
+import ApplicantDetailModal from './ApplicantDetailModal';
 import axios from 'axios';
 import '../styles/ag-grid.css'
 
@@ -42,8 +43,18 @@ const Applicant = () => {
         {
             field: 'files', headerName: '제출 서류'
             , cellRenderer: (p) => {
-                if (p) return <span assName="">X</span>;
-                else return <span><button>보기</button></span>; // 기본값
+                const hasFiles = p.value && (Array.isArray(p.value) ? p.value.length > 0 : true);
+
+                if (!hasFiles) {
+                    return <span className="text-gray-400">없음</span>;
+                }
+                return (
+                    <span>
+                        <button className="btn-view" onClick={() => onRowClicked(p)}>
+                            보기
+                        </button>
+                    </span>
+                );
             }
             , filter: false
             , width: 110
@@ -60,7 +71,7 @@ const Applicant = () => {
                 if (p.value === 'QUALIFIED') return '승인';
                 return p.value;
             },
-            // 2. 필터가 작동할 때 참조할 값을 정의 (화면에 보이는 값 기준)
+            // 필터가 작동할 때 참조할 값을 정의 (화면에 보이는 값 기준)
             filterValueGetter: (p) => {
                 if (p.data.aplctSttsCd === 'SUBMIT') return '청약 신청';
                 if (p.data.aplctSttsCd === 'WINNER') return '서류 제출 요청';
@@ -168,12 +179,12 @@ const Applicant = () => {
                 let nextStts;
                 if (currentStts === 'SUBMIT') {
                     nextStts = isApproval ? 'WINNER' : 'LOSER';
-                } else if (currentStts === 'WINNER' && !isApproval) {      
+                } else if (currentStts === 'WINNER' && !isApproval) {
                     nextStts = 'LOSER';
                 } else if (currentStts === 'WINNER' && isApproval) {    // 위 필터에서 거르지만 방어코드
                     return false;
                 } else if (currentStts === 'SUPPLEMENT') {
-                    nextStts = isApproval ? 'INSPECTION' : 'LOSER';
+                    nextStts = isApproval ? 'QUALIFIED' : 'LOSER';
                 } else if (currentStts === 'INSPECTION') {
                     nextStts = isApproval ? 'QUALIFIED' : 'LOSER';
                 }
@@ -196,12 +207,12 @@ const Applicant = () => {
                 let nextStts;
                 if (currentStts === 'SUBMIT') {
                     nextStts = isApproval ? 'WINNER' : 'LOSER';
-                } else if (currentStts === 'WINNER' && !isApproval) {   
+                } else if (currentStts === 'WINNER' && !isApproval) {
                     nextStts = 'LOSER';
                 } else if (currentStts === 'WINNER' && isApproval) {    // 위 조건식에서 거르지만 방어코드
                     return false;
                 } else if (currentStts === 'SUPPLEMENT') {
-                    nextStts = isApproval ? 'INSPECTION' : 'LOSER';
+                    nextStts = isApproval ? 'QUALIFIED' : 'LOSER';
                 } else if (currentStts === 'INSPECTION') {
                     nextStts = isApproval ? 'QUALIFIED' : 'LOSER';
                 }
@@ -307,6 +318,15 @@ const Applicant = () => {
         }
     };
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedApplicant, setSelectedApplicant] = useState(null);
+
+    // 2. 행 클릭 시 모달 열기 함수
+    const onRowClicked = (params) => {
+        setSelectedApplicant(params.data);
+        setIsModalOpen(true);
+    };
+
     return (
         <div style={{ width: '100%', height: '100%' }}>
             <div style={{ marginBottom: '15px' }}>
@@ -324,6 +344,15 @@ const Applicant = () => {
                     pagination={true}
                 />
             </div>
+            {/* 2. 모달 컴포넌트 배치 */}
+            <ApplicantDetailModal
+                isOpen={isModalOpen}
+                data={selectedApplicant}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedApplicant(null);
+                }}
+            />
         </div>
     );
 };
