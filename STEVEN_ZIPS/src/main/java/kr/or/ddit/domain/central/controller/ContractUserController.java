@@ -28,7 +28,9 @@ public class ContractUserController {
     private IContractUserService contractUserService;
 
     @Autowired
+
     private IAnnouncementService announcementService;
+
     @Autowired
     private IAttachFileMapper iAttachFileMapper;
 
@@ -183,6 +185,13 @@ public class ContractUserController {
         result.put("success", true);
         return result;
     }
+
+    @PreAuthorize("hasRole('MEMBER')")
+    @GetMapping("historyDetail.do")
+    public String contractHistoryDetail(@RequestParam String aplctNo, Model model){
+        return "central/contract/contractADetail";
+    }
+
 
     /*@GetMapping("/history.do")
     public String contractHistory() {
