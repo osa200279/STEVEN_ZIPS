@@ -23,21 +23,14 @@ public interface IResidentFacilityMapper {
 
     List<ResidentFacilityHistoryDTO> selectFacilityStatusCardList(@Param("aptCmplexNo") String aptCmplexNo);
 
-    List<ResidentFacilityHistoryDTO> selectFacilityHistoryList(
-            @Param("aptCmplexNo") String aptCmplexNo,
-            @Param("facilityTyCd") String facilityTyCd,
-            @Param("startRow") int startRow,
-            @Param("endRow") int endRow
-    );
-
-    int selectFacilityHistoryCount(@Param("aptCmplexNo") String aptCmplexNo,
-                                   @Param("facilityTyCd") String facilityTyCd);
+    int selectFacilityHistoryCount(ResidentFacilityHistoryDTO dto);
 
 
     List<FacilityInfoDTO> selectResidentFacilityInfoList(
             @Param("aptCmplexNo") String aptCmplexNo,
             @Param("facilityTyCd") String facilityTyCd,
             @Param("facilityNm") String facilityNm,
+            @Param("dongNo") String dongNo,
             @Param("locCn") String locCn,
             @Param("sortColumn") String sortColumn,
             @Param("sortOrder") String sortOrder,
@@ -49,8 +42,13 @@ public interface IResidentFacilityMapper {
             @Param("aptCmplexNo") String aptCmplexNo,
             @Param("facilityTyCd") String facilityTyCd,
             @Param("facilityNm") String facilityNm,
+            @Param("dongNo") String dongNo,
             @Param("locCn") String locCn
     );
 
 
+    List<ResidentFacilityHistoryDTO> selectFacilityHistoryList(ResidentFacilityHistoryDTO dto);
+
+
+    List<FacilityInfoDTO> selectFacilityDongList(String aptCmplexNo);
 }

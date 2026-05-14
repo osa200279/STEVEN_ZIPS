@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import kr.or.ddit.common.model.PaginationInfoVO;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
@@ -83,12 +86,22 @@ public class ResidentMainController {
             @RequestParam(value = "facilityPage", required = false, defaultValue = "1") int facilityPage,
             @RequestParam(value = "facilityNm", required = false) String facilityNm,
             @RequestParam(value = "locCn", required = false) String locCn,
+            @RequestParam(value = "dongNo", required = false) String dongNo,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "historyChkDt", required = false) String historyChkDt,
+            @RequestParam(value = "historyFacilityNm", required = false) String historyFacilityNm,
+            @RequestParam(value = "historyChkCn", required = false) String historyChkCn,
+            @RequestParam(value = "historyChkStts", required = false) String historyChkStts,
+            @RequestParam(value = "historyPicNm", required = false) String historyPicNm,
             @RequestParam(value = "sortColumn", required = false, defaultValue = "facility_ty_cd") String sortColumn,
             @RequestParam(value = "sortOrder", required = false, defaultValue = "ASC") String sortOrder,
             @RequestParam(value = "historySortColumn", required = false, defaultValue = "chk_dt") String historySortColumn,
             @RequestParam(value = "historySortOrder", required = false, defaultValue = "DESC") String historySortOrder,
             Model model
     ) {
+
+
+
         /*
          * @PreAuthorize("hasRole('RESIDENT')")
          * → 입주민 이상만 접근 가능.
@@ -107,9 +120,6 @@ public class ResidentMainController {
         int screenSize = 5;
         int startRow = (currentPage - 1) * screenSize + 1;
         int endRow = currentPage * screenSize;
-
-        int totalRecord = residentFacilityService.getFacilityHistoryCount(aptCmplexNo, facilityTyCd);
-        int totalPage = (int) Math.ceil((double) totalRecord / screenSize);
 
         List<ResidentFacilityHistoryDTO> statusCardList =
                 residentFacilityService.getFacilityStatusCardList(aptCmplexNo);
@@ -156,8 +166,16 @@ public class ResidentMainController {
                 aptCmplexNo,
                 facilityTyCd,
                 facilityNm,
+                dongNo,
                 locCn
         );
+
+        /* 동 정보 검색 */
+        List<FacilityInfoDTO> facilityDongList =
+                residentFacilityService.getFacilityDongList(aptCmplexNo);
+
+        model.addAttribute("facilityDongList", facilityDongList);
+        model.addAttribute("dongNo", dongNo);
 
         /*
          * PaginationInfoVO
@@ -179,6 +197,7 @@ public class ResidentMainController {
                         aptCmplexNo,
                         facilityTyCd,
                         facilityNm,
+                        dongNo,
                         locCn,
                         sortColumn,
                         sortOrder,
@@ -188,9 +207,59 @@ public class ResidentMainController {
 
         facilityPagingVO.setDataList(facilityInfoList);
 
-        List<ResidentFacilityHistoryDTO> historyList =
-                residentFacilityService.getFacilityHistoryList(aptCmplexNo, facilityTyCd, startRow, endRow);
+        /*
+         * 시설 점검 상세 이력 정렬 컬럼 검증
+         *
+         * 왜 필요?
+         * → 사용자가 URL에 이상한 컬럼명을 넣으면 SQL 오류가 나거나
+         *   SQL Injection 위험이 생길 수 있어서 허용된 컬럼만 사용한다.
+         */
+        switch (historySortColumn) {
+            case "chk_dt":
+            case "facility_nm":
+            case "chk_cn":
+            case "chk_stts_cd":
+            case "pic_nm":
+                break;
+            default:
+                historySortColumn = "chk_dt";
+        }
 
+        /*
+         * 정렬 방향 검증
+         */
+        if (!"ASC".equalsIgnoreCase(historySortOrder)) {
+            historySortOrder = "DESC";
+        } else {
+            historySortOrder = "ASC";
+        }
+
+        ResidentFacilityHistoryDTO historySearchDTO = new ResidentFacilityHistoryDTO();
+        historySearchDTO.setAptCmplexNo(aptCmplexNo);
+        historySearchDTO.setFacilityTyCd(facilityTyCd);
+        historySearchDTO.setKeyword(keyword);
+        historySearchDTO.setStartRow(startRow);
+        historySearchDTO.setEndRow(endRow);
+        historySearchDTO.setSortColumn(historySortColumn);
+        historySearchDTO.setSortOrder(historySortOrder);
+        /*
+         * 시설 점검 상세 이력 총 건수
+         * → 페이징 계산에 사용한다.
+         */
+        int totalRecord = residentFacilityService.getFacilityHistoryCount(historySearchDTO);
+
+        /*
+         * 총 페이지 수
+         * → 총 건수 / 한 페이지 개수.
+         */
+        int totalPage = (int) Math.ceil((double) totalRecord / screenSize);
+
+        /*
+         * 시설 점검 상세 이력 목록 조회
+         * → 검색/정렬/페이징 조건을 DTO에 담아서 조회한다.
+         */
+        List<ResidentFacilityHistoryDTO> historyList =
+                residentFacilityService.getFacilityHistoryList(historySearchDTO);
 
         /* 입주민 아파트 헤더레이아웃 */
         AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
@@ -226,7 +295,149 @@ public class ResidentMainController {
         model.addAttribute("sortColumn", sortColumn);
         model.addAttribute("sortOrder", sortOrder);
 
+        /*
+         * 시설 점검 상세 이력 검색어 유지
+         * → 검색 후에도 입력창에 사용자가 입력한 값이 남아있게 한다.
+         */
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("historySortColumn", historySortColumn);
+        model.addAttribute("historySortOrder", historySortOrder);
+
+        /* 시설 점검 상세 이력 셀렉트 박스 */
+        model.addAttribute("historyChkDt", historyChkDt);
+        model.addAttribute("historyFacilityNm", historyFacilityNm);
+        model.addAttribute("historyChkCn", historyChkCn);
+        model.addAttribute("historyChkStts", historyChkStts);
+        model.addAttribute("historyPicNm", historyPicNm);
+
         return "member/resident/manage_facility";
+    }
+
+    @ResponseBody
+    @PreAuthorize("hasRole('RESIDENT')")
+    @GetMapping("/manage/facility/{aptCmplexNo}/facility/list")
+    public Map<String, Object> manageFacilityInfoListAjax(
+            @PathVariable String aptCmplexNo,
+            @RequestParam(value = "facilityPage", defaultValue = "1") int facilityPage,
+            @RequestParam(value = "facilityTyCd", required = false) String facilityTyCd,
+            @RequestParam(value = "facilityNm", required = false) String facilityNm,
+            @RequestParam(value = "locCn", required = false) String locCn,
+            @RequestParam(value = "dongNo", required = false) String dongNo,
+            @RequestParam(value = "sortColumn", defaultValue = "facility_ty_cd") String sortColumn,
+            @RequestParam(value = "sortOrder", defaultValue = "ASC") String sortOrder
+    ) {
+        int pageSize = 5;
+
+        switch (sortColumn) {
+            case "facility_ty_cd":
+            case "facility_nm":
+            case "dong_no":
+            case "loc_cn":
+                break;
+            default:
+                sortColumn = "facility_ty_cd";
+        }
+
+        sortOrder = "DESC".equalsIgnoreCase(sortOrder) ? "DESC" : "ASC";
+
+        PaginationInfoVO<FacilityInfoDTO> pagingVO = new PaginationInfoVO<>(5, 5);
+
+        int totalRecord = residentFacilityService.getResidentFacilityInfoCount(
+                aptCmplexNo,
+                facilityTyCd,
+                facilityNm,
+                dongNo,
+                locCn
+        );
+
+        pagingVO.setTotalRecord(totalRecord);
+        pagingVO.setCurrentPage(facilityPage);
+
+        List<FacilityInfoDTO> facilityInfoList =
+                residentFacilityService.getResidentFacilityInfoList(
+                        aptCmplexNo,
+                        facilityTyCd,
+                        facilityNm,
+                        dongNo,
+                        locCn,
+                        sortColumn,
+                        sortOrder,
+                        pagingVO.getStartRow(),
+                        pagingVO.getEndRow()
+                );
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("facilityInfoList", facilityInfoList);
+        result.put("facilityPage", facilityPage);
+        result.put("facilityTotalPage", pagingVO.getTotalPage());
+        result.put("facilityTotalRecord", totalRecord);
+
+        return result;
+    }
+
+    /*
+     * 시설 점검 상세 이력 비동기 목록 조회
+     *
+     */
+    @ResponseBody
+    @PreAuthorize("hasRole('RESIDENT')")
+    @GetMapping("/manage/facility/{aptCmplexNo}/history/list")
+    public Map<String, Object> manageFacilityHistoryListAjax(
+            @PathVariable String aptCmplexNo,
+            @RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
+            @RequestParam(value = "historyChkStartDt", required = false) String historyChkStartDt,
+            @RequestParam(value = "historyChkEndDt", required = false) String historyChkEndDt,
+            @RequestParam(value = "historyFacilityNm", required = false) String historyFacilityNm,
+            @RequestParam(value = "historyChkCn", required = false) String historyChkCn,
+            @RequestParam(value = "historyChkStts", required = false) String historyChkStts,
+            @RequestParam(value = "historyPicNm", required = false) String historyPicNm,
+            @RequestParam(value = "sortColumn", defaultValue = "chk_dt") String sortColumn,
+            @RequestParam(value = "sortOrder", defaultValue = "DESC") String sortOrder
+    ) {
+        int screenSize = 5;
+        int startRow = (currentPage - 1) * screenSize + 1;
+        int endRow = currentPage * screenSize;
+
+        switch (sortColumn) {
+            case "chk_dt":
+            case "facility_nm":
+            case "chk_cn":
+            case "chk_stts_cd":
+            case "pic_nm":
+                break;
+            default:
+                sortColumn = "chk_dt";
+        }
+
+        sortOrder = "ASC".equalsIgnoreCase(sortOrder) ? "ASC" : "DESC";
+
+        ResidentFacilityHistoryDTO dto = new ResidentFacilityHistoryDTO();
+        dto.setAptCmplexNo(aptCmplexNo);
+        dto.setHistoryChkStartDt(historyChkStartDt);
+        dto.setHistoryChkEndDt(historyChkEndDt);
+        dto.setHistoryFacilityNm(historyFacilityNm);
+        dto.setHistoryChkCn(historyChkCn);
+        dto.setHistoryChkStts(historyChkStts);
+        dto.setHistoryPicNm(historyPicNm);
+        dto.setSortColumn(sortColumn);
+        dto.setSortOrder(sortOrder);
+        dto.setStartRow(startRow);
+        dto.setEndRow(endRow);
+
+
+        int totalRecord = residentFacilityService.getFacilityHistoryCount(dto);
+        int totalPage = (int) Math.ceil((double) totalRecord / screenSize);
+
+        List<ResidentFacilityHistoryDTO> historyList =
+                residentFacilityService.getFacilityHistoryList(dto);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("historyList", historyList);
+        result.put("totalRecord", totalRecord);
+        result.put("totalPage", totalPage);
+        result.put("currentPage", currentPage);
+
+        return result;
     }
 
     @GetMapping("/manage/favorite")

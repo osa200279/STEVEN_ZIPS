@@ -1,6 +1,5 @@
 package kr.or.ddit.domain.member.resident.service;
 
-
 import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO;
 import kr.or.ddit.domain.member.resident.mapper.IResidentFacilityMapper;
@@ -41,6 +40,7 @@ public class ResidentFacilityServiceImpl implements IResidentFacilityService {
             String aptCmplexNo,
             String facilityTyCd,
             String facilityNm,
+            String dongNo,
             String locCn,
             String sortColumn,
             String sortOrder,
@@ -51,6 +51,7 @@ public class ResidentFacilityServiceImpl implements IResidentFacilityService {
                 aptCmplexNo,
                 facilityTyCd,
                 facilityNm,
+                dongNo,
                 locCn,
                 sortColumn,
                 sortOrder,
@@ -64,46 +65,30 @@ public class ResidentFacilityServiceImpl implements IResidentFacilityService {
             String aptCmplexNo,
             String facilityTyCd,
             String facilityNm,
+            String dongNo,
             String locCn
     ) {
         return residentFacilityMapper.selectResidentFacilityInfoCount(
                 aptCmplexNo,
                 facilityTyCd,
                 facilityNm,
+                dongNo,
                 locCn
         );
     }
 
-
     @Override
-    public List<ResidentFacilityHistoryDTO> getFacilityHistoryList(
-            String aptCmplexNo,
-            String facilityTyCd,
-            int startRow,
-            int endRow
-    ) {
-
-        /*
-         * 시설 점검 상세 이력도 시설유형으로 필터링해야 하므로
-         * aptCmplexNo만 넘기면 부족하다.
-         */
-        return residentFacilityMapper.selectFacilityHistoryList(
-                aptCmplexNo,
-                facilityTyCd,
-                startRow,
-                endRow
-        );
+    public List<FacilityInfoDTO> getFacilityDongList(String aptCmplexNo) {
+        return residentFacilityMapper.selectFacilityDongList(aptCmplexNo);
     }
 
     @Override
-    public int getFacilityHistoryCount(String aptCmplexNo, String facilityTyCd) {
-
-        /*
-         * 페이징 전체 개수도 검색조건과 동일해야 한다.
-         * 목록은 필터링했는데 count는 전체를 세면 페이지 수가 틀어진다.
-         */
-        return residentFacilityMapper.selectFacilityHistoryCount(aptCmplexNo, facilityTyCd);
+    public int getFacilityHistoryCount(ResidentFacilityHistoryDTO dto) {
+        return residentFacilityMapper.selectFacilityHistoryCount(dto);
     }
 
-
+    @Override
+    public List<ResidentFacilityHistoryDTO> getFacilityHistoryList(ResidentFacilityHistoryDTO dto) {
+        return residentFacilityMapper.selectFacilityHistoryList(dto);
+    }
 }

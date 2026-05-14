@@ -126,6 +126,8 @@ public class FacilityInfoDTO {
     /* 단지카드 페이징 */
     private int startRow;    // 페이징 시작 row
     private int endRow;      // 페이징 끝 row
+    private String sortColumn;   // 정렬 컬럼
+    private String sortOrder;    // ASC 또는 DESC
 
     /* 시설정보 페이징 */
     private int facilityStartRow;   // 시설정보 페이징 시작 번호
@@ -146,8 +148,6 @@ public class FacilityInfoDTO {
     private String aptComplexInfo;
     private String mgmtOfficeInfo; // 관리사무소 정보
     private List<?> annBoardPostInfoList;
-
-
 
 
 }
