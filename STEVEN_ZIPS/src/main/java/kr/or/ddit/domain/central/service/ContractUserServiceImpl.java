@@ -3,6 +3,7 @@ package kr.or.ddit.domain.central.service;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.mapper.IContractUserMapper;
 import kr.or.ddit.domain.central.vo.ContractUserVO;
 import kr.or.ddit.domain.central.vo.RentCtrtVO;
@@ -32,6 +33,11 @@ public class ContractUserServiceImpl implements IContractUserService {
     @Override
     public void cancelContract(String aplctNo) {
         contractUserMapper.cancelContract(aplctNo);
+    }
+
+    @Override
+    public AnnouncementDTO selectOneContractHistoryDetail(String aplctNo) {
+        return contractUserMapper.selectOneContractHistoryDetail(aplctNo);
     }
 
     @Autowired
@@ -74,6 +80,7 @@ public class ContractUserServiceImpl implements IContractUserService {
             }
         }
     }
+
 
     @Override
     public List<ContractUserVO> selectContractDoc(String userNo) {

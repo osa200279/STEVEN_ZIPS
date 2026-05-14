@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.service;
 
+import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.vo.ContractUserVO;
 import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,4 +27,9 @@ public interface IContractUserService {
     List<Map<String, Object>> selectAplctList(String userNo);
 
     void cancelContract(String aplctNo);
+
+    AnnouncementDTO selectOneContractHistoryDetail(String aplctNo);
 }
+
+
+

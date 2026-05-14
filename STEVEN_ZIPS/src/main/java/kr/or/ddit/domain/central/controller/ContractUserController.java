@@ -7,6 +7,7 @@ import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
 import kr.or.ddit.domain.central.service.IContractUserService;
 import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
+import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +29,6 @@ public class ContractUserController {
     private IContractUserService contractUserService;
 
     @Autowired
-
     private IAnnouncementService announcementService;
 
     @Autowired
@@ -188,10 +188,19 @@ public class ContractUserController {
 
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("historyDetail.do")
-    public String contractHistoryDetail(@RequestParam String aplctNo, Model model){
+    public String contractHistoryDetail(@RequestParam String aplctNo,
+                                        @AuthenticationPrincipal CustomUser principal,
+                                        Model model){
+
+        String userNo = principal.getMember().getUserNo();
+        MemberVO memberVO = principal.getMember();
+        AnnouncementDTO announcement = contractUserService.selectOneContractHistoryDetail(aplctNo);
+        model.addAttribute("memberVO", memberVO);
+        model.addAttribute("announcement", announcement);
+        model.addAttribute("aplctNo", aplctNo);
+        model.addAttribute("userNo", userNo);
         return "central/contract/contractADetail";
     }
-
 
     /*@GetMapping("/history.do")
     public String contractHistory() {

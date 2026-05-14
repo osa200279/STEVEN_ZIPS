@@ -148,21 +148,42 @@
           AND exclusive_size = #{exclusiveSize}
           AND ROWNUM = 1
     </select>
-    <select id="selectAplctList" resultType="map" parameterType="string">
-        SELECT a.aplct_no
-             , a.ann_no
-             , a.aplct_stts_cd
-             , a.reg_dt
-             , aht.exclusive_size
-             , cab.ttl
-             , aht.ty_nm
-             , ac.apt_cmplex_nm
+    <select id="selectAplctList" resultType="kr.or.ddit.domain.central.admin.dto.AnnouncementDTO" parameterType="string">
+        SELECT a.aplct_no           /*신청번호*/
+             , a.ann_no             /*공고번호*/
+             , a.aplct_stts_cd      /*신청상태코드*/
+             , a.reg_dt             /*등록일시*/
+             , aht.exclusive_size   /*전용면적*/
+             , aht.ty_nm            /*타입명*/
+             , cab.ttl              /*제목*/
+             , cab.rcrt_end_dt      /*모집종료일*/
+             , ac.apt_cmplex_nm     /*아파트 단지 명*/
+             , m.user_nm            /*사용자명*/
+             , m.user_telno         /*사용자 전화번호*/
         FROM aplct a
                  INNER JOIN apt_ho_ty aht on a.ho_ty_no = aht.ho_ty_no
                  INNER JOIN center_ann_board_post cab on a.ann_no = cab.ann_no
                  INNER JOIN apt_complex ac on ac.apt_cmplex_no = aht.apt_cmplex_no
+                 INNER JOIN member m ON m.user_no = a.user_no
         WHERE a.user_no = #{userNo}
-        ORDER BY a.reg_dt DESC
+    </select>
+    <select id="selectOneContractHistoryDetail"
+            resultType="kr.or.ddit.domain.central.admin.dto.AnnouncementDTO" parameterType="string">
+        SELECT a.aplct_no
+             , a.aplct_stts_cd
+             , a.reg_dt
+             , cab.ttl
+             , cab.ann_no
+             , ac.apt_cmplex_nm
+             , aht.ty_nm
+             , aht.exclusive_size
+             , cab.rcrt_end_dt
+             , m.user_nm
+             , m.user_telno
+        FROM aplct a
+        INNER JOIN apt_ho_ty aht ON a.ho_ty_no = aht.ho_ty_no
+        INNER JOIN center_ann_board_post cab ON cab.ann_no = a.ann_no
+        INNER JOIN member m ON m.user_no ON
 
     </select>
     <update id="updateInqCnt" parameterType="string">

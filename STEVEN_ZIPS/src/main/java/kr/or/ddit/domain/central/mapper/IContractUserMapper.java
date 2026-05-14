@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.mapper;
 
+import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.vo.ContractUserVO;
 import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,4 +32,6 @@ public interface IContractUserMapper {
     List<Map<String, Object>> selectAplctList(String userNo);
 
     void cancelContract(String aplctNo);
+
+    AnnouncementDTO selectOneContractHistoryDetail(String aplctNo);
 }
