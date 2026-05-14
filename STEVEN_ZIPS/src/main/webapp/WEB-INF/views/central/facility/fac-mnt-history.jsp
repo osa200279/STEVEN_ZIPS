@@ -1162,6 +1162,41 @@
 
         renderFacilityRows(1);
     })();
+
+
+    /*
+ * 새로고침 시 검색조건 초기화
+ *
+ * URL 파라미터란?
+ * → 주소 뒤에 붙는 ?sidonm=서울특별시 같은 검색 조건 값.
+ *
+ * 왜 제거?
+ * → 새로고침하면 브라우저가 같은 URL을 다시 호출해서
+ *   이전 검색조건이 그대로 유지되기 때문.
+ */
+    window.addEventListener("load", function () {
+
+        const url = new URL(window.location.href);
+
+        /*
+         * search
+         * → URL의 ? 뒤쪽 값 전체
+         * 예: ?sidonm=서울특별시&currentPage=1
+         */
+        if (url.search) {
+
+            /*
+             * replaceState
+             * → 화면 새로고침 없이 주소창 URL만 바꾸는 기능.
+             *
+             * 왜 사용?
+             * → 검색조건 파라미터를 주소에서 제거해서
+             *   다음 새로고침 때 처음 진입 화면처럼 만들기 위해.
+             */
+            history.replaceState(null, "", url.pathname);
+        }
+    });
+
 </script>
 
 </body>
