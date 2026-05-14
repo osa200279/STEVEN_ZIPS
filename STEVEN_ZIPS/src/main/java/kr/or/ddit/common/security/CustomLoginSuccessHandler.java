@@ -1,4 +1,4 @@
-package kr.or.ddit.common.security;
+﻿package kr.or.ddit.common.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -37,15 +37,15 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-											Authentication authentication) throws IOException, ServletException {
+										Authentication authentication) throws IOException, ServletException {
 		log.info("## CustomLoginSuccessHandler.onAuthenticationSuccess() 실행...!");
 
 		CustomUser customUser = (CustomUser) authentication.getPrincipal();
 		MemberVO member = customUser.getMember();
 
 		// JWT 토큰 생성
-		long expiredTime = 1000 * 60 * 60 * 1;	// 토큰 만료시간 설정 : 1시간
-		Date expiry = new Date(System.currentTimeMillis() + expiredTime);	// 현재시간으로부터 +1시간 까지
+		long expiredTime = 1000 * 60 * 60 * 1;   // 토큰 만료시간 설정 : 1시간
+		Date expiry = new Date(System.currentTimeMillis() + expiredTime);   // 현재시간으로부터 +1시간 까지
 		String accessToken = tokenProvider.makeToken(expiry, member);
 		log.info("## 발급된 토큰 {}", accessToken);
 
@@ -58,18 +58,18 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 		// 시큐리티 활성화된 사용자인지 체크
 		if(customUser.isEnabled()) {
-			log.info("## username : {}", customUser.getUsername());	// 인증된 사용자 아이디
-			log.info("## password : {}", customUser.getPassword());	// 인증된 사용자 비밀번호
+			log.info("## username : {}", customUser.getUsername());   // 인증된 사용자 아이디
+			log.info("## password : {}", customUser.getPassword());   // 인증된 사용자 비밀번호
 			Collection<GrantedAuthority> grantedAuthority = customUser.getAuthorities();
-		 	Iterator<GrantedAuthority> ite_authority = grantedAuthority.iterator();
-		 	while(ite_authority.hasNext()) {
-		 		GrantedAuthority authority = ite_authority.next();
-		 		log.info("## auth : {}", authority.getAuthority());	// 인증된 사용자 권한
-		 	}
+			Iterator<GrantedAuthority> ite_authority = grantedAuthority.iterator();
+			while(ite_authority.hasNext()) {
+				GrantedAuthority authority = ite_authority.next();
+				log.info("## auth : {}", authority.getAuthority());   // 인증된 사용자 권한
+			}
 		}
-		
+
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
-		String targetUrl = "/";	// 기본 default target은 root
+		String targetUrl = "/";   // 기본 default target은 root
 
 		if(savedRequest != null) {
 			String redirectUrl = savedRequest.getRedirectUrl();
@@ -93,7 +93,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 		if(session == null) {
 			return;
 		}
-		
+
 		// SPRING_SECURITY_LAST_EXCEPTION 값
 		session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
 	}
