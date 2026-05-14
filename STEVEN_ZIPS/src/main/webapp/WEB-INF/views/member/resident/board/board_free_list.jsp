@@ -4,305 +4,51 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>자유게시판 - 목록 – 대덕아파트</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
 
     <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif !important;
-            background: var(--bg);
-            color: var(--text-dark);
-            margin: 0;
-        }
-
-        .material-symbols-outlined {
-            font-family: 'Material Symbols Outlined' !important;
-        }
-
-        .main-shell {
-            display: flex;
-            align-items: stretch;
-            width: 100%;
-            min-height: calc(100vh - 114px);
-            margin-top: 114px;
-            background: var(--bg);
-        }
-
-        .content-area {
-            flex: 1;
-            min-width: 0;
-            padding: 32px 40px 64px;
-        }
-
-        .page-content-wrap {
-            max-width: 1080px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--text-light);
-            margin-bottom: 18px;
-        }
-
-        .breadcrumb a {
-            color: var(--text-light);
-            text-decoration: none;
-        }
-
-        .breadcrumb .cur {
-            color: var(--green-dark);
-            font-weight: 700;
-        }
-
-        .page-title {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--text-dark);
-            padding-bottom: 14px;
-            border-bottom: 2px solid var(--green-dark);
-            margin-bottom: 16px;
-            letter-spacing: -.4px;
-        }
-
-        .page-desc {
-            font-size: 13px;
-            line-height: 1.8;
-            color: var(--text-light);
-            margin-bottom: 24px;
-        }
-
-        .hero-card, .card, .panel {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            box-shadow: 0 10px 24px rgba(30, 60, 40, .05);
-        }
-
-        .section-hd {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .section-hd h3 {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--text-dark);
-        }
-
-        .section-hd span {
-            font-size: 12px;
-            color: var(--text-light);
-        }
-
-        .card, .panel {
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            background: #fff;
-            overflow: hidden;
-            border-radius: 12px;
-        }
-
-        .data-table thead th {
-            background: var(--green-pale);
-            color: var(--text-mid);
-            padding: 12px 14px;
-            text-align: left;
-            font-weight: 700;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .data-table tbody td {
-            padding: 13px 14px;
-            border-bottom: 1px solid #edf0eb;
-            color: var(--text-dark);
-            vertical-align: top;
-        }
-
-        .data-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .col-no {
-            text-align: center !important;
-            width: 70px;
-        }
-
-        .col-ttl {
-            text-align: left !important;
-        }
-
-        .col-wrt {
-            text-align: center !important;
-            width: 110px;
-        }
-
-        .col-dt {
-            text-align: center !important;
-            width: 150px;
-        }
-
-        .col-inq {
-            text-align: right !important;
-            width: 80px;
-        }
-
-        .fake-input, .fake-select, .fake-textarea {
-            width: 100%;
-            border: 1px solid #d8ddd4;
-            background: #fff;
-            border-radius: 10px;
-            padding: 11px 13px;
-            font-size: 13px;
-            color: var(--text-dark);
-            box-sizing: border-box;
-        }
-
-        .inline-fields {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-main, .btn-sub, .btn-danger, .btn-ghost {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 120px;
-            padding: 12px 18px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 800;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            box-sizing: border-box;
-        }
-
-        .btn-main {
-            background: var(--green-dark);
-            color: #fff;
-        }
-
-        .btn-sub {
-            background: #edf5ef;
-            color: var(--green-dark);
-        }
-
-        .btn-danger {
-            background: #b64444;
-            color: #fff;
-        }
-
-        .btn-ghost {
-            background: #fff;
-            color: var(--text-mid);
-            border: 1px solid var(--border);
-        }
-
-        .search-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
-        .search-row .fake-input, .search-row .fake-select {
-            max-width: 220px;
-        }
+        body {font-family: 'Noto Sans KR', sans-serif !important;background: var(--bg);color: var(--text-dark);margin: 0;}
+        .material-symbols-outlined { font-family: 'Material Symbols Outlined' !important; }
+        .main-shell {display:flex;align-items:stretch;width:100%;min-height:calc(100vh - 114px);margin-top:114px;background:var(--bg);}
+        .content-area {flex:1;min-width:0;padding:32px 40px 64px;}
+        .page-content-wrap {max-width:1080px;width:100%;margin:0 auto;}
+        .breadcrumb {display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-light);margin-bottom:18px;}
+        .breadcrumb a {color:var(--text-light);text-decoration:none;} .breadcrumb .cur {color:var(--green-dark);font-weight:700;}
+        .page-title {font-size:22px;font-weight:800;color:var(--text-dark);padding-bottom:14px;border-bottom:2px solid var(--green-dark);margin-bottom:16px;letter-spacing:-.4px;}
+        .page-desc {font-size:13px;line-height:1.8;color:var(--text-light);margin-bottom:24px;}
+        .hero-card,.card,.panel {background:var(--white);border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 24px rgba(30,60,40,.05);}
+        .section-hd {display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);} .section-hd h3 {margin:0;font-size:15px;font-weight:800;color:var(--text-dark);} .section-hd span {font-size:12px;color:var(--text-light);} .card,.panel {padding:20px;margin-bottom:20px;}
+        .data-table {width:100%;border-collapse:collapse;font-size:13px;background:#fff;overflow:hidden;border-radius:12px;} .data-table thead th {background:var(--green-pale);color:var(--text-mid);padding:12px 14px;text-align:left;font-weight:700;border-bottom:1px solid var(--border);} .data-table tbody td {padding:13px 14px;border-bottom:1px solid #edf0eb;color:var(--text-dark);vertical-align:top;} .data-table tbody tr:last-child td {border-bottom:none;}
+        .col-no  { text-align:center !important; width:70px; }
+        .col-ttl { text-align:left   !important; max-width:400px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .col-wrt { text-align:center !important; width:110px; }
+        .col-dt  { text-align:center !important; width:150px; }
+        .col-inq { text-align:right  !important; width:80px; }
+        .fake-input,.fake-select,.fake-textarea {width:100%;border:1px solid #d8ddd4;background:#fff;border-radius:10px;padding:11px 13px;font-size:13px;color:var(--text-dark);box-sizing:border-box;}
+        .inline-fields {display:flex;gap:10px;flex-wrap:wrap;}
+        .btn-main,.btn-sub,.btn-danger,.btn-ghost {display:inline-flex;align-items:center;justify-content:center;min-width:120px;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;border:none;cursor:pointer;box-sizing:border-box;} .btn-main {background:var(--green-dark);color:#fff;} .btn-sub {background:#edf5ef;color:var(--green-dark);} .btn-danger {background:#b64444;color:#fff;} .btn-ghost {background:#fff;color:var(--text-mid);border:1px solid var(--border);}
+        .search-row {display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;} .search-row .fake-input,.search-row .fake-select {max-width:220px;}
 
         /* 페이징 */
-        .pagination {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            margin-top: 24px;
-            flex-wrap: wrap;
-        }
-
+        .pagination {display:flex;align-items:center;justify-content:center;gap:4px;margin-top:24px;flex-wrap:wrap;}
         .pagination button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: #fff;
-            color: var(--text-mid);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .15s;
+            display:inline-flex;align-items:center;justify-content:center;
+            width:36px;height:36px;border-radius:8px;border:1px solid var(--border);
+            background:#fff;color:var(--text-mid);font-size:13px;font-weight:600;cursor:pointer;
+            transition:all .15s;
         }
+        .pagination button:hover {background:var(--green-pale);border-color:var(--green-dark);color:var(--green-dark);}
+        .pagination button.active {background:var(--green-dark);color:#fff;border-color:var(--green-dark);}
+        .pagination button.nav {min-width:36px;font-size:16px;color:var(--text-light);}
+        .pagination button.nav:disabled {opacity:.35;cursor:default;}
+        .pagination .ellipsis {width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;color:var(--text-light);font-size:13px;letter-spacing:2px;}
 
-        .pagination button:hover {
-            background: var(--green-pale);
-            border-color: var(--green-dark);
-            color: var(--green-dark);
-        }
-
-        .pagination button.active {
-            background: var(--green-dark);
-            color: #fff;
-            border-color: var(--green-dark);
-        }
-
-        .pagination button.nav {
-            min-width: 36px;
-            font-size: 16px;
-            color: var(--text-light);
-        }
-
-        .pagination button.nav:disabled {
-            opacity: .35;
-            cursor: default;
-        }
-
-        .pagination .ellipsis {
-            width: 36px;
-            height: 36px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-light);
-            font-size: 13px;
-            letter-spacing: 2px;
-        }
-
-        @media (max-width: 900px) {
-            .main-shell {
-                flex-direction: column
-            }
-
-            .content-area {
-                padding: 24px 18px 48px
-            }
-
-            .page-content-wrap {
-                max-width: 100%
-            }
-        }
+        @media (max-width:900px){.main-shell{flex-direction:column}.content-area{padding:24px 18px 48px}.page-content-wrap{max-width:100%}}
     </style>
 </head>
 <body>
@@ -332,12 +78,10 @@
                     <select name="searchType" class="fake-select">
                         <option value="ttl" ${searchType == 'ttl' ? 'selected' : ''}>제목</option>
                         <option value="wrtrId" ${searchType == 'wrtrId' ? 'selected' : ''}>작성자</option>
-                        <option value="cn" ${searchType == 'cn' ? 'selected' : ''}>내용</option>
                     </select>
                     <input class="fake-input" name="searchWord" value="${searchWord}" placeholder="검색어를 입력하세요"/>
                     <button class="btn-sub" onclick="doSearch()">검색</button>
-                    <a href="${pageContext.request.contextPath}/resident/board/free/write/${aptCmplexNo}"
-                       class="btn-main">글쓰기</a>
+                    <a href="${pageContext.request.contextPath}/resident/board/free/write/${aptCmplexNo}" class="btn-main">글쓰기</a>
                 </div>
 
                 <table class="data-table">
@@ -361,13 +105,11 @@
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="board" items="${pagingVO.dataList}">
-                                <tr style="cursor:pointer;"
-                                    onclick="location.href='/resident/boardFreeDetail/${board.postNo}/${aptCmplexNo}'">
+                                <tr style="cursor:pointer;" onclick="location.href='/resident/boardFreeDetail/${board.postNo}/${aptCmplexNo}'">
                                     <td class="col-no">${board.postNo}</td>
                                     <td class="col-ttl">${board.ttl}</td>
                                     <td class="col-wrt">${board.wrtrId}</td>
-                                    <td class="col-dt"><fmt:formatDate value="${board.regDttm}"
-                                                                       pattern="yyyy-MM-dd HH:mm"/></td>
+                                    <td class="col-dt"><fmt:formatDate value="${board.regDttm}" pattern="yyyy-MM-dd HH:mm"/></td>
                                     <td class="col-inq">${board.inqCnt}</td>
                                 </tr>
                             </c:forEach>
@@ -389,7 +131,7 @@
 <script>
     const aptCmplexNo = '${aptCmplexNo}';
     const currentPage = parseInt('${pagingVO.currentPage}') || 1;
-    const totalPage = parseInt('${pagingVO.totalPage}') || 1;
+    const totalPage   = parseInt('${pagingVO.totalPage}')   || 1;
 
     /* ── 페이징 렌더 ── */
     function renderPagination() {
