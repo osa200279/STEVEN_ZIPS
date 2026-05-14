@@ -28,11 +28,11 @@ public class AdmDashBoardRestController {
     // 리액트 페이지로 로그인한 관리자 정보를 넘김
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/info")
-    public ResponseEntity<?> getAdminInfo(@AuthenticationPrincipal CustomUser customUser){
-        if(customUser == null){
+    public ResponseEntity<?> getAdminInfo(@AuthenticationPrincipal CustomUser customUser) {
+        if (customUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 없습니다.");
         }
-        AdmVO adm = (AdmVO)customUser.getMember();
+        AdmVO adm = (AdmVO) customUser.getMember();
 
         log.info("## 리액트 레이아웃에서 관리자 정보 요청함: {}", adm.getUserNm());
 
@@ -42,16 +42,16 @@ public class AdmDashBoardRestController {
     // 청약 신청 목록 조회
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/aplct")
-    public ResponseEntity<List<AplctDTO>> getAplctList(){
+    public ResponseEntity<List<AplctDTO>> getAplctList() {
         // log.info("#####청약 신청 리스트 컨트롤러 진입!!");
         try {
             List<AplctDTO> list = aplctService.selectAplctList();
             // log.info("##### 청약 리스트 : {}", list);
-            if(list.isEmpty()){
+            if (list.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
             return ResponseEntity.ok(list);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
@@ -60,17 +60,21 @@ public class AdmDashBoardRestController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/aplct/upd")
     public ResponseEntity<Integer> updAplct(@RequestBody Map<String, Object> params) {
+        // log.info("#### 상태 변경 진입 :" + params);
 
-        List<Map<String,Object>> updateList = (List<Map<String, Object>>)params.get("aplctMapList");
 
-        // String aplctSttsCd = (String) map.get("aplctSttsCd");
-        // List<String> aplctNos = (List<String>) params.get("aplctNos");
+        List<Map<String, Object>> updateList = (List<Map<String, Object>>) params.get("aplctMapList");
 
-         int cnt = aplctService.approveAplct(updateList);
+        if (updateList == null || updateList.isEmpty()) {
+            log.warn("#### 업데이트할 데이터가 전달되지 않았습니다.");
+            return ResponseEntity.badRequest().body(0);
+        }
 
-        // return cnt > 0 ? ResponseEntity.ok(cnt)
-        //: ResponseEntity.badRequest().body(0);
+        int cnt = aplctService.approveAplct(updateList);
 
-        return null;
+        // log.info("#### 상태변경 쿼리 끝 {}", cnt);
+        // 서비스에 트랜잭셔널 어노테이션을 써서 어떠한 값이 오더라도 성공으로 간주(쿼리에 익명블록 사용으로 성공해도 -1의 값이 올 수 있음)
+        return cnt != 0 ? ResponseEntity.ok(cnt)
+                : ResponseEntity.badRequest().body(0);
     }
 }

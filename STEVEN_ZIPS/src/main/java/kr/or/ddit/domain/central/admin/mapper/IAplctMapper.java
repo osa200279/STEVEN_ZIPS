@@ -12,5 +12,5 @@ public interface IAplctMapper {
 
     List<AplctDTO> selectAplctList();
 
-    int updateAplctStatus(List<Map<String, Object>> updateList);
+    int updateAplctStatus(@Param("updateList") List<Map<String, Object>> updateList);
 }
