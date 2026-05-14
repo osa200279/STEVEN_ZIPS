@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.member.resident.mapper.IResidentNoticeBoardMapper">
+
+        <resultMap id="residentBoardNoticeMap"
+                   type="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO">
+            <id property="annNo" column="ann_no"/>
+            <result property="boardNo" column="board_no"/>
+            <result property="aptCmplexNo" column="apt_cmplex_no"/>
+            <result property="ttl" column="ttl"/>
+            <result property="cn" column="cn"/>
+            <result property="wrtrId" column="wrtr_id"/>
+            <result property="regDttm" column="reg_dttm"/>
+            <result property="mdfDttm" column="mdf_dttm"/>
+            <result property="inqCnt" column="inq_cnt"/>
+            <result property="delYn" column="del_yn"/>
+            <result property="atchFileId" column="atch_file_id"/>
+            <result property="boardTyCd" column="board_ty_cd"/>
+            <result property="boardNm" column="board_nm"/>
+        </resultMap>
+
+        <select id="selectResidentBoardNoticeCount"
+                parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO"
+                resultType="int">
+            /* IResidentBoardNoticeMapper.selectResidentBoardNoticeCount */
+            SELECT COUNT(*)
+            FROM apt_ann_board_post aabp
+            INNER JOIN apt_board_instance abi
+            ON aabp.board_no = abi.board_no
+            WHERE aabp.del_yn = 'N'
+            AND abi.use_yn = 'Y'
+            AND abi.board_ty_cd = 'NOTICE'
+            AND abi.apt_cmplex_no = #{aptCmplexNo}
+            <if test="searchTtl != null and searchTtl != ''">
+                AND aabp.ttl LIKE '%' || #{searchTtl} || '%'
+            </if>
+            <if test="searchStartDt != null and searchStartDt != ''">
+                AND TRUNC(aabp.reg_dttm) <![CDATA[>=]]> TO_DATE(#{searchStartDt}, 'YYYY-MM-DD')
+            </if>
+            <if test="searchEndDt != null and searchEndDt != ''">
+                AND TRUNC(aabp.reg_dttm) <![CDATA[<=]]> TO_DATE(#{searchEndDt}, 'YYYY-MM-DD')
+            </if>
+        </select>
+
+        <select id="selectResidentBoardNoticeList"
+                parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO"
+                resultMap="residentBoardNoticeMap">
+            /* IResidentBoardNoticeMapper.selectResidentBoardNoticeList */
+            SELECT *
+            FROM (
+            SELECT rownum rnum
+            , notice_list.*
+            FROM (
+            SELECT aabp.ann_no
+            , aabp.board_no
+            , abi.apt_cmplex_no
+            , aabp.ttl
+            , aabp.wrtr_id
+            , TO_CHAR(aabp.reg_dttm, 'YYYY-MM-DD') reg_dttm
+            , TO_CHAR(aabp.mdf_dttm, 'YYYY-MM-DD') mdf_dttm
+            , NVL(aabp.inq_cnt, 0) inq_cnt
+            , aabp.del_yn
+            , aabp.atch_file_id
+            , abi.board_ty_cd
+            , abi.board_nm
+            FROM apt_ann_board_post aabp
+            INNER JOIN apt_board_instance abi
+            ON aabp.board_no = abi.board_no
+            WHERE aabp.del_yn = 'N'
+            AND abi.use_yn = 'Y'
+            AND abi.board_ty_cd = 'NOTICE'
+            AND abi.apt_cmplex_no = #{aptCmplexNo}
+            <if test="searchTtl != null and searchTtl != ''">
+                AND aabp.ttl LIKE '%' || #{searchTtl} || '%'
+            </if>
+            <if test="searchStartDt != null and searchStartDt != ''">
+                AND TRUNC(aabp.reg_dttm) <![CDATA[>=]]> TO_DATE(#{searchStartDt}, 'YYYY-MM-DD')
+            </if>
+            <if test="searchEndDt != null and searchEndDt != ''">
+                AND TRUNC(aabp.reg_dttm) <![CDATA[<=]]> TO_DATE(#{searchEndDt}, 'YYYY-MM-DD')
+            </if>
+            ORDER BY aabp.top_fix_yn DESC
+            , aabp.reg_dttm DESC
+            , TO_NUMBER(REGEXP_REPLACE(aabp.ann_no, '[^0-9]', '')) DESC
+            ) notice_list
+            WHERE rownum <![CDATA[<=]]> #{endRow}
+            )
+            WHERE rnum <![CDATA[>=]]> #{startRow}
+        </select>
+
+        <select id="selectResidentBoardNoticeDetail"
+                parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO"
+                resultMap="residentBoardNoticeMap">
+            /* IResidentBoardNoticeMapper.selectResidentBoardNoticeDetail */
+            SELECT aabp.ann_no
+                 , aabp.board_no
+                 , abi.apt_cmplex_no
+                 , aabp.ttl
+                 , aabp.cn
+                 , aabp.wrtr_id
+                 , TO_CHAR(aabp.reg_dttm, 'YYYY-MM-DD') reg_dttm
+                 , TO_CHAR(aabp.mdf_dttm, 'YYYY-MM-DD') mdf_dttm
+                 , NVL(aabp.inq_cnt, 0) inq_cnt
+                 , aabp.del_yn
+                 , aabp.atch_file_id
+                 , abi.board_ty_cd
+                 , abi.board_nm
+            FROM apt_ann_board_post aabp
+                     INNER JOIN apt_board_instance abi
+                                ON aabp.board_no = abi.board_no
+            WHERE aabp.del_yn = 'N'
+              AND abi.use_yn = 'Y'
+              AND abi.board_ty_cd = 'NOTICE'
+              AND abi.apt_cmplex_no = #{aptCmplexNo}
+              AND aabp.ann_no = #{annNo}
+        </select>
+
+        <update id="updateResidentBoardNoticeInqCnt"
+                parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO">
+            /* IResidentBoardNoticeMapper.updateResidentBoardNoticeInqCnt */
+            UPDATE apt_ann_board_post
+            SET inq_cnt = NVL(inq_cnt, 0) + 1
+            WHERE ann_no = #{annNo}
+              AND del_yn = 'N'
+              AND board_no IN (
+                SELECT board_no
+                FROM apt_board_instance
+                WHERE apt_cmplex_no = #{aptCmplexNo}
+                  AND board_ty_cd = 'NOTICE'
+                  AND use_yn = 'Y'
+            )
+        </update>
+
+    </mapper>

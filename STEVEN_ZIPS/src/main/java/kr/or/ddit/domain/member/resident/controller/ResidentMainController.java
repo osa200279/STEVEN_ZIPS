@@ -7,6 +7,7 @@ import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO;
 import kr.or.ddit.domain.member.resident.service.IResidentFacilityService;
 import kr.or.ddit.domain.member.resident.service.IResidentMoveService;
+import kr.or.ddit.domain.member.resident.service.IResidentNoticeBoardService;
 import kr.or.ddit.domain.member.resident.vo.MyAptVO;
 import kr.or.ddit.domain.member.resident.vo.ResidentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import org.springframework.web.bind.annotation.ResponseBody;
+import kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO;
 
 import java.util.HashMap;
 
@@ -45,6 +47,9 @@ public class ResidentMainController {
 
     @Autowired
     private IResidentMoveService residentMoveService;
+
+    @Autowired
+    private IResidentNoticeBoardService residentNoticeBoardService;
 
     /**
      * 내 아파트 목록 조회 컨트롤러
@@ -746,8 +751,54 @@ public class ResidentMainController {
      * ========================= */
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/board/notice/{aptCmplexNo}")
-    public String boardNotice(@PathVariable String aptCmplexNo, Model model) {
+    public String boardNotice(
+            @PathVariable String aptCmplexNo,
+            @RequestParam(value = "currentPage", required = false, defaultValue = "1") int currentPage,
+            @RequestParam(value = "searchTtl", required = false) String searchTtl,
+            @RequestParam(value = "searchStartDt", required = false) String searchStartDt,
+            @RequestParam(value = "searchEndDt", required = false) String searchEndDt,
+            Model model
+    ) {
+        /*
+         * currentPage
+         * → 현재 페이지 번호.
+         * 왜 사용?
+         * → 공지사항 목록을 한 번에 전부 보여주지 않고 페이지 단위로 나누기 위해.
+         */
+
+        PaginationInfoVO<ResidentNoticeBoardDTO> pagingVO = new PaginationInfoVO<>(10, 5);
+
+        ResidentNoticeBoardDTO searchDTO = new ResidentNoticeBoardDTO();
+        searchDTO.setAptCmplexNo(aptCmplexNo);
+        searchDTO.setSearchTtl(searchTtl);
+        searchDTO.setSearchStartDt(searchStartDt);
+        searchDTO.setSearchEndDt(searchEndDt);
+
+        int totalRecord = residentNoticeBoardService.selectResidentBoardNoticeCount(searchDTO);
+
+        pagingVO.setCurrentPage(currentPage);
+        pagingVO.setTotalRecord(totalRecord);
+
+        searchDTO.setStartRow(pagingVO.getStartRow());
+        searchDTO.setEndRow(pagingVO.getEndRow());
+
+        List<ResidentNoticeBoardDTO> noticeList =
+                residentNoticeBoardService.selectResidentBoardNoticeList(searchDTO);
+
+        pagingVO.setDataList(noticeList);
+
         model.addAttribute("aptCmplexNo", aptCmplexNo);
+        model.addAttribute("noticeList", noticeList);
+        model.addAttribute("pagingVO", pagingVO);
+
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalRecord", totalRecord);
+        model.addAttribute("totalPage", pagingVO.getTotalPage());
+
+        model.addAttribute("searchTtl", searchTtl);
+        model.addAttribute("searchStartDt", searchStartDt);
+        model.addAttribute("searchEndDt", searchEndDt);
+
         return "member/resident/board/board_notice";
     }
 

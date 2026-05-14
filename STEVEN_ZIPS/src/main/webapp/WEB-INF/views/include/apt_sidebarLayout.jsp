@@ -6,6 +6,75 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
+<style>
+
+  .notice-search-wrap{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+  }
+
+  .notice-search-input{
+    height:42px;
+    padding:0 18px;
+    border:none;
+    border-radius:999px;
+    background:#eef1ed;
+    color:#2f312f;
+    font-size:14px;
+    outline:none;
+    min-width:180px;
+    box-sizing:border-box;
+  }
+
+  .notice-search-input::placeholder{
+    color:#7d847d;
+  }
+
+  .notice-search-date{
+    width:180px;
+  }
+
+  .notice-search-btn{
+    height:42px;
+    min-width:92px;
+    border:none;
+    border-radius:999px;
+    background:#006b50;
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  .notice-reset-btn{
+    height:42px;
+    min-width:92px;
+    border:none;
+    border-radius:999px;
+    background:#667594;
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    text-decoration:none;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-sizing:border-box;
+  }
+
+  .notice-search-tilde{
+    font-size:18px;
+    font-weight:700;
+    color:#4d5450;
+  }
+
+</style>
+
 <script>
   tailwind.config = {
     darkMode: "class",
@@ -92,7 +161,7 @@
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/intro') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/apt/main/${apt.aptCmplexNo}/aptInfo">우리아파트</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/intro') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/apt/main/${apt.aptCmplexNo}/intro">관리사무소 소개</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/operation') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/facility') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/manage/facility">시설관리이력</a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/facility') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/manage/facility/${apt.aptCmplexNo}">시설관리이력</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/favorite') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/manage/favorite">즐겨찾기</a>
       </div>
     </details>

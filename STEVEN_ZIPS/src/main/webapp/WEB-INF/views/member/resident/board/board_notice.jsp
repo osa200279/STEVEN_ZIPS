@@ -60,51 +60,105 @@
           <span class="cur">공지사항</span>
         </div>
         <h1 class="page-title">공지사항</h1>
-        <p class="page-desc">공지사항 키워드 검색, 긴급공지 카드형 UI, 공지 리스트를 포함한 화면입니다.</p>
+        <p class="page-desc">단지 관리자가 등록한 우리 단지 공지사항을 확인할 수 있습니다.</p>
 
-        <section class="search-row">
-          <input class="fake-input" value="정기점검" />
-          <button class="btn-sub">검색</button>
-        </section>
-        <section class="notice-card">
-          <strong style="display:block; font-size:16px; color:#6d4b00; margin-bottom:8px;">긴급 공지</strong>
-          <div style="font-size:14px; font-weight:700; color:#4b3600;">4월 27일 오전 10시 전기설비 정기점검 안내</div>
-          <div style="font-size:12px; color:#816b2e; margin-top:6px;">일시적 정전 구간이 발생할 수 있으니 사전에 확인 부탁드립니다.</div>
-        </section>
+        <form method="get"
+              action="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}"
+              class="notice-search-wrap">
+
+          <input type="text"
+                 name="searchTtl"
+                 class="notice-search-input"
+                 placeholder="제목 검색"
+                 value="${searchTtl}" />
+
+          <input type="date"
+                 name="searchStartDt"
+                 class="notice-search-input notice-search-date"
+                 value="${searchStartDt}" />
+
+          <span class="notice-search-tilde">~</span>
+
+          <input type="date"
+                 name="searchEndDt"
+                 class="notice-search-input notice-search-date"
+                 value="${searchEndDt}" />
+
+          <button type="submit"
+                  class="notice-search-btn">
+            검색
+          </button>
+
+          <a href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}"
+             class="notice-reset-btn">
+            초기화
+          </a>
+        </form>
+
         <section class="panel">
           <div class="section-hd">
             <h3>공지사항 목록</h3>
-            <span>최근 등록순</span>
-          </div><table class="data-table">
-          <thead>
-          <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>작성일</th>
-            <th>조회수</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr>
-            <td>15</td>
-            <td>어린이날 행사 안내</td>
-            <td>2026-04-22</td>
-            <td>124</td>
-          </tr>
-          <tr>
-            <td>14</td>
-            <td>분리수거장 환경개선 공사 일정</td>
-            <td>2026-04-20</td>
-            <td>88</td>
-          </tr>
-          <tr>
-            <td>13</td>
-            <td>주차장 CCTV 점검 완료 안내</td>
-            <td>2026-04-19</td>
-            <td>73</td>
-          </tr>
-          </tbody>
-        </table>
+            <span>총 ${totalRecord}건</span>
+          </div>
+
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>작성일</th>
+              <th>조회수</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <c:choose>
+              <c:when test="${empty noticeList}">
+                <tr>
+                  <td colspan="4" style="text-align:center; padding:30px;">
+                    등록된 공지사항이 없습니다.
+                  </td>
+                </tr>
+              </c:when>
+
+              <c:otherwise>
+                <c:forEach var="notice" items="${noticeList}">
+                  <tr>
+                    <td>${notice.annNo}</td>
+                    <td>
+                      <a href="${pageContext.request.contextPath}/resident/board/notice/detail/${aptCmplexNo}/${notice.annNo}"
+                         style="color:var(--text-dark); text-decoration:none; font-weight:700;">
+                          ${notice.ttl}
+                      </a>
+                    </td>
+                    <td>${notice.regDttm}</td>
+                    <td>${notice.inqCnt}</td>
+                  </tr>
+                </c:forEach>
+              </c:otherwise>
+            </c:choose>
+            </tbody>
+          </table>
+
+          <div class="btn-row">
+            <c:if test="${currentPage > 1}">
+              <a class="btn-ghost"
+                 href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}?currentPage=${currentPage - 1}&searchTtl=${searchTtl}&searchStartDt=${searchStartDt}&searchEndDt=${searchEndDt}">
+                이전
+              </a>
+            </c:if>
+
+            <span style="display:flex;align-items:center;font-size:13px;color:var(--text-mid);font-weight:700;">
+      ${currentPage} / ${totalPage}
+    </span>
+
+            <c:if test="${currentPage < totalPage}">
+              <a class="btn-ghost"
+                 href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}?currentPage=${currentPage + 1}&searchTtl=${searchTtl}&searchStartDt=${searchStartDt}&searchEndDt=${searchEndDt}">
+                다음
+              </a>
+            </c:if>
+          </div>
         </section>
 
       </div>
