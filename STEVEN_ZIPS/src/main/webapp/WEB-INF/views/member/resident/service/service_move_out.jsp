@@ -51,7 +51,7 @@
         <span class="cur">전출신고</span>
       </div>
       <h1 class="page-title">전출신고</h1>
-      <p class="page-desc">전출신고서 작성을 위한 정보 입력과 전출신고 완료 버튼을 포함한 화면입니다.</p>
+      <p class="page-desc">전출신고서 작성을 위한 정보 입력과 전출신고 버튼을 포함한 화면입니다.</p>
 
       <section class="panel">
         <div class="section-hd"><h3>전출신고서 작성</h3><span>전출</span></div>
@@ -84,7 +84,7 @@
           <div class="td"><textarea class="fake-textarea" id="spclCn" placeholder="특이사항을 입력해주세요."></textarea></div>
         </div>
         <div class="btn-row">
-          <button class="btn-main" onclick="submitMoveOut()">전출신고 완료</button>
+          <button class="btn-main" onclick="submitMoveOut()">전출신고</button>
         </div>
       </section>
 
