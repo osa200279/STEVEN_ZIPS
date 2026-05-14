@@ -156,22 +156,22 @@ public class ManagerMainController {
 
         return ResponseEntity.ok(result);
     }
-    //시도 목록 조회 API
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin-mgmt-ofc/sido/list")
-    @ResponseBody
-    public List<String> getAdminMgmtOfcSidoList() {
-        return mgmtOfficeMapper.selectAdminMgmtOfficeSidoList();
-    }
-    //시군구 목록 조회 API
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin-mgmt-ofc/sigungu/list")
-    @ResponseBody
-    public List<String> getAdminMgmtOfcSigunguList(
-            @RequestParam String sidoNm
-    ) {
-        return mgmtOfficeMapper.selectAdminMgmtOfficeSigunguList(sidoNm);
-    }
+        //시도 목록 조회 API
+        @PreAuthorize("hasRole('ADMIN')")
+        @GetMapping("/admin-mgmt-ofc/sido/list")
+        @ResponseBody
+        public List<String> getAdminMgmtOfcSidoList() {
+            return mgmtOfficeMapper.selectAdminMgmtOfficeSidoList();
+        }
+        //시군구 목록 조회 API
+        @PreAuthorize("hasRole('ADMIN')")
+        @GetMapping("/admin-mgmt-ofc/sigungu/list")
+        @ResponseBody
+        public List<String> getAdminMgmtOfcSigunguList(
+                @RequestParam String sidoNm
+        ) {
+            return mgmtOfficeMapper.selectAdminMgmtOfficeSigunguList(sidoNm);
+        }
 
 
     // ── 화면 이동 매핑 ────────────────────────────────────────
@@ -281,11 +281,7 @@ public class ManagerMainController {
 //        return "apt/mgmtOffice/facility/mngr_facility_list";
 //    }
 
-    /**
-     * 공용시설 기존 진입 주소
-     * - 예전 사이드바 주소 호환용
-     * - 실제 화면 처리는 PublicFacilityController로 위임
-     */
+    // 공용 시설
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/publicFacilityList/{mgmtOfcNo}")
     public String publicFacilityList(
@@ -294,7 +290,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "redirect:/manager/publicFacility/list/" + mgmtOfcNo;
+        return "apt/mgmtOffice/mngr_public_facility";
     }
 
     // 검침 기록
@@ -345,9 +341,10 @@ public class ManagerMainController {
         return "apt/mgmtOffice/mngr_partner_list";
     }
 
-    // 단지 정보 수정페이지
+
+    // 단지 구조 정보 수정페이지
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping({"/complex/edit/{mgmtOfcNo}"})
+    @GetMapping({"/complex/buildingLayOut/{mgmtOfcNo}"})
     public String complexEdit(
             @PathVariable String mgmtOfcNo,
             @AuthenticationPrincipal CustomUser customUser,
@@ -365,7 +362,7 @@ public class ManagerMainController {
 
     // 단지 정보 수정페이지
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping({"/complex/editt/{mgmtOfcNo}"})
+    @GetMapping({"/complex/edit/{mgmtOfcNo}"})
     public String complexEditt(
             @PathVariable String mgmtOfcNo,
             @AuthenticationPrincipal CustomUser customUser,
@@ -375,11 +372,9 @@ public class ManagerMainController {
         // mgmtOfcNo 로 아파트 정보 가져오는 메서드
         AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
 
-        model.addAttribute("complex",aptComplexVO);
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
         System.out.println("mgmtOfcNo = " + mgmtOfcNo);
         System.out.println("aptComplexVO = " + aptComplexVO);
-
 
         return "apt/mgmtOffice/mngr_complex_edit";
     }
