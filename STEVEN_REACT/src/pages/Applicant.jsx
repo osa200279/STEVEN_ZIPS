@@ -41,14 +41,15 @@ const Applicant = () => {
         { field: 'tyNm', headerName: '호 타입', width: 105 },
         { field: 'exclusiveSize', headerName: '전용 면적(㎡)', width: 130 },
         {
-            field: 'imageFileNo', headerName: '제출 서류'
+            field: 'docList', headerName: '제출 서류'
             , cellRenderer: (p) => {
-                if (p) return <span className="text-gray-400">없음</span>;
-            
+                const docs = p.data.docList;
+                if (!docs || docs.length === 0 || !docs[0].sbmsnDocNo) return <span className="text-gray-400">없음</span>;
+
                 return (
                     <span>
-                        <button onClick={() => openModal(p)}>
-                            보기
+                        <button className='btn-confirm' onClick={() => openDetailModal(p)}>
+                            확인
                         </button>
                     </span>
                 );
@@ -82,7 +83,7 @@ const Applicant = () => {
             cellRenderer: (p) => {
                 if (p.value === 'SUBMIT') return <span className="stts-apply">청약 신청</span>;
                 if (p.value === 'WINNER') return <span className="stts-apply">서류 제출 요청</span>;
-                if (p.value === 'INSPECTION') return <span className="stts-apply">서류 검토 필요</span>;
+                if (p.value === 'INSPECTION') return <span className="stts">서류 검토 필요</span>;
                 if (p.value === 'LOSER') return <span className="stts-reject">반려</span>;
                 if (p.value === 'CANCEL') return <span className="stts-reject">취소</span>;
                 if (p.value === 'SUPPLEMENT') return <span className="stts-apply">서류 보완 요청</span>;
@@ -319,7 +320,7 @@ const Applicant = () => {
     const [selectedApplicant, setSelectedApplicant] = useState(null);
 
     // 클릭 시 모달 열기 함수
-    const openModal = (params) => {
+    const openDetailModal = (params) => {
         setSelectedApplicant(params.data);
         setIsModalOpen(true);
     };
@@ -331,14 +332,17 @@ const Applicant = () => {
             </div>
 
             {/* AG Grid 테마 적용 영역 */}
-            <div className="ag-theme-alpine" style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+            <div className="ag-theme-alpine" style={{ height: 'calc(100vh - 100px)', width: '100%' }}>
                 <AgGridReact
                     theme="legacy"
                     rowData={rowData}
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
                     rowSelection={rowSelection}
+                    onRowClicked={openDetailModal}
                     pagination={true}
+                    paginationPageSize={17}
+                    paginationPageSizeSelector={[17, 30, 50]}
                 />
             </div>
             {/* 2. 모달 컴포넌트 배치 */}

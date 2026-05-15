@@ -3,6 +3,8 @@ import { X } from 'lucide-react';
 
 const ApplicantDetailModal = ({ isOpen, data, onClose }) => {
     if (!isOpen || !data) return null;
+    console.log(data.docList);
+    console.log(data.docList[0].fileInfo.googleId);
 
     return (
         <div className="modal-overlay" style={overlayStyle}>
@@ -14,13 +16,26 @@ const ApplicantDetailModal = ({ isOpen, data, onClose }) => {
                     </button>
                 </div>
                 <hr />
-                <div style={bodyStyle}>
-                    {/* 여기서 상세 정보를 렌더링 */}
-                    <div className="info-row"><strong>신청 번호:</strong> {data.aplctNo}</div>
-                    <div className="info-row"><strong>이름:</strong> {data.userNm}</div>
-                    <div className="info-row"><strong>아이디:</strong> {data.userId}</div>
-                    <div className="info-row"><strong>공고명:</strong> {data.ttl}</div>
-                    <div className="info-row"><strong>타입/면적:</strong> {data.tyNm} / {data.exclusiveSize}㎡</div>
+                <div>
+                    <div><strong>아이디:</strong> {data.userId}</div>
+                    <div><strong>이름:</strong> {data.userNm}</div>
+                    <div><strong>공고명:</strong> {data.tyNm}</div>
+                    <div><strong>공고명:</strong> {data.ttl}</div>
+                    <div><strong>공고명:</strong> {data.aptCmplexNo}</div>
+                    <div><strong>타입/면적:</strong> {data.tyNm} / {data.exclusiveSize}㎡</div>
+                    <div><strong>첨부 파일</strong></div><br />
+                    {
+                        data.docList.map((doc, index) => {
+                            return (
+                                <div key={index}>
+                                    <a href={`http://localhost:8080/file/download/${doc.fileInfo?.googleId}`} rel='noopener noreferrer'>
+                                        [ {doc.mdfcnDt ? `수정일  ${doc.mdfcnDt}` : `등록일 ${doc.regDt}`} ] {doc.sbmsnDocTyCd} : {doc.fileInfo?.fileOgName}
+                                    </a>
+                                    <br />
+                                </div>
+                            )
+                        })
+                    }
                 </div>
                 <div style={footerStyle}>
                     <button onClick={onClose} className="btn-close">닫기</button>

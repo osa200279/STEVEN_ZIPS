@@ -22,6 +22,14 @@
     font-weight: 'bold';
 }
 
+.stts {
+    background-color: skyblue;
+    color: #000000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 'bold';
+}
+
 .check {
     padding: 2px 8px;
     color: rgb(15, 92, 0);
@@ -90,4 +98,23 @@
 .btn-supplement:hover {
     background-color: rgb(255, 238, 0);
     border: 1px solid #494800;
+}
+
+.btn-confirm {
+    background-color: #4a90e2;
+    color: white;
+    border-radius: 5px;
+    width: 40px;
+    height: 26px;
+}
+
+.btn-confirm:active {
+    /* 1. 살짝 아래로 내려가는 효과 */
+    transform: translateY(2px); 
+    
+    /* 2. 배경색을 조금 더 어둡게 해서 눌린 느낌 강조 */
+    background-color: #357abd; 
+    
+    /* 3. 버튼 그림자가 있었다면 제거 (선택 사항) */
+    box-shadow: none;
 }
