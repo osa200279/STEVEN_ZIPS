@@ -26,10 +26,11 @@ const ApplicantDetailModal = ({ isOpen, data, onClose }) => {
                     <div><strong>첨부 파일</strong></div><br />
                     {
                         data.docList.map((doc, index) => {
+                            const formattedDate = new Date(doc.mdfcnDt || doc.regDt).toLocaleDateString('sv-SE');
                             return (
                                 <div key={index}>
                                     <a href={`http://localhost:8080/file/download/${doc.fileInfo?.googleId}`} rel='noopener noreferrer'>
-                                        [ {doc.mdfcnDt ? `수정일  ${doc.mdfcnDt}` : `등록일 ${doc.regDt}`} ] {doc.sbmsnDocTyCd} : {doc.fileInfo?.fileOgName}
+                                        [ {doc.mdfcnDt ? `수정일  ${formattedDate}` : `등록일 ${formattedDate}`} ] {doc.sbmsnDocTyCd} : {doc.fileInfo?.fileOgName}
                                     </a>
                                     <br />
                                 </div>
