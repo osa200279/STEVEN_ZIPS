@@ -121,12 +121,8 @@ public class AptRetrieveController {
             Model model
     ) {
 
-        log.info("아파트 단지 상세 조회 aptCmplexNo = {}", aptCmplexNo);
-
         AptComplexVO aptInfo =
                 aptComplexService.selectAptComplexDetail(aptCmplexNo);
-
-        log.info("조회된 아파트 단지 상세 정보 = {}", aptInfo);
 
         if (aptInfo == null) {
             model.addAttribute(
@@ -169,11 +165,8 @@ public class AptRetrieveController {
                 }
             }
         }
-
         model.addAttribute("layoutGoogleIdList", layoutGoogleIdList);
-
         model.addAttribute("complexGoogleIdList", complexGoogleIdList);
-
         model.addAttribute("aptInfo", aptInfo);
 
         return "central/aptDetail";
