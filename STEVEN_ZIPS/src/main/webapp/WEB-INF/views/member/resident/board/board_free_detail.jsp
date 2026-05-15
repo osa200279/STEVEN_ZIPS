@@ -437,7 +437,7 @@
                 <!-- 4) 첨부파일 칩 -->
                 <c:if test="${not empty attachFile}">
                     <div class="attach-row">
-                        <a href="https://drive.google.com/file/d/${attachFile.googleId}/view"
+                        <a href="/file/download/${attachFile.googleId}"
                            target="_blank" class="attach-chip">
                             <c:choose>
                                 <c:when test="${fn:startsWith(attachFile.mimeType, 'image/')}">
