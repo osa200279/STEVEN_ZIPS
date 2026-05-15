@@ -904,7 +904,7 @@ public class ResidentMainController {
             @RequestParam(value = "searchEndDt", required = false) String searchEndDt,
             Model model
     ) {
-        PaginationInfoVO<ResidentNoticeBoardDTO> pagingVO = new PaginationInfoVO<>(10, 5);
+        PaginationInfoVO<ResidentNoticeBoardDTO> pagingVO = new PaginationInfoVO<>(5, 5);
         // 10: 한 페이지에 10개 출력
         // 5: 페이지 번호를 5개 단위로 출력
 
@@ -941,6 +941,33 @@ public class ResidentMainController {
         return "member/resident/board/board_notice";
     }
 
+    /**
+     * 입주민 - 공지게시판 비동기
+     * @author 김보라
+     * @param aptCmplexNo
+     * @param annNo
+     * @return 입주민 공지글 상세내용 보기
+     */
+    @ResponseBody
+    @PreAuthorize("hasRole('RESIDENT')")
+    @GetMapping("/board/notice/detail-ajax/{aptCmplexNo}/{annNo}")
+    public ResidentNoticeBoardDTO residentNoticeDetailAjax(
+            @PathVariable String aptCmplexNo,
+            @PathVariable String annNo
+    ) {
+        /*
+         * AJAX란?
+         * → 화면 전체를 새로고침하지 않고 서버에서 필요한 데이터만 받아오는 방식.
+         * 왜 사용?
+         * → 공지 제목 클릭 시 목록 페이지는 그대로 두고, 상세 내용만 위에 보여주기 위해.
+         */
+        ResidentNoticeBoardDTO searchDTO = new ResidentNoticeBoardDTO();
+        searchDTO.setAptCmplexNo(aptCmplexNo);
+        searchDTO.setAnnNo(annNo);
+
+        return residentNoticeBoardService.selectResidentBoardNoticeDetail(searchDTO);
+    }
+
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/board/free/{aptCmplexNo}")
     public String boardFree(@PathVariable String aptCmplexNo, Model model) {
@@ -961,7 +988,7 @@ public class ResidentMainController {
         return "member/resident/board/board_free_write";
     }
 
-    /*@PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/board/free/detail/{postNo}/{aptCmplexNo}")
     public String boardFreeDetail(@PathVariable String aptCmplexNo,
                                   @PathVariable String postNo, Model model,
@@ -970,7 +997,7 @@ public class ResidentMainController {
         model.addAttribute("aptCmplexNo", aptCmplexNo);
         model.addAttribute("postNo", postNo);
         return "member/resident/board/board_free_detail";
-    }*/
+    }
 
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/board/chat/{aptCmplexNo}")

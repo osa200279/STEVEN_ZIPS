@@ -17,6 +17,8 @@
             <result property="atchFileId" column="atch_file_id"/>
             <result property="boardTyCd" column="board_ty_cd"/>
             <result property="boardNm" column="board_nm"/>
+            <result property="fileOgName" column="file_og_name"/>
+            <result property="topFixYn" column="top_fix_yn"/>
         </resultMap>
 
         <select id="selectResidentBoardNoticeCount"
@@ -63,9 +65,17 @@
             , aabp.atch_file_id
             , abi.board_ty_cd
             , abi.board_nm
+            , af.file_og_name
+            , aabp.top_fix_yn
             FROM apt_ann_board_post aabp
             INNER JOIN apt_board_instance abi
             ON aabp.board_no = abi.board_no
+            LEFT OUTER JOIN attach_file af
+            ON TO_CHAR(af.file_group_no) = aabp.atch_file_id
+            AND af.file_sort_order = 1
+            LEFT OUTER JOIN attach_file af
+            ON TO_CHAR(af.file_group_no) = aabp.atch_file_id
+            AND af.file_sort_order = 1
             WHERE aabp.del_yn = 'N'
             AND abi.use_yn = 'Y'
             AND abi.board_ty_cd = 'NOTICE'
@@ -105,6 +115,7 @@
                  , aabp.atch_file_id
                  , abi.board_ty_cd
                  , abi.board_nm
+                 , aabp.top_fix_yn
             FROM apt_ann_board_post aabp
                      INNER JOIN apt_board_instance abi
                                 ON aabp.board_no = abi.board_no

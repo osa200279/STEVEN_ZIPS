@@ -32,5 +32,10 @@ public class ResidentNoticeBoardDTO {
     private int startRow;          // 페이징 시작 행
     private int endRow;            // 페이징 끝 행
 
+    private String fileOgName;      // 원본 파일명
+    private String fileDownUrl;     // 파일 다운로드 URL
+
+    private String topFixYn;    // 상단고정여부, Y이면 긴급 공지로 표시
+
 
 }

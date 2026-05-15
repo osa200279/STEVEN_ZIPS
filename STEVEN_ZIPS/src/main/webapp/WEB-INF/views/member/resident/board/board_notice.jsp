@@ -130,6 +130,176 @@
       color: #aaa;
       cursor: default;
     }
+
+    .notice-detail-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(30, 60, 40, .05);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+
+    .notice-detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 26px 26px 18px;
+    }
+
+    .notice-detail-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .notice-more-btn {
+      border: none;
+      background: transparent;
+      font-size: 24px;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    .notice-detail-writer {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 26px 22px;
+    }
+
+    .notice-writer-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--green-dark);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+    }
+
+    .notice-writer-id {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .notice-meta {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .notice-detail-body {
+      border-top: 1px solid var(--border);
+      padding: 26px;
+    }
+
+    .notice-content {
+      min-height: 54px;
+      white-space: pre-wrap;
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-dark);
+    }
+
+    .notice-file-area {
+      margin: 0 26px 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-mid);
+    }
+
+    .notice-file-icon {
+      font-size: 13px;
+      color: var(--green-dark);
+    }
+
+    .notice-attach-icon {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .notice-attach-icon.has-file {
+      color: var(--green-dark);
+    }
+
+    .notice-attach-icon.no-file {
+      color: #c3c9c0;
+    }
+
+    .notice-file-empty {
+      color: var(--text-light);
+      font-size: 13px;
+    }
+
+    .notice-file-download {
+      color: var(--green-dark);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .notice-close-btn {
+      border: none;
+      background: #edf5ef;
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+
+    /*
+     * hover란?
+     * → 마우스를 올렸을 때 적용되는 CSS 상태.
+     */
+    .notice-close-btn:hover {
+      background: var(--green-dark);
+      color: #fff;
+    }
+
+    /* 공지의 긴급배지 */
+    .notice-emergency-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 6px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #ffe8e8;
+      color: #d93025;
+      font-size: 11px;
+      font-weight: 900;
+      vertical-align: middle;
+    }
+    /*
+     * TOP_FIX_YN = 'Y'
+     * → 사용자에게 중요한 공지임을 제목 앞에서 바로 인지시키기 위해 사용.
+     */
+    .detail-emergency-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #ffe8e8;
+      color: #d93025;
+      font-size: 12px;
+      font-weight: 900;
+      vertical-align: middle;
+    }
+
+
   </style>
 
 </head>
@@ -189,11 +359,54 @@
             <span>총 ${totalRecord}건</span>
           </div>
 
+          <section id="noticeDetailCard" class="notice-detail-card" style="display:none;">
+            <div class="notice-detail-header">
+              <h2 class="notice-detail-title">
+                <span id="detailEmergencyBadge"></span>
+                <span id="detailTtl"></span>
+              </h2>
+
+              <button type="button"
+                      class="notice-close-btn"
+                      id="noticeCloseBtn">
+                접기
+              </button>
+            </div>
+
+            <div class="notice-detail-writer">
+              <div class="notice-writer-avatar" id="detailAvatar">T</div>
+
+              <div>
+                <div id="detailWrtrId" class="notice-writer-id"></div>
+                <div class="notice-meta">
+                  <span id="detailRegDttm"></span>
+                  <span>조회 <span id="detailInqCnt"></span></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="notice-detail-body">
+              <div id="detailCn" class="notice-content"></div>
+            </div>
+
+            <div id="detailFileArea" class="notice-file-area">
+              <span id="detailFileIcon" class="notice-file-icon">📎</span>
+              <a id="detailFileLink"
+                 class="notice-file-download"
+                 href="javascript:void(0);"
+                 style="display:none;">
+              </a>
+              <span id="detailFileEmpty" class="notice-file-empty">첨부파일 없음</span>
+            </div>
+          </section>
+
           <table class="data-table">
             <thead>
             <tr>
               <th>번호</th>
               <th>제목</th>
+              <th>글쓴이</th>
+              <th>첨부</th>
               <th>작성일</th>
               <th>조회수</th>
             </tr>
@@ -203,24 +416,55 @@
             <c:choose>
               <c:when test="${empty noticeList}">
                 <tr>
-                  <td colspan="4" style="text-align:center; padding:30px;">
+                  <td colspan="6" style="text-align:center; padding:30px;">
                     등록된 공지사항이 없습니다.
                   </td>
                 </tr>
               </c:when>
 
               <c:otherwise>
-                <c:forEach var="notice" items="${noticeList}">
+                <c:forEach var="notice"
+                           items="${noticeList}"
+                           varStatus="status">
                   <tr>
-                    <td>${notice.annNo}</td>
                     <td>
-                      <a href="${pageContext.request.contextPath}/resident/board/notice/detail/${aptCmplexNo}/${notice.annNo}"
+                        ${pagingVO.totalRecord
+                                - ((pagingVO.currentPage - 1) * pagingVO.screenSize)
+                                - status.index}
+                    </td>
+
+                    <td>
+                      <a href="javascript:void(0);"
+                         class="notice-title-link"
+                         data-ann-no="${notice.annNo}"
                          style="color:var(--text-dark); text-decoration:none; font-weight:700;">
+
+                        <c:if test="${notice.topFixYn eq 'Y'}">
+                          <span class="notice-emergency-badge">긴급</span>
+                        </c:if>
+
                           ${notice.ttl}
                       </a>
                     </td>
+
+                    <td>${notice.wrtrId}</td>
+
+                    <td>
+                      <c:choose>
+                        <c:when test="${not empty notice.atchFileId}">
+                          <span class="notice-attach-icon has-file" title="첨부파일 있음">📎</span>
+                        </c:when>
+                        <c:otherwise>
+                          <span class="notice-attach-icon no-file" title="첨부파일 없음">📎</span>
+                        </c:otherwise>
+                      </c:choose>
+                    </td>
+
                     <td>${notice.regDttm}</td>
-                    <td>${notice.inqCnt}</td>
+
+                    <td class="notice-inq-cnt" data-ann-no="${notice.annNo}">
+                        ${notice.inqCnt}
+                    </td>
                   </tr>
                 </c:forEach>
               </c:otherwise>
@@ -238,6 +482,125 @@
   </div>
   <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const titleLinks = document.querySelectorAll(".notice-title-link");
+
+      titleLinks.forEach(function (link) {
+        link.addEventListener("click", function () {
+          const annNo = this.dataset.annNo;
+
+          fetch("${pageContext.request.contextPath}/resident/board/notice/detail-ajax/${aptCmplexNo}/" + annNo)
+                  .then(function (response) {
+                    if (!response.ok) {
+                      throw new Error("공지사항 상세 조회 실패");
+                    }
+                    return response.json();
+                  })
+                  .then(function (notice) {
+                    /*
+                     * textContent란?
+                     * → HTML 태그로 해석하지 않고 글자 그대로 넣는 방식.
+                     * 왜 사용?
+                     * → DB 내용에 script 태그 등이 들어와도 실행되지 않게 막기 위해.
+                     */
+                    document.getElementById("noticeDetailCard").style.display = "block";
+
+                    document.getElementById("detailTtl").textContent = notice.ttl || "";
+                    const detailEmergencyBadge =
+                            document.getElementById("detailEmergencyBadge");
+                    /*
+                     * TOP_FIX_YN = 'Y'
+                     * → 긴급 공지 여부 확인.
+                     * 왜 사용?
+                     * → 상세 화면에서도 사용자가 중요 공지임을 바로 인지하게 하기 위해.
+                     */
+                    if (notice.topFixYn === "Y") {
+                      detailEmergencyBadge.innerHTML =
+                              '<span class="notice-emergency-badge">긴급</span>';
+                    } else {
+                      detailEmergencyBadge.innerHTML = "";
+                    }
+                    document.getElementById("detailWrtrId").textContent = notice.wrtrId || "";
+                    document.getElementById("detailRegDttm").textContent = notice.regDttm || "";
+                    document.getElementById("detailInqCnt").textContent = notice.inqCnt || 0;
+                    const listInqCnt = document.querySelector(
+                            ".notice-inq-cnt[data-ann-no='" + notice.annNo + "']"
+                    );
+
+                    if (listInqCnt) {
+                      listInqCnt.textContent = notice.inqCnt || 0;
+                    }
+                    document.getElementById("detailCn").textContent = notice.cn || "";
+
+                    const avatar = document.getElementById("detailAvatar");
+                    avatar.textContent = notice.wrtrId ? notice.wrtrId.substring(0, 1).toUpperCase() : "N";
+
+                    const fileArea = document.getElementById("detailFileArea");
+                    const fileIcon = document.getElementById("detailFileIcon");
+                    const fileLink = document.getElementById("detailFileLink");
+                    const fileEmpty = document.getElementById("detailFileEmpty");
+
+                    fileArea.style.display = "inline-flex";
+
+                    if (notice.atchFileId) {
+                      fileIcon.style.color = "var(--green-dark)";
+                      fileLink.style.display = "inline";
+                      fileEmpty.style.display = "none";
+
+                      fileLink.textContent = notice.fileOgName || "첨부파일 다운로드";
+
+                      /*
+                       * 다운로드 URL
+                       * → 프로젝트에 이미 파일 다운로드 컨트롤러가 있으면 그 URL에 맞춰야 함.
+                       */
+                      fileLink.href = "${pageContext.request.contextPath}/file/download/" + notice.atchFileId;
+                    } else {
+                      fileIcon.style.color = "#c3c9c0";
+                      fileLink.style.display = "none";
+                      fileLink.removeAttribute("href");
+                      fileEmpty.style.display = "inline";
+                      fileEmpty.textContent = "첨부파일 없음";
+                    }
+
+                    // 게시글 열릴 때, noticeDetailCard 위치로 스크롤 이동
+                    // window.scrollTo({
+                    //   top: document.getElementById("noticeDetailCard").offsetTop - 120,
+                    //   behavior: "smooth"
+                    // });
+                  })
+                  .catch(function (error) {
+                    alert("공지사항 상세 내용을 불러오지 못했습니다.");
+                    console.error(error);
+                  });
+        });
+      });
+
+      /*
+       * 상세 공지 닫기 버튼
+       */
+      const noticeCloseBtn = document.getElementById("noticeCloseBtn");
+
+      noticeCloseBtn.addEventListener("click", function () {
+
+        const detailCard = document.getElementById("noticeDetailCard");
+
+        /*
+         * display:none
+         * → 화면에서 요소를 완전히 숨김.
+         * 어떤 상황에서 사용?
+         * → 모달 닫기, 상세영역 접기, 탭 숨김 등.
+         */
+        detailCard.style.display = "none";
+
+        /*
+         * 접은 후 목록 위치로 자연스럽게 이동
+         */
+        // window.scrollTo({
+        //   top: document.querySelector(".data-table").offsetTop - 120,
+        //   behavior: "smooth"
+        // });
+      });
+    });
     document.addEventListener("DOMContentLoaded", function () {
       const pagingLinks = document.querySelectorAll(".pagination .page-link");
 
