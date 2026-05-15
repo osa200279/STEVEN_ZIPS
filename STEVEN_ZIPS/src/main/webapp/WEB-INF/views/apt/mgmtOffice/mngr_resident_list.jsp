@@ -32,6 +32,15 @@
             display: flex;
             justify-content: center;
         }
+        .grid-badge.status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .grid-badge.status-warning {
+            background: #fde2e2;
+            color: #c0392b;
+        }
     </style>
 </head>
 <body>
@@ -89,8 +98,13 @@
                                 <label class="field-label">입주 상태</label>
                                 <select class="form-select" id="filterMoveStatus">
                                     <option value="">전체</option>
+                                    <option value="WAIT">입주대기</option>
                                     <option value="LIVE">입주중</option>
+                                    <option value="MID">중도퇴거</option>
                                     <option value="OUT">퇴거</option>
+
+
+
                                 </select>
                             </div>
                             <div class="form-field">
@@ -250,8 +264,13 @@
                     }
 
                     function moveStatusText(value) {
+                        if (value === "WAIT") return "입주대기";
                         if (value === "LIVE") return "입주중";
+                        if (value === "MID") return "중도퇴거";
                         if (value === "OUT") return "퇴거";
+
+
+
                         return "-";
                     }
 
@@ -264,10 +283,23 @@
                         if (value === "MEMBER") return badgeHtml("duty-adm", "세대원");
                         return '<span class="grid-badge gray">-</span>';
                     }
-
                     function moveStatusBadge(value) {
-                        if (value === "LIVE") return badgeHtml("status-active", "입주중");
-                        if (value === "OUT") return badgeHtml("status-inactive", "퇴거");
+
+                        if (value === "WAIT") {
+                            return badgeHtml("status-pending", "입주대기");
+                        }
+
+                        if (value === "LIVE") {
+                            return badgeHtml("status-active", "입주중");
+                        }
+
+                        if (value === "MID") {
+                            return badgeHtml("status-warning", "중도퇴거");
+                        }
+                        if (value === "OUT") {
+                            return badgeHtml("status-inactive", "퇴거");
+                        }
+
                         return '<span class="grid-badge gray">-</span>';
                     }
 
