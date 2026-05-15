@@ -406,7 +406,7 @@
             WAIT: "badge-yellow",
             LIVE: "badge-green",
             OUT: "badge-gray",
-            MID: "badge-blue"
+            MID: "badge-red"
           };
 
           function esc(value) {
