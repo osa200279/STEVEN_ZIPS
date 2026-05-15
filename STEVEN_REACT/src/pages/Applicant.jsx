@@ -4,6 +4,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Check, Triangle, X } from 'lucide-react';
 import requestApi, { getCookie } from '../util/api/requestApi';
 import ApplicantDetailModal from './ApplicantDetailModal';
+import Swal from 'sweetalert2';
 import axios from 'axios';
 import '../styles/ag-grid.css'
 
@@ -232,6 +233,7 @@ const Applicant = () => {
 
     // 보완 요청 버튼 기능
     const supplement = async (p) => {
+
         const ag = p.api;
         const selectedNodes = ag.getSelectedNodes();
         const actionNm = '보완';
@@ -243,6 +245,7 @@ const Applicant = () => {
         const isCurrentNodeSelected = selectedNodes.some(node => node.data.aplctNo === p.data.aplctNo);
 
         if (selectedNodes && selectedNodes.length > 1 && isCurrentNodeSelected) {
+
             // 상태 변경 버튼이 활성화된한 아이들만 필터
             const validNodes = selectedNodes.filter(node => ['SUPPLEMENT', 'INSPECTION'].includes(node.data.aplctSttsCd));
 
@@ -261,7 +264,6 @@ const Applicant = () => {
                 return;
             }
             confirmMsg = `현재 선택된 ${selectedNodes.length}개의 목록 중 ${aplctMapList.length}개 서류 보완 요청 처리가능합니다. \n일괄 ${actionNm} 처리하시겠습니까?`;
-
         } else {
             // 선택된 행이 없거나 1개만 선택된 경우 (단일 처리)
             const currentStts = p.data.aplctSttsCd;
@@ -280,6 +282,19 @@ const Applicant = () => {
         }
 
         if (!window.confirm(confirmMsg)) return;
+
+        const reason = window.prompt(`${actionNm} 사유를 입력해주세요.`);
+
+        if (reason === null) return;
+        if (reason.trim() === "") {
+            alert("사유를 입력해야 처리가 가능합니다.");
+            return;
+        }
+
+        const finalMapList = aplctMapList.map(item => ({
+            ...item,
+            rjctRsnCn: reason // VO에 추가하신 변수명으로 매칭하세요!
+        }));
 
         updSttsRequest(aplctMapList, ag);
     }
