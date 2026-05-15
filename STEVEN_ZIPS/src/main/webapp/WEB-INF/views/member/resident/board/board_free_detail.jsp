@@ -439,14 +439,6 @@
                     <div class="attach-row">
                         <a href="/file/download/${attachFile.googleId}"
                            target="_blank" class="attach-chip">
-                            <c:choose>
-                                <c:when test="${fn:startsWith(attachFile.mimeType, 'image/')}">
-                                    <span class="material-symbols-outlined" style="font-size:16px;">image</span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="material-symbols-outlined" style="font-size:16px;">attach_file</span>
-                                </c:otherwise>
-                            </c:choose>
                                 ${attachFile.fileOgName}
                         </a>
                     </div>
