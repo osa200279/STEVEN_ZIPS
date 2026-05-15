@@ -21,54 +21,70 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
 
     <style>
-        #facilityPage { --accent:#2e5c38; --accent-light:#e8f0ea; --accent-dim:rgba(38,92,48,.08); --surface:#fff; --line:#d7dce2; --th-bg:#f0f2ef; --text-head:#1a2e1e; }
+        /* 시설 등록 화면 전용 색상 */
+        #facilityPage { --accent:#2e5c38; --accent-dim:rgba(38,92,48,.08); --surface:#fff; --line:#d7dce2; --text-head:#1a2e1e; }
+
+        /* 상단 제목 */
         #facilityPage .page-title-block h2 { color:var(--text-head); font-size:19px; letter-spacing:-.5px; }
         #facilityPage .page-title-block p { color:#6b7a6e; font-size:12px; }
-        #facilityPage .panel { border-radius:6px; border:1px solid var(--line); box-shadow:none; margin:0; }
+
+        /* 패널 */
+        #facilityPage .panel { margin:0; border:1px solid var(--line); border-radius:6px; box-shadow:none; }
         #facilityPage .panel-header { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--line); background:var(--surface); border-radius:6px 6px 0 0; }
         #facilityPage .panel-title { display:flex; align-items:center; gap:6px; margin:0; font-size:13px; font-weight:800; color:var(--text-head); }
         #facilityPage .panel-title .material-symbols-rounded { font-size:17px; color:var(--accent); }
         #facilityPage .panel-body { padding:14px 16px 16px; background:var(--surface); }
-        #facilityPage .panel-body .form-input, #facilityPage .panel-body .form-select { height:32px; font-size:12px; border-color:var(--line); background:var(--surface); border-radius:4px; }
-        #facilityPage .panel-body .form-input:focus, #facilityPage .panel-body .form-select:focus { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-dim); }
-        #facilityPage .panel-body .form-input:disabled, #facilityPage .panel-body .form-select:disabled { background:#f5f6f5; color:#aab4ac; cursor:not-allowed; }
+
+        /* 폼 요소 */
+        #facilityPage .panel-body .form-input,
+        #facilityPage .panel-body .form-select { height:32px; font-size:12px; border-color:var(--line); background:var(--surface); border-radius:4px; }
+        #facilityPage .panel-body .form-input:focus,
+        #facilityPage .panel-body .form-select:focus { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-dim); }
+        #facilityPage .panel-body .form-input:disabled,
+        #facilityPage .panel-body .form-select:disabled { background:#f5f6f5; color:#aab4ac; cursor:not-allowed; }
+
+        /* 버튼 */
         #facilityPage .btn { border-radius:4px; }
         #facilityPage .btn-primary { background:var(--accent); }
         #facilityPage .btn-primary:hover { background:#1a3d1f; }
+
+        /* 안내/경고 박스 */
         #facilityPage .notice-box { display:flex; gap:10px; padding:11px 13px; background:#f7faf7; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:0 4px 4px 0; font-size:12px; color:#4a5c4e; line-height:1.6; }
         #facilityPage .notice-box .material-symbols-rounded { color:var(--accent); font-size:17px; flex-shrink:0; margin-top:2px; }
-        #facilityPage .notice-box strong { color:#1a2e1e; }
-        #facilityPage .field-help { margin-top:4px; font-size:11px; color:#9caa9e; line-height:1.5; }
-        #facilityPage .warn-inline { display:flex; align-items:flex-start; gap:7px; padding:8px 11px; background:#fffbf0; border:1px solid #e8c84a; border-left:3px solid #c9900a; border-radius:0 4px 4px 0; font-size:11px; color:#7a5c00; line-height:1.6; margin-top:6px; margin-bottom:2px; }
+        #facilityPage .warn-inline { display:flex; align-items:flex-start; gap:7px; padding:8px 11px; margin-top:6px; margin-bottom:2px; background:#fffbf0; border:1px solid #e8c84a; border-left:3px solid #c9900a; border-radius:0 4px 4px 0; font-size:11px; color:#7a5c00; line-height:1.6; }
         #facilityPage .warn-inline .material-symbols-rounded { font-size:15px; color:#c9900a; flex-shrink:0; margin-top:1px; }
         #facilityPage .warn-inline strong { color:#5a3d00; }
-        .form-section-title { letter-spacing:0; text-transform:none; font-size:11px; font-weight:800; color:#4a5c4e; display:flex; align-items:center; gap:4px; margin-bottom:10px; }
-        .form-section-title .material-symbols-rounded { font-size:15px; color:var(--accent,#2e5c38); }
 
-        .facility-modal-cols { display:grid; grid-template-columns:1fr 1fr; gap:0; }
-        .facility-modal-col-left { padding-right:20px; border-right:1px solid var(--line,#d7dce2); }
-        .facility-modal-col-right { padding-left:20px; }
-        .facility-col-label { font-size:11px; font-weight:800; color:#8a9a8e; letter-spacing:.5px; text-transform:uppercase; padding-bottom:8px; border-bottom:1px solid var(--line,#d7dce2); margin-bottom:14px; }
+        /* 좌우 컬럼 */
+        #facilityPage .facility-modal-cols { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+        #facilityPage .facility-modal-col-left { padding-right:20px; border-right:1px solid var(--line); }
+        #facilityPage .facility-modal-col-right { padding-left:20px; }
+        #facilityPage .facility-col-label { margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid var(--line); font-size:11px; font-weight:800; color:#8a9a8e; letter-spacing:.5px; text-transform:uppercase; }
+        #facilityPage .form-section-title { display:flex; align-items:center; gap:4px; margin-bottom:10px; font-size:11px; font-weight:800; color:#4a5c4e; }
+        #facilityPage .form-section-title .material-symbols-rounded { font-size:15px; color:var(--accent); }
 
-        #facilityPage .file-upload-box { border:1px dashed var(--line); border-radius:4px; padding:12px; background:#fafcfb; }
+        /* 파일 업로드 */
+        #facilityPage .file-upload-box { padding:12px; border:1px dashed var(--line); border-radius:4px; background:#fafcfb; }
         #facilityPage .file-upload-title { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:#4a5c4e; }
         #facilityPage .file-upload-title .material-symbols-rounded { font-size:16px; color:var(--accent); }
         #facilityPage .file-upload-desc { font-size:11px; color:#7a8a7d; line-height:1.5; }
         #facilityPage .file-preview-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:10px; }
-        #facilityPage .file-preview-item { position:relative; min-height:92px; border:1px solid var(--line); border-radius:4px; background:#fff; overflow:hidden; }
-        #facilityPage .file-preview-item img { width:100%; height:92px; object-fit:cover; display:block; }
-        #facilityPage .file-preview-name { padding:6px 7px; font-size:11px; color:#4a5c4e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-top:1px solid var(--line); }
-        #facilityPage .file-preview-remove { position:absolute; top:5px; right:5px; width:22px; height:22px; border:0; border-radius:50%; background:rgba(17,24,39,.78); color:#fff; font-size:14px; line-height:22px; cursor:pointer; }
+        #facilityPage .file-preview-item { min-height:92px; border:1px solid var(--line); border-radius:4px; background:#fff; overflow:hidden; }
+        #facilityPage .file-preview-item img { width:100%; height:92px; object-fit:contain; display:block; background:#f8fafc; }
+        #facilityPage .file-preview-name { padding:6px 7px; border-top:1px solid var(--line); font-size:11px; color:#4a5c4e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         #facilityPage .file-preview-empty { padding:13px; border:1px solid var(--line); border-radius:4px; background:#fff; font-size:12px; color:#9caa9e; }
-        .location-select-row { display:grid; grid-template-columns:1.1fr .75fr .75fr 1.1fr; gap:10px; align-items:end; }
-        .location-detail-row { margin-top:10px; }
-        .location-select-row .field-help { display:none; }
-        .location-help-row { margin-top:5px; font-size:11px; color:#9caa9e; line-height:1.5; }
-        @media (max-width:900px) { .location-select-row { grid-template-columns:1fr 1fr; } }
+
+        /* 위치 선택 */
+        #facilityPage .location-select-row { display:grid; grid-template-columns:1.1fr .75fr .75fr 1.1fr; gap:10px; align-items:end; }
+        #facilityPage .location-detail-row { margin-top:10px; }
+        #facilityPage .location-help-row { margin-top:5px; font-size:11px; color:#9caa9e; line-height:1.5; }
+
+        /* 반응형 */
+        @media (max-width:900px) { #facilityPage .location-select-row { grid-template-columns:1fr 1fr; } }
         @media (max-width:760px) {
-            .facility-modal-cols { grid-template-columns:1fr; }
-            .facility-modal-col-left { padding-right:0; border-right:none; border-bottom:1px solid var(--line,#d7dce2); padding-bottom:16px; margin-bottom:16px; }
-            .facility-modal-col-right { padding-left:0; }
+            #facilityPage .facility-modal-cols { grid-template-columns:1fr; }
+            #facilityPage .facility-modal-col-left { padding-right:0; padding-bottom:16px; margin-bottom:16px; border-right:none; border-bottom:1px solid var(--line); }
+            #facilityPage .facility-modal-col-right { padding-left:0; }
         }
     </style>
 
@@ -262,14 +278,6 @@
         var contextPath = config.contextPath || "";
         var mgmtOfcNo = config.mgmtOfcNo || "";
 
-        /*
-         * 파일 누적 배열
-         * - { file: File, objectUrl: string } 형태로 저장
-         * - objectUrl은 미리보기용으로 미리 생성해두고 배열에 함께 보관
-         * - fileInput.value를 초기화해도 objectUrl은 유지됨
-         */
-        var selectedFacilityFiles = [];
-
         function getEl(id) { return document.getElementById(id); }
         function apiUrl(path) { return contextPath + "/manager/facility/" + path; }
         function listUrl() { return contextPath + "/manager/facility/page/" + encodeURIComponent(mgmtOfcNo); }
@@ -413,14 +421,21 @@
         }
 
         function makeRegisterFormData() {
+            // 기본 form 기준 FormData 생성
+            // - input type="file"에 선택된 파일도 자동 포함
             var formData = new FormData(getEl("facilityForm"));
+
+            // 위치구분에 따라 가공된 상세위치 반영
             formData.set("locCn", buildLocationText());
+
+            // 등록 시 기본 사용여부 고정
             formData.set("useYn", "Y");
-            if (!formData.get("instlDt")) formData.delete("instlDt");
-            formData.delete("facilityFiles");
-            selectedFacilityFiles.forEach(function (item) {
-                formData.append("facilityFiles", item.file);
-            });
+
+            // 설치일자가 비어 있으면 서버로 빈 문자열 전송 방지
+            if (!formData.get("instlDt")) {
+                formData.delete("instlDt");
+            }
+
             return formData;
         }
 
@@ -441,64 +456,61 @@
 
         /* ============================================================
            파일 미리보기
-           - objectUrl을 파일 선택 즉시 생성해서 배열에 보관
-           - fileInput.value 초기화와 무관하게 미리보기 유지
+           - 기본 파일 input의 FileList 기준으로 현재 선택된 파일만 표시
+           - 파일을 다시 선택하면 브라우저 기본 동작에 따라 기존 선택은 교체
         ============================================================ */
         function renderSelectedFilePreview() {
+            // 파일 input
+            var fileInput = getEl("facilityFiles");
+
+            // 미리보기 영역
             var previewArea = getEl("facilityFilePreview");
+
+            // 필수 요소가 없으면 중단
+            if (!fileInput || !previewArea) return;
+
+            // 기존 미리보기 초기화
             previewArea.innerHTML = "";
 
-            if (selectedFacilityFiles.length === 0) {
+            // 선택된 파일이 없으면 안내문구 표시
+            if (!fileInput.files || fileInput.files.length === 0) {
                 previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>';
                 return;
             }
 
-            selectedFacilityFiles.forEach(function (item, index) {
+            // 현재 input에 선택된 파일 기준으로 미리보기 생성
+            Array.from(fileInput.files).forEach(function (file) {
+                // 미리보기 카드
                 var wrapper = document.createElement("div");
                 wrapper.className = "file-preview-item";
 
-                if (item.file.type && item.file.type.indexOf("image/") === 0) {
+                // 이미지 파일이면 썸네일 표시
+                if (file.type && file.type.indexOf("image/") === 0) {
                     var img = document.createElement("img");
-                    img.alt = item.file.name;
-                    img.src = item.objectUrl; /* 미리 생성된 URL 사용 */
+                    img.alt = file.name;
+                    img.src = URL.createObjectURL(file);
+
+                    // 이미지 로드 후 임시 objectUrl 해제
+                    img.onload = function () {
+                        URL.revokeObjectURL(img.src);
+                    };
+
                     wrapper.appendChild(img);
                 }
 
-                var removeButton = document.createElement("button");
-                removeButton.type = "button";
-                removeButton.className = "file-preview-remove";
-                removeButton.textContent = "x";
-                removeButton.addEventListener("click", function () {
-                    /* objectUrl 메모리 해제 후 배열에서 제거 */
-                    URL.revokeObjectURL(selectedFacilityFiles[index].objectUrl);
-                    selectedFacilityFiles.splice(index, 1);
-                    renderSelectedFilePreview();
-                });
-                wrapper.appendChild(removeButton);
-
+                // 파일명 표시
                 var nameEl = document.createElement("div");
                 nameEl.className = "file-preview-name";
-                nameEl.textContent = item.file.name;
+                nameEl.textContent = file.name;
                 wrapper.appendChild(nameEl);
 
+                // 미리보기 영역에 카드 추가
                 previewArea.appendChild(wrapper);
             });
         }
 
         function previewSelectedFiles() {
-            var fileInput = getEl("facilityFiles");
-            if (!fileInput.files || fileInput.files.length === 0) return;
-
-            /* 선택 즉시 objectUrl 생성해서 배열에 저장 */
-            Array.from(fileInput.files).forEach(function (file) {
-                selectedFacilityFiles.push({
-                    file: file,
-                    objectUrl: URL.createObjectURL(file)
-                });
-            });
-
-            /* input 초기화 — 이미 objectUrl로 분리했으므로 안전 */
-            fileInput.value = "";
+            // 파일 선택 변경 시 input.files 기준으로 미리보기만 다시 그림
             renderSelectedFilePreview();
         }
 

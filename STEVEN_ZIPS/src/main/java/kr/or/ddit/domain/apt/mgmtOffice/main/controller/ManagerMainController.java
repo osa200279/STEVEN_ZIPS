@@ -269,6 +269,9 @@ public class ManagerMainController {
         return "redirect:/manager/resident/auto/list/" + mgmtOfcNo;
     }
 
+
+
+
     // 방문 차량 자동 처리
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/visit/auto/{mgmtOfcNo}")

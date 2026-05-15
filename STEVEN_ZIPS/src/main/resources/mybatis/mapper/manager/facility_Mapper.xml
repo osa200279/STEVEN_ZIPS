@@ -390,6 +390,16 @@
             dual
     </select>
 
+    <!-- 시설 유형 정정 -->
+    <update id="correctFacilityType" parameterType="kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO">
+        UPDATE
+            facility
+        SET
+            facility_ty_cd = #{facilityTyCd}
+        WHERE
+            facility_no = #{facilityNo}
+    </update>
+
     <!-- 이용불가 시설 통계 -->
     <select id="selectDisabledStats" resultType="map">
         SELECT
