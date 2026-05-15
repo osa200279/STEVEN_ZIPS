@@ -116,34 +116,64 @@ public class AptRetrieveController {
     }
 
     @GetMapping("/detail.do")
-    public String aptDetail(@RequestParam("aptCmplexNo") String aptCmplexNo, Model model) {
+    public String aptDetail(
+            @RequestParam("aptCmplexNo") String aptCmplexNo,
+            Model model
+    ) {
+
         log.info("아파트 단지 상세 조회 aptCmplexNo = {}", aptCmplexNo);
 
-        AptComplexVO aptInfo = aptComplexService.selectAptComplexDetail(aptCmplexNo);
+        AptComplexVO aptInfo =
+                aptComplexService.selectAptComplexDetail(aptCmplexNo);
 
         log.info("조회된 아파트 단지 상세 정보 = {}", aptInfo);
 
         if (aptInfo == null) {
-            model.addAttribute("message", "해당 단지 정보를 찾을 수 없습니다.");
-            model.addAttribute("redirectUrl", "/apt/list.do");
+            model.addAttribute(
+                    "message",
+                    "해당 단지 정보를 찾을 수 없습니다."
+            );
+
+            model.addAttribute(
+                    "redirectUrl",
+                    "/apt/list.do"
+            );
             return "common/errorAlert";
         }
 
-        List<AttachFileVO> fileList = attachFileService.setFileMetaData(aptInfo.getImgFileNo());
+        List<AttachFileVO> fileList = new ArrayList<>();
         List<String> layoutGoogleIdList = new ArrayList<>();
         List<String> complexGoogleIdList = new ArrayList<>();
 
-        for(AttachFileVO file : fileList){
-            if(file.getCat().equals("layoutImage")){
-                layoutGoogleIdList.add(file.getGoogleId());
-            }
-            if(file.getCat().equals("complexImage")){
-                complexGoogleIdList.add(file.getGoogleId());
+        if(aptInfo.getImgFileNo() != null && !aptInfo.getImgFileNo().isBlank()) {
+            fileList = attachFileService.setFileMetaData(aptInfo.getImgFileNo());
+            if(fileList != null) {
+                for(AttachFileVO file : fileList){
+                    if(file == null){
+                        continue;
+                    }
+                    if("layoutImage".equals(file.getCat())){
+                        if(file.getGoogleId() != null) {
+                            layoutGoogleIdList.add(
+                                    file.getGoogleId()
+                            );
+                        }
+                    }
+                    if("complexImage".equals(file.getCat())){
+                        if(file.getGoogleId() != null) {
+                            complexGoogleIdList.add(
+                                    file.getGoogleId()
+                            );
+                        }
+                    }
+                }
             }
         }
 
-        model.addAttribute("layoutGoogleIdList",layoutGoogleIdList);
-        model.addAttribute("complexGoogleIdList",complexGoogleIdList);
+        model.addAttribute("layoutGoogleIdList", layoutGoogleIdList);
+
+        model.addAttribute("complexGoogleIdList", complexGoogleIdList);
+
         model.addAttribute("aptInfo", aptInfo);
 
         return "central/aptDetail";
