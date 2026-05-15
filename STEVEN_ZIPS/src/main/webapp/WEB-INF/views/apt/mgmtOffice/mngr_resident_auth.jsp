@@ -341,35 +341,32 @@
                     if (!page || page.dataset.bound === "true") return;
                     page.dataset.bound = "true";
 
-                    var rqstRowData = [
-                        {
-                            rqstNo: 1,
-                            userNm: "김민수",
-                            telno: "010-1234-5678",
-                            rqstTyCd: "MVIN",
-                            dong: "101동",
-                            ho: "302호",
-                            mvinPrdDt: "2026-05-01",
-                            mvoutPrdDt: "",
-                            mvoutRsnCn: "",
-                            rcptDt: "2026-04-20",
-                            rqstSttsCd: "WAIT"
-                        },
-                        {
-                            rqstNo: 2,
-                            userNm: "이서연",
-                            telno: "010-9876-5432",
-                            rqstTyCd: "CHG",
-                            dong: "102동",
-                            ho: "804호",
-                            mvinPrdDt: "2026-05-10",
-                            mvoutPrdDt: "",
-                            mvoutRsnCn: "세대주 명의 변경 요청",
-                            rcptDt: "2026-04-22",
-                            rqstSttsCd: "WAIT"
-                        }
-                    ];
 
+                    var rqstRowData = [
+
+                        <c:forEach var="row" items="${residentAuthList}" varStatus="vs">
+
+                        {
+                            rqstNo: "${row.rqstNo}",
+                            userNm: "${row.userNm}",
+                            telno: "${row.userTelno}",
+                            rqstTyCd: "${row.rqstTyCd}",
+                            dong: "${row.dong}",
+                            ho: "${row.ho}",
+                            mvinPrdDt: "${row.mvinPrdDt}",
+                            mvoutPrdDt: "${row.mvoutPrdDt}",
+                            mvoutRsnCn: "${row.mvoutRsnCn}",
+                            rcptDt: "${row.rcptDt}",
+                            rqstSttsCd: "${row.rqstSttsCd}"
+                        }
+
+                        <c:if test="${!vs.last}">
+                        ,
+                        </c:if>
+
+                        </c:forEach>
+
+                    ];
                     var currentRqst = null;
 
                     function rqstTypeText(code) {
@@ -408,9 +405,7 @@
                         return rqstRowData.filter(function (row) {
                             return (!rqstTy || row.rqstTyCd === rqstTy)
                                 && (!status || row.rqstSttsCd === status)
-                                && (!keyword || row.userNm.indexOf(keyword) > -1 || row.telno.indexOf(keyword) > -1)
-                                && (!startDt || row.rcptDt >= startDt)
-                                && (!endDt || row.rcptDt <= endDt);
+                                && (!keyword || row.userNm.indexOf(keyword) > -1 || row.telno.indexOf(keyword) > -1);
                         });
                     }
 
@@ -427,7 +422,7 @@
 
                         tbody.innerHTML = rows.map(function (row) {
                             return '<tr>'
-                                + '<td class="col-rqst-no td-mono">RQ' + String(row.rqstNo).padStart(3, "0") + '</td>'
+                                + '<td class="col-rqst-no td-mono">' + row.rqstNo + '</td>'
                                 + '<td class="col-user td-bold">' + row.userNm + '</td>'
                                 + '<td class="col-tel">' + row.telno + '</td>'
                                 + '<td class="col-type">' + rqstTypeText(row.rqstTyCd) + '</td>'
@@ -525,18 +520,46 @@
                     }
 
                     function approveRqst() {
+
                         if (!currentRqst) return;
 
-                        currentRqst.rqstSttsCd = "APRV";
+                        fetch("${pageContext.request.contextPath}/office/resident/auth/approve", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                [document.querySelector('meta[name="_csrf_header"]').content]:
+                                document.querySelector('meta[name="_csrf"]').content
+                            },
+                            body: JSON.stringify({
+                                rqstNo: currentRqst.rqstNo
+                            })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
 
-                        renderTable();
-                        closeApproveModal();
-                        closeDetailModal();
+                                if (data.success) {
 
-                        alert("승인 처리되었습니다.");
+                                    currentRqst.rqstSttsCd = "APRV";
+
+                                    renderTable();
+
+                                    closeApproveModal();
+                                    closeDetailModal();
+
+                                    alert("승인 처리되었습니다.");
+
+                                } else {
+                                    alert("승인 처리 실패");
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert("서버 오류");
+                            });
                     }
 
                     function rejectRqst() {
+
                         if (!currentRqst) return;
 
                         var reason = document.getElementById("rejectReason").value.trim();
@@ -549,14 +572,45 @@
                         }
 
                         hint.style.display = "none";
-                        currentRqst.rqstSttsCd = "RJCT";
-                        currentRqst.mvoutRsnCn = reason;
 
-                        renderTable();
-                        closeRejectModal();
-                        closeDetailModal();
+                        fetch("${pageContext.request.contextPath}/office/resident/auth/reject", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                [document.querySelector('meta[name="_csrf_header"]').content]:
+                                document.querySelector('meta[name="_csrf"]').content
+                            },
+                            body: JSON.stringify({
+                                rqstNo: currentRqst.rqstNo,
+                                rjctRsnCn: reason
+                            })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
 
-                        alert("반려 처리되었습니다.");
+                                if (data.success) {
+
+
+
+
+                                    currentRqst.rqstSttsCd = "RJCT";
+                                    currentRqst.mvoutRsnCn = reason;
+
+                                    renderTable();
+
+                                    closeRejectModal();
+                                    closeDetailModal();
+
+                                    alert("반려 처리되었습니다.");
+
+                                } else {
+                                    alert("반려 처리 실패");
+                                }
+                            })
+                            .catch(err => {
+                                console.error("reject error =", err);
+                                alert("서버 오류");
+                            });
                     }
 
                     document.getElementById("btnSearch").addEventListener("click", renderTable);
@@ -591,7 +645,7 @@
                         var detailBtn = e.target.closest('[data-action="detail"]');
 
                         if (detailBtn) {
-                            var rqstNo = Number(detailBtn.dataset.rqstNo);
+                            var rqstNo = detailBtn.dataset.rqstNo;
                             var row = rqstRowData.find(function (r) {
                                 return r.rqstNo === rqstNo;
                             });

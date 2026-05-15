@@ -7,6 +7,8 @@ import kr.or.ddit.domain.apt.mgmtOffice.main.vo.MgmtOfficeVO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.ManagerPaginationVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.service.IFacilityService;
+import kr.or.ddit.domain.apt.mgmtOffice.resident.service.IMngResidentAuthService;
+import kr.or.ddit.domain.apt.mgmtOffice.resident.vo.MngResidentAuthVO;
 import kr.or.ddit.domain.member.manager.vo.MngrVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
@@ -32,6 +34,9 @@ public class ManagerMainController {
 
     // 관리사무소 목록 조회용 Mapper
     private final IMgmtOfficeMapper mgmtOfficeMapper;
+
+
+    private final IMngResidentAuthService residentAuthService;
 
     // ADMIN/MNGR 접근 기준 및 화면 공통 모델 처리
     private final IManagerModelService managerAccessService;
@@ -228,10 +233,18 @@ public class ManagerMainController {
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
+
+        List<MngResidentAuthVO> residentAuthList
+                = residentAuthService.selectResidentAuthList();
+
+        System.out.println("residentAuthList = " + residentAuthList);
+
+        model.addAttribute("residentAuthList", residentAuthList);
+
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
         return "apt/mgmtOffice/mngr_resident_auth";
     }
-
     // 전출입 관리
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/resident/moveList/{mgmtOfcNo}")
