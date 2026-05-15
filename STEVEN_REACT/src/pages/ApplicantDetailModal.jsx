@@ -23,13 +23,14 @@ const ApplicantDetailModal = ({ isOpen, data, onClose }) => {
                     <div><strong>공고명:</strong> {data.ttl}</div>
                     <div><strong>공고명:</strong> {data.aptCmplexNo}</div>
                     <div><strong>타입/면적:</strong> {data.tyNm} / {data.exclusiveSize}㎡</div>
-                    <div><strong>첨부 파일</strong></div><br />
+                    <div><strong>첨부 파일</strong></div>
                     {
                         data.docList.map((doc, index) => {
-                            const formattedDate = new Date(doc.mdfcnDt || doc.regDt).toLocaleDateString('sv-SE');
+                            const hasDate = doc.mdfcnDt || doc.regDt;
+                            const formattedDate = hasDate ? new Date(doc.mdfcnDt || doc.regDt).toLocaleDateString('sv-SE') : "미등록";
                             return (
                                 <div key={index}>
-                                    <a href={`http://localhost:8080/file/download/${doc.fileInfo?.googleId}`} rel='noopener noreferrer'>
+                                    {index+1}.&nbsp;<a href={`http://localhost:8080/file/download/${doc.fileInfo?.googleId}`} rel='noopener noreferrer'>
                                         [ {doc.mdfcnDt ? `수정일  ${formattedDate}` : `등록일 ${formattedDate}`} ] {doc.sbmsnDocTyCd} : {doc.fileInfo?.fileOgName}
                                     </a>
                                     <br />

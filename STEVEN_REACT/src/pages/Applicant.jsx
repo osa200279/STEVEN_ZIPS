@@ -98,11 +98,11 @@ const Applicant = () => {
                 if (p.value === 'SUBMIT') {
                     return (
                         <div>
-                            <button title='승인' className='btn-pass' onClick={() => updStts(p, true)}>
+                            <button title='승인' className='btn-pass' onClick={(e) => { e.stopPropagation(); updStts(p, true) }}>
                                 <Check className='check' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                             &nbsp;&nbsp;
-                            <button title='반려' className='btn-reject' onClick={() => updStts(p, false)}>
+                            <button title='반려' className='btn-reject' onClick={(e) => { e.stopPropagation(); updStts(p, false) }}>
                                 <X className='reject' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                         </div>
@@ -110,7 +110,7 @@ const Applicant = () => {
                 } else if (p.value === 'WINNER') {
                     return (
                         <div>
-                            <button title='반려' className='btn-reject' onClick={() => updStts(p, false)}>
+                            <button title='반려' className='btn-reject' onClick={(e) => { e.stopPropagation(); updStts(p, false) }}>
                                 <X className='reject' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                         </div>
@@ -119,15 +119,15 @@ const Applicant = () => {
                     || p.value === 'INSPECTION') {
                     return (
                         <div>
-                            <button title='승인' className='btn-pass' onClick={() => updStts(p, true)}>
+                            <button title='승인' className='btn-pass' onClick={(e) => { e.stopPropagation(); updStts(p, true) }}>
                                 <Check className='check' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                             &nbsp;&nbsp;
-                            <button title='보완' className='btn-supplement' onClick={() => supplement(p)}>
+                            <button title='보완' className='btn-supplement' onClick={(e) => { e.stopPropagation(); supplement(p) }}>
                                 <Triangle className='supplement' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                             &nbsp;&nbsp;
-                            <button title='반려' className='btn-reject' onClick={() => updStts(p, false)}>
+                            <button title='반려' className='btn-reject' onClick={(e) => { e.stopPropagation(); updStts(p, false) }}>
                                 <X className='reject' style={{ marginTop: '0px', padding: '0px' }} size={24} />
                             </button>
                         </div>
@@ -321,6 +321,27 @@ const Applicant = () => {
 
     // 클릭 시 모달 열기 함수
     const openDetailModal = (params) => {
+
+        if (!params.event) {
+            // rowSelection이나 DeselectAll 등으로 호출된 경우
+            return;
+        }
+
+        const e = params.event;
+
+        if (e.target.closest('.btn-confirm')) {
+            setSelectedApplicant(params.data);
+            setIsModalOpen(true);
+            return; // 처리 완료 후 종료
+        }
+
+        if (
+            e.target.closest('button')
+            || e.target.closest('svg')
+        ) {
+            return;
+        }
+
         setSelectedApplicant(params.data);
         setIsModalOpen(true);
     };
