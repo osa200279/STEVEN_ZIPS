@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.board.mapper.ImngrRegidentNoticeMapper">
+
+    <!-- 공지 목록 개수 -->
+    <select id="selectNoticeCount" resultType="int">
+
+        SELECT COUNT(*)
+        FROM APT_ANN_BOARD_POST
+        WHERE DEL_YN = 'N'
+
+    </select>
+
+    <!-- 공지 목록 -->
+    <select id="selectNoticeList"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO">
+
+        SELECT *
+        FROM
+        (
+        SELECT
+        ROW_NUMBER() OVER
+        (
+        ORDER BY TOP_FIX_YN DESC
+        , REG_DTTM DESC
+        ) RN
+        , ANN_NO
+        , BOARD_NO
+        , TTL
+        , CN
+        , WRTR_ID
+        , REG_DTTM
+        , MDF_DTTM
+        , INQ_CNT
+        , DEL_YN
+        , ATCH_FILE_ID
+        , TOP_FIX_YN
+        FROM APT_ANN_BOARD_POST
+        WHERE DEL_YN = 'N'
+
+        <if test="searchTtl != null and searchTtl != ''">
+            AND TTL LIKE '%' || #{searchTtl} || '%'
+        </if>
+
+        )
+        WHERE RN BETWEEN #{startRow} AND #{endRow}
+
+    </select>
+
+    <!-- 상세조회 -->
+    <select id="selectNoticeDetail"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO">
+
+        SELECT
+            ANN_NO
+             , BOARD_NO
+             , TTL
+             , CN
+             , WRTR_ID
+             , REG_DTTM
+             , MDF_DTTM
+             , INQ_CNT
+             , DEL_YN
+             , ATCH_FILE_ID
+             , TOP_FIX_YN
+        FROM APT_ANN_BOARD_POST
+        WHERE ANN_NO = #{annNo}
+
+    </select>
+
+    <!-- 등록 -->
+    <insert id="insertNotice"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO">
+
+        INSERT INTO APT_ANN_BOARD_POST
+        (
+          ANN_NO
+        , BOARD_NO
+        , TTL
+        , CN
+        , WRTR_ID
+        , TOP_FIX_YN
+        , REG_DTTM
+        , DEL_YN
+        )
+        VALUES
+            (
+              'ANN' || LPAD(SEQ_APT_ANN_BOARD_POST.NEXTVAL, 8, '0')
+            , #{boardNo}
+            , #{ttl}
+            , #{cn}
+            , #{wrtrId}
+            , #{topFixYn}
+            , SYSDATE
+            , 'N'
+            )
+
+    </insert>
+
+    <!-- 수정 -->
+    <update id="updateNotice"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO">
+
+        UPDATE APT_ANN_BOARD_POST
+        SET TTL = #{ttl}
+          , CN = #{cn}
+          , TOP_FIX_YN = #{topFixYn}
+          , MDF_DTTM = SYSDATE
+        WHERE ANN_NO = #{annNo}
+
+    </update>
+
+    <!-- 삭제 -->
+    <update id="deleteNotice"
+            parameterType="string">
+
+        UPDATE APT_ANN_BOARD_POST
+        SET DEL_YN = 'Y'
+        WHERE ANN_NO = #{annNo}
+
+    </update>
+
+
+    <select id="selectAptCmplexNoByMgmtOfcNo"
+            parameterType="string"
+            resultType="string">
+        /* ImngrRegidentNoticeMapper.selectAptCmplexNoByMgmtOfcNo */
+        SELECT apt_cmplex_no
+        FROM mgmt_office
+        WHERE mgmt_ofc_no = #{mgmtOfcNo}
+          AND use_yn = 'Y'
+    </select>
+
+    <select id="selectNoticeBoardNoByAptCmplexNo"
+            parameterType="string"
+            resultType="string">
+        /* ImngrRegidentNoticeMapper.selectNoticeBoardNoByAptCmplexNo */
+        SELECT board_no
+        FROM apt_board_instance
+        WHERE apt_cmplex_no = #{aptCmplexNo}
+          AND board_ty_cd = 'NOTICE'
+          AND use_yn = 'Y'
+    </select>
+
+</mapper>
