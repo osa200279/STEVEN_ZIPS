@@ -438,7 +438,7 @@
                 <c:if test="${not empty attachFile}">
                     <div class="attach-row">
                         <a href="/file/download/${attachFile.googleId}"
-                           target="_blank" class="attach-chip">
+                           class="attach-chip">
                                 ${attachFile.fileOgName}
                         </a>
                     </div>
