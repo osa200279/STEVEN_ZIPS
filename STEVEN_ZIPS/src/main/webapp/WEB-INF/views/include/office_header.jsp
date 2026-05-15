@@ -67,11 +67,11 @@
         <c:set var="bcParent" value="회계운영관리" />
         <c:set var="bcCurrent" value="관리비항목집계" />
     </c:when>
-    <c:when test="${fn:contains(uri, '/manager/bill/charge')}">
+    <c:when test="${fn:contains(uri, '/manager/bill/issue')}">
         <c:set var="bcParent" value="회계운영관리" />
         <c:set var="bcCurrent" value="고지서등록" />
     </c:when>
-    <c:when test="${fn:contains(uri, '/manager/bill/issue')}">
+    <c:when test="${fn:contains(uri, '/manager/bill/charge')}">
         <c:set var="bcParent" value="회계운영관리" />
         <c:set var="bcCurrent" value="관리비부과" />
     </c:when>

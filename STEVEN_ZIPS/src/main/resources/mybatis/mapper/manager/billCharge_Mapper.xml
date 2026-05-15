@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.bill.mapper.IBillChargeMapper">
+
+    <!-- BILL resultMap -->
+    <resultMap id="billMap"
+               type="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO">
+        <id property="billNo" column="BILL_NO"/>
+        <result property="hoNo" column="HO_NO"/>
+        <result property="billYm" column="BILL_YM"/>
+        <result property="billPblancDt" column="BILL_PBLANC_DT"/>
+        <result property="billTotAmt" column="BILL_TOT_AMT"/>
+        <result property="dueDt" column="DUE_DT"/>
+        <result property="pymtSttsCd" column="PYMT_STTS_CD"/>
+        <result property="pymtDt" column="PYMT_DT"/>
+        <result property="pymtAmt" column="PYMT_AMT"/>
+        <result property="lateFeeRt" column="LATE_FEE_RT"/>
+        <result property="lateFeeAmt" column="LATE_FEE_AMT"/>
+    </resultMap>
+
+    <!-- BILL_DETAIL resultMap -->
+    <resultMap id="billDetailMap"
+               type="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillDetailVO">
+        <id property="billDetailNo" column="BILL_DETAIL_NO"/>
+        <result property="billNo" column="BILL_NO"/>
+        <result property="billItemCd" column="BILL_ITEM_CD"/>
+        <result property="billItemAmt" column="BILL_ITEM_AMT"/>
+        <result property="atchFileId" column="ATCH_FILE_ID"/>
+    </resultMap>
+
+    <!-- ExpenseVO resultMap: 지출 항목별 합계 조회용 -->
+    <resultMap id="expenseSummaryMap"
+               type="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.ExpenseVO">
+        <result property="expenseCd" column="EXPENSE_CD"/>
+        <result property="expenseCdNm" column="EXPENSE_CD_NM"/>
+        <result property="expenseCdContent" column="EXPENSE_CD_CONTENT"/>
+        <result property="expenseAmt" column="EXPENSE_AMT"/>
+    </resultMap>
+
+
+    <!-- 이미 해당 월 관리비가 부과되었는지 확인 -->
+    <select id="selectBillChargeExistsCount" resultType="int">
+        SELECT COUNT(*)
+        FROM BILL B
+                 JOIN APT_DETAIL H
+                      ON B.HO_NO = H.HO_NO
+                 JOIN APT_UNIT U
+                      ON H.DONG_NO = U.DONG_NO
+        WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND B.BILL_YM = #{billYm}
+    </select>
+
+
+    <!-- 부과 대상 세대 목록 조회 -->
+    <select id="selectBillTargetHouseList" resultMap="billMap">
+        SELECT
+            H.HO_NO
+        FROM APT_DETAIL H
+                 JOIN APT_UNIT U
+                      ON H.DONG_NO = U.DONG_NO
+        WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND H.HO_STTS_CD = 'Y'
+        ORDER BY U.DONG_NM, H.HO
+    </select>
+
+
+    <!-- 관리비 부과용 월별 지출 항목 합계 조회 -->
+    <select id="selectExpenseSummaryForCharge" resultMap="expenseSummaryMap">
+        SELECT
+            E.EXPENSE_CD,
+            C.CODE_NAME AS EXPENSE_CD_NM,
+            C.CODE_CONTENT AS EXPENSE_CD_CONTENT,
+            SUM(E.EXPENSE_AMT) AS EXPENSE_AMT
+        FROM EXPENSE E
+                 LEFT JOIN COMMON_CODE C
+                           ON C.GROUP_CODE_NO = 'EXPN_CD'
+                               AND C.CODE_NO_CD = E.EXPENSE_CD
+                               AND C.USE_YN = 'Y'
+        WHERE E.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND E.EXPENSE_YR = #{expenseYr}
+          AND E.EXPENSE_MM = #{expenseMm}
+        GROUP BY
+            E.EXPENSE_CD,
+            C.CODE_NAME,
+            C.CODE_CONTENT,
+            C.SORT_ORDER
+        ORDER BY C.SORT_ORDER
+    </select>
+
+
+    <!-- BILL 등록 -->
+    <insert id="insertBill"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO">
+
+        <selectKey keyProperty="billNo"
+                   resultType="string"
+                   order="BEFORE">
+            SELECT 'BL' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD(SEQ_BILL.NEXTVAL, 7, '0')
+            FROM DUAL
+        </selectKey>
+
+        INSERT INTO BILL (
+        BILL_NO,
+        HO_NO,
+        BILL_YM,
+        BILL_PBLANC_DT,
+        BILL_TOT_AMT,
+        DUE_DT,
+        PYMT_STTS_CD,
+        PYMT_DT,
+        PYMT_AMT,
+        LATE_FEE_RT,
+        LATE_FEE_AMT
+        ) VALUES (
+        #{billNo},
+        #{hoNo},
+        #{billYm},
+        SYSDATE,
+        #{billTotAmt},
+        #{dueDt},
+        #{pymtSttsCd},
+        #{pymtDt},
+        #{pymtAmt},
+        #{lateFeeRt},
+        #{lateFeeAmt}
+        )
+    </insert>
+
+
+    <!-- BILL_DETAIL 등록 -->
+    <insert id="insertBillDetail"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillDetailVO">
+
+        <selectKey keyProperty="billDetailNo"
+                   resultType="string"
+                   order="BEFORE">
+            SELECT 'BD' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD(SEQ_BILL_DETAIL.NEXTVAL, 7, '0')
+            FROM DUAL
+        </selectKey>
+
+        INSERT INTO BILL_DETAIL (
+        BILL_DETAIL_NO,
+        BILL_NO,
+        BILL_ITEM_CD,
+        BILL_ITEM_AMT,
+        ATCH_FILE_ID
+        ) VALUES (
+        #{billDetailNo},
+        #{billNo},
+        #{billItemCd},
+        #{billItemAmt},
+        #{atchFileId}
+        )
+    </insert>
+
+</mapper>
