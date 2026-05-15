@@ -90,7 +90,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
      */
     @Override
     @Transactional
-    public String insertPublicFacility(PublicFacilityFormDTO formDTO, List<MultipartFile> facilityFiles) {
+    public String insertPublicFacility(PublicFacilityFormDTO formDTO, List<MultipartFile> facilityFiles, String userNo) {
         // 요청값 기본값 정리
         normalizeInsertForm(formDTO);
 
@@ -119,7 +119,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
         publicFacilityMapper.insertPublicFacility(publicFacilityParam);
 
         // 시설 사진 추가/삭제 처리
-        processFacilityFiles(facilityNo, facilityFiles, formDTO.getDeleteFileUuids());
+        processFacilityFiles(facilityNo, facilityFiles, formDTO.getDeleteFileUuids(), userNo);
 
         // 등록 후 Controller에 편의시설번호 반환
         return cmnFacilityNo;
@@ -132,7 +132,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
      */
     @Override
     @Transactional
-    public void updatePublicFacility(PublicFacilityFormDTO formDTO, List<MultipartFile> facilityFiles) {
+    public void updatePublicFacility(PublicFacilityFormDTO formDTO, List<MultipartFile> facilityFiles, String userNo) {
         // 수정 대상 편의시설번호 확인
         if (!StringUtils.hasText(formDTO.getCmnFacilityNo())) {
             throw new IllegalArgumentException("편의시설번호가 없습니다.");
@@ -152,15 +152,11 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
         // 화면에서 facilityNo가 넘어오지 않아도 상세 조회값으로 보정
         formDTO.setFacilityNo(detail.getFacilityNo());
 
-        // FACILITY 기본정보 수정
-        // - 수정 화면에 있는 시설명/동/상세위치 저장
-        publicFacilityMapper.updateFacilityForPublicFacility(formDTO);
-
         // PUBLIC_FACILITY 운영정보 수정
         publicFacilityMapper.updatePublicFacility(formDTO);
 
         // 시설 사진 추가/삭제 처리
-        processFacilityFiles(detail.getFacilityNo(), facilityFiles, formDTO.getDeleteFileUuids());
+        processFacilityFiles(detail.getFacilityNo(), facilityFiles, formDTO.getDeleteFileUuids(), userNo);
     }
 
     /**
@@ -282,7 +278,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
      * 4. FILE_GROUP_NO가 없으면 IAttachFileMapper.getSeqFileGroupNo()로 신규 채번 후 FACILITY에 연결
      * 5. Google Drive 업로드 후 ATTACH_FILE INSERT
      */
-    private void processFacilityFiles(String facilityNo, List<MultipartFile> facilityFiles, String deleteFileUuids) {
+    private void processFacilityFiles(String facilityNo, List<MultipartFile> facilityFiles, String deleteFileUuids, String userNo) {
         // 업로드 파일 존재 여부 확인
         boolean hasUploadFiles = hasUploadFiles(facilityFiles);
 
@@ -321,7 +317,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
         }
 
         // 신규 시설 사진 업로드 처리
-        uploadFacilityFiles(facilityVO, facilityFiles);
+        uploadFacilityFiles(facilityVO, facilityFiles, userNo);
     }
 
     /**
@@ -397,7 +393,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
      * 4. ATTACH_FILE INSERT
      * 5. 중간 실패 시 이미 업로드된 Google Drive 파일 휴지통 이동
      */
-    private void uploadFacilityFiles(FacilityVO facilityVO, List<MultipartFile> facilityFiles) {
+    private void uploadFacilityFiles(FacilityVO facilityVO, List<MultipartFile> facilityFiles, String userNo) {
         // 업로드할 파일이 없으면 종료
         if (!hasUploadFiles(facilityFiles)) {
             return;
@@ -438,7 +434,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
                 String savedFileName = uuid + "_" + originalFilename;
 
                 // Google Drive 폴더 경로 생성
-                String folderPath = createFacilityFolderPath(facilityVO);
+                String folderPath = createFacilityFolderPath(facilityVO, userNo);
 
                 // DB 저장용 전체 경로
                 String fullPath = folderPath + "/" + savedFileName;
@@ -490,7 +486,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
      * - 저장 기준은 DB의 FACILITY.FILE_GROUP_NO
      * - 경로는 Drive 폴더 정리용
      */
-    private String createFacilityFolderPath(FacilityVO facilityVO) {
+    private String createFacilityFolderPath(FacilityVO facilityVO, String userNo) {
         // 시설유형코드 보정
         String facilityTyCd = StringUtils.hasText(facilityVO.getFacilityTyCd())
                 ? facilityVO.getFacilityTyCd()
@@ -501,7 +497,13 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
                 ? facilityVO.getAptCmplexNo()
                 : "unknownApt";
 
+        // 업로드 사용자번호 보정
+        String uploadUserNo = StringUtils.hasText(userNo)
+                ? userNo
+                : "unknownUser";
+
         return "apt/facility/"
+                + uploadUserNo + "/"
                 + aptCmplexNo + "/"
                 + facilityTyCd + "/"
                 + facilityVO.getFacilityNo();

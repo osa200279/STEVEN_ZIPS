@@ -55,7 +55,11 @@ public interface IPublicFacilityService {
      * @param facilityFiles 시설 사진 파일 목록
      * @return 생성된 공용시설번호
      */
-    String insertPublicFacility(PublicFacilityFormDTO formDTO, List<MultipartFile> facilityFiles);
+    String insertPublicFacility(
+            PublicFacilityFormDTO formDTO,
+            List<MultipartFile> facilityFiles,
+            String userNo
+    );
 
     /**
      * 공용시설 수정 처리
@@ -65,7 +69,11 @@ public interface IPublicFacilityService {
      * @param formDTO 수정 화면 요청 DTO
      * @param facilityFiles 추가 시설 사진 파일 목록
      */
-    void updatePublicFacility(PublicFacilityFormDTO formDTO, List<MultipartFile> facilityFiles);
+    void updatePublicFacility(
+            PublicFacilityFormDTO formDTO,
+            List<MultipartFile> facilityFiles,
+            String userNo
+    );
 
     /**
      * 공용시설 삭제 처리

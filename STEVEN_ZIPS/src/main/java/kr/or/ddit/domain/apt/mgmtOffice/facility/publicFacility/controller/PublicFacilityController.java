@@ -191,27 +191,58 @@ public class PublicFacilityController {
     }
 
     @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @ResponseBody
     @PostMapping("/insert/{mgmtOfcNo}")
-    public String insert(
+    public Map<String, Object> insert(
             @PathVariable String mgmtOfcNo,
             PublicFacilityFormDTO formDTO,
-            @RequestParam(required = false) List<MultipartFile> facilityFiles
+            @RequestParam(required = false) List<MultipartFile> facilityFiles,
+            @AuthenticationPrincipal CustomUser customUser
     ) {
-        formDTO.setMgmtOfcNo(mgmtOfcNo);
-        String cmnFacilityNo = publicFacilityService.insertPublicFacility(formDTO, facilityFiles);
-        return "redirect:/manager/publicFacility/update-page/" + mgmtOfcNo + "/" + cmnFacilityNo;
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            //** AJAX 등록 응답 형식 통일
+            formDTO.setMgmtOfcNo(mgmtOfcNo);
+            String userNo = customUser.getMember().getUserNo(); // 업로드 사용자 번호
+            String cmnFacilityNo = publicFacilityService.insertPublicFacility(formDTO, facilityFiles, userNo);
+            result.put("success", true);
+            result.put("message", "편의시설 운영정보가 등록되었습니다.");
+            result.put("cmnFacilityNo", cmnFacilityNo);
+        } catch (Exception e) {
+            log.error("편의시설 운영정보 등록 오류", e);
+            result.put("success", false);
+            result.put("message", e.getMessage() == null ? "편의시설 운영정보 등록 중 오류가 발생했습니다." : e.getMessage());
+        }
+
+        return result;
     }
 
     @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @ResponseBody
     @PostMapping("/update/{mgmtOfcNo}")
-    public String update(
+    public Map<String, Object> update(
             @PathVariable String mgmtOfcNo,
             PublicFacilityFormDTO formDTO,
-            @RequestParam(required = false) List<MultipartFile> facilityFiles
+            @RequestParam(required = false) List<MultipartFile> facilityFiles,
+            @AuthenticationPrincipal CustomUser customUser
     ) {
-        formDTO.setMgmtOfcNo(mgmtOfcNo);
-        publicFacilityService.updatePublicFacility(formDTO, facilityFiles);
-        return "redirect:/manager/publicFacility/detail-page/" + mgmtOfcNo + "/" + formDTO.getCmnFacilityNo();
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            formDTO.setMgmtOfcNo(mgmtOfcNo);
+            String userNo = customUser.getMember().getUserNo(); // 업로드 사용자 번호
+            publicFacilityService.updatePublicFacility(formDTO, facilityFiles, userNo);
+            result.put("success", true);
+            result.put("message", "편의시설 운영정보가 저장되었습니다.");
+            result.put("cmnFacilityNo", formDTO.getCmnFacilityNo());
+        } catch (Exception e) {
+            log.error("편의시설 운영정보 저장 오류", e);
+            result.put("success", false);
+            result.put("message", e.getMessage() == null ? "편의시설 운영정보 저장 중 오류가 발생했습니다." : e.getMessage());
+        }
+
+        return result;
     }
 
     @ResponseBody

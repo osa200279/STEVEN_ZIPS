@@ -57,11 +57,28 @@
     }
 
     /**
+     * empty display fallback
+     * - missing grid data visibility
+     */
+    function displayText(value) {
+        var valueText = text(value).trim();
+        return valueText ? valueText : "-";
+    }
+
+    /**
      * 공용시설명 표시값
      * - PUBLIC_FACILITY 명칭이 없으면 FACILITY 명칭 사용
      */
     function getFacilityName(row) {
-        return text(row.cmnFacilityNm || row.facilityNm);
+        return displayText(row.cmnFacilityNm || row.facilityNm);
+    }
+
+    /**
+     * 카테고리 표시값
+     * - FACILITY.FACILITY_TY_CD 기준 편의시설 유형명 표시
+     */
+    function getFacilityTypeName(row) {
+        return displayText(row.facilityTyNm || row.facilityTyCd);
     }
 
     /**
@@ -69,7 +86,9 @@
      * - 조인 컬럼명 차이를 보정
      */
     function getDongText(row) {
-        return text(row.dongNm || row.dongName || row.dongNo || row.buildingNm || row.buildingNo);
+        var dongText = text(row.dongNm || row.dongName || row.dongNo || row.buildingNm || row.buildingNo).trim();
+        if (dongText.indexOf("_") > -1) dongText = dongText.substring(dongText.lastIndexOf("_") + 1);
+        return displayText(dongText);
     }
 
     /**
@@ -77,7 +96,7 @@
      * - FACILITY.LOC_CN 표시
      */
     function getLocationText(row) {
-        return text(row.locCn || row.locationCn || row.facilityLocCn);
+        return displayText(row.locCn || row.locationCn || row.facilityLocCn);
     }
 
     /**
@@ -85,7 +104,7 @@
      * - PUBLIC_FACILITY.CMN_FACILITY_OPR_HR 표시
      */
     function getOperationHour(row) {
-        return text(row.cmnFacilityOprHr || row.oprHr);
+        return displayText(row.cmnFacilityOprHr || row.oprHr);
     }
 
     /**
@@ -255,14 +274,15 @@
         return [
             { headerName:"번호", width:70, minWidth:60, maxWidth:90, valueGetter:renderReverseNumber, cellClass:"cell-center", sortable:false, resizable:true },
             { headerName:"편의시설명", field:"cmnFacilityNm", flex:1.2, minWidth:135, cellClass:"cell-left", cellRenderer:function (p) { return renderEllipsis(getFacilityName(p.data || {})); } },
-            { headerName:"동", field:"dongNm", flex:.65, minWidth:80, cellClass:"cell-center", valueGetter:function (p) { return getDongText(p.data || {}) || "공용"; } },
+            { headerName:"카테고리", field:"facilityTyNm", flex:.85, minWidth:105, cellClass:"cell-center", cellRenderer:function (p) { return badge(getFacilityTypeName(p.data || {}), "badge-blue"); } },
+            { headerName:"동", field:"dongNm", flex:.65, minWidth:80, cellClass:"cell-center", valueGetter:function (p) { return getDongText(p.data || {}); } },
             { headerName:"위치", field:"locCn", flex:1.1, minWidth:130, cellClass:"cell-left", cellRenderer:function (p) { return renderEllipsis(getLocationText(p.data || {})); } },
             { headerName:"예약", field:"cmnFacilityRsvYn", flex:.7, minWidth:90, cellClass:"cell-center", cellRenderer:function (p) { return renderReserveBadge((p.data || {}).cmnFacilityRsvYn || (p.data || {}).rsvYn); } },
-            { headerName:"이용요금", field:"cmnFacilityAmt", flex:.75, minWidth:95, cellClass:"cell-right", valueFormatter:function (p) { return formatNumber(p.value) + "원"; } },
+            { headerName:"이용요금", field:"cmnFacilityAmt", flex:.75, minWidth:95, cellClass:"cell-right", valueFormatter:function (p) { return p.value == null || p.value === "" ? "-" : formatNumber(p.value) + "원"; } },
             { headerName:"운영시간", field:"cmnFacilityOprHr", flex:1, minWidth:125, cellClass:"cell-center", valueGetter:function (p) { return getOperationHour(p.data || {}); } },
             { headerName:"운영현황", field:"operStatus", flex:.9, minWidth:110, cellClass:"cell-center", cellRenderer:function (p) { return renderFacilityStatusBadge(p.data || {}); } },
             { headerName:"자원", field:"itemCnt", flex:.6, minWidth:75, cellClass:"cell-center", valueGetter:function (p) { return Number((p.data || {}).itemCnt || 0) + "개"; } },
-            { headerName:"수정일", field:"mdfDt", flex:.8, minWidth:95, cellClass:"cell-center", valueFormatter:function (p) { return formatDate(p.value); } },
+            { headerName:"수정일", field:"mdfDt", flex:.8, minWidth:95, cellClass:"cell-center", valueFormatter:function (p) { return displayText(formatDate(p.value)); } },
             { headerName:"관리", field:"actions", flex:option.isAdmin ? .65 : 1.25, minWidth:option.isAdmin ? 90 : 150, cellClass:"cell-center", sortable:false, resizable:false, cellRenderer:function (p) { return renderFacilityActions(p, option); } }
         ];
     }

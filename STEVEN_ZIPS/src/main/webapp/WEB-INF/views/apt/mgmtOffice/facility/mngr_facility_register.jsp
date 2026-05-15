@@ -39,20 +39,17 @@
         #facilityPage .notice-box .material-symbols-rounded { color:var(--accent); font-size:17px; flex-shrink:0; margin-top:2px; }
         #facilityPage .notice-box strong { color:#1a2e1e; }
         #facilityPage .field-help { margin-top:4px; font-size:11px; color:#9caa9e; line-height:1.5; }
-        /* 경고 인라인 박스 */
         #facilityPage .warn-inline { display:flex; align-items:flex-start; gap:7px; padding:8px 11px; background:#fffbf0; border:1px solid #e8c84a; border-left:3px solid #c9900a; border-radius:0 4px 4px 0; font-size:11px; color:#7a5c00; line-height:1.6; margin-top:6px; margin-bottom:2px; }
         #facilityPage .warn-inline .material-symbols-rounded { font-size:15px; color:#c9900a; flex-shrink:0; margin-top:1px; }
         #facilityPage .warn-inline strong { color:#5a3d00; }
         .form-section-title { letter-spacing:0; text-transform:none; font-size:11px; font-weight:800; color:#4a5c4e; display:flex; align-items:center; gap:4px; margin-bottom:10px; }
         .form-section-title .material-symbols-rounded { font-size:15px; color:var(--accent,#2e5c38); }
 
-        /* 등록/수정 폼 공통 형태 */
         .facility-modal-cols { display:grid; grid-template-columns:1fr 1fr; gap:0; }
         .facility-modal-col-left { padding-right:20px; border-right:1px solid var(--line,#d7dce2); }
         .facility-modal-col-right { padding-left:20px; }
         .facility-col-label { font-size:11px; font-weight:800; color:#8a9a8e; letter-spacing:.5px; text-transform:uppercase; padding-bottom:8px; border-bottom:1px solid var(--line,#d7dce2); margin-bottom:14px; }
 
-        /* 사진 업로드 */
         #facilityPage .file-upload-box { border:1px dashed var(--line); border-radius:4px; padding:12px; background:#fafcfb; }
         #facilityPage .file-upload-title { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:#4a5c4e; }
         #facilityPage .file-upload-title .material-symbols-rounded { font-size:16px; color:var(--accent); }
@@ -61,23 +58,13 @@
         #facilityPage .file-preview-item { position:relative; min-height:92px; border:1px solid var(--line); border-radius:4px; background:#fff; overflow:hidden; }
         #facilityPage .file-preview-item img { width:100%; height:92px; object-fit:cover; display:block; }
         #facilityPage .file-preview-name { padding:6px 7px; font-size:11px; color:#4a5c4e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-top:1px solid var(--line); }
+        #facilityPage .file-preview-remove { position:absolute; top:5px; right:5px; width:22px; height:22px; border:0; border-radius:50%; background:rgba(17,24,39,.78); color:#fff; font-size:14px; line-height:22px; cursor:pointer; }
         #facilityPage .file-preview-empty { padding:13px; border:1px solid var(--line); border-radius:4px; background:#fff; font-size:12px; color:#9caa9e; }
-        /* 위치 선택 행 */
-        .location-select-row {display: grid; grid-template-columns: 1.1fr .75fr .75fr 1.1fr; gap: 10px;align-items: end;  }
-        /* 상세위치 행 */.location-detail-row {margin-top: 10px;}
-        /* 위치 선택 행 안의 도움말 숨김 */
-        .location-select-row .field-help {
-            display:none;
-        }
-
-        /* 위치 안내 문구 */
-        .location-help-row {
-            margin-top:5px;
-            font-size:11px;
-            color:#9caa9e;
-            line-height:1.5;
-        }
-        /* 모바일 대응 */@media (max-width: 900px) {.location-select-row {grid-template-columns: 1fr 1fr; }}
+        .location-select-row { display:grid; grid-template-columns:1.1fr .75fr .75fr 1.1fr; gap:10px; align-items:end; }
+        .location-detail-row { margin-top:10px; }
+        .location-select-row .field-help { display:none; }
+        .location-help-row { margin-top:5px; font-size:11px; color:#9caa9e; line-height:1.5; }
+        @media (max-width:900px) { .location-select-row { grid-template-columns:1fr 1fr; } }
         @media (max-width:760px) {
             .facility-modal-cols { grid-template-columns:1fr; }
             .facility-modal-col-left { padding-right:0; border-right:none; border-bottom:1px solid var(--line,#d7dce2); padding-bottom:16px; margin-bottom:16px; }
@@ -105,7 +92,8 @@
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
         <%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
 
-        <main class="main-content">            <div class="office-page" id="facilityPage">
+        <main class="main-content">
+            <div class="office-page" id="facilityPage">
                 <div class="page-header">
                     <div class="page-title-block">
                         <h2>시설 등록</h2>
@@ -118,7 +106,6 @@
                         <h3 class="panel-title"><span class="material-symbols-rounded">edit_square</span>시설 정보 입력</h3>
                     </div>
 
-                    <%-- 시설 등록 폼: 신규 시설 저장용 FormData 기준 --%>
                     <form id="facilityForm" enctype="multipart/form-data">
                         <input type="hidden" id="useYn" name="useYn" value="Y">
 
@@ -133,17 +120,14 @@
                             </div>
 
                             <div class="facility-modal-cols">
-                                <%-- 좌측 영역: FACILITY 기본정보 입력 --%>
                                 <div class="facility-modal-col-left">
                                     <div class="facility-col-label">시설 정보</div>
 
-                                    <%-- 시설 정보 섹션 --%>
                                     <div class="form-section" style="margin-bottom:14px;">
                                         <div class="form-section-title">
                                             <span class="material-symbols-rounded">apartment</span>시설 정보
                                         </div>
 
-                                        <%-- 시설명 + 시설유형: 한 줄 --%>
                                         <div class="form-row cols-2">
                                             <div class="form-field">
                                                 <label class="field-label">시설명 <span class="req">*</span></label>
@@ -171,29 +155,25 @@
                                             </div>
                                         </div>
 
-                                        <%-- 시설유형 경고: 계약·점검 이력 연결 시 변경 어려움 --%>
                                         <div class="warn-inline">
                                             <span class="material-symbols-rounded">warning</span>
                                             <div>시설유형은 <strong>계약·점검·검침 이력이 연결되면 변경이 어렵습니다.</strong> 정확하게 선택하세요.</div>
                                         </div>
 
-                                        <%-- 설치일자: half width --%>
                                         <div class="form-row cols-2" style="margin-top:8px;">
                                             <div class="form-field">
                                                 <label class="field-label">설치일자</label>
                                                 <input type="date" class="form-input" id="instlDt" name="instlDt">
                                             </div>
-                                            <div class="form-field"></div><%-- 빈 칸 유지 --%>
+                                            <div class="form-field"></div>
                                         </div>
                                     </div>
 
-                                    <%-- 위치 정보 섹션 --%>
                                     <div class="form-section">
                                         <div class="form-section-title">
                                             <span class="material-symbols-rounded">location_on</span>위치 정보
                                         </div>
 
-                                        <%-- 위치구분 + 동 + 층 + 호: 한 줄 --%>
                                         <div class="location-select-row">
                                             <div class="form-field">
                                                 <label class="field-label">위치구분 <span class="req">*</span></label>
@@ -214,14 +194,12 @@
                                                     </c:forEach>
                                                 </select>
                                             </div>
-
                                             <div class="form-field">
                                                 <label class="field-label">층</label>
                                                 <select class="form-select" id="facilityFloor" disabled>
                                                     <option value="">선택</option>
                                                 </select>
                                             </div>
-
                                             <div class="form-field">
                                                 <label class="field-label">호</label>
                                                 <select class="form-select" id="facilityHo" disabled>
@@ -230,15 +208,13 @@
                                             </div>
                                         </div>
                                         <div class="location-help-row">구분에 따라 동·층·호가 활성화됩니다.</div>
-                                    <%-- 상세위치: 다음 줄 전체 --%>
-                                    <div class="form-field location-detail-row">
-                                        <label class="field-label">상세위치</label>
-                                        <input type="text" class="form-input" id="locCn" name="locCn" placeholder="예) 1층 로비, 옥상, 지하주차장 B2 A구역">
+                                        <div class="form-field location-detail-row">
+                                            <label class="field-label">상세위치</label>
+                                            <input type="text" class="form-input" id="locCn" name="locCn" placeholder="예) 1층 로비, 옥상, 지하주차장 B2 A구역">
+                                        </div>
                                     </div>
-                                   </div>
                                 </div>
 
-                                <%-- 우측 영역: 시설 사진 등록 및 연결 안내 --%>
                                 <div class="facility-modal-col-right">
                                     <div class="facility-col-label">사진 &amp; 연결</div>
 
@@ -281,26 +257,19 @@
 
 <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
 <script>
-    /* ============================================================
-       시설 등록 화면 스크립트
-
-       JS 읽는 순서
-       1. 기본 설정값
-       2. 공통 함수(fetch, URL, alert)
-       3. 위치구분 처리(공용/동/세대) — disabled 방식으로 레이아웃 고정
-       4. 저장 데이터 생성
-       5. 파일 미리보기/관리
-       6. 이벤트 연결
-       7. 초기 실행
-    ============================================================ */
     (function () {
         var config = window.facilityPageConfig || {};
         var contextPath = config.contextPath || "";
         var mgmtOfcNo = config.mgmtOfcNo || "";
 
-        /* ============================================================
-           공통 함수
-        ============================================================ */
+        /*
+         * 파일 누적 배열
+         * - { file: File, objectUrl: string } 형태로 저장
+         * - objectUrl은 미리보기용으로 미리 생성해두고 배열에 함께 보관
+         * - fileInput.value를 초기화해도 objectUrl은 유지됨
+         */
+        var selectedFacilityFiles = [];
+
         function getEl(id) { return document.getElementById(id); }
         function apiUrl(path) { return contextPath + "/manager/facility/" + path; }
         function listUrl() { return contextPath + "/manager/facility/page/" + encodeURIComponent(mgmtOfcNo); }
@@ -337,12 +306,6 @@
             if (select) select.innerHTML = '<option value="">' + placeholder + '</option>';
         }
 
-        /* ============================================================
-           위치구분 처리 — disabled 방식으로 레이아웃 고정
-           COMMON : 동/층/호 모두 disabled
-           DONG   : 동만 enabled, 층/호 disabled
-           HOUSEHOLD : 동/층/호 모두 enabled
-        ============================================================ */
         function removeHouseholdPrefix(text) {
             return String(text || "").replace(/^\s*\d+\s*층\s*/g, "").replace(/^\s*\d+\s*호\s*/g, "").trim();
         }
@@ -368,9 +331,9 @@
             var locCn = getEl("locCn");
 
             if (type === "COMMON") {
-                dongNo.disabled = true;  dongNo.value = "";
+                dongNo.disabled = true; dongNo.value = "";
                 floorSelect.disabled = true; resetSelect(floorSelect, "층 선택");
-                hoSelect.disabled = true;  resetSelect(hoSelect, "호 선택");
+                hoSelect.disabled = true; resetSelect(hoSelect, "호 선택");
                 locCn.placeholder = "예) 중앙광장, 지하1층 전기실, 관리동 옥상";
                 locCn.value = removeHouseholdPrefix(locCn.value);
                 return;
@@ -379,13 +342,12 @@
             if (type === "DONG") {
                 dongNo.disabled = false;
                 floorSelect.disabled = true; resetSelect(floorSelect, "층 선택");
-                hoSelect.disabled = true;  resetSelect(hoSelect, "호 선택");
+                hoSelect.disabled = true; resetSelect(hoSelect, "호 선택");
                 locCn.placeholder = "예) 1층 로비, 옥상, EPS실";
                 locCn.value = removeHouseholdPrefix(locCn.value);
                 return;
             }
 
-            /* HOUSEHOLD */
             dongNo.disabled = false;
             floorSelect.disabled = false;
             hoSelect.disabled = false;
@@ -444,21 +406,21 @@
             var type = getEl("locationType").value;
             var locCn = getEl("locCn");
             var dongNo = getEl("dongNo");
-
             if (type === "COMMON") { dongNo.value = ""; return locCn.value; }
             if (type === "DONG") { return removeHouseholdPrefix(locCn.value); }
             updateHouseholdLocationText();
             return locCn.value;
         }
 
-        /* ============================================================
-           저장 처리
-        ============================================================ */
         function makeRegisterFormData() {
             var formData = new FormData(getEl("facilityForm"));
             formData.set("locCn", buildLocationText());
             formData.set("useYn", "Y");
             if (!formData.get("instlDt")) formData.delete("instlDt");
+            formData.delete("facilityFiles");
+            selectedFacilityFiles.forEach(function (item) {
+                formData.append("facilityFiles", item.file);
+            });
             return formData;
         }
 
@@ -479,39 +441,67 @@
 
         /* ============================================================
            파일 미리보기
+           - objectUrl을 파일 선택 즉시 생성해서 배열에 보관
+           - fileInput.value 초기화와 무관하게 미리보기 유지
         ============================================================ */
-        function previewSelectedFiles() {
-            var fileInput = getEl("facilityFiles");
+        function renderSelectedFilePreview() {
             var previewArea = getEl("facilityFilePreview");
             previewArea.innerHTML = "";
 
-            if (!fileInput.files || fileInput.files.length === 0) {
+            if (selectedFacilityFiles.length === 0) {
                 previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>';
                 return;
             }
 
-            Array.from(fileInput.files).forEach(function (file) {
-                var item = document.createElement("div");
-                item.className = "file-preview-item";
+            selectedFacilityFiles.forEach(function (item, index) {
+                var wrapper = document.createElement("div");
+                wrapper.className = "file-preview-item";
 
-                if (file.type && file.type.indexOf("image/") === 0) {
+                if (item.file.type && item.file.type.indexOf("image/") === 0) {
                     var img = document.createElement("img");
-                    img.alt = file.name;
-                    img.src = URL.createObjectURL(file);
-                    item.appendChild(img);
+                    img.alt = item.file.name;
+                    img.src = item.objectUrl; /* 미리 생성된 URL 사용 */
+                    wrapper.appendChild(img);
                 }
 
-                var name = document.createElement("div");
-                name.className = "file-preview-name";
-                name.textContent = file.name;
-                item.appendChild(name);
-                previewArea.appendChild(item);
+                var removeButton = document.createElement("button");
+                removeButton.type = "button";
+                removeButton.className = "file-preview-remove";
+                removeButton.textContent = "x";
+                removeButton.addEventListener("click", function () {
+                    /* objectUrl 메모리 해제 후 배열에서 제거 */
+                    URL.revokeObjectURL(selectedFacilityFiles[index].objectUrl);
+                    selectedFacilityFiles.splice(index, 1);
+                    renderSelectedFilePreview();
+                });
+                wrapper.appendChild(removeButton);
+
+                var nameEl = document.createElement("div");
+                nameEl.className = "file-preview-name";
+                nameEl.textContent = item.file.name;
+                wrapper.appendChild(nameEl);
+
+                previewArea.appendChild(wrapper);
             });
         }
 
-        /* ============================================================
-           이벤트 연결 및 초기 실행
-        ============================================================ */
+        function previewSelectedFiles() {
+            var fileInput = getEl("facilityFiles");
+            if (!fileInput.files || fileInput.files.length === 0) return;
+
+            /* 선택 즉시 objectUrl 생성해서 배열에 저장 */
+            Array.from(fileInput.files).forEach(function (file) {
+                selectedFacilityFiles.push({
+                    file: file,
+                    objectUrl: URL.createObjectURL(file)
+                });
+            });
+
+            /* input 초기화 — 이미 objectUrl로 분리했으므로 안전 */
+            fileInput.value = "";
+            renderSelectedFilePreview();
+        }
+
         function bindEvents() {
             getEl("facilityForm").addEventListener("submit", saveFacility);
             getEl("backToListBtn").addEventListener("click", function () { location.href = listUrl(); });

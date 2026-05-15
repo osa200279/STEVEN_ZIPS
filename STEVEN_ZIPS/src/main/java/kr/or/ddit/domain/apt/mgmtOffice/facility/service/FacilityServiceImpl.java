@@ -380,6 +380,18 @@ public class FacilityServiceImpl implements IFacilityService {
             return;
         }
 
+        //** 수정: 파일 input이 비어 있어도 빈 MultipartFile 배열이 넘어올 수 있어 실제 파일 존재 여부를 먼저 확인
+        boolean hasRealUploadFile = false;
+        for (MultipartFile facilityFile : facilityFiles) {
+            if (facilityFile != null && !facilityFile.isEmpty()) {
+                hasRealUploadFile = true;
+                break;
+            }
+        }
+        if (!hasRealUploadFile) {
+            return;
+        }
+
         /* Google Drive 롤백 대상 ID 목록 */
         List<String> uploadedGoogleIds = new ArrayList<>();
 

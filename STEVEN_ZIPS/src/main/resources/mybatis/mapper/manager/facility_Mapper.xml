@@ -75,7 +75,7 @@
         THEN '편의시설'
         ELSE '일반시설'
         END AS facility_kind_nm,
-        NVL(pf.cmn_facility_nm, f.facility_nm) AS facility_nm,
+        f.facility_nm AS facility_nm,
         cc.code_name AS facility_ty_nm,
         CASE
         WHEN INSTR(f.dong_no, '_') > 0
@@ -307,12 +307,33 @@
         AND f.apt_cmplex_no = <include refid="subqueryaptcmplexno"/>
     </select>
 
+    <!-- //** 수정: 시설 수정 Service에서 기존 시설 확인용으로 호출하는 상세 조회 SQL 추가 -->
+    <select id="selectFacilityDetail" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO">
+        SELECT
+        <include refid="facilitybasecolumns"/>
+        FROM
+        facility f
+        WHERE
+        f.facility_no = #{facilityNo}
+        AND f.apt_cmplex_no = <include refid="subqueryaptcmplexno"/>
+    </select>
+
     <!-- 시설 신규 번호 생성 -->
     <select id="getFacilityNo" resultType="string">
         SELECT
             'FAC' || LPAD(seq_facility.NEXTVAL, 4, '0')
         FROM
             dual
+    </select>
+
+    <!-- //** 수정: 시설 등록 시 관리사무소번호로 단지번호 조회 -->
+    <select id="selectAptCmplexNoByMgmtOfcNo" parameterType="string" resultType="string">
+        SELECT
+            mo.apt_cmplex_no
+        FROM
+            mgmt_office mo
+        WHERE
+            mo.mgmt_ofc_no = #{mgmtOfcNo}
     </select>
 
     <!-- 시설 등록 -->
@@ -435,6 +456,17 @@
             ho
     </select>
 
+    <!-- //** 수정: 시설 사진 삭제 전 Google Drive ID 확인용 단건 조회 SQL 추가 -->
+    <select id="selectFacilityFile" resultMap="attachFileResultMap">
+        SELECT
+            *
+        FROM
+            attach_file
+        WHERE
+            file_group_no = #{fileGroupNo}
+            AND file_save_uuid = #{fileSaveUuid}
+    </select>
+
     <!-- 첨부파일 상세/목록 조회 -->
     <select id="selectFacilityFileList" resultMap="attachFileResultMap">
         SELECT
@@ -447,5 +479,14 @@
             file_sort_order,
             reg_dt
     </select>
+
+    <!-- //** 수정: 시설 사진 삭제 후 ATTACH_FILE 레코드 삭제 SQL 추가 -->
+    <delete id="deleteFacilityFile">
+        DELETE FROM
+            attach_file
+        WHERE
+            file_group_no = #{fileGroupNo}
+            AND file_save_uuid = #{fileSaveUuid}
+    </delete>
 
 </mapper>

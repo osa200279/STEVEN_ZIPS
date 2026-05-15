@@ -201,14 +201,14 @@
                                         </div>
                                         <div class="form-field">
                                             <label class="field-label">동</label>
-                                            <input type="text" class="form-input" value="${empty detail.dongNo ? '공용' : detail.dongNo}" readonly>
+                        <input type="text" class="form-input" value="${empty detail.dongNo ? '-' : (fn:contains(detail.dongNo, '_') ? fn:substringAfter(detail.dongNo, '_') : detail.dongNo)}" readonly>
                                         </div>
                                     </div>
 
                                     <div class="form-row cols-1">
                                         <div class="form-field">
                                             <label class="field-label">상세위치</label>
-                                            <input type="text" class="form-input" value="${detail.locCn}" readonly>
+                        <input type="text" class="form-input" value="${empty detail.locCn ? '-' : detail.locCn}" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -223,11 +223,11 @@
                                     <div class="form-row cols-2">
                                         <div class="form-field">
                                             <label class="field-label">편의시설 번호</label>
-                                            <input type="text" class="form-input" value="${detail.cmnFacilityNo}" readonly>
+                        <input type="text" class="form-input" value="${empty detail.cmnFacilityNo ? '-' : detail.cmnFacilityNo}" readonly>
                                         </div>
                                         <div class="form-field">
                                             <label class="field-label">편의시설 명</label>
-                                            <input type="text" class="form-input" value="${detail.cmnFacilityNm}" readonly>
+                        <input type="text" class="form-input" value="${empty detail.cmnFacilityNm ? '-' : detail.cmnFacilityNm}" readonly>
                                         </div>
                                     </div>
 
@@ -249,7 +249,7 @@
                                     <div class="form-row cols-1">
                                         <div class="form-field">
                                             <label class="field-label">운영시간</label>
-                                            <input type="text" class="form-input" value="${detail.cmnFacilityOprHr}" readonly>
+                        <input type="text" class="form-input" value="${empty detail.cmnFacilityOprHr ? '-' : detail.cmnFacilityOprHr}" readonly>
                                         </div>
                                     </div>
 
@@ -293,7 +293,7 @@
                                     </div>
                                     <div class="form-row cols-1">
                                         <div class="form-field">
-                                            <textarea class="form-textarea" rows="4" readonly>${detail.cmnFacilityCn}</textarea>
+                        <textarea class="form-textarea" rows="4" readonly>${empty detail.cmnFacilityCn ? '-' : detail.cmnFacilityCn}</textarea>
                                         </div>
                                     </div>
                                 </div>

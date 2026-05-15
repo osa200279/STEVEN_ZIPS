@@ -285,7 +285,8 @@ public class FacilityController {
     public ResponseEntity<Map<String, Object>> insertFacility(
             @PathVariable String mgmtOfcNo,
             @ModelAttribute FacilityVO facilityVO,
-            @RequestPart(required = false) MultipartFile[] facilityFiles,
+            //** 수정: multipart/form-data의 동일 name 다중 파일을 안정적으로 받기 위해 RequestParam 사용
+            @RequestParam(required = false) MultipartFile[] facilityFiles,
             @AuthenticationPrincipal CustomUser customUser
     ) {
         /* JSON 응답 Map */
@@ -329,7 +330,8 @@ public class FacilityController {
     public ResponseEntity<Map<String, Object>> updateFacility(
             @PathVariable String mgmtOfcNo,
             @ModelAttribute FacilityVO facilityVO,
-            @RequestPart(required = false) MultipartFile[] facilityFiles,
+            //** 수정: multipart/form-data의 동일 name 다중 파일을 안정적으로 받기 위해 RequestParam 사용
+            @RequestParam(required = false) MultipartFile[] facilityFiles,
             @RequestParam(required = false, defaultValue = "") String deleteFileUuids,
             @AuthenticationPrincipal CustomUser customUser
     ) {

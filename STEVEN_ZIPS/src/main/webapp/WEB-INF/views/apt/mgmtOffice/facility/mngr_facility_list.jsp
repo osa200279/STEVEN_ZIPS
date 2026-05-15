@@ -264,7 +264,8 @@
                     <div class="facility-info-line">
                         <span class="material-symbols-rounded">info</span>
                         헬스장·독서실 등 편의시설에 대한 운영 관리는 편의시설 관리에서 진행합니다.
-                        <a href="${pageContext.request.contextPath}/manager/publicFacilityList">편의시설 관리 →</a>
+                        <%-- //** 수정: 실제 편의시설 운영관리 목록 매핑으로 이동 --%>
+                        <a href="${pageContext.request.contextPath}/manager/publicFacility/page/${mgmtOfcNo}">편의시설 관리 →</a>
                     </div>
                 </div>
             </div>
@@ -1153,8 +1154,8 @@
             if (!confirm(confirmMessage)) return;
 
             try {
-                /* 서버 활성여부 변경 요청 */
-                var response = await fetch(apiUrl("use-yn/update"), {
+                //** 수정: FacilityController의 실제 사용여부 변경 매핑(/use/update/{mgmtOfcNo}) 호출
+                var response = await fetch(apiUrl("use/update/" + encodeURIComponent(mgmtOfcNo)), {
                     method: "POST",
                     headers: Object.assign({
                         "Content-Type": "application/json"

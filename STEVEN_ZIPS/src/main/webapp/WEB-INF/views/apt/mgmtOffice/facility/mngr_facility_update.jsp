@@ -60,6 +60,7 @@
         #facilityPage .file-preview-item { position:relative; min-height:92px; border:1px solid var(--line); border-radius:4px; background:#fff; overflow:hidden; }
         #facilityPage .file-preview-item img { width:100%; height:92px; object-fit:cover; display:block; }
         #facilityPage .file-preview-name { padding:6px 7px; font-size:11px; color:#4a5c4e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-top:1px solid var(--line); }
+        #facilityPage .file-preview-remove { position:absolute; top:5px; right:5px; width:22px; height:22px; border:0; border-radius:50%; background:rgba(17,24,39,.78); color:#fff; font-size:14px; line-height:22px; cursor:pointer; }
         #facilityPage .file-preview-empty { padding:13px; border:1px solid var(--line); border-radius:4px; background:#fff; font-size:12px; color:#9caa9e; }
         #facilityPage .file-manage-list { display:flex; flex-direction:column; gap:7px; margin-top:8px; }
         #facilityPage .file-manage-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--line); border-radius:4px; background:#fff; }
@@ -327,6 +328,8 @@
         var currentFacility = null;
         var isPublicFacility = false; // 편의시설 여부
         var correctionUnlocked = false;
+        //** 파일 선택창 재선택 시 기존 선택이 교체되는 브라우저 기본 동작 보완
+        var selectedFacilityFiles = [];
 
         function getEl(id) { return document.getElementById(id); }
         function apiUrl(path) { return contextPath + "/manager/facility/" + path; }
@@ -726,6 +729,11 @@
             }
             if (!formData.get("instlDt")) formData.delete("instlDt");
             formData.set("deleteFileUuids", getEl("deleteFileUuids").value || "");
+            //** 누적 선택 파일 전송 대상 재구성
+            formData.delete("facilityFiles");
+            selectedFacilityFiles.forEach(function (file) {
+                formData.append("facilityFiles", file);
+            });
             return formData;
         }
 
@@ -780,10 +788,7 @@
          * - 파일 input으로 선택한 이미지 목록 표시
          * - 선택 직후 미리보기 클릭 시 확대 모달 표시
          */
-        function previewSelectedFiles() {
-            /* 파일 input 요소 */
-            var fileInput = getEl("facilityFiles");
-
+        function renderSelectedFilePreview() {
             /* 새 선택 사진 미리보기 영역 */
             var previewArea = getEl("facilityFilePreview");
 
@@ -791,13 +796,13 @@
             previewArea.innerHTML = "";
 
             /* 선택 파일 없음 처리 */
-            if (!fileInput.files || fileInput.files.length === 0) {
+            if (selectedFacilityFiles.length === 0) {
                 previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>';
                 return;
             }
 
             /* 선택 파일 목록 순회 처리 */
-            Array.from(fileInput.files).forEach(function (file) {
+            selectedFacilityFiles.forEach(function (file, index) {
                 /* 미리보기 카드 요소 */
                 var item = document.createElement("div");
 
@@ -830,6 +835,17 @@
                     item.appendChild(img);
                 }
 
+                //** 누적 선택 파일 개별 제거 버튼 제공
+                var removeButton = document.createElement("button");
+                removeButton.type = "button";
+                removeButton.className = "file-preview-remove";
+                removeButton.textContent = "x";
+                removeButton.addEventListener("click", function () {
+                    selectedFacilityFiles.splice(index, 1);
+                    renderSelectedFilePreview();
+                });
+                item.appendChild(removeButton);
+
                 /* 파일명 표시 요소 */
                 var name = document.createElement("div");
 
@@ -845,6 +861,21 @@
                 /* 미리보기 영역에 카드 추가 처리 */
                 previewArea.appendChild(item);
             });
+        }
+
+        function previewSelectedFiles() {
+            var fileInput = getEl("facilityFiles");
+            if (!fileInput.files || fileInput.files.length === 0) {
+                renderSelectedFilePreview();
+                return;
+            }
+
+            //** 파일 선택창 반복 사용 시 선택 파일 누적 처리
+            Array.from(fileInput.files).forEach(function (file) {
+                selectedFacilityFiles.push(file);
+            });
+            fileInput.value = "";
+            renderSelectedFilePreview();
         }
 
         function updateDeleteFileUuids() {

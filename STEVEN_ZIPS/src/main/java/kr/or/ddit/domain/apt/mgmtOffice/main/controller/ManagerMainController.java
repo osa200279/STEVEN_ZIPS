@@ -281,29 +281,29 @@ public class ManagerMainController {
         return "apt/mgmtOffice/mngr_visit_auto";
     }
 
-//    // 시설 목록
-//    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-//    @GetMapping("facility/facilityList/{mgmtOfcNo}")
-//    public String facilityList(
-//            @PathVariable String mgmtOfcNo,
-//            @AuthenticationPrincipal CustomUser customUser,
-//            Model model
-//    ) {
-//        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-//        model.addAttribute("dongList", facilityService.selectDongList(mgmtOfcNo));
-//        return "apt/mgmtOffice/facility/mngr_facility_list";
-//    }
-
-    // 공용 시설
+    // 시설 목록
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/publicFacilityList/{mgmtOfcNo}")
+    @GetMapping("facility/page/{mgmtOfcNo}")
+    public String facilityList(
+            @PathVariable String mgmtOfcNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+        model.addAttribute("dongList", facilityService.selectDongList(mgmtOfcNo));
+        return "apt/mgmtOffice/facility/mngr_facility_list";
+    }
+
+    // 편의 시설
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/publicFacility/page/{mgmtOfcNo}")
     public String publicFacilityList(
             @PathVariable String mgmtOfcNo,
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_public_facility";
+        return "apt/mgmtOffice/facility/publicFacility/publicFacilityList";
     }
 
     // 검침 기록
