@@ -222,11 +222,11 @@
     </main>
 </div>
 
-<!-- 계약 신청 모달 -->
+<!-- 청약 신청 모달 -->
 <div id="applyModal" class="modal-overlay">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-            <h2 class="text-base font-bold text-[#004830]">계약 신청</h2>
+            <h2 class="text-base font-bold text-[#004830]">청약 신청</h2>
             <button onclick="closeApplyModal()" class="text-slate-400 hover:text-slate-600">
                 <span class="material-symbols-outlined">close</span>
             </button>
@@ -265,7 +265,7 @@
 
         <div class="flex justify-end gap-2 px-6 py-4 border-t border-slate-200 bg-slate-50 rounded-b-xl">
             <button onclick="closeApplyModal()" class="px-5 py-2 bg-white border border-slate-300 text-sm text-slate-600 rounded hover:bg-slate-50 transition-colors">취소</button>
-            <button onclick="submitApply()" class="px-6 py-2 bg-[#004830] text-white text-sm font-bold rounded hover:bg-[#226046] transition-all">계약 신청</button>
+            <button onclick="submitApply()" class="px-6 py-2 bg-[#004830] text-white text-sm font-bold rounded hover:bg-[#226046] transition-all">청약 신청</button>
         </div>
     </div>
 </div>
@@ -315,7 +315,7 @@
                     body: JSON.stringify(data)
                 }).then(res => res.json()).then(result => {
                     if (result.success) {
-                        Swal.fire({icon: 'success', title: '계약 신청 완료', text: '심사 결과를 기다려주세요.', confirmButtonColor: '#004830'})
+                        Swal.fire({icon: 'success', title: '청약 신청 완료', text: '심사 결과를 기다려주세요.', confirmButtonColor: '#004830'})
                             .then(() => window.location.href = '/contract/history.do');
                     } else {
                         Swal.fire({icon: 'error', title: '오류', text: '신청 중 오류가 발생했습니다.', confirmButtonColor: '#004830'});

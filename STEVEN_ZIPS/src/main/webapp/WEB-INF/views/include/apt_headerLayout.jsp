@@ -110,7 +110,7 @@
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
                 <a href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}">공지사항</a>
-                <a href="${pageContext.request.contextPath}/resident/board/free/${aptCmplexNo}">자유게시판</a>
+                <a href="${pageContext.request.contextPath}/resident/board/free/list/${aptCmplexNo}">자유게시판</a>
                 <a href="${pageContext.request.contextPath}/resident/board/chat/${aptCmplexNo}">그룹채팅방</a>
             </div>
         </div>

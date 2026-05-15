@@ -7,17 +7,49 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { font-family: 'Manrope', sans-serif; background-color: #f8faf6; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .status-step { display: flex; align-items: flex-start; gap: 12px; position: relative; }
-        .status-step:not(:last-child)::after { content: ''; position: absolute; left: 11px; top: 26px; width: 2px; height: calc(100% - 4px); background: #e2e8e0; }
-        .status-step.done:not(:last-child)::after { background: #226046; }
-        .status-step.done-end::after { background: #e2e8e0 !important; }
-        .status-step.done-submit:not(:last-child)::after { background: #e2e8e0; }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #f8faf6;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .status-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            position: relative;
+        }
+
+        .status-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 26px;
+            width: 2px;
+            height: calc(100% - 4px);
+            background: #e2e8e0;
+        }
+
+        .status-step.done:not(:last-child)::after {
+            background: #226046;
+        }
+
+        .status-step.done-end::after {
+            background: #e2e8e0 !important;
+        }
+
+        .status-step.done-submit:not(:last-child)::after {
+            background: #e2e8e0;
+        }
     </style>
 </head>
 <body class="bg-[#f8faf6] text-[#191c1a]">
@@ -29,8 +61,8 @@
 <main class="ml-80 p-8 pt-28">
 
     <div class="mb-6">
-        <h1 class="text-xl font-bold text-[#004830] mb-1">계약 신청 조회</h1>
-        <p class="text-sm text-slate-400">내가 신청한 계약 내역을 확인할 수 있습니다.</p>
+        <h1 class="text-xl font-bold text-[#004830] mb-1">청약 신청 조회</h1>
+        <p class="text-sm text-slate-400">내가 신청한 청약 내역을 확인할 수 있습니다.</p>
     </div>
 
     <c:choose>
@@ -44,7 +76,8 @@
                         <div class="flex items-center justify-between">
                             <div class="space-y-1">
                                 <p class="text-xs text-slate-400">신청번호</p>
-                                <a href="/contract/historyDetail.do?aplctNo=${aplct.APLCT_NO}"><p class="text-lg font-bold text-[#004830]">${aplct.APLCT_NO}</p></a>
+                                <a href="/contract/historyDetail.do?aplctNo=${aplct.APLCT_NO}"><p
+                                        class="text-lg font-bold text-[#004830]">${aplct.APLCT_NO}</p></a>
                             </div>
                             <div class="text-right space-y-1">
                                 <c:choose>
@@ -70,7 +103,8 @@
                                         <span class="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">${aplct.APLCT_STTS_CD}</span>
                                     </c:otherwise>
                                 </c:choose>
-                                <p class="text-xs text-slate-400">${fn:substring(fn:replace(aplct.REG_DT, '-', '.'), 0, 16)} 신청</p>
+                                <p class="text-xs text-slate-400">${fn:substring(fn:replace(aplct.REG_DT, '-', '.'), 0, 16)}
+                                    신청</p>
                             </div>
                         </div>
                     </div>
@@ -108,7 +142,7 @@
                             </div>
                         </div>
 
-                        <!-- 진행 상태 -->
+                            <%-- 진행 상태 --%>
                         <div class="col-span-1 p-6">
                             <p class="text-xs font-bold text-[#004830] mb-4 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-[16px]">timeline</span>
@@ -116,7 +150,7 @@
                             </p>
                             <div class="space-y-4">
 
-                                    <%-- 1단계: 신청 완료 --%>
+                                    <%-- 1단계: 신청완료 --%>
                                 <c:choose>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'CANCEL'}">
                                         <div class="status-step done-end">
@@ -147,7 +181,7 @@
                                             </div>
                                             <div class="pb-4">
                                                 <p class="text-sm font-semibold text-[#226046]">신청 완료</p>
-                                                <p class="text-xs text-slate-400 mt-0.5">계약 신청이 완료되었습니다.</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">추첨 대기 중입니다.</p>
                                             </div>
                                         </div>
                                     </c:when>
@@ -158,13 +192,13 @@
                                             </div>
                                             <div class="pb-4">
                                                 <p class="text-sm font-semibold text-[#226046]">신청 완료</p>
-                                                <p class="text-xs text-slate-400 mt-0.5">계약 신청이 완료되었습니다.</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">청약 신청이 완료되었습니다.</p>
                                             </div>
                                         </div>
                                     </c:otherwise>
                                 </c:choose>
 
-                                    <%-- 2단계: 서류 제출 --%>
+                                    <%-- 2단계: 서류제출 --%>
                                 <c:choose>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'QUALIFIED'}">
                                         <div class="status-step done">
@@ -188,6 +222,17 @@
                                             </div>
                                         </div>
                                     </c:when>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'INSPECTION'}">
+                                        <div class="status-step done-end">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-blue-400 text-white">
+                                                <span class="material-symbols-outlined text-[14px]">manage_search</span>
+                                            </div>
+                                            <div class="pb-4">
+                                                <p class="text-sm font-semibold text-blue-500">서류 검토 중</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">서류를 검토 중입니다.</p>
+                                            </div>
+                                        </div>
+                                    </c:when>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'SUPPLEMENT'}">
                                         <div class="status-step done-end">
                                             <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-orange-400 text-white">
@@ -195,7 +240,7 @@
                                             </div>
                                             <div class="pb-4">
                                                 <p class="text-sm font-semibold text-orange-500">서류 보완 필요</p>
-                                                <p class="text-xs text-slate-400 mt-0.5">제출한 서류를 보완해 주세요.</p>
+                                                <p class="text-xs text-slate-400 mt-0.5">서류 보완이 필요합니다.</p>
                                             </div>
                                         </div>
                                     </c:when>
@@ -206,22 +251,22 @@
                                                 <span class="material-symbols-outlined text-[14px]">upload_file</span>
                                             </div>
                                             <div class="pb-4">
-                                                <p class="text-sm font-semibold text-slate-300">서류 제출</p>
+                                                <p class="text-sm font-semibold text-slate-300">서류 제출 필요</p>
                                                 <p class="text-xs text-slate-300 mt-0.5">해당 없음</p>
                                             </div>
                                         </div>
                                     </c:otherwise>
                                 </c:choose>
 
-                                    <%-- 3단계: 검증 완료 --%>
+                                    <%-- 3단계: 승인완료 --%>
                                 <c:choose>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'QUALIFIED'}">
                                         <div class="status-step">
-                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-[#004830] text-white">
-                                                <span class="material-symbols-outlined text-[14px]">verified</span>
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-[#226046] text-white">
+                                                <span class="material-symbols-outlined text-[14px]">check</span>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-semibold text-[#004830]">검증 완료</p>
+                                                <p class="text-sm font-semibold text-[#226046]">승인</p>
                                                 <p class="text-xs text-slate-400 mt-0.5">계약을 진행할 수 있습니다.</p>
                                             </div>
                                         </div>
@@ -229,11 +274,11 @@
                                     <c:otherwise>
                                         <div class="status-step">
                                             <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-slate-100 text-slate-300">
-                                                <span class="material-symbols-outlined text-[14px]">verified</span>
+                                                <span class="material-symbols-outlined text-[14px]">check</span>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-semibold text-slate-300">검증 완료</p>
-                                                <p class="text-xs text-slate-300 mt-0.5">서류 검토 후 완료됩니다.</p>
+                                                <p class="text-sm font-semibold text-slate-300">승인</p>
+                                                <p class="text-xs text-slate-300 mt-0.5">대기</p>
                                             </div>
                                         </div>
                                     </c:otherwise>
@@ -304,7 +349,12 @@
                         Swal.fire({icon: 'success', title: '취소 완료', confirmButtonColor: '#004830'})
                             .then(() => location.reload());
                     } else {
-                        Swal.fire({icon: 'error', title: '오류', text: '취소 중 오류가 발생했습니다.', confirmButtonColor: '#004830'});
+                        Swal.fire({
+                            icon: 'error',
+                            title: '오류',
+                            text: '취소 중 오류가 발생했습니다.',
+                            confirmButtonColor: '#004830'
+                        });
                     }
                 });
             }

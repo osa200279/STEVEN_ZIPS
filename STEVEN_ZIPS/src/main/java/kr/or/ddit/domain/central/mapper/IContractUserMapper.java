@@ -14,8 +14,7 @@ public interface IContractUserMapper {
     String selectRentCtrtNo(String userNo);
 
     void insertContractDoc(ContractUserVO contractUserVO);
-
-    List<ContractUserVO> selectContractDoc(String userNo);
+    
 
     void insertRentCtrtVO(RentCtrtVO rentCtrtVO);
 
@@ -33,5 +32,12 @@ public interface IContractUserMapper {
 
     void cancelContract(String aplctNo);
 
-    AnnouncementDTO selectOneContractHistoryDetail(String aplctNo);
+    Map<String, Object> selectOneContractHistoryDetail(String aplctNo);
+
+    List<Map<String, Object>> selectSbmsnDocList(String aplctNo);
+
+    int selectAplctcount(Map<String, Object> params);
+
+
+    List<Map<String, Object>> selectAplctDocList(String aplctNo);
 }

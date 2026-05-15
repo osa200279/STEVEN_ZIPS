@@ -1,7 +1,5 @@
 package kr.or.ddit.domain.central.service;
 
-import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
-import kr.or.ddit.domain.central.vo.ContractUserVO;
 import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,8 +9,8 @@ import java.util.Map;
 
 public interface IContractUserService {
 
-    void insertContractDoc(MultipartFile[] contractDocFile, List<String> docTypeList, String userNo) throws IOException;
-    List<ContractUserVO> selectContractDoc(String userNo);
+    void insertContractDoc(MultipartFile file, String sbmsnDocTyCd, String aplctNo, String userNo) throws IOException;
+    //List<ContractUserVO> selectContractDoc(String userNo);
 
 
     void insertRentCtrt(RentCtrtVO rentCtrtVO);
@@ -28,7 +26,11 @@ public interface IContractUserService {
 
     void cancelContract(String aplctNo);
 
-    AnnouncementDTO selectOneContractHistoryDetail(String aplctNo);
+    Map<String, Object> selectOneContractHistoryDetail(String aplctNo);
+
+    List<Map<String, Object>> selectSbmsnDocList(String aplctNo);
+
+    List<Map<String, Object>> selectAplctDocList(String aplctNo);
 }
 
 

@@ -17,4 +17,6 @@ public class ContractUserVO {
     private String rentCtrtNo;
     private String ctrtSttsCd;  // 계약상태코드
     private String tyNm;
+    private String aplctNo;
+
 }

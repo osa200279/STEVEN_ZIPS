@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,61 +37,13 @@ public class ContractUserController {
 
     @GetMapping("/list.do")
     public String contractList() {
-
         return "central/contract/contractList";
     }
-
-    /*@GetMapping("/notice.do")
-    public String contractNotice() {
-        return "central/contract/contractNotice"; // JSP 이름
-    }*/
 
     @GetMapping("/apply.do")
     public String contractApply() {
         return "central/contract/contractApply";
     }
-
-    /*@PostMapping("/apply.do")
-    public String applyContract(
-            @RequestParam("uploadFiles") MultipartFile[] uploadFiles,
-            @RequestParam("docTypeList") List<String> docTypeList,
-            Model model
-    ) {
-
-        log.info("파일 개수 : {}", uploadFiles.length);
-
-        for (int i = 0; i < uploadFiles.length; i++) {
-
-            MultipartFile file = uploadFiles[i];
-
-            log.info("====================");
-            log.info("문서타입 : {}", docTypeList.get(i));
-            log.info("파일명 : {}", file.getOriginalFilename());
-            log.info("파일크기 : {}", file.getSize());
-
-            String docType = docTypeList.get(i);
-
-            if ("RESIDENT".equals(docType)) {
-                model.addAttribute("residentFile",
-                        file.getOriginalFilename());
-            }
-
-            if ("FAMILY".equals(docType)) {
-                model.addAttribute("familyFile",
-                        file.getOriginalFilename());
-            }
-
-            if ("FINANCE".equals(docType)) {
-                model.addAttribute("financeFile",
-                        file.getOriginalFilename());
-            }
-
-        }
-
-        return "central/contract/contractAList";
-    }*/
-
-    // 컨트롤러에서 rentCtrtNo 파라미터 제거
 
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/notice.do")
@@ -114,7 +67,7 @@ public class ContractUserController {
     @ResponseBody
     @PostMapping("/request.do")
     public Map<String, Object> contractRequest(@RequestBody Map<String, Object> params,
-                                               @AuthenticationPrincipal CustomUser principal){
+                                               @AuthenticationPrincipal CustomUser principal) {
         Map<String, Object> result = new HashMap<>();
         try {
             params.put("userNo", principal.getMember().getUserNo());
@@ -123,6 +76,7 @@ public class ContractUserController {
         } catch (Exception e) {
             log.error("계약 신청 오류: {}", e.getMessage());
             result.put("success", false);
+            result.put("message", e.getMessage());
         }
         return result;
     }
@@ -143,8 +97,8 @@ public class ContractUserController {
             model.addAttribute("fileList", fileList);
         }
 
-        log.info("aptCmplexNo: {}", announcement.getAptCmplexNo());  // 추가
-        log.info("exclusiveSize: {}", exclusiveSize);  // 추가
+        log.info("aptCmplexNo: {}", announcement.getAptCmplexNo());
+        log.info("exclusiveSize: {}", exclusiveSize);
         model.addAttribute("announcement", announcement);
         model.addAttribute("exclusiveSize", exclusiveSize);
         model.addAttribute("principal", principal);
@@ -155,8 +109,7 @@ public class ContractUserController {
     @GetMapping("/history.do")
     public String contractHistory(
             @AuthenticationPrincipal CustomUser principal,
-            Model model
-    ) {
+            Model model) {
         String userNo = principal.getMember().getUserNo();
         List<Map<String, Object>> list = contractUserService.selectAplctList(userNo);
         log.info("aplctList: {}", list);
@@ -186,34 +139,45 @@ public class ContractUserController {
         return result;
     }
 
-    @PreAuthorize("hasRole('MEMBER')")
-    @GetMapping("historyDetail.do")
+    @GetMapping("/historyDetail.do")
     public String contractHistoryDetail(@RequestParam String aplctNo,
                                         @AuthenticationPrincipal CustomUser principal,
-                                        Model model){
-
+                                        Model model) {
         String userNo = principal.getMember().getUserNo();
         MemberVO memberVO = principal.getMember();
-        AnnouncementDTO announcement = contractUserService.selectOneContractHistoryDetail(aplctNo);
+        Map<String, Object> detail = contractUserService.selectOneContractHistoryDetail(aplctNo);
+        //List<Map<String, Object>> docList = contractUserService.selectSbmsnDocList(aplctNo);
+        List<Map<String, Object>> docList = contractUserService.selectAplctDocList(aplctNo);
+        log.info("detail: {}", detail);
+        log.info("docList: {}", docList);
         model.addAttribute("memberVO", memberVO);
-        model.addAttribute("announcement", announcement);
+        model.addAttribute("detail", detail);
+        model.addAttribute("docList", docList);
         model.addAttribute("aplctNo", aplctNo);
         model.addAttribute("userNo", userNo);
         return "central/contract/contractADetail";
     }
 
-    /*@GetMapping("/history.do")
-    public String contractHistory() {
-        return "central/contract/contractAList";
-    }*/
+    @PreAuthorize("hasRole('MEMBER')")
+    @PostMapping("/insertContractDoc.do")
+    @ResponseBody
+    public Map<String, Object> insertContractDoc(
+            @RequestParam MultipartFile file,
+            @RequestParam String aplctNo,
+            @RequestParam String sbmsnDocTyCd,
+            @AuthenticationPrincipal CustomUser principal
+            ){
+        Map<String, Object> result = new HashMap<>();
 
-   /* @GetMapping("/detail.do")
-    public String contractDetail(String annNo, Model model) {
+        try {
+            String userNo = principal.getMember().getUserNo();
+            contractUserService.insertContractDoc(file, sbmsnDocTyCd, aplctNo, userNo);
+            result.put("success", true);
+        } catch (Exception e){
+            log.error("에러");
+            result.put("success", false);
+        }
+        return result;
 
-        NoticeVO notice = noticeService.getNoticeDetail(annNo);
-        model.addAttribute("notice", notice);
-
-        return "central/contract/contractNoticeDetail"; // 상세 JSP
-    }*/
-
+    }
 }
