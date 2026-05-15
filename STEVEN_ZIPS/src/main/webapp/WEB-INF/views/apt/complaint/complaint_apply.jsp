@@ -306,6 +306,12 @@
                 if (resp.ok) {
                     alert(result.message);
                     location.href = window.location.pathname + "?curPage=1"
+                    // try{
+                    //     const res = await fetch(`/apt/complaint/ajax/load-cvpl/{aptCmplexNo}`);
+                    //
+                    // }catch(e){
+                    //     console.error(e);
+                    // }
                 }else{
                     alert(result.message);
                 }

@@ -42,6 +42,7 @@ public class CvplController {
 
     /**
      * 민원신청 페이지
+     *
      * @author 이용로
      */
     @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
@@ -52,7 +53,7 @@ public class CvplController {
             , @RequestParam(defaultValue = "1") int curPage
             , Model model) {
         log.info("complaintApplyForm() 실행");
-        ResidentVO residentVO = (ResidentVO)customUser.getMember();
+        ResidentVO residentVO = (ResidentVO) customUser.getMember();
 
         // 페이징VO 생성 및 현재페이지 세팅
         PaginationInfoVO<CvplVO> page = new PaginationInfoVO<>(11, 5);
@@ -82,6 +83,7 @@ public class CvplController {
 
     /**
      * 민원 신청 비동기
+     *
      * @author 이용로
      */
     @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
@@ -94,10 +96,10 @@ public class CvplController {
             , CvplVO cvplVO) {
         log.info("complaintApply() 실행");
 
-        ResidentVO resident = (ResidentVO)customUser.getMember();
+        ResidentVO resident = (ResidentVO) customUser.getMember();
 
-        for(MyAptVO apt : resident.getMyAptList()){
-            if(apt.getAptCmplexNo().equals(aptCmplexNo)){
+        for (MyAptVO apt : resident.getMyAptList()) {
+            if (apt.getAptCmplexNo().equals(aptCmplexNo)) {
                 cvplVO.setHoNo(apt.getHoNo());
             }
         }
@@ -117,17 +119,17 @@ public class CvplController {
         }
         MultipartFile[] finalFiles = validFileList.isEmpty() ? null : validFileList.toArray(new MultipartFile[0]);
 
-        try{
+        try {
             ServiceResult result = cvplService.applyCvpl(cvplVO, finalFiles);
 
-            if(ServiceResult.OK.equals(result)){
+            if (ServiceResult.OK.equals(result)) {
                 resp.put("message", "민원이 접수되었습니다.");
                 return new ResponseEntity<>(resp, HttpStatus.OK);
-            }else {
+            } else {
                 resp.put("message", "민원 접수에 실패했습니다.");
                 return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             resp.put("message", "서버에러");
             return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -135,6 +137,7 @@ public class CvplController {
 
     /**
      * 비동기 민원 내역 리스트 불러오기
+     *
      * @param customUser
      * @param aptCmplexNo
      * @return
@@ -145,12 +148,26 @@ public class CvplController {
     public ResponseEntity<List<CvplVO>> ajaxLoadCvpl(
             @AuthenticationPrincipal CustomUser customUser
             , @PathVariable String aptCmplexNo
-            , @RequestParam(defaultValue = "1") int curPage
-            , Model model)    {
+            , Model model) {
+        PaginationInfoVO<CvplVO> page = new PaginationInfoVO<>(11, 5);
+        ResidentVO resident = (ResidentVO) customUser.getMember();
 
-        ResidentVO resident = (ResidentVO)customUser.getMember();
+        // 검색조건 설정
+        CvplVO searchVO = new CvplVO();
+        searchVO.setAptCmplexNo(aptCmplexNo);
+        searchVO.setUserNo(resident.getUserNo());
+        page.setSearchVO(searchVO);
 
-        List<CvplVO> cvplList = cvplService.selectCvplListByAptCmplexNo(aptCmplexNo, resident.getUserNo());
+        // 전체 데이터 갯수 조회
+        int totalRecord = cvplService.selectCvplCount(page.getSearchVO());
+        page.setTotalRecord(totalRecord);
+        page.setCurrentPage(1);
+
+        // 해당 페이지 범위에 맞는 리스트만 조회
+        List<CvplVO> cvplList = cvplService.selectMyCvplList(page);
+        page.setDataList(cvplList);
+
+        model.addAttribute("page", page);
 
         return ResponseEntity.ok(cvplList);
     }
@@ -162,7 +179,7 @@ public class CvplController {
     public String cvplList(@AuthenticationPrincipal CustomUser customUser
             , @PathVariable String aptCmplexNo
             , Model model) {
-        ResidentVO resident = (ResidentVO)customUser.getMember();
+        ResidentVO resident = (ResidentVO) customUser.getMember();
         List<CvplVO> cvplList = cvplService.selectCvplListByAptCmplexNo(aptCmplexNo, resident.getUserNo());
 
         model.addAttribute("cvplList", cvplList);

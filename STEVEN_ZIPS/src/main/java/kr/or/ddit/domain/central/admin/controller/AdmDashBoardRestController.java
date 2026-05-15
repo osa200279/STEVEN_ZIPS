@@ -43,10 +43,9 @@ public class AdmDashBoardRestController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/aplct")
     public ResponseEntity<List<AplctDTO>> getAplctList() {
-        // log.info("#####청약 신청 리스트 컨트롤러 진입!!");
         try {
             List<AplctDTO> list = aplctService.selectAplctList();
-            // log.info("##### 청약 리스트 : {}", list);
+
             if (list.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
@@ -61,7 +60,6 @@ public class AdmDashBoardRestController {
     @PutMapping("/aplct/upd")
     public ResponseEntity<Integer> updAplct(@RequestBody Map<String, Object> params) {
         // log.info("#### 상태 변경 진입 :" + params);
-
 
         List<Map<String, Object>> updateList = (List<Map<String, Object>>) params.get("aplctMapList");
 
