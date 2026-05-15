@@ -59,7 +59,7 @@ public class MgmtExpenseController {
      * GET /manager/expense/MO00001?expenseYr=2026&expenseMm=5&expenseCd=SAL
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/{mgmtOfcNo}")
+    @GetMapping("/expense/{mgmtOfcNo}")
     public ResponseEntity<Map<String, Object>> selectExpenseList(
             @PathVariable String mgmtOfcNo,
             @RequestParam(required = false) Integer expenseYr,
@@ -117,7 +117,7 @@ public class MgmtExpenseController {
      * POST /manager/expense/MO00001
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @PostMapping("/{mgmtOfcNo}")
+    @PostMapping("/expense/{mgmtOfcNo}")
     public ResponseEntity<Map<String, Object>> insertExpense(
             @PathVariable String mgmtOfcNo,
             @RequestBody ExpenseVO expenseVO
@@ -158,7 +158,7 @@ public class MgmtExpenseController {
      * PUT /manager/expense/MO00001/EX2605140000001
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @PutMapping("/{mgmtOfcNo}/{expenseNo}")
+    @PutMapping("/expense/{mgmtOfcNo}/{expenseNo}")
     public ResponseEntity<Map<String, Object>> updateExpense(
             @PathVariable String mgmtOfcNo,
             @PathVariable String expenseNo,
@@ -201,7 +201,7 @@ public class MgmtExpenseController {
      * DELETE /manager/expense/MO00001/EX2605140000001
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @DeleteMapping("/{mgmtOfcNo}/{expenseNo}")
+    @DeleteMapping("/expense/{mgmtOfcNo}/{expenseNo}")
     public ResponseEntity<Map<String, Object>> deleteExpense(
             @PathVariable String mgmtOfcNo,
             @PathVariable String expenseNo

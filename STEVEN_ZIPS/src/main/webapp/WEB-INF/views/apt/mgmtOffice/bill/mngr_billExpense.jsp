@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: PC-27
-  Date: 2026-05-14
-  Time: 오후 7:37
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
@@ -18,117 +11,49 @@
 
   <title>지출 등록</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet" />
+
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
+
   <style>
-    body {
-      margin: 0;
-      background: #f5f6f8;
-      font-family: Arial, sans-serif;
-      color: #222;
-    }
-
-    .page-wrap {
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-
-    .page-title {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 24px;
-    }
-
-    .box {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 14px;
-      padding: 22px;
-      margin-bottom: 20px;
-    }
-
-    .box-title {
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 16px;
-    }
-
-    .form-row {
+    .expense-page .expense-form-row {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       align-items: center;
     }
 
-    label {
+    .expense-page .expense-form-row label {
       font-weight: 700;
       margin-right: 4px;
     }
 
-    input,
-    select {
-      height: 38px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    .expense-page input,
+    .expense-page select {
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
       padding: 0 10px;
-      box-sizing: border-box;
+      font-family: inherit;
+      font-size: 13px;
     }
 
-    input[type="number"] {
+    .expense-page input[type="number"] {
       width: 130px;
     }
 
-    input[type="text"] {
+    .expense-page input[type="text"] {
       width: 300px;
     }
 
-    .btn {
-      height: 38px;
-      border: 0;
-      border-radius: 8px;
-      padding: 0 16px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      background: #166534;
-      color: #fff;
-    }
-
-    .btn-secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-    .btn-danger {
-      background: #dc2626;
-      color: #fff;
-    }
-
-    .summary {
-      font-size: 18px;
+    .expense-summary {
+      font-size: 16px;
       font-weight: 800;
       margin-bottom: 14px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-    }
-
-    th {
-      background: #f0f2f5;
-      border-bottom: 1px solid #ccc;
-      padding: 12px;
-      font-size: 14px;
-    }
-
-    td {
-      border-bottom: 1px solid #eee;
-      padding: 12px;
-      text-align: center;
-      font-size: 14px;
     }
 
     .text-right {
@@ -136,141 +61,181 @@
     }
 
     .empty {
-      color: #777;
+      color: var(--text-tertiary);
       padding: 30px;
-    }
-
-    .desc {
-      color: #666;
-      font-size: 13px;
+      text-align: center;
     }
   </style>
 </head>
 
 <body>
+<div class="app-wrapper">
 
-<div class="page-wrap">
+  <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
 
-  <h1 class="page-title">지출 등록</h1>
+  <div class="main-wrap">
 
-  <div class="box">
-    <div class="box-title">조회 조건</div>
+    <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
 
-    <div class="form-row">
-      <label for="searchYear">연도</label>
-      <input type="number" id="searchYear">
+    <main class="main-content">
+      <div class="office-page expense-page">
 
-      <label for="searchMonth">월</label>
-      <select id="searchMonth">
-        <option value="1">1월</option>
-        <option value="2">2월</option>
-        <option value="3">3월</option>
-        <option value="4">4월</option>
-        <option value="5">5월</option>
-        <option value="6">6월</option>
-        <option value="7">7월</option>
-        <option value="8">8월</option>
-        <option value="9">9월</option>
-        <option value="10">10월</option>
-        <option value="11">11월</option>
-        <option value="12">12월</option>
-      </select>
+        <div class="page-header">
+          <div class="page-title-block">
+            <h2>지출 내역 관리</h2>
+            <p>관리비 부과에 사용할 월별 지출 내역을 등록하고 관리합니다.</p>
+          </div>
+        </div>
 
-      <label for="searchExpenseCd">지출항목</label>
-      <select id="searchExpenseCd">
-        <option value="">전체</option>
-        <option value="SAL">급여/수당</option>
-        <option value="OFF">사무비</option>
-        <option value="REP">수선유지비</option>
-        <option value="UTL">공공요금</option>
-        <option value="SRV">위탁수수료</option>
-        <option value="INS">보험료</option>
-        <option value="ETC">잡지출</option>
-      </select>
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <span class="material-symbols-rounded">search</span>
+              조회 조건
+            </h3>
+          </div>
 
-      <button type="button" class="btn btn-primary" onclick="loadExpenseList()">조회</button>
-    </div>
+          <div class="panel-body">
+            <div class="expense-form-row">
+              <label for="searchYear">연도</label>
+              <input type="number" id="searchYear">
+
+              <label for="searchMonth">월</label>
+              <select id="searchMonth">
+                <option value="1">1월</option>
+                <option value="2">2월</option>
+                <option value="3">3월</option>
+                <option value="4">4월</option>
+                <option value="5">5월</option>
+                <option value="6">6월</option>
+                <option value="7">7월</option>
+                <option value="8">8월</option>
+                <option value="9">9월</option>
+                <option value="10">10월</option>
+                <option value="11">11월</option>
+                <option value="12">12월</option>
+              </select>
+
+              <label for="searchExpenseCd">지출항목</label>
+              <select id="searchExpenseCd">
+                <option value="">전체</option>
+                <option value="SAL">급여/수당</option>
+                <option value="OFF">사무비</option>
+                <option value="REP">수선유지비</option>
+                <option value="UTL">공공요금</option>
+                <option value="SRV">위탁수수료</option>
+                <option value="INS">보험료</option>
+                <option value="ETC">잡지출</option>
+              </select>
+
+              <button type="button" class="btn btn-primary" onclick="loadExpenseList()">조회</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <span class="material-symbols-rounded">edit_note</span>
+              지출 입력
+            </h3>
+          </div>
+
+          <div class="panel-body">
+            <input type="hidden" id="expenseNo">
+
+            <div class="expense-form-row">
+              <label for="expenseYr">연도</label>
+              <input type="number" id="expenseYr">
+
+              <label for="expenseMm">월</label>
+              <select id="expenseMm">
+                <option value="1">1월</option>
+                <option value="2">2월</option>
+                <option value="3">3월</option>
+                <option value="4">4월</option>
+                <option value="5">5월</option>
+                <option value="6">6월</option>
+                <option value="7">7월</option>
+                <option value="8">8월</option>
+                <option value="9">9월</option>
+                <option value="10">10월</option>
+                <option value="11">11월</option>
+                <option value="12">12월</option>
+              </select>
+
+              <label for="expenseCd">지출항목</label>
+              <select id="expenseCd">
+                <option value="">선택</option>
+                <option value="SAL">급여/수당</option>
+                <option value="OFF">사무비</option>
+                <option value="REP">수선유지비</option>
+                <option value="UTL">공공요금</option>
+                <option value="SRV">위탁수수료</option>
+                <option value="INS">보험료</option>
+                <option value="ETC">잡지출</option>
+              </select>
+
+              <label for="expenseAmt">금액</label>
+              <input type="number" id="expenseAmt" placeholder="금액">
+
+              <label for="expenseCn">내용</label>
+              <input type="text" id="expenseCn" placeholder="예: 5월 공용 전기요금">
+
+              <button type="button" class="btn btn-primary" onclick="saveExpense()">저장</button>
+              <button type="button" class="btn btn-secondary" onclick="resetForm()">초기화</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <span class="material-symbols-rounded">receipt_long</span>
+              지출 목록
+            </h3>
+          </div>
+
+          <div class="panel-body">
+            <div class="expense-summary">
+              월 지출 합계:
+              <span id="totalAmount">0</span>원
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+              <tr>
+                <th>연도</th>
+                <th>월</th>
+                <th>항목</th>
+                <th>내용</th>
+                <th>금액</th>
+                <th>등록일</th>
+                <th>관리</th>
+              </tr>
+              </thead>
+              <tbody id="expenseTbody">
+              <tr>
+                <td colspan="7" class="empty">조회된 지출 내역이 없습니다.</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
   </div>
-
-  <div class="box">
-    <div class="box-title">지출 입력</div>
-
-    <input type="hidden" id="expenseNo">
-
-    <div class="form-row">
-      <label for="expenseYr">연도</label>
-      <input type="number" id="expenseYr">
-
-      <label for="expenseMm">월</label>
-      <select id="expenseMm">
-        <option value="1">1월</option>
-        <option value="2">2월</option>
-        <option value="3">3월</option>
-        <option value="4">4월</option>
-        <option value="5">5월</option>
-        <option value="6">6월</option>
-        <option value="7">7월</option>
-        <option value="8">8월</option>
-        <option value="9">9월</option>
-        <option value="10">10월</option>
-        <option value="11">11월</option>
-        <option value="12">12월</option>
-      </select>
-
-      <label for="expenseCd">지출항목</label>
-      <select id="expenseCd">
-        <option value="">선택</option>
-        <option value="SAL">급여/수당</option>
-        <option value="OFF">사무비</option>
-        <option value="REP">수선유지비</option>
-        <option value="UTL">공공요금</option>
-        <option value="SRV">위탁수수료</option>
-        <option value="INS">보험료</option>
-        <option value="ETC">잡지출</option>
-      </select>
-
-      <label for="expenseAmt">금액</label>
-      <input type="number" id="expenseAmt" placeholder="금액">
-
-      <label for="expenseCn">내용</label>
-      <input type="text" id="expenseCn" placeholder="예: 5월 공용 전기요금">
-
-      <button type="button" class="btn btn-primary" onclick="saveExpense()">저장</button>
-      <button type="button" class="btn btn-secondary" onclick="resetForm()">초기화</button>
-    </div>
-
-    <p class="desc">
-      저장 시 EXPENSE 테이블에 등록되고, 목록은 COMMON_CODE와 조인해서 항목명을 표시합니다.
-    </p>
-  </div>
-
-  <div class="box">
-    <div class="summary">
-      월 지출 합계:
-      <span id="totalAmount">0</span>원
-    </div>
-
-    <table>
-      <thead>
-      <tr>
-        <th>연도</th>
-        <th>월</th>
-        <th>항목</th>
-        <th>내용</th>
-        <th>금액</th>
-        <th>등록일</th>
-        <th>관리</th>
-      </tr>
-      </thead>
-      <tbody id="expenseTbody">
-      <tr>
-        <td colspan="7" class="empty">조회된 지출 내역이 없습니다.</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
 </div>
+
+<script>
+  // 기존 script 그대로 유지
+</script>
+
+</body>
+</html>
 
 <script>
   const contextPath = '${pageContext.request.contextPath}';
@@ -366,6 +331,7 @@
   }
 
   async function saveExpense() {
+    //console.log("저장 버튼 클릭됨");
     const expenseNo = document.getElementById('expenseNo').value;
 
     const payload = {

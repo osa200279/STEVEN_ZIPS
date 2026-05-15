@@ -183,7 +183,7 @@
                     </a>
 
                     <span class="sub-group-label">지출·예산</span>
-                    <a href="${ctx}/manager/bill/expense${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/expense/{mgmtOfcNo}') ? 'active' : ''}">
+                    <a href="${ctx}/manager/bill/expense${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/expense') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">지출 내역 관리</span>
                     </a>

@@ -75,7 +75,7 @@
         <c:set var="bcParent" value="회계운영관리" />
         <c:set var="bcCurrent" value="관리비부과" />
     </c:when>
-    <c:when test="${fn:contains(uri, '/manager/bill/expense/${office.mgmtOfcNo}')}">
+    <c:when test="${fn:contains(uri, '/manager/bill/expense')}">
         <c:set var="bcParent" value="회계운영관리" />
         <c:set var="bcCurrent" value="지출내역관리" />
     </c:when>
