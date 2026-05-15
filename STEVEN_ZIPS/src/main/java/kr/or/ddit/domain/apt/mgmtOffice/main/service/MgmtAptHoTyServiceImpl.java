@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.main.service;
 
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyVO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
@@ -35,8 +36,43 @@ public class MgmtAptHoTyServiceImpl implements IMgmtAptHoTyService {
     }
 
     @Override
-    public void insertHoType(String mgmtOfcNo, AptHoTyVO aptHoTyVO, MultipartFile imageFile) {
+    public void insertHoType(
+            String mgmtOfcNo,
+            AptHoTyVO aptHoTyVO,
+            MultipartFile imageFile
+    ) {
+
+        // 1. 단지 조회
+        AptComplexVO complex =
+                aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+        if(complex == null){
+            throw new RuntimeException("단지 정보가 없습니다.");
+        }
+
+        // 2. 단지번호 세팅
+        aptHoTyVO.setAptCmplexNo(
+                complex.getAptCmplexNo()
+        );
+
+        // 3. 이미지 업로드
+/*        if(imageFile != null && !imageFile.isEmpty()){
+
+            AttachFileVO attachFileVO =
+                    attachFileService.uploadSingleFile(
+                            imageFile,
+                            "apt-ho-type"
+                    );
+
+            aptHoTyVO.setImageFileNo(
+                    attachFileVO.getFileGroupNo()
+            );
+        }
+
+        // 4. insert
+        hoTyMapper.insertHoType(aptHoTyVO);*/
 
     }
+
 
 }

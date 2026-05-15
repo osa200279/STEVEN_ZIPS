@@ -1,6 +1,9 @@
 package kr.or.ddit.domain.apt.main.controller;
 
+import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.main.service.IMgmtAptComplexService;
+import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
+import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.main.vo.ComplexEditDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -19,7 +23,7 @@ import java.util.Map;
 public class AptComplexController {
 
     @Autowired
-    private IMgmtAptComplexService aptComplexService;
+    private IMgmtAptComplexService mgmtAptComplexService;
 
     /**
      * 단지 상세조회
@@ -32,7 +36,7 @@ public class AptComplexController {
     ) {
 
         ComplexEditDTO.DetailResponse response =
-                aptComplexService.getComplexDetail(mgmtOfcNo);
+                mgmtAptComplexService.getComplexDetail(mgmtOfcNo);
 
         return ResponseEntity.ok(response);
     }
@@ -53,7 +57,7 @@ public class AptComplexController {
         try {
             log.info("단지 수정 요청 : {}", request);
 
-            aptComplexService.updateComplex(
+            mgmtAptComplexService.updateComplex(
                     mgmtOfcNo,
                     request
             );

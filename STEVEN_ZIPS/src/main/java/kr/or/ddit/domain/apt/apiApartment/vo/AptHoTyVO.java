@@ -17,4 +17,8 @@ public class AptHoTyVO {
     private Integer roomCnt;
     // 욕실 개수
     private Integer bathroomCnt;
+
+    // 사진정보
+    private String imageFileNo;
+
 }

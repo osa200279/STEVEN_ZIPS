@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
 
         const response = await fetch(
-            `/manager/complex/list/${mgmtOfcNo}`
+            `/manager/ho-type/hoList/${mgmtOfcNo}`
         );
 
         if (!response.ok) {
@@ -461,7 +461,7 @@ async function insertHoType(){
         }
 
         const response = await fetch(
-            "/manager/ho-type/insert",
+            `/manager/ho-type/insert/${mgmtOfcNo}`,
             {
                 method: "POST",
                 body: formData

@@ -1,6 +1,8 @@
 package kr.or.ddit.domain.apt.mgmtOffice.main.controller;
 
 import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyVO;
+import kr.or.ddit.domain.apt.main.service.IAptComplexService;
+import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtAptHoTyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,26 +23,34 @@ public class MgmtAptHoTyController {
     @Autowired
     private IMgmtAptHoTyService hoTyService;
 
+    @Autowired
+    private IAptComplexService aptComplexService;
+
+    @GetMapping("/hoList/{mgmtOfcNo}")
+    @ResponseBody
+    public List<AptDetailGridDTO> selectComplexList(
+            @PathVariable String mgmtOfcNo
+    ) {
+
+        return aptComplexService.selectComplexList(mgmtOfcNo);
+    }
 
     @GetMapping("/list/{mgmtOfcNo}")
     @ResponseBody
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     public List<AptHoTyVO> selectHoTypeList(@PathVariable String mgmtOfcNo) {
 
-
         /*mgmtOfcNo 로 hotyList 가져오기*/
         return hoTyService.selectHoTypeList(mgmtOfcNo);
     }
 
-    @PostMapping("/insert")
+    @PostMapping("/insert/{mgmtOfcNo}")
     @ResponseBody
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     public ResponseEntity<Map<String, Object>> insertHoType(
 
-            @RequestParam String mgmtOfcNo,
-
+            @PathVariable String mgmtOfcNo,
             AptHoTyVO aptHoTyVO,
-
             @RequestParam(required = false)
             MultipartFile imageFile
 
