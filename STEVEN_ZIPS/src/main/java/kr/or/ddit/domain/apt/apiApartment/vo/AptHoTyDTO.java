@@ -3,7 +3,7 @@ package kr.or.ddit.domain.apt.apiApartment.vo;
 import lombok.Data;
 
 @Data
-public class AptHoTyVO {
+public class AptHoTyDTO {
 
     // 호 타입 번호
     private String hoTyNo;
@@ -19,6 +19,12 @@ public class AptHoTyVO {
     private Integer bathroomCnt;
 
     // 사진정보
-    private String imageFileNo;
+    private Long imageFileNo;
+
+    // 화면에 띄워줄 사진을 위한 googleId
+    private String googleId;
+
+    // 사진 지우는지 체크해주는녀석
+    private boolean imageChanged;
 
 }

@@ -164,76 +164,45 @@
                         ====================================================== -->
                         <div class="unit-layout-panel">
 
-                            <div class="unit-panel-title">
+                            <div class="unit-panel-title unit-layout-title">
 
-                                층별 배치도 삽입
+                                <div class="layout-title-left">
+
+                                <span class="material-symbols-rounded layout-title-icon">
+                                    apartment
+                                </span>
+
+                                    <div>
+
+                                        <div class="layout-main-title">
+                                            배치도
+                                        </div>
+
+                                        <div class="layout-sub-title">
+                                            동별 세대 구조를 확인할 수 있습니다.
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <select id="dongSelect"
+                                        class="layout-dong-select">
+
+                                    <option value="">
+                                        동 선택
+                                    </option>
+
+                                </select>
 
                             </div>
 
-                            <div class="unit-layout-grid">
-
-                                <!-- 나중에 JS 반복 -->
-
-                                <div class="unit-floor-row">
-
-                                    <div class="unit-floor-label">
-                                        15F
-                                    </div>
-
-                                    <div class="unit-cell selected">
-                                        1501
-                                    </div>
-
-                                    <div class="unit-cell">
-                                        1502
-                                    </div>
-
-                                    <div class="unit-cell">
-                                        1503
-                                    </div>
-
-                                    <div class="unit-cell disabled">
-                                        1504
-                                    </div>
-
-                                    <div class="unit-cell">
-                                        1505
-                                    </div>
-
-                                </div>
-
-                                <div class="unit-floor-row">
-
-                                    <div class="unit-floor-label">
-                                        14F
-                                    </div>
-
-                                    <div class="unit-cell">
-                                        1401
-                                    </div>
-
-                                    <div class="unit-cell live">
-                                        1402
-                                    </div>
-
-                                    <div class="unit-cell empty">
-                                        1403
-                                    </div>
-
-                                    <div class="unit-cell">
-                                        1404
-                                    </div>
-
-                                    <div class="unit-cell">
-                                        1405
-                                    </div>
-
-                                </div>
+                            <div class="unit-layout-grid"
+                                 id="unitLayoutGrid">
 
                             </div>
 
                         </div>
-
                         <!-- =====================================================
                              우측 테이블 영역
                         ====================================================== -->
@@ -247,7 +216,7 @@
                                 <div class="unit-table-actions">
 
                                     <button type="button"
-                                            class="btn btn-secondary"
+                                            class="btn btn-primary btn-type-manage"
                                             id="btnOpenTypeDrawer">
 
                                         평형 타입 관리
@@ -257,36 +226,63 @@
                                 </div>
 
                                 <!-- 우측 -->
-                                <div class="unit-bulk-type">
+                                <div class="unit-bulk-actions">
 
-                                    <select class="form-select"
-                                            id="hoTypeSelect">
+                                    <!-- 상태 변경 -->
+                                    <div class="unit-bulk-box">
 
-                                        <option value="">
-                                            평형 선택
-                                        </option>
+                                        <select class="form-select"
+                                                id="hoStatusSelect">
 
-                                        <option value="84A">
-                                            84A
-                                        </option>
+                                            <option value="">
+                                                상태 선택
+                                            </option>
 
-                                        <option value="84B">
-                                            84B
-                                        </option>
+                                            <option value="LIVE">
+                                                입주
+                                            </option>
 
-                                        <option value="59A">
-                                            59A
-                                        </option>
+                                            <option value="EMPTY">
+                                                공실
+                                            </option>
 
-                                    </select>
+                                            <option value="DISABLED">
+                                                비활성
+                                            </option>
 
-                                    <button type="button"
-                                            class="btn btn-primary"
-                                            id="btnApplyHoType">
+                                        </select>
 
-                                        선택 호 평형 적용
+                                        <button type="button"
+                                                class="btn btn-primary"
+                                                id="btnApplyHoStatus">
 
-                                    </button>
+                                            선택 호 상태 적용
+
+                                        </button>
+
+                                    </div>
+
+                                    <!-- 평형 변경 -->
+                                    <div class="unit-bulk-box">
+
+                                        <select class="form-select"
+                                                id="hoTypeSelect">
+
+                                            <option value="">
+                                                평형 선택
+                                            </option>
+
+                                        </select>
+
+                                        <button type="button"
+                                                class="btn btn-primary"
+                                                id="btnApplyHoType">
+
+                                            선택 호 평형 적용
+
+                                        </button>
+
+                                    </div>
 
                                 </div>
 
@@ -486,11 +482,11 @@
                     <!-- 기본 상태 -->
                     <div class="upload-content">
 
-                        <div class="plus">
+                        <div class="upload-plus">
                             +
                         </div>
 
-                        <div class="text">
+                        <div class="upload-text">
                             파일을 드래그하거나 클릭하여 업로드
                         </div>
 
@@ -514,7 +510,6 @@
                         </button>
 
                     </div>
-
                 </div>
 
             </div>

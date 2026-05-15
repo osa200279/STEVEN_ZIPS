@@ -2,7 +2,7 @@ package kr.or.ddit.domain.apt.apiApartment.mapper;
 
 
 import kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity;
-import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyVO;
+import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyDTO;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptInfraEntity;
 import kr.or.ddit.domain.apt.apiApartment.vo.MgmtOfficeEntity;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
@@ -57,5 +57,5 @@ public interface IAptApiMapper {
 
     void updateEmpty(String hoNo);
 
-    void insertAptHoTyBatch(List<AptHoTyVO> list);
+    void insertAptHoTyBatch(List<AptHoTyDTO> list);
 }

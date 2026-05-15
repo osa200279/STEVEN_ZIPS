@@ -95,8 +95,12 @@
 
 .unit-floor-row {
     display: grid;
-    grid-template-columns: 60px repeat(5, 1fr);
+
+    grid-template-columns:
+        60px repeat(auto-fit, minmax(60px, 1fr));
+
     gap: 8px;
+
     align-items: center;
 }
 
@@ -129,12 +133,6 @@
 .unit-cell:hover {
     border-color: #2563eb;
     background: #eff6ff;
-}
-
-.unit-cell.selected {
-    background: #2563eb;
-    color: #fff;
-    border-color: #2563eb;
 }
 
 .unit-cell.disabled {
@@ -172,10 +170,46 @@
     gap: 10px;
 }
 
-.unit-bulk-type {
+.unit-bulk-actions{
+
     display: flex;
+    gap: 12px;
+
+    align-items: center;
+}
+
+.unit-bulk-actions{
+
+    display: flex;
+    gap: 14px;
+
+    align-items: center;
+}
+
+.unit-bulk-box{
+
+    display: flex;
+    align-items: center;
+
     gap: 10px;
-    width: 340px;
+
+    min-width: 360px;
+}
+
+.unit-bulk-box .form-select{
+
+    min-width: 130px;
+    flex: 1;
+}
+
+.unit-bulk-box .btn{
+
+    white-space: nowrap;
+}
+
+.unit-bulk-box .form-select{
+
+    flex: 1;
 }
 
 .unit-bulk-type .form-select {
@@ -441,7 +475,6 @@
     width: 100%;
 }
 
-
 /* =========================================================
    평형 타입 모달
 ========================================================= */
@@ -545,46 +578,6 @@
     gap: 18px;
 }
 
-.ho-image-upload {
-    display: block;
-}
-
-.ho-image-preview {
-
-    height: 240px;
-
-    border: 2px dashed #cbd5e1;
-    border-radius: 20px;
-
-    background: #f8fafc;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    gap: 10px;
-
-    cursor: pointer;
-
-    overflow: hidden;
-}
-
-.ho-image-preview img {
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-}
-
-.ho-image-preview .material-symbols-rounded {
-
-    font-size: 44px;
-
-    color: #64748b;
-}
-
 .ho-type-modal-footer {
 
     padding: 24px 30px;
@@ -596,18 +589,30 @@
     gap: 12px;
 }
 
-.ho-type-modal .upload-box {
+/* =========================================================
+   업로드 박스
+========================================================= */
+
+.upload-box {
+
+    position: relative;
 
     min-height: 240px;
 
-}
+    border: 2px dashed #cbd5e1;
+    border-radius: 20px;
 
-.upload-box {
+    background: #f8fafc;
+
+    overflow: hidden;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
+    padding: 20px;
+
+    cursor: pointer;
 }
 
 .upload-content {
@@ -624,7 +629,6 @@
     height: 100%;
 
     text-align: center;
-
 }
 
 .upload-plus {
@@ -643,20 +647,325 @@
     line-height: 1.5;
 
     color: #64748b;
+}
+
+/* =========================================================
+   이미지 미리보기
+========================================================= */
+
+.preview-img {
+
+    max-width: 220px;
+    max-height: 220px;
+
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+
+    border-radius: 16px;
+
+    box-shadow: 0 4px 18px rgba(0,0,0,0.12);
 
 }
 
-.upload-box {
+/* =========================================================
+   제거 버튼
+========================================================= */
 
-    margin: 0 auto;
+.remove-btn {
 
+    position: absolute;
+
+    top: -8px;
+    right: -8px;
+
+    width: 34px;
+    height: 34px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.92);
+
+    color: #0f172a;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+
+    z-index: 20;
+
+    transition: 0.15s ease;
 }
+
+.remove-btn:hover {
+
+    transform: scale(1.06);
+
+    background: #fff;
+}
+
+/* =========================================================
+   빈 메시지
+========================================================= */
 
 .empty-message {
+
     height: 160px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     color: #94a3b8;
+
     font-size: 14px;
+}
+
+.preview-card{
+
+    width:70%;
+    height:70%;
+
+    background:transparent;
+    border-radius:20px;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    position:relative;
+}
+
+.unit-layout-header{
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.unit-dong-select{
+
+    width: 140px;
+}
+
+/* =========================================
+   층별 배치도 헤더
+========================================= */
+
+.unit-layout-title{
+
+    height: auto;
+
+    padding: 18px 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.layout-title-left{
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.layout-title-icon{
+
+    width: 46px;
+    height: 46px;
+
+    border-radius: 14px;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 26px;
+}
+
+.layout-main-title{
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #0f172a;
+}
+
+.layout-sub-title{
+
+    margin-top: 4px;
+
+    font-size: 13px;
+
+    color: #64748b;
+}
+
+.layout-dong-select{
+
+    width: 120px;
+    height: 42px;
+
+    border: 1px solid #dbe3ea;
+    border-radius: 12px;
+
+    background: #fff;
+
+    padding: 0 14px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* =========================================
+   층별 배치도
+========================================= */
+
+.unit-layout-grid{
+
+    padding: 18px;
+    gap: 8px;
+
+    background:
+            linear-gradient(
+                    to bottom,
+                    #f8fafc,
+                    #ffffff
+            );
+}
+
+.unit-floor-row{
+
+    grid-template-columns:
+        48px repeat(auto-fit, minmax(48px, 1fr));
+
+    gap: 6px;
+}
+
+.unit-floor-label{
+
+    font-size: 12px;
+    font-weight: 700;
+
+    color: #64748b;
+}
+
+/* 세대 */
+.unit-cell{
+
+    height: 42px;
+
+    border-radius: 12px;
+
+    border: 1px solid #dbe3ea;
+
+    background: #ffffff;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    box-shadow:
+            0 1px 2px rgba(15, 23, 42, 0.04);
+
+    transition: 0.15s ease;
+}
+
+/* hover */
+.unit-cell:hover{
+
+    transform: translateY(-1px);
+
+    border-color: #93c5fd;
+
+    background: #eff6ff;
+}
+
+/* 선택 */
+.unit-cell.selected{
+
+    position: relative;
+
+    border: 2px solid #2563eb !important;
+
+    box-shadow:
+            0 0 0 3px rgba(37, 99, 235, 0.18),
+            0 4px 10px rgba(37, 99, 235, 0.12);
+
+    transform: translateY(-1px) scale(1.02);
+
+    z-index: 2;
+}
+
+.unit-cell.selected::after{
+
+    content: "✓";
+
+    position: absolute;
+
+    top: -7px;
+    right: -7px;
+
+    width: 18px;
+    height: 18px;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+    color: #fff;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+            0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+/* 공실 */
+.unit-cell.empty{
+
+    background: #ecfdf5;
+    border-color: #86efac;
+    color: #15803d;
+}
+
+/* 입주 */
+.unit-cell.live{
+
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+/* 비활성 */
+.unit-cell.disabled{
+
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #6b7280;
+}
+
+.unit-bulk-box .form-select,
+.layout-dong-select{
+
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
 }

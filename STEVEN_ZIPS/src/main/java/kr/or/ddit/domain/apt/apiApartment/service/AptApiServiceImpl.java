@@ -158,7 +158,7 @@ public class AptApiServiceImpl implements IAptApiService {
         List<AptUnitVO> aptUnitVOList = new ArrayList<>();
         List<AptDetailVO> aptDetailVOList = new ArrayList<>();
         List<AuthVO> authVOList = new ArrayList<>();
-        List<AptHoTyVO> aptHoTyVOList = new ArrayList<>();
+        List<AptHoTyDTO> aptHoTyDTOList = new ArrayList<>();
 
 
         for (AptListItem listItem : AptItemList) {
@@ -201,7 +201,7 @@ public class AptApiServiceImpl implements IAptApiService {
             /*      호 테이블 entity 구성 끝! */
 
             /* 호 타입 구성*/
-            toAptHoTyVO(aptHoTyVOList, bassItem);
+            toAptHoTyVO(aptHoTyDTOList, bassItem);
 
             entityList.add(toEntity(listItem, bassItem,detailItem));
         }
@@ -223,7 +223,7 @@ public class AptApiServiceImpl implements IAptApiService {
         batchInsert(managerVOList, aptMapper::insertManagerBatch);
         batchInsert(authVOList, aptMapper::insertAuthBatch);
         batchInsert(aptUnitVOList, aptMapper::insertAptUnitBatch);
-        batchInsert(aptHoTyVOList, aptMapper::insertAptHoTyBatch);
+        batchInsert(aptHoTyDTOList, aptMapper::insertAptHoTyBatch);
         batchInsert(aptDetailVOList, aptMapper::insertAptDetailBatch);
 
         for (AptInfraEntity infra : infraEntityList) {
@@ -815,8 +815,8 @@ public class AptApiServiceImpl implements IAptApiService {
     }
 
 
-    private List<AptHoTyVO> toAptHoTyVO(
-            List<AptHoTyVO> aptHoTyVOList,
+    private List<AptHoTyDTO> toAptHoTyVO(
+            List<AptHoTyDTO> aptHoTyDTOList,
             AptBass bassItem){
 
         Map<String, Integer> map = new HashMap<>();
@@ -837,7 +837,7 @@ public class AptApiServiceImpl implements IAptApiService {
             }
         }
 
-        AptHoTyVO hoTy = new AptHoTyVO();
+        AptHoTyDTO hoTy = new AptHoTyDTO();
 
         hoTy.setHoTyNo(bassItem.getKaptCode() + "_1");
         hoTy.setAptCmplexNo(bassItem.getKaptCode());
@@ -849,9 +849,9 @@ public class AptApiServiceImpl implements IAptApiService {
         hoTy.setRoomCnt(1);
         hoTy.setBathroomCnt(1);
 
-        aptHoTyVOList.add(hoTy);
+        aptHoTyDTOList.add(hoTy);
 
-        return aptHoTyVOList;
+        return aptHoTyDTOList;
     }
 
 }
