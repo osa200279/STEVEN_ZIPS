@@ -31,7 +31,7 @@ const ApplicantDetailModal = ({ isOpen, data, onClose }) => {
                             return (
                                 <div key={index}>
                                     {index+1}.&nbsp;<a href={`http://localhost:8080/file/download/${doc.fileInfo?.googleId}`} rel='noopener noreferrer'>
-                                        [ {doc.mdfcnDt ? `수정일  ${formattedDate}` : `등록일 ${formattedDate}`} ] {doc.sbmsnDocTyCd} : {doc.fileInfo?.fileOgName}
+                                        [ {doc.mdfcnDt ? `수정일:  ${formattedDate}` : `등록일: ${formattedDate}`} ] {doc.sbmsnDocTyCd}: {doc.fileInfo?.fileOgName}
                                     </a>
                                     <br />
                                 </div>
