@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>편의시설(공용) 상세</title>
+    <title>편의시설 상세</title>
 
     <sec:csrfMetaTags/>
 
@@ -102,6 +102,14 @@
         #publicFacilityDetailPage .item-table tbody tr { cursor:pointer; transition:background .1s; }
         #publicFacilityDetailPage .item-table tbody tr:hover { background:var(--surface-sub); }
         #publicFacilityDetailPage .item-empty { text-align:center; color:var(--text-ter); padding:16px 0; cursor:default !important; }
+        #publicFacilityDetailPage .item-table { table-layout:fixed; }
+        #publicFacilityDetailPage .col-item-no { width:110px; }
+        #publicFacilityDetailPage .col-item-status { width:120px; }
+        #publicFacilityDetailPage .col-item-action { width:80px; }
+        #publicFacilityDetailPage .th-name { text-align:left; padding-left:10px; }
+        #publicFacilityDetailPage .td-center { text-align:center; }
+        #publicFacilityDetailPage .td-name { padding-left:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #publicFacilityDetailPage .item-action-wrap { display:flex; align-items:center; justify-content:center; }
 
         /* 행 이동 화살표 */
         #publicFacilityDetailPage .item-arrow { color:var(--text-ter); font-size:16px; vertical-align:middle; }
@@ -117,18 +125,9 @@
 
         /* 인라인 편집 */
         #publicFacilityDetailPage .item-table tr { cursor:default; }
-        #publicFacilityDetailPage .item-table .item-input { height:28px; font-size:12px; border:1px solid var(--line); border-radius:4px; padding:0 8px; width:100%; box-sizing:border-box; }
-        #publicFacilityDetailPage .item-table .item-input:focus { border-color:var(--accent); outline:none; }
-        #publicFacilityDetailPage .item-table .item-select { height:28px; font-size:12px; border:1px solid var(--line); border-radius:4px; padding:0 6px; width:100%; box-sizing:border-box; }
         #publicFacilityDetailPage .item-table .item-select:focus { border-color:var(--accent); outline:none; }
         #publicFacilityDetailPage .row-btn { height:26px; padding:0 8px; font-size:11px; border-radius:4px; cursor:pointer; border:1px solid var(--line); background:#fff; color:var(--text-sec); }
         #publicFacilityDetailPage .row-btn:hover { border-color:var(--accent); color:var(--accent); }
-        #publicFacilityDetailPage .row-btn-danger { border-color:#fca5a5; color:#b42318; }
-        #publicFacilityDetailPage .row-btn-danger:hover { background:#fee2e2; }
-        #publicFacilityDetailPage .row-btn-primary { border-color:var(--accent); background:var(--accent); color:#fff; }
-        #publicFacilityDetailPage .row-btn-primary:hover { background:var(--accent-hover); }
-        #publicFacilityDetailPage .item-add-btn { display:flex; align-items:center; justify-content:center; gap:4px; margin-top:8px; font-size:12px; color:var(--accent); background:none; border:1px dashed var(--accent); border-radius:4px; padding:5px 10px; cursor:pointer; width:100%; box-sizing:border-box; }
-        #publicFacilityDetailPage .item-add-btn:hover { background:var(--accent-light); }
 
         @media (max-width:760px) {
             .facility-modal-cols { grid-template-columns:1fr; }
@@ -143,9 +142,9 @@
 
     <div class="main-wrap">
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
-        <c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/publicFacility/list/${mgmtOfcNo}" />
+        <c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/publicFacility/page/${mgmtOfcNo}" />
         <c:set var="activeSidebarParent" value="시설·공사 관리" />
-        <c:set var="activeSidebarCurrent" value="편의시설(공용) 관리" />
+        <c:set var="activeSidebarCurrent" value="편의시설 관리" />
         <%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
 
         <main class="main-content">
@@ -153,8 +152,8 @@
 
                 <div class="page-header">
                     <div class="page-title-block">
-                        <h2>편의시설(공용) 상세</h2>
-                        <p>시설자산(FACILITY)과 편의시설(공용) 운영정보(PUBLIC_FACILITY)를 확인합니다.</p>
+                        <h2>편의시설 상세</h2>
+                        <p>시설자산과 편의시설 운영정보를 확인합니다.</p>
                     </div>
                 </div>
 
@@ -162,7 +161,7 @@
                     <div class="panel-header">
                         <h3 class="panel-title">
                             <span class="material-symbols-rounded">info</span>
-                            편의시설(공용) 정보
+                            편의시설 정보
                         </h3>
                     </div>
 
@@ -218,16 +217,16 @@
                                 <div class="form-section" style="margin-bottom:14px;">
                                     <div class="form-section-title">
                                         <span class="material-symbols-rounded">meeting_room</span>
-                                        편의시설(공용) 운영정보
+                                        편의시설 운영정보
                                     </div>
 
                                     <div class="form-row cols-2">
                                         <div class="form-field">
-                                            <label class="field-label">편의시설(공용)번호</label>
+                                            <label class="field-label">편의시설 번호</label>
                                             <input type="text" class="form-input" value="${detail.cmnFacilityNo}" readonly>
                                         </div>
                                         <div class="form-field">
-                                            <label class="field-label">편의시설(공용)명</label>
+                                            <label class="field-label">편의시설 명</label>
                                             <input type="text" class="form-input" value="${detail.cmnFacilityNm}" readonly>
                                         </div>
                                     </div>
@@ -342,17 +341,17 @@
 
                                     <table class="item-table">
                                         <colgroup>
-                                            <col style="width:110px;">
-                                            <col>
-                                            <col style="width:120px;">
+                                            <col class="col-item-no">
+                                            <col class="col-item-name">
+                                            <col class="col-item-status">
                                             <sec:authorize access="!hasRole('ADMIN')">
-                                                <col style="width:130px;">
+                                                <col class="col-item-action">
                                             </sec:authorize>
                                         </colgroup>
                                         <thead>
                                         <tr>
                                             <th>자원번호</th>
-                                            <th style="text-align:left;padding-left:10px;">자원명</th>
+                                            <th class="th-name">자원명</th>
                                             <th>상태</th>
                                             <sec:authorize access="!hasRole('ADMIN')">
                                                 <th>관리</th>
@@ -364,9 +363,9 @@
                                             <c:when test="${not empty itemList}">
                                                 <c:forEach var="item" items="${itemList}">
                                                     <tr data-item-no="${item.cmnFacilityItemNo}" data-item-nm="${item.itemNm}" data-stts="${item.cmnFacilitySttsCd}">
-                                                        <td style="text-align:center;">${item.cmnFacilityItemNo}</td>
-                                                        <td style="padding-left:10px;">${item.itemNm}</td>
-                                                        <td style="text-align:center;">
+                                                        <td class="td-center">${item.cmnFacilityItemNo}</td>
+                                                        <td class="td-name">${item.itemNm}</td>
+                                                        <td class="td-center">
                                                             <c:choose>
                                                                 <c:when test="${item.cmnFacilitySttsCd eq 'OPEN'}"><span class="stts-badge stts-open">사용가능</span></c:when>
                                                                 <c:when test="${item.cmnFacilitySttsCd eq 'USE'}"><span class="stts-badge stts-use">사용중</span></c:when>
@@ -376,10 +375,16 @@
                                                             </c:choose>
                                                         </td>
                                                         <sec:authorize access="!hasRole('ADMIN')">
-                                                            <td style="text-align:center;">
-                                                                <div style="display:flex;gap:4px;justify-content:center;">
-                                                                    <button type="button" class="row-btn" data-action="edit">수정</button>
-                                                                    <button type="button" class="row-btn row-btn-danger" data-action="delete">삭제</button>
+                                                            <td class="td-center">
+                                                                <div class="item-action-wrap">
+                                                                    <button type="button"
+                                                                            class="row-btn"
+                                                                            data-action="edit"
+                                                                            data-item-no="${item.cmnFacilityItemNo}"
+                                                                            data-item-nm="${item.itemNm}"
+                                                                            data-stts="${item.cmnFacilitySttsCd}">
+                                                                        수정
+                                                                    </button>
                                                                 </div>
                                                             </td>
                                                         </sec:authorize>
@@ -394,11 +399,6 @@
                                         </c:choose>
                                         </tbody>
                                     </table>
-                                    <sec:authorize access="!hasRole('ADMIN')">
-                                        <button type="button" class="item-add-btn" id="itemAddBtn">
-                                            <span class="material-symbols-rounded" style="font-size:16px;">add</span> 자원 추가
-                                        </button>
-                                    </sec:authorize>
                                 </div>
 
                             </div>
@@ -576,22 +576,20 @@
 
         document.addEventListener("DOMContentLoaded", function () {
 
-            /* 자원 추가 버튼 */
-            var addBtn = document.getElementById("itemAddBtn");
-            if (addBtn) addBtn.addEventListener("click", addInsertRow);
 
             /* 테이블 이벤트 위임 */
             var tbody = document.getElementById("dtlItemBody");
             if (tbody) {
                 tbody.addEventListener("click", function (e) {
-                    var btn = e.target.closest("button[data-action]");
+                    var btn = e.target.closest("button[data-action]");       /* 클릭 버튼 */
                     if (!btn) return;
-                    var action = btn.getAttribute("data-action");
-                    var tr = btn.closest("tr");
-                    if (action === "edit")   startEdit(tr);
-                    if (action === "cancel") cancelEdit(tr);
-                    if (action === "save")   saveEdit(tr);
-                    if (action === "delete") deleteItem(tr);
+
+                    var action = btn.getAttribute("data-action");            /* 버튼 동작 */
+
+                    if (action === "edit") {
+                        openItemEditModal(btn);                              /* 수정 모달 */
+                        return;
+                    }
                 });
             }
 
@@ -599,7 +597,7 @@
             var backBtn = document.getElementById("backToListBtn");
             if (backBtn) {
                 backBtn.addEventListener("click", function () {
-                    location.href = contextPath + "/manager/publicFacility/list/" + encodeURIComponent(mgmtOfcNo);
+                    location.href = contextPath + "/manager/publicFacility/page/" + encodeURIComponent(mgmtOfcNo);
                 });
             }
 

@@ -12,19 +12,28 @@
         ============================================================
     -->
 
+    <!-- 일반 시설자산 시설유형코드 목록 -->
+    <sql id="assetfacilitytypecodes">
+        'ELV',
+        'WTR',
+        'ELC',
+        'GAS',
+        'FIRE',
+        'SEC',
+        'ETC'
+    </sql>
+
     <!--
         편의시설로 취급하는 FACILITY_TY 코드 목록
-        - 편의시설 여부는 PUBLIC_FACILITY 연결 여부가 아니라 FACILITY.FACILITY_TY_CD 기준으로 판단한다.
+        - FACILITY_TY 공통코드 중 일반 시설자산 코드를 제외한 나머지를 편의시설로 판단한다.
         - PUBLIC_FACILITY는 운영관리 등록 정보이므로, 이 테이블에 행이 없어도 편의시설 목록에는 보여야 한다.
     -->
     <sql id="publicfacilitytypecodes">
-        'MEET',
-        'PARK',
-        'PLAY',
-        'COMM',
-        'GYM',
-        'STUDY',
-        'PARKING'
+        select cc.code_no_cd
+        from common_code cc
+        where cc.group_code_no = 'FACILITY_TY'
+          and nvl(cc.use_yn, 'Y') = 'Y'
+          and cc.code_no_cd not in (<include refid="assetfacilitytypecodes"/>)
     </sql>
 
     <!-- 관리사무소 번호로 현재 단지번호를 찾는 공통 조건 -->

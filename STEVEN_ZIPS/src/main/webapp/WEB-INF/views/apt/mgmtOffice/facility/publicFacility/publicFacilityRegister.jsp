@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>편의시설(공용) 등록</title>
+    <title>편의시설 등록</title>
     <sec:csrfMetaTags/>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -118,6 +118,29 @@
         #publicFacilityPage .file-meta { margin-top:2px; font-size:11px; color:var(--text-ter); }
         #publicFacilityPage .file-delete-check { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#7f1d1d; font-weight:700; }
         #publicFacilityPage .file-delete-check input { width:14px; height:14px; }
+        #publicFacilityPage .photo-guide { align-items:flex-start; padding:12px; }
+        #publicFacilityPage .photo-guide-title { margin-bottom:9px; font-size:12px; font-weight:800; color:var(--text-pri); }
+        #publicFacilityPage .photo-guide-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid rgba(46,92,56,.13); }
+        #publicFacilityPage .photo-guide-row span { flex:0 0 auto; font-size:11px; color:var(--text-sec); font-weight:700; }
+        #publicFacilityPage .photo-guide-row strong { min-width:0; text-align:right; font-size:11px; color:var(--text-pri); font-weight:800; line-height:1.35; }
+        /* 운영시간 입력 */
+        #publicFacilityPage .opr-time-box { display:flex; flex-direction:column; gap:8px; padding:10px; border:1px solid var(--line); border-radius:4px; background:#fafcfb; }
+        #publicFacilityPage .opr-time-row { display:grid; grid-template-columns:64px minmax(94px,1fr) 16px minmax(94px,1fr) 64px minmax(112px,1fr) 16px minmax(112px,1fr); gap:7px; align-items:center; }
+        #publicFacilityPage .opr-time-label { font-size:11px; font-weight:800; color:var(--text-sec); white-space:nowrap; }
+        #publicFacilityPage .opr-time-separator { text-align:center; font-size:12px; font-weight:800; color:var(--text-ter); }
+        #publicFacilityPage .opr-preview-row { display:grid; grid-template-columns:64px 1fr; gap:7px; align-items:center; }
+        #publicFacilityPage .opr-preview { min-height:30px; padding:6px 9px; display:flex; align-items:center; border:1px solid var(--line); border-radius:4px; background:#fff; font-size:12px; font-weight:700; color:var(--text-pri); }
+        #publicFacilityPage .opr-preview.is-empty { color:var(--text-ter); font-weight:500; }
+        #publicFacilityPage .opr-time-notice { min-height:17px; padding-left:71px; font-size:11px; line-height:1.5; color:#b45309; }
+        #publicFacilityPage .opr-time-notice:empty { display:none; }
+
+        /* 새 시설자산 위치 선택 인라인 */
+        #publicFacilityPage .location-select-row { display:grid; grid-template-columns:1.1fr .75fr .75fr .75fr; gap:8px; align-items:end; }
+        #publicFacilityPage .location-help-row { margin-top:5px; font-size:11px; color:var(--text-ter); line-height:1.5; }
+        #publicFacilityPage .location-detail-row { margin-top:10px; }
+        @media (max-width:900px) {
+            #publicFacilityPage .location-select-row { grid-template-columns:1fr 1fr; }
+        }
 
         @media (max-width:760px) {
             .facility-modal-cols { grid-template-columns:1fr; }
@@ -137,20 +160,21 @@
     </script>
 </head>
 <body>
+<c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/publicFacility/page/${mgmtOfcNo}" />
+<c:set var="activeSidebarParent" value="시설·공사 관리" />
+<c:set var="activeSidebarCurrent" value="편의시설 관리" />
 <div class="app-wrapper">
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
+
     <div class="main-wrap">
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
-        <c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/publicFacility/list/${mgmtOfcNo}" />
-        <c:set var="activeSidebarParent" value="시설·공사 관리" />
-        <c:set var="activeSidebarCurrent" value="편의시설(공용) 관리" />
         <%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
         <main class="main-content">
             <div class="office-page" id="publicFacilityPage">
                 <div class="page-header">
                     <div class="page-title-block">
-                        <h2>편의시설(공용) 등록</h2>
-                        <p>기존 시설자산을 운영관리 대상으로 연결하거나, 새 시설자산과 편의시설(공용) 운영정보를 함께 등록합니다.</p>
+                        <h2>편의시설 등록</h2>
+                        <p>기존 시설자산을 운영관리 대상으로 연결하거나, 새 시설자산과 편의시설 운영정보를 함께 등록합니다.</p>
                     </div>
                 </div>
 
@@ -166,16 +190,6 @@
                         <input type="hidden" id="deleteFileUuids" name="deleteFileUuids">
 
                         <div class="panel-body">
-                            <div class="form-section" style="margin-bottom:14px;">
-                                <div class="notice-box">
-                                    <span class="material-symbols-rounded">info</span>
-                                    <div>
-                                        기존 시설자산 선택은 FACILITY에 등록되어 있지만 아직 운영관리 정보가 없는 시설을 연결합니다.<br>
-                                        새 시설자산 등록은 FACILITY를 먼저 생성한 뒤 PUBLIC_FACILITY를 연결합니다. 사진은 연결된 FACILITY.FILE_GROUP_NO 기준으로 저장됩니다.
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="facility-modal-cols">
                                 <div class="facility-modal-col-left">
                                     <div class="facility-col-label">시설 정보</div>
@@ -238,24 +252,21 @@
                                                 <div class="form-field">
                                                     <label class="field-label">시설유형</label>
                                                     <select class="form-select" id="regFacilityTyCd" name="facilityTyCd">
-                                                        <option value="ETC">기타시설</option>
-                                                        <option value="PLAY">놀이터</option>
-                                                        <option value="PARK">주차장</option>
-                                                        <option value="ELV">승강기</option>
-                                                        <option value="FIRE">소방시설</option>
-                                                        <option value="ELC">전기시설</option>
-                                                        <option value="WTR">급수시설</option>
-                                                        <option value="GAS">가스시설</option>
+                                                        <c:forEach var="type" items="${publicFacilityTypeList}">
+                                                            <option value="${type.code}">${type.codeNm}</option>
+                                                        </c:forEach>
                                                     </select>
                                                 </div>
                                             </div>
 
-                                            <div class="form-row cols-2">
+                                            <%-- 위치 선택 행: 위치구분·동·층·호 인라인 배치 --%>
+                                            <div class="location-select-row">
                                                 <div class="form-field">
                                                     <label class="field-label">위치 구분</label>
                                                     <select class="form-select" id="regLocationType" name="locationType">
                                                         <option value="COMMON">공용 위치</option>
-                                                        <option value="DONG">동 기준 위치</option>
+                                                        <option value="DONG">동 위치</option>
+                                                        <option value="HOUSEHOLD">세대 위치</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-field" id="regDongField">
@@ -269,9 +280,23 @@
                                                         </c:forEach>
                                                     </select>
                                                 </div>
+                                                <div class="form-field">
+                                                    <label class="field-label">층</label>
+                                                    <select class="form-select" id="regFacilityFloor">
+                                                        <option value="">선택</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-field">
+                                                    <label class="field-label">호</label>
+                                                    <select class="form-select" id="regFacilityHo">
+                                                        <option value="">선택</option>
+                                                    </select>
+                                                </div>
                                             </div>
+                                            <div class="location-help-row">위치 구분에 따라 동·층·호가 활성화됩니다.</div>
 
-                                            <div class="form-row cols-2">
+                                            <%-- 상세위치 및 활성여부 행 --%>
+                                            <div class="form-row cols-2 location-detail-row">
                                                 <div class="form-field">
                                                     <label class="field-label">상세위치</label>
                                                     <input type="text" class="form-input" id="regLocCn" name="locCn" placeholder="예) 커뮤니티센터 2층">
@@ -312,9 +337,50 @@
                                                 <label class="field-label">이용요금 (원)</label>
                                                 <input type="number" class="form-input" id="regAmt" name="cmnFacilityAmt" placeholder="0 (무료)" min="0">
                                             </div>
+                                        </div>
+
+                                        <div class="form-row cols-1">
                                             <div class="form-field">
-                                                <label class="field-label">운영시간</label>
-                                                <input type="text" class="form-input" id="regOprHr" name="cmnFacilityOprHr" placeholder="예) 06:00~22:00">
+                                                <label class="field-label">운영요일/운영시간</label>
+                                                <div class="opr-time-box">
+                                                    <%-- 운영조건 선택 행 --%>
+                                                    <div class="opr-time-row">
+                                                        <span class="opr-time-label">운영요일</span>
+                                                        <select class="form-select" id="oprStartDay">
+                                                            <option value="월" selected>월요일</option>
+                                                            <option value="화">화요일</option>
+                                                            <option value="수">수요일</option>
+                                                            <option value="목">목요일</option>
+                                                            <option value="금">금요일</option>
+                                                            <option value="토">토요일</option>
+                                                            <option value="일">일요일</option>
+                                                        </select>
+                                                        <span class="opr-time-separator">~</span>
+                                                        <select class="form-select" id="oprEndDay">
+                                                            <option value="월">월요일</option>
+                                                            <option value="화">화요일</option>
+                                                            <option value="수">수요일</option>
+                                                            <option value="목">목요일</option>
+                                                            <option value="금">금요일</option>
+                                                            <option value="토">토요일</option>
+                                                            <option value="일" selected>일요일</option>
+                                                        </select>
+                                                        <span class="opr-time-label">운영시간</span>
+                                                        <input type="time" class="form-input" id="oprStartTime" step="60">
+                                                        <span class="opr-time-separator">~</span>
+                                                        <input type="time" class="form-input" id="oprEndTime" step="60">
+                                                    </div>
+
+                                                    <%-- 자동 저장값 표시 행 --%>
+                                                    <div class="opr-preview-row">
+                                                        <span class="opr-time-label">저장값</span>
+                                                        <div class="opr-preview is-empty" id="oprHrPreview">운영시간을 입력하면 자동으로 저장값이 생성됩니다.</div>
+                                                    </div>
+                                                    <div class="opr-time-notice" id="oprTimeNotice"></div>
+
+                                                    <%-- DB 전송용 운영시간 값 --%>
+                                                    <input type="hidden" id="regOprHr" name="cmnFacilityOprHr">
+                                                </div>
                                             </div>
                                         </div>
 
@@ -342,6 +408,14 @@
                                             <input type="file" class="form-input" id="regImgInput" name="facilityFiles" accept="image/*" multiple>
                                             <div class="file-preview-list" id="regImgGrid" style="margin-top:8px;">
                                                 <div class="file-preview-empty">선택된 사진이 없습니다.</div>
+                                            </div>
+                                        </div>
+                                        <div class="notice-box photo-guide" style="margin-top:12px;">
+                                            <span class="material-symbols-rounded">info</span>
+                                            <div>
+                                                <div>기존 시설자산 선택은 운영 정보가 없는 시설을 연결합니다.</div>
+                                                <div>새 시설자산 등록은 자산을 먼저 생성한 뒤 연결합니다.</div>
+                                                <div style="margin-top:6px;">💡 사진은 시설자산 관리 메뉴에서 확인할 수 있습니다.</div>
                                             </div>
                                         </div>
                                     </div>
@@ -375,14 +449,9 @@
                                 <input type="text" class="form-input" id="facilityKeyword" placeholder="시설명, 시설번호, 위치 검색">
                                 <select class="form-select" id="facilityTypeFilter">
                                     <option value="">시설유형 전체</option>
-                                    <option value="ETC">기타시설</option>
-                                    <option value="PLAY">놀이터</option>
-                                    <option value="PARK">주차장</option>
-                                    <option value="ELV">승강기</option>
-                                    <option value="FIRE">소방시설</option>
-                                    <option value="ELC">전기시설</option>
-                                    <option value="WTR">급수시설</option>
-                                    <option value="GAS">가스시설</option>
+                                    <c:forEach var="type" items="${publicFacilityTypeList}">
+                                        <option value="${type.code}">${type.codeNm}</option>
+                                    </c:forEach>
                                 </select>
                                 <select class="form-select" id="facilityDongFilter">
                                     <option value="">동 전체</option>
@@ -509,6 +578,14 @@
             return requestJson(url, { method:"POST", headers:getCsrfHeaders(), body:formData });
         }
 
+        function getJson(url) {
+            return requestJson(url, { method:"GET", headers:getCsrfHeaders() });
+        }
+
+        function resetSelect(select, placeholder) {
+            if (select) select.innerHTML = '<option value="">' + placeholder + '</option>';
+        }
+
         /* 등록 방식 변경 함수 */
         function setRegisterMode(mode) {
             var isNewMode = mode === "NEW";
@@ -525,7 +602,7 @@
             });
 
             /* 새 시설자산 등록 모드에서만 신규 시설 입력값 전송 */
-            ["regFacilityNm", "regFacilityTyCd", "regLocationType", "regDongNo", "regLocCn", "regUseYn"].forEach(function (id) {
+            ["regFacilityNm", "regFacilityTyCd", "regLocationType", "regDongNo", "regFacilityFloor", "regFacilityHo", "regLocCn", "regUseYn"].forEach(function (id) {
                 var el = getEl(id);
                 if (el) el.disabled = !isNewMode;
             });
@@ -540,17 +617,208 @@
 
         /* 새 시설자산 위치 구분 변경 함수 */
         function updateLocationType() {
-            var isDongLocation = getEl("regLocationType").value === "DONG";
+            var type = getEl("regLocationType").value;
             var isNewMode = getEl("registerMode").value === "NEW";
             var dongEl = getEl("regDongNo");
+            var floorEl = getEl("regFacilityFloor");
+            var hoEl = getEl("regFacilityHo");
+            var locEl = getEl("regLocCn");
 
-            /* 공용 위치 선택 시 동 값 제거 */
-            if (!isDongLocation) {
+            if (type === "COMMON") {
                 dongEl.value = "";
+                dongEl.disabled = true;
+                floorEl.disabled = true;
+                hoEl.disabled = true;
+                resetSelect(floorEl, "선택");
+                resetSelect(hoEl, "선택");
+                locEl.value = removeHouseholdPrefix(locEl.value);
+                locEl.placeholder = "예) 중앙광장, 커뮤니티센터 2층";
+                return;
             }
 
-            /* 새 시설자산 모드 + 동 기준 위치일 때만 동 선택 가능 */
-            dongEl.disabled = !(isNewMode && isDongLocation);
+            if (type === "DONG") {
+                dongEl.disabled = !isNewMode;
+                floorEl.disabled = true;
+                hoEl.disabled = true;
+                resetSelect(floorEl, "선택");
+                resetSelect(hoEl, "선택");
+                locEl.value = removeHouseholdPrefix(locEl.value);
+                locEl.placeholder = "예) 101동 1층 로비, 옥상";
+                return;
+            }
+
+            dongEl.disabled = !isNewMode;
+            floorEl.disabled = !isNewMode;
+            hoEl.disabled = !isNewMode;
+            locEl.placeholder = "예) 세대 분전반, 수도계량기";
+            updateHouseholdLocationText();
+        }
+
+        function removeHouseholdPrefix(text) {
+            return String(text || "")
+                .replace(/^\s*\d+\s*층\s*/g, "")
+                .replace(/^\s*\d+\s*호\s*/g, "")
+                .trim();
+        }
+
+        function updateHouseholdLocationText() {
+            if (getEl("regLocationType").value !== "HOUSEHOLD") return;
+
+            var floor = getEl("regFacilityFloor").value;
+            var ho = getEl("regFacilityHo").value;
+            var locEl = getEl("regLocCn");
+            var detailText = removeHouseholdPrefix(locEl.value);
+
+            locEl.value = [
+                floor ? floor + "층" : "",
+                ho ? ho + "호" : "",
+                detailText
+            ].filter(Boolean).join(" ");
+        }
+
+        async function loadFloorList() {
+            var dongEl = getEl("regDongNo");
+            var floorEl = getEl("regFacilityFloor");
+            var hoEl = getEl("regFacilityHo");
+
+            resetSelect(floorEl, "선택");
+            resetSelect(hoEl, "선택");
+            updateHouseholdLocationText();
+
+            if (!dongEl.value) return;
+
+            var result = await getJson(contextPath + "/manager/facility/location/floors/" + encodeURIComponent(mgmtOfcNo) + "?dongNo=" + encodeURIComponent(dongEl.value));
+            var floorList = result.list || result.floorList || result || [];
+
+            floorList.forEach(function (row) {
+                var floor = row.floor || row.FLOOR;
+                if (!floor) return;
+                var option = document.createElement("option");
+                option.value = floor;
+                option.textContent = floor + "층";
+                floorEl.appendChild(option);
+            });
+        }
+
+        async function loadHoList() {
+            var dongEl = getEl("regDongNo");
+            var floorEl = getEl("regFacilityFloor");
+            var hoEl = getEl("regFacilityHo");
+
+            resetSelect(hoEl, "선택");
+            updateHouseholdLocationText();
+
+            if (!dongEl.value || !floorEl.value) return;
+
+            var result = await getJson(contextPath + "/manager/facility/location/rooms/" + encodeURIComponent(mgmtOfcNo) + "?dongNo=" + encodeURIComponent(dongEl.value) + "&floor=" + encodeURIComponent(floorEl.value));
+            var hoList = result.list || result.roomList || result || [];
+
+            hoList.forEach(function (row) {
+                var ho = row.ho || row.HO;
+                if (!ho) return;
+                var option = document.createElement("option");
+                option.value = ho;
+                option.textContent = ho + "호";
+                hoEl.appendChild(option);
+            });
+        }
+
+        function buildNewFacilityLocationText() {
+            var type = getEl("regLocationType").value;
+            var locEl = getEl("regLocCn");
+
+            if (type === "COMMON") {
+                getEl("regDongNo").value = "";
+                return locEl.value;
+            }
+
+            if (type === "DONG") {
+                return removeHouseholdPrefix(locEl.value);
+            }
+
+            updateHouseholdLocationText();
+            return locEl.value;
+        }
+
+        /* 운영요일 표시문구 생성 함수 */
+        function buildOperationDayText(startDay, endDay) {
+            if (!startDay || !endDay) return "";
+
+            /* 매일 운영 표시 */
+            if (startDay === "월" && endDay === "일") return "매일";
+
+            /* 단일 요일 운영 표시 */
+            if (startDay === endDay) return startDay;
+
+            /* 요일 범위 운영 표시 */
+            return startDay + "~" + endDay;
+        }
+
+        /* 운영시간 저장값 자동 생성 함수 */
+        function updateOperationHourText() {
+            var startDay = getEl("oprStartDay").value;
+            var endDay = getEl("oprEndDay").value;
+            var startTime = getEl("oprStartTime").value;
+            var endTime = getEl("oprEndTime").value;
+            var hiddenInput = getEl("regOprHr");
+            var preview = getEl("oprHrPreview");
+            var notice = getEl("oprTimeNotice");
+
+            /* 시간 미입력 상태 */
+            if (!startTime && !endTime) {
+                hiddenInput.value = "";
+                preview.innerText = "운영시간을 입력하면 자동으로 저장값이 생성됩니다.";
+                preview.classList.add("is-empty");
+                notice.innerText = "";
+                return;
+            }
+
+            /* 부분 입력 상태 */
+            if (!startTime || !endTime) {
+                hiddenInput.value = "";
+                preview.innerText = "시작시간과 종료시간을 모두 입력해야 저장됩니다.";
+                preview.classList.add("is-empty");
+                notice.innerText = "";
+                return;
+            }
+
+            var dayText = buildOperationDayText(startDay, endDay);
+            var operationText = dayText + " " + startTime + "~" + endTime;
+
+            hiddenInput.value = operationText;
+            preview.innerText = operationText;
+            preview.classList.remove("is-empty");
+
+            /* 야간 운영 안내 */
+            if (startTime > endTime) {
+                notice.innerText = "종료시간이 시작시간보다 빠르므로 다음날 종료되는 야간 운영으로 저장됩니다.";
+                return;
+            }
+
+            /* 24시간 또는 별도 기준 안내 */
+            if (startTime === endTime) {
+                notice.innerText = "시작시간과 종료시간이 같아 24시간 운영 또는 별도 운영 기준으로 저장됩니다.";
+                return;
+            }
+
+            notice.innerText = "";
+        }
+
+        /* 운영시간 입력 검증 함수 */
+        function validateOperationHourInput() {
+            var startTime = getEl("oprStartTime").value;
+            var endTime = getEl("oprEndTime").value;
+
+            /* 둘 다 비어 있으면 운영시간 미입력으로 허용 */
+            if (!startTime && !endTime) return true;
+
+            /* 하나만 입력된 경우 저장 방지 */
+            if (!startTime || !endTime) {
+                alertMessage("운영시간은 시작시간과 종료시간을 모두 입력하세요.");
+                return false;
+            }
+
+            return true;
         }
 
         /* 시설자산 선택 모달 열기 함수 */
@@ -820,8 +1088,24 @@
                 alertMessage("동 기준 위치를 선택한 경우 동을 선택하세요.");
                 return;
             }
+            if (mode === "NEW" && getEl("regLocationType").value === "HOUSEHOLD" && !getEl("regDongNo").value) {
+                alertMessage("세대 위치를 선택한 경우 동을 선택하세요.");
+                return;
+            }
             if (!getEl("regCmnNm").value.trim()) {
                 alertMessage("편의시설(공용)명을 입력하세요.");
+                return;
+            }
+
+            if (mode === "NEW") {
+                getEl("regLocCn").value = buildNewFacilityLocationText();
+            }
+
+            /* 운영시간 최종 저장값 생성 */
+            updateOperationHourText();
+
+            /* 운영시간 부분 입력 검증 */
+            if (!validateOperationHourInput()) {
                 return;
             }
 
@@ -870,7 +1154,25 @@
             getEl("facilityResetBtn").addEventListener("click", resetCandidateFilter);
 
             /* 새 시설자산 위치 구분 이벤트 */
-            getEl("regLocationType").addEventListener("change", updateLocationType);
+            getEl("regLocationType").addEventListener("change", function () {
+                updateLocationType();
+                if (this.value === "HOUSEHOLD" && getEl("regDongNo").value) {
+                    loadFloorList();
+                }
+            });
+            getEl("regDongNo").addEventListener("change", function () {
+                if (getEl("regLocationType").value === "HOUSEHOLD") {
+                    loadFloorList();
+                }
+            });
+            getEl("regFacilityFloor").addEventListener("change", loadHoList);
+            getEl("regFacilityHo").addEventListener("change", updateHouseholdLocationText);
+
+            /* 운영요일/운영시간 자동 조합 이벤트 */
+            ["oprStartDay", "oprEndDay", "oprStartTime", "oprEndTime"].forEach(function (id) {
+                getEl(id).addEventListener("change", updateOperationHourText);
+                getEl(id).addEventListener("input", updateOperationHourText);
+            });
 
             /* 사진 파일 선택 이벤트 */
             getEl("regImgInput").addEventListener("change", previewSelectedFiles);
@@ -892,6 +1194,7 @@
             /* 기본 등록 방식 및 카운트 세팅 */
             setRegisterMode("EXISTING");
             updateCandidateCount();
+            updateOperationHourText();
 
             /* 공통 이미지 확대 모듈 연결 */
             if (window.CommonImageViewer) {

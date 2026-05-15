@@ -3,7 +3,7 @@ package kr.or.ddit.domain.apt.mgmtOffice.facility.publicFacility.dto;
 import lombok.Data;
 
 /**
- * 공용시설 등록/수정 Form DTO
+ * 편의시설 등록/수정 Form DTO
  * - publicFacilityRegister.jsp form name 기준 요청값 수신
  * - DB 테이블 1개와 1:1 매칭되는 VO가 아니라 화면 요청 전용 DTO
  * - registerMode 값으로 기존 시설자산 선택 / 새 시설자산 등록 분기
@@ -55,7 +55,7 @@ public class PublicFacilityFormDTO {
 
     /**
      * 위치구분
-     * - COMMON: 공용 위치
+     * - COMMON: 편의 위치
      * - DONG: 동 기준 위치
      * - DB 컬럼 아님
      * - ServiceImpl에서 dongNo 저장 여부 판단용으로만 사용
@@ -79,21 +79,21 @@ public class PublicFacilityFormDTO {
      * ============================================================
      */
 
-    /** 공용시설번호 */
+    /** 편의시설번호 */
     private String cmnFacilityNo;
 
-    /** 공용시설명 */
+    /** 편의시설명 */
     private String cmnFacilityNm;
 
-    /** 공용시설 예약 여부 */
+    /** 편의시설 예약 여부 */
     private String cmnFacilityRsvYn;
 
-    /** 공용시설 비용 */
+    /** 편의시설 비용 */
     private Integer cmnFacilityAmt;
 
-    /** 공용시설 운영 시간 */
+    /** 편의시설 운영 시간 */
     private String cmnFacilityOprHr;
 
-    /** 공용시설 내용 / 안내문 */
+    /** 편의시설 내용 / 안내문 */
     private String cmnFacilityCn;
 }

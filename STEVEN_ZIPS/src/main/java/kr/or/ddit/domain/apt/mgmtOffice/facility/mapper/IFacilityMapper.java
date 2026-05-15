@@ -24,7 +24,7 @@ public interface IFacilityMapper {
      * - keyword      : 시설명·위치 통합 검색어
      * - facilityTyCd : 시설유형코드
      * - useYn        : 사용여부
-     * - dongNo       : 동번호 (_COMMON_ 이면 공용 위치 시설만)
+     * - dongNo       : 동번호 (_COMMON_ 이면 편의 위치 시설만)
      */
     List<FacilityVO> selectFacilityList(Map<String, Object> paramMap);
 
@@ -85,6 +85,12 @@ public interface IFacilityMapper {
     List<Map<String, Object>> selectFacilityTypeList(
             Map<String, Object> paramMap
     );
+
+    /**
+     * 등록 화면 편의시설 유형 목록 조회
+     * - FACILITY_TY 공통코드에서 일반시설 코드를 제외한 목록
+     */
+    List<Map<String, Object>> selectPublicFacilityTypeList();
 
     /**
      * 시설번호 생성

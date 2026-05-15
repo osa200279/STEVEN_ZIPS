@@ -349,32 +349,27 @@
         var html = '<button type="button" class="pf-btn" id="pfCloseBtnFooter">닫기</button>';
 
         if (mode === "detail" && !_cfg.isAdmin) {
-            html += '<button type="button" class="pf-btn pf-btn-danger"  id="pfDeleteBtn">삭제</button>';
-            html += '<button type="button" class="pf-btn pf-btn-primary" id="pfToUpdateBtn">수정</button>';
+            html += '<button type="button" class="pf-btn pf-btn-primary" id="pfToUpdateBtn">수정</button>'; /* 수정 */
         }
+
         if (mode === "update" && !_cfg.isAdmin) {
-            html += '<button type="button" class="pf-btn" id="pfToDetailBtn">취소</button>';
-            html += '<button type="button" class="pf-btn pf-btn-primary" id="pfSaveBtn">저장</button>';
+            html += '<button type="button" class="pf-btn pf-btn-save" id="pfSaveBtn">저장</button>'; /* 저장 */
         }
+
         if (mode === "insert" && !_cfg.isAdmin) {
-            html += '<button type="button" class="pf-btn pf-btn-primary" id="pfSaveBtn">저장</button>';
+            html += '<button type="button" class="pf-btn pf-btn-save" id="pfSaveBtn">저장</button>'; /* 등록 */
         }
 
         footer.innerHTML = html;
 
         var c = _el("pfCloseBtnFooter");
-        var d = _el("pfDeleteBtn");
         var u = _el("pfToUpdateBtn");
-        var b = _el("pfToDetailBtn");
         var s = _el("pfSaveBtn");
 
-        if (c) c.addEventListener("click", close);
-        if (d) d.addEventListener("click", confirmDelete);
-        if (u) u.addEventListener("click", _switchToUpdate);
-        if (b) b.addEventListener("click", function () { open("detail", _itemNo); });
-        if (s) s.addEventListener("click", save);
+        if (c) c.addEventListener("click", close);        /* 닫기 */
+        if (u) u.addEventListener("click", _switchToUpdate); /* 수정전환 */
+        if (s) s.addEventListener("click", save);         /* 저장 */
     }
-
     /* ============================================================
        상세 → 수정 전환 (같은 모달)
     ============================================================ */

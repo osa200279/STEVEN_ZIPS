@@ -393,7 +393,6 @@
                 fitColumns(api);
                 if (api && typeof api.refreshCells === "function") api.refreshCells({ force:true });
             },
-
             /**
              * 탭 컬럼 변경
              * - 공용시설 / 공용 아이템 탭 전환 시 호출
@@ -412,6 +411,18 @@
             exportCsv:function (fileName) {
                 if (api && typeof api.exportDataAsCsv === "function") {
                     api.exportDataAsCsv({ fileName:fileName || "편의시설공용_목록.csv" });
+                }
+            },
+            getCurrentPage:function () {
+                if (api && typeof api.paginationGetCurrentPage === "function") {
+                    return api.paginationGetCurrentPage();
+                }
+                return 0;
+            },
+
+            goToPage:function (pageNo) {
+                if (api && typeof api.paginationGoToPage === "function") {
+                    api.paginationGoToPage(Number(pageNo || 0));
                 }
             }
         };

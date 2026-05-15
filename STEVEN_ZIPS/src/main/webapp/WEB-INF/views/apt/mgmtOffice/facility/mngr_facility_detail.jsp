@@ -252,28 +252,20 @@
                                 </div>
 
                                 <%-- 하단 연결 정보 3개 --%>
+                                <%-- 하단 관련 이력 --%>
                                 <div class="detail-link-row">
-                                    <div class="detail-section" id="detailContSection">
+                                    <div class="detail-section" id="detailHistorySection">
                                         <h3 class="detail-section-title">
-                                            <span class="material-symbols-rounded">description</span>최근 계약 정보
-                                            <a href="${pageContext.request.contextPath}/manager/facility/contractList" id="contMoreLink" style="margin-left:auto; font-size:11px; font-weight:800; color:var(--accent); text-decoration:none;">전체보기 →</a>
+                                            <span class="material-symbols-rounded">history</span>최근 점검·보수 이력
+                                            <a href="${pageContext.request.contextPath}/manager/checkHistory"
+                                               id="historyMoreLink"
+                                               style="margin-left:auto; font-size:11px; font-weight:800; color:var(--accent); text-decoration:none;">전체보기 →</a>
                                         </h3>
-                                        <div class="detail-summary"><div id="detailContBody"></div></div>
+                                        <div class="detail-summary">
+                                            <div id="detailHistoryBody"></div>
+                                        </div>
                                     </div>
-                                    <div class="detail-section" id="detailChkSection">
-                                        <h3 class="detail-section-title">
-                                            <span class="material-symbols-rounded">fact_check</span>최근 점검이력
-                                            <a href="${pageContext.request.contextPath}/manager/checkHistory" id="chkMoreLink" style="margin-left:auto; font-size:11px; font-weight:800; color:var(--accent); text-decoration:none;">전체보기 →</a>
-                                        </h3>
-                                        <div class="detail-summary"><div id="detailChkBody"></div></div>
-                                    </div>
-                                    <div class="detail-section" id="detailMeterSection">
-                                        <h3 class="detail-section-title">
-                                            <span class="material-symbols-rounded">electric_meter</span>검침 연결 정보
-                                            <a href="${pageContext.request.contextPath}/manager/checkHistory" style="margin-left:auto; font-size:11px; font-weight:800; color:var(--accent); text-decoration:none;">검침기록 보기 →</a>
-                                        </h3>
-                                        <div class="detail-summary"><div id="detailMeterBody"></div></div>
-                                    </div>
+
                                 </div>
 
                             </div>
@@ -762,101 +754,29 @@
             }).join("");
         }
 
-        /**
-         * 최근 계약 정보 렌더링 처리
-         * - 계약 정보가 없으면 빈 메시지 출력
-         * - 계약번호/계약명/종료일 표시
-         */
-        function renderLatestContract(contract) {
-            /* 최근 계약 영역 */
-            var area = document.getElementById("detailContBody");
 
-            /* 계약 정보 없음 처리 */
-            if (!contract) {
-                area.innerHTML = '<div class="ds-empty">등록된 계약이 없습니다.</div>';
+        function renderRelatedHistory(historyList) {
+            var area = document.getElementById("detailHistoryBody"); /* 이력 영역 */
+
+            if (!historyList || historyList.length === 0) {
+                area.innerHTML = '<div class="ds-empty">최근 점검·보수 이력이 없습니다.</div>';
                 return;
             }
 
-            /* 계약번호 표시값 */
-            var contNo = escapeHtml(contract.contNo || "-");
+            area.innerHTML = historyList.slice(0, 3).map(function (history) {
+                var historyNo = escapeHtml(history.facChkHstryNo || history.facChkHistNo || "-"); /* 이력번호 */
+                var status = escapeHtml(history.chkSttsNm || history.chkSttsCd || "-");           /* 상태 */
+                var content = escapeHtml(history.chkCn || "-");                                   /* 내용 */
+                var date = escapeHtml(formatDate(history.chkDt) || "-");                          /* 점검일 */
 
-            /* 계약명 표시값 */
-            var contNm = escapeHtml(contract.contNm || "-");
-
-            /* 계약 종료일 표시값 */
-            var contEndDt = escapeHtml(formatDate(contract.contEndDt) || "-");
-
-            /* 최근 계약 HTML 출력 처리 */
-            area.innerHTML = '<div class="ds-row">'
-                + '<span class="ds-no">' + contNo + '</span>'
-                + '<span class="ds-nm">' + contNm + '</span>'
-                + '<span class="ds-dt">' + contEndDt + '</span>'
-                + '</div>';
-        }
-
-        /**
-         * 최근 점검이력 렌더링 처리
-         * - 최대 3건까지 표시
-         * - 점검이력이 없으면 빈 메시지 출력
-         */
-        function renderRecentChecks(checks) {
-            /* 최근 점검 영역 */
-            var area = document.getElementById("detailChkBody");
-
-            /* 점검 목록 없음 처리 */
-            if (!checks || checks.length === 0) {
-                area.innerHTML = '<div class="ds-empty">점검이력이 없습니다.</div>';
-                return;
-            }
-
-            /* 최근 점검 3건 HTML 출력 처리 */
-            area.innerHTML = checks.slice(0, 3).map(function (check) {
-                /* 점검번호 표시값 */
-                var checkNo = escapeHtml(check.facChkHstryNo || "-");
-
-                /* 점검내용 표시값 */
-                var checkCn = escapeHtml(check.chkCn || "-");
-
-                /* 점검일자 표시값 */
-                var checkDt = escapeHtml(formatDate(check.chkDt) || "-");
-
-                /* 점검 행 HTML 반환값 */
                 return '<div class="ds-row">'
-                    + '<span class="ds-no">' + checkNo + '</span>'
-                    + '<span class="ds-nm">' + checkCn + '</span>'
-                    + '<span class="ds-dt">' + checkDt + '</span>'
+                    + '<span class="ds-no">' + historyNo + '</span>'
+                    + '<span class="ds-nm">[' + status + '] ' + content + '</span>'
+                    + '<span class="ds-dt">' + date + '</span>'
                     + '</div>';
             }).join("");
         }
 
-        /**
-         * 검침 연결 정보 렌더링 처리
-         * - 검침 연결 정보가 없으면 빈 메시지 출력
-         * - 작업번호/업체명 표시
-         */
-        function renderMeterInfo(meter) {
-            /* 검침 연결 영역 */
-            var area = document.getElementById("detailMeterBody");
-
-            /* 검침 정보 없음 처리 */
-            if (!meter) {
-                area.innerHTML = '<div class="ds-empty">검침 연결 정보가 없습니다.</div>';
-                return;
-            }
-
-            /* 검침번호 표시값 */
-            var meterNo = escapeHtml(meter.meterWrkNo || meter.meterHstryNo || "-");
-
-            /* 검침 업체명 표시값 */
-            var meterName = escapeHtml(meter.partnerNm || meter.providerNm || "검침 연결");
-
-            /* 검침 연결 HTML 출력 처리 */
-            area.innerHTML = '<div class="ds-row">'
-                + '<span class="ds-no">' + meterNo + '</span>'
-                + '<span class="ds-nm">' + meterName + '</span>'
-                + '<span class="ds-dt">-</span>'
-                + '</div>';
-        }
 
         /**
          * 시설 기본정보 렌더링 처리
@@ -1031,14 +951,8 @@
             /* 시설 사진 렌더링 처리 */
             renderDetailFiles(result.fileList || result.attachFileList || facility.fileList || []);
 
-            /* 최근 계약 렌더링 처리 */
-            renderLatestContract(result.latestContract || null);
-
-            /* 최근 점검이력 렌더링 처리 */
-            renderRecentChecks(result.recentCheckList || []);
-
-            /* 검침 연결 렌더링 처리 */
-            renderMeterInfo(result.meterInfo || null);
+            /* 최근 점검·보수 이력 렌더링 */
+            renderRelatedHistory(result.recentHistoryList || result.recentCheckList || []);
 
             /* 편의시설 안내 렌더링 처리 */
             renderPublicFacilityNotice(facility);
@@ -1085,6 +999,11 @@
         });
     })();
 </script>
+<%-- 사이드바/헤더 현재 위치 설정 --%>
+<c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/facility/page/${mgmtOfcNo}" />
+<c:set var="activeSidebarParent" value="시설·공사 관리" />
+<c:set var="activeSidebarCurrent" value="시설 상세" />
 
+<%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
 </body>
 </html>

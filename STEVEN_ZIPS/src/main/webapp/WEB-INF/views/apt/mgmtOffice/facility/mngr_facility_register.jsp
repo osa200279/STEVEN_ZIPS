@@ -62,7 +62,22 @@
         #facilityPage .file-preview-item img { width:100%; height:92px; object-fit:cover; display:block; }
         #facilityPage .file-preview-name { padding:6px 7px; font-size:11px; color:#4a5c4e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-top:1px solid var(--line); }
         #facilityPage .file-preview-empty { padding:13px; border:1px solid var(--line); border-radius:4px; background:#fff; font-size:12px; color:#9caa9e; }
+        /* 위치 선택 행 */
+        .location-select-row {display: grid; grid-template-columns: 1.1fr .75fr .75fr 1.1fr; gap: 10px;align-items: end;  }
+        /* 상세위치 행 */.location-detail-row {margin-top: 10px;}
+        /* 위치 선택 행 안의 도움말 숨김 */
+        .location-select-row .field-help {
+            display:none;
+        }
 
+        /* 위치 안내 문구 */
+        .location-help-row {
+            margin-top:5px;
+            font-size:11px;
+            color:#9caa9e;
+            line-height:1.5;
+        }
+        /* 모바일 대응 */@media (max-width: 900px) {.location-select-row {grid-template-columns: 1fr 1fr; }}
         @media (max-width:760px) {
             .facility-modal-cols { grid-template-columns:1fr; }
             .facility-modal-col-left { padding-right:0; border-right:none; border-bottom:1px solid var(--line,#d7dce2); padding-bottom:16px; margin-bottom:16px; }
@@ -78,12 +93,19 @@
     </script>
 </head>
 <body>
+
+<c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/facility/page/${mgmtOfcNo}" />
+<c:set var="activeSidebarParent" value="시설·공사 관리" />
+<c:set var="activeSidebarCurrent" value="시설 등록" />
+
 <div class="app-wrapper">
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
+
     <div class="main-wrap">
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
-        <main class="main-content">
-            <div class="office-page" id="facilityPage">
+        <%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
+
+        <main class="main-content">            <div class="office-page" id="facilityPage">
                 <div class="page-header">
                     <div class="page-title-block">
                         <h2>시설 등록</h2>
@@ -105,7 +127,7 @@
                                 <div class="notice-box">
                                     <span class="material-symbols-rounded">info</span>
                                     <div>시설 기본정보를 등록합니다. 헬스장·독서실 등 편의시설 운영정보는
-                                        <a href="${pageContext.request.contextPath}/manager/publicFacilityList" style="color:#2e5c38;font-weight:700;">편의시설 관리</a>에서 진행합니다.
+                                        <a href="${pageContext.request.contextPath}/manager/publicFacility/page/${mgmtOfcNo}" style="color:#2e5c38;font-weight:700;">편의시설 관리</a>에서 진행합니다.
                                     </div>
                                 </div>
                             </div>
@@ -141,13 +163,9 @@
                                                         <option value="ETC">기타시설</option>
                                                     </optgroup>
                                                     <optgroup label="편의시설">
-                                                        <option value="MEET">회의실</option>
-                                                        <option value="PARK">입주민주차장</option>
-                                                        <option value="PLAY">놀이시설</option>
-                                                        <option value="COMM">커뮤니티시설</option>
-                                                        <option value="GYM">피트니스센터</option>
-                                                        <option value="STUDY">독서실</option>
-                                                        <option value="PARKING">방문차량주차구역</option>
+                                                        <c:forEach var="type" items="${publicFacilityTypeList}">
+                                                            <option value="${type.code}">${type.codeNm}</option>
+                                                        </c:forEach>
                                                     </optgroup>
                                                 </select>
                                             </div>
@@ -175,8 +193,8 @@
                                             <span class="material-symbols-rounded">location_on</span>위치 정보
                                         </div>
 
-                                        <%-- 위치구분 + 동: 한 줄 --%>
-                                        <div class="form-row cols-2">
+                                        <%-- 위치구분 + 동 + 층 + 호: 한 줄 --%>
+                                        <div class="location-select-row">
                                             <div class="form-field">
                                                 <label class="field-label">위치구분 <span class="req">*</span></label>
                                                 <select class="form-select" id="locationType">
@@ -184,7 +202,6 @@
                                                     <option value="DONG">동 위치</option>
                                                     <option value="HOUSEHOLD">세대 위치</option>
                                                 </select>
-                                                <div class="field-help">구분에 따라 동·층·호가 활성화됩니다.</div>
                                             </div>
                                             <div class="form-field">
                                                 <label class="field-label">동</label>
@@ -197,28 +214,28 @@
                                                     </c:forEach>
                                                 </select>
                                             </div>
-                                        </div>
 
-                                        <%-- 층 + 호: 한 줄, 위치구분에 따라 disabled 제어 --%>
-                                        <div class="form-row cols-2">
                                             <div class="form-field">
                                                 <label class="field-label">층</label>
-                                                <select class="form-select" id="facilityFloor" disabled><option value="">층 선택</option></select>
+                                                <select class="form-select" id="facilityFloor" disabled>
+                                                    <option value="">선택</option>
+                                                </select>
                                             </div>
+
                                             <div class="form-field">
                                                 <label class="field-label">호</label>
-                                                <select class="form-select" id="facilityHo" disabled><option value="">호 선택</option></select>
+                                                <select class="form-select" id="facilityHo" disabled>
+                                                    <option value="">선택</option>
+                                                </select>
                                             </div>
                                         </div>
-
-                                        <%-- 상세위치: 한 줄 --%>
-                                        <div class="form-row cols-1">
-                                            <div class="form-field">
-                                                <label class="field-label">상세위치</label>
-                                                <input type="text" class="form-input" id="locCn" name="locCn" placeholder="예) 1층 로비, 옥상, 지하주차장 B2 A구역">
-                                            </div>
-                                        </div>
+                                        <div class="location-help-row">구분에 따라 동·층·호가 활성화됩니다.</div>
+                                    <%-- 상세위치: 다음 줄 전체 --%>
+                                    <div class="form-field location-detail-row">
+                                        <label class="field-label">상세위치</label>
+                                        <input type="text" class="form-input" id="locCn" name="locCn" placeholder="예) 1층 로비, 옥상, 지하주차장 B2 A구역">
                                     </div>
+                                   </div>
                                 </div>
 
                                 <%-- 우측 영역: 시설 사진 등록 및 연결 안내 --%>
@@ -395,7 +412,7 @@
                 if (!floor) return;
                 var option = document.createElement("option");
                 option.value = floor;
-                option.textContent = floor + "층";
+                option.textContent = floor;
                 floorSelect.appendChild(option);
             });
         }
@@ -418,7 +435,7 @@
                 if (!ho) return;
                 var option = document.createElement("option");
                 option.value = ho;
-                option.textContent = ho + "호";
+                option.textContent = ho;
                 hoSelect.appendChild(option);
             });
         }

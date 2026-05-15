@@ -222,6 +222,19 @@
     #pfItemModal .pf-btn-primary:hover { background:#1f4027; }
     #pfItemModal .pf-btn-danger  { background:#ef4444; border-color:#ef4444; color:#fff; }
     #pfItemModal .pf-btn-danger:hover { background:#dc2626; }
+
+
+    #pfItemModal .pf-btn.pf-btn-save {
+        background:#2563eb;
+        border-color:#2563eb;
+        color:#fff;
+    }
+
+    #pfItemModal .pf-btn.pf-btn-save:hover {
+        background:#1d4ed8;
+        border-color:#1d4ed8;
+        color:#fff;
+    }
 </style>
 
 <%-- ============================================================

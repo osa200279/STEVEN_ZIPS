@@ -252,7 +252,7 @@
                         <div class="list-header-right">
                             <%-- 편의시설 탭 전용 운영관리 이동 버튼 --%>
                             <button type="button" class="btn btn-secondary btn-sm" id="publicFacilityManageBtn" data-action="movePublicFacilityManage" style="display:none;">
-                                <span class="material-symbols-rounded">settings</span>공용시설 운영관리
+                                <span class="material-symbols-rounded">settings</span>편의시설 운영관리
                             </button>
                             <button type="button" class="btn btn-secondary btn-sm" data-action="exportExcel"><span class="material-symbols-rounded">download</span>엑셀 다운로드</button>
                             <sec:authorize access="!hasRole('ADMIN')">
@@ -367,6 +367,20 @@
          * - 사용자가 키를 입력할 때마다 바로 실행하지 않고 0.18초 뒤에 한 번만 실행하기 위해 사용한다.
          */
         var suggestTimer = null;
+
+        /*
+         * restoreState
+         * - 상세/수정 화면 이동 후 목록 복귀 시 복원 대상 상태
+         * - sessionStorage에서 읽어온 목록 상태 임시 보관
+         */
+        var restoreState = null;
+
+        /*
+         * STORAGE_KEY
+         * - 시설자산 목록 상태 저장 key
+         * - 관리사무소별 목록 상태 구분용 key
+         */
+        var STORAGE_KEY = "facilityListState:" + mgmtOfcNo;
 
         /*
          * PUBLIC_TYPE_CODES
@@ -502,6 +516,112 @@
            - list.jsp에서는 등록/수정/상세 화면을 직접 열지 않고 이동만 한다.
         ============================================================ */
 
+        /**
+         * 시설자산 목록 상태 저장
+         * - 상세/수정 화면 이동 전 현재 탭, 검색조건, 페이지 번호 저장
+         * - 브라우저 탭 단위 저장을 위한 sessionStorage 사용
+         */
+        function saveListState() {
+            /* 현재 페이지 번호 */
+            var currentPage = 0;
+
+            /* 현재 페이지 번호 조회 */
+            if (window.FacilityGrid && typeof FacilityGrid.getCurrentPage === "function") {
+                currentPage = FacilityGrid.getCurrentPage();
+            }
+
+            /* 저장 대상 목록 상태 */
+            var state = {
+                tab: currentTab,
+                page: currentPage,
+                facilityTyCd: el("filterFacTy").value,
+                useYn: el("filterUseYn").value,
+                dongNo: el("filterDong").value,
+                instlDt: el("filterInstlDt").value,
+                keyword: el("filterKeyword").value
+            };
+
+            /* 목록 상태 세션 저장 */
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        /**
+         * 시설자산 목록 상태 조회
+         * - sessionStorage에 저장된 이전 목록 상태 조회
+         * - JSON 파싱 실패 시 복원 제외
+         */
+        function readListState() {
+            /* 저장 상태 문자열 */
+            var savedText = sessionStorage.getItem(STORAGE_KEY);
+
+            /* 저장 상태 없음 */
+            if (!savedText) {
+                return null;
+            }
+
+            try {
+                /* 저장 상태 객체 변환 */
+                return JSON.parse(savedText);
+            } catch (e) {
+                /* 저장 상태 파싱 실패 로그 */
+                console.warn("시설자산 목록 상태 복원 실패", e);
+
+                return null;
+            }
+        }
+
+        /**
+         * 목록 상태 복원 가능 여부 확인
+         * - 상세/수정 화면에서 목록으로 돌아온 경우만 복원 대상
+         * - 사이드바/메뉴에서 시설자산 목록으로 새 진입한 경우 복원 제외
+         */
+        function canRestoreListState() {
+            /* 이전 페이지 주소 */
+            var referrer = document.referrer || "";
+
+            /* 상세 화면에서 돌아온 경우 */
+            var fromDetailPage = referrer.indexOf("/manager/facility/detail-page/") > -1;
+
+            /* 수정 화면에서 돌아온 경우 */
+            var fromUpdatePage = referrer.indexOf("/manager/facility/update-page/") > -1;
+
+            /* 상세/수정 복귀 여부 반환 */
+            return fromDetailPage || fromUpdatePage;
+        }
+
+        /**
+         * 시설자산 목록 상태 반영
+         * - 저장된 탭, 검색조건 화면 반영
+         * - 시설유형은 옵션 생성 후 따로 반영 필요
+         */
+        function applyListState(state) {
+            /* 복원 상태 없음 */
+            if (!state) return;
+
+            /* 탭 상태 반영 */
+            currentTab = state.tab === "PUBLIC" ? "PUBLIC" : "ALL";
+
+            /* 탭 버튼 활성 상태 반영 */
+            document.querySelectorAll(".facility-tab-btn").forEach(function (button) {
+                button.classList.toggle("active", button.dataset.kind === currentTab);
+            });
+
+            /* 편의시설 운영관리 버튼 표시 상태 반영 */
+            updatePublicManageButton();
+
+            /* 활성여부 조건 반영 */
+            el("filterUseYn").value = state.useYn || "";
+
+            /* 동 조건 반영 */
+            el("filterDong").value = state.dongNo || "";
+
+            /* 설치일자 조건 반영 */
+            el("filterInstlDt").value = state.instlDt || "";
+
+            /* 검색어 조건 반영 */
+            el("filterKeyword").value = state.keyword || "";
+        }
+
         /** 시설 등록 화면 이동 */
         function moveRegisterPage() {
             location.href = pageUrl("register/" + encodeURIComponent(mgmtOfcNo));
@@ -509,6 +629,10 @@
 
         /** 시설 상세 화면 이동 */
         function moveDetailPage(facilityNo) {
+            /* 목록 상태 저장 */
+            saveListState();
+
+            /* 상세 화면 이동 */
             location.href = pageUrl(
                 "detail-page/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facilityNo)
             );
@@ -516,11 +640,16 @@
 
         /** 시설 수정 화면 이동 */
         function moveUpdatePage(facilityNo) {
+            /* 관리자 수정 제한 */
             if (isAdmin) {
                 alertMessage("관리자는 조회만 가능합니다.");
                 return;
             }
 
+            /* 목록 상태 저장 */
+            saveListState();
+
+            /* 수정 화면 이동 */
             location.href = pageUrl(
                 "update-page/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facilityNo)
             );
@@ -572,18 +701,56 @@
             }
         }
 
-        /** 검색 조건 초기화 후 목록 재조회 */
-        function resetSearch() {
-            el("filterFacTy").value = "";
-            el("filterUseYn").value = "";
-            el("filterDong").value = "";
-            el("filterInstlDt").value = "";
-            el("filterKeyword").value = "";
+        function resetSearchForTabChange() {
+            el("filterFacTy").value = "";      /* 시설유형 */
+            el("filterUseYn").value = "";      /* 활성여부 */
+            el("filterDong").value = "";       /* 동 */
+            el("filterInstlDt").value = "";    /* 설치일자 */
+            el("filterKeyword").value = "";    /* 검색어 */
 
-            closeSuggestList();
-            FacilityGrid.reset();
-            loadFacilityList();
+            closeSuggestList();                /* 자동완성 */
+            FacilityGrid.reset();              /* 그리드 */
+            sessionStorage.removeItem(STORAGE_KEY); /* 저장상태 */
+            restoreState = null;               /* 복원상태 */
         }
+            /** 검색 조건 초기화 후 목록 재조회 */
+            function resetSearch() {
+                /* 시설유형 조건 초기화 */
+                el("filterFacTy").value = "";
+
+                /* 활성여부 조건 초기화 */
+                el("filterUseYn").value = "";
+
+                /* 동 조건 초기화 */
+                el("filterDong").value = "";
+
+                /* 설치일자 조건 초기화 */
+                el("filterInstlDt").value = "";
+
+                /* 검색어 조건 초기화 */
+                el("filterKeyword").value = "";
+
+                /* 저장 목록 상태 삭제 */
+                sessionStorage.removeItem(STORAGE_KEY);
+
+                /* 복원 상태 초기화 */
+                restoreState = null;
+
+                /* 자동완성 닫기 */
+                closeSuggestList();
+
+                /* 그리드 필터 초기화 */
+                FacilityGrid.reset();
+
+                /* 시설자산 목록 재조회 */
+                loadFacilityList();
+
+                /* 저장 목록 상태 삭제 */
+                sessionStorage.removeItem(STORAGE_KEY);
+
+                /* 복원 상태 초기화 */
+                restoreState = null;
+            }
 
         /**
          * 목록 상단 설명 문구 만들기
@@ -619,6 +786,8 @@
             return labels.join(" · ");
         }
 
+
+
         /* ============================================================
            5. 탭 / 시설유형 필터
            - 전체시설 탭과 편의시설 탭의 시설유형 select 구성이 다르다.
@@ -645,7 +814,8 @@
          * - 운영시간/예약/요금 등은 시설자산이 아니라 공용시설 운영관리에서 처리
          */
         function movePublicFacilityManagePage() {
-            location.href = contextPath + "/manager/publicFacilityList";
+            /* 편의시설 관리 화면 이동 */
+            location.href = contextPath+ "/manager/publicFacility/page/"+ encodeURIComponent(mgmtOfcNo);
         }
 
         /**
@@ -665,12 +835,10 @@
                 button.classList.toggle("active", button.dataset.kind === currentTab);
             });
 
-            el("filterFacTy").value = "";
-            closeSuggestList();
-            FacilityGrid.reset();
+            resetSearchForTabChange();             /* 검색조건 초기화 */
 
-            await loadFacilityTypeFilter();
-            await loadFacilityList();
+            await loadFacilityTypeFilter();        /* 유형필터 재생성 */
+            await loadFacilityList();              /* 목록 재조회 */
         }
 
         /**
@@ -785,10 +953,33 @@
 
             try {
                 var result = await getJson(url);
+                /* 조회 목록 반영 */
                 currentList = result.list || result.facilityList || [];
 
+                /* 그리드 행 데이터 반영 */
                 FacilityGrid.setRows(currentList);
+
+                /* 저장 페이지 복원 */
+                if (restoreState && restoreState.page != null) {
+                    /* 저장 페이지 번호 */
+                    var restorePageNo = Number(restoreState.page) || 0;
+
+                    /* 저장 페이지 이동 예약 */
+                    setTimeout(function () {
+                        /* 저장 페이지 이동 */
+                        if (window.FacilityGrid && typeof FacilityGrid.goToPage === "function") {
+                            FacilityGrid.goToPage(restorePageNo);
+                        }
+                    }, 0);
+
+                    /* 복원 상태 초기화 */
+                    restoreState = null;
+                }
+
+                /* 목록 헤더 갱신 */
                 updateListHeader(currentList.length);
+
+                /* 현황 카드 갱신 */
                 updateStats(currentList, result.stats || {});
             } catch (e) {
                 console.error(e);
@@ -1148,10 +1339,48 @@
         ============================================================ */
 
         document.addEventListener("DOMContentLoaded", function () {
+            /* 페이지 이동 유형 조회 */
+            var navigationEntry = performance.getEntriesByType("navigation")[0];
+
+            /* 새로고침 여부 */
+            var isReload = navigationEntry && navigationEntry.type === "reload";
+
+            /* 새로고침 시 저장 목록 상태 삭제 */
+            if (isReload) {
+                sessionStorage.removeItem(STORAGE_KEY);
+            }
+
+            /* 이전 목록 상태 조회 */
+            restoreState = readListState();
+
+            /* 목록 상태 복원 제외 처리 */
+            if (restoreState && !canRestoreListState()) {
+                /* 저장 목록 상태 삭제 */
+                sessionStorage.removeItem(STORAGE_KEY);
+
+                /* 복원 상태 초기화 */
+                restoreState = null;
+            }
+
+            /* 시설자산 그리드 초기화 */
             FacilityGrid.init("facilityGrid");
+
+            /* 화면 이벤트 연결 */
             bindEvents();
-            updatePublicManageButton();
-            loadFacilityTypeFilter().then(loadFacilityList);
+
+            /* 저장 탭/검색조건 반영 */
+            applyListState(restoreState);
+
+            /* 시설유형 필터 생성 후 목록 조회 */
+            loadFacilityTypeFilter().then(function () {
+                /* 시설유형 조건 반영 */
+                if (restoreState && restoreState.facilityTyCd) {
+                    el("filterFacTy").value = restoreState.facilityTyCd;
+                }
+
+                /* 시설자산 목록 조회 */
+                return loadFacilityList();
+            });
         });
 
     })();

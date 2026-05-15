@@ -140,6 +140,11 @@ public interface IFacilityService {
     List<Map<String, Object>> selectFacilityTypeList(Map<String, Object> paramMap);
 
     /**
+     * 등록 화면 편의시설 유형 목록 조회
+     */
+    List<Map<String, Object>> selectPublicFacilityTypeList();
+
+    /**
      * 시설 위치 동 목록 조회
      */
     List<FacilityLocationDTO> selectFacilityUnitList(String mgmtOfcNo);

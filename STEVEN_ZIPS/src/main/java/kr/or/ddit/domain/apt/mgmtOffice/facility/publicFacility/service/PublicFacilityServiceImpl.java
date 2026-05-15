@@ -18,8 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 
 /**
- * 공용시설 Service 구현체
- * - Controller 요청을 받아 공용시설 업무 흐름 처리
+ * 편의시설 Service 구현체
+ * - Controller 요청을 받아 편의시설 업무 흐름 처리
  * - FACILITY 신규 등록 / 기존 FACILITY 연결 / PUBLIC_FACILITY 등록 분기 담당
  * - ATTACH_FILE 직접 SQL은 기존 IAttachFileMapper를 사용
  */
@@ -28,7 +28,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PublicFacilityServiceImpl implements IPublicFacilityService {
 
-    /** 공용시설 Mapper */
+    /** 편의시설 Mapper */
     private final IPublicFacilityMapper publicFacilityMapper;
 
     /** 공통 첨부파일 Mapper */
@@ -43,7 +43,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
     /** 새 시설자산 등록 모드 */
     private static final String REGISTER_MODE_NEW = "NEW";
 
-    /** 공용 위치 구분값 */
+    /** 편의 위치 구분값 */
     private static final String LOCATION_TYPE_COMMON = "COMMON";
 
     /** 기본 사용여부 */
@@ -54,7 +54,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
 
     /**
      * 운영관리 미등록 시설자산 후보 목록 조회
-     * - 공용시설 등록 화면의 시설자산 선택 모달에서 사용
+     * - 편의시설 등록 화면의 시설자산 선택 모달에서 사용
      */
     @Override
     public List<FacilityVO> selectFacilityCandidateList(String mgmtOfcNo) {
@@ -63,7 +63,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
     }
 
     /**
-     * 공용시설 목록 조회
+     * 편의시설 목록 조회
      * - AG Grid rowData용 목록 조회
      */
     @Override
@@ -73,17 +73,17 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
     }
 
     /**
-     * 공용시설 상세 조회
+     * 편의시설 상세 조회
      * - 상세/수정 화면에서 공통으로 사용
      */
     @Override
     public PublicFacilityVO selectPublicFacilityDetail(Map<String, Object> paramMap) {
-        // 공용시설번호 + 관리사무소번호 기준 단건 조회
+        // 편의시설번호 + 관리사무소번호 기준 단건 조회
         return publicFacilityMapper.selectPublicFacilityDetail(paramMap);
     }
 
     /**
-     * 공용시설 등록 처리
+     * 편의시설 등록 처리
      * - EXISTING: 기존 시설자산 선택 후 PUBLIC_FACILITY만 등록
      * - NEW: FACILITY 먼저 등록 후 PUBLIC_FACILITY 등록
      * - 트랜잭션으로 묶어서 중간 실패 시 전체 rollback
@@ -106,10 +106,10 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
         // 동일 시설자산이 이미 운영관리 대상으로 등록되어 있는지 확인
         int existsCount = publicFacilityMapper.selectPublicFacilityExistsByFacilityNo(facilityNo);
         if (existsCount > 0) {
-            throw new IllegalStateException("이미 공용시설 운영관리에 등록된 시설자산입니다.");
+            throw new IllegalStateException("이미 편의시설 운영관리에 등록된 시설자산입니다.");
         }
 
-        // 신규 공용시설번호 생성
+        // 신규 편의시설번호 생성
         String cmnFacilityNo = publicFacilityMapper.selectNextCmnFacilityNo();
 
         // PUBLIC_FACILITY 등록 파라미터 생성
@@ -121,21 +121,21 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
         // 시설 사진 추가/삭제 처리
         processFacilityFiles(facilityNo, facilityFiles, formDTO.getDeleteFileUuids());
 
-        // 등록 후 Controller에 공용시설번호 반환
+        // 등록 후 Controller에 편의시설번호 반환
         return cmnFacilityNo;
     }
 
     /**
-     * 공용시설 수정 처리
+     * 편의시설 수정 처리
      * - PUBLIC_FACILITY 운영정보 수정
      * - 사진 처리 기준은 연결된 FACILITY.FILE_GROUP_NO
      */
     @Override
     @Transactional
     public void updatePublicFacility(PublicFacilityFormDTO formDTO, List<MultipartFile> facilityFiles) {
-        // 수정 대상 공용시설번호 확인
+        // 수정 대상 편의시설번호 확인
         if (!StringUtils.hasText(formDTO.getCmnFacilityNo())) {
-            throw new IllegalArgumentException("공용시설번호가 없습니다.");
+            throw new IllegalArgumentException("편의시설번호가 없습니다.");
         }
 
         // 수정 대상 상세 조회 조건 생성
@@ -146,7 +146,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
         // 기존 상세 조회로 연결된 facilityNo 확인
         PublicFacilityVO detail = publicFacilityMapper.selectPublicFacilityDetail(paramMap);
         if (detail == null) {
-            throw new IllegalArgumentException("수정할 공용시설을 찾을 수 없습니다.");
+            throw new IllegalArgumentException("수정할 편의시설을 찾을 수 없습니다.");
         }
 
         // 화면에서 facilityNo가 넘어오지 않아도 상세 조회값으로 보정
@@ -164,17 +164,17 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
     }
 
     /**
-     * 공용시설 삭제 처리
+     * 편의시설 삭제 처리
      * - 현재는 PUBLIC_FACILITY 연결 데이터 삭제 기준
      * - FACILITY와 ATTACH_FILE은 유지
      */
     @Override
     @Transactional
     public void deletePublicFacility(Map<String, Object> paramMap) {
-        // 삭제 대상 공용시설 존재 여부 확인
+        // 삭제 대상 편의시설 존재 여부 확인
         PublicFacilityVO detail = publicFacilityMapper.selectPublicFacilityDetail(paramMap);
         if (detail == null) {
-            throw new IllegalArgumentException("삭제할 공용시설을 찾을 수 없습니다.");
+            throw new IllegalArgumentException("삭제할 편의시설을 찾을 수 없습니다.");
         }
 
         // PUBLIC_FACILITY 삭제 처리
@@ -198,7 +198,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
             formDTO.setUseYn(DEFAULT_USE_YN);
         }
 
-        // 공용 위치 선택 시 동번호는 DB에 저장하지 않음
+        // 편의 위치 선택 시 동번호는 DB에 저장하지 않음
         if (LOCATION_TYPE_COMMON.equals(formDTO.getLocationType())) {
             formDTO.setDongNo(null);
         }
@@ -225,7 +225,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
 
     /**
      * 새 시설자산 등록
-     * - 공용시설 등록 화면의 NEW 탭에서 입력한 FACILITY 정보를 저장
+     * - 편의시설 등록 화면의 NEW 탭에서 입력한 FACILITY 정보를 저장
      */
     private String insertNewFacility(PublicFacilityFormDTO formDTO, String aptCmplexNo) {
         // 신규 시설번호 생성
@@ -259,11 +259,11 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
             String cmnFacilityNo
     ) {
         Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("cmnFacilityNo", cmnFacilityNo);                     // 공용시설번호
+        paramMap.put("cmnFacilityNo", cmnFacilityNo);                     // 편의시설번호
         paramMap.put("aptCmplexNo", aptCmplexNo);                         // 아파트단지번호
         paramMap.put("facilityNo", facilityNo);                           // 시설번호
-        paramMap.put("cmnFacilityNm", formDTO.getCmnFacilityNm());         // 공용시설명
-        paramMap.put("cmnFacilityCn", formDTO.getCmnFacilityCn());         // 공용시설 안내/내용
+        paramMap.put("cmnFacilityNm", formDTO.getCmnFacilityNm());         // 편의시설명
+        paramMap.put("cmnFacilityCn", formDTO.getCmnFacilityCn());         // 편의시설 안내/내용
         paramMap.put("cmnFacilityAmt", formDTO.getCmnFacilityAmt());       // 이용요금
         paramMap.put("cmnFacilityRsvYn", formDTO.getCmnFacilityRsvYn());   // 예약여부
         paramMap.put("cmnFacilityOprHr", formDTO.getCmnFacilityOprHr());   // 운영시간
@@ -272,7 +272,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
 
     /**
      * 시설 사진 처리
-     * - 공용시설 화면에서 업로드하더라도 저장 기준은 FACILITY.FILE_GROUP_NO
+     * - 편의시설 화면에서 업로드하더라도 저장 기준은 FACILITY.FILE_GROUP_NO
      * - ATTACH_FILE 조회/삭제/채번/insert는 기존 IAttachFileMapper 사용
      *
      * 처리 순서
@@ -379,7 +379,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
                 }
             }
         } catch (Exception e) {
-            log.error("공용시설 시설사진 삭제 오류 - fileGroupNo={}, deleteFileUuids={}", fileGroupNo, deleteFileUuids, e);
+            log.error("편의시설 시설사진 삭제 오류 - fileGroupNo={}, deleteFileUuids={}", fileGroupNo, deleteFileUuids, e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -468,7 +468,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
                 attachFileMapper.insertAttachFile(file);
             }
         } catch (Exception e) {
-            log.error("공용시설 시설사진 업로드 오류 - facilityNo={}", facilityVO.getFacilityNo(), e);
+            log.error("편의시설 시설사진 업로드 오류 - facilityNo={}", facilityVO.getFacilityNo(), e);
 
             // 이미 업로드된 Google Drive 파일 롤백
             if (drive != null && !uploadedGoogleIds.isEmpty()) {
@@ -476,7 +476,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
                     try {
                         googleDriveService.moveToTrash(drive, googleId);
                     } catch (Exception rollbackEx) {
-                        log.error("공용시설 시설사진 롤백 실패 googleId={}", googleId, rollbackEx);
+                        log.error("편의시설 시설사진 롤백 실패 googleId={}", googleId, rollbackEx);
                     }
                 }
             }
@@ -508,7 +508,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
     }
 
     /**
-     * 공용시설 동 옵션 조회
+     * 편의시설 동 옵션 조회
      * - 목록 필터의 동 select 구성용
      */
     @Override
@@ -518,7 +518,7 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
     }
 
     /**
-     * 공용시설 위치 옵션 조회
+     * 편의시설 위치 옵션 조회
      * - 동 선택값 기준 위치 select 구성용
      */
     @Override
@@ -528,12 +528,12 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
     }
 
     /**
-     * 공용시설명 자동완성 조회
-     * - 검색어 일부 입력 시 공용시설명 후보 조회
+     * 편의시설명 자동완성 조회
+     * - 검색어 일부 입력 시 편의시설명 후보 조회
      */
     @Override
     public List<String> selectPublicFacilityNameSuggestList(Map<String, Object> paramMap) {
-        // 관리사무소 번호와 검색어 기준 공용시설명 후보 조회
+        // 관리사무소 번호와 검색어 기준 편의시설명 후보 조회
         return publicFacilityMapper.selectPublicFacilityNameSuggestList(paramMap);
     }
 

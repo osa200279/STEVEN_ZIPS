@@ -125,6 +125,15 @@ public class FacilityServiceImpl implements IFacilityService {
     }
 
     /**
+     * 등록 화면 편의시설 유형 목록 조회
+     */
+    @Override
+    public List<Map<String, Object>> selectPublicFacilityTypeList() {
+        /* 편의시설 유형 목록 반환 */
+        return facilityMapper.selectPublicFacilityTypeList();
+    }
+
+    /**
      * 시설 등록
      *
      * 처리 순서

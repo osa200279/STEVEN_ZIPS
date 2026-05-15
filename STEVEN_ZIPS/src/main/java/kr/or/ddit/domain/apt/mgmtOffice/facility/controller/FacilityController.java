@@ -48,28 +48,7 @@ public class FacilityController {
     @Autowired
     private IManagerModelService managerModelService; // 관리사무소 공통 모델 Service
 
-    /**
-     * 시설 목록 화면 이동
-     */
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/page/{mgmtOfcNo}")
-    public String facilityListPage(
-            @PathVariable String mgmtOfcNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
-    ) {
-        /* 관리사무소 공통 화면 모델 */
-        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
 
-        /* 화면 API 기준 관리사무소 번호 */
-        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
-
-        /* 시설 필터/등록용 동 목록 */
-        model.addAttribute("dongList", facilityService.selectDongList(mgmtOfcNo));
-
-        /* 시설자산 목록 JSP */
-        return "apt/mgmtOffice/facility/mngr_facility_list";
-    }
 
     /**
      * 시설 등록 화면 이동
@@ -89,6 +68,9 @@ public class FacilityController {
 
         /* 시설 위치 선택용 동 목록 */
         model.addAttribute("dongList", facilityService.selectDongList(mgmtOfcNo));
+
+        /* 등록 화면 편의시설 유형 목록 */
+        model.addAttribute("publicFacilityTypeList", facilityService.selectPublicFacilityTypeList());
 
         /* 시설자산 등록 JSP */
         return "apt/mgmtOffice/facility/mngr_facility_register";

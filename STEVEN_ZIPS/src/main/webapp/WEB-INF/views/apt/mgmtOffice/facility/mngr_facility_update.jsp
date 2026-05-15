@@ -70,6 +70,13 @@
         #facilityPage .file-delete-check { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#7f1d1d; font-weight:700; }
         #facilityPage .file-delete-check input { width:14px; height:14px; }
 
+        /* 위치 선택 행: 등록 화면과 동일한 한 줄 선택 구조 */
+        #facilityPage .location-select-row { display:grid; grid-template-columns:1.1fr .75fr .75fr .75fr; gap:8px; align-items:end; }
+        #facilityPage .location-select-row .field-help { display:none; } /* 선택 행 도움말 숨김 */
+        #facilityPage .location-help-row { margin-top:5px; font-size:11px; color:#9caa9e; line-height:1.5; }
+        #facilityPage .location-detail-row { margin-top:10px; }
+        @media (max-width:900px) { #facilityPage .location-select-row { grid-template-columns:1fr 1fr; } }
+
         /* 이미지 클릭 확대 공통 */
         #facilityPage .js-image-preview { cursor:zoom-in; }
 
@@ -102,10 +109,22 @@
     </script>
 </head>
 <body>
+<c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/facility/page/${mgmtOfcNo}" />
+<c:set var="activeSidebarParent" value="시설·공사 관리" />
+<c:set var="activeSidebarCurrent" value="시설 수정" />
+<div id="imagePreviewModal" class="image-preview-modal">
+    <button type="button" id="imagePreviewCloseBtn" class="image-preview-close" aria-label="이미지 확대 닫기">×</button>
+    <img id="imagePreviewLargeImg" src="" alt="확대 이미지">
+</div>
+
+<%-- 이미지 확대 모달: 기존 등록 사진과 새 선택 사진 공통 확대 영역 --%>
+<script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
+
 <div class="app-wrapper">
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
     <div class="main-wrap">
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
+        <%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
         <main class="main-content">
             <div class="office-page" id="facilityPage">
                 <div class="page-header">
@@ -116,7 +135,7 @@
                 </div>
                 <div class="panel">
                     <div class="panel-header">
-                        <h3 class="panel-title"><span class="material-symbols-rounded">edit_square</span>시설 정보 수정</h3>
+                        <h3 class="panel-title"><span class="material-symbols-rounded">edit_square</span><span id="facilityPanelTitleText">시설 정보 수정</span></h3>
                     </div>
                     <form id="facilityForm" enctype="multipart/form-data">
                         <input type="hidden" id="facilityNo" name="facilityNo">
@@ -200,8 +219,8 @@
                                         <div class="form-section-title">
                                             <span class="material-symbols-rounded">location_on</span>위치 정보
                                         </div>
-                                        <%-- 위치구분 + 동: 한 줄 --%>
-                                        <div class="form-row cols-2">
+                                        <%-- 위치 선택 행: 등록 화면과 동일한 인라인 선택 구조 --%>
+                                        <div class="location-select-row">
                                             <div class="form-field">
                                                 <label class="field-label">위치구분 <span class="req">*</span></label>
                                                 <select class="form-select" id="locationType">
@@ -209,7 +228,6 @@
                                                     <option value="DONG">동 위치</option>
                                                     <option value="HOUSEHOLD">세대 위치</option>
                                                 </select>
-                                                <div class="field-help">구분에 따라 동·층·호가 활성화됩니다.</div>
                                             </div>
                                             <div class="form-field">
                                                 <label class="field-label">동</label>
@@ -222,33 +240,35 @@
                                                     </c:forEach>
                                                 </select>
                                             </div>
-                                        </div>
-                                        <%-- 층 + 호: 한 줄, disabled 방식 --%>
-                                        <div class="form-row cols-2">
                                             <div class="form-field">
                                                 <label class="field-label">층</label>
-                                                <select class="form-select" id="facilityFloor" disabled><option value="">층 선택</option></select>
+                                                <select class="form-select" id="facilityFloor" disabled>
+                                                    <option value="">선택</option>
+                                                </select>
                                             </div>
                                             <div class="form-field">
                                                 <label class="field-label">호</label>
-                                                <select class="form-select" id="facilityHo" disabled><option value="">호 선택</option></select>
+                                                <select class="form-select" id="facilityHo" disabled>
+                                                    <option value="">선택</option>
+                                                </select>
                                             </div>
                                         </div>
-                                        <div class="form-row cols-1">
-                                            <div class="form-field">
-                                                <label class="field-label">상세위치</label>
-                                                <input type="text" class="form-input" id="locCn" name="locCn">
-                                            </div>
+                                        <div class="location-help-row">구분에 따라 동·층·호가 활성화됩니다.</div>
+
+                                        <%-- 상세위치 행: 선택값 자동 반영 대상 --%>
+                                        <div class="form-field location-detail-row">
+                                            <label class="field-label">상세위치</label>
+                                            <input type="text" class="form-input" id="locCn" name="locCn">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="facility-modal-col-right">
                                     <div class="facility-col-label">사진 &amp; 연결</div>
                                     <div class="form-section" id="facilityFileEditSection">
-                                        <div class="form-section-title"><span class="material-symbols-rounded">image</span>시설 사진</div>
+                                        <div class="form-section-title"><span class="material-symbols-rounded">image</span><span id="facilityPhotoTitleText">시설 사진</span></div>
                                         <div class="file-upload-box">
                                             <div class="file-upload-title"><span class="material-symbols-rounded">upload_file</span>사진 추가</div>
-                                            <div class="file-upload-desc" style="margin-top:3px;margin-bottom:8px;">이미지 파일을 여러 장 선택할 수 있습니다.</div>
+                                            <div class="file-upload-desc" id="facilityPhotoDescText" style="margin-top:3px;margin-bottom:8px;">이미지 파일을 여러 장 선택할 수 있습니다.</div>
                                             <input type="file" class="form-input" id="facilityFiles" name="facilityFiles" accept="image/*" multiple>
                                             <div class="file-preview-list" id="facilityFilePreview" style="margin-top:8px;">
                                                 <div class="file-preview-empty">선택된 사진이 없습니다.</div>
@@ -258,14 +278,21 @@
                                             <div class="file-preview-empty">기존 등록 사진을 불러오는 중입니다.</div>
                                         </div>
                                     </div>
-                                    <div class="form-section" id="publicFacilityFileGuide" style="display:none;">
-                                        <div class="form-section-title"><span class="material-symbols-rounded">image</span>편의시설 사진</div>
+
+                                    <%-- 편의시설 운영정보 상태 영역: 편의시설인 경우에만 JS에서 표시 --%>
+                                    <div class="form-section" id="publicFacilityStatusSection" style="display:none;margin-top:14px;">
+                                        <div class="form-section-title">
+                                            <span class="material-symbols-rounded">meeting_room</span><span id="publicFacilityStatusSectionTitle">편의시설 운영정보</span>
+                                        </div>
                                         <div class="notice-box">
                                             <span class="material-symbols-rounded">info</span>
-                                            <div>편의시설 사진은 시설자산 관리에서 수정하지 않습니다.<br>
-                                                사진 등록·수정은 <a href="${pageContext.request.contextPath}/manager/publicFacilityList" style="color:#2e5c38;font-weight:700;">편의시설 관리</a>에서 진행하세요.</div>
+                                            <div>
+                                                <strong id="publicFacilityStatusTitle">편의시설 운영정보 확인</strong><br>
+                                                <span id="publicFacilityStatusDesc">편의시설 운영정보 등록 여부를 확인합니다.</span>
+                                            </div>
                                         </div>
                                     </div>
+
                                     <div class="form-section">
                                         <div class="form-section-title"><span class="material-symbols-rounded">link</span>연결 안내</div>
                                         <div class="notice-box">
@@ -289,14 +316,6 @@
         </main>
     </div>
 </div>
-
-<%-- 이미지 확대 모달: 기존 등록 사진과 새 선택 사진 공통 확대 영역 --%>
-<div id="imagePreviewModal" class="image-preview-modal">
-    <button type="button" id="imagePreviewCloseBtn" class="image-preview-close" aria-label="이미지 확대 닫기">×</button>
-    <img id="imagePreviewLargeImg" src="" alt="확대 이미지">
-</div>
-
-<script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
 <script>
     (function () {
         var config = window.facilityPageConfig || {};
@@ -306,7 +325,7 @@
         var isAdmin = config.isAdmin === true || config.isAdmin === "true";
 
         var currentFacility = null;
-        var isPublicFacility = false;
+        var isPublicFacility = false; // 편의시설 여부
         var correctionUnlocked = false;
 
         function getEl(id) { return document.getElementById(id); }
@@ -458,9 +477,67 @@
             return locCn.value;
         }
 
+        /**
+         * 시설 수정 문구 적용 처리
+         * - 일반 시설 수정 제목 표시
+         * - 편의시설 수정 제목 표시
+         * - 사진 영역 제목 및 안내문 표시
+         */
+        function applyFacilityDisplayText() {
+            var panelTitleText = getEl("facilityPanelTitleText"); // 상단 패널 제목
+            var photoTitleText = getEl("facilityPhotoTitleText"); // 사진 영역 제목
+            var photoDescText = getEl("facilityPhotoDescText"); // 사진 업로드 안내문
+
+            if (panelTitleText) {
+                panelTitleText.textContent = isPublicFacility ? "편의시설 정보 수정" : "시설 정보 수정"; // 패널 제목 문구
+            }
+
+            if (photoTitleText) {
+                photoTitleText.textContent = isPublicFacility ? "편의시설 사진" : "시설 사진"; // 사진 제목 문구
+            }
+
+            if (photoDescText) {
+                photoDescText.textContent = isPublicFacility
+                    ? "편의시설 화면에 노출될 사진을 여러 장 선택할 수 있습니다."
+                    : "시설자산 사진을 여러 장 선택할 수 있습니다."; // 사진 안내 문구
+            }
+        }
+
+        /**
+         * 편의시설 운영정보 상태 문구 적용 처리
+         * - 일반 시설 수정 시 상태 영역 숨김
+         * - 편의시설 운영정보 등록 시 등록 완료 문구 표시
+         * - 편의시설 운영정보 미등록 시 미등록 문구 표시
+         */
+        function applyPublicFacilityStatusText(facility) {
+            var section = getEl("publicFacilityStatusSection"); // 상태 영역
+            var title = getEl("publicFacilityStatusTitle"); // 상태 제목
+            var desc = getEl("publicFacilityStatusDesc"); // 상태 설명
+
+            if (!section || !title || !desc) return; // 요소 없음 방어
+
+            if (!isPublicFacility) {
+                section.style.display = "none"; // 일반시설 숨김
+                return;
+            }
+
+            section.style.display = ""; // 편의시설 표시
+
+            if (facility.cmnFacilityNo || facility.cmnFacilityNO) {
+                title.textContent = "편의시설 운영정보 등록 완료"; // 등록완료 제목
+                desc.textContent = "해당 시설자산에는 편의시설 운영정보가 등록되어 있습니다."; // 등록완료 문구
+                return;
+            }
+
+            title.textContent = "편의시설 운영정보 미등록"; // 미등록 제목
+            desc.textContent = "해당 시설자산에는 아직 편의시설 운영정보가 등록되어 있지 않습니다."; // 미등록 문구
+        }
+
         function fillFacilityForm(facility) {
             currentFacility = facility;
-            isPublicFacility = facility.facilityKind === "PUBLIC";
+            isPublicFacility = facility.facilityKind === "PUBLIC"; // 편의시설 여부 판단
+            applyFacilityDisplayText(); // 화면 문구 적용
+            applyPublicFacilityStatusText(facility); // 운영정보 상태 문구 적용
             getEl("facilityNo").value = facility.facilityNo || "";
             getEl("facilityNm").value = facility.facilityNm || "";
             getEl("facilityTyCd").value = facility.facilityTyCd || "";
@@ -471,13 +548,8 @@
             getEl("locationType").value = facility.dongNo ? "DONG" : "COMMON";
             setUseYnValue(facility.useYn || "Y");
             changeLocationTypeView();
-            applyPublicFacilityMode();
         }
 
-        function applyPublicFacilityMode() {
-            getEl("facilityFileEditSection").style.display = isPublicFacility ? "none" : "";
-            getEl("publicFacilityFileGuide").style.display = isPublicFacility ? "" : "none";
-        }
 
         /**
          * 파일 이미지 URL 반환
@@ -608,8 +680,8 @@
             /* 기존 등록 사진 목록 영역 */
             var area = getEl("facilityFileManageList");
 
-            /* 영역 없음 또는 편의시설 모드 방어 처리 */
-            if (!area || isPublicFacility) return;
+            /* 기존 등록 사진 목록 영역 없음 방어 처리 */
+            if (!area) return;
 
             /* 기존 등록 사진 없음 처리 */
             if (!files || files.length === 0) {

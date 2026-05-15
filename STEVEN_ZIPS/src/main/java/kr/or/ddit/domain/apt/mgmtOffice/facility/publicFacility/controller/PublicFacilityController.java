@@ -48,17 +48,6 @@ public class PublicFacilityController {
     @Autowired
     private IManagerModelService managerModelService;
 
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/list/{mgmtOfcNo}")
-    public String list(
-            @PathVariable String mgmtOfcNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
-    ) {
-        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
-        return "apt/mgmtOffice/facility/publicFacility/publicFacilityList";
-    }
 
     @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @GetMapping("/register/{mgmtOfcNo}")
@@ -69,6 +58,9 @@ public class PublicFacilityController {
     ) {
         managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+        List<FacilityVO> dongList = facilityService.selectDongList(mgmtOfcNo);
+        model.addAttribute("dongList", dongList == null ? Collections.emptyList() : dongList);
+        model.addAttribute("publicFacilityTypeList", facilityService.selectPublicFacilityTypeList());
         List<FacilityVO> facilityCandidateList = publicFacilityService.selectFacilityCandidateList(mgmtOfcNo);
         model.addAttribute("facilityCandidateList", facilityCandidateList);
         return "apt/mgmtOffice/facility/publicFacility/publicFacilityRegister";
@@ -229,18 +221,32 @@ public class PublicFacilityController {
             @PathVariable String mgmtOfcNo,
             @RequestBody Map<String, String> body
     ) {
+        Map<String, Object> result = new HashMap<>();
+
         String cmnFacilityNo = body == null ? null : body.get("cmnFacilityNo");
 
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("mgmtOfcNo", mgmtOfcNo);
-        paramMap.put("cmnFacilityNo", cmnFacilityNo);
+        if (cmnFacilityNo == null || cmnFacilityNo.trim().isEmpty()) {
+            result.put("success", false);
+            result.put("message", "삭제할 편의시설 번호가 없습니다.");
+            return result;
+        }
 
-        publicFacilityService.deletePublicFacility(paramMap);
+        try {
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("mgmtOfcNo", mgmtOfcNo);
+            paramMap.put("cmnFacilityNo", cmnFacilityNo);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("success", true);
-        result.put("message", "공용시설이 삭제되었습니다.");
-        return result;
+            publicFacilityService.deletePublicFacility(paramMap);
+
+            result.put("success", true);
+            result.put("message", "공용시설이 삭제되었습니다.");
+            return result;
+
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", " 이용 이력, 자원 정보(연결 데이터)가 있어 삭제할 수 없습니다.");
+            return result;
+        }
     }
 
     @ResponseBody

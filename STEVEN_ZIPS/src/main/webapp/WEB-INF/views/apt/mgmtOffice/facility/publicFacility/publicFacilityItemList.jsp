@@ -129,9 +129,9 @@
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
     <div class="main-wrap">
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
-        <c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/publicFacility/list/${mgmtOfcNo}" />
+        <c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/publicFacility/page/${mgmtOfcNo}" />
         <c:set var="activeSidebarParent" value="시설·공사 관리" />
-        <c:set var="activeSidebarCurrent" value="편의시설(공용) 관리" />
+        <c:set var="activeSidebarCurrent" value="편의시설 관리" />
         <%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
 
         <main class="main-content">

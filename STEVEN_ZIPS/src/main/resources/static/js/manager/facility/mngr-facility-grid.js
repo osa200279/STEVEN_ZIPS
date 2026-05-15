@@ -506,6 +506,50 @@ var FacilityGrid = (function () {
 
         return rows;
     }
+    /**
+     * 현재 페이지 번호 조회
+     * - AG Grid 현재 페이지 번호 반환
+     * - AG Grid 페이지 번호는 0부터 시작
+     */
+    function getCurrentPage() {
+        /* AG Grid API */
+        var api = gridTarget && gridTarget.__gridApi;
+
+        /* 페이지 조회 가능 여부 */
+        var canGetPage = api && typeof api.paginationGetCurrentPage === "function";
+
+        /* 페이지 조회 불가 처리 */
+        if (!canGetPage) {
+            return 0;
+        }
+
+        /* 현재 페이지 번호 반환 */
+        return api.paginationGetCurrentPage();
+    }
+
+    /**
+     * 지정 페이지 이동
+     * - 저장된 목록 페이지 복원용
+     * - AG Grid 페이지 번호는 0부터 시작
+     */
+    function goToPage(page) {
+        /* AG Grid API */
+        var api = gridTarget && gridTarget.__gridApi;
+
+        /* 페이지 이동 가능 여부 */
+        var canGoPage = api && typeof api.paginationGoToPage === "function";
+
+        /* 페이지 이동 불가 처리 */
+        if (!canGoPage) {
+            return;
+        }
+
+        /* 이동 페이지 번호 */
+        var pageNo = Number(page) || 0;
+
+        /* 지정 페이지 이동 */
+        api.paginationGoToPage(pageNo);
+    }
 
     /**
      * 외부 공개 함수 목록
@@ -516,7 +560,9 @@ var FacilityGrid = (function () {
         reset: reset,
         refreshSize: refreshSize,
         exportExcel: exportExcel,
-        getRows: getRows
+        getRows: getRows,
+        getCurrentPage: getCurrentPage,
+        goToPage: goToPage
     };
 
 })();
