@@ -1,23 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    loadMyVhcl();
-
-    initModal();
-
-    initFileUpload();
-
-    initRegister();
-
-    initDelete();
-
+const body = document.body;
 
 const memberType = body.dataset.memberType;
 
 const isResident = memberType === "ResidentVO";
 
 let isSubmitting = false;
-
-const body = document.body;
 
 const aptCmplexNo = body.dataset.aptCmplexNo;
 
@@ -36,6 +25,17 @@ const removeBtn = document.getElementById("removeBtn");
 const uploadContent = document.querySelector(".upload-content");
 
 const vhclModal = document.getElementById("vhclModal");
+
+    loadMyVhcl();
+
+    initModal();
+
+    initFileUpload();
+
+    initRegister();
+
+    initDelete();
+
 
 /* =========================
    modal

@@ -1,5 +1,7 @@
 package kr.or.ddit.domain.central.controller;
 
+import kr.or.ddit.common.file.service.IAttachFileService;
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.service.ICentralAptComplexService;
@@ -12,12 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Controller
 @RequestMapping("/main/apt")
 public class AptRetrieveController {
+
+    @Autowired
+    private IAttachFileService attachFileService;
 
     @Autowired
     private ICentralAptComplexService aptComplexService;
@@ -123,6 +129,21 @@ public class AptRetrieveController {
             return "common/errorAlert";
         }
 
+        List<AttachFileVO> fileList = attachFileService.setFileMetaData(aptInfo.getImgFileNo());
+        List<String> layoutGoogleIdList = new ArrayList<>();
+        List<String> complexGoogleIdList = new ArrayList<>();
+
+        for(AttachFileVO file : fileList){
+            if(file.getCat().equals("layoutImage")){
+                layoutGoogleIdList.add(file.getGoogleId());
+            }
+            if(file.getCat().equals("complexImage")){
+                complexGoogleIdList.add(file.getGoogleId());
+            }
+        }
+
+        model.addAttribute("layoutGoogleIdList",layoutGoogleIdList);
+        model.addAttribute("complexGoogleIdList",complexGoogleIdList);
         model.addAttribute("aptInfo", aptInfo);
 
         return "central/aptDetail";

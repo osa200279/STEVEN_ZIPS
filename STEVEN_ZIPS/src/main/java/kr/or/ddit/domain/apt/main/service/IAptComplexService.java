@@ -4,8 +4,6 @@ import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
-import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
-import kr.or.ddit.domain.apt.main.vo.ComplexEditDTO;
 
 import java.util.List;
 

@@ -257,7 +257,7 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
             if (layoutFiles != null) {
                 int sortOrder = 0;
 
-                String cat = "rprsntImage";
+                String cat = "layoutImage";
 
                 for (MultipartFile file : layoutFiles) {
 

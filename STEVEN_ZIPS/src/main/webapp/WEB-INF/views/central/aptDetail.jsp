@@ -183,6 +183,191 @@
             font-weight: 500;
             color: #f1f5f9;
         }
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 360px;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .slider-image {
+            position: absolute;
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        .slider-image.active {
+            opacity: 1;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 42px;
+            height: 42px;
+
+            border: none;
+            border-radius: 9999px;
+
+            background: rgba(0,0,0,0.45);
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .slider-btn:hover {
+            background: rgba(0,0,0,0.65);
+        }
+
+        .slider-btn.prev {
+            left: 12px;
+        }
+
+        .slider-btn.next {
+            right: 12px;
+        }
+
+        .image-modal {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0,0,0,0.82);
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            z-index: 99999;
+        }
+
+        .image-modal.active {
+            display: flex;
+        }
+
+        .image-modal img {
+            max-width: 90vw;
+            max-height: 88vh;
+
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+
+            object-fit: contain;
+
+            transition: cursor 0.2s ease;
+
+            cursor: zoom-in;
+
+            display: block;
+            will-change: transform;
+            user-select: none;
+        }
+        .image-modal img.zoomed {
+            cursor: grab;
+        }
+        .image-modal img.dragging {
+            cursor: grabbing;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 24px;
+            right: 28px;
+
+            color: white;
+            font-size: 42px;
+
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .modal-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+
+            width: 54px;
+            height: 54px;
+
+            border-radius: 9999px;
+            border: none;
+
+            background: rgba(255,255,255,0.15);
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+        }
+
+        .modal-nav-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .modal-prev {
+            left: 28px;
+        }
+
+        .modal-next {
+            right: 28px;
+        }
+
+        .slider-image {
+            cursor: zoom-in;
+        }
+        .modal-top-actions {
+            position: absolute;
+            top: 24px;
+            right: 28px;
+
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            z-index: 100001;
+        }
+
+        .modal-download-btn,
+        .modal-close-btn {
+            width: 46px;
+            height: 46px;
+
+            border-radius: 9999px;
+
+            background: rgba(255,255,255,0.16);
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            text-decoration: none;
+            cursor: pointer;
+
+            transition: background 0.2s;
+        }
+
+        .modal-download-btn:hover,
+        .modal-close-btn:hover {
+            background: rgba(255,255,255,0.28);
+        }
     </style>
 </head>
 
@@ -424,21 +609,50 @@
                 <span class="material-symbols-outlined text-primary">map</span>
                 단지배치도
             </div>
+                <div class="image-box">
 
-            <div class="image-box">
-                <c:choose>
-                    <c:when test="${not empty aptInfo.imgFileNo}">
-                        <img src="${pageContext.request.contextPath}/file/imageView.do?fileNo=${aptInfo.imgFileNo}"
-                             alt="단지배치도">
-                    </c:when>
-                    <c:otherwise>
-                        <div class="empty-image">
-                            <span class="material-symbols-outlined">map</span>
-                            <p class="text-sm font-bold">등록된 단지배치도가 없습니다.</p>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+                    <c:choose>
+
+                        <c:when test="${not empty layoutGoogleIdList}">
+
+                            <div class="slider-container" id="layoutSlider">
+
+                                <c:forEach items="${layoutGoogleIdList}" var="googleId" varStatus="status">
+
+                                    <img
+                                            src="/file/display/${googleId}"
+                                            class="slider-image ${status.first ? 'active' : ''}"
+                                            alt="단지배치도"
+                                    />
+
+                                </c:forEach>
+
+                                <c:if test="${fn:length(layoutGoogleIdList) > 1}">
+                                    <button type="button" class="slider-btn prev">
+                                        <span class="material-symbols-outlined">chevron_left</span>
+                                    </button>
+
+                                    <button type="button" class="slider-btn next">
+                                        <span class="material-symbols-outlined">chevron_right</span>
+                                    </button>
+                                </c:if>
+
+                            </div>
+
+                        </c:when>
+
+                        <c:otherwise>
+
+                            <div class="empty-image">
+                                <span class="material-symbols-outlined">map</span>
+                                <p class="text-sm font-bold">등록된 단지배치도가 없습니다.</p>
+                            </div>
+
+                        </c:otherwise>
+
+                    </c:choose>
+
+                </div>
         </div>
 
         <!-- 단지 사진 -->
@@ -449,28 +663,318 @@
             </div>
 
             <div class="image-box">
+
                 <c:choose>
-                    <c:when test="${not empty aptInfo.rprsntImgFileNo}">
-                        <img src="${pageContext.request.contextPath}/file/imageView.do?fileNo=${aptInfo.rprsntImgFileNo}"
-                             alt="단지사진">
+
+                    <c:when test="${not empty complexGoogleIdList}">
+
+                        <div class="slider-container" id="complexSlider">
+
+                            <c:forEach items="${complexGoogleIdList}" var="googleId" varStatus="status">
+
+                                <img
+                                        src="/file/display/${googleId}"
+                                        class="slider-image ${status.first ? 'active' : ''}"
+                                        alt="단지사진"
+                                />
+
+                            </c:forEach>
+
+                            <c:if test="${fn:length(complexGoogleIdList) > 1}">
+                                <button type="button" class="slider-btn prev">
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+
+                                <button type="button" class="slider-btn next">
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </c:if>
+
+                        </div>
+
                     </c:when>
+
                     <c:otherwise>
+
                         <div class="empty-image">
                             <span class="material-symbols-outlined">image</span>
                             <p class="text-sm font-bold">해당 이미지가 없습니다.</p>
                         </div>
+
                     </c:otherwise>
+
                 </c:choose>
+
             </div>
         </div>
 
     </section>
 
 </main>
+<div class="image-modal" id="imageModal">
 
+    <div class="modal-top-actions">
+
+        <a
+                id="modalDownloadBtn"
+                href="#"
+                class="modal-download-btn"
+                download
+        >
+        <span class="material-symbols-outlined">
+            download
+        </span>
+        </a>
+
+        <div class="modal-close-btn" id="modalClose">
+        <span class="material-symbols-outlined">
+            close
+        </span>
+        </div>
+
+    </div>
+
+    <button type="button" class="modal-nav-btn modal-prev" id="modalPrev">
+        <span class="material-symbols-outlined">chevron_left</span>
+    </button>
+
+    <img id="modalImage" src="" alt="확대 이미지">
+
+    <button type="button" class="modal-nav-btn modal-next" id="modalNext">
+        <span class="material-symbols-outlined">chevron_right</span>
+    </button>
+
+</div>
 <div class="ml-80">
     <%@ include file="/WEB-INF/views/include/main_footerLayout.jsp" %>
 </div>
+<script>
 
+    let scale = 1;
+    let translateX = 0;
+    let translateY = 0;
+
+    let isDragging = false;
+
+    let startX = 0;
+    let startY = 0;
+
+    let isZoomed = false;
+
+    let modalImages = [];
+    let modalIndex = 0;
+
+    const imageModal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+
+    function openModal(images, index) {
+
+        modalImages = images;
+        modalIndex = index;
+
+        setModalImage();
+
+        imageModal.classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+
+        imageModal.classList.remove("active");
+        document.body.style.overflow = "";
+    }
+
+    function showModalImage(index) {
+
+        if(index < 0) {
+            modalIndex = modalImages.length - 1;
+        } else if(index >= modalImages.length) {
+            modalIndex = 0;
+        } else {
+            modalIndex = index;
+        }
+
+        setModalImage();
+    }
+
+    document.getElementById("modalClose")
+        .addEventListener("click", closeModal);
+
+    document.getElementById("modalPrev")
+        .addEventListener("click", () => {
+            showModalImage(modalIndex - 1);
+        });
+
+    document.getElementById("modalNext")
+        .addEventListener("click", () => {
+            showModalImage(modalIndex + 1);
+        });
+
+    imageModal.addEventListener("click", (e) => {
+
+        if(e.target === imageModal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener("keydown", (e) => {
+
+        if(!imageModal.classList.contains("active")) {
+            return;
+        }
+
+        if(e.key === "Escape") {
+            closeModal();
+        }
+
+        if(e.key === "ArrowLeft") {
+            showModalImage(modalIndex - 1);
+        }
+
+        if(e.key === "ArrowRight") {
+            showModalImage(modalIndex + 1);
+        }
+    });
+
+    function initSlider(sliderId) {
+
+        const slider = document.getElementById(sliderId);
+
+        if (!slider) return;
+
+        const images = slider.querySelectorAll(".slider-image");
+
+        const imageSrcList = [...images].map(img => img.src);
+
+        images.forEach((img, idx) => {
+
+            img.addEventListener("click", () => {
+                openModal(imageSrcList, idx);
+            });
+        });
+
+        if (images.length <= 1) return;
+
+        const prevBtn = slider.querySelector(".prev");
+        const nextBtn = slider.querySelector(".next");
+
+        let currentIndex = 0;
+
+        function showImage(index) {
+
+            images.forEach(img => {
+                img.classList.remove("active");
+            });
+
+            images[index].classList.add("active");
+        }
+
+        nextBtn.addEventListener("click", () => {
+
+            currentIndex++;
+
+            if (currentIndex >= images.length) {
+                currentIndex = 0;
+            }
+
+            showImage(currentIndex);
+        });
+
+        prevBtn.addEventListener("click", () => {
+
+            currentIndex--;
+
+            if (currentIndex < 0) {
+                currentIndex = images.length - 1;
+            }
+
+            showImage(currentIndex);
+        });
+    }
+
+    initSlider("layoutSlider");
+    initSlider("complexSlider");
+
+    function setModalImage() {
+
+        const currentSrc = modalImages[modalIndex];
+
+        modalImage.src = currentSrc;
+
+        const googleId = currentSrc.split("/").pop();
+
+        document.getElementById("modalDownloadBtn").href =
+            "/file/download/" + googleId;
+
+        scale = 1;
+        translateX = 0;
+        translateY = 0;
+
+        isZoomed = false;
+
+        modalImage.classList.remove("zoomed");
+        modalImage.classList.remove("dragging");
+
+        applyImageTransform();
+    }
+    modalImage.addEventListener("dblclick", () => {
+
+        if(!isZoomed) {
+
+            isZoomed = true;
+
+            scale = 2;
+
+            modalImage.classList.add("zoomed");
+
+        } else {
+
+            isZoomed = false;
+
+            scale = 1;
+
+            translateX = 0;
+            translateY = 0;
+
+            modalImage.classList.remove("zoomed");
+        }
+
+        applyImageTransform();
+    });
+    function applyImageTransform() {
+
+        modalImage.style.transform =
+            `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+    modalImage.addEventListener("mousedown", (e) => {
+
+        if(!isZoomed) return;
+
+        isDragging = true;
+
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+
+        modalImage.classList.add("dragging");
+    });
+
+    document.addEventListener("mousemove", (e) => {
+
+        if(!isDragging) return;
+
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+
+        applyImageTransform();
+    });
+
+    document.addEventListener("mouseup", () => {
+
+        isDragging = false;
+
+        modalImage.classList.remove("dragging");
+    });
+
+</script>
 </body>
 </html>

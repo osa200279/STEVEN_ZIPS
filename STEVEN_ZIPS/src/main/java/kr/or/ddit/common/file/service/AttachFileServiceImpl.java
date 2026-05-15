@@ -131,6 +131,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
     /**
      * fileGroupNo 중에 여러 파일이 있을 경우 선택한 파일 삭제!
+     * 테이블과 구글 같이 삭제되는 메서드입니다!
      * @author 도선호
      * @param googleId
      */
@@ -150,7 +151,6 @@ public class AttachFileServiceImpl implements IAttachFileService {
     }
 
     /**
-     * mapper에는 있는데 service에는 없어서 추가했어요
      * attachFileGroupNo 얻는 메서드
      * @author 도선호
      * @return
@@ -161,7 +161,6 @@ public class AttachFileServiceImpl implements IAttachFileService {
     }
 
     /**
-     * mapper에는 있는데 service에는 없어서 추가했어요
      * 첨부파일정보 db에 insert 하는 메서드
      * @author 도선호
      * @param fileVO
@@ -170,5 +169,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
     public int insertAttachFile(AttachFileVO fileVO) {
         return attachFileMapper.insertAttachFile(fileVO);
     }
+
+
 
 }

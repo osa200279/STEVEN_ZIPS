@@ -232,12 +232,12 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">단지정보</span>
-                    <a href="${ctx}/manager/complex/editt/${mgmtOfcNo}"
+                    <a href="${ctx}/manager/complex/edit/${mgmtOfcNo}"
                        class="nav-item ${fn:contains(uri, '/manager/complex/edit') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 기본정보 관리</span>
                     </a>
-                    <a href="${ctx}/manager/complex/edit/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/comlex/buildingLayOut') ? 'active' : ''}">
+                    <a href="${ctx}/manager/complex/buildingLayOut/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/comlex/buildingLayOut') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 구조 관리</span>
                     </a>
