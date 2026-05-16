@@ -54,7 +54,7 @@
                  inner join APT_DETAIL HO on(RESI.HO_NO = HO.HO_NO)
                  inner join APT_UNIT DONG on(HO.DONG_NO = DONG.DONG_NO)
                  inner join APT_COMPLEX APT on(DONG.APT_CMPLEX_NO = APT.APT_CMPLEX_NO)
-        where M.USER_NO = #{user_no}
+        where M.USER_NO = #{user_no} and RESI.INOUC_CD = 'LIVE'
     </select>
 
 

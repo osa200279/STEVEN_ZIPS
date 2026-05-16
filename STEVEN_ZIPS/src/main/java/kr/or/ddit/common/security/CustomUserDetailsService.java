@@ -48,6 +48,7 @@ public class CustomUserDetailsService implements UserDetailsService{
 
 		if("ROLE_RESIDENT".equals(auth)){
 			ResidentVO resident = residentMapper.selectOneResidentInfo(member.getUserNo());
+			log.info("### resident : {} ", resident);
 
 			if(resident != null && InoutCd.LIVE == resident.getInoutCd()){	// LIVE(입주중) 상태이면 입주민으로 판단
 				log.info("## 입주중인 회원으로 확인됨! : {}", resident);
