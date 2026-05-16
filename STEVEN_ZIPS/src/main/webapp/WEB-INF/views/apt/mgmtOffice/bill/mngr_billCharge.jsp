@@ -394,7 +394,7 @@
       return;
     }
 
-    const url = contextPath + '/manager/bill/charge/api/preview/' + mgmtOfcNo
+    const url = contextPath + '/manager/bill/charge/preview/' + mgmtOfcNo
             + '?billYm=' + encodeURIComponent(billYm);
 
     try {
@@ -531,7 +531,7 @@
       dueDt: dueDt
     };
 
-    const url = contextPath + '/manager/bill/charge/api/execute/' + mgmtOfcNo;
+    const url = contextPath + '/manager/bill/charge/execute/' + mgmtOfcNo;
 
     try {
       const response = await fetch(url, {

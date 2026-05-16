@@ -171,7 +171,7 @@
                     <span class="sub-group-label">관리비</span>
                     <a href="${ctx}/manager/bill/charge${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">관리비 부과·연체</span>
+                        <span class="nav-text">관리비 부과</span>
                     </a>
                     <a href="${ctx}/manager/bill/issue${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/issue') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>

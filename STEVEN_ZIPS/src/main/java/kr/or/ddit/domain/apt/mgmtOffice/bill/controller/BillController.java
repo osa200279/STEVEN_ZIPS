@@ -64,10 +64,10 @@ public class BillController {
      * 관리비 부과 미리보기
      *
      * 요청 예시:
-     * GET /manager/bill/charge/api/preview/4?billYm=202605
+     * GET /manager/bill/charge/preview/4?billYm=202605
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/preview/{mgmtOfcNo}")
+    @GetMapping("/bill/charge/preview/{mgmtOfcNo}")
     public ResponseEntity<Map<String, Object>> previewBillCharge(
             @PathVariable String mgmtOfcNo,
             @RequestParam String billYm,
@@ -103,7 +103,7 @@ public class BillController {
      * 관리비 부과 실행
      *
      * 요청 예시:
-     * POST /manager/bill/charge/api/execute/4
+     * POST /manager/bill/charge/execute/4
      *
      * 요청 JSON:
      * {
@@ -112,7 +112,7 @@ public class BillController {
      * }
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @PostMapping("/execute/{mgmtOfcNo}")
+    @PostMapping("/bill/charge/execute/{mgmtOfcNo}")
     public ResponseEntity<Map<String, Object>> executeBillCharge(
             @PathVariable String mgmtOfcNo,
             @RequestBody Map<String, String> body,
