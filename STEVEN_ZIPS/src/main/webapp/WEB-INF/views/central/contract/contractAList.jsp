@@ -294,18 +294,6 @@
                            class="px-5 py-2 bg-white border border-slate-200 text-sm text-slate-600 rounded-full hover:bg-slate-50 transition-colors">
                             공고 보기
                         </a>
-                        <c:if test="${aplct.APLCT_STTS_CD == 'SUBMIT'}">
-                            <button onclick="cancelAplct('${aplct.APLCT_NO}')"
-                                    class="px-5 py-2 bg-red-500 text-white rounded-full text-sm font-semibold hover:bg-red-600 transition-colors">
-                                신청 취소
-                            </button>
-                        </c:if>
-                        <c:if test="${aplct.APLCT_STTS_CD == 'WINNER' || aplct.APLCT_STTS_CD == 'SUPPLEMENT'}">
-                            <a href="/contract/submitDoc.do?aplctNo=${aplct.APLCT_NO}"
-                               class="px-5 py-2 bg-[#004830] text-white rounded-full text-sm font-semibold hover:bg-[#226046] transition-colors">
-                                서류 제출
-                            </a>
-                        </c:if>
                     </div>
                 </div>
             </c:forEach>
