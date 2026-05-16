@@ -328,6 +328,8 @@
 </main>
 
 <script>
+
+    // 청약 신청 취소(fetch api)
     function cancelAplct(aplctNo) {
         Swal.fire({
             icon: 'warning', title: '신청을 취소하시겠습니까?', text: '취소 후 복구가 불가능합니다.',

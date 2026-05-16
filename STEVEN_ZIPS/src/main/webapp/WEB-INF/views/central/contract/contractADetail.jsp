@@ -417,6 +417,8 @@
 </main>
 
 <script>
+
+    // 제출 서류 업로드(fetch api)
     function submitDoc(submitDocTyCd){
         const fileInput = document.querySelector('#file_' + submitDocTyCd);
         if (fileInput.files.length === 0) {
@@ -451,6 +453,7 @@
             });
     }
 
+    // 청약 신청 취소(fetch api)
     function cancelAplct(aplctNo) {
         const csrfHeader = document.getElementById('csrfHeader').value;
         const csrfToken = document.getElementById('csrfToken').value;
