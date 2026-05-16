@@ -229,6 +229,8 @@
         </div>
     </div>
 
+
+
     <!-- 공고정보 + 신청자정보 2단 -->
     <div class="grid grid-cols-2 gap-6 mb-6">
 
@@ -271,11 +273,14 @@
                 </c:choose>
             </div>
 
-                <%-- 반려사유 (신청 전체) --%>
+                <%-- 보완 사유: SUPPLEMENT이고 사유 있을 때만 --%>
             <c:if test="${status == 'SUPPLEMENT' && not empty detail.RJCT_RSN_CN}">
-                <div class="px-7 py-3 bg-red-50 border-b border-red-100 flex items-start gap-2">
-                    <span class="material-symbols-outlined text-[14px] text-red-400 mt-0.5">error</span>
-                    <p class="text-sm text-red-400">${detail.RJCT_RSN_CN}</p>
+                <div class="px-7 py-4 bg-orange-50 border-b border-orange-100 flex items-start gap-2">
+                    <span class="material-symbols-outlined text-[16px] text-orange-400 mt-0.5">error</span>
+                    <div>
+                        <p class="text-xs font-bold text-orange-400 mb-0.5">보완 사유</p>
+                        <p class="text-sm text-orange-400 leading-relaxed">${detail.RJCT_RSN_CN}</p>
+                    </div>
                 </div>
             </c:if>
 
@@ -364,7 +369,7 @@
     <!-- SUBMIT일 때 취소버튼 단독 -->
     <c:if test="${status == 'SUBMIT'}">
         <div class="flex justify-end mb-6">
-            <button onclick="cancelAplct('260514_t_700_01')"
+            <button onclick="cancelAplct('${detail.APLCT_NO}')"
                     class="flex items-center gap-2 px-7 py-3 bg-red-500 text-white rounded-full text-sm font-bold hover:bg-red-600 transition-colors">
                 <span class="material-symbols-outlined text-[17px]">close</span>신청 취소
             </button>
