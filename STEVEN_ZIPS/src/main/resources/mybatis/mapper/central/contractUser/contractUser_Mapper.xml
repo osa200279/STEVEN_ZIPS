@@ -15,7 +15,7 @@
     <!-- 제출서류 insert -->
     <insert id="insertContractDoc" parameterType="kr.or.ddit.domain.central.vo.ContractUserVO">
         <selectKey keyProperty="sbmsnDocNo" resultType="string" order="BEFORE">
-            SELECT seq_sbmsn_doc.nextval FROM dual
+            SELECT seq_sbmsn_doc.nextval FROM dual              /*kr.or.ddit.domain.central.mapper.IContractUserMapper.insertContractDoc*/
         </selectKey>
         INSERT INTO sbmsn_doc (
         sbmsn_doc_no
@@ -209,7 +209,7 @@
 
     <!--제출 서류 조회-->
     <select id="selectSbmsnDocList" resultType="map" parameterType="string">
-        SELECT sbmsn_doc_no
+        SELECT sbmsn_doc_no             /*kr.or.ddit.domain.central.mapper.IContractUserMapper.selectSbmsnDocList*/
               ,sbmsn_doc_ty_cd
               ,reg_dt
               ,atch_file_id
@@ -221,7 +221,7 @@
 
     <!--청약 신청 중복 조회-->
     <select id="selectAplctcount" resultType="int" parameterType="map">
-        SELECT count(*)
+        SELECT count(*)             /*kr.or.ddit.domain.central.mapper.IContractUserMapper.selectAplctcount*/
         FROM aplct
         WHERE user_no = #{userNo}
         AND ann_no = #{annNo}
@@ -229,7 +229,7 @@
 
     <!--청약 신청 상세조회-->
     <select id="selectAplctDocList" resultType="map" parameterType="string">
-        SELECT rcd.sbmsn_doc_ty_cd
+        SELECT rcd.sbmsn_doc_ty_cd      /*kr.or.ddit.domain.central.mapper.IContractUserMapper.selectAplctDocList*/
              , sd.sbmsn_doc_no
              , sd.atch_file_id
              , sd.reg_dt
