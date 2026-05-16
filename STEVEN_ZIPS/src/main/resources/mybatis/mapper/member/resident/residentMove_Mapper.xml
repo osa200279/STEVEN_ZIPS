@@ -3,7 +3,7 @@
 <mapper namespace="kr.or.ddit.domain.member.resident.mapper.IResidentMoveMapper">
 
     <select id="selectHoList" parameterType="map" resultType="map">
-        SELECT ad.ho_no
+        SELECT ad.ho_no             /*kr.or.ddit.domain.member.resident.mapper.IResidentMoveMapper.selectHoList*/
              , ad.ho
              , au.dong_nm
         FROM hshld_head hh
@@ -15,7 +15,7 @@
 
     <!-- aptCmplexNo로 MNG_NO 조회 -->
     <select id="selectMngNo" parameterType="string" resultType="string">
-        SELECT m.user_no
+        SELECT m.user_no            /*kr.or.ddit.domain.member.resident.mapper.IResidentMoveMapper.selectMngNo*/
         FROM manager m
                  INNER JOIN mgmt_office mo ON m.mgmt_ofc_no = mo.mgmt_ofc_no
         WHERE mo.apt_cmplex_no = #{aptCmplexNo}
@@ -28,7 +28,7 @@
         <selectKey keyProperty="rqstNo" resultType="string" order="BEFORE">
             SELECT SEQ_RESIDENT_RQST.nextval FROM dual
         </selectKey>
-        INSERT INTO resident_rqst (
+        INSERT INTO resident_rqst (         /*kr.or.ddit.domain.member.resident.mapper.IResidentMoveMapper.inserMoveOut*/
         rqst_no
         , apt_cmplex_no
         , mvin_prd_dt
@@ -58,7 +58,7 @@
         <selectKey keyProperty="rqstNo" resultType="string" order="BEFORE">
             SELECT SEQ_RESIDENT_RQST.nextval FROM dual
         </selectKey>
-        INSERT INTO resident_rqst (
+        INSERT INTO resident_rqst (                 /*kr.or.ddit.domain.member.resident.mapper.IResidentMoveMapper.insertMoveIn*/
         rqst_no
         , apt_cmplex_no
         , mvin_prd_dt
@@ -83,7 +83,7 @@
 
     <!-- HSHLD_HEAD INOUT_CD UPDATE -->
     <update id="updateInoutCd" parameterType="map">
-        UPDATE hshld_head
+        UPDATE hshld_head           /*kr.or.ddit.domain.member.resident.mapper.IResidentMoveMapper.updateInoutCd*/
         SET inout_cd = #{inoutCd}
           , move_out_dt = SYSDATE
         WHERE user_no = #{userNo}
