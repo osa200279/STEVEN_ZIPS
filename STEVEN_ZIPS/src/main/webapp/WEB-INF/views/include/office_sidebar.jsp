@@ -168,20 +168,6 @@
             </summary>
             <div class="submenu-wrap">
                 <div class="submenu-inner">
-                    <span class="sub-group-label">관리비</span>
-                    <a href="${ctx}/manager/bill/charge${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">관리비 부과</span>
-                    </a>
-                    <a href="${ctx}/manager/bill/issue${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/issue') ? 'active' : ''}">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">고지서 등록</span>
-                    </a>
-                    <a href="${ctx}/manager/bill/item-summary${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/item-summary') ? 'active' : ''}">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">관리비 항목·집계</span>
-                    </a>
-
                     <span class="sub-group-label">지출·예산</span>
                     <a href="${ctx}/manager/bill/expense${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/expense') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
@@ -194,6 +180,19 @@
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">지출 통계</span>
+                    </a>
+                    <span class="sub-group-label">관리비</span>
+                    <a href="${ctx}/manager/bill/charge${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">관리비 부과</span>
+                    </a>
+                    <a href="${ctx}/manager/bill/issue${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/issue') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">고지서 등록</span>
+                    </a>
+                    <a href="${ctx}/manager/bill/item-summary${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/item-summary') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">관리비 항목·집계</span>
                     </a>
                 </div>
             </div>
