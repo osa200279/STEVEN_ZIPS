@@ -62,7 +62,7 @@ const Applicant = () => {
             field: 'aplctSttsCd', headerName: '상태',
             valueFormatter: (p) => {
                 if (p.value === 'SUBMIT') return '청약 신청';
-                if (p.value === 'WINNER') return '서류 제출 요청';
+                if (p.value === 'WINNER') return '서류 제출 대기';
                 if (p.value === 'INSPECTION') return '서류 검토 필요';
                 if (p.value === 'LOSER') return '반려';
                 if (p.value === 'CANCEL') return '취소';
@@ -73,7 +73,7 @@ const Applicant = () => {
             // 필터가 작동할 때 참조할 값을 정의 (화면에 보이는 값 기준)
             filterValueGetter: (p) => {
                 if (p.data.aplctSttsCd === 'SUBMIT') return '청약 신청';
-                if (p.data.aplctSttsCd === 'WINNER') return '서류 제출 요청';
+                if (p.data.aplctSttsCd === 'WINNER') return '서류 제출 대기';
                 if (p.data.aplctSttsCd === 'INSPECTION') return '서류 검토 필요';
                 if (p.data.aplctSttsCd === 'LOSER') return '반려';
                 if (p.data.aplctSttsCd === 'CANCEL') return '취소';
@@ -83,7 +83,7 @@ const Applicant = () => {
             },
             cellRenderer: (p) => {
                 if (p.value === 'SUBMIT') return <span className="stts-apply">청약 신청</span>;
-                if (p.value === 'WINNER') return <span className="stts-apply">서류 제출 요청</span>;
+                if (p.value === 'WINNER') return <span className="stts-apply">서류 제출 대기</span>;
                 if (p.value === 'INSPECTION') return <span className="stts">서류 검토 필요</span>;
                 if (p.value === 'LOSER') return <span className="stts-reject">반려</span>;
                 if (p.value === 'CANCEL') return <span className="stts-reject">취소</span>;
@@ -296,7 +296,7 @@ const Applicant = () => {
             rjctRsnCn: reason // VO에 추가하신 변수명으로 매칭하세요!
         }));
 
-        updSttsRequest(aplctMapList, ag);
+        updSttsRequest(finalMapList, ag);
     }
 
     // 백엔드 업데이트 요청
