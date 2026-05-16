@@ -201,7 +201,8 @@
 
         <div class="section-divider"></div>
 
-        <details class="nav-group">
+            <details class="nav-group" ${fn:contains(uri, '/mgmtOffice/mngrResidentNotice') ? 'open="open"' : ''}>
+<%--        <details class="nav-group">--%>
             <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">campaign</span>
                 <span class="cat-label">소통·행정 관리</span>
@@ -216,7 +217,9 @@
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">1:1 채팅 문의</span></a>
 
                     <span class="sub-group-label">게시판</span>
-                    <a href="/mgmtOffice/mngrResidentNotice/${mgmtOfcNo}" class="nav-item" aria-disabled="true"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">공지사항 관리</span></a>
+                    <a href="/mgmtOffice/mngrResidentNotice/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/mgmtOffice/mngrResidentNotice') ? 'active' : ''}">
+<%--                    <a href="/mgmtOffice/mngrResidentNotice/${mgmtOfcNo}" class="nav-item" aria-disabled="true">--%>
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">공지사항 관리</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">생활안내·운영정보</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">긴급 SMS 발송</span></a>
 

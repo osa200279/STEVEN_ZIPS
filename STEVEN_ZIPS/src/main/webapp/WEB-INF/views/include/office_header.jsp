@@ -1,93 +1,93 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<c:set var="uri" value="${pageContext.request.requestURI}" />
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
-<c:set var="mgmtPath" value="${not empty mgmtOfcNo ? '/' : ''}${mgmtOfcNo}" />
+<c:set var="uri" value="${pageContext.request.requestURI}"/>
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
+<c:set var="mgmtPath" value="${not empty mgmtOfcNo ? '/' : ''}${mgmtOfcNo}"/>
 
-<c:set var="bcParent" value="관리사무소" />
-<c:set var="bcCurrent" value="대시보드" />
+<%--<c:set var="bcParent" value="관리사무소" />--%>
+<%--<c:set var="bcCurrent" value="대시보드" />--%>
 
-<c:choose>
-    <c:when test="${fn:contains(uri, '/manager/employee/account')}">
-        <c:set var="bcParent" value="직원관리" />
-        <c:set var="bcCurrent" value="직원계정관리" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/vacation')}">
-        <c:set var="bcParent" value="직원관리" />
-        <c:set var="bcCurrent" value="휴가일정" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/resident/list')}">
-        <c:set var="bcParent" value="입주민관리" />
-        <c:set var="bcCurrent" value="입주민목록" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/resident/auth')}">
-        <c:set var="bcParent" value="입주민관리" />
-        <c:set var="bcCurrent" value="회원권한변경" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/resident/moveList')}">
-        <c:set var="bcParent" value="입주민관리" />
-        <c:set var="bcCurrent" value="입주/퇴거관리" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/resident/auto')}">
-        <c:set var="bcParent" value="입주민관리" />
-        <c:set var="bcCurrent" value="입주민차량관리" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/visit/auto')}">
-        <c:set var="bcParent" value="입주민관리" />
-        <c:set var="bcCurrent" value="방문차량관리" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/facilityList')}">
-        <c:set var="bcParent" value="시설관리" />
-        <c:set var="bcCurrent" value="시설목록" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/publicFacilityList')}">
-        <c:set var="bcParent" value="시설관리" />
-        <c:set var="bcCurrent" value="공용시설관리" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/meterReading')}">
-        <c:set var="bcParent" value="시설관리" />
-        <c:set var="bcCurrent" value="검침기록관리" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/checkHistory')}">
-        <c:set var="bcParent" value="시설관리" />
-        <c:set var="bcCurrent" value="유지보수점검이력" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/facility/workCalendar')}">
-        <c:set var="bcParent" value="시설관리" />
-        <c:set var="bcCurrent" value="공사점검일정" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/facility/partnerList')}">
-        <c:set var="bcParent" value="시설관리" />
-        <c:set var="bcCurrent" value="협력업체관리" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/bill/item-summary')}">
-        <c:set var="bcParent" value="회계운영관리" />
-        <c:set var="bcCurrent" value="관리비항목집계" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/bill/issue')}">
-        <c:set var="bcParent" value="회계운영관리" />
-        <c:set var="bcCurrent" value="고지서등록" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/bill/charge')}">
-        <c:set var="bcParent" value="회계운영관리" />
-        <c:set var="bcCurrent" value="관리비부과" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/bill/expense')}">
-        <c:set var="bcParent" value="회계운영관리" />
-        <c:set var="bcCurrent" value="지출내역관리" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/account/arrears')}">
-        <c:set var="bcParent" value="회계운영관리" />
-        <c:set var="bcCurrent" value="연체내역관리" />
-    </c:when>
-    <c:when test="${fn:contains(uri, '/manager/complex/edit')}">
-        <c:set var="bcParent" value="단지운영관리" />
-        <c:set var="bcCurrent" value="단지정보수정" />
-    </c:when>
-</c:choose>
+<%--<c:choose>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/employee/account')}">--%>
+<%--        <c:set var="bcParent" value="직원관리"/>--%>
+<%--        <c:set var="bcCurrent" value="직원계정관리"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/vacation')}">--%>
+<%--        <c:set var="bcParent" value="직원관리"/>--%>
+<%--        <c:set var="bcCurrent" value="휴가일정"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/resident/list')}">--%>
+<%--        <c:set var="bcParent" value="입주민관리"/>--%>
+<%--        <c:set var="bcCurrent" value="입주민목록"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/resident/auth')}">--%>
+<%--        <c:set var="bcParent" value="입주민관리"/>--%>
+<%--        <c:set var="bcCurrent" value="회원권한변경"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/resident/moveList')}">--%>
+<%--        <c:set var="bcParent" value="입주민관리"/>--%>
+<%--        <c:set var="bcCurrent" value="입주/퇴거관리"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/resident/auto')}">--%>
+<%--        <c:set var="bcParent" value="입주민관리"/>--%>
+<%--        <c:set var="bcCurrent" value="입주민차량관리"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/visit/auto')}">--%>
+<%--        <c:set var="bcParent" value="입주민관리"/>--%>
+<%--        <c:set var="bcCurrent" value="방문차량관리"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/facilityList')}">--%>
+<%--        <c:set var="bcParent" value="시설관리"/>--%>
+<%--        <c:set var="bcCurrent" value="시설목록"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/publicFacilityList')}">--%>
+<%--        <c:set var="bcParent" value="시설관리"/>--%>
+<%--        <c:set var="bcCurrent" value="공용시설관리"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/meterReading')}">--%>
+<%--        <c:set var="bcParent" value="시설관리"/>--%>
+<%--        <c:set var="bcCurrent" value="검침기록관리"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/checkHistory')}">--%>
+<%--        <c:set var="bcParent" value="시설관리"/>--%>
+<%--        <c:set var="bcCurrent" value="유지보수점검이력"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/facility/workCalendar')}">--%>
+<%--        <c:set var="bcParent" value="시설관리"/>--%>
+<%--        <c:set var="bcCurrent" value="공사점검일정"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/facility/partnerList')}">--%>
+<%--        <c:set var="bcParent" value="시설관리"/>--%>
+<%--        <c:set var="bcCurrent" value="협력업체관리"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/bill/item-summary')}">--%>
+<%--        <c:set var="bcParent" value="회계운영관리"/>--%>
+<%--        <c:set var="bcCurrent" value="관리비항목집계"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/bill/issue')}">--%>
+<%--        <c:set var="bcParent" value="회계운영관리"/>--%>
+<%--        <c:set var="bcCurrent" value="고지서등록"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/bill/charge')}">--%>
+<%--        <c:set var="bcParent" value="회계운영관리"/>--%>
+<%--        <c:set var="bcCurrent" value="관리비부과"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/bill/expense')}">--%>
+<%--        <c:set var="bcParent" value="회계운영관리"/>--%>
+<%--        <c:set var="bcCurrent" value="지출내역관리"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/account/arrears')}">--%>
+<%--        <c:set var="bcParent" value="회계운영관리"/>--%>
+<%--        <c:set var="bcCurrent" value="연체내역관리"/>--%>
+<%--    </c:when>--%>
+<%--    <c:when test="${fn:contains(uri, '/manager/complex/edit')}">--%>
+<%--        <c:set var="bcParent" value="단지운영관리"/>--%>
+<%--        <c:set var="bcCurrent" value="단지정보수정"/>--%>
+<%--    </c:when>--%>
+<%--</c:choose>--%>
 
 <header class="topbar">
     <div class="breadcrumb">
@@ -96,9 +96,11 @@
             <span>홈</span>
         </a>
         <span style="margin: 0 4px">/</span>
-        <span id="officeBcParent">${bcParent}</span>
+        <span id="officeBcParent">관리사무소</span>
+<%--        <span id="officeBcParent">${bcParent}</span>--%>
         <span style="margin: 0 4px">/</span>
-        <span class="bc-current" id="officeBcCurrent">${bcCurrent}</span>
+        <span class="bc-current" id="officeBcCurrent">대시보드</span>
+<%--        <span class="bc-current" id="officeBcCurrent">${bcCurrent}</span>--%>
     </div>
 
     <div class="topbar-actions">
@@ -145,78 +147,106 @@
 </header>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    function renderClock() {
-        var now = new Date();
-        var pad = function (value) { return String(value).padStart(2, "0"); };
-        var clock = document.getElementById("currentTime");
+    document.addEventListener("DOMContentLoaded", function () {
+        function renderClock() {
+            var now = new Date();
+            var pad = function (value) {
+                return String(value).padStart(2, "0");
+            };
+            var clock = document.getElementById("currentTime");
 
-        if (!clock) {
-            return;
+            if (!clock) {
+                return;
+            }
+
+            clock.textContent =
+                now.getFullYear() + "." +
+                pad(now.getMonth() + 1) + "." +
+                pad(now.getDate()) + " " +
+                pad(now.getHours()) + ":" +
+                pad(now.getMinutes());
         }
 
-        clock.textContent =
-            now.getFullYear() + "." +
-            pad(now.getMonth() + 1) + "." +
-            pad(now.getDate()) + " " +
-            pad(now.getHours()) + ":" +
-            pad(now.getMinutes());
-    }
+        renderClock();
+        setInterval(renderClock, 60000);
 
-    renderClock();
-    setInterval(renderClock, 60000);
-
-    function getCleanText(element) {
-        return element ? element.textContent.replace(/\s+/g, " ").trim() : "";
-    }
-
-    function updateBreadcrumbFromSidebar() {
-        var activeItem = document.querySelector(".sidebar .nav-item.active:not([aria-disabled='true'])");
-        var parentTarget = document.getElementById("officeBcParent");
-        var currentTarget = document.getElementById("officeBcCurrent");
-
-        if (!activeItem || !parentTarget || !currentTarget) {
-            return;
+        function getCleanText(element) {
+            return element ? element.textContent.replace(/\s+/g, " ").trim() : "";
         }
 
-        var currentText = getCleanText(activeItem.querySelector(".nav-text"));
-        var parentText = "관리사무소";
-        var group = activeItem.closest(".nav-group");
+        function updateBreadcrumbFromSidebar() {
+            /*
+                activeItem
+                → 현재 선택된 사이드바 메뉴.
+                .active 클래스가 붙은 메뉴를 찾는다.
+            */
+            var activeItem = document.querySelector(".sidebar .nav-item.active:not([aria-disabled='true'])");
+            var parentTarget = document.getElementById("officeBcParent");
+            var currentTarget = document.getElementById("officeBcCurrent");
 
-        if (group) {
-            parentText = getCleanText(group.querySelector(".cat-label")) || parentText;
-        }
+            if (!activeItem || !parentTarget || !currentTarget) {
+                return;
+            }
 
-        if (activeItem.classList.contains("nav-dashboard")) {
-            parentText = "관리사무소";
-        }
+            /*
+                currentText
+                → 현재 페이지명.
+                예: 대시보드, 공지사항 관리, 협력업체 관리
+            */
+            var currentText = getCleanText(activeItem.querySelector(".nav-text"));
+            /*
+                parentText
+                → 상위 메뉴명.
+                기본값은 사이드바 로고 아래 텍스트에서 가져온다.
+            */
+            var parentText =
+                getCleanText(document.querySelector(".sidebar-logo p")) || "관리사무소";
+            // var parentText = "관리사무소";
 
-        if (currentText) {
+            /*
+                nav-group
+                → 사이드바의 접히는 메뉴 묶음.
+                이 안에 있으면 cat-label 값을 상위 메뉴명으로 사용한다.
+            */
+            var group = activeItem.closest(".nav-group");
+
+            if (group) {
+                parentText = getCleanText(group.querySelector(".cat-label")) || parentText;
+            }
+
             parentTarget.textContent = parentText;
             currentTarget.textContent = currentText;
+
+            // if (activeItem.classList.contains("nav-dashboard")) {
+            //     parentText = "관리사무소";
+            // }
+            //
+            // if (currentText) {
+            //     parentTarget.textContent = parentText;
+            //     currentTarget.textContent = currentText;
+            // }
         }
-    }
 
-    updateBreadcrumbFromSidebar();
+        updateBreadcrumbFromSidebar();
 
-    document.querySelectorAll(".sidebar .nav-item").forEach(function (item) {
-        item.addEventListener("click", function () {
-            window.setTimeout(updateBreadcrumbFromSidebar, 0);
+        document.querySelectorAll(".sidebar .nav-item").forEach(function (item) {
+            item.addEventListener("click", function () {
+                window.setTimeout(updateBreadcrumbFromSidebar, 0);
+            });
         });
+
+        var logoutBtn = document.getElementById("logoutBtn");
+        var logoutForm = document.getElementById("logoutForm");
+
+        if (logoutBtn && logoutForm) {
+            logoutBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                if (confirm("로그아웃 하시겠습니까?")) {
+                    logoutForm.submit();
+                }
+            });
+        }
     });
-
-    var logoutBtn = document.getElementById("logoutBtn");
-    var logoutForm = document.getElementById("logoutForm");
-
-    if (logoutBtn && logoutForm) {
-        logoutBtn.addEventListener("click", function (e) {
-            e.preventDefault();
-
-            if (confirm("로그아웃 하시겠습니까?")) {
-                logoutForm.submit();
-            }
-        });
-    }
-});
 </script>
 <jsp:include page="/WEB-INF/views/include/websocket.jsp"/>
