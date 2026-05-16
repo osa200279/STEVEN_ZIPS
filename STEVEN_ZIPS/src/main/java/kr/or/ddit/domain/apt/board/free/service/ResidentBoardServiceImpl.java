@@ -24,64 +24,75 @@ public class ResidentBoardServiceImpl implements IResidentBoardService {
     private final GoogleDriveService googleDriveService;
     private final IAttachFileMapper iAttachFileMapper;
 
+
+    // 댓글 목록 조회
     @Override
     public List<RsidBoardCommentVO> boardFreeComment(String postNo) {
         return mapper.boardFreeComment(postNo);
     }
 
+    // 댓글 수정
     @Transactional
     @Override
     public int updateBoardComment(RsidBoardCommentVO rsidBoardCommentVO) {
         return mapper.updateBoardComment(rsidBoardCommentVO);
     }
 
+    // 댓글 삭제
     @Transactional
     @Override
     public int deleteBoardComment(String cmtNo) {
         return mapper.deleteBoardComment(cmtNo);
     }
 
+    // 대댓글(답글) insert
     @Transactional
     @Override
     public int insertSubComment(RsidBoardCommentVO rsidBoardCommentVO) {
         return mapper.insertSubComment(rsidBoardCommentVO);
     }
 
+    // 첨부파일 그룹 번호(fileGroupNo)로 DB에서 첨부파일 단건을 조회
     @Override
     public AttachFileVO selectAttachFile(String fileGroupNo) {
         return mapper.selectAttachFile(fileGroupNo);
     }
 
-
+    // 댓글 달기
     @Transactional
     @Override
     public int insertBoardComment(RsidBoardCommentVO rsidBoardCommentVO) {
         return mapper.insertBoardComment(rsidBoardCommentVO);
     }
 
+    // 게시글 삭제(상태만 변경)
     @Transactional
     @Override
     public int deleteBoardFree(String postNo) {
         return mapper.deleteBoardFree(postNo);
     }
 
+    // 게시글 수정
     @Transactional
     @Override
     public int updateBoardFree(RsidBoardVO rsidBoardVO) {
         return mapper.updateBoardFree(rsidBoardVO);
     }
 
+    // 조회수 증가
     @Transactional
     @Override
     public void updateInqCnt(String postNo) {
         mapper.updateInqCnt(postNo);
     }
 
+    // 게시글 목록 조회
     @Override
     public List<RsidBoardVO> boardFreeList(PaginationInfoVO<RsidBoardVO> pagingVO) {
         return mapper.boardFreeList(pagingVO);
     }
 
+    // 게시글 단건 조회
     @Override
     public RsidBoardVO selectOneBoardFree(RsidBoardVO rsidBoardVO) {
         return mapper.selectOneBoardFree(rsidBoardVO);
@@ -134,6 +145,7 @@ public class ResidentBoardServiceImpl implements IResidentBoardService {
         System.out.println("atch_file_id 값: " + rsidBoardVO.getAtchFileId());
     }
 
+    // 게시글 목록 페이징 처리
     @Override
     public int selectBoardFreeCount(PaginationInfoVO<RsidBoardVO> pagingVO) {
         return mapper.selectBoardFreeCount(pagingVO);
