@@ -649,8 +649,8 @@
                                         → 몇 번째 컬럼을 정렬할지 JS에 알려주는 값.
                                         0: 시설명, 1: 시설유형, 2: 위치, 3: 상세 위치
                                     --%>
-                                    <th class="sortable-th" data-sort-col="0">시설명 ⇅</th>
-                                    <th class="sortable-th" data-sort-col="1">시설유형 ⇅</th>
+                                    <th class="sortable-th" data-sort-col="0">시설유형 ⇅</th>
+                                    <th class="sortable-th" data-sort-col="1">시설명 ⇅</th>
                                     <th class="sortable-th" data-sort-col="2">위치 ⇅</th>
                                     <th class="sortable-th" data-sort-col="3">상세 위치 ⇅</th>
                             </tr>

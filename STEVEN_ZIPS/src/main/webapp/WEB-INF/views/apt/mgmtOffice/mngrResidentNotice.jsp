@@ -585,12 +585,6 @@
 
                             <div class="notice-modal-header">
                                 <span>공지사항 등록</span>
-
-                                <button type="button"
-                                        class="btn btn-reset"
-                                        id="closeNoticeModalBtn">
-                                    닫기
-                                </button>
                             </div>
 
                             <form method="post"
