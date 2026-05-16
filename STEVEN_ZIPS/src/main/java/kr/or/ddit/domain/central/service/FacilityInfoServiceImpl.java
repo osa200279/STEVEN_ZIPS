@@ -55,4 +55,9 @@ public class FacilityInfoServiceImpl implements IFacilityInfoService {
         return mapper.selectAptCardTotalCount(dto);
     }
 
+    @Override
+    public List<String> getFacilityTypeList() {
+        return mapper.selectFacilityTypeList();
+    }
+
 }

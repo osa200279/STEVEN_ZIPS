@@ -140,28 +140,16 @@
         .search-input{
             height:42px;
             border:0;
-            border-radius:22px;
+            border-radius:6px;
             background:#eef1ee;
             padding:0 18px;
-            font-size:14px;
-            color:#111827;
-            outline:none;
-        }
-
-        .search-select{
-            width:230px;
-        }
-
-        .search-input{
-            flex:1;
-            min-width:260px;
         }
 
         .search-button{
             height:42px;
             min-width:90px;
             border:0;
-            border-radius:22px;
+            border-radius:6px;
             background:#00583f;
             color:#fff;
             font-size:14px;
@@ -344,6 +332,28 @@
             font-weight:800;
 
             vertical-align:middle;
+        }
+
+        /* 시설사항 검색 영역 */
+        .facility-sub-search {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        /* 시설사항 검색 input/select 공통 너비 */
+        .facility-sub-search .search-select,
+        .facility-sub-search .search-input {
+            width: 213px;
+            max-width: 213px;
+            flex: none;
+        }
+
+        /* 버튼 너비 통일 */
+        .facility-sub-search .search-button {
+            width: 90px;
+            flex: none;
         }
     </style>
 </head>
@@ -592,24 +602,29 @@
                     <section class="facility-section">
                         <h2 class="facility-section-title">시설사항</h2>
 
-                        <div style="display:flex; gap:10px; margin-bottom:16px;">
+                        <%-- 시설유형 공통코드 select box --%>
+                        <div class="facility-sub-search">
+
+                            <select id="facilityTySearch"
+                                    class="search-select">
+                                <option value="">시설유형 전체</option>
+
+                                <c:forEach var="facilityTy" items="${facilityTypeList}">
+                                    <option value="${facilityTy}">
+                                            ${facilityTy}
+                                    </option>
+                                </c:forEach>
+                            </select>
+
                             <input type="text"
                                    id="facilityNmSearch"
                                    class="search-input"
-                                   placeholder="시설명 검색"
-                                   style="max-width:220px;">
-
-                            <input type="text"
-                                   id="facilityTySearch"
-                                   class="search-input"
-                                   placeholder="시설유형 검색"
-                                   style="max-width:220px;">
+                                   placeholder="시설명 검색">
 
                             <input type="text"
                                    id="facilityLocSearch"
                                    class="search-input"
-                                   placeholder="상세위치 검색"
-                                   style="max-width:220px;">
+                                   placeholder="상세위치 검색">
 
                             <button type="button"
                                     id="facilitySearchBtn"
@@ -623,6 +638,7 @@
                                     style="background:#64748b;">
                                 초기화
                             </button>
+
                         </div>
 
                         <table class="facility-table" id="facilitySortTable">

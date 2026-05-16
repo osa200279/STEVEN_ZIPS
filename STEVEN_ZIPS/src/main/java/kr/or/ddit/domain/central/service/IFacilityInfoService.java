@@ -19,4 +19,6 @@ public interface IFacilityInfoService {
 
     int getAptCardTotalCount(FacilityInfoDTO dto);
 
+    List<String> getFacilityTypeList();
+
 }

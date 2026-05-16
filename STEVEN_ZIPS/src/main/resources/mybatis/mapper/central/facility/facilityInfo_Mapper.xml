@@ -261,5 +261,41 @@
 
     </select>
 
+    <!-- 시설유형 목록 조회 -->
+    <!-- 시설유형 목록 조회 -->
+    <select id="selectFacilityTypeList"
+            resultType="string">
+
+        /*
+         * 시설사항의 시설유형 조회
+         * → 코드값을 한글명으로 변환
+         */
+        SELECT DISTINCT
+            CASE facility_ty_cd
+                WHEN 'ELV'     THEN '승강기'
+                WHEN 'WTR'     THEN '급수시설'
+                WHEN 'ELC'     THEN '전기시설'
+                WHEN 'GAS'     THEN '가스시설'
+                WHEN 'FIRE'    THEN '소방시설'
+                WHEN 'SEC'     THEN '보안시설'
+                WHEN 'ETC'     THEN '기타시설'
+                WHEN 'PARK'    THEN '입주민주차장'
+                WHEN 'PLAY'    THEN '놀이시설'
+                WHEN 'COMM'    THEN '커뮤니티룸'
+                WHEN 'GYM'     THEN '피트니스센터'
+                WHEN 'STUDY'   THEN '작은도서관'
+                WHEN 'PARKING' THEN '방문차량 주차구역'
+                WHEN 'MEET'    THEN '회의실'
+                ELSE facility_ty_cd
+                END AS facilityTyNm
+
+        FROM facility
+
+        WHERE facility_ty_cd IS NOT NULL
+
+        ORDER BY facilityTyNm ASC
+
+    </select>
+
 
 </mapper>

@@ -147,6 +147,12 @@ public class FacilityHistoryController {
 
         List<String> sidoList = facilityInfoService.getSidoList();
 
+        /*
+         * 시설유형 select box용 공통코드 조회
+         */
+        List<String> facilityTypeList = facilityInfoService.getFacilityTypeList();
+        model.addAttribute("facilityTypeList", facilityTypeList);
+
         List<String> sigunguList = null;
 
         if (dto.getSidoNm() != null && !dto.getSidoNm().isEmpty()) {
@@ -167,17 +173,6 @@ public class FacilityHistoryController {
 
         return "central/facility/fac-mnt-history";
     }
-//    @GetMapping("/history.do")
-//    public String facilityHistory(Model model) {
-//
-//        List<FacilityHistoryVO> list = facilityHistoryService.getFacilityHistoryList();
-//
-//        model.addAttribute("list", list);
-//
-//        return "central/facility/fac-mnt-history";
-//    }
-
-
 
     @GetMapping("/checkHistory.do")
     public String facilityCheckHistory() {

@@ -28,4 +28,10 @@ public interface IFacilityInfoMapper {
     /* 단지카드 페이징 처리 */
     int selectAptCardTotalCount(FacilityInfoDTO dto);
 
+    /*
+     * 시설유형 목록 조회
+     * 시설유형코드 목록을 담는다.
+     */
+    List<String> selectFacilityTypeList();
+
 }
