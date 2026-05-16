@@ -3,6 +3,8 @@ package kr.or.ddit.domain.apt.mgmtOffice.bill.controller;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.service.IBillChargeService;
+import kr.or.ddit.domain.apt.mgmtOffice.bill.service.IBillIssueService;
+import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.service.IFacilityService;
 import kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IMgmtOfficeMapper;
@@ -18,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -41,6 +44,8 @@ public class BillController {
     @Autowired
     private IBillChargeService billChargeService;
 
+    @Autowired
+    private IBillIssueService billIssueService;
     /**
      * @Author 이윤진
      * @param mgmtOfcNo 관리사무소번호
@@ -158,6 +163,94 @@ public class BillController {
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
         return "apt/mgmtOffice/mngr_billIssue";
+    }
+
+    // 고지서 목록 조회
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/bill/issue/list/{mgmtOfcNo}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> selectBillIssueList(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(required = false) String billYm,
+            @RequestParam(required = false) String pymtSttsCd,
+            @RequestParam(required = false) String dongNo,
+            @RequestParam(required = false) String ho
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+            if (aptComplexVO == null) {
+                result.put("success", false);
+                result.put("message", "관리사무소에 연결된 아파트 단지 정보가 없습니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            BillVO searchVO = new BillVO();
+            searchVO.setAptCmplexNo(aptComplexVO.getAptCmplexNo());
+            searchVO.setBillYm(billYm);
+            searchVO.setPymtSttsCd(pymtSttsCd);
+            searchVO.setDongNo(dongNo);
+            searchVO.setHo(ho);
+
+            List<BillVO> list = billIssueService.selectBillIssueList(searchVO);
+
+            long totalAmount = 0L;
+            for (BillVO billVO : list) {
+                if (billVO.getBillTotAmt() != null) {
+                    totalAmount += billVO.getBillTotAmt();
+                }
+            }
+
+            result.put("success", true);
+            result.put("list", list);
+            result.put("totalCount", list.size());
+            result.put("totalAmount", totalAmount);
+
+        } catch (Exception e) {
+            log.error("고지서 목록 조회 실패", e);
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    // 고지서 상세 조회
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/bill/issue/detail/{mgmtOfcNo}/{billNo}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> selectBillIssueDetail(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String billNo
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+            if (aptComplexVO == null) {
+                result.put("success", false);
+                result.put("message", "관리사무소에 연결된 아파트 단지 정보가 없습니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            BillVO billVO = billIssueService.selectBillIssueDetail(
+                    aptComplexVO.getAptCmplexNo(),
+                    billNo
+            );
+
+            result.put("success", true);
+            result.put("bill", billVO);
+
+        } catch (Exception e) {
+            log.error("고지서 상세 조회 실패", e);
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
     }
 
     // 관리비 항목 요약

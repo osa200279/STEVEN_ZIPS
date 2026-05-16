@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class BillVO {
@@ -19,4 +20,21 @@ public class BillVO {
     private Long pymtAmt;           // 실제 납부 금액
     private BigDecimal lateFeeRt;   // 연체요율
     private Long lateFeeAmt;        // 연체료금액
+
+    // 검색/권한 확인용
+    private String aptCmplexNo;
+    private String mgmtOfcNo;
+
+    // 세대 표시용
+    private String dongNo;
+    private String dongNm;
+    private String ho;
+    private String displayDongHo;
+
+    // 납부상태 표시용
+    private String pymtSttsNm;
+    private String pymtSttsContent;
+
+    // 상세 목록
+    private List<BillDetailVO> detailList;
 }

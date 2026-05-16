@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.bill.mapper.IBillIssueMapper">
+
+    <resultMap id="billMap" type="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO">
+        <id property="billNo" column="BILL_NO"/>
+        <result property="hoNo" column="HO_NO"/>
+        <result property="billYm" column="BILL_YM"/>
+        <result property="billPblancDt" column="BILL_PBLANC_DT"/>
+        <result property="billTotAmt" column="BILL_TOT_AMT"/>
+        <result property="dueDt" column="DUE_DT"/>
+        <result property="pymtSttsCd" column="PYMT_STTS_CD"/>
+        <result property="pymtDt" column="PYMT_DT"/>
+        <result property="pymtAmt" column="PYMT_AMT"/>
+        <result property="lateFeeRt" column="LATE_FEE_RT"/>
+        <result property="lateFeeAmt" column="LATE_FEE_AMT"/>
+
+        <result property="aptCmplexNo" column="APT_CMPLEX_NO"/>
+        <result property="dongNo" column="DONG_NO"/>
+        <result property="dongNm" column="DONG_NM"/>
+        <result property="ho" column="HO"/>
+        <result property="displayDongHo" column="DISPLAY_DONG_HO"/>
+
+        <result property="pymtSttsNm" column="PYMT_STTS_NM"/>
+        <result property="pymtSttsContent" column="PYMT_STTS_CONTENT"/>
+    </resultMap>
+</mapper>
