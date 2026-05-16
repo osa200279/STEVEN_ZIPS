@@ -104,28 +104,30 @@
 
   ClassicEditor.create(document.querySelector('#editor'))
           .then(editor => { ckEditor = editor; })
-          .catch(error => { console.error('CKEditor 초기화 오류', error); });
+          .catch(error => console.error('CKEditor 초기화 오류', error));
 
-  document.getElementById('attachFile').addEventListener('change', function () {
-    const name = this.files.length > 0 ? this.files[0].name : '선택된 파일 없음';
-    document.getElementById('fileName').textContent = name;
+  document.querySelector('#attachFile').addEventListener('change', function () {
+    const name = this.files[0]?.name ?? '선택된 파일 없음';
+    document.querySelector('#fileName').textContent = name;
   });
 
-  document.getElementById('submitBtn').addEventListener('click', () => {
-    const ttl = document.getElementById('ttl').value.trim();
-    const cn = ckEditor.getData().trim();
+  document.querySelector('#submitBtn').addEventListener('click', () => {
+    const ttl = document.querySelector('#ttl').value.trim();
+    const cn  = ckEditor.getData().trim();
 
-    if (ttl === '') {
+    if (!ttl) {
       alert('제목을 입력해주세요.');
-      document.getElementById('ttl').focus();
+      document.querySelector('#ttl').focus();
       return;
     }
-    if (cn === '' || cn === '<p>&nbsp;</p>') {
+
+    if (!cn || cn === '<p>&nbsp;</p>') {
       alert('내용을 입력해주세요.');
       return;
     }
-    document.getElementById('cn').value = cn;
-    document.getElementById('writeForm').submit();
+
+    document.querySelector('#cn').value = cn;
+    document.querySelector('#writeForm').submit();
   });
 </script>
 </html>

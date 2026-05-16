@@ -131,59 +131,73 @@
 <script>
     const aptCmplexNo = '${aptCmplexNo}';
     const currentPage = parseInt('${pagingVO.currentPage}') || 1;
-    const totalPage = parseInt('${pagingVO.totalPage}') || 1;
+    const totalPage   = parseInt('${pagingVO.totalPage}')   || 1;
 
-    function renderPagination() {
-        const wrap = document.getElementById('pagination');
-        wrap.innerHTML = '';
-        const delta = 2;
-        const prev = btn('‹', 'nav', currentPage <= 1);
-        prev.addEventListener('click', () => goPage(currentPage - 1));
-        wrap.appendChild(prev);
-        const pages = pageRange(currentPage, totalPage, delta);
-        let lastRendered = 0;
-        pages.forEach(p => {
-            if (p - lastRendered > 1) {
-                const el = document.createElement('span');
-                el.className = 'ellipsis';
-                el.textContent = '…';
-                wrap.appendChild(el);
-            }
-            const b = btn(p, p === currentPage ? 'active' : '', false);
-            b.addEventListener('click', () => goPage(p));
-            wrap.appendChild(b);
-            lastRendered = p;
-        });
-        const next = btn('›', 'nav', currentPage >= totalPage);
-        next.addEventListener('click', () => goPage(currentPage + 1));
-        wrap.appendChild(next);
+    // 페이지 이동: hidden input에 페이지 번호 세팅 후 폼 제출
+    function goPage(page) {
+        if (page < 1 || page > totalPage) return;
+        document.querySelector('#f-page').value = page;
+        document.querySelector('#filterForm').submit();
     }
 
-    function pageRange(cur, total, delta) {
-        const set = new Set();
-        set.add(1);
-        set.add(total);
-        for (let i = Math.max(1, cur - delta); i <= Math.min(total, cur + delta); i++) set.add(i);
+    // 검색: 페이지를 1로 초기화 후 폼 제출
+    function doSearch() {
+        document.querySelector('#f-page').value = 1;
+        document.querySelector('#filterForm').submit();
+    }
+
+    // 페이지 버튼 요소 생성 헬퍼
+    function createBtn(label, cls, disabled) {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        if (cls)      btn.className = cls;
+        if (disabled) btn.disabled  = true;
+        return btn;
+    }
+
+    // 현재 페이지 기준으로 표시할 페이지 번호 배열 계산
+    // 예) cur=5, total=10, delta=2 → [1, 3, 4, 5, 6, 7, 10]
+    function getPageRange(cur, total, delta) {
+        const set = new Set([1, total]);
+        for (let i = Math.max(1, cur - delta); i <= Math.min(total, cur + delta); i++) {
+            set.add(i);
+        }
         return [...set].sort((a, b) => a - b);
     }
 
-    function btn(label, cls, disabled) {
-        const b = document.createElement('button');
-        b.textContent = label;
-        if (cls) b.className = cls;
-        if (disabled) b.disabled = true;
-        return b;
-    }
+    // 페이지네이션 렌더링
+    function renderPagination() {
+        const wrap = document.querySelector('#pagination');
+        wrap.innerHTML = '';
 
-    function goPage(page) {
-        if (page < 1 || page > totalPage) return;
-        document.getElementById('f-page').value = page;
-        document.getElementById('filterForm').submit();
-    }
+        // 이전 버튼
+        const prevBtn = createBtn('‹', 'nav', currentPage <= 1);
+        prevBtn.addEventListener('click', () => goPage(currentPage - 1));
+        wrap.appendChild(prevBtn);
 
-    function doSearch() {
-        document.getElementById('f-page').value = 1;
-        document.getElementById('filterForm').submit();
+        // 페이지 번호 버튼 + 생략 부호(...) 처리
+        const pages = getPageRange(currentPage, totalPage, 2);
+        let lastRendered = 0;
+
+        pages.forEach(p => {
+            // 이전에 렌더링한 페이지와 1 이상 차이나면 생략 부호 삽입
+            if (p - lastRendered > 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'ellipsis';
+                ellipsis.textContent = '…';
+                wrap.appendChild(ellipsis);
+            }
+
+            const pageBtn = createBtn(p, p === currentPage ? 'active' : '', false);
+            pageBtn.addEventListener('click', () => goPage(p));
+            wrap.appendChild(pageBtn);
+            lastRendered = p;
+        });
+
+        // 다음 버튼
+        const nextBtn = createBtn('›', 'nav', currentPage >= totalPage);
+        nextBtn.addEventListener('click', () => goPage(currentPage + 1));
+        wrap.appendChild(nextBtn);
     }
 
     renderPagination();
