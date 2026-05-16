@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.central.mapper.IContractUserMapper">
 
+
     <!-- rent_ctrt 테이블에서 user_no로 가장 최근 rent_ctrt_no 1건 조회
     사용 목적: 서류 제출 시 해당 사용자의 임대계약번호 찾기 -->
     <select id="selectRentCtrtNo" parameterType="string" resultType="string">
@@ -242,6 +243,21 @@
             AND sd.aplct_no = a.aplct_no
         WHERE a.aplct_no = #{aplctNo}
     </select>
+    <select id="selectSubmittedDocCount" resultType="int">
+        SELECT COUNT(*)
+        FROM sbmsn_doc
+        WHERE aplct_no = #{aplctNo}
+        AND atch_file_id IS NOT NULL
+    </select>
+    <select id="selectRequiredDocCount" resultType="int">
+        SELECT COUNT(*)
+        FROM rent_ctrt_doc rcd
+                 INNER JOIN rent_listing rl ON rcd.rent_lstg_no = rl.rent_lstg_no
+                 INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+                 INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
+                 INNER JOIN aplct a ON a.ho_ty_no = aht.ho_ty_no
+        WHERE a.aplct_no = #{aplctNo}
+    </select>
 
     <!--공고 조회수 증가-->
     <update id="updateInqCnt" parameterType="string">
@@ -257,5 +273,19 @@
         SET aplct_stts_cd = 'CANCEL'
         WHERE aplct_no = #{aplctNo}
     </update>
+    <update id="isAllSubmitted" parameterType="string">
+        UPDATE aplct
+        SET aplct_stts_cd = 'INSPECTION',
+            mdf_dt = SYSDATE
+        WHERE aplct_no = #{aplctNo}
+    </update>
+
+    <!-- 서류 제출 중복 방지 -->
+    <delete id="deleteContractDoc">
+        DELETE
+        FROM sbmsn_doc
+        WHERE aplct_no = #{aplctNo}
+        AND sbmsn_doc_ty_cd = #{sbmsnDocTyCd}
+    </delete>
 
 </mapper>

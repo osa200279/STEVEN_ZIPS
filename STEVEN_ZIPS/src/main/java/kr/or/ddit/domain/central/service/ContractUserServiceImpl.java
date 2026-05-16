@@ -110,6 +110,12 @@ public class ContractUserServiceImpl implements IContractUserService {
     public void insertContractDoc(MultipartFile file, String sbmsnDocTyCd, String aplctNo, String userNo) throws IOException {
         if (file != null && !file.isEmpty()) {
 
+            log.info("deleteContractDoc 실행: aplctNo={}, sbmsnDocTyCd={}", aplctNo, sbmsnDocTyCd);
+            // 동일 서류 종류 기존 데이터 삭제 (덮어쓰기)
+            contractUserMapper.deleteContractDoc(aplctNo, sbmsnDocTyCd);
+            log.info("insertContractDoc 실행 시작");
+
+
             // 1. UUID로 고유한 저장 파일명 생성 (원본 파일명 앞에 UUID 접두사 추가)
             String uuid = UUID.randomUUID().toString().replace("-", "");
             String savedFileName = uuid + "_" + file.getOriginalFilename();
@@ -138,6 +144,12 @@ public class ContractUserServiceImpl implements IContractUserService {
             contractUserVO.setAplctNo(aplctNo);
             contractUserMapper.insertContractDoc(contractUserVO);
 
+            int submitted = contractUserMapper.selectSubmittedDocCount(aplctNo);
+            int required  = contractUserMapper.selectRequiredDocCount(aplctNo);
+
+            if (submitted >= required){
+                contractUserMapper.isAllSubmitted(aplctNo);
+            }
 
         }
     }

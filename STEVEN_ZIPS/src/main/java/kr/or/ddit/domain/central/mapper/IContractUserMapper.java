@@ -4,6 +4,7 @@ import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.vo.ContractUserVO;
 import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -47,4 +48,13 @@ public interface IContractUserMapper {
 
     // 경고임 무시해도됨
     List<Map<String, Object>> selectAplctDocList(String aplctNo);
+
+    void deleteContractDoc(@Param("aplctNo") String aplctNo,
+                           @Param("sbmsnDocTyCd") String sbmsnDocTyCd);
+
+    int selectSubmittedDocCount(@Param("aplctNo") String aplctNo);
+
+    int selectRequiredDocCount(@Param("aplctNo") String aplctNo);
+
+    void isAllSubmitted(@Param("aplctNo") String aplctNo);
 }

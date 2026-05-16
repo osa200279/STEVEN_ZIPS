@@ -45,7 +45,6 @@ public class ContractUserController {
         return "central/contract/contractApply";
     }
 
-
     /**
      * 공고 목록 페이지를 반환하는 컨트롤러 메소드
      * MEMBER 권한을 가진 사용자만 접근 가능
@@ -53,6 +52,7 @@ public class ContractUserController {
      * searchVO 검색 조건을 담은 DTO (페이지, 키워드)
      * 공고 목록 JSP 경로 (central/contract/contractNotice)
      */
+
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/notice.do")
     public String contractNoticeList(AnnouncementDTO searchVO, Model model) {
@@ -93,6 +93,7 @@ public class ContractUserController {
      * principal 현재 로그인한 사용자 정보
      * 처리 결과 Map {"success": true} 또는 {"success": false, "message": "에러메시지"}
      */
+
     @PreAuthorize("hasRole('MEMBER')")
     @ResponseBody
     @PostMapping("/request.do")
@@ -219,7 +220,6 @@ public class ContractUserController {
         return result;
     }
 
-
     /**
      * 청약 신청 목록 상세 페이지를 반환하는 메소드
      * 신청 번호로 상세 정보 및 제출 서류 목록을 조회하여 JSP에 전달
@@ -264,28 +264,24 @@ public class ContractUserController {
     @PostMapping("/insertContractDoc.do")
     @ResponseBody
     public Map<String, Object> insertContractDoc(
-            @RequestParam MultipartFile file,
+            @RequestParam List<MultipartFile> files,
+            @RequestParam List<String> sbmsnDocTyCds,
             @RequestParam String aplctNo,
+            @AuthenticationPrincipal CustomUser principal) {
 
-            // 제출할 서류 공통 코드
-            @RequestParam String sbmsnDocTyCd,
-            @AuthenticationPrincipal CustomUser principal
-            ){
+
         Map<String, Object> result = new HashMap<>();
-
         try {
-
-            // 현재 로그인한 사용자의 userNo 추출
             String userNo = principal.getMember().getUserNo();
-
-            // 파일, 서류 종류 코드, 신청 번호, 사용자 번호를 전달하여 서류 저장 처리
-            contractUserService.insertContractDoc(file, sbmsnDocTyCd, aplctNo, userNo);
+            for (int i = 0; i < files.size(); i++) {
+                contractUserService.insertContractDoc(files.get(i), sbmsnDocTyCds.get(i), aplctNo, userNo);
+            }
             result.put("success", true);
-        } catch (Exception e){
-            log.error("에러");
+        } catch (Exception e) {
+            log.error("서류 업로드 오류: {}", e.getMessage());
             result.put("success", false);
+            result.put("message", e.getMessage());
         }
         return result;
-
     }
 }

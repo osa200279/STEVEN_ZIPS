@@ -165,20 +165,24 @@
                 <c:choose>
 
                     <c:when test="${status == 'CANCEL'}">
-                        <div class="w-10 h-10 rounded-full bg-red-400 text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">close</span></div>
+                        <div class="w-10 h-10 rounded-full bg-red-400 text-white flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">close</span></div>
                         <p class="text-sm font-bold text-red-400">취소</p>
                     </c:when>
                     <c:when test="${status == 'LOSER'}">
-                        <div class="w-10 h-10 rounded-full bg-amber-400 text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">remove</span></div>
+                        <div class="w-10 h-10 rounded-full bg-amber-400 text-white flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">remove</span></div>
                         <p class="text-sm font-bold text-amber-500">낙첨</p>
                     </c:when>
                     <c:when test="${status == 'SUBMIT'}">
-                        <div class="w-10 h-10 rounded-full bg-[#226046] text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">check</span></div>
+                        <div class="w-10 h-10 rounded-full bg-[#226046] text-white flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">check</span></div>
                         <p class="text-sm font-bold text-[#226046]">신청 완료</p>
                         <p class="text-xs text-slate-400"></p>
                     </c:when>
                     <c:otherwise>
-                        <div class="w-10 h-10 rounded-full bg-[#226046] text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">check</span></div>
+                        <div class="w-10 h-10 rounded-full bg-[#226046] text-white flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">check</span></div>
                         <p class="text-sm font-bold text-[#226046]">신청 완료</p>
                     </c:otherwise>
                 </c:choose>
@@ -188,24 +192,29 @@
             <div class="flex flex-col items-center gap-2.5 z-10 flex-1">
                 <c:choose>
                     <c:when test="${status == 'QUALIFIED'}">
-                        <div class="w-10 h-10 rounded-full bg-[#226046] text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">check</span></div>
+                        <div class="w-10 h-10 rounded-full bg-[#226046] text-white flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">check</span></div>
                         <p class="text-sm font-bold text-[#226046]">서류 제출 완료</p>
                         <p class="text-xs text-slate-400">-</p>
                     </c:when>
                     <c:when test="${status == 'WINNER'}">
-                        <div class="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">upload_file</span></div>
+                        <div class="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">upload_file</span></div>
                         <p class="text-sm font-bold text-blue-500">서류 제출 필요</p>
                     </c:when>
                     <c:when test="${status == 'INSPECTION'}">
-                        <div class="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">manage_search</span></div>
+                        <div class="w-10 h-10 rounded-full bg-blue-400 text-white flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">manage_search</span></div>
                         <p class="text-sm font-bold text-blue-500">서류 검토</p>
                     </c:when>
                     <c:when test="${status == 'SUPPLEMENT'}">
-                        <div class="w-10 h-10 rounded-full bg-orange-400 text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">warning</span></div>
+                        <div class="w-10 h-10 rounded-full bg-orange-400 text-white flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">warning</span></div>
                         <p class="text-sm font-bold text-orange-500">보완 필요</p>
                     </c:when>
                     <c:otherwise>
-                        <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">upload_file</span></div>
+                        <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">upload_file</span></div>
                         <p class="text-sm font-semibold text-slate-400">서류 제출</p>
                     </c:otherwise>
                 </c:choose>
@@ -215,12 +224,14 @@
             <div class="flex flex-col items-center gap-2.5 z-10 flex-1">
                 <c:choose>
                     <c:when test="${status == 'QUALIFIED'}">
-                        <div class="w-10 h-10 rounded-full bg-[#226046] text-white flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">check</span></div>
+                        <div class="w-10 h-10 rounded-full bg-[#226046] text-white flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">check</span></div>
                         <p class="text-sm font-bold text-[#226046]">승인 완료</p>
                         <p class="text-xs text-slate-400">-</p>
                     </c:when>
                     <c:otherwise>
-                        <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[18px]">check</span></div>
+                        <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">check</span></div>
                         <p class="text-sm font-semibold text-slate-400">승인 완료</p>
                     </c:otherwise>
                 </c:choose>
@@ -228,7 +239,6 @@
 
         </div>
     </div>
-
 
 
     <!-- 공고정보 + 신청자정보 2단 -->
@@ -245,8 +255,10 @@
             </p>
             <div class="ir"><span class="il">공고명</span><span class="iv">${detail.TTL}</span></div>
             <div class="ir"><span class="il">공고번호</span><span class="iv">${detail.ANN_NO}</span></div>
-            <div class="ir"><span class="il">타입</span><span class="iv">${detail.TY_NM} · ${detail.EXCLUSIVE_SIZE}㎡</span></div>
-            <div class="ir"><span class="il">모집마감</span><span class="iv">${fn:substring(fn:replace(detail.RCRT_END_DT, '-', '.'), 0, 10)}</span></div>
+            <div class="ir"><span class="il">타입</span><span
+                    class="iv">${detail.TY_NM} · ${detail.EXCLUSIVE_SIZE}㎡</span></div>
+            <div class="ir"><span class="il">모집마감</span><span
+                    class="iv">${fn:substring(fn:replace(detail.RCRT_END_DT, '-', '.'), 0, 10)}</span></div>
         </div>
 
         <!-- 신청자 정보 -->
@@ -254,7 +266,8 @@
             <p class="sec-title"><span class="material-symbols-outlined text-[18px]">person</span>신청자 정보</p>
             <div class="ir"><span class="il">이름</span><span class="iv">${detail.USER_NM}</span></div>
             <div class="ir"><span class="il">연락처</span><span class="iv">${detail.USER_TELNO}</span></div>
-            <div class="ir"><span class="il">신청일시</span><span class="iv">${fn:substring(fn:replace(detail.REG_DT, '-', '.'), 0, 16)}</span></div>
+            <div class="ir"><span class="il">신청일시</span><span
+                    class="iv">${fn:substring(fn:replace(detail.REG_DT, '-', '.'), 0, 16)}</span></div>
         </div>
     </div>
 
@@ -266,10 +279,18 @@
                     <span class="material-symbols-outlined text-[18px]">folder_open</span>서류 제출 현황
                 </p>
                 <c:choose>
-                    <c:when test="${status == 'WINNER'}"><span class="text-sm text-blue-500 font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">info</span> 서류를 제출해 주세요</span></c:when>
-                    <c:when test="${status == 'SUPPLEMENT'}"><span class="text-sm text-orange-500 font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">warning</span> 반려 서류를 보완해 주세요</span></c:when>
-                    <c:when test="${status == 'INSPECTION'}"><span class="text-sm text-blue-500 font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">manage_search</span> 서류 검토 중입니다</span></c:when>
-                    <c:when test="${status == 'QUALIFIED'}"><span class="text-sm text-green-600 font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> 검토 완료</span></c:when>
+                    <c:when test="${status == 'WINNER'}"><span
+                            class="text-sm text-blue-500 font-semibold flex items-center gap-1"><span
+                            class="material-symbols-outlined text-[14px]">info</span> 서류를 제출해 주세요</span></c:when>
+                    <c:when test="${status == 'SUPPLEMENT'}"><span
+                            class="text-sm text-orange-500 font-semibold flex items-center gap-1"><span
+                            class="material-symbols-outlined text-[14px]">warning</span> 반려 서류를 보완해 주세요</span></c:when>
+                    <c:when test="${status == 'INSPECTION'}"><span
+                            class="text-sm text-blue-500 font-semibold flex items-center gap-1"><span
+                            class="material-symbols-outlined text-[14px]">manage_search</span> 서류 검토 중입니다</span></c:when>
+                    <c:when test="${status == 'QUALIFIED'}"><span
+                            class="text-sm text-green-600 font-semibold flex items-center gap-1"><span
+                            class="material-symbols-outlined text-[14px]">check_circle</span> 검토 완료</span></c:when>
                 </c:choose>
             </div>
 
@@ -306,11 +327,21 @@
                                 <span class="material-symbols-outlined text-[20px] text-slate-300">description</span>
                             </c:otherwise>
                         </c:choose>
-                        <span class="${doc.ATCH_FILE_ID == null ? 'font-semibold text-slate-300' : 'font-semibold text-slate-700'}">${doc.SBMSN_DOC_TY_CD}</span>
+                        <span class="${doc.ATCH_FILE_ID == null ? 'font-semibold text-slate-300' : 'font-semibold text-slate-700'}">
+                        <c:choose>
+                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'ID'}">신분증</c:when>
+                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'FAMILY'}">가족관계서류</c:when>
+                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'RESIDENCE'}">주민등록서류</c:when>
+                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'CONTRACT'}">계약서류</c:when>
+                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'ETC'}">기타서류</c:when>
+                            <c:otherwise>${doc.SBMSN_DOC_TY_CD}</c:otherwise>
+                        </c:choose>
+                        </span>
                     </div>
 
                         <%-- 제출일 --%>
-                    <span style="text-align:center" class="text-sm ${doc.ATCH_FILE_ID == null ? 'text-slate-300' : 'text-slate-500'}">
+                    <span style="text-align:center"
+                          class="text-sm ${doc.ATCH_FILE_ID == null ? 'text-slate-300' : 'text-slate-500'}">
                     <c:choose>
                         <c:when test="${doc.REG_DT != null}">${fn:substring(fn:replace(doc.REG_DT, '-', '.'), 0, 10)}</c:when>
                         <c:otherwise>-</c:otherwise>
@@ -332,21 +363,23 @@
                         <%-- 제출 버튼 --%>
                     <div style="text-align:center">
                         <c:choose>
-                            <c:when test="${status == 'QUALIFIED'}">
+                            <c:when test="${status == 'QUALIFIED' || status == 'INSPECTION'}">
                                 <span class="text-xs text-slate-300">-</span>
                             </c:when>
                             <c:otherwise>
-                                <div class="flex items-center justify-center gap-2">
-                                    <input type="file" id="file_${doc.SBMSN_DOC_TY_CD}" style="display:none"
-                                           accept=".pdf,.jpg,.jpeg,.png"/>
-                                    <label for="file_${doc.SBMSN_DOC_TY_CD}"
-                                           class="text-xs px-3 py-1.5 bg-white border border-slate-300 rounded-full cursor-pointer hover:bg-slate-50 text-slate-600">
-                                        파일선택
-                                    </label>
-                                    <button onclick="submitDoc('${doc.SBMSN_DOC_TY_CD}')"
-                                            class="text-xs px-3 py-1.5 bg-[#004830] text-white rounded-full hover:bg-[#226046]">
-                                        제출
-                                    </button>
+
+                                <div class="flex flex-col items-center gap-1">
+                                    <div class="flex items-center gap-2">
+                                    <span id="fileName_${doc.SBMSN_DOC_TY_CD}"
+                                          class="text-xs text-slate-400 w-[100px] truncate"></span>
+                                        <input type="file" id="file_${doc.SBMSN_DOC_TY_CD}" style="display:none"
+                                               accept=".pdf,.jpg,.jpeg,.png"
+                                               onchange="document.querySelector('#fileName_${doc.SBMSN_DOC_TY_CD}').textContent = this.files[0]?.name ?? ''"/>
+                                        <label for="file_${doc.SBMSN_DOC_TY_CD}"
+                                               class="text-xs px-3 py-1.5 bg-white border border-slate-300 rounded-full cursor-pointer hover:bg-slate-50 text-slate-600">
+                                            파일선택
+                                        </label>
+                                    </div>
                                 </div>
                             </c:otherwise>
                         </c:choose>
@@ -357,6 +390,10 @@
                 <%-- 신청 취소 버튼 --%>
             <c:if test="${status == 'WINNER' || status == 'SUPPLEMENT'}">
                 <div class="px-7 py-5 border-t border-[#eef2eb] bg-[#f4f7f4] flex justify-end gap-3">
+                    <button onclick="submitAllDocs()"
+                            class="flex items-center gap-2 px-7 py-3 bg-[#004830] text-white rounded-full text-sm font-bold hover:bg-[#226046] transition-colors">
+                        <span class="material-symbols-outlined text-[17px]">upload_file</span>제출
+                    </button>
                     <button onclick="cancelAplct('${detail.APLCT_NO}')"
                             class="flex items-center gap-2 px-7 py-3 bg-red-500 text-white rounded-full text-sm font-bold hover:bg-red-600 transition-colors">
                         <span class="material-symbols-outlined text-[17px]">close</span>신청 취소
@@ -422,40 +459,41 @@
 </main>
 
 <script>
+    const csrfToken = document.querySelector('#csrfToken').value;
+    const csrfHeader = document.querySelector('#csrfHeader').value;
 
     // 제출 서류 업로드(fetch api)
-    function submitDoc(submitDocTyCd){
-        const fileInput = document.querySelector('#file_' + submitDocTyCd);
-        if (fileInput.files.length === 0) {
-            alert("파일을 선택해주세요.")
-            return false;
+    async function submitAllDocs() {
+
+        console.log('버튼 테스트');
+        const selectedInputs = [...document.querySelectorAll('input[type="file"]')]
+            .filter(input => input.files.length > 0);
+
+        if (selectedInputs.length === 0) {
+            alert('제출할 파일을 선택해주세요.');
+            return;
         }
+
         const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        formData.append('sbmsnDocTyCd', submitDocTyCd);
+        selectedInputs.forEach(input => {
+            formData.append('files', input.files[0]);
+            formData.append('sbmsnDocTyCds', input.id.replace('file_', ''));
+        });
         formData.append('aplctNo', '${detail.APLCT_NO}');
 
-        const csrfHeader = document.getElementById('csrfHeader').value;
-        const csrfToken = document.getElementById('csrfToken').value;
-
-        fetch('/contract/insertContractDoc.do',{
+        const res    = await fetch('/contract/insertContractDoc.do', {
             method: 'POST',
-            headers: {[csrfHeader]: csrfToken},
+            headers: { [csrfHeader]: csrfToken },
             body: formData
-        })
-            .then(res => res.json())
-            .then(result =>{
-                if (result.success){
-                    alert("제출 완료.");
-                    location.reload();
-                }else{
-                    alert("제출 실패.");
-                }
-            })
-            .catch(err => {
-                console.error("통신 에러:", err);
-                alert("오류가 발생했습니다.");
-            });
+        });
+        const result = await res.json();
+
+        if (result.success) {
+            alert('제출 완료.');
+            location.reload();
+        } else {
+            alert('제출 실패.');
+        }
     }
 
     // 청약 신청 취소(fetch api)
