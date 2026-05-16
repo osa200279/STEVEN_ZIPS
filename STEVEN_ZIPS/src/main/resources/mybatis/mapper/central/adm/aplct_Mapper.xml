@@ -39,6 +39,7 @@
              , a.REG_DT
              , a.MDF_DT
              , a.APLCT_STTS_CD
+             , a.RJCT_RSN_CN
              , b.TTL
              , m.USER_ID
              , m.USER_NM
@@ -49,7 +50,7 @@
              , h.BATHROOM_CNT
              , d.SBMSN_DOC_NO
              , d.SBMSN_DOC_TY_CD
-             , d.REG_DT as DOC_REG_DT
+             , d.REG_DT   as DOC_REG_DT
              , d.MDFCN_DT as DOC_MDF_DT
              , d.ATCH_FILE_ID
              , f.FILE_GROUP_NO
@@ -73,8 +74,9 @@
         BEGIN
         <foreach collection="updateList" item="item" separator=";">
             update APLCT
-            set APLCT_STTS_CD = #{item.aplctSttsCd},
-            MDF_DT = SYSDATE
+            set APLCT_STTS_CD = #{item.aplctSttsCd}
+                ,MDF_DT = SYSDATE
+                ,RJCT_RSN_CN = #{item.rjctRsnCn}
             where APLCT_NO = #{item.aplctNo}
         </foreach>
         ; END;
