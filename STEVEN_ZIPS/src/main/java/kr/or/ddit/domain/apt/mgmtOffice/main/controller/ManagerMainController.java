@@ -366,7 +366,6 @@ public class ManagerMainController {
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
-
         // mgmtOfcNo 로 아파트 정보 가져오는 메서드
         AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
 
@@ -384,13 +383,12 @@ public class ManagerMainController {
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
-
         // mgmtOfcNo 로 아파트 정보 가져오는 메서드
         AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
 
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
         System.out.println("mgmtOfcNo = " + mgmtOfcNo);
-        System.out.println("aptComplexVO = " + aptComplexVO);
+        System.out.println("complex = " + aptComplexVO);
 
         return "apt/mgmtOffice/mngr_complex_edit";
     }

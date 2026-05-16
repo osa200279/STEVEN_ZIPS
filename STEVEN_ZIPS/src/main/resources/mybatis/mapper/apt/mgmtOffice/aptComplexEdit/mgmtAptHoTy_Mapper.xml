@@ -59,14 +59,16 @@
             dual
     </select>
 
+
+    <!--현재 호 타입 넘버 마지막 자리 잘라서 +1 한다음 가져오기-->
     <select id="selectNextHoTySeq" resultType="java.lang.String">
         SELECT NVL(
-                       MAX(
-                               TO_NUMBER(
-                                       REGEXP_SUBSTR(HO_TY_NO, '[^_]+$')
-                               )
-                       ),
-                       0
+                   MAX(
+                       TO_NUMBER(
+                           REGEXP_SUBSTR(HO_TY_NO, '[^_]+$')
+                       )
+                   ),
+                   0
                ) + 1
         FROM APT_HO_TY
         WHERE APT_CMPLEX_NO = #{aptCmplexNo}

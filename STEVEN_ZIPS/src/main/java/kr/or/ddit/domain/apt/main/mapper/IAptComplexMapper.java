@@ -32,6 +32,7 @@ public interface IAptComplexMapper {
 
     void updateComplex(ComplexEditDTO.SaveRequest request);
 
-
     String selectOneAptCmplexByMgmtOfcNo(String mgmtOfcNo);
+
+    List<AptDetailGridDTO> selectAllHoByDong(String dongNo);
 }

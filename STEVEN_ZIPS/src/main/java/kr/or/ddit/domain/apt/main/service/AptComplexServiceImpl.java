@@ -31,9 +31,6 @@ import java.util.stream.Collectors;
 public class AptComplexServiceImpl implements IAptComplexService {
 
     @Autowired
-    private IAttachFileService attachFileService;
-
-    @Autowired
     private IAptComplexMapper aptComplexMapper;
 
     @Autowired

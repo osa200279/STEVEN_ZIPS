@@ -66,13 +66,6 @@
                     ====================================================== -->
                     <section class="unit-top-panel">
 
-                        <div class="unit-top-header">
-
-                            단지 구조를 설정할 수 있는 필드 등 선택하고
-                            총수와 층별 세대수를 설정 할 수 있다.
-
-                        </div>
-
                         <div class="unit-top-grid">
 
                             <div class="form-field">
@@ -81,16 +74,8 @@
                                     동 선택
                                 </label>
 
-                                <select class="form-select">
-
-                                    <option>
-                                        101동
-                                    </option>
-
-                                    <option>
-                                        102동
-                                    </option>
-
+                                <select class="form-select"
+                                        id="dongSelect">
                                 </select>
 
                             </div>
@@ -103,7 +88,7 @@
 
                                 <input type="number"
                                        class="form-input"
-                                       value="15">
+                                       id="totalFloorInput">
 
                             </div>
 
@@ -115,7 +100,7 @@
 
                                 <input type="number"
                                        class="form-input"
-                                       value="5">
+                                       id="hoPerFloorInput">
 
                             </div>
 
@@ -127,7 +112,7 @@
 
                                 <input type="text"
                                        class="form-input"
-                                       value="75세대"
+                                       id="totalHoInput"
                                        readonly>
 
                             </div>
@@ -142,7 +127,8 @@
                                 </button>
 
                                 <button type="button"
-                                        class="btn btn-primary">
+                                        class="btn btn-primary"
+                                        id="btnApplyStructure">
 
                                     구조 변경 적용
 
@@ -174,7 +160,8 @@
 
                                     <div>
 
-                                        <div class="layout-main-title">
+                                        <div class="layout-main-title"
+                                             id="layoutTitle">
                                             배치도
                                         </div>
 
@@ -185,15 +172,6 @@
                                     </div>
 
                                 </div>
-
-                                <select id="dongSelect"
-                                        class="layout-dong-select">
-
-                                    <option value="">
-                                        동 선택
-                                    </option>
-
-                                </select>
 
                             </div>
 
@@ -238,12 +216,8 @@
                                                 상태 선택
                                             </option>
 
-                                            <option value="LIVE">
-                                                입주
-                                            </option>
-
                                             <option value="EMPTY">
-                                                공실
+                                                활성(공실)
                                             </option>
 
                                             <option value="DISABLED">
@@ -543,6 +517,8 @@
 </div>
 
 
+
+<script src="${pageContext.request.contextPath}/js/mgmtOfc/mngr_ho_ty_edit.js"></script>
 <script src="${pageContext.request.contextPath}/js/mgmtOfc/mngr_building_layout_edit.js"></script>
 
 </body>

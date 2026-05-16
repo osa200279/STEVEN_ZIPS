@@ -815,22 +815,6 @@
     color: #64748b;
 }
 
-.layout-dong-select{
-
-    width: 120px;
-    height: 42px;
-
-    border: 1px solid #dbe3ea;
-    border-radius: 12px;
-
-    background: #fff;
-
-    padding: 0 14px;
-
-    font-size: 14px;
-    font-weight: 600;
-}
-
 /* =========================================
    층별 배치도
 ========================================= */
@@ -962,8 +946,7 @@
     color: #6b7280;
 }
 
-.unit-bulk-box .form-select,
-.layout-dong-select{
+.unit-bulk-box .form-select{
 
     appearance: auto;
     -webkit-appearance: auto;

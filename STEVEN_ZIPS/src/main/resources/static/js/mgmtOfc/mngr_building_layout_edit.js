@@ -2,17 +2,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let allHoList = [];
 
-    let isEditMode = false;
-    let imageChanged = false;
-    let editingHoTyNo = null;
-
     const csrfToken = document.querySelector('meta[name="_csrf"]').content;
 
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
 
     const wrap = document.querySelector(".unit-manage-wrap");
 
+    const btnApplyHoStatus = document.querySelector("#btnApplyHoStatus");
+
+    const btnApplyHoType = document.querySelector("#btnApplyHoType");
+
     const mgmtOfcNo = wrap.dataset.mgmtOfcNo;
+
+    window.initHoTypeManager({
+        mgmtOfcNo,
+        csrfToken,
+        csrfHeader,
+        renderHoTypeSelect
+    });
 
     // =========================
     // 컬럼 정의
@@ -94,7 +101,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     ];
 
     const gridApi = agGrid.createGrid(
-
         document.querySelector("#unitGrid"),
 
         {
@@ -128,586 +134,57 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     );
 
-    // =========================
-    // 데이터 조회
-    // =========================
-    try {
+    await reloadHoData();
 
-        const response = await fetch(
-            `/manager/compolexEdit/hoList/${mgmtOfcNo}`
-        );
 
-        if (!response.ok) {
-            throw new Error("호 목록 조회 실패");
-        }
+    /*화면 다시그리기*/
+    async function reloadHoData(selectedDongNo = null) {
 
-        const data = await response.json();
+        try {
 
-        console.log(data);
-
-        allHoList = data;
-
-        gridApi.setGridOption(
-            "rowData",
-            data
-        );
-
-        renderDongSelect(data);
-
-        await loadHoTypeList();
-
-    } catch (error) {
-
-        console.error(error);
-
-    }
-
-// ======================================
-// 평형 타입 Drawer
-// =====================================
-
-const btnOpenTypeDrawer =
-    document.querySelector("#btnOpenTypeDrawer");
-
-const btnCloseTypeDrawer =
-    document.querySelector("#btnCloseTypeDrawer");
-
-const hoTypeDrawer =
-    document.querySelector("#hoTypeDrawer");
-
-const drawerBackdrop =
-    document.querySelector("#drawerBackdrop");
-
-const hoTypeList = document.querySelector("#hoTypeList");
-
-btnOpenTypeDrawer.addEventListener("click", async () => {
-
-    hoTypeDrawer.classList.add("open");
-
-    drawerBackdrop.classList.add("show");
-
-    await loadHoTypeList();
-
-});
-
-
-// 닫기
-btnCloseTypeDrawer.addEventListener("click", closeTypeDrawer);
-
-drawerBackdrop.addEventListener("click", closeTypeDrawer);
-
-function closeTypeDrawer(){
-
-    hoTypeDrawer.classList.remove("open");
-
-    drawerBackdrop.classList.remove("show");
-
-}
-
-
-// ======================================
-// 평형 타입 추가 모달
-// ======================================
-
-const btnOpenTypeModal =
-    document.querySelector("#btnOpenTypeModal");
-
-const btnCloseTypeModal =
-    document.querySelector("#btnCloseTypeModal");
-
-const btnCancelTypeModal =
-    document.querySelector("#btnCancelTypeModal");
-
-const hoTypeModal =
-    document.querySelector("#hoTypeModal");
-
-const hoTypeModalBackdrop =
-    document.querySelector("#hoTypeModalBackdrop");
-
-// 열기
-btnOpenTypeModal.addEventListener("click", () => {
-
-    isEditMode = false;
-    imageChanged = false;
-    editingHoTyNo = null;
-
-    document.querySelector("#tyNm").value = "";
-    document.querySelector("#exclusiveSize").value = "";
-    document.querySelector("#roomCnt").value = "";
-    document.querySelector("#bathroomCnt").value = "";
-
-    hoTypeImage.value = "";
-
-    hoPreviewImg.src = "";
-
-    hoPreviewCard.style.display = "none";
-
-    hoUploadContent.style.display = "flex";
-
-    document.querySelector(
-        ".ho-type-modal-title"
-    ).textContent = "새 평형 타입 추가";
-
-    btnInsertHoType.textContent =
-        "평형 타입 추가";
-
-    hoTypeModal.classList.add("show");
-
-    hoTypeModalBackdrop.classList.add("show");
-
-});
-
-// 닫기
-btnCloseTypeModal.addEventListener("click", closeTypeModal);
-
-btnCancelTypeModal.addEventListener("click", closeTypeModal);
-
-hoTypeModalBackdrop.addEventListener("click", closeTypeModal);
-
-function closeTypeModal(){
-
-    hoTypeModal.classList.remove("show");
-
-    hoTypeModalBackdrop.classList.remove("show");
-
-    isEditMode = false;
-    imageChanged = false;
-    editingHoTyNo = null;
-
-}
-
-const hoUploadBox =
-    document.querySelector("#hoUploadBox");
-
-const hoTypeImage =
-    document.querySelector("#hoTypeImage");
-
-const hoUploadContent =
-    document.querySelector(".upload-content");
-
-const hoPreviewImg =
-    document.querySelector("#hoPreviewImg");
-
-const hoPreviewCard =
-    document.querySelector("#hoPreviewCard");
-
-const hoRemoveBtn =
-    document.querySelector("#hoRemoveBtn");
-
-// 초기 숨김
-hoPreviewCard.style.display = "none";
-
-// 업로드 박스 클릭
-hoUploadBox.addEventListener("click", () => {
-
-    hoTypeImage.click();
-
-});
-
-// 파일 선택
-hoTypeImage.addEventListener("change", e => {
-
-    const file = e.target.files[0];
-    imageChanged = true;
-
-    if(!file){
-        return;
-    }
-
-    // 이미지 체크
-    if(!file.type.startsWith("image/")){
-
-        alert("이미지 파일만 업로드 가능합니다.");
-
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = event => {
-
-        hoPreviewImg.src = event.target.result;
-
-        hoUploadContent.style.display = "none";
-
-        hoPreviewCard.style.display = "flex";
-
-        hoRemoveBtn.style.display = "flex";
-
-    };
-
-    reader.readAsDataURL(file);
-
-});
-
-// 제거 버튼
-hoRemoveBtn.addEventListener("click", e => {
-
-    e.stopPropagation();
-
-    imageChanged = true;
-
-    hoTypeImage.value = "";
-
-    hoPreviewImg.src = "";
-
-    hoPreviewCard.style.display = "none";
-
-    hoUploadContent.style.display = "flex";
-
-});
-
-
-async function loadHoTypeList(){
-
-    try{
-
-        const response = await fetch(
-            `/manager/ho-type/hoTyList/${mgmtOfcNo}`
-        );
-
-        if(!response.ok){
-            throw new Error("평형 타입 조회 실패");
-        }
-
-        const data = await response.json();
-
-        console.log(data);
-
-        renderHoTypeList(data);
-
-        renderHoTypeSelect(data);
-
-    }catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-function renderHoTypeList(list){
-
-    if(!list || list.length === 0){
-
-        hoTypeList.innerHTML = `
-    <div class="empty-message">
-        등록된 평형 타입이 없습니다.
-</div>
-    `;
-
-        return;
-    }
-
-    hoTypeList.innerHTML = list.map(item => `
-
-    <div class="ho-type-card">
-
-        <div class="ho-type-card-top">
-
-        <div>
-
-        <strong class="ho-type-name">
-        ${item.tyNm}
-        </strong>   
-
-    <p class="ho-type-size">
-        전용 ${item.exclusiveSize}㎡
-    </p>
-
-</div>
-
-</div>
-
-    <div class="ho-type-card-info">
-
-        방 ${item.roomCnt} · 욕실 ${item.bathroomCnt}
-
-    </div>
-
-    <div class="ho-type-card-actions">
-
-        <button type="button"
-                class="btn btn-sm btn-secondary btn-edit-type"
-                data-hoty-no="${item.hoTyNo}"
-                data-ty-nm="${item.tyNm}"
-                data-exclusive-size="${item.exclusiveSize}"
-                data-room-cnt="${item.roomCnt}"
-                data-bathroom-cnt="${item.bathroomCnt}"
-                data-google-id="${item.googleId}"
-                >
-        
-            수정
-        
-        </button>
-
-        <button type="button"
-                class="btn btn-sm btn-danger btn-delete-type"
-                data-hoty-no="${item.hoTyNo}">
-        
-            삭제
-        
-        </button>
-
-    </div>
-
-</div>
-
-    `).join("");
-
-    document
-        .querySelectorAll(".btn-edit-type")
-        .forEach(btn => {
-
-            btn.addEventListener("click", () => {
-                imageChanged = false;
-                isEditMode = true;
-                hoTypeImage.value = "";
-
-                editingHoTyNo =
-                    btn.dataset.hotyNo;
-
-                // input 세팅
-                document.querySelector("#tyNm").value =
-                    btn.dataset.tyNm;
-
-                document.querySelector("#exclusiveSize").value =
-                    btn.dataset.exclusiveSize;
-
-                document.querySelector("#roomCnt").value =
-                    btn.dataset.roomCnt;
-
-                document.querySelector("#bathroomCnt").value =
-                    btn.dataset.bathroomCnt;
-
-                // 이미지 세팅
-                const googleId =
-                    btn.dataset.googleId;
-
-                if(googleId && googleId !== "null"){
-
-                    hoPreviewImg.src =
-                        `/file/display/${googleId}`;
-
-                    hoUploadContent.style.display = "none";
-
-                    hoPreviewCard.style.display = "flex";
-
-                    hoRemoveBtn.style.display = "flex";
-                }else{
-
-                    hoPreviewImg.src = "";
-
-                    hoRemoveBtn.style.display = "none";
-
-                    hoPreviewCard.style.display = "none";
-
-                    hoUploadContent.style.display = "flex";
-                }
-
-                // 타이틀 변경
-                document.querySelector(
-                    ".ho-type-modal-title"
-                ).textContent = "평형 타입 수정";
-
-                // 버튼 텍스트 변경
-                btnInsertHoType.textContent =
-                    "수정 완료";
-
-                // 모달 열기
-                hoTypeModal.classList.add("show");
-
-                hoTypeModalBackdrop.classList.add("show");
-
-            });
-
-        });
-
-
-    document
-        .querySelectorAll(".btn-delete-type")
-        .forEach(btn => {
-
-            btn.addEventListener("click", async () => {
-
-                const hoTyNo =
-                    btn.dataset.hotyNo;
-
-                const confirmed =
-                    confirm("평형 타입을 삭제하시겠습니까?");
-
-                if(!confirmed){
-                    return;
-                }
-
-                try{
-
-                    const formData =
-                        new FormData();
-
-                    formData.append(
-                        "hoTyNo",
-                        hoTyNo
-                    );
-
-                    const response =
-                        await fetch(
-                            `/manager/ho-type/delete/${mgmtOfcNo}`,
-                            {
-                                method: "POST",
-
-                                headers: {
-                                    [csrfHeader]: csrfToken
-                                },
-
-                                body: formData
-                            }
-                        );
-
-                    if(!response.ok){
-                        throw new Error("삭제 실패");
-                    }
-
-                    const result =
-                        await response.json();
-
-                    console.log(result);
-
-                    if(!result.success){
-
-                        alert(
-                            result.message || "삭제 실패"
-                        );
-
-                        return;
-                    }
-
-                    alert("삭제 완료");
-
-                    await loadHoTypeList();
-
-                }catch(error){
-
-                    console.error(error);
-
-                    alert("삭제 실패");
-                }
-
-            });
-
-        });
-
-
-}
-
-
-
-const btnInsertHoType =
-    document.querySelector("#btnInsertHoType");
-
-btnInsertHoType.addEventListener("click", insertHoType);
-
-async function insertHoType(){
-
-    const url = isEditMode
-        ? `/manager/ho-type/update/${mgmtOfcNo}`
-        : `/manager/ho-type/insert/${mgmtOfcNo}`;
-
-
-    try{
-
-        const formData = new FormData();
-
-        formData.append(
-            "imageChanged",
-            imageChanged
-        );
-
-        formData.append(
-            "mgmtOfcNo",
-            mgmtOfcNo
-        );
-
-        formData.append(
-            "tyNm",
-            document.querySelector("#tyNm").value
-        );
-
-        formData.append(
-            "exclusiveSize",
-            document.querySelector("#exclusiveSize").value
-        );
-
-        formData.append(
-            "roomCnt",
-            document.querySelector("#roomCnt").value
-        );
-
-        formData.append(
-            "bathroomCnt",
-            document.querySelector("#bathroomCnt").value
-        );
-
-        if(isEditMode){
-            formData.append(
-                "hoTyNo",
-                editingHoTyNo
+            const response = await fetch(
+                `/manager/complexEdit/hoList/${mgmtOfcNo}`
             );
-        }
 
-        // 이미지
-        const imageFile =
-            hoTypeImage.files[0];
-
-        if(imageFile){
-            formData.append(
-                "imageFile",
-                imageFile
-            );
-        }
-
-        const response = await fetch(
-            url,
-            {
-                method: "POST",
-
-                headers: {
-                    [csrfHeader]: csrfToken
-                },
-
-                body: formData
+            if (!response.ok) {
+                throw new Error("호 목록 조회 실패");
             }
-        );
 
-        if(!response.ok){
-            throw new Error("평형 타입 등록 실패");
+            const data = await response.json();
+
+            allHoList = data;
+
+            // grid 갱신
+            gridApi.setGridOption(
+                "rowData",
+                data
+            );
+
+            // 동 select 다시 그림
+            renderDongSelect(data);
+
+            // 기존 선택 동 유지
+            if (selectedDongNo) {
+
+                document.querySelector("#dongSelect").value =
+                    selectedDongNo;
+
+                changeDongLayout(selectedDongNo);
+
+            }
+
+            await window.hoTypeManager.loadHoTypeList();
+
+        } catch (error) {
+
+            console.error(error);
+
         }
-
-        const result = await response.json();
-
-        console.log(result);
-
-        alert(
-            isEditMode
-                ? "수정 완료"
-                : "등록 완료"
-        );
-
-        closeTypeModal();
-
-        await loadHoTypeList();
-
-    }catch(error){
-
-        console.error(error);
-
-        alert("등록 실패");
 
     }
 
-}
 
-    function renderDongSelect(list){
+    function renderDongSelect(list) {
 
         const dongSelect =
             document.querySelector("#dongSelect");
@@ -716,7 +193,7 @@ async function insertHoType(){
 
         list.forEach(item => {
 
-            if(!dongMap.has(item.dongNo)){
+            if (!dongMap.has(item.dongNo)) {
 
                 dongMap.set(
                     item.dongNo,
@@ -742,7 +219,7 @@ async function insertHoType(){
     `).join("");
 
         // 최초 선택
-        if(sortedList.length > 0){
+        if (sortedList.length > 0) {
 
             dongSelect.value = sortedList[0][0];
 
@@ -752,11 +229,11 @@ async function insertHoType(){
     }
 
 
-    function renderFloorLayout(list){
+    function renderFloorLayout(list) {
 
         const layoutGrid = document.querySelector("#unitLayoutGrid");
 
-        if(!list || list.length === 0){
+        if (!list || list.length === 0) {
 
             layoutGrid.innerHTML = `
             <div class="empty-message">
@@ -774,12 +251,11 @@ async function insertHoType(){
 
             const floor = item.floor;
 
-            if(!floorMap[floor]){
+            if (!floorMap[floor]) {
                 floorMap[floor] = [];
             }
 
             floorMap[floor].push(item);
-
 
 
         });
@@ -815,7 +291,7 @@ async function insertHoType(){
 
                     let statusClass = "";
 
-                    switch(ho.hoSttsCd){
+                    switch (ho.hoSttsCd) {
 
                         case "LIVE":
                             statusClass = "live";
@@ -855,7 +331,7 @@ async function insertHoType(){
 
     }
 
-    function bindUnitCellEvent(){
+    function bindUnitCellEvent() {
 
         document
             .querySelectorAll(".unit-cell")
@@ -871,7 +347,7 @@ async function insertHoType(){
 
                     gridApi.forEachNode(node => {
 
-                        if(node.data.hoNo === hoNo){
+                        if (node.data.hoNo === hoNo) {
 
                             node.setSelected(!isSelected);
 
@@ -885,9 +361,8 @@ async function insertHoType(){
 
     }
 
-    function syncLayoutSelection(){
+    function syncLayoutSelection() {
 
-        // 전체 선택 제거
         document
             .querySelectorAll(".unit-cell")
             .forEach(cell => {
@@ -896,9 +371,7 @@ async function insertHoType(){
 
             });
 
-        // grid 선택 목록
-        const selectedRows =
-            gridApi.getSelectedRows();
+        const selectedRows = gridApi.getSelectedRows();
 
         selectedRows.forEach(row => {
 
@@ -907,7 +380,7 @@ async function insertHoType(){
                     `.unit-cell[data-ho-no="${row.hoNo}"]`
                 );
 
-            if(target){
+            if (target) {
 
                 target.classList.add("selected");
 
@@ -925,22 +398,37 @@ async function insertHoType(){
 
         });
 
-    function changeDongLayout(dongNo){
+    function changeDongLayout(dongNo) {
 
         const filteredList =
             allHoList.filter(item =>
                 item.dongNo === dongNo
             );
 
+        const layoutTitle =
+            document.querySelector("#layoutTitle");
+
+        const selectedData =
+            filteredList[0];
+
+        if (layoutTitle && selectedData) {
+
+            layoutTitle.textContent =
+                `${selectedData.dongNm}동 배치도`;
+
+        }
+
         renderFloorLayout(filteredList);
+
+        renderDongSummary(filteredList);
     }
 
-    function renderHoTypeSelect(list){
+    function renderHoTypeSelect(list) {
 
         const hoTypeSelect =
             document.querySelector("#hoTypeSelect");
 
-        if(!list || list.length === 0){
+        if (!list || list.length === 0) {
 
             hoTypeSelect.innerHTML = `
             <option value="">
@@ -965,5 +453,276 @@ async function insertHoType(){
 
     }
 
+
+    function renderDongSummary(list) {
+
+        if (!list || list.length === 0) {
+            return;
+        }
+
+        // 총 층수
+        const maxFloor =
+            Math.max(
+                ...list.map(item => Number(item.floor))
+            );
+
+        // 층별 그룹핑
+        const floorMap = {};
+
+        list.forEach(item => {
+
+            if (!floorMap[item.floor]) {
+                floorMap[item.floor] = [];
+            }
+
+            floorMap[item.floor].push(item);
+
+        });
+
+        // 층별 최대 세대수
+        const hoPerFloor =
+            Math.max(
+                ...Object.values(floorMap)
+                    .map(v => v.length)
+            );
+
+        // 총 세대수
+        const totalHo = list.length;
+
+        document.querySelector("#totalFloorInput").value =
+            maxFloor;
+
+        document.querySelector("#hoPerFloorInput").value =
+            hoPerFloor;
+
+        document.querySelector("#totalHoInput").value =
+            `${totalHo}세대`;
+    }
+
+    document
+        .querySelector("#btnApplyStructure")
+        .addEventListener(
+            "click",
+            applyStructure
+        );
+
+    async function applyStructure() {
+
+        const dongNo =
+            document.querySelector("#dongSelect").value;
+
+        const totalFloor =
+            Number(
+                document.querySelector("#totalFloorInput").value
+            );
+
+        const hoPerFloor =
+            Number(
+                document.querySelector("#hoPerFloorInput").value
+            );
+
+        if (!dongNo) {
+
+            alert("동을 선택해주세요.");
+
+            return;
+        }
+
+        if (!confirm(
+            "구조 변경 시 일부 호가 구조 제거될 수 있습니다.\n계속하시겠습니까?"
+        )) {
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                `/manager/complexEdit/updateStructure/${mgmtOfcNo}`,
+
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        [csrfHeader]: csrfToken
+                    },
+
+                    body: JSON.stringify({
+                        mgmtOfcNo,
+                        dongNo,
+                        totalFloor,
+                        hoPerFloor
+                    })
+
+                }
+            );
+
+            const result =
+                await response.json();
+
+            if (!result.success) {
+
+                alert(
+                    result.message ||
+                    "구조 변경 실패"
+                );
+
+                return;
+            }
+
+            alert("구조 변경 완료");
+
+            await reloadHoData(dongNo);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("구조 변경 실패");
+
+        }
+
+    }
+
+    btnApplyHoStatus.addEventListener("click", applyHoStatus)
+
+    btnApplyHoType.addEventListener("click", applyHoType);
+
+    async function applyHoStatus() {
+
+        const hoSttsCd =
+            document.querySelector("#hoStatusSelect").value;
+
+        if (!hoSttsCd) {
+
+            alert("상태를 선택해주세요.");
+
+            return;
+        }
+
+        const selectedRows =
+            gridApi.getSelectedRows();
+
+        if (selectedRows.length === 0) {
+
+            alert("호를 선택해주세요.");
+
+            return;
+        }
+
+        const hoNoList =
+            selectedRows.map(row => row.hoNo);
+
+        try {
+
+            const response = await fetch(
+                `/manager/complexEdit/updateHoStatus/${mgmtOfcNo}`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        [csrfHeader]: csrfToken
+                    },
+
+                    body: JSON.stringify({
+                        aptCmplexNo: wrap.dataset.aptCmplexNo,
+                        hoNoList,
+                        hoSttsCd
+                    })
+
+                }
+            );
+
+            const result =
+                await response.json();
+
+            if (!result.success) {
+
+                alert(
+                    result.message ||
+                    "상태 변경 실패"
+                );
+
+                return;
+            }
+
+            alert("상태 변경 완료");
+
+            const currentDongNo =
+                document.querySelector("#dongSelect").value;
+
+            await reloadHoData(currentDongNo);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("상태 변경 실패");
+
+        }
+
+    }
+
+
+    async function applyHoType(){
+
+        const hoTyNo = document.querySelector("#hoTypeSelect").value;
+
+        if(!hoTyNo){
+            alert("평형 타입을 선택해주세요.");
+            return;
+        }
+
+        const selectedRows =
+            gridApi.getSelectedRows();
+
+        if(selectedRows.length === 0){
+
+            alert("호를 선택해주세요.");
+
+            return;
+        }
+
+        const hoNoList =
+            selectedRows.map(row => row.hoNo);
+
+        try{
+
+            const response = await fetch(
+                `/manager/complexEdit/updateHoType/${mgmtOfcNo}`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        [csrfHeader]: csrfToken
+                    },
+
+                    body: JSON.stringify({
+                        hoNoList,
+                        hoTyNo
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if(!result.success){
+                alert(result.message || "평형 변경 실패");
+                return;
+            }
+
+            alert("평형 변경 완료");
+
+            const currentDongNo =
+                document.querySelector("#dongSelect").value;
+
+            await reloadHoData(currentDongNo);
+        }catch(error){
+            console.error(error);
+            alert("평형 변경 실패");
+        }
+    }
 
 });

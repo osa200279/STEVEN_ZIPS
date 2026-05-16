@@ -166,7 +166,7 @@
                        ON D.HO_TY_NO = T.HO_TY_NO
 
     WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
-      AND D.HO_STTS_CD != 'REMOVE'
+      AND D.HO_STTS_CD != 'STRUCT_REMOVED'
 
     ORDER BY
         U.DONG_NM ASC,
@@ -179,5 +179,23 @@
         from MGMT_OFFICE
         where MGMT_OFC_NO = #{mgmtOfcNo}
     </select>
+
+
+    <select id="selectAllHoByDong" resultType="kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO">
+
+        SELECT  /*kr.or.ddit.domain.apt.main.mapper.IAptComplexMapper.selectAllHoByDong*/
+            HO_NO
+            ,DONG_NO
+            ,FLOOR
+            ,HO
+            ,HO_STTS_CD
+            ,HO_TY_NO
+        FROM APT_DETAIL
+        WHERE DONG_NO = #{dongNo}
+
+        ORDER BY FLOOR ASC, HO ASC
+
+    </select>
+
 
 </mapper>
