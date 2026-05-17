@@ -9,7 +9,7 @@ import axios from 'axios';
 import '../styles/ag-grid.css'
 
 const Applicant = () => {
-    const { admInfo } = useOutletContext();
+    const { admInfo } = useOutletContext() || {};
     const [rowData, setRowData] = useState([]);
 
     useEffect(() => {
@@ -162,7 +162,7 @@ const Applicant = () => {
 
         let aplctMapList = [];
         let confirmMsg = "";
-
+        let nextStts = "";
         // 현재 클릭한 행이 선택된 행들 중에 포함되어 있는지 확인
         const isCurrentNodeSelected = selectedNodes.some(node => node.data.aplctNo === p.data.aplctNo);
 
@@ -175,7 +175,6 @@ const Applicant = () => {
 
             aplctMapList = validNodes.map(node => {
                 const currentStts = node.data.aplctSttsCd;
-                let nextStts;
                 if (currentStts === 'SUBMIT') {
                     nextStts = isApproval ? 'WINNER' : 'LOSER';
                 } else if (currentStts === 'WINNER' && !isApproval) {
@@ -203,7 +202,6 @@ const Applicant = () => {
             // 선택된 행이 없거나 1개만 선택된 경우 (단일 처리)
             const currentStts = p.data.aplctSttsCd;
             if (['SUBMIT', 'WINNER', 'SUPPLEMENT', 'INSPECTION'].includes(currentStts)) {
-                let nextStts;
                 if (currentStts === 'SUBMIT') {
                     nextStts = isApproval ? 'WINNER' : 'LOSER';
                 } else if (currentStts === 'WINNER' && !isApproval) {
@@ -228,7 +226,18 @@ const Applicant = () => {
 
         if (!window.confirm(confirmMsg)) return;
 
-        updSttsRequest(aplctMapList, ag);
+        if(nextStts === 'QUALIFIED'){
+            try {
+                const makeCtrt = async () => {
+                    const resp = await requestApi.post(``)
+                };
+            } catch(error){
+
+            }
+        }else{
+            updSttsRequest(aplctMapList, ag);
+        }
+        
     };
 
     // 보완 요청 버튼 기능

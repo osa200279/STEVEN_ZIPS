@@ -1,45 +1,66 @@
 import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import '../styles/common.css';
-import { ChartSpline, ContrastIcon, Download, FileChartLine, FileClock, FileXCorner, Plus, SquarePen } from 'lucide-react';
+import { ChartSpline, CheckCheckIcon, ContrastIcon, Download, FileChartLine, FileClock, FileXCorner, Plus, SquarePen } from 'lucide-react';
+import requestApi from '../util/api/requestApi';
 
 const Ctrt = ({ onViewChange }) => {
   const { admInfo } = useOutletContext() || {};
-  const [currentView, setCurrentView] = useState('list');
+  const [list, setList] = useState([]);
 
-  const stats = [
+  // useEffect(() => {
+  //   const fetchContracts = async () =>{
+  //     try{
+  //       const response = await requestApi.get(`/api/react/adm/ctrt`);
+
+  //       if(Array.isArray(response.data)){
+  //         setList(response.data);
+  //       }else {
+  //         console.error("서버 응답이 배열 형식이 아닙니다: ", response.data);
+  //         setList([]);
+  //       }
+  //     }catch(error){
+  //       console.error("데이터 로드 실패 : ", error);
+  //       setList([]);
+  //     }
+  //   }
+  // }, []);
+
+
+  const board = [
     { label: '이행 중인 계약', value: '1,234', change: '+12%', icon: <FileChartLine />, color: 'bg-primary-fixed', hasTrend: true },
-    { label: '미승인 계약', value: '29', icon: <SquarePen />, color: 'bg-pending-container' },
+    { label: '미승인 계약', value: '29', icon: <SquarePen />, color: 'bg-pending-container', pending: true },
     { label: '만료 임박 계약', value: '14', icon: <FileClock />, color: 'bg-error-container', urgent: true },
-    { label: '만료된 계약', value: '14', icon: <FileXCorner />, color: '--bg-expired-container', expired: true },
+    { label: '만료된 계약', value: '14', icon: <FileXCorner />, color: 'bg-expired-container', expired: true },
   ];
 
   const contracts = [
-    { rnet_ctrt_no: 'rent_ctrt_no', user_id: 'Yirho', user_name: '이용로', rent_type: '전세', period: '2025.04.01 ~ 2026.04.01', price: '₩1,240,000,000', ctrt_stts: '이행중', detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'rent_ctrt_no', user_id: 'Yirho', user_name: '이용로', rent_type: '전세', aptCmplexNo: 'A101231', aptCmplexNm: 'a아파트', approvalDt: '2026.05.11' , period: '2025.04.01 ~ 2026.04.01', price: '₩1,240,000,000', ctrt_stts: '이행중', detail: '상세보기', mgr: '담당자A' , isExpiryUrgent: false },
 
-    { rnet_ctrt_no: 'RC2025002', user_id: 'minsu12', user_name: '김민수', rent_type: '월세', period: '2025.03.15 ~ 2026.03.14', price: '₩850,000', ctrt_stts: '이행중', detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'RC2025002', user_id: 'minsu12', user_name: '김민수', rent_type: '월세', period: '2025.03.15 ~ 2026.03.14', price: '₩850,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
 
-    { rnet_ctrt_no: 'RC2025003', user_id: 'jiyeon88', user_name: '박지연', rent_type: '전세', period: '2025.02.01 ~ 2026.01.31', price: '₩980,000,000', ctrt_stts: '계약만료', detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'RC2025003', user_id: 'jiyeon88', user_name: '박지연', rent_type: '전세', period: '2025.02.01 ~ 2026.01.31', price: '₩980,000,000', ctrt_stts: '계약만료',mgr: '담당자A' , detail: '상세보기', isExpiryUrgent: false },
 
-    { rnet_ctrt_no: 'RC2025004', user_id: 'donghyuk7', user_name: '최동혁', rent_type: '월세', period: '2025.05.01 ~ 2026.04.30', price: '₩1,200,000', ctrt_stts: '이행중', detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'RC2025004', user_id: 'donghyuk7', user_name: '최동혁', rent_type: '월세', period: '2025.05.01 ~ 2026.04.30', price: '₩1,200,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
 
-    { rnet_ctrt_no: 'RC2025005', user_id: 'sohee99', user_name: '정소희', rent_type: '전세', period: '2024.11.10 ~ 2026.11.09', price: '₩1,450,000,000', ctrt_stts: '이행중', detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'RC2025005', user_id: 'sohee99', user_name: '정소희', rent_type: '전세', period: '2024.11.10 ~ 2026.11.09', price: '₩1,450,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
 
-    { rnet_ctrt_no: 'RC2025006', user_id: 'junseo21', user_name: '한준서', rent_type: '월세', period: '2025.01.20 ~ 2026.01.19', price: '₩730,000', ctrt_stts: '계약만료예정', detail: '상세보기', isExpiryUrgent: true },
+    { rent_ctrt_no: 'RC2025006', user_id: 'junseo21', user_name: '한준서', rent_type: '월세', period: '2025.01.20 ~ 2026.01.19', price: '₩730,000', ctrt_stts: '계약만료예정', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: true },
 
-    { rnet_ctrt_no: 'RC2025007', user_id: 'yerim_k', user_name: '강예림', rent_type: '전세', period: '2025.06.01 ~ 2027.05.31', price: '₩1,120,000,000', ctrt_stts: '이행중', detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'RC2025007', user_id: 'yerim_k', user_name: '강예림', rent_type: '전세', period: '2025.06.01 ~ 2027.05.31', price: '₩1,120,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
 
-    { rnet_ctrt_no: 'RC2025008', user_id: 'taewoo44', user_name: '임태우', rent_type: '월세', period: '2025.04.10 ~ 2026.04.09', price: '₩950,000', ctrt_stts: '계약완료', detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'RC2025008', user_id: 'taewoo44', user_name: '임태우', rent_type: '월세', period: '2025.04.10 ~ 2026.04.09', price: '₩950,000', ctrt_stts: '계약완료', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
 
-    { rnet_ctrt_no: 'RC2025009', user_id: 'eunji02', user_name: '서은지', rent_type: '전세', period: '2025.07.01 ~ 2027.06.30', price: '₩1,670,000,000', ctrt_stts: '이행중', detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'RC2025009', user_id: 'eunji02', user_name: '서은지', rent_type: '전세', period: '2025.07.01 ~ 2027.06.30', price: '₩1,670,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
 
-    { rnet_ctrt_no: 'RC2025010', user_id: 'hyunwoo55', user_name: '조현우', rent_type: '월세', period: '2025.08.15 ~ 2026.08.14', price: '₩670,000', ctrt_stts: '계약대기', detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'RC2025010', user_id: 'hyunwoo55', user_name: '조현우', rent_type: '월세', period: '2025.08.15 ~ 2026.08.14', price: '₩670,000', ctrt_stts: '계약대기', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
+    { rent_ctrt_no: 'RC2025010', user_id: 'hyunwoo55', user_name: '조현우', rent_type: '월세', period: '2025.08.15 ~ 2026.08.14', price: '₩670,000', ctrt_stts: '계약대기', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
 
-    { rnet_ctrt_no: 'RC2025011', user_id: 'nari_dev', user_name: '이나리', rent_type: '전세', period: '2025.09.01 ~ 2027.08.31', price: '₩1,320,000,000', ctrt_stts: '이행중', detail: '상세보기', isExpiryUrgent: false }
+    { rent_ctrt_no: 'RC2025011', user_id: 'nari_dev', user_name: '이나리', rent_type: '전세', period: '2025.09.01 ~ 2027.08.31', price: '₩1,320,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false }
   ];
 
   return (
-    <div className="content-wrapper">
+    <div className="content-wrapper" style={{paddingTop:'0px'}}>
       {/* 타이틀 세션 */}
       <div className="page-header">
         <div>
@@ -55,7 +76,7 @@ const Ctrt = ({ onViewChange }) => {
 
       {/* 대시보드 통계 그리드*/}
       <div className="stats-grid">
-        {stats.map((stat, i) => (
+        {board.map((stat, i) => (
           <div key={i} className="stat-card">
             <div className="stat-icon-row">
               <div className={`icon-box-wrapper ${stat.color}`}>
@@ -108,40 +129,46 @@ const Ctrt = ({ onViewChange }) => {
           <table className="data-table">
             <thead>
               <tr>
-                <th>계약 번호</th>
+                <th style={{ textAlign: 'left', marginRight: '0px', paddingRight: '0px' }}>계약 번호</th>
                 <th>ID</th>
+                <th>아파트</th>
+                <th>승인일</th>
+                <th>계약 기간</th>
                 <th>전·월세</th>
-                <th>기간</th>
                 <th>임대료</th>   {/* 전세면 보증금, 월세면 월 임대 금액 */}
                 <th>상태</th>
+                <th>담당자</th>
                 <th>상세</th>
               </tr>
             </thead>
             <tbody>
               {contracts.map((item, i) => (
                 <tr key={i}>
-                  <td>  {/* 계약 번호 */}
-                    <div className="cell-flex">
-                      <div>
-                        <p className="cell-title">{item.rnet_ctrt_no}</p>
-                      </div>
+                  <td style={{ textAlign: 'left', marginRight: '0px', paddingRight: '0px' }}>  {/* 계약 번호 */}
+                    <div>
+                      <p className="cell-title" style={{marginRight: '0px'}}>{item.rent_ctrt_no}</p>
                     </div>
                   </td>
                   <td> {/* ID */}
-                    <div className="cell-flex">
-                      <div>
-                        <p className="cell-title">{item.user_id}</p>
-                        <p className="cell-sub">이름 : {item.user_name}</p>
-                      </div>
+                    <div>
+                      <p className="cell-title">{item.user_id}</p>
+                      <p className="cell-sub">이름 : {item.user_name}</p>
                     </div>
+                  </td>
+                  <td> {/* 아파트 */}
+                    <p className="cell-title">{item.aptCmplexNo}</p>
+                    <p className="cell-sub">{item.aptCmplexNm}</p>
+                  </td>
+                  <td> {/* 계약 승인일 */}
+                    <span className="cell-title">{item.approvalDt}</span>
+                  </td>
+                  <td> {/* 기간 */}
+                    <span className="cell-title">{item.period}</span>
                   </td>
                   <td> {/* 임대 타입 */}
                     <span className="cell-title">
                       {item.rent_type}
                     </span>
-                  </td>
-                  <td> {/* 기간 */}
-                    <span className="cell-title">{item.period}</span>
                   </td>
                   <td className='price'> {/* 임대료 */}
                     <span className='cell-title'>
@@ -150,6 +177,9 @@ const Ctrt = ({ onViewChange }) => {
                   </td>
                   <td> {/* 상태 */}
                     <span className={`cell-text ${item.isExpiryUrgent ? 'text-error font-semibold' : ''} `}>{item.ctrt_stts}</span>
+                  </td>
+                  <td> {/* 담당자 */}
+                    <p className='cell-title'>{item.mgr}</p>
                   </td>
                   <td>{/* 상세 버튼 */}
                     <button className='btn-cell'>상세보기</button>
@@ -183,6 +213,5 @@ const Ctrt = ({ onViewChange }) => {
     </div>
   );
 };
-
 
 export default Ctrt;

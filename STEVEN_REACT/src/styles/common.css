@@ -34,7 +34,7 @@
 .text-secondary { color: var(--secondary); }
 .bg-error-container { background-color: var(--error-container); }
 .bg-pending-container { background-color: var(--pending-container); }
-.bg-expired-container { background-color: var(--outline); }
+.bg-expired-container { background-color: silver; }
 .text-error { color: var(--error); }
 .bg-surface-container-high { background-color: var(--surface-container-high); }
 .text-on-surface-variant { color: var(--on-surface-variant); }
@@ -151,7 +151,7 @@
 
 /* 레이아웃 기반 구조 */
 .content-wrapper {
-  padding: 24px;
+  padding: 2px;
   max-width: 1440px; /* max-w-container-max */
   margin-left: auto;
   margin-right: auto;
@@ -389,7 +389,7 @@
 .data-table th {
   background-color: var(--surface-container-low);
   border-bottom: 1px solid var(--outline-variant);
-  padding: 8px 15px;
+  padding: 15px 15px;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
