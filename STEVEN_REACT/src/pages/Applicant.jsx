@@ -299,7 +299,7 @@ const Applicant = () => {
         updSttsRequest(finalMapList, ag);
     }
 
-    // 백엔드 업데이트 요청
+    // 백엔드 업데이트 요청  
     const updSttsRequest = async (aplctMapList, agApi) => {
         if (!aplctMapList || aplctMapList.length === 0) return;
 

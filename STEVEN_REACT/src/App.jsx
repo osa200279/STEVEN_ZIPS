@@ -7,9 +7,9 @@ import Applicant from "./pages/Applicant";
 import AptRegister from "./pages/AptRegister";
 import Ctrt from "./pages/Ctrt";
 import Home from "./pages/Home";
-import './styles/centralAside.css';
-import './styles/centralCommon.css';
-import './styles/centralHeader.css';
+import './styles/sidebar.css';
+import './styles/common.css';
+import './styles/header.css';
 import { getCookie } from './util/api/requestApi';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
