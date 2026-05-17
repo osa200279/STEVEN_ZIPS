@@ -1,6 +1,5 @@
 package kr.or.ddit.domain.central.mapper;
 
-import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.vo.ContractUserVO;
 import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import org.apache.ibatis.annotations.Mapper;

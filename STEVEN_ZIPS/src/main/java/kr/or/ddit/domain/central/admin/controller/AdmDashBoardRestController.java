@@ -2,6 +2,7 @@ package kr.or.ddit.domain.central.admin.controller;
 
 import kr.or.ddit.domain.central.admin.dto.AplctDTO;
 import kr.or.ddit.domain.central.admin.service.IAplctService;
+import kr.or.ddit.domain.central.rentCtrt.service.IRentCtrtService;
 import kr.or.ddit.domain.member.admin.vo.AdmVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,9 @@ public class AdmDashBoardRestController {
 
     @Autowired
     private IAplctService aplctService;
+
+    @Autowired
+    private IRentCtrtService rentCtrtService;
 
     // 리액트 페이지로 로그인한 관리자 정보를 넘김
     @PreAuthorize("hasRole('ADMIN')")
@@ -71,8 +75,25 @@ public class AdmDashBoardRestController {
         int cnt = aplctService.approveAplct(updateList);
 
         // log.info("#### 상태변경 쿼리 끝 {}", cnt);
-        // 서비스에 트랜잭셔널 어노테이션을 써서 어떠한 값이 오더라도 성공으로 간주(쿼리에 익명블록 사용으로 성공해도 -1의 값이 올 수 있음)
+        // 서비스에 트랜잭셔널 어노테이션을 써서 어떠한 값이 오더라도 성공으로 간주
+        // (쿼리에 익명블록 사용으로 성공해도 -1의 값이 올 수 있음)
         return cnt != 0 ? ResponseEntity.ok(cnt)
                 : ResponseEntity.badRequest().body(0);
+    }
+
+    // 임대 계약 생성 및 담당자 배정
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/ctrt/make")
+    public ResponseEntity<?> makeCtrt(
+            @AuthenticationPrincipal CustomUser customUser
+            , String aplctNo) {
+        log.info("makeCtrt() 실행");
+        AdmVO adm = (AdmVO) customUser.getMember();
+        String manager = adm.getUserNo();
+
+        // 임대계약 생성 및 담당자 배정은 한 서비스에서 한번에 실행되어야함(트랜잭션)
+        int result = rentCtrtService.makeCtrt(aplctNo, manager);
+
+        return null;
     }
 }

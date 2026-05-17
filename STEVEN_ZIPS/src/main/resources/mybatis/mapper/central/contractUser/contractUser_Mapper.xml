@@ -31,41 +31,6 @@
         )
     </insert>
 
-
-    <!--<insert id="insertRentCtrtVO" parameterType="kr.or.ddit.domain.central.vo.RentCtrtVO">
-        <selectKey keyProperty="rentCtrtNo" resultType="string" order="BEFORE">
-            SELECT seq_rent_ctrt.nextval        /*kr.or.ddit.domain.central.mapper.IContractUserMapper.insertRentCtrtVO*/
-            FROM dual
-        </selectKey>
-        INSERT INTO rent_ctrt (
-        rent_ctrt_no
-        ,rent_lstg_no
-        ,ctrt_id
-        ,mvin_yn
-        ,ctrt_stts_cd
-        ,reg_dt
-        ,user_no
-        ,rentor_nm
-        ,rentor_telno
-        ,agnt_nm
-        ,agnt_telno
-        ,spcl_stpltn_cn
-        ) VALUES (
-        #{rentCtrtNo}
-        ,#{rentLstgNo}
-        ,#{rentCtrtNo}
-        ,'N'
-        ,'SUB'
-        ,SYSDATE
-        ,#{userNo}
-        ,#{rentorNm}
-        ,#{rentorTelno}
-        ,#{agntNm}
-        ,#{agntTelno}
-        ,#{spclStpltnCn}
-        )
-    </insert>-->
-
     <!--aplct 테이블에 INSERT
     aplct_no 형식: YYMMDD_userNo_순번
     청약 신청 시 사용, 초기 상태는 SUBMIT-->
