@@ -172,9 +172,9 @@
                 </div>
 
                 <%-- 탭 --%>
-                <div class="public-tab-row" role="tablist" aria-label="편의시설(공용) 관리 구분">
+                <div class="public-tab-row" role="tablist" aria-label="편의시설 관리 구분">
                     <button type="button" class="public-tab-btn active" id="tabPublicFacility" data-view-type="PUBLIC_FACILITY">
-                        <span class="material-symbols-rounded">meeting_room</span>편의시설(공용)
+                        <span class="material-symbols-rounded">meeting_room</span>편의시설
                     </button>
                     <button type="button" class="public-tab-btn" id="tabPublicItem" data-view-type="PUBLIC_ITEM">
                         <span class="material-symbols-rounded">inventory_2</span>편의시설 자원
@@ -298,7 +298,7 @@
 
                             <%-- 자원 탭 필터 --%>
                             <div class="form-field filter-item-only">
-                                <label class="field-label">편의시설(공용)번호</label>
+                                <label class="field-label">편의시설 번호</label>
                                 <div class="search-auto-wrap" style="position:relative;">
                                     <div style="display:flex;align-items:center;border:1px solid var(--line);border-radius:4px;background:#fff;overflow:hidden;">
                                         <span style="display:flex;align-items:center;height:32px;padding:0 8px;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-light);border-right:1px solid var(--line);white-space:nowrap;flex-shrink:0;">CMN</span>
@@ -354,7 +354,7 @@
                 <div class="panel">
                     <div class="panel-header">
                         <div class="list-header-left">
-                            <h3 class="panel-title" id="listTitle"><span class="material-symbols-rounded">meeting_room</span>편의시설(공용) 목록</h3>
+                            <h3 class="panel-title" id="listTitle"><span class="material-symbols-rounded">meeting_room</span>편의시설 목록</h3>
                             <span class="list-count" id="listCount">0건</span>
                             <span class="result-desc" id="resultDesc">전체 조건</span>
                         </div>
@@ -364,7 +364,7 @@
                             </button>
                             <sec:authorize access="!hasRole('ADMIN')">
                                 <button type="button" class="btn btn-primary btn-sm" id="registerBtn">
-                                    <span class="material-symbols-rounded">add</span><span id="registerBtnText">편의시설(공용) 등록</span>
+                                    <span class="material-symbols-rounded">add</span><span id="registerBtnText">편의시설 등록</span>
                                 </button>
                             </sec:authorize>
                         </div>
@@ -376,7 +376,7 @@
                             <span class="summary-chip" id="chipSecondWrap">예약가능 <strong id="chipSecond">0</strong></span>
                             <span class="summary-chip" id="chipThirdWrap">유료 <strong id="chipThird">0</strong></span>
                         </div>
-                        <span class="summary-note" id="summaryNote">편의시설(공용) 기본정보를 조회합니다.</span>
+                        <span class="summary-note" id="summaryNote">편의시설 기본정보를 조회합니다.</span>
                     </div>
 
                     <div class="public-grid-wrap">
@@ -385,7 +385,7 @@
 
                     <div class="info-line" id="infoLine">
                         <span class="material-symbols-rounded">info</span>
-                        편의시설(공용)은 FACILITY 마스터와 연결되고, 편의시설 자원은 PUBLIC_FACILITY 하위 자원으로 관리됩니다.
+                        편의시설 시설자산과 연결되고, 편의시설 자원은 하위 자원으로 관리됩니다.
                     </div>
                 </div>
 
@@ -485,7 +485,10 @@
                         return "NORMAL";
                     }
 
-                    function getFacilityName(row) { return text((row || {}).cmnFacilityNm || (row || {}).facilityNm); }
+                    /* 편의시설명 조회 함수 */
+                    function getFacilityName(row) { return text((row || {}).cmnFacilityNm); }
+
+                    /* 시설유형 표시값 조회 함수 */
                     function getFacilityTypeText(row) { return text((row || {}).facilityTyNm || (row || {}).facilityTyCd); }
 
                     function buildOperationDayText(dayType, startDay, endDay) {
@@ -629,17 +632,90 @@
                         return false;
                     }
 
-                    function getOperationTimeRange(operationHour) {
-                        var matches = text(operationHour).match(/([0-2][0-9]:[0-5][0-9])/g) || [];
-                        return { start:matches[0] || "", end:matches[1] || "" };
+                    /**
+                     * 시간 필터값 정규화
+                     * - input type=time 값: 00:00, 12:00
+                     * - 기존 저장값 보정: 오전 12:00 -> 00:00
+                     * - 기존 저장값 보정: 오후 12:00 -> 12:00
+                     */
+                    function normalizeTimeForFilter(value) {
+                        var raw = text(value).trim();
+                        var match;
+                        var ampm;
+                        var hour;
+                        var minute;
+
+                        if (!raw) return "";
+
+                        match = raw.match(/(오전|오후)?\s*([0-2]?\d):([0-5]\d)/);
+                        if (!match) return "";
+
+                        ampm = match[1] || "";
+                        hour = Number(match[2]);
+                        minute = match[3];
+
+                        if (ampm === "오전" && hour === 12) hour = 0;
+                        if (ampm === "오후" && hour < 12) hour += 12;
+
+                        return String(hour).padStart(2, "0") + ":" + minute;
                     }
 
+                    /**
+                     * 시간 분 단위 변환
+                     * - 00:00 -> 0
+                     * - 12:00 -> 720
+                     * - 비교 기준 단일화
+                     */
+                    function timeToMinutes(value) {
+                        var timeValue = normalizeTimeForFilter(value);
+                        var parts;
+
+                        if (!timeValue) return null;
+
+                        parts = timeValue.split(":");
+                        return Number(parts[0]) * 60 + Number(parts[1]);
+                    }
+
+                    /**
+                     * 운영시간 범위 추출
+                     * - 신규 저장값: 매일 00:00~18:00
+                     * - 기존 저장값: 매일 오전 11:34~오후 12:00
+                     */
+                    function getOperationTimeRange(operationHour) {
+                        var matches = text(operationHour).match(/(오전|오후)?\s*[0-2]?\d:[0-5]\d/g) || [];
+
+                        return {
+                            start:normalizeTimeForFilter(matches[0] || ""),
+                            end:normalizeTimeForFilter(matches[1] || "")
+                        };
+                    }
+
+                    /**
+                     * 운영시간 필터 일치 여부
+                     * - 시작시간 조건: 운영 시작시간이 필터 시작시간 이상
+                     * - 종료시간 조건: 운영 종료시간이 필터 종료시간 이하
+                     * - 오전 12시와 오후 12시 구분
+                     */
                     function isOperationTimeMatched(operationHour, filterStartTime, filterEndTime) {
+                        var range;
+                        var rowStartMinute;
+                        var rowEndMinute;
+                        var filterStartMinute;
+                        var filterEndMinute;
+
                         if (!filterStartTime && !filterEndTime) return true;
-                        var range = getOperationTimeRange(operationHour);
-                        if (!range.start && !range.end) return false;
-                        if (filterStartTime && (!range.start || range.start < filterStartTime)) return false;
-                        if (filterEndTime && (!range.end || range.end > filterEndTime)) return false;
+
+                        range = getOperationTimeRange(operationHour);
+                        rowStartMinute = timeToMinutes(range.start);
+                        rowEndMinute = timeToMinutes(range.end);
+                        filterStartMinute = timeToMinutes(filterStartTime);
+                        filterEndMinute = timeToMinutes(filterEndTime);
+
+                        if (filterStartMinute != null && rowStartMinute == null) return false;
+                        if (filterEndMinute != null && rowEndMinute == null) return false;
+                        if (filterStartMinute != null && rowStartMinute < filterStartMinute) return false;
+                        if (filterEndMinute != null && rowEndMinute > filterEndMinute) return false;
+
                         return true;
                     }
 
@@ -705,10 +781,32 @@
                         sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
                     }
 
+                    /**
+                     * 목록 상태 조회
+                     * - 상세/수정/등록 화면 복귀 시 복원 대상 상태
+                     * - 메뉴 재진입 시 canRestoreListState()에서 제거 대상 상태
+                     */
                     function loadListState() {
                         var raw = sessionStorage.getItem(STORAGE_KEY);
                         if (!raw) return null;
                         try { return JSON.parse(raw); } catch (e) { sessionStorage.removeItem(STORAGE_KEY); return null; }
+                    }
+
+                    /**
+                     * 목록 상태 복원 기준
+                     * - 편의시설 상세 화면 복귀
+                     * - 편의시설 수정 화면 복귀
+                     * - 편의시설 등록 화면 복귀
+                     * - 그 외 사이드바/상단메뉴/다른 화면 재진입은 첫 번째 탭 초기 진입
+                     */
+                    function canRestoreListState() {
+                        var referrer = document.referrer || "";
+
+                        var fromDetailPage = referrer.indexOf("/manager/publicFacility/detail-page/") > -1;
+                        var fromUpdatePage = referrer.indexOf("/manager/publicFacility/update-page/") > -1;
+                        var fromRegisterPage = referrer.indexOf("/manager/publicFacility/register/") > -1;
+
+                        return fromDetailPage || fromUpdatePage || fromRegisterPage;
                     }
 
                     function restoreFacilityFilters(filter) {
@@ -746,7 +844,8 @@
                             var operationStatus = getOperationStatus(row);
                             var itemCnt = getItemCount(row);
                             var mdfDate = normalizeDate(row.mdfDt);
-                            var keywordOk = !f.keyword || contains(row.cmnFacilityNm, f.keyword) || contains(row.facilityNm, f.keyword);
+                            /* 편의시설명 검색 조건 */
+                            var keywordOk = !f.keyword || contains(row.cmnFacilityNm, f.keyword);
                             var rowDongNo = text(row.dongNo);
                             var dongOk = !f.dongNo || (f.dongNo === "_COMMON_" && !rowDongNo) || rowDongNo === f.dongNo;
                             var facilityTyOk = !f.facilityTyCd || row.facilityTyCd === f.facilityTyCd;
@@ -855,7 +954,7 @@
                     function moveItemDetail(no, row) {
                         saveListState();
                         var facilityNo = row && row.cmnFacilityNo ? row.cmnFacilityNo : "";
-                        if (!facilityNo) { alertMessage("상위 편의시설(공용) 번호가 없습니다."); return; }
+                        if (!facilityNo) { alertMessage("상위 편의시설 번호가 없습니다."); return; }
                         if (window.PublicFacilityItemModal) {
                             PublicFacilityItemModal.init({ contextPath:contextPath, mgmtOfcNo:mgmtOfcNo, cmnFacilityNo:facilityNo, isAdmin:config.isAdmin });
                             PublicFacilityItemModal.open("detail", no);
@@ -865,7 +964,7 @@
                     function moveItemUpdate(no, row) {
                         saveListState();
                         var facilityNo = row && row.cmnFacilityNo ? row.cmnFacilityNo : "";
-                        if (!facilityNo) { alertMessage("상위 편의시설(공용) 번호가 없습니다."); return; }
+                        if (!facilityNo) { alertMessage("상위 편의시설 번호가 없습니다."); return; }
                         if (window.PublicFacilityItemModal) {
                             PublicFacilityItemModal.init({ contextPath:contextPath, mgmtOfcNo:mgmtOfcNo, cmnFacilityNo:facilityNo, isAdmin:config.isAdmin });
                             PublicFacilityItemModal.open("update", no);
@@ -873,7 +972,7 @@
                     }
 
                     async function deleteFacility(cmnFacilityNo) {
-                        if (!confirm("해당 편의시설(공용)을 삭제하시겠습니까?\n예약이력이 있는 경우 삭제되지 않습니다.")) return;
+                        if (!confirm("해당 편의시설을 삭제하시겠습니까?\n예약이력이 있는 경우 삭제되지 않습니다.")) return;
                         try {
                             await postJson(contextPath + "/manager/publicFacility/delete/" + encodeURIComponent(mgmtOfcNo), { cmnFacilityNo:cmnFacilityNo });
                             alertMessage("삭제되었습니다.");
@@ -902,13 +1001,13 @@
                         el("tabPublicItem").classList.toggle("active", isItem);
                         el("listTitle").innerHTML = isItem
                             ? '<span class="material-symbols-rounded">inventory_2</span>편의시설 자원 목록'
-                            : '<span class="material-symbols-rounded">meeting_room</span>편의시설(공용) 목록';
+                            : '<span class="material-symbols-rounded">meeting_room</span>편의시설 목록';
                         if (el("registerBtnText")) {
-                            el("registerBtnText").textContent = isItem ? "자원 등록" : "편의시설(공용) 등록";
+                            el("registerBtnText").textContent = isItem ? "자원 등록" : "편의시설 등록";
                         }
                         el("infoLine").innerHTML = isItem
-                            ? '<span class="material-symbols-rounded">info</span>편의시설 자원은 PUBLIC_FACILITY.CMN_FACILITY_NO 기준으로 연결됩니다.'
-                            : '<span class="material-symbols-rounded">info</span>편의시설(공용)은 FACILITY.FACILITY_NO와 PUBLIC_FACILITY.FACILITY_NO 기준으로 연결됩니다.';
+                            ? '<span class="material-symbols-rounded">info</span>편의시설 자원은 편의시설번호 기준으로 연결됩니다.'
+                            : '<span class="material-symbols-rounded">info</span>편의시설은 시설번호와 편의시설의 시설번호 기준으로 연결됩니다.';
                     }
 
                     function switchTab(viewType) {
@@ -1047,8 +1146,26 @@
                     }
 
                     document.addEventListener("DOMContentLoaded", function () {
+                        /* 저장 목록 상태 조회 */
                         restoreState = loadListState();
-                        if (restoreState && restoreState.viewType) { currentViewType = restoreState.viewType; }
+
+                        /*
+                         * 복원 대상 판정
+                         * - 상세/수정/등록 화면에서 돌아온 경우만 저장 탭/필터 복원
+                         * - 사이드바나 다른 메뉴에서 새로 들어온 경우 저장 상태 제거
+                         */
+                        if (restoreState && !canRestoreListState()) {
+                            sessionStorage.removeItem(STORAGE_KEY);
+                            restoreState = null;
+                        }
+
+                        /*
+                         * 초기 탭 결정
+                         * - 복원 대상이면 저장된 탭 유지
+                         * - 복원 대상이 아니면 항상 첫 번째 탭인 편의시설 탭 표시
+                         */
+                        currentViewType = restoreState && restoreState.viewType ? restoreState.viewType : "PUBLIC_FACILITY";
+
                         publicFacilityGrid = window.PublicFacilityAgGrid.create({
                             gridId:"publicFacilityGrid",
                             viewType:currentViewType,
@@ -1061,8 +1178,14 @@
                             onItemEdit:moveItemUpdate,
                             onItemDelete:deleteItem
                         });
+
+                        /* 탭 화면 상태 반영 */
                         updateTabUi();
+
+                        /* 화면 이벤트 연결 */
                         bindEvents();
+
+                        /* 목록 조회 */
                         loadList();
                     });
                 })();

@@ -56,18 +56,10 @@
         #facilityPage .asset-summary-card.primary .summary-label { color:rgba(255,255,255,.72); }
         #facilityPage .asset-summary-card.primary .summary-value { color:#fff; }
 
-        /* 탭 */
-        #facilityPage .facility-tab-row { display:flex; align-items:center; gap:6px; margin-bottom:14px; border-bottom:1px solid var(--line); }
-        #facilityPage .facility-tab-btn { position:relative; display:inline-flex; align-items:center; gap:5px; height:36px; padding:0 14px; border:0; background:transparent; color:#6b7a6e; font-size:12px; font-weight:800; cursor:pointer; }
-        #facilityPage .facility-tab-btn .material-symbols-rounded { font-size:17px; color:#9caa9e; }
-        #facilityPage .facility-tab-btn.active { color:var(--accent); }
-        #facilityPage .facility-tab-btn.active::after { content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--accent); }
-        #facilityPage .facility-tab-btn.active .material-symbols-rounded { color:var(--accent); }
-
         /* 검색 */
         #facilityPage .facility-filter-panel { overflow:visible; }
         #facilityPage .facility-filter-panel .panel-body { overflow:visible; }
-        #facilityPage .facility-filter-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr minmax(280px,1.4fr) auto; gap:10px; align-items:end; }
+        #facilityPage .facility-filter-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr minmax(260px,1.4fr) auto; gap:10px; align-items:end; }
         #facilityPage .facility-search-field { position:relative; min-width:0; z-index:20; }
         #facilityPage .search-wrap { position:relative; width:100%; }
         #facilityPage .search-wrap .material-symbols-rounded { position:absolute; left:9px; top:50%; transform:translateY(-50%); font-size:15px; color:#9caa9e; pointer-events:none; }
@@ -180,15 +172,6 @@
                     </div>
                 </div>
 
-                <div class="facility-tab-row tab-bar" role="tablist" aria-label="시설종류 선택">
-                    <button type="button" class="facility-tab-btn tab-btn active" data-action="setFacilityTab" data-kind="ALL">
-                        <span class="material-symbols-rounded">apartment</span>전체시설
-                    </button>
-                    <button type="button" class="facility-tab-btn tab-btn" data-action="setFacilityTab" data-kind="PUBLIC">
-                        <span class="material-symbols-rounded">groups</span>편의시설
-                    </button>
-                </div>
-
                 <div class="panel facility-filter-panel">
                     <div class="panel-header">
                         <h3 class="panel-title"><span class="material-symbols-rounded">manage_search</span>검색 조건</h3>
@@ -196,9 +179,25 @@
                     <div class="panel-body">
                         <div class="facility-filter-grid">
                             <div class="form-field">
+                                <label class="field-label">시설구분</label>
+                                <select class="form-select" id="filterFacilityKind" name="facilityKind">
+                                    <option value="ALL">전체</option>
+                                    <option value="FACILITY">일반시설</option>
+                                    <option value="PUBLIC">편의시설</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
                                 <label class="field-label">시설유형</label>
                                 <select class="form-select" id="filterFacTy" name="facilityTyCd">
                                     <option value="">전체</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">운영관리</label>
+                                <select class="form-select" id="filterPublicFacilityYn" name="publicFacilityYn">
+                                    <option value="">전체</option>
+                                    <option value="Y">운영등록</option>
+                                    <option value="N">운영미등록</option>
                                 </select>
                             </div>
                             <div class="form-field">
@@ -250,8 +249,8 @@
                             <span class="result-desc" id="resultDesc">전체 조건</span>
                         </div>
                         <div class="list-header-right">
-                            <%-- 편의시설 탭 전용 운영관리 이동 버튼 --%>
-                            <button type="button" class="btn btn-secondary btn-sm" id="publicFacilityManageBtn" data-action="movePublicFacilityManage" style="display:none;">
+                            <%-- 편의시설 운영관리 화면 이동 버튼 --%>
+                            <button type="button" class="btn btn-secondary btn-sm" id="publicFacilityManageBtn" data-action="movePublicFacilityManage">
                                 <span class="material-symbols-rounded">settings</span>편의시설 운영관리
                             </button>
                             <button type="button" class="btn btn-secondary btn-sm" data-action="exportExcel"><span class="material-symbols-rounded">download</span>엑셀 다운로드</button>
@@ -290,9 +289,8 @@
 
        유지 기능
        - 목록 조회
-       - 전체시설 / 편의시설 탭 변경
-       - 시설유형 / 운영상태 / 동 / 검색어 필터 조회
-       - 전체시설 탭에서 “편의시설” 선택 시 편의시설 탭으로 이동
+       - 시설구분 / 시설유형 / 운영관리 / 활성여부 / 동 / 검색어 필터 조회
+       - 시설유형 select에서 일반시설 / 편의시설 optgroup 구분
        - 검색어 자동완성
        - 등록 / 상세 / 수정 화면 이동
        - AG Grid 출력
@@ -303,12 +301,17 @@
        2. 공통 함수
        3. 페이지 이동
        4. 검색 조건
-       5. 탭 / 시설유형 필터
+       5. 시설유형 필터
        6. 목록 / 현황 카드
        7. 자동완성
        8. 엑셀 다운로드
        9. 이벤트 처리
        10. 초기 실행
+
+       목록 상태 유지 기준
+       - 상세/수정 화면에서 목록 복귀 : 필터 유지
+       - 사이드바/상단 메뉴/다른 화면에서 목록 진입 : 필터 초기화
+       - 초기화 버튼 클릭 : 필터 초기화
     ============================================================ */
     (function () {
 
@@ -346,14 +349,6 @@
          */
         var isAdmin = config.isAdmin === true || config.isAdmin === "true";
 
-        /*
-         * currentTab
-         * - 현재 선택된 시설 탭
-         * - ALL    : 전체시설 탭
-         * - PUBLIC : 편의시설 탭
-         * - 목록 조회 시 facilityKind 파라미터로 서버에 보낸다.
-         */
-        var currentTab = "ALL";
 
         /*
          * currentList
@@ -386,7 +381,7 @@
         /*
          * PUBLIC_TYPE_CODES
          * - 편의시설로 취급할 시설유형 코드 목록
-         * - 전체시설 탭에서는 이 코드들을 각각 보여주지 않고 “편의시설” 옵션 하나로 합친다.
+         * - 시설유형 select에서 일반시설 / 편의시설 optgroup을 나눌 때 사용한다.
          */
         var PUBLIC_TYPE_CODES = ["MEET", "PARK", "PLAY", "COMM", "GYM", "STUDY", "PARKING"];
 
@@ -519,23 +514,23 @@
 
         /**
          * 시설자산 목록 상태 저장
-         * - 상세/수정 화면 이동 전 현재 탭, 검색조건, 페이지 번호 저장
+         * - 상세/수정 화면 이동 전 현재 검색조건, 페이지 번호 저장
          * - 브라우저 탭 단위 저장을 위한 sessionStorage 사용
          */
         function saveListState() {
-            /* 현재 페이지 번호 */
-            var currentPage = 0;
-
-            /* 현재 페이지 번호 조회 */
-            if (window.FacilityGrid && typeof FacilityGrid.getCurrentPage === "function") {
-                currentPage = FacilityGrid.getCurrentPage();
-            }
+            /*
+             * currentPage
+             * - AG Grid 현재 페이지 번호
+             * - 상세/수정 화면에서 목록으로 돌아올 때 같은 페이지를 복원하기 위해 저장한다.
+             */
+            var currentPage = FacilityGrid.getCurrentPage();
 
             /* 저장 대상 목록 상태 */
             var state = {
-                tab: currentTab,
                 page: currentPage,
+                facilityKind: el("filterFacilityKind").value,
                 facilityTyCd: el("filterFacTy").value,
+                publicFacilityYn: el("filterPublicFacilityYn").value,
                 useYn: el("filterUseYn").value,
                 dongNo: el("filterDong").value,
                 instlDt: el("filterInstlDt").value,
@@ -572,43 +567,36 @@
         }
 
         /**
-         * 목록 상태 복원 가능 여부 확인
-         * - 상세/수정 화면에서 목록으로 돌아온 경우만 복원 대상
-         * - 사이드바/메뉴에서 시설자산 목록으로 새 진입한 경우 복원 제외
+         * 목록 상태 복원 가능 여부
+         * - 상세 화면 복귀 시 복원 대상
+         * - 수정 화면 복귀 시 복원 대상
+         * - 메뉴/탭 신규 진입 시 초기화 대상
          */
         function canRestoreListState() {
             /* 이전 페이지 주소 */
             var referrer = document.referrer || "";
 
-            /* 상세 화면에서 돌아온 경우 */
+            /* 상세 화면 복귀 여부 */
             var fromDetailPage = referrer.indexOf("/manager/facility/detail-page/") > -1;
 
-            /* 수정 화면에서 돌아온 경우 */
+            /* 수정 화면 복귀 여부 */
             var fromUpdatePage = referrer.indexOf("/manager/facility/update-page/") > -1;
 
-            /* 상세/수정 복귀 여부 반환 */
+            /* 상세/수정 복귀 여부 */
             return fromDetailPage || fromUpdatePage;
         }
 
         /**
          * 시설자산 목록 상태 반영
-         * - 저장된 탭, 검색조건 화면 반영
+         * - 저장된 검색조건 화면 반영
          * - 시설유형은 옵션 생성 후 따로 반영 필요
          */
         function applyListState(state) {
             /* 복원 상태 없음 */
             if (!state) return;
 
-            /* 탭 상태 반영 */
-            currentTab = state.tab === "PUBLIC" ? "PUBLIC" : "ALL";
-
-            /* 탭 버튼 활성 상태 반영 */
-            document.querySelectorAll(".facility-tab-btn").forEach(function (button) {
-                button.classList.toggle("active", button.dataset.kind === currentTab);
-            });
-
-            /* 편의시설 운영관리 버튼 표시 상태 반영 */
-            updatePublicManageButton();
+            /* 시설구분 조건 반영 */
+            el("filterFacilityKind").value = state.facilityKind || "ALL";
 
             /* 활성여부 조건 반영 */
             el("filterUseYn").value = state.useYn || "";
@@ -621,6 +609,10 @@
 
             /* 검색어 조건 반영 */
             el("filterKeyword").value = state.keyword || "";
+
+            if (el("filterPublicFacilityYn")) {
+                el("filterPublicFacilityYn").value = state.publicFacilityYn || "";
+            }
         }
 
         /** 시설 등록 화면 이동 */
@@ -663,31 +655,47 @@
 
         /**
          * 현재 검색 조건 수집
-         * - 서버 목록 조회 API에 붙일 query string 생성
-         * - 예: facilityKind=ALL&useYn=Y&keyword=승강기
+         * - 시설구분, 시설유형, 운영관리, 활성여부, 동, 설치일자, 검색어를 서버로 전달
          */
         function getSearchParams() {
             var params = new URLSearchParams();
 
-            params.append("facilityKind", currentTab);
+            var facilityKindSelect = el("filterFacilityKind");          // 시설구분 select
+            var publicFacilitySelect = el("filterPublicFacilityYn");    // 운영관리 select
 
+            /* 시설구분 조건 */
+            params.append("facilityKind", facilityKindSelect ? facilityKindSelect.value : "ALL");
+
+            /* 시설유형 조건 */
             if (el("filterFacTy").value) {
                 params.append("facilityTyCd", el("filterFacTy").value);
             }
+
+            /* 운영관리 등록 여부 조건 */
+            if (publicFacilitySelect && publicFacilitySelect.value) {
+                params.append("publicFacilityYn", publicFacilitySelect.value);
+            }
+
+            /* 활성여부 조건 */
             if (el("filterUseYn").value) {
                 params.append("useYn", el("filterUseYn").value);
             }
+
+            /* 동 조건 */
             if (el("filterDong").value) {
                 params.append("dongNo", el("filterDong").value);
             }
+
+            /* 설치일자 조건 */
             appendInstallDateParams(params);
+
+            /* 검색어 조건 */
             if (el("filterKeyword").value.trim()) {
                 params.append("keyword", el("filterKeyword").value.trim());
             }
 
             return params;
         }
-
         /**
          * 설치일자 조건 추가
          * - 화면에서는 날짜 하나만 선택한다.
@@ -702,113 +710,155 @@
             }
         }
 
-        function resetSearchForTabChange() {
-            el("filterFacTy").value = "";      /* 시설유형 */
-            el("filterUseYn").value = "";      /* 활성여부 */
-            el("filterDong").value = "";       /* 동 */
-            el("filterInstlDt").value = "";    /* 설치일자 */
-            el("filterKeyword").value = "";    /* 검색어 */
+        /** 검색 조건 초기화 후 목록 재조회 */
+        function resetSearch() {
+            /* 시설구분 조건 초기화 */
+            el("filterFacilityKind").value = "ALL";
 
-            closeSuggestList();                /* 자동완성 */
-            FacilityGrid.reset();              /* 그리드 */
-            sessionStorage.removeItem(STORAGE_KEY); /* 저장상태 */
-            restoreState = null;               /* 복원상태 */
+            /* 시설유형 조건 초기화 */
+            el("filterFacTy").value = "";
+
+            /* 운영관리 조건 초기화 */
+            el("filterPublicFacilityYn").value = "";
+
+            /* 활성여부 조건 초기화 */
+            el("filterUseYn").value = "";
+
+            /* 동 조건 초기화 */
+            el("filterDong").value = "";
+
+            /* 설치일자 조건 초기화 */
+            el("filterInstlDt").value = "";
+
+            /* 검색어 조건 초기화 */
+            el("filterKeyword").value = "";
+
+            /* 저장 목록 상태 삭제 */
+            sessionStorage.removeItem(STORAGE_KEY);
+
+            /* 복원 상태 초기화 */
+            restoreState = null;
+
+            /* 자동완성 닫기 */
+            closeSuggestList();
+
+            /* 그리드 필터 초기화 */
+            FacilityGrid.reset();
+
+            /* 시설자산 목록 재조회 */
+            loadFacilityList();
         }
-            /** 검색 조건 초기화 후 목록 재조회 */
-            function resetSearch() {
-                /* 시설유형 조건 초기화 */
-                el("filterFacTy").value = "";
-
-                /* 활성여부 조건 초기화 */
-                el("filterUseYn").value = "";
-
-                /* 동 조건 초기화 */
-                el("filterDong").value = "";
-
-                /* 설치일자 조건 초기화 */
-                el("filterInstlDt").value = "";
-
-                /* 검색어 조건 초기화 */
-                el("filterKeyword").value = "";
-
-                /* 저장 목록 상태 삭제 */
-                sessionStorage.removeItem(STORAGE_KEY);
-
-                /* 복원 상태 초기화 */
-                restoreState = null;
-
-                /* 자동완성 닫기 */
-                closeSuggestList();
-
-                /* 그리드 필터 초기화 */
-                FacilityGrid.reset();
-
-                /* 시설자산 목록 재조회 */
-                loadFacilityList();
-
-                /* 저장 목록 상태 삭제 */
-                sessionStorage.removeItem(STORAGE_KEY);
-
-                /* 복원 상태 초기화 */
-                restoreState = null;
-            }
 
         /**
          * 목록 상단 설명 문구 만들기
-         * - 예: 시설종류: 전체시설 · 운영상태: 사용 가능 · 검색어: 승강기
+         * - 예: 운영관리: 운영등록 · 활성여부: 활성 · 검색어: 승강기
          * - 실제 조회 조건을 사용자가 볼 수 있게 보여주는 용도
          */
         function makeFilterText() {
+            /*
+             * labels
+             * - 화면 상단 목록 설명에 표시할 검색 조건 문구 모음
+             * - 조건이 하나도 없으면 마지막에 "전체 조건"을 반환한다.
+             */
             var labels = [];
+
+            /*
+             * facilityKindSelect
+             * - 시설 대분류 필터
+             * - ALL      : 전체
+             * - FACILITY : 일반시설
+             * - PUBLIC   : 편의시설
+             */
+            var facilityKindSelect = el("filterFacilityKind");
+
+            /*
+             * typeSelect
+             * - 시설 세부유형 필터
+             * - 승강기, 소방시설, 독서실 같은 FACILITY_TY 코드 기준
+             */
             var typeSelect = el("filterFacTy");
+
+            /*
+             * publicFacilityYnSelect
+             * - 편의시설 운영관리 등록 여부 필터
+             * - Y : PUBLIC_FACILITY에 운영정보 등록
+             * - N : 편의시설 유형이지만 운영정보 미등록
+             */
+            var publicFacilityYnSelect = el("filterPublicFacilityYn");
+
+            /*
+             * useYnSelect
+             * - 시설 사용 여부 필터
+             * - Y : 활성
+             * - N : 비활성
+             */
             var useYnSelect = el("filterUseYn");
+
+            /*
+             * dongSelect
+             * - 시설 위치 동 필터
+             * - _COMMON_은 동이 없는 공용 위치 시설 조회용
+             */
             var dongSelect = el("filterDong");
+
+            /*
+             * instlDt
+             * - 설치일자 단일 날짜 조건
+             */
             var instlDt = el("filterInstlDt").value;
+
+            /*
+             * keyword
+             * - 시설번호, 시설명, 상세위치 통합 검색어
+             */
             var keyword = el("filterKeyword").value.trim();
 
-            labels.push("시설종류: " + (currentTab === "PUBLIC" ? "편의시설" : "전체시설"));
+            /* 시설구분 조건 문구 */
+            if (facilityKindSelect.value !== "ALL") {
+                labels.push("시설구분: " + facilityKindSelect.options[facilityKindSelect.selectedIndex].text);
+            }
 
+            /* 시설유형 조건 문구 */
             if (typeSelect.value) {
                 labels.push("시설유형: " + typeSelect.options[typeSelect.selectedIndex].text);
             }
+
+            /* 운영관리 등록 여부 조건 문구 */
+            if (publicFacilityYnSelect.value) {
+                labels.push("운영관리: " + publicFacilityYnSelect.options[publicFacilityYnSelect.selectedIndex].text);
+            }
+
+            /* 활성여부 조건 문구 */
             if (useYnSelect.value) {
                 labels.push("활성여부: " + useYnSelect.options[useYnSelect.selectedIndex].text);
             }
+
+            /* 동 조건 문구 */
             if (dongSelect.value) {
                 labels.push("동: " + dongSelect.options[dongSelect.selectedIndex].text);
             }
+
+            /* 설치일자 조건 문구 */
             if (instlDt) {
                 labels.push("설치일자: " + instlDt);
             }
+
+            /* 검색어 조건 문구 */
             if (keyword) {
                 labels.push("검색어: " + keyword);
             }
 
-            return labels.join(" · ");
+            /* 조건이 없을 때 기본 문구 */
+            return labels.length > 0 ? labels.join(" · ") : "전체 조건";
         }
 
 
 
         /* ============================================================
-           5. 탭 / 시설유형 필터
-           - 전체시설 탭과 편의시설 탭의 시설유형 select 구성이 다르다.
+           5. 시설유형 필터
+           - 목록은 탭으로 나누지 않고 전체 시설을 함께 조회한다.
+           - 시설유형 select 안에서 일반시설 / 편의시설을 optgroup으로 구분한다.
         ============================================================ */
-
-        /**
-         * 편의시설 운영관리 버튼 표시 갱신
-         * - 전체시설 탭에서는 숨김 처리
-         * - 편의시설 탭에서는 표시 처리
-         */
-        function updatePublicManageButton() {
-            /* 운영관리 버튼 요소 */
-            var manageBtn = el("publicFacilityManageBtn");
-
-            /* 버튼 요소 없음 방어 */
-            if (!manageBtn) return;
-
-            /* 편의시설 탭 기준 표시 여부 */
-            manageBtn.style.display = currentTab === "PUBLIC" ? "inline-flex" : "none";
-        }
 
         /**
          * 편의시설 운영관리 화면 이동
@@ -816,42 +866,18 @@
          */
         function movePublicFacilityManagePage() {
             /* 편의시설 관리 화면 이동 */
-            location.href = contextPath+ "/manager/publicFacility/page/"+ encodeURIComponent(mgmtOfcNo);
-        }
-
-        /**
-         * 탭 변경
-         * - currentTab 값을 바꾼다.
-         * - 탭 버튼 active 표시를 바꾼다.
-         * - 시설유형 필터를 탭에 맞게 다시 그린다.
-         * - 목록을 다시 조회한다.
-         */
-        async function changeTab(tabName) {
-            currentTab = tabName === "PUBLIC" ? "PUBLIC" : "ALL";
-
-            /* 편의시설 탭 전용 운영관리 버튼 표시 갱신 */
-            updatePublicManageButton();
-
-            document.querySelectorAll(".facility-tab-btn").forEach(function (button) {
-                button.classList.toggle("active", button.dataset.kind === currentTab);
-            });
-
-            resetSearchForTabChange();             /* 검색조건 초기화 */
-
-            await loadFacilityTypeFilter();        /* 유형필터 재생성 */
-            await loadFacilityList();              /* 목록 재조회 */
+            location.href = contextPath + "/manager/publicFacility/page/" + encodeURIComponent(mgmtOfcNo);
         }
 
         /**
          * 시설유형 필터 목록 조회 및 화면 출력
-         * - 전체시설 탭: 일반시설 유형 + “편의시설” 옵션 1개
-         * - 편의시설 탭: 편의시설 세부 유형 목록
+         * - 일반시설과 편의시설을 한 select 안에서 그룹으로 구분한다.
+         * - 목록 조회 자체는 항상 FACILITY 전체 기준으로 조회한다.
+         * - 시설유형 select 구성에는 전체 유형이 필요하므로 facilityKind=ALL로 조회한다.
          */
         async function loadFacilityTypeFilter() {
             var select = el("filterFacTy");
-            var url = apiUrl(
-                "type/list/" + encodeURIComponent(mgmtOfcNo) + "?facilityKind=" + encodeURIComponent(currentTab)
-            );
+            var url = apiUrl("type/list/" + encodeURIComponent(mgmtOfcNo) + "?facilityKind=ALL");
 
             try {
                 var result = await getJson(url);
@@ -859,12 +885,7 @@
 
                 select.innerHTML = '<option value="">전체</option>';
 
-                if (currentTab === "ALL") {
-                    drawAllTabTypeOptions(select, typeList);
-                    return;
-                }
-
-                drawPublicTabTypeOptions(select, typeList);
+                drawGroupedTypeOptions(select, typeList);
             } catch (e) {
                 console.error(e);
                 select.innerHTML = '<option value="">전체</option>';
@@ -872,15 +893,16 @@
         }
 
         /**
-         * 전체시설 탭 시설유형 select 구성
-         * - 일반시설 코드는 optgroup 안에 그대로 표시
-         * - 편의시설 코드는 각각 보여주지 않고 마지막에 “편의시설” 1개로 표시
+         * 시설유형 select optgroup 구성
+         * - 일반시설 그룹에는 소방시설, 전기시설, 급수시설 등 기본 시설유형을 표시한다.
+         * - 편의시설 그룹에는 헬스장, 독서실, 놀이터 등 운영관리 대상 시설유형을 표시한다.
          */
-        function drawAllTabTypeOptions(select, typeList) {
+        function drawGroupedTypeOptions(select, typeList) {
             var normalGroup = document.createElement("optgroup");
-            var hasPublicType = false;
+            var publicGroup = document.createElement("optgroup");
 
             normalGroup.label = "일반시설";
+            publicGroup.label = "편의시설";
 
             typeList.forEach(function (item) {
                 var code = readValue(item, ["code", "CODE", "codeNoCd", "CODE_NO_CD"]);
@@ -890,7 +912,7 @@
                 if (!code) return;
 
                 if (isPublicType(code, kind)) {
-                    hasPublicType = true;
+                    publicGroup.appendChild(makeOption(code, name || code));
                     return;
                 }
 
@@ -901,20 +923,9 @@
                 select.appendChild(normalGroup);
             }
 
-            if (hasPublicType) {
-                select.appendChild(makeOption("_PUBLIC_", "편의시설"));
+            if (publicGroup.children.length > 0) {
+                select.appendChild(publicGroup);
             }
-        }
-
-        /** 편의시설 탭 시설유형 select 구성 */
-        function drawPublicTabTypeOptions(select, typeList) {
-            typeList.forEach(function (item) {
-                var code = readValue(item, ["code", "CODE", "codeNoCd", "CODE_NO_CD"]);
-                var name = readValue(item, ["codeNm", "CODENM", "CODE_NM", "codeName", "CODE_NAME"]);
-
-                if (!code) return;
-                select.appendChild(makeOption(code, name || code));
-            });
         }
 
         /** 해당 시설유형 코드가 편의시설인지 확인 */
@@ -940,7 +951,7 @@
 
         /**
          * 시설 목록 조회
-         * - 현재 선택된 탭/필터/검색어를 서버로 보낸다.
+         * - 현재 선택된 필터/검색어를 서버로 보낸다.
          * - 받은 목록을 currentList에 저장한다.
          * - AG Grid와 현황 카드 값을 갱신한다.
          */
@@ -968,9 +979,7 @@
                     /* 저장 페이지 이동 예약 */
                     setTimeout(function () {
                         /* 저장 페이지 이동 */
-                        if (window.FacilityGrid && typeof FacilityGrid.goToPage === "function") {
-                            FacilityGrid.goToPage(restorePageNo);
-                        }
+                        FacilityGrid.goToPage(restorePageNo);
                     }, 0);
 
                     /* 복원 상태 초기화 */
@@ -1197,6 +1206,7 @@
                 return;
             }
 
+            /* AG Grid 현재 행 데이터 CSV 다운로드 */
             FacilityGrid.exportExcel("시설자산_목록.csv");
         }
 
@@ -1207,7 +1217,7 @@
 
         /**
          * 클릭 이벤트 처리
-         * - 등록/상세/수정/검색/초기화/탭/엑셀/자동완성 선택 버튼 처리
+         * - 등록/상세/수정/검색/초기화/엑셀/자동완성 선택 버튼 처리
          */
         function handleClick(event) {
             var button = event.target.closest("[data-action]");
@@ -1242,11 +1252,6 @@
                 return;
             }
 
-            if (action === "setFacilityTab") {
-                changeTab(button.dataset.kind);
-                return;
-            }
-
             if (action === "exportExcel") {
                 exportExcel();
                 return;
@@ -1271,7 +1276,7 @@
 
         /**
          * select 변경 이벤트 처리
-         * - 시설유형/운영상태/동 필터 변경 시 목록을 다시 조회한다.
+         * - 필터 변경 시 목록 재조회
          */
         function handleChange(event) {
             if (event.target.id === "filterFacTy") {
@@ -1280,6 +1285,8 @@
             }
 
             if (
+                event.target.id === "filterFacilityKind" ||
+                event.target.id === "filterPublicFacilityYn" ||
                 event.target.id === "filterUseYn" ||
                 event.target.id === "filterDong" ||
                 event.target.id === "filterInstlDt"
@@ -1291,15 +1298,9 @@
 
         /**
          * 시설유형 필터 변경 처리
-         * - 전체시설 탭에서 “편의시설” 옵션을 선택하면 편의시설 탭으로 이동한다.
-         * - 그 외에는 현재 탭에서 목록만 다시 조회한다.
+         * - 탭 이동 없이 현재 목록을 선택한 시설유형으로 다시 조회한다.
          */
         function handleTypeFilterChange(value) {
-            if (currentTab === "ALL" && value === "_PUBLIC_") {
-                changeTab("PUBLIC");
-                return;
-            }
-
             closeSuggestList();
             loadFacilityList();
         }
@@ -1330,6 +1331,7 @@
             });
 
             window.addEventListener("resize", function () {
+                /* 화면 크기 변경 시 컬럼 폭 재계산 */
                 FacilityGrid.refreshSize();
             });
         }
@@ -1340,21 +1342,15 @@
         ============================================================ */
 
         document.addEventListener("DOMContentLoaded", function () {
-            /* 페이지 이동 유형 조회 */
-            var navigationEntry = performance.getEntriesByType("navigation")[0];
-
-            /* 새로고침 여부 */
-            var isReload = navigationEntry && navigationEntry.type === "reload";
-
-            /* 새로고침 시 저장 목록 상태 삭제 */
-            if (isReload) {
-                sessionStorage.removeItem(STORAGE_KEY);
-            }
-
             /* 이전 목록 상태 조회 */
             restoreState = readListState();
 
-            /* 목록 상태 복원 제외 처리 */
+            /*
+             * 목록 상태 복원 기준
+             * - 상세 화면 복귀 : 검색조건 복원 대상
+             * - 수정 화면 복귀 : 검색조건 복원 대상
+             * - 사이드바/상단 메뉴/다른 화면 진입 : 검색조건 초기화 대상
+             */
             if (restoreState && !canRestoreListState()) {
                 /* 저장 목록 상태 삭제 */
                 sessionStorage.removeItem(STORAGE_KEY);
@@ -1363,13 +1359,23 @@
                 restoreState = null;
             }
 
-            /* 시설자산 그리드 초기화 */
+            /*
+             * 시설자산 그리드 초기화
+             * - mngr-facility-grid.js FacilityGrid 객체 기준
+             * - 오류 발생 시 콘솔 노출 기준
+             */
             FacilityGrid.init("facilityGrid");
 
-            /* 화면 이벤트 연결 */
+            /*
+             * 화면 이벤트 연결
+             * - 검색 버튼 연결
+             * - 초기화 버튼 연결
+             * - 등록/상세/수정 버튼 연결
+             * - 엑셀 다운로드 버튼 연결
+             */
             bindEvents();
 
-            /* 저장 탭/검색조건 반영 */
+            /* 저장 검색조건 반영 */
             applyListState(restoreState);
 
             /* 시설유형 필터 생성 후 목록 조회 */

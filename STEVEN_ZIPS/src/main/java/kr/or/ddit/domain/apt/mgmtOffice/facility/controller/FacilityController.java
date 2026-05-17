@@ -129,6 +129,8 @@ public class FacilityController {
 
     /**
      * 시설 목록 조회
+     * - 시설자산 목록 그리드 데이터 조회
+     * - publicFacilityYn : 운영관리 등록 여부 필터(Y/N)
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/list/{mgmtOfcNo}")
@@ -138,6 +140,7 @@ public class FacilityController {
             @RequestParam(required = false, defaultValue = "ALL") String facilityKind,
             @RequestParam(required = false, defaultValue = "") String keyword,
             @RequestParam(required = false, defaultValue = "") String facilityTyCd,
+            @RequestParam(required = false, defaultValue = "") String publicFacilityYn,
             @RequestParam(required = false, defaultValue = "") String useYn,
             @RequestParam(required = false, defaultValue = "") String dongNo,
             @RequestParam(required = false, defaultValue = "") String instlStartDt,
@@ -153,6 +156,7 @@ public class FacilityController {
             paramMap.put("facilityKind", facilityKind);
             paramMap.put("keyword", keyword);
             paramMap.put("facilityTyCd", facilityTyCd);
+            paramMap.put("publicFacilityYn", publicFacilityYn); // 운영관리 등록 여부
             paramMap.put("useYn", useYn);
             paramMap.put("dongNo", dongNo);
             paramMap.put("instlStartDt", instlStartDt);
@@ -180,6 +184,8 @@ public class FacilityController {
 
     /**
      * 시설 목록 건수 조회
+     * - 시설자산 목록 검색 조건과 동일한 조건으로 건수 조회
+     * - publicFacilityYn : 운영관리 등록 여부 필터(Y/N)
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/count/{mgmtOfcNo}")
@@ -189,6 +195,7 @@ public class FacilityController {
             @RequestParam(required = false, defaultValue = "ALL") String facilityKind,
             @RequestParam(required = false, defaultValue = "") String keyword,
             @RequestParam(required = false, defaultValue = "") String facilityTyCd,
+            @RequestParam(required = false, defaultValue = "") String publicFacilityYn,
             @RequestParam(required = false, defaultValue = "") String useYn,
             @RequestParam(required = false, defaultValue = "") String dongNo,
             @RequestParam(required = false, defaultValue = "") String instlStartDt,
@@ -204,6 +211,7 @@ public class FacilityController {
             paramMap.put("facilityKind", facilityKind);
             paramMap.put("keyword", keyword);
             paramMap.put("facilityTyCd", facilityTyCd);
+            paramMap.put("publicFacilityYn", publicFacilityYn); // 운영관리 등록 여부
             paramMap.put("useYn", useYn);
             paramMap.put("dongNo", dongNo);
             paramMap.put("instlStartDt", instlStartDt);
