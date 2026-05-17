@@ -38,21 +38,34 @@
         #publicFacilityPage .btn-primary:hover { background:var(--accent-hover); border-color:var(--accent-hover); }
         #publicFacilityPage .notice-box { display:flex; gap:10px; padding:11px 13px; background:#f7faf7; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:0 4px 4px 0; font-size:12px; color:var(--text-sec); line-height:1.6; }
         #publicFacilityPage .notice-box .material-symbols-rounded { color:var(--accent); font-size:17px; flex-shrink:0; margin-top:2px; }
+        #publicFacilityPage .form-guide-line { margin-bottom:12px; padding:9px 11px; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:0 4px 4px 0; background:#f8f9fb; color:var(--text-sec); font-size:12px; line-height:1.5; }
         #publicFacilityPage .field-help { margin-top:5px; font-size:11px; color:var(--text-ter); line-height:1.5; }
         .form-section-title { display:flex; align-items:center; gap:4px; font-size:11px; font-weight:800; color:var(--text-sec,#4a5c4e); letter-spacing:0; text-transform:none; margin-bottom:10px; }
         .form-section-title .material-symbols-rounded { font-size:15px; color:var(--accent,#2e5c38); }
 
-        /* 2컬럼 레이아웃 */
-        .facility-modal-cols { display:grid; grid-template-columns:1fr 1fr; gap:0; }
-        .facility-modal-col-left { padding-right:20px; border-right:1px solid var(--line,#d7dce2); }
-        .facility-modal-col-right { padding-left:20px; }
-        .facility-col-label { font-size:11px; font-weight:800; color:#8a9a8e; letter-spacing:.5px; text-transform:uppercase; padding-bottom:8px; border-bottom:1px solid var(--line,#d7dce2); margin-bottom:14px; }
+        /* 2컬럼 레이아웃 — 좌우 동일 높이 */
+        .facility-modal-cols { display:grid; grid-template-columns:calc(50% - 10px) calc(50% - 10px); gap:0 20px; align-items:stretch; }
+        .facility-modal-col-left { border-right:1px solid var(--line,#d7dce2); display:flex; flex-direction:column; padding-right:20px; min-width:0; overflow:hidden; }
+        .facility-modal-col-right { display:flex; flex-direction:column; padding-left:0; min-width:0; }
+        .facility-col-label { font-size:11px; font-weight:700; color:#8a9a8e; letter-spacing:.4px; text-transform:uppercase; padding-bottom:8px; border-bottom:1px solid var(--line,#d7dce2); margin-bottom:14px; }
+
+        /* 우측 컬럼 마지막 섹션이 남은 공간을 채우도록 */
+        .facility-modal-col-right > .form-section:last-child { }
+
+        /* 시설자산 연결 영역 */
+        #publicFacilityPage .asset-link-section { padding:12px; border:1px solid var(--line); border-radius:4px; background:#f8f9fb; }
+        #publicFacilityPage .asset-link-section .form-section-title { margin-bottom:10px; }
+        #publicFacilityPage .asset-link-section .form-input,
+        #publicFacilityPage .asset-link-section .form-select { background:#fff; }
+        #publicFacilityPage .asset-link-section .selected-facility-box.is-selected { background:#fff; }
+        #publicFacilityPage .asset-link-section .selected-empty { min-height:78px; }
+        #publicFacilityPage .asset-link-section .field-help { color:var(--text-ter); }
 
         /* 등록 방식 탭 */
         #publicFacilityPage .mode-tabs { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:14px; }
-        #publicFacilityPage .mode-tab { display:flex; align-items:center; justify-content:center; gap:5px; height:34px; border:1px solid var(--line); border-radius:4px; background:var(--surface); color:var(--text-sec); font-size:12px; font-weight:800; cursor:pointer; }
+        #publicFacilityPage .mode-tab { display:flex; align-items:center; justify-content:center; gap:5px; height:34px; border:1px solid var(--line); border-radius:4px; background:var(--surface); color:var(--text-sec); font-size:12px; font-weight:600; cursor:pointer; }
         #publicFacilityPage .mode-tab .material-symbols-rounded { font-size:16px; }
-        #publicFacilityPage .mode-tab.is-active { border-color:var(--accent); background:var(--accent-light); color:var(--accent); }
+        #publicFacilityPage .mode-tab.is-active { border-color:var(--accent); background:var(--accent-light); color:var(--accent); font-weight:700; }
         #publicFacilityPage .mode-panel { display:none; }
         #publicFacilityPage .mode-panel.is-active { display:block; }
 
@@ -64,16 +77,25 @@
         #publicFacilityPage .selected-summary { display:none; }
         #publicFacilityPage .selected-summary.is-active { display:block; }
         #publicFacilityPage .selected-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
-        #publicFacilityPage .selected-name { font-size:13px; font-weight:800; color:var(--text-pri); }
+        #publicFacilityPage .selected-name { font-size:13px; font-weight:700; color:var(--text-pri); }
         #publicFacilityPage .selected-code { font-size:11px; color:var(--text-ter); }
         #publicFacilityPage .selected-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
         #publicFacilityPage .selected-item { min-height:44px; padding:8px 9px; border:1px solid var(--line); border-radius:4px; background:var(--surface-sub); }
-        #publicFacilityPage .selected-label { display:block; margin-bottom:3px; font-size:10px; font-weight:800; color:var(--text-ter); }
-        #publicFacilityPage .selected-value { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:700; color:var(--text-pri); }
+        #publicFacilityPage .selected-label { display:block; margin-bottom:3px; font-size:10px; font-weight:600; color:var(--text-ter); }
+        #publicFacilityPage .selected-value { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:500; color:var(--text-pri); }
+
+        /* 선택 완료 후 시설자산 요약 */
+        #publicFacilityPage .selected-facility-box.is-selected { padding:10px 12px; background:#fff; }
+        #publicFacilityPage .selected-line-box { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:34px; }
+        #publicFacilityPage .selected-line-main { min-width:0; display:flex; align-items:center; gap:7px; color:var(--text-sec); font-size:12px; font-weight:500; line-height:1.45; white-space:nowrap; overflow:hidden; }
+        #publicFacilityPage .selected-line-main .material-symbols-rounded { flex-shrink:0; font-size:16px; color:#9aa5a0; }
+        #publicFacilityPage .selected-line-text { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #publicFacilityPage .selected-line-box .btn { flex-shrink:0; height:28px; min-height:28px; padding:0 10px; font-size:11px; }
+        #publicFacilityPage .selected-hidden-values { display:none; }
 
         /* 시설자산 선택 모달 */
-        #publicFacilityPage .facility-select-modal { display:none; position:fixed; inset:0; z-index:9500; background:rgba(16,24,20,.48); align-items:center; justify-content:center; padding:28px; box-sizing:border-box; }
-        #publicFacilityPage .facility-select-modal.is-open { display:flex; }
+        .facility-select-modal { display:none !important; position:fixed !important; inset:0 !important; z-index:9500 !important; background:rgba(16,24,20,.48); align-items:center; justify-content:center; padding:28px; box-sizing:border-box; }
+        .facility-select-modal.is-open { display:flex !important; }
         #publicFacilityPage .facility-select-box { width:min(920px, 94vw); max-height:86vh; display:flex; flex-direction:column; border-radius:3px; background:#fff; border:1px solid rgba(215,220,226,.95); box-shadow:0 22px 52px rgba(0,0,0,.22); overflow:hidden; }
         #publicFacilityPage .facility-select-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 18px; border-bottom:1px solid var(--line); background:var(--surface); }
         #publicFacilityPage .facility-select-title { display:flex; align-items:center; gap:7px; margin:0; font-size:14px; font-weight:800; color:var(--text-pri); }
@@ -87,16 +109,16 @@
         #publicFacilityPage .candidate-filter { display:grid; grid-template-columns:1.4fr .9fr .9fr auto; gap:7px; margin-bottom:10px; padding:10px; border:1px solid var(--line); border-radius:6px; background:var(--surface-sub); }
         #publicFacilityPage .candidate-table-wrap { border:1px solid var(--line); border-radius:6px; overflow:hidden; background:#fff; }
         #publicFacilityPage .candidate-table { width:100%; border-collapse:collapse; table-layout:fixed; }
-        #publicFacilityPage .candidate-table th { height:34px; padding:0 10px; border-bottom:1px solid var(--line); background:#f3f5f3; color:var(--text-sec); font-size:11px; font-weight:800; text-align:left; }
+        #publicFacilityPage .candidate-table th { height:34px; padding:0 10px; border-bottom:1px solid var(--line); background:#f3f5f3; color:var(--text-sec); font-size:11px; font-weight:600; text-align:left; }
         #publicFacilityPage .candidate-table td { height:42px; padding:7px 10px; border-bottom:1px solid var(--line); color:var(--text-pri); font-size:12px; vertical-align:middle; }
         #publicFacilityPage .candidate-table tbody tr:last-child td { border-bottom:0; }
         #publicFacilityPage .candidate-table tbody tr:hover { background:var(--accent-dim); }
         #publicFacilityPage .candidate-table .candidate-hidden { display:none; }
         #publicFacilityPage .candidate-table .cell-center { text-align:center; }
-        #publicFacilityPage .candidate-name-main { display:block; font-size:12px; font-weight:800; color:var(--text-pri); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #publicFacilityPage .candidate-name-main { display:block; font-size:12px; font-weight:600; color:var(--text-pri); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         #publicFacilityPage .candidate-name-sub { display:block; margin-top:2px; font-size:11px; color:var(--text-ter); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         #publicFacilityPage .candidate-empty-row td { height:68px; text-align:center; color:var(--text-ter); }
-        #publicFacilityPage .badge-mini { display:inline-flex; align-items:center; height:22px; padding:0 8px; border-radius:4px; font-size:11px; font-weight:800; }
+        #publicFacilityPage .badge-mini { display:inline-flex; align-items:center; height:22px; padding:0 8px; border-radius:4px; font-size:11px; font-weight:600; }
         #publicFacilityPage .badge-use-y { background:#dceee0; color:#1f7a3f; }
         #publicFacilityPage .badge-use-n { background:#fee2e2; color:#b42318; }
 
@@ -118,17 +140,13 @@
         #publicFacilityPage .file-meta { margin-top:2px; font-size:11px; color:var(--text-ter); }
         #publicFacilityPage .file-delete-check { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#7f1d1d; font-weight:700; }
         #publicFacilityPage .file-delete-check input { width:14px; height:14px; }
-        #publicFacilityPage .photo-guide { align-items:flex-start; padding:13px 14px; }
-        #publicFacilityPage .photo-guide-lines { display:flex; flex-direction:column; gap:8px; line-height:1.55; }
-        #publicFacilityPage .photo-guide-line { position:relative; padding-left:10px; font-size:12px; color:var(--text-sec); }
-        #publicFacilityPage .photo-guide-line::before { content:""; position:absolute; left:0; top:.72em; width:4px; height:4px; border-radius:50%; background:var(--accent); opacity:.75; }
 
         /* 운영시간 입력 */
         #publicFacilityPage .opr-time-box { display:flex; flex-direction:column; gap:8px; padding:10px; border:1px solid var(--line); border-radius:4px; background:#fafcfb; }
-        #publicFacilityPage .opr-time-row { display:grid; grid-template-columns:64px minmax(210px,1fr) 64px minmax(122px,.7fr) 16px minmax(122px,.7fr); gap:7px; align-items:center; }
+        #publicFacilityPage .opr-time-row { display:grid; grid-template-columns:64px minmax(0,1fr) 64px minmax(0,.7fr) 16px minmax(0,.7fr); gap:7px; align-items:center; }
         #publicFacilityPage .opr-day-range { display:grid; grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr); gap:7px; align-items:center; min-width:0; }
-        #publicFacilityPage .opr-time-label { font-size:11px; font-weight:800; color:var(--text-sec); white-space:nowrap; }
-        #publicFacilityPage .opr-time-separator { text-align:center; font-size:12px; font-weight:800; color:var(--text-ter); }
+        #publicFacilityPage .opr-time-label { font-size:11px; font-weight:600; color:var(--text-sec); white-space:nowrap; }
+        #publicFacilityPage .opr-time-separator { text-align:center; font-size:12px; font-weight:500; color:var(--text-ter); }
         #publicFacilityPage .opr-preview-row { display:grid; grid-template-columns:64px 1fr; gap:7px; align-items:center; }
         #publicFacilityPage .opr-preview { min-height:30px; padding:6px 9px; display:flex; align-items:center; border:1px solid var(--line); border-radius:4px; background:#fff; font-size:12px; font-weight:700; color:var(--text-pri); }
         #publicFacilityPage .opr-preview.is-empty { color:var(--text-ter); font-weight:500; }
@@ -148,14 +166,12 @@
             #publicFacilityPage .location-select-row { grid-template-columns:1fr 1fr; }
         }
 
-
         /* 편의시설 자원 안내 */
         #publicFacilityPage .item-guide-list { display:flex; flex-direction:column; gap:10px; margin-top:8px; }
         #publicFacilityPage .item-guide-row { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:11px 12px; border:1px solid var(--line); border-radius:4px; background:#fff; }
-        #publicFacilityPage .item-guide-main { font-size:12px; font-weight:800; color:var(--text-pri); }
+        #publicFacilityPage .item-guide-main { font-size:12px; font-weight:600; color:var(--text-pri); }
         #publicFacilityPage .item-guide-sub { margin-top:5px; font-size:11px; color:var(--text-ter); line-height:1.55; }
-        #publicFacilityPage .item-guide-badge { display:inline-flex; align-items:center; height:24px; padding:0 9px; border-radius:4px; background:var(--accent-light); color:var(--accent); font-size:11px; font-weight:800; white-space:nowrap; }
-
+        #publicFacilityPage .item-guide-badge { display:inline-flex; align-items:center; height:24px; padding:0 9px; border-radius:4px; background:var(--accent-light); color:var(--accent); font-size:11px; font-weight:600; white-space:nowrap; }
 
         @media (max-width:1180px) {
             #publicFacilityPage .opr-operation-grid,
@@ -215,56 +231,64 @@
 
                         <div class="panel-body">
                             <div class="facility-modal-cols">
+                                <%-- 좌측: 시설자산 연결 + 운영정보 --%>
                                 <div class="facility-modal-col-left">
-                                    <div class="facility-col-label">시설 정보</div>
+                                    <%-- 안내 문구: 간결하게 정리 --%>
+                                    <div class="form-guide-line">
+                                        기존 시설자산에 연결하거나 새 시설자산을 함께 등록할 수 있습니다. 등록한 사진은 시설자산 관리에서도 함께 확인됩니다.
+                                    </div>
 
                                     <div class="mode-tabs" role="tablist" aria-label="편의시설 등록 방식 선택">
                                         <button type="button" class="mode-tab is-active" data-mode="EXISTING" role="tab" aria-selected="true">
-                                            <span class="material-symbols-rounded">link</span>기존 시설자산 선택
+                                            <span class="material-symbols-rounded">link</span>기존 시설자산 연결
                                         </button>
                                         <button type="button" class="mode-tab" data-mode="NEW" role="tab" aria-selected="false">
-                                            <span class="material-symbols-rounded">add_business</span>새 시설자산 등록
+                                            <span class="material-symbols-rounded">add_business</span>연결할 새 시설자산 등록
                                         </button>
                                     </div>
 
-                                    <%-- 기존 시설자산 선택 탭: 선택 요약만 표시하고 목록은 모달에서 검색 --%>
+                                    <%-- 기존 시설자산 연결 탭 --%>
                                     <div class="mode-panel is-active" id="existingFacilityPanel" data-mode-panel="EXISTING">
-                                        <div class="form-section" style="margin-bottom:14px;">
+                                        <div class="form-section asset-link-section" style="margin-bottom:14px;">
                                             <div class="form-section-title">
-                                                <span class="material-symbols-rounded">fact_check</span>기존 시설자산 선택
+                                                <span class="material-symbols-rounded">fact_check</span>기존 시설자산 연결
                                             </div>
 
                                             <div class="selected-facility-box">
                                                 <div class="selected-empty" id="selectedEmptyBox">
                                                     <span class="material-symbols-rounded">domain_add</span>
-                                                    <div>운영관리 정보를 입력할 시설자산을 선택하세요.</div>
-                                                    <button type="button" class="btn btn-secondary" id="openFacilityModalBtn">시설자산 선택</button>
+                                                    <div>편의시설 운영정보를 연결할 시설자산을 선택하세요.</div>
+                                                    <button type="button" class="btn btn-secondary" id="openFacilityModalBtn">연결할 시설자산 선택</button>
                                                 </div>
 
                                                 <div class="selected-summary" id="selectedSummaryBox">
-                                                    <div class="selected-head">
-                                                        <div>
-                                                            <div class="selected-name" id="selectedFacilityNmText">-</div>
-                                                            <div class="selected-code" id="selectedFacilityNoText">-</div>
+                                                    <div class="selected-line-box">
+                                                        <div class="selected-line-main">
+                                                            <span class="material-symbols-rounded">link</span>
+                                                            <span class="selected-line-text" id="selectedAssetLineText" title="-">-</span>
                                                         </div>
                                                         <button type="button" class="btn btn-secondary" id="changeFacilityBtn">다시 선택</button>
                                                     </div>
-                                                    <div class="selected-grid">
-                                                        <div class="selected-item"><span class="selected-label">시설유형</span><span class="selected-value" id="selectedFacilityTyText">-</span></div>
-                                                        <div class="selected-item"><span class="selected-label">위치</span><span class="selected-value" id="selectedLocationText">-</span></div>
-                                                        <div class="selected-item"><span class="selected-label">사용여부</span><span class="selected-value" id="selectedUseYnText">-</span></div>
+
+                                                    <div class="selected-hidden-values" aria-hidden="true">
+                                                        <span id="selectedFacilityNmText">-</span>
+                                                        <span id="selectedFacilityNoText">-</span>
+                                                        <span id="selectedFacilityTyText">-</span>
+                                                        <span id="selectedLocationText">-</span>
+                                                        <span id="selectedUseYnText">-</span>
                                                     </div>
-                                                    <div class="field-help">등록한 사진은 이 시설의 사진으로 함께 관리되며, 시설자산 관리 화면과 편의시설 관리 화면에서 함께 확인할 수 있습니다.</div>
+
+                                                    <div class="field-help">등록한 사진은 연결된 시설자산의 사진으로 함께 관리됩니다.</div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <%-- 새 시설자산 등록 탭: 위치 구분 포함 --%>
+                                    <%-- 연결할 새 시설자산 등록 탭 --%>
                                     <div class="mode-panel" id="newFacilityPanel" data-mode-panel="NEW">
-                                        <div class="form-section" style="margin-bottom:14px;">
+                                        <div class="form-section asset-link-section" style="margin-bottom:14px;">
                                             <div class="form-section-title">
-                                                <span class="material-symbols-rounded">apartment</span>새 시설자산 정보
+                                                <span class="material-symbols-rounded">apartment</span>연결할 새 시설자산 정보
                                             </div>
 
                                             <div class="form-row cols-2">
@@ -282,7 +306,6 @@
                                                 </div>
                                             </div>
 
-                                            <%-- 위치 선택 행: 위치구분·동·층·호 인라인 배치 --%>
                                             <div class="location-select-row">
                                                 <div class="form-field">
                                                     <label class="field-label">위치 구분</label>
@@ -299,11 +322,8 @@
                                                         <c:forEach var="dong" items="${dongList}">
                                                             <option value="${dong.dongNo}">
                                                                 <c:choose>
-                                                                    <%-- 세대 위치 선택용 동 표시값: A12185003_3 → 3 --%>
                                                                     <c:when test="${fn:contains(dong.dongNo, '_')}">${fn:substringAfter(dong.dongNo, '_')}</c:when>
-                                                                    <%-- 동명이 있으면 기존 명칭 사용 --%>
                                                                     <c:when test="${not empty dong.dongNm}">${dong.dongNm}</c:when>
-                                                                    <%-- 동번호만 있는 경우 값 그대로 표시 --%>
                                                                     <c:otherwise>${dong.dongNo}</c:otherwise>
                                                                 </c:choose>
                                                             </option>
@@ -325,7 +345,6 @@
                                             </div>
                                             <div class="location-help-row">위치 구분에 따라 동·층·호가 활성화됩니다.</div>
 
-                                            <%-- 상세위치 및 활성여부 행 --%>
                                             <div class="form-row cols-2 location-detail-row">
                                                 <div class="form-field">
                                                     <label class="field-label">상세위치</label>
@@ -345,7 +364,7 @@
                                     <%-- PUBLIC_FACILITY 운영정보 공통 영역 --%>
                                     <div class="form-section">
                                         <div class="form-section-title">
-                                            <span class="material-symbols-rounded">meeting_room</span>편의시설 운영정보
+                                            <span class="material-symbols-rounded">meeting_room</span>편의시설 기본/운영정보
                                         </div>
 
                                         <div class="form-row cols-2">
@@ -373,9 +392,7 @@
                                             <div class="form-field">
                                                 <label class="field-label">운영요일/운영시간</label>
                                                 <div class="opr-time-box">
-                                                    <%-- 운영요일/운영시간 입력 행 --%>
                                                     <div class="opr-time-row">
-                                                        <%-- 운영요일 범위 --%>
                                                         <span class="opr-time-label">운영요일</span>
                                                         <div class="opr-day-range">
                                                             <select class="form-select" id="oprStartDay">
@@ -398,22 +415,18 @@
                                                                 <option value="일">일요일</option>
                                                             </select>
                                                         </div>
-
-                                                        <%-- 운영시간 범위 --%>
                                                         <span class="opr-time-label">운영시간</span>
                                                         <input type="time" class="form-input" id="oprStartTime" step="60">
                                                         <span class="opr-time-separator">~</span>
                                                         <input type="time" class="form-input" id="oprEndTime" step="60">
                                                     </div>
 
-                                                    <%-- 자동 저장값 표시 행 --%>
                                                     <div class="opr-preview-row">
                                                         <span class="opr-time-label">저장값</span>
                                                         <div class="opr-preview is-empty" id="oprHrPreview">운영시간을 입력하면 자동으로 저장값이 생성됩니다.</div>
                                                     </div>
                                                     <div class="opr-time-notice" id="oprTimeNotice"></div>
 
-                                                    <%-- DB 전송용 운영시간 값 --%>
                                                     <input type="hidden" id="regOprHr" name="cmnFacilityOprHr">
                                                 </div>
                                             </div>
@@ -428,13 +441,11 @@
                                     </div>
                                 </div>
 
-                                <%-- 우측: 사진 등록 --%>
+                                <%-- 우측: 사진 + 자원 안내 — flex 컬럼으로 좌측과 높이 맞춤 --%>
                                 <div class="facility-modal-col-right">
-                                    <div class="facility-col-label">시설 사진</div>
-
                                     <div class="form-section">
                                         <div class="form-section-title">
-                                            <span class="material-symbols-rounded">image</span>시설 사진
+                                            <span class="material-symbols-rounded">image</span>시설 및 편의시설 사진
                                         </div>
                                         <div class="file-manage-list" id="regFileManageList" style="display:none;margin-bottom:8px;"></div>
                                         <div class="file-upload-box">
@@ -445,18 +456,10 @@
                                                 <div class="file-preview-empty">선택된 사진이 없습니다.</div>
                                             </div>
                                         </div>
-                                        <div class="notice-box photo-guide" style="margin-top:12px;">
-                                            <span class="material-symbols-rounded">info</span>
-                                            <div class="photo-guide-lines">
-                                                <div class="photo-guide-line">기존 시설자산 선택은 이미 등록된 시설에 편의시설 운영정보를 추가합니다.</div>
-                                                <div class="photo-guide-line">새 시설자산 등록은 시설 기본정보와 편의시설 운영정보를 함께 등록합니다.</div>
-                                                <div class="photo-guide-line">등록한 사진은 시설자산 관리와 편의시설 관리에서 함께 확인할 수 있습니다.</div>
-                                            </div>
-                                        </div>
                                     </div>
 
-                                    <%-- 편의시설 자원 안내: 저장 전에는 편의시설번호가 없어 실제 자원 등록을 막음 --%>
-                                    <div class="form-section" style="margin-top:14px;">
+                                    <%-- 편의시설 자원 안내: 사진 영역 아래로 밀어서 하단 고정 --%>
+                                    <div class="form-section" style="margin-top:auto;padding-top:14px;">
                                         <div class="form-section-title">
                                             <span class="material-symbols-rounded">inventory_2</span>편의시설 자원
                                         </div>
@@ -479,12 +482,11 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="page-actions" style="justify-content:flex-end;margin-top:14px;">
-                            <button type="button" class="btn btn-secondary" id="backToListBtn">취소</button>
-                            <button type="submit" class="btn btn-primary">저장</button>
-                        </div>
+                            <div class="page-actions" style="justify-content:flex-end;margin-top:14px;">
+                                <button type="button" class="btn btn-secondary" id="backToListBtn">취소</button>
+                                <button type="submit" class="btn btn-primary">저장</button>
+                            </div>
                     </form>
                 </div>
 
@@ -492,7 +494,7 @@
                 <div class="facility-select-modal" id="facilitySelectModal" aria-hidden="true">
                     <div class="facility-select-box" role="dialog" aria-modal="true" aria-label="시설자산 선택">
                         <div class="facility-select-head">
-                            <h3 class="facility-select-title"><span class="material-symbols-rounded">domain_search</span>운영관리 미등록 시설자산 선택</h3>
+                            <h3 class="facility-select-title"><span class="material-symbols-rounded">domain_search</span>편의시설에 연결할 시설자산 선택</h3>
                             <button type="button" class="facility-select-close" id="closeFacilityModalBtn" aria-label="닫기">
                                 <span class="material-symbols-rounded">close</span>
                             </button>
@@ -575,7 +577,6 @@
                                             </c:forEach>
                                         </c:when>
                                         <c:otherwise>
-                                            <%-- 후보 없음 표시 기준 --%>
                                         </c:otherwise>
                                     </c:choose>
                                     <tr class="candidate-empty-row" id="candidateEmptyRow" style="display:none;"><td colspan="6">검색 조건에 맞는 운영관리 미등록 시설자산이 없습니다.</td></tr>
@@ -585,14 +586,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </main>
     </div>
 </div>
 
 <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
 <script src="${pageContext.request.contextPath}/js/manager/common-image-viewer.js"></script>
-
 
 <script>
     (function () {
@@ -601,16 +600,9 @@
         var mgmtOfcNo  = config.mgmtOfcNo  || "";
         var preselectFacilityNo = config.preselectFacilityNo || "";
 
-        /* 공통 DOM 조회 함수 */
         function getEl(id) { return document.getElementById(id); }
-
-        /* 목록 주소 생성 함수 */
         function listUrl() { return contextPath + "/manager/publicFacility/page/" + encodeURIComponent(mgmtOfcNo); }
-
-        /* 알림 출력 함수 */
         function alertMessage(msg) { if (typeof showAlert === "function") showAlert(msg); else alert(msg); }
-
-        /* CSRF 헤더 생성 함수 */
         function getCsrfHeaders() {
             var tokenMeta  = document.querySelector('meta[name="_csrf"]');
             var headerMeta = document.querySelector('meta[name="_csrf_header"]');
@@ -618,8 +610,6 @@
             if (tokenMeta && headerMeta) headers[headerMeta.content] = tokenMeta.content;
             return headers;
         }
-
-        /* JSON 요청 공통 함수 */
         async function requestJson(url, options) {
             var response = await fetch(url, options || {});
             var contentType = response.headers.get("content-type") || "";
@@ -628,57 +618,35 @@
                 location.href = contextPath + "/login.do";
                 throw new Error("login required");
             }
-            if (contentType.indexOf("application/json") === -1) {
-                throw new Error("JSON 응답이 아닙니다.");
-            }
+            if (contentType.indexOf("application/json") === -1) throw new Error("JSON 응답이 아닙니다.");
             var data = await response.json();
             if (!response.ok || data.success === false) throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
             return data;
         }
+        function postForm(url, formData) { return requestJson(url, { method:"POST", headers:getCsrfHeaders(), body:formData }); }
+        function getJson(url) { return requestJson(url, { method:"GET", headers:getCsrfHeaders() }); }
+        function resetSelect(select, placeholder) { if (select) select.innerHTML = '<option value="">' + placeholder + '</option>'; }
 
-        /* FormData POST 함수 */
-        function postForm(url, formData) {
-            return requestJson(url, { method:"POST", headers:getCsrfHeaders(), body:formData });
-        }
-
-        function getJson(url) {
-            return requestJson(url, { method:"GET", headers:getCsrfHeaders() });
-        }
-
-        function resetSelect(select, placeholder) {
-            if (select) select.innerHTML = '<option value="">' + placeholder + '</option>';
-        }
-
-        /* 등록 방식 변경 함수 */
         function setRegisterMode(mode) {
             var isNewMode = mode === "NEW";
             getEl("registerMode").value = mode;
-
             document.querySelectorAll(".mode-tab").forEach(function (tab) {
                 var active = tab.dataset.mode === mode;
                 tab.classList.toggle("is-active", active);
                 tab.setAttribute("aria-selected", active ? "true" : "false");
             });
-
             document.querySelectorAll(".mode-panel").forEach(function (panel) {
                 panel.classList.toggle("is-active", panel.dataset.modePanel === mode);
             });
-
-            /* 새 시설자산 등록 모드에서만 신규 시설 입력값 전송 */
             ["regFacilityNm", "regFacilityTyCd", "regLocationType", "regDongNo", "regFacilityFloor", "regFacilityHo", "regLocCn", "regUseYn"].forEach(function (id) {
                 var el = getEl(id);
                 if (el) el.disabled = !isNewMode;
             });
-
-            /* 기존 시설자산 모드에서만 선택 facilityNo 전송 */
             getEl("selectedFacilityNo").disabled = isNewMode;
             getEl("regFacilityNm").required = isNewMode;
-
-            /* 위치 구분 표시 갱신 */
             updateLocationType();
         }
 
-        /* 새 시설자산 위치 구분 변경 함수 */
         function updateLocationType() {
             var type = getEl("regLocationType").value;
             var isNewMode = getEl("registerMode").value === "NEW";
@@ -686,273 +654,125 @@
             var floorEl = getEl("regFacilityFloor");
             var hoEl = getEl("regFacilityHo");
             var locEl = getEl("regLocCn");
-
             if (type === "COMMON") {
-                dongEl.value = "";
-                dongEl.disabled = true;
-                floorEl.disabled = true;
-                hoEl.disabled = true;
-                resetSelect(floorEl, "선택");
-                resetSelect(hoEl, "선택");
+                dongEl.value = ""; dongEl.disabled = true; floorEl.disabled = true; hoEl.disabled = true;
+                resetSelect(floorEl, "선택"); resetSelect(hoEl, "선택");
                 locEl.value = removeHouseholdPrefix(locEl.value);
-                locEl.placeholder = "예) 중앙광장, 커뮤니티센터 2층";
-                return;
+                locEl.placeholder = "예) 중앙광장, 커뮤니티센터 2층"; return;
             }
-
             if (type === "DONG") {
-                dongEl.disabled = !isNewMode;
-                floorEl.disabled = true;
-                hoEl.disabled = true;
-                resetSelect(floorEl, "선택");
-                resetSelect(hoEl, "선택");
+                dongEl.disabled = !isNewMode; floorEl.disabled = true; hoEl.disabled = true;
+                resetSelect(floorEl, "선택"); resetSelect(hoEl, "선택");
                 locEl.value = removeHouseholdPrefix(locEl.value);
-                locEl.placeholder = "예) 101동 1층 로비, 옥상";
-                return;
+                locEl.placeholder = "예) 101동 1층 로비, 옥상"; return;
             }
-
-            dongEl.disabled = !isNewMode;
-            floorEl.disabled = !isNewMode;
-            hoEl.disabled = !isNewMode;
+            dongEl.disabled = !isNewMode; floorEl.disabled = !isNewMode; hoEl.disabled = !isNewMode;
             locEl.placeholder = "예) 세대 분전반, 수도계량기";
             updateHouseholdLocationText();
         }
 
         function removeHouseholdPrefix(text) {
-            return String(text || "")
-                .replace(/^\s*\d+\s*층\s*/g, "")
-                .replace(/^\s*\d+\s*호\s*/g, "")
-                .trim();
+            return String(text || "").replace(/^\s*\d+\s*층\s*/g, "").replace(/^\s*\d+\s*호\s*/g, "").trim();
         }
 
-        /* 동 표시값 변환 함수 */
         function formatDongText(dongNo) {
             var value = String(dongNo || "").trim();
-
-            /* 공용 위치 표시값 */
             if (!value) return "공용 위치";
-
-            /* 아파트번호_동번호 형식 보정 */
-            if (value.indexOf("_") > -1) {
-                value = value.substring(value.lastIndexOf("_") + 1);
-            }
-
-            /* 동 표시값 */
+            if (value.indexOf("_") > -1) value = value.substring(value.lastIndexOf("_") + 1);
+            if (value.indexOf("동") > -1) return value;
             return value + "동";
         }
 
         function updateHouseholdLocationText() {
             if (getEl("regLocationType").value !== "HOUSEHOLD") return;
-
             var floor = getEl("regFacilityFloor").value;
             var ho = getEl("regFacilityHo").value;
             var locEl = getEl("regLocCn");
             var detailText = removeHouseholdPrefix(locEl.value);
-
-            locEl.value = [
-                floor ? floor + "층" : "",
-                ho ? ho + "호" : "",
-                detailText
-            ].filter(Boolean).join(" ");
+            locEl.value = [floor ? floor + "층" : "", ho ? ho + "호" : "", detailText].filter(Boolean).join(" ");
         }
 
         async function loadFloorList() {
-            var dongEl = getEl("regDongNo");
-            var floorEl = getEl("regFacilityFloor");
-            var hoEl = getEl("regFacilityHo");
-
-            resetSelect(floorEl, "선택");
-            resetSelect(hoEl, "선택");
-            updateHouseholdLocationText();
-
+            var dongEl = getEl("regDongNo"); var floorEl = getEl("regFacilityFloor"); var hoEl = getEl("regFacilityHo");
+            resetSelect(floorEl, "선택"); resetSelect(hoEl, "선택"); updateHouseholdLocationText();
             if (!dongEl.value) return;
-
             var result = await getJson(contextPath + "/manager/facility/location/floors/" + encodeURIComponent(mgmtOfcNo) + "?dongNo=" + encodeURIComponent(dongEl.value));
             var floorList = result.list || result.floorList || result || [];
-
             floorList.forEach(function (row) {
-                var floor = row.floor || row.FLOOR;
-                if (!floor) return;
-                var option = document.createElement("option");
-                option.value = floor;
-                option.textContent = floor;
-                floorEl.appendChild(option);
+                var floor = row.floor || row.FLOOR; if (!floor) return;
+                var option = document.createElement("option"); option.value = floor; option.textContent = floor; floorEl.appendChild(option);
             });
         }
 
         async function loadHoList() {
-            var dongEl = getEl("regDongNo");
-            var floorEl = getEl("regFacilityFloor");
-            var hoEl = getEl("regFacilityHo");
-
-            resetSelect(hoEl, "선택");
-            updateHouseholdLocationText();
-
+            var dongEl = getEl("regDongNo"); var floorEl = getEl("regFacilityFloor"); var hoEl = getEl("regFacilityHo");
+            resetSelect(hoEl, "선택"); updateHouseholdLocationText();
             if (!dongEl.value || !floorEl.value) return;
-
             var result = await getJson(contextPath + "/manager/facility/location/rooms/" + encodeURIComponent(mgmtOfcNo) + "?dongNo=" + encodeURIComponent(dongEl.value) + "&floor=" + encodeURIComponent(floorEl.value));
             var hoList = result.list || result.roomList || result || [];
-
             hoList.forEach(function (row) {
-                var ho = row.ho || row.HO;
-                if (!ho) return;
-                var option = document.createElement("option");
-                option.value = ho;
-                option.textContent = ho;
-                hoEl.appendChild(option);
+                var ho = row.ho || row.HO; if (!ho) return;
+                var option = document.createElement("option"); option.value = ho; option.textContent = ho; hoEl.appendChild(option);
             });
         }
 
         function buildNewFacilityLocationText() {
             var type = getEl("regLocationType").value;
             var locEl = getEl("regLocCn");
-
-            if (type === "COMMON") {
-                getEl("regDongNo").value = "";
-                return locEl.value;
-            }
-
-            if (type === "DONG") {
-                return removeHouseholdPrefix(locEl.value);
-            }
-
+            if (type === "COMMON") { getEl("regDongNo").value = ""; return locEl.value; }
+            if (type === "DONG") return removeHouseholdPrefix(locEl.value);
             updateHouseholdLocationText();
             return locEl.value;
         }
 
-        /* 시간 저장값 정규화 함수 */
-        function normalizeTimeValue(timeValue) {
-            if (!timeValue) return "";
+        function normalizeTimeValue(timeValue) { if (!timeValue) return ""; return String(timeValue).substring(0, 5); }
 
-            /* HH:mm 저장값 */
-            return String(timeValue).substring(0, 5);
-        }
-
-        /* 운영요일 표시문구 생성 함수 */
         function buildOperationDayText() {
-            var startDay = getEl("oprStartDay").value; // 운영 시작요일
-            var endDay = getEl("oprEndDay").value; // 운영 종료요일
-
-            if (!startDay || !endDay) return ""; // 요일 값 없음
-            if (startDay === "월" && endDay === "일") return "매일"; // 월요일부터 일요일까지
-            if (startDay === "월" && endDay === "금") return "평일"; // 월요일부터 금요일까지
-            if (startDay === "토" && endDay === "일") return "주말"; // 토요일부터 일요일까지
-            if (startDay === endDay) return startDay; // 단일 요일
-
-            return startDay + "~" + endDay; // 요일 범위
+            var startDay = getEl("oprStartDay").value;
+            var endDay = getEl("oprEndDay").value;
+            if (!startDay || !endDay) return "";
+            if (startDay === "월" && endDay === "일") return "매일";
+            if (startDay === "월" && endDay === "금") return "평일";
+            if (startDay === "토" && endDay === "일") return "주말";
+            if (startDay === endDay) return startDay;
+            return startDay + "~" + endDay;
         }
 
-        /* 운영시간 저장값 자동 생성 함수 */
         function updateOperationHourText() {
             var startTime = normalizeTimeValue(getEl("oprStartTime").value);
             var endTime = normalizeTimeValue(getEl("oprEndTime").value);
-            var hiddenInput = getEl("regOprHr");
-            var preview = getEl("oprHrPreview");
-            var notice = getEl("oprTimeNotice");
-
-            /* 시간 미입력 상태 */
-            if (!startTime && !endTime) {
-                hiddenInput.value = "";
-                preview.innerText = "운영시간을 입력하면 자동으로 저장값이 생성됩니다.";
-                preview.classList.add("is-empty");
-                notice.innerText = "";
-                return;
-            }
-
-            /* 부분 입력 상태 */
-            if (!startTime || !endTime) {
-                hiddenInput.value = "";
-                preview.innerText = "시작시간과 종료시간을 모두 입력해야 저장됩니다.";
-                preview.classList.add("is-empty");
-                notice.innerText = "";
-                return;
-            }
-
-            var dayText = buildOperationDayText(); // 운영요일 표시문구
-            var operationText = dayText + " " + startTime + "~" + endTime; // DB 저장용 운영시간 문구
-
-            hiddenInput.value = operationText;
-            preview.innerText = operationText;
-            preview.classList.remove("is-empty");
-
-            /* 야간 운영 안내 */
-            if (startTime > endTime) {
-                notice.innerText = "종료시간이 시작시간보다 빠르므로 다음날 종료되는 야간 운영으로 저장됩니다.";
-                return;
-            }
-
-            /* 24시간 또는 별도 기준 안내 */
-            if (startTime === endTime) {
-                notice.innerText = "시작시간과 종료시간이 같아 24시간 운영 또는 별도 운영 기준으로 저장됩니다.";
-                return;
-            }
-
+            var hiddenInput = getEl("regOprHr"); var preview = getEl("oprHrPreview"); var notice = getEl("oprTimeNotice");
+            if (!startTime && !endTime) { hiddenInput.value = ""; preview.innerText = "운영시간을 입력하면 자동으로 저장값이 생성됩니다."; preview.classList.add("is-empty"); notice.innerText = ""; return; }
+            if (!startTime || !endTime) { hiddenInput.value = ""; preview.innerText = "시작시간과 종료시간을 모두 입력해야 저장됩니다."; preview.classList.add("is-empty"); notice.innerText = ""; return; }
+            var dayText = buildOperationDayText();
+            var operationText = dayText + " " + startTime + "~" + endTime;
+            hiddenInput.value = operationText; preview.innerText = operationText; preview.classList.remove("is-empty");
+            if (startTime > endTime) { notice.innerText = "종료시간이 시작시간보다 빠르므로 다음날 종료되는 야간 운영으로 저장됩니다."; return; }
+            if (startTime === endTime) { notice.innerText = "시작시간과 종료시간이 같아 24시간 운영 또는 별도 운영 기준으로 저장됩니다."; return; }
             notice.innerText = "";
         }
 
-        /* 운영시간 입력 검증 함수 */
         function validateOperationHourInput() {
             var startTime = normalizeTimeValue(getEl("oprStartTime").value);
             var endTime = normalizeTimeValue(getEl("oprEndTime").value);
-
-            /* 둘 다 비어 있으면 운영시간 미입력으로 허용 */
             if (!startTime && !endTime) return true;
-
-            /* 하나만 입력된 경우 저장 방지 */
-            if (!startTime || !endTime) {
-                alertMessage("운영시간은 시작시간과 종료시간을 모두 입력하세요.");
-                return false;
-            }
-
+            if (!startTime || !endTime) { alertMessage("운영시간은 시작시간과 종료시간을 모두 입력하세요."); return false; }
             return true;
         }
 
-        /* 시설자산 선택 모달 열기 함수 */
-        function openFacilityModal() {
-            getEl("facilitySelectModal").classList.add("is-open");
-            getEl("facilitySelectModal").setAttribute("aria-hidden", "false");
-            document.body.style.overflow = "hidden";
-            updateCandidateCount();
-        }
+        function openFacilityModal() { getEl("facilitySelectModal").classList.add("is-open"); getEl("facilitySelectModal").setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; updateCandidateCount(); }
 
-        /* 시설자산 선택 모달 닫기 함수 */
         function closeFacilityModal() {
             var modal = getEl("facilitySelectModal");
             var activeEl = document.activeElement;
-
-            /*
-             * 모달 내부 포커스 제거
-             * - 선택/닫기 버튼이 focus 상태인 채 aria-hidden=true가 되면 브라우저 접근성 경고 발생
-             * - 모달을 숨기기 전에 현재 포커스를 먼저 해제
-             */
-            if (activeEl && modal.contains(activeEl)) {
-                activeEl.blur();
-            }
-
-            /*
-             * 모달 닫힘 처리
-             * - 화면 표시 클래스 제거
-             * - 접근성 숨김 상태 반영
-             * - body 스크롤 잠금 해제
-             */
-            modal.classList.remove("is-open");
-            modal.setAttribute("aria-hidden", "true");
-            document.body.style.overflow = "";
-
-            /*
-             * 포커스 복귀 처리
-             * - 선택 요약이 보이면 다시 선택 버튼으로 이동
-             * - 선택 전 상태이면 최초 시설자산 선택 버튼으로 이동
-             */
+            if (activeEl && modal.contains(activeEl)) activeEl.blur();
+            modal.classList.remove("is-open"); modal.setAttribute("aria-hidden", "true"); document.body.style.overflow = "";
             var returnBtn = getEl("changeFacilityBtn") || getEl("openFacilityModalBtn");
-            if (returnBtn && returnBtn.offsetParent !== null) {
-                returnBtn.focus();
-            }
+            if (returnBtn && returnBtn.offsetParent !== null) returnBtn.focus();
         }
 
-        /* 시설자산 선택값 반영 함수 */
         function selectFacility(row) {
             if (!row) return;
-
             var facilityNo = row.dataset.facilityNo || "";
             var facilityNm = row.dataset.facilityNm || "";
             var facilityTyNm = row.dataset.facilityTyNm || row.dataset.facilityTyCd || "-";
@@ -960,79 +780,46 @@
             var locCn = row.dataset.locCn || "";
             var useYn = row.dataset.useYn || "Y";
             var locationText = formatDongText(dongNo) + (locCn ? " · " + locCn : "");
-
+            var assetLineText = [facilityNo || "-", facilityNm || "-", locationText || "-"].join(" · ");
             getEl("selectedFacilityNo").value = facilityNo;
             getEl("selectedFacilityNmText").innerText = facilityNm || "-";
             getEl("selectedFacilityNoText").innerText = facilityNo || "-";
             getEl("selectedFacilityTyText").innerText = facilityTyNm;
             getEl("selectedLocationText").innerText = locationText || "-";
             getEl("selectedUseYnText").innerText = useYn === "N" ? "비활성" : "활성";
-
+            getEl("selectedAssetLineText").innerText = assetLineText;
+            getEl("selectedAssetLineText").title = assetLineText;
             getEl("selectedEmptyBox").style.display = "none";
             getEl("selectedSummaryBox").classList.add("is-active");
             document.querySelector(".selected-facility-box").classList.add("is-selected");
-
-            /* 기존 사진 로드 */
             loadExistingFiles(facilityNo);
             closeFacilityModal();
         }
 
-
-        /* 사전 선택 시설자산 자동 반영 함수 */
         function applyPreselectedFacility(facilityNo) {
             if (!facilityNo) return;
-
-            /*
-             * 후보 목록에서 facilityNo가 같은 row 탐색
-             * - 운영등록 버튼으로 넘어온 facilityNo가 후보 목록에 있으면 기존 selectFacility 흐름 그대로 사용
-             * - 시설명, 시설유형, 위치, 사용여부까지 data-* 값으로 자동 반영
-             */
             var candidateRows = Array.from(document.querySelectorAll("#facilityCandidateBody .candidate-row"));
-            var row = candidateRows.find(function (candidateRow) {
-                return candidateRow.dataset.facilityNo === facilityNo;
-            });
-
-            if (row) {
-                selectFacility(row);
-                return;
-            }
-
-            /*
-             * 후보 row를 못 찾은 경우 최소 표시 처리
-             * - 후보 목록에 없는 상태에서도 화면이 완전히 비어 보이지 않게 facilityNo만 표시
-             * - 상세 API 응답 구조가 확정되면 여기에서 시설유형/위치/사용여부까지 추가 세팅 가능
-             */
+            var row = candidateRows.find(function (candidateRow) { return candidateRow.dataset.facilityNo === facilityNo; });
+            if (row) { selectFacility(row); return; }
             getEl("selectedFacilityNo").value = facilityNo;
             getEl("selectedFacilityNoText").innerText = facilityNo;
             getEl("selectedFacilityNmText").innerText = "선택된 시설자산";
             getEl("selectedFacilityTyText").innerText = "-";
             getEl("selectedLocationText").innerText = "-";
             getEl("selectedUseYnText").innerText = "-";
+            getEl("selectedAssetLineText").innerText = facilityNo + " · 선택된 시설자산 · -";
+            getEl("selectedAssetLineText").title = facilityNo + " · 선택된 시설자산 · -";
             getEl("selectedEmptyBox").style.display = "none";
             getEl("selectedSummaryBox").classList.add("is-active");
             document.querySelector(".selected-facility-box").classList.add("is-selected");
-
-            /* 기존 사진 로드 */
             loadExistingFiles(facilityNo);
         }
 
-        /* 사전 선택 시설자산 변경 제한 함수 */
         function lockFacilitySelection() {
             var changeBtn = getEl("changeFacilityBtn");
-
-            /*
-             * 시설자산 목록에서 운영등록으로 진입한 경우
-             * - 이미 선택된 시설자산 기준으로 PUBLIC_FACILITY를 등록하는 흐름
-             * - 다른 시설자산으로 다시 선택하지 못하도록 버튼 비활성화
-             */
-            if (changeBtn) {
-                changeBtn.disabled = true;
-                changeBtn.innerText = "시설자산 고정";
-                changeBtn.title = "시설자산 목록에서 선택되어 들어온 시설은 변경할 수 없습니다.";
-            }
+            if (changeBtn) { changeBtn.disabled = true; changeBtn.innerText = "연결 시설자산 고정"; changeBtn.title = "시설자산 목록에서 선택되어 들어온 시설은 변경할 수 없습니다."; }
         }
 
-        /* 기존 사진 이미지 URL 반환 함수 */
         function getFileImageUrl(file) {
             if (file.viewUrl) return file.viewUrl;
             if (file.fileUrl) return file.fileUrl;
@@ -1040,58 +827,38 @@
             return "";
         }
 
-        /* 기존 사진 로드 함수 */
         async function loadExistingFiles(facilityNo) {
             var area = getEl("regFileManageList");
-            area.style.display = "";
-            area.innerHTML = '<div class="file-preview-empty">기존 사진을 불러오는 중입니다.</div>';
+            area.style.display = ""; area.innerHTML = '<div class="file-preview-empty">기존 사진을 불러오는 중입니다.</div>';
             getEl("deleteFileUuids").value = "";
-
             try {
                 var result = await requestJson(contextPath + "/manager/facility/detail/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facilityNo));
                 var fileList = result.fileList || result.attachFileList || (result.facility && result.facility.fileList) || [];
                 renderExistingFiles(fileList);
-            } catch (err) {
-                area.innerHTML = '<div class="file-preview-empty">기존 사진을 불러오지 못했습니다.</div>';
-            }
+            } catch (err) { area.innerHTML = '<div class="file-preview-empty">기존 사진을 불러오지 못했습니다.</div>'; }
         }
 
-        /* 기존 사진 렌더링 함수 */
         function renderExistingFiles(files) {
             var area = getEl("regFileManageList");
-            if (!files || files.length === 0) {
-                area.innerHTML = '<div class="file-preview-empty">기존 등록 사진이 없습니다.</div>';
-                return;
-            }
+            if (!files || files.length === 0) { area.innerHTML = '<div class="file-preview-empty">기존 등록 사진이 없습니다.</div>'; return; }
             area.innerHTML = files.map(function (file) {
                 var imgUrl = getFileImageUrl(file);
                 var name = file.fileOgName || file.fileSaveUuid || "시설사진";
                 var uuid = file.fileSaveUuid || "";
-                var thumbHtml = imgUrl
-                    ? '<img class="file-thumb js-image-preview" src="' + imgUrl + '" alt="' + name + '">'
-                    : '<div class="file-thumb"></div>';
-                return '<div class="file-manage-row">'
-                    + thumbHtml
-                    + '<div class="file-info"><div class="file-name">' + name + '</div><div class="file-meta">' + (file.fileExt || "image") + '</div></div>'
-                    + '<label class="file-delete-check"><input type="checkbox" class="js-delete-file-check" value="' + uuid + '">삭제</label>'
-                    + '</div>';
+                var thumbHtml = imgUrl ? '<img class="file-thumb js-image-preview" src="' + imgUrl + '" alt="' + name + '">' : '<div class="file-thumb"></div>';
+                return '<div class="file-manage-row">' + thumbHtml + '<div class="file-info"><div class="file-name">' + name + '</div><div class="file-meta">' + (file.fileExt || "image") + '</div></div>' + '<label class="file-delete-check"><input type="checkbox" class="js-delete-file-check" value="' + uuid + '">삭제</label>' + '</div>';
             }).join("");
         }
 
-        /* 삭제 UUID 갱신 함수 */
         function updateDeleteFileUuids() {
-            var checked = Array.from(document.querySelectorAll(".js-delete-file-check:checked"))
-                .map(function (box) { return box.value; })
-                .filter(Boolean);
+            var checked = Array.from(document.querySelectorAll(".js-delete-file-check:checked")).map(function (box) { return box.value; }).filter(Boolean);
             getEl("deleteFileUuids").value = checked.join(",");
         }
 
-        /* 후보 목록 검색 함수 */
         function filterCandidateList() {
             var keyword = (getEl("facilityKeyword").value || "").toLowerCase().trim();
             var facilityTyCd = getEl("facilityTypeFilter").value || "";
             var dongNo = getEl("facilityDongFilter").value || "";
-
             document.querySelectorAll("#facilityCandidateBody .candidate-row").forEach(function (row) {
                 var text = (row.innerText || "").toLowerCase();
                 var matchKeyword = !keyword || text.indexOf(keyword) > -1;
@@ -1099,199 +866,85 @@
                 var matchDong = !dongNo || row.dataset.dongNo === dongNo;
                 row.classList.toggle("candidate-hidden", !(matchKeyword && matchType && matchDong));
             });
-
             updateCandidateCount();
         }
 
-        /* 후보 목록 카운트 갱신 함수 */
         function updateCandidateCount() {
             var visibleCount = 0;
-            document.querySelectorAll("#facilityCandidateBody .candidate-row").forEach(function (row) {
-                if (!row.classList.contains("candidate-hidden")) visibleCount++;
-            });
+            document.querySelectorAll("#facilityCandidateBody .candidate-row").forEach(function (row) { if (!row.classList.contains("candidate-hidden")) visibleCount++; });
             getEl("candidateVisibleCount").innerHTML = "검색 결과 <strong>" + visibleCount + "</strong>건";
             getEl("candidateEmptyRow").style.display = visibleCount === 0 ? "table-row" : "none";
         }
 
-        /* 후보 검색 초기화 함수 */
-        function resetCandidateFilter() {
-            getEl("facilityKeyword").value = "";
-            getEl("facilityTypeFilter").value = "";
-            getEl("facilityDongFilter").value = "";
-            filterCandidateList();
-        }
+        function resetCandidateFilter() { getEl("facilityKeyword").value = ""; getEl("facilityTypeFilter").value = ""; getEl("facilityDongFilter").value = ""; filterCandidateList(); }
 
-        /* 사진 미리보기 렌더링 함수 */
         function previewSelectedFiles() {
-            var fileInput = getEl("regImgInput");
-            var previewArea = getEl("regImgGrid");
+            var fileInput = getEl("regImgInput"); var previewArea = getEl("regImgGrid");
             previewArea.innerHTML = "";
-
-            if (!fileInput.files || fileInput.files.length === 0) {
-                previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>';
-                return;
-            }
-
+            if (!fileInput.files || fileInput.files.length === 0) { previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>'; return; }
             Array.from(fileInput.files).forEach(function (file) {
-                var item = document.createElement("div");
-                item.className = "file-preview-item";
-
+                var item = document.createElement("div"); item.className = "file-preview-item";
                 if (file.type && file.type.indexOf("image/") === 0) {
-                    var img = document.createElement("img");
-                    img.alt = file.name;
-                    img.src = URL.createObjectURL(file);
-                    if (window.CommonImageViewer) {
-                        img.addEventListener("click", function () { CommonImageViewer.openUrl(this.src); });
-                    }
+                    var img = document.createElement("img"); img.alt = file.name; img.src = URL.createObjectURL(file);
+                    if (window.CommonImageViewer) img.addEventListener("click", function () { CommonImageViewer.openUrl(this.src); });
                     item.appendChild(img);
                 }
-
-                var name = document.createElement("div");
-                name.className = "file-preview-name";
-                name.textContent = file.name;
-                item.appendChild(name);
-                previewArea.appendChild(item);
+                var name = document.createElement("div"); name.className = "file-preview-name"; name.textContent = file.name;
+                item.appendChild(name); previewArea.appendChild(item);
             });
         }
 
-        /* 등록 저장 처리 함수 */
         async function saveRegister(event) {
             event.preventDefault();
-
             var mode = getEl("registerMode").value;
             var selectedFacilityNo = getEl("selectedFacilityNo").value;
-
-            if (mode === "EXISTING" && !selectedFacilityNo) {
-                alertMessage("기존 시설자산을 선택하세요.");
-                return;
-            }
-            if (mode === "NEW" && !getEl("regFacilityNm").value.trim()) {
-                alertMessage("시설명을 입력하세요.");
-                return;
-            }
-            if (mode === "NEW" && getEl("regLocationType").value === "DONG" && !getEl("regDongNo").value) {
-                alertMessage("동 기준 위치를 선택한 경우 동을 선택하세요.");
-                return;
-            }
-            if (mode === "NEW" && getEl("regLocationType").value === "HOUSEHOLD" && !getEl("regDongNo").value) {
-                alertMessage("세대 위치를 선택한 경우 동을 선택하세요.");
-                return;
-            }
-            if (!getEl("regCmnNm").value.trim()) {
-                alertMessage("편의시설명을 입력하세요.");
-                return;
-            }
-
-            if (mode === "NEW") {
-                getEl("regLocCn").value = buildNewFacilityLocationText();
-            }
-
-            /* 운영시간 최종 저장값 생성 */
+            if (mode === "EXISTING" && !selectedFacilityNo) { alertMessage("연결할 기존 시설자산을 선택하세요."); return; }
+            if (mode === "NEW" && !getEl("regFacilityNm").value.trim()) { alertMessage("시설명을 입력하세요."); return; }
+            if (mode === "NEW" && getEl("regLocationType").value === "DONG" && !getEl("regDongNo").value) { alertMessage("동 기준 위치를 선택한 경우 동을 선택하세요."); return; }
+            if (mode === "NEW" && getEl("regLocationType").value === "HOUSEHOLD" && !getEl("regDongNo").value) { alertMessage("세대 위치를 선택한 경우 동을 선택하세요."); return; }
+            if (!getEl("regCmnNm").value.trim()) { alertMessage("편의시설명을 입력하세요."); return; }
+            if (mode === "NEW") getEl("regLocCn").value = buildNewFacilityLocationText();
             updateOperationHourText();
-
-            /* 운영시간 부분 입력 검증 */
-            if (!validateOperationHourInput()) {
-                return;
-            }
-
+            if (!validateOperationHourInput()) return;
             updateDeleteFileUuids();
-
             try {
                 await postForm(contextPath + "/manager/publicFacility/insert/" + encodeURIComponent(mgmtOfcNo), new FormData(getEl("registerForm")));
                 alertMessage("편의시설이 등록되었습니다.");
                 location.href = listUrl();
-            } catch (err) {
-                console.error(err);
-                alertMessage(err.message || "편의시설 등록 중 오류가 발생했습니다.");
-            }
+            } catch (err) { console.error(err); alertMessage(err.message || "편의시설 등록 중 오류가 발생했습니다."); }
         }
 
-        /* 초기 이벤트 연결 */
         document.addEventListener("DOMContentLoaded", function () {
-            /* 등록 방식 탭 클릭 이벤트 */
-            document.querySelectorAll(".mode-tab").forEach(function (tab) {
-                tab.addEventListener("click", function () {
-                    setRegisterMode(tab.dataset.mode || "EXISTING");
-                });
-            });
-
-            /* 시설자산 선택 모달 이벤트 */
+            document.querySelectorAll(".mode-tab").forEach(function (tab) { tab.addEventListener("click", function () { setRegisterMode(tab.dataset.mode || "EXISTING"); }); });
             getEl("openFacilityModalBtn").addEventListener("click", openFacilityModal);
             getEl("changeFacilityBtn").addEventListener("click", openFacilityModal);
             getEl("closeFacilityModalBtn").addEventListener("click", closeFacilityModal);
-            getEl("facilitySelectModal").addEventListener("click", function (event) {
-                if (event.target === getEl("facilitySelectModal")) closeFacilityModal();
-            });
-
-            /* 후보 선택 이벤트 */
+            getEl("facilitySelectModal").addEventListener("click", function (event) { if (event.target === getEl("facilitySelectModal")) closeFacilityModal(); });
             getEl("facilityCandidateBody").addEventListener("click", function (event) {
                 var selectBtn = event.target.closest('[data-action="selectCandidate"]');
                 var row = event.target.closest(".candidate-row");
                 if (selectBtn && row) selectFacility(row);
             });
-
-            /* 후보 검색 이벤트 */
             getEl("facilityKeyword").addEventListener("keyup", filterCandidateList);
             getEl("facilityTypeFilter").addEventListener("change", filterCandidateList);
             getEl("facilityDongFilter").addEventListener("change", filterCandidateList);
             getEl("facilityResetBtn").addEventListener("click", resetCandidateFilter);
-
-            /* 새 시설자산 위치 구분 이벤트 */
-            getEl("regLocationType").addEventListener("change", function () {
-                updateLocationType();
-                if (this.value === "HOUSEHOLD" && getEl("regDongNo").value) {
-                    loadFloorList();
-                }
-            });
-            getEl("regDongNo").addEventListener("change", function () {
-                if (getEl("regLocationType").value === "HOUSEHOLD") {
-                    loadFloorList();
-                }
-            });
+            getEl("regLocationType").addEventListener("change", function () { updateLocationType(); if (this.value === "HOUSEHOLD" && getEl("regDongNo").value) loadFloorList(); });
+            getEl("regDongNo").addEventListener("change", function () { if (getEl("regLocationType").value === "HOUSEHOLD") loadFloorList(); });
             getEl("regFacilityFloor").addEventListener("change", loadHoList);
             getEl("regFacilityHo").addEventListener("change", updateHouseholdLocationText);
-
-            /* 운영요일/운영시간 자동 조합 이벤트 */
-            ["oprStartDay", "oprEndDay", "oprStartTime", "oprEndTime"].forEach(function (id) {
-                getEl(id).addEventListener("change", updateOperationHourText);
-                getEl(id).addEventListener("input", updateOperationHourText);
-            });
-
-            /* 사진 파일 선택 이벤트 */
+            ["oprStartDay", "oprEndDay", "oprStartTime", "oprEndTime"].forEach(function (id) { getEl(id).addEventListener("change", updateOperationHourText); getEl(id).addEventListener("input", updateOperationHourText); });
             getEl("regImgInput").addEventListener("change", previewSelectedFiles);
-
-            /* 기존 사진 삭제 체크 이벤트 */
-            document.addEventListener("change", function (e) {
-                if (e.target.classList.contains("js-delete-file-check")) updateDeleteFileUuids();
-            });
-
-            /* 저장/취소 이벤트 */
+            document.addEventListener("change", function (e) { if (e.target.classList.contains("js-delete-file-check")) updateDeleteFileUuids(); });
             getEl("registerForm").addEventListener("submit", saveRegister);
             getEl("backToListBtn").addEventListener("click", function () { history.back(); });
-
-            /* ESC 키로 시설자산 선택 모달 닫기 */
-            document.addEventListener("keydown", function (event) {
-                if (event.key === "Escape") closeFacilityModal();
-            });
-
-            /* 기본 등록 방식 및 카운트 세팅 */
+            document.addEventListener("keydown", function (event) { if (event.key === "Escape") closeFacilityModal(); });
             setRegisterMode("EXISTING");
             updateCandidateCount();
             updateOperationHourText();
-
-            /* 공통 이미지 확대 모듈 연결 */
-            if (window.CommonImageViewer) {
-                CommonImageViewer.bind("#regFileManageList");
-            }
-
-            /* facilityNo 파라미터가 넘어온 경우 후보 목록 기준 자동 선택 */
+            if (window.CommonImageViewer) CommonImageViewer.bind("#regFileManageList");
             if (preselectFacilityNo) {
                 applyPreselectedFacility(preselectFacilityNo);
-
-                /*
-                 * 시설자산 목록에서 운영등록으로 진입한 경우
-                 * - 선택된 시설자산을 변경하지 못하도록 다시 선택 버튼 잠금
-                 */
                 lockFacilitySelection();
                 var modeTabs = document.querySelector(".mode-tabs");
                 if (modeTabs) modeTabs.style.display = "none";

@@ -52,12 +52,12 @@
 
         /* 검색 조건 */
         #publicFacilityPage .public-filter-panel { overflow:visible; }
-        #publicFacilityPage .public-filter-grid { display:grid; grid-template-columns:1fr 1.25fr 1.25fr .75fr; gap:10px 12px; align-items:end; }
-        #publicFacilityPage .filter-action-field { grid-column:4; }
+        #publicFacilityPage .public-filter-grid { display:grid; grid-template-columns:.75fr .7fr .85fr .75fr .85fr .9fr 1.55fr auto; gap:8px 10px; align-items:end; }
+        #publicFacilityPage .filter-action-field { grid-column:auto; }
         #publicFacilityPage .public-filter-actions { display:flex; justify-content:flex-end; gap:7px; white-space:nowrap; }
         #publicFacilityPage.is-item-tab .public-filter-grid { grid-template-columns:1fr 1fr .75fr 1.2fr auto; }
         #publicFacilityPage.is-item-tab .filter-action-field { grid-column:5; }
-        #publicFacilityPage .public-filter-grid .btn { min-height:32px; height:32px; padding:0 12px; font-size:12px; border-radius:4px; }
+        #publicFacilityPage .public-filter-grid .btn { min-height:32px; height:32px; padding:0 10px; font-size:12px; border-radius:4px; }
         #publicFacilityPage .search-wrap { position:relative; width:100%; }
         #publicFacilityPage .search-wrap .material-symbols-rounded { position:absolute; left:9px; top:50%; transform:translateY(-50%); font-size:15px; color:#9caa9e; pointer-events:none; }
         #publicFacilityPage .search-wrap input { padding-left:30px; width:100%; }
@@ -189,22 +189,12 @@
                     <div class="panel-body">
                         <div class="public-filter-grid">
 
-                            <%-- 1행: 분류 / 편의시설명 / 동 / 위치 --%>
+                            <%-- 편의시설 탭 필터: 분류 / 동 / 위치 / 예약여부 / 운영현황 / 수정일 / 편의시설 검색 --%>
                             <div class="form-field filter-facility-only">
                                 <label class="field-label">분류</label>
                                 <select class="form-select" id="filterFacilityTyCd">
                                     <option value="">전체</option>
                                 </select>
-                            </div>
-                            <div class="form-field filter-facility-only">
-                                <label class="field-label">편의시설명</label>
-                                <div class="search-auto-wrap">
-                                    <div class="search-wrap">
-                                        <span class="material-symbols-rounded">search</span>
-                                        <input type="text" class="form-input" id="filterFacilityKeyword" placeholder="편의시설명 검색" autocomplete="off">
-                                    </div>
-                                    <div class="facility-suggest-box" id="facilitySuggestBox"></div>
-                                </div>
                             </div>
                             <div class="form-field filter-facility-only">
                                 <label class="field-label">동</label>
@@ -219,8 +209,6 @@
                                     <option value="">전체</option>
                                 </select>
                             </div>
-
-                            <%-- 2행: 예약여부 / 운영요일 / 운영시간 / 운영현황 --%>
                             <div class="form-field filter-facility-only">
                                 <label class="field-label">예약여부</label>
                                 <select class="form-select" id="filterRsvYn">
@@ -228,45 +216,6 @@
                                     <option value="Y">예약제</option>
                                     <option value="N">자유이용</option>
                                 </select>
-                            </div>
-                            <div class="form-field filter-facility-only">
-                                <label class="field-label">운영요일</label>
-                                <select class="form-select" id="filterOperDayType">
-                                    <option value="">전체</option>
-                                    <option value="DAILY">매일</option>
-                                    <option value="WEEKDAY">평일</option>
-                                    <option value="WEEKEND">주말</option>
-                                    <option value="CUSTOM">직접 지정</option>
-                                </select>
-                                <div class="filter-opr-row cols-3 filter-custom-day-row" id="filterCustomDayRow">
-                                    <select class="form-select" id="filterOprStartDay">
-                                        <option value="월">월요일</option>
-                                        <option value="화">화요일</option>
-                                        <option value="수">수요일</option>
-                                        <option value="목">목요일</option>
-                                        <option value="금">금요일</option>
-                                        <option value="토">토요일</option>
-                                        <option value="일">일요일</option>
-                                    </select>
-                                    <span class="filter-opr-sep">~</span>
-                                    <select class="form-select" id="filterOprEndDay">
-                                        <option value="월">월요일</option>
-                                        <option value="화">화요일</option>
-                                        <option value="수">수요일</option>
-                                        <option value="목">목요일</option>
-                                        <option value="금" selected>금요일</option>
-                                        <option value="토">토요일</option>
-                                        <option value="일">일요일</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-field filter-facility-only">
-                                <label class="field-label">운영시간</label>
-                                <div class="filter-opr-row cols-3">
-                                    <input type="time" class="form-input" id="filterOprStartTime" step="60">
-                                    <span class="filter-opr-sep">~</span>
-                                    <input type="time" class="form-input" id="filterOprEndTime" step="60">
-                                </div>
                             </div>
                             <div class="form-field filter-facility-only">
                                 <label class="field-label">운영현황</label>
@@ -278,23 +227,20 @@
                                     <option value="CLOSE_PART">일부 사용중지</option>
                                 </select>
                             </div>
-
-                            <%-- 3행: 수정일 / 자원 개수 / (빈칸) / 액션 --%>
                             <div class="form-field filter-facility-only">
                                 <label class="field-label">수정일</label>
                                 <input type="date" class="form-input" id="filterMdfDt">
                             </div>
                             <div class="form-field filter-facility-only">
-                                <label class="field-label">자원 개수</label>
-                                <select class="form-select" id="filterItemCntType">
-                                    <option value="">전체</option>
-                                    <option value="ZERO">0개</option>
-                                    <option value="ONE_MORE">1개 이상</option>
-                                    <option value="FIVE_MORE">5개 이상</option>
-                                    <option value="TEN_MORE">10개 이상</option>
-                                </select>
+                                <label class="field-label">편의시설 검색</label>
+                                <div class="search-auto-wrap">
+                                    <div class="search-wrap">
+                                        <span class="material-symbols-rounded">search</span>
+                                        <input type="text" class="form-input" id="filterFacilityKeyword" placeholder="편의시설명 또는 편의시설번호 검색" autocomplete="off">
+                                    </div>
+                                    <div class="facility-suggest-box" id="facilitySuggestBox"></div>
+                                </div>
                             </div>
-                            <div class="form-field filter-facility-only"><%-- 빈 칸 맞춤 --%></div>
 
                             <%-- 자원 탭 필터 --%>
                             <div class="form-field filter-item-only">
@@ -374,7 +320,7 @@
                         <div class="summary-chips">
                             <span class="summary-chip">전체 <strong id="chipTotal">0</strong></span>
                             <span class="summary-chip" id="chipSecondWrap">예약가능 <strong id="chipSecond">0</strong></span>
-                            <span class="summary-chip" id="chipThirdWrap">유료 <strong id="chipThird">0</strong></span>
+                            <span class="summary-chip" id="chipThirdWrap">일부점검 <strong id="chipThird">0</strong></span>
                         </div>
                         <span class="summary-note" id="summaryNote">편의시설 기본정보를 조회합니다.</span>
                     </div>
@@ -581,18 +527,48 @@
                         el("facilitySuggestBox").style.display = "none";
                     }
 
+                    function escapeHtml(value) {
+                        return text(value)
+                            .replace(/&/g, "&amp;")
+                            .replace(/</g, "&lt;")
+                            .replace(/>/g, "&gt;")
+                            .replace(/"/g, "&quot;");
+                    }
+
                     function showFacilitySuggest() {
                         var keyword = text(el("filterFacilityKeyword").value).trim().toLowerCase();
                         var box = el("facilitySuggestBox");
+                        var used = {};
+                        var list = [];
+
                         if (!keyword) { hideFacilitySuggest(); return; }
-                        var names = Array.from(new Set(rowDataAll.map(getFacilityName).filter(function (name) {
-                            return name && name.toLowerCase().indexOf(keyword) > -1;
-                        }))).slice(0, 10);
-                        if (names.length === 0) { hideFacilitySuggest(); return; }
-                        box.innerHTML = names.map(function (name) {
-                            return '<button type="button" class="facility-suggest-item" data-name="'
-                                + name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
-                                + '">' + name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</button>';
+
+                        /* 편의시설명 / 편의시설번호 자동완성 목록 구성 */
+                        rowDataAll.forEach(function (row) {
+                            var cmnFacilityNo = text(row.cmnFacilityNo).trim();
+                            var cmnFacilityNm = text(row.cmnFacilityNm).trim();
+                            var noMatched = cmnFacilityNo.toLowerCase().indexOf(keyword) > -1;
+                            var nameMatched = cmnFacilityNm.toLowerCase().indexOf(keyword) > -1;
+                            var key = cmnFacilityNo || cmnFacilityNm;
+
+                            if (!key || used[key]) return;
+                            if (!noMatched && !nameMatched) return;
+
+                            used[key] = true;
+                            list.push({ cmnFacilityNo:cmnFacilityNo, cmnFacilityNm:cmnFacilityNm });
+                        });
+
+                        list = list.slice(0, 10);
+
+                        if (list.length === 0) { hideFacilitySuggest(); return; }
+
+                        box.innerHTML = list.map(function (item) {
+                            var main = item.cmnFacilityNm || "-";
+                            var sub = item.cmnFacilityNo || "";
+                            return '<button type="button" class="facility-suggest-item" data-name="' + escapeHtml(main) + '" data-no="' + escapeHtml(sub) + '">'
+                                + '<span style="font-weight:700;">' + escapeHtml(main) + '</span>'
+                                + (sub ? '<span style="font-size:11px;color:#8a9a8e;margin-left:8px;">' + escapeHtml(sub) + '</span>' : '')
+                                + '</button>';
                         }).join("");
                         box.style.display = "block";
                     }
@@ -600,7 +576,9 @@
                     function selectFacilitySuggest(event) {
                         var item = event.target.closest(".facility-suggest-item");
                         if (!item) return;
-                        el("filterFacilityKeyword").value = item.dataset.name;
+
+                        /* 편의시설번호가 있으면 번호 기준으로 검색창 반영 */
+                        el("filterFacilityKeyword").value = item.dataset.no || item.dataset.name || "";
                         hideFacilitySuggest();
                         searchList();
                     }
@@ -732,25 +710,13 @@
                     }
 
                     function getFacilityFilterValue() {
-                        var operDay = buildOperationDayText(
-                            el("filterOperDayType").value,
-                            el("filterOprStartDay").value,
-                            el("filterOprEndDay").value
-                        );
                         return {
                             keyword:text(el("filterFacilityKeyword").value).trim(),
                             dongNo:el("filterDongNo").value,
                             facilityTyCd:el("filterFacilityTyCd").value,
                             locCn:el("filterLocCn").value,
                             rsvYn:el("filterRsvYn").value,
-                            operDayType:el("filterOperDayType").value,
-                            oprStartDay:el("filterOprStartDay").value,
-                            oprEndDay:el("filterOprEndDay").value,
-                            operDay:operDay,
-                            operStartTime:el("filterOprStartTime").value,
-                            operEndTime:el("filterOprEndTime").value,
                             operStatus:el("filterOperStatus").value,
-                            itemCntType:el("filterItemCntType").value,
                             mdfDt:el("filterMdfDt").value
                         };
                     }
@@ -802,11 +768,21 @@
                     function canRestoreListState() {
                         var referrer = document.referrer || "";
 
+                        /*
+                         * 페이지 이동 복원 대상
+                         * - 상세/수정/등록 화면에서 목록으로 돌아온 경우
+                         */
                         var fromDetailPage = referrer.indexOf("/manager/publicFacility/detail-page/") > -1;
                         var fromUpdatePage = referrer.indexOf("/manager/publicFacility/update-page/") > -1;
                         var fromRegisterPage = referrer.indexOf("/manager/publicFacility/register/") > -1;
 
-                        return fromDetailPage || fromUpdatePage || fromRegisterPage;
+                        /*
+                         * 모달 저장 후 새로고침 복원 대상
+                         * - 자원 탭에서 상세/수정 모달 저장 후 location.reload() 된 경우
+                         */
+                        var fromModalRefresh = sessionStorage.getItem("publicFacilityModalRefresh") === "Y";
+
+                        return fromDetailPage || fromUpdatePage || fromRegisterPage || fromModalRefresh;
                     }
 
                     function restoreFacilityFilters(filter) {
@@ -817,14 +793,7 @@
                         refreshLocationOptions();
                         el("filterLocCn").value = filter.locCn || "";
                         el("filterRsvYn").value = filter.rsvYn || "";
-                        el("filterOperDayType").value = filter.operDayType || "";
-                        el("filterOprStartDay").value = filter.oprStartDay || "월";
-                        el("filterOprEndDay").value = filter.oprEndDay || "금";
-                        el("filterOprStartTime").value = filter.operStartTime || "";
-                        el("filterOprEndTime").value = filter.operEndTime || "";
-                        updateFilterOperationDayTypeView();
                         el("filterOperStatus").value = filter.operStatus || "";
-                        el("filterItemCntType").value = filter.itemCntType || "";
                         el("filterMdfDt").value = filter.mdfDt || "";
                     }
 
@@ -839,24 +808,23 @@
                     function getFilteredFacilityRows() {
                         var f = getFacilityFilterValue();
                         return rowDataAll.filter(function (row) {
-                            var operationHour = getOperationHour(row);
                             var locationText = getLocationText(row);
                             var operationStatus = getOperationStatus(row);
-                            var itemCnt = getItemCount(row);
                             var mdfDate = normalizeDate(row.mdfDt);
-                            /* 편의시설명 검색 조건 */
-                            var keywordOk = !f.keyword || contains(row.cmnFacilityNm, f.keyword);
+
+                            /* 편의시설명 / 편의시설번호 검색 조건 */
+                            var keywordOk = !f.keyword
+                                || contains(row.cmnFacilityNm, f.keyword)
+                                || contains(row.cmnFacilityNo, f.keyword);
                             var rowDongNo = text(row.dongNo);
                             var dongOk = !f.dongNo || (f.dongNo === "_COMMON_" && !rowDongNo) || rowDongNo === f.dongNo;
                             var facilityTyOk = !f.facilityTyCd || row.facilityTyCd === f.facilityTyCd;
                             var locationOk = !f.locCn || locationText === f.locCn;
                             var rsvOk = !f.rsvYn || row.cmnFacilityRsvYn === f.rsvYn || row.rsvYn === f.rsvYn;
-                            var operDayOk = isOperationDayMatched(operationHour, f.operDay);
-                            var operTimeOk = isOperationTimeMatched(operationHour, f.operStartTime, f.operEndTime);
                             var operStatusOk = !f.operStatus || operationStatus === f.operStatus;
-                            var itemCntOk = isItemCountMatched(itemCnt, f.itemCntType);
                             var mdfDateOk = !f.mdfDt || mdfDate === f.mdfDt;
-                            return keywordOk && dongOk && facilityTyOk && locationOk && rsvOk && operDayOk && operTimeOk && operStatusOk && itemCntOk && mdfDateOk;
+
+                            return keywordOk && dongOk && facilityTyOk && locationOk && rsvOk && operStatusOk && mdfDateOk;
                         });
                     }
 
@@ -884,7 +852,7 @@
                             el("chipThirdWrap").childNodes[0].nodeValue = "점검중 ";
                             el("chipSecond").textContent = openCount;
                             el("chipThird").textContent = repairCount;
-                            el("summaryNote").textContent = "PUBLIC_FACILITY 하위 PUBLIC_ITEM 자원 정보를 조회합니다.";
+                            el("summaryNote").textContent = "편의시설별 등록된 자원 현황을 조회합니다";
                         } else {
                             var rsvCount = list.filter(function (row) { return row.cmnFacilityRsvYn === "Y" || row.rsvYn === "Y"; }).length;
                             var repairFacilityCount = list.filter(function (row) { return getOperationStatus(row) === "REPAIR_PART"; }).length;
@@ -892,7 +860,7 @@
                             el("chipThirdWrap").childNodes[0].nodeValue = "일부점검 ";
                             el("chipSecond").textContent = rsvCount;
                             el("chipThird").textContent = repairFacilityCount;
-                            el("summaryNote").textContent = "FACILITY 마스터와 연결된 PUBLIC_FACILITY 정보를 조회합니다.";
+                            el("summaryNote").textContent = "단지 내 편의시설 운영 정보를 조회합니다.";
                         }
                     }
 
@@ -905,14 +873,7 @@
                         el("filterFacilityTyCd").value = "";
                         el("filterLocCn").value = "";
                         el("filterRsvYn").value = "";
-                        el("filterOperDayType").value = "";
-                        el("filterOprStartDay").value = "월";
-                        el("filterOprEndDay").value = "금";
-                        el("filterOprStartTime").value = "";
-                        el("filterOprEndTime").value = "";
-                        updateFilterOperationDayTypeView();
                         el("filterOperStatus").value = "";
-                        el("filterItemCntType").value = "";
                         el("filterMdfDt").value = "";
                         hideFacilitySuggest();
                         refreshLocationOptions();
@@ -1007,7 +968,7 @@
                         }
                         el("infoLine").innerHTML = isItem
                             ? '<span class="material-symbols-rounded">info</span>편의시설 자원은 편의시설번호 기준으로 연결됩니다.'
-                            : '<span class="material-symbols-rounded">info</span>편의시설은 시설번호와 편의시설의 시설번호 기준으로 연결됩니다.';
+                            : '<span class="material-symbols-rounded">info</span>편의시설은 운영관리 정보와 하위 자원을 함께 관리합니다.';
                     }
 
                     function switchTab(viewType) {
@@ -1062,12 +1023,7 @@
                         el("filterFacilityTyCd").addEventListener("change", searchList);
                         el("filterLocCn").addEventListener("change", searchList);
                         el("filterRsvYn").addEventListener("change", searchList);
-                        ["filterOperDayType", "filterOprStartDay", "filterOprEndDay", "filterOprStartTime", "filterOprEndTime"].forEach(function (id) {
-                            el(id).addEventListener("change", function () { updateFilterOperationDayTypeView(); searchList(); });
-                            el(id).addEventListener("input", searchList);
-                        });
                         el("filterOperStatus").addEventListener("change", searchList);
-                        el("filterItemCntType").addEventListener("change", searchList);
                         el("filterMdfDt").addEventListener("change", searchList);
                         el("filterItemKeyword").addEventListener("keyup", function (e) { if (e.key === "Enter") searchList(); });
                         el("filterItemNo").addEventListener("keyup", function (e) { if (e.key === "Enter") searchList(); });
@@ -1158,6 +1114,12 @@
                             sessionStorage.removeItem(STORAGE_KEY);
                             restoreState = null;
                         }
+
+                        /*
+                         * 모달 새로고침 복원 플래그 제거
+                         * - 이번 진입에서만 탭 복원에 사용하고 바로 삭제
+                         */
+                        sessionStorage.removeItem("publicFacilityModalRefresh");
 
                         /*
                          * 초기 탭 결정

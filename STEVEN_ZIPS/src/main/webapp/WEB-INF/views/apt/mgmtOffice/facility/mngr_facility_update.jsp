@@ -36,15 +36,15 @@
         #facilityPage .notice-box strong { color:#1a2e1e; }
         #facilityPage .field-help { margin-top:5px; font-size:11px; color:#9caa9e; line-height:1.5; }
         #facilityPage .field-help.lock { color:#7c2d12; }
-        .form-section-title { letter-spacing:0; text-transform:none; font-size:11px; font-weight:800; color:#4a5c4e; display:flex; align-items:center; gap:4px; margin-bottom:10px; }
+        .form-section-title { letter-spacing:0; text-transform:none; font-size:11px; font-weight:600; color:#4a5c4e; display:flex; align-items:center; gap:4px; margin-bottom:10px; }
         .form-section-title .material-symbols-rounded { font-size:15px; color:var(--accent,#2e5c38); }
         .facility-modal-cols { display:grid; grid-template-columns:1fr 1fr; gap:0; }
         .facility-modal-col-left { padding-right:20px; border-right:1px solid var(--line,#d7dce2); }
         .facility-modal-col-right { padding-left:20px; }
-        .facility-col-label { font-size:11px; font-weight:800; color:#8a9a8e; letter-spacing:.5px; text-transform:uppercase; padding-bottom:8px; border-bottom:1px solid var(--line,#d7dce2); margin-bottom:14px; }
+        .facility-col-label { font-size:11px; font-weight:600; color:#8a9a8e; letter-spacing:.5px; text-transform:uppercase; padding-bottom:8px; border-bottom:1px solid var(--line,#d7dce2); margin-bottom:14px; }
         #facilityPage .facility-type-control { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:8px; }
         #facilityPage .facility-use-control { display:flex; align-items:center; gap:10px; min-width:0; min-height:32px; }
-        #facilityPage .facility-use-status { font-size:12px; font-weight:800; color:#1f5a35; white-space:nowrap; }
+        #facilityPage .facility-use-status { font-size:12px; font-weight:600; color:#1f5a35; white-space:nowrap; }
         #facilityPage .facility-use-status.is-off { color:#7f1d1d; }
         #facilityPage .use-toggle { position:relative; display:inline-flex; width:46px; height:24px; flex-shrink:0; }
         #facilityPage .use-toggle input { position:absolute; opacity:0; pointer-events:none; }
@@ -53,7 +53,7 @@
         #facilityPage .use-toggle input:checked + .use-toggle-slider { background:#2e5c38; border-color:#2e5c38; }
         #facilityPage .use-toggle input:checked + .use-toggle-slider::after { transform:translateX(22px); }
         #facilityPage .file-upload-box { border:1px dashed var(--line); border-radius:4px; padding:12px; background:#fafcfb; }
-        #facilityPage .file-upload-title { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:#4a5c4e; }
+        #facilityPage .file-upload-title { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#4a5c4e; }
         #facilityPage .file-upload-title .material-symbols-rounded { font-size:16px; color:var(--accent); }
         #facilityPage .file-upload-desc { font-size:11px; color:#7a8a7d; line-height:1.5; }
         #facilityPage .file-preview-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:10px; }
@@ -66,31 +66,33 @@
         #facilityPage .file-manage-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--line); border-radius:4px; background:#fff; }
         #facilityPage .file-thumb { width:48px; height:48px; border-radius:4px; border:1px solid var(--line); object-fit:cover; background:#f4f7f4; flex-shrink:0; }
         #facilityPage .file-info { min-width:0; flex:1; }
-        #facilityPage .file-name { font-size:12px; font-weight:700; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #facilityPage .file-name { font-size:12px; font-weight:600; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         #facilityPage .file-meta { margin-top:2px; font-size:11px; color:#9caa9e; }
-        #facilityPage .file-delete-check { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#7f1d1d; font-weight:700; }
+        #facilityPage .file-delete-check { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#7f1d1d; font-weight:600; }
         #facilityPage .file-delete-check input { width:14px; height:14px; }
 
-        /* 위치 선택 행: 등록 화면과 동일한 한 줄 선택 구조 */
+        /* 위치 선택 행 */
         #facilityPage .location-select-row { display:grid; grid-template-columns:1.1fr .75fr .75fr .75fr; gap:8px; align-items:end; }
-        #facilityPage .location-select-row .field-help { display:none; } /* 선택 행 도움말 숨김 */
+        #facilityPage .location-select-row .field-help { display:none; }
         #facilityPage .location-help-row { margin-top:5px; font-size:11px; color:#9caa9e; line-height:1.5; }
         #facilityPage .location-detail-row { margin-top:10px; }
         @media (max-width:900px) { #facilityPage .location-select-row { grid-template-columns:1fr 1fr; } }
 
-        /* 이미지 클릭 확대 공통 */
+        /* 편의시설 운영정보 참고 박스 — 상세화면 asset-ref-box와 동일한 구조 */
+        #facilityPage .cmn-ref-box { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:42px; padding:10px 12px; border:1px solid var(--line); border-radius:4px; background:#f6f7f8; }
+        #facilityPage .cmn-ref-main { min-width:0; display:flex; align-items:center; gap:7px; color:#4a5c4e; font-size:12px; font-weight:400; line-height:1.45; white-space:nowrap; overflow:hidden; }
+        #facilityPage .cmn-ref-main .material-symbols-rounded { font-size:16px; color:#9aa5a0; flex-shrink:0; }
+        #facilityPage .cmn-ref-text { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #facilityPage .cmn-ref-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+        #facilityPage .cmn-ref-link { display:inline-flex; align-items:center; gap:3px; color:var(--accent); font-size:11px; font-weight:500; text-decoration:none; white-space:nowrap; }
+        #facilityPage .cmn-ref-link:hover { color:#1a3d1f; }
+        #facilityPage .cmn-ref-link .material-symbols-rounded { font-size:13px; }
+        #facilityPage .cmn-ref-empty { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:42px; padding:10px 12px; border:1px solid var(--line); border-radius:4px; background:#f6f7f8; font-size:12px; color:#9caa9e; }
+
         #facilityPage .js-image-preview { cursor:zoom-in; }
-
-        /* 이미지 확대 모달 배경 */
         .image-preview-modal { display:none; position:fixed; inset:0; z-index:2147483647; align-items:center; justify-content:center; padding:24px; background:rgba(0,0,0,.76); }
-
-        /* 이미지 확대 모달 표시 상태 */
         .image-preview-modal.is-open { display:flex !important; }
-
-        /* 이미지 확대 모달 큰 이미지 */
         .image-preview-modal img { max-width:92vw; max-height:88vh; object-fit:contain; border-radius:6px; background:#fff; }
-
-        /* 이미지 확대 모달 닫기 버튼 */
         .image-preview-close { position:absolute; top:22px; right:28px; border:0; background:transparent; color:#fff; font-size:38px; line-height:1; cursor:pointer; }
         @media (max-width:760px) {
             .facility-modal-cols { grid-template-columns:1fr; }
@@ -118,7 +120,6 @@
     <img id="imagePreviewLargeImg" src="" alt="확대 이미지">
 </div>
 
-<%-- 이미지 확대 모달: 기존 등록 사진과 새 선택 사진 공통 확대 영역 --%>
 <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
 
 <div class="app-wrapper">
@@ -154,12 +155,10 @@
                             </div>
                             <div class="facility-modal-cols">
                                 <div class="facility-modal-col-left">
-                                    <div class="facility-col-label">시설 정보</div>
                                     <div class="form-section" style="margin-bottom:14px;">
                                         <div class="form-section-title">
                                             <span class="material-symbols-rounded">apartment</span>시설 정보
                                         </div>
-                                        <%-- 시설명 + 시설유형(정정버튼 포함): 한 줄 --%>
                                         <div class="form-row cols-2">
                                             <div class="form-field">
                                                 <label class="field-label">시설명 <span class="req">*</span></label>
@@ -197,7 +196,6 @@
                                                 <div class="field-help" id="correctionGuide" style="display:none;color:#1f5a35;font-weight:700;">정정 가능 · 변경할 시설유형을 선택하고 저장하세요.</div>
                                             </div>
                                         </div>
-                                        <%-- 설치일자 + 활성여부: 한 줄 --%>
                                         <div class="form-row cols-2" style="margin-top:2px;">
                                             <div class="form-field">
                                                 <label class="field-label">설치일자</label>
@@ -220,7 +218,6 @@
                                         <div class="form-section-title">
                                             <span class="material-symbols-rounded">location_on</span>위치 정보
                                         </div>
-                                        <%-- 위치 선택 행: 등록 화면과 동일한 인라인 선택 구조 --%>
                                         <div class="location-select-row">
                                             <div class="form-field">
                                                 <label class="field-label">위치구분 <span class="req">*</span></label>
@@ -255,8 +252,6 @@
                                             </div>
                                         </div>
                                         <div class="location-help-row">구분에 따라 동·층·호가 활성화됩니다.</div>
-
-                                        <%-- 상세위치 행: 선택값 자동 반영 대상 --%>
                                         <div class="form-field location-detail-row">
                                             <label class="field-label">상세위치</label>
                                             <input type="text" class="form-input" id="locCn" name="locCn">
@@ -264,7 +259,6 @@
                                     </div>
                                 </div>
                                 <div class="facility-modal-col-right">
-                                    <div class="facility-col-label">사진 &amp; 연결</div>
                                     <div class="form-section" id="facilityFileEditSection">
                                         <div class="form-section-title"><span class="material-symbols-rounded">image</span><span id="facilityPhotoTitleText">시설 사진</span></div>
                                         <div class="file-upload-box">
@@ -280,28 +274,43 @@
                                         </div>
                                     </div>
 
-                                    <%-- 편의시설 운영정보 상태 영역: 편의시설인 경우에만 JS에서 표시 --%>
+                                    <%-- 편의시설 운영정보 연결 상태: 편의시설인 경우에만 JS에서 표시 --%>
                                     <div class="form-section" id="publicFacilityStatusSection" style="display:none;margin-top:14px;">
                                         <div class="form-section-title">
-                                            <span class="material-symbols-rounded">meeting_room</span><span id="publicFacilityStatusSectionTitle">편의시설 운영정보</span>
+                                            <span class="material-symbols-rounded">meeting_room</span>편의시설 운영정보
                                         </div>
-                                        <div class="notice-box">
-                                            <span class="material-symbols-rounded">info</span>
-                                            <div>
-                                                <strong id="publicFacilityStatusTitle">편의시설 운영정보 확인</strong><br>
-                                                <span id="publicFacilityStatusDesc">편의시설 운영정보 등록 여부를 확인합니다.</span>
+                                        <%-- 등록된 경우: cmn-ref-box (JS에서 채움) --%>
+                                        <div class="cmn-ref-box" id="cmnRefBox" style="display:none;">
+                                            <div class="cmn-ref-main">
+                                                <span class="material-symbols-rounded">link</span>
+                                                <span class="cmn-ref-text" id="cmnRefText">-</span>
                                             </div>
+                                            <div class="cmn-ref-actions">
+                                                <a href="#" class="cmn-ref-link" id="cmnDetailLink">
+                                                    상세<span class="material-symbols-rounded">arrow_forward</span>
+                                                </a>
+                                                <a href="#" class="cmn-ref-link" id="cmnEditLink">
+                                                    수정<span class="material-symbols-rounded">edit</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <%-- 미등록인 경우 --%>
+                                        <div class="cmn-ref-empty" id="cmnRefEmpty" style="display:none;">
+                                            <span>편의시설 운영정보가 아직 등록되지 않았습니다.</span>
+                                            <a href="#" class="cmn-ref-link" id="cmnRegisterLink">
+                                                등록<span class="material-symbols-rounded">add</span>
+                                            </a>
                                         </div>
                                     </div>
 
-                                    <div class="form-section">
+                                    <div class="form-section" style="margin-top:14px;">
                                         <div class="form-section-title"><span class="material-symbols-rounded">link</span>연결 안내</div>
                                         <div class="notice-box">
                                             <span class="material-symbols-rounded">info</span>
                                             <div>시설 기본정보만 수정합니다.<br>
-                                                · 계약 체결 → <a href="${pageContext.request.contextPath}/manager/facility/contractList" style="color:#2e5c38;font-weight:700;">계약 관리</a><br>
-                                                · 점검이력 → <a href="${pageContext.request.contextPath}/manager/checkHistory" style="color:#2e5c38;font-weight:700;">유지보수·점검 이력</a><br>
-                                                · 검침 연결 → <a href="${pageContext.request.contextPath}/manager/facility/partnerList" style="color:#2e5c38;font-weight:700;">협력업체 관리</a></div>
+                                                · 계약 체결 → <a href="${pageContext.request.contextPath}/manager/facility/contractList" style="color:#2e5c38;font-weight:600;">계약 관리</a><br>
+                                                · 점검이력 → <a href="${pageContext.request.contextPath}/manager/checkHistory" style="color:#2e5c38;font-weight:600;">유지보수·점검 이력</a><br>
+                                                · 검침 연결 → <a href="${pageContext.request.contextPath}/manager/facility/partnerList" style="color:#2e5c38;font-weight:600;">협력업체 관리</a></div>
                                         </div>
                                     </div>
                                 </div>
@@ -326,9 +335,8 @@
         var isAdmin = config.isAdmin === true || config.isAdmin === "true";
 
         var currentFacility = null;
-        var isPublicFacility = false; // 편의시설 여부
+        var isPublicFacility = false;
         var correctionUnlocked = false;
-        //** 파일 선택창 재선택 시 기존 선택이 교체되는 브라우저 기본 동작 보완
         var selectedFacilityFiles = [];
 
         function getEl(id) { return document.getElementById(id); }
@@ -352,9 +360,7 @@
                 location.href = contextPath + "/login.do";
                 throw new Error("login required");
             }
-            if (contentType.indexOf("application/json") === -1) {
-                throw new Error("JSON 응답이 아닙니다. 요청 URL 또는 로그인 상태를 확인해주세요.");
-            }
+            if (contentType.indexOf("application/json") === -1) throw new Error("JSON 응답이 아닙니다.");
             var data = await response.json();
             if (!response.ok || data.success === false) throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
             return data;
@@ -370,14 +376,8 @@
 
         function formatDate(value) { return value ? String(value).slice(0, 10) : ""; }
         function getResultFacility(result) { return result.detail || result.facility || result || {}; }
-
-        function resetSelect(select, placeholder) {
-            if (select) select.innerHTML = '<option value="">' + placeholder + '</option>';
-        }
-
-        function removeHouseholdPrefix(text) {
-            return String(text || "").replace(/^\s*\d+\s*층\s*/g, "").replace(/^\s*\d+\s*호\s*/g, "").trim();
-        }
+        function resetSelect(select, placeholder) { if (select) select.innerHTML = '<option value="">' + placeholder + '</option>'; }
+        function removeHouseholdPrefix(text) { return String(text || "").replace(/^\s*\d+\s*층\s*/g, "").replace(/^\s*\d+\s*호\s*/g, "").trim(); }
 
         function setUseYnValue(value) {
             var useYn = value === "N" ? "N" : "Y";
@@ -407,66 +407,46 @@
             var floorSelect = getEl("facilityFloor");
             var hoSelect = getEl("facilityHo");
             var locCn = getEl("locCn");
-
             if (type === "COMMON") {
-                dongNo.disabled = true;  dongNo.value = "";
+                dongNo.disabled = true; dongNo.value = "";
                 floorSelect.disabled = true; resetSelect(floorSelect, "층 선택");
-                hoSelect.disabled = true;  resetSelect(hoSelect, "호 선택");
+                hoSelect.disabled = true; resetSelect(hoSelect, "호 선택");
                 locCn.placeholder = "예) 중앙광장, 지하1층 전기실, 관리동 옥상";
-                locCn.value = removeHouseholdPrefix(locCn.value);
-                return;
+                locCn.value = removeHouseholdPrefix(locCn.value); return;
             }
             if (type === "DONG") {
                 dongNo.disabled = false;
                 floorSelect.disabled = true; resetSelect(floorSelect, "층 선택");
-                hoSelect.disabled = true;  resetSelect(hoSelect, "호 선택");
+                hoSelect.disabled = true; resetSelect(hoSelect, "호 선택");
                 locCn.placeholder = "예) 1층 로비, 옥상, EPS실";
-                locCn.value = removeHouseholdPrefix(locCn.value);
-                return;
+                locCn.value = removeHouseholdPrefix(locCn.value); return;
             }
-            dongNo.disabled = false;
-            floorSelect.disabled = false;
-            hoSelect.disabled = false;
+            dongNo.disabled = false; floorSelect.disabled = false; hoSelect.disabled = false;
             locCn.placeholder = "예) 세대 분전반, 수도계량기";
             updateHouseholdLocationText();
         }
 
         async function loadFloorList() {
-            var dongNo = getEl("dongNo");
-            var floorSelect = getEl("facilityFloor");
-            var hoSelect = getEl("facilityHo");
-            resetSelect(floorSelect, "층 선택");
-            resetSelect(hoSelect, "호 선택");
-            updateHouseholdLocationText();
+            var dongNo = getEl("dongNo"); var floorSelect = getEl("facilityFloor"); var hoSelect = getEl("facilityHo");
+            resetSelect(floorSelect, "층 선택"); resetSelect(hoSelect, "호 선택"); updateHouseholdLocationText();
             if (!dongNo.value) return;
             var result = await getJson(apiUrl("location/floors/" + encodeURIComponent(mgmtOfcNo) + "?dongNo=" + encodeURIComponent(dongNo.value)));
             var floorList = result.list || result.floorList || result || [];
             floorList.forEach(function (row) {
-                var floor = row.floor || row.FLOOR;
-                if (!floor) return;
-                var option = document.createElement("option");
-                option.value = floor;
-                option.textContent = floor + "층";
-                floorSelect.appendChild(option);
+                var floor = row.floor || row.FLOOR; if (!floor) return;
+                var option = document.createElement("option"); option.value = floor; option.textContent = floor + "층"; floorSelect.appendChild(option);
             });
         }
 
         async function loadHoList() {
-            var dongNo = getEl("dongNo");
-            var floorSelect = getEl("facilityFloor");
-            var hoSelect = getEl("facilityHo");
-            resetSelect(hoSelect, "호 선택");
-            updateHouseholdLocationText();
+            var dongNo = getEl("dongNo"); var floorSelect = getEl("facilityFloor"); var hoSelect = getEl("facilityHo");
+            resetSelect(hoSelect, "호 선택"); updateHouseholdLocationText();
             if (!dongNo.value || !floorSelect.value) return;
             var result = await getJson(apiUrl("location/rooms/" + encodeURIComponent(mgmtOfcNo) + "?dongNo=" + encodeURIComponent(dongNo.value) + "&floor=" + encodeURIComponent(floorSelect.value)));
             var hoList = result.list || result.roomList || result || [];
             hoList.forEach(function (row) {
-                var ho = row.ho || row.HO;
-                if (!ho) return;
-                var option = document.createElement("option");
-                option.value = ho;
-                option.textContent = ho + "호";
-                hoSelect.appendChild(option);
+                var ho = row.ho || row.HO; if (!ho) return;
+                var option = document.createElement("option"); option.value = ho; option.textContent = ho + "호"; hoSelect.appendChild(option);
             });
         }
 
@@ -480,67 +460,58 @@
             return locCn.value;
         }
 
-        /**
-         * 시설 수정 문구 적용 처리
-         * - 일반 시설 수정 제목 표시
-         * - 편의시설 수정 제목 표시
-         * - 사진 영역 제목 및 안내문 표시
-         */
         function applyFacilityDisplayText() {
-            var panelTitleText = getEl("facilityPanelTitleText"); // 상단 패널 제목
-            var photoTitleText = getEl("facilityPhotoTitleText"); // 사진 영역 제목
-            var photoDescText = getEl("facilityPhotoDescText"); // 사진 업로드 안내문
-
-            if (panelTitleText) {
-                panelTitleText.textContent = isPublicFacility ? "편의시설 정보 수정" : "시설 정보 수정"; // 패널 제목 문구
-            }
-
-            if (photoTitleText) {
-                photoTitleText.textContent = isPublicFacility ? "편의시설 사진" : "시설 사진"; // 사진 제목 문구
-            }
-
-            if (photoDescText) {
-                photoDescText.textContent = isPublicFacility
-                    ? "편의시설 화면에 노출될 사진을 여러 장 선택할 수 있습니다."
-                    : "시설자산 사진을 여러 장 선택할 수 있습니다."; // 사진 안내 문구
-            }
+            var panelTitleText = getEl("facilityPanelTitleText");
+            var photoTitleText = getEl("facilityPhotoTitleText");
+            var photoDescText = getEl("facilityPhotoDescText");
+            if (panelTitleText) panelTitleText.textContent = isPublicFacility ? "편의시설 정보 수정" : "시설 정보 수정";
+            if (photoTitleText) photoTitleText.textContent = isPublicFacility ? "편의시설 사진" : "시설 사진";
+            if (photoDescText) photoDescText.textContent = isPublicFacility
+                ? "시설자산과 편의시설 화면에 함께 노출될 사진을 선택할 수 있습니다."
+                : "시설자산 사진을 여러 장 선택할 수 있습니다.";
         }
 
-        /**
-         * 편의시설 운영정보 상태 문구 적용 처리
-         * - 일반 시설 수정 시 상태 영역 숨김
-         * - 편의시설 운영정보 등록 시 등록 완료 문구 표시
-         * - 편의시설 운영정보 미등록 시 미등록 문구 표시
-         */
+        /* 편의시설 운영정보 연결 상태 표시 — 상세화면 asset-ref-box와 동일한 방식 */
         function applyPublicFacilityStatusText(facility) {
-            var section = getEl("publicFacilityStatusSection"); // 상태 영역
-            var title = getEl("publicFacilityStatusTitle"); // 상태 제목
-            var desc = getEl("publicFacilityStatusDesc"); // 상태 설명
+            var section = getEl("publicFacilityStatusSection");
+            if (!section) return;
 
-            if (!section || !title || !desc) return; // 요소 없음 방어
+            if (!isPublicFacility) { section.style.display = "none"; return; }
+            section.style.display = "";
 
-            if (!isPublicFacility) {
-                section.style.display = "none"; // 일반시설 숨김
-                return;
+            var cmnNo = facility.cmnFacilityNo || facility.cmnFacilityNO || "";
+            var cmnNm = facility.cmnFacilityNm || "";
+
+            var refBox   = getEl("cmnRefBox");
+            var refEmpty = getEl("cmnRefEmpty");
+
+            if (cmnNo) {
+                /* 등록된 경우: 번호 · 이름 표시 + 상세/수정 링크 */
+                var refText = getEl("cmnRefText");
+                var detailLink = getEl("cmnDetailLink");
+                var editLink   = getEl("cmnEditLink");
+
+                refText.textContent = cmnNo + (cmnNm ? " · " + cmnNm : "");
+                detailLink.href = contextPath + "/manager/publicFacility/detail-page/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(cmnNo);
+                editLink.href   = contextPath + "/manager/publicFacility/update-page/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(cmnNo);
+
+                refBox.style.display   = "";
+                refEmpty.style.display = "none";
+            } else {
+                /* 미등록인 경우: 등록 링크 */
+                var registerLink = getEl("cmnRegisterLink");
+                registerLink.href = contextPath + "/manager/publicFacility/register/" + encodeURIComponent(mgmtOfcNo) + "?facilityNo=" + encodeURIComponent(facilityNo);
+
+                refBox.style.display   = "none";
+                refEmpty.style.display = "";
             }
-
-            section.style.display = ""; // 편의시설 표시
-
-            if (facility.cmnFacilityNo || facility.cmnFacilityNO) {
-                title.textContent = "편의시설 운영정보 등록 완료"; // 등록완료 제목
-                desc.textContent = "해당 시설자산에는 편의시설 운영정보가 등록되어 있습니다."; // 등록완료 문구
-                return;
-            }
-
-            title.textContent = "편의시설 운영정보 미등록"; // 미등록 제목
-            desc.textContent = "해당 시설자산에는 아직 편의시설 운영정보가 등록되어 있지 않습니다."; // 미등록 문구
         }
 
         function fillFacilityForm(facility) {
             currentFacility = facility;
-            isPublicFacility = facility.facilityKind === "PUBLIC"; // 편의시설 여부 판단
-            applyFacilityDisplayText(); // 화면 문구 적용
-            applyPublicFacilityStatusText(facility); // 운영정보 상태 문구 적용
+            isPublicFacility = facility.facilityKind === "PUBLIC";
+            applyFacilityDisplayText();
+            applyPublicFacilityStatusText(facility);
             getEl("facilityNo").value = facility.facilityNo || "";
             getEl("facilityNm").value = facility.facilityNm || "";
             getEl("facilityTyCd").value = facility.facilityTyCd || "";
@@ -553,164 +524,50 @@
             changeLocationTypeView();
         }
 
-
-        /**
-         * 파일 이미지 URL 반환
-         * - viewUrl 우선 사용 처리
-         * - fileUrl 보조 사용 처리
-         * - googleId 기반 표시 URL 생성 처리
-         */
         function getFileImageUrl(file) {
-            /* viewUrl 우선 반환값 */
             if (file.viewUrl) return file.viewUrl;
-
-            /* fileUrl 보조 반환값 */
             if (file.fileUrl) return file.fileUrl;
-
-            /* Google Drive 파일 표시 URL 반환값 */
             if (file.googleId) return contextPath + "/file/display/" + encodeURIComponent(file.googleId);
-
-            /* 이미지 URL 없음 반환값 */
             return "";
         }
 
-        /**
-         * 이미지 확대 모달 열기 처리
-         * - 기존 등록 사진 썸네일 클릭 처리
-         * - 새로 선택한 사진 미리보기 클릭 처리
-         */
         window.openFacilityImagePreview = function (imgSrc) {
-            /* 이미지 확대 모달 요소 */
             var modal = document.getElementById("imagePreviewModal");
-
-            /* 확대 이미지 요소 */
             var largeImg = document.getElementById("imagePreviewLargeImg");
-
-            /* 필수 요소 존재 여부 */
-            var hasRequiredElement = modal && largeImg && imgSrc;
-
-            /* 필수 요소 없음 방어 처리 */
-            if (!hasRequiredElement) return;
-
-            /* 확대 이미지 주소 반영 처리 */
+            if (!modal || !largeImg || !imgSrc) return;
             largeImg.src = imgSrc;
-
-            /* 모달 표시 클래스 추가 처리 */
             modal.classList.add("is-open");
         };
 
-        /**
-         * 이미지 확대 모달 닫기 처리
-         * - 닫기 버튼 클릭 처리
-         * - 검은 배경 클릭 처리
-         * - ESC 키 입력 처리
-         */
         window.closeFacilityImagePreview = function () {
-            /* 이미지 확대 모달 요소 */
             var modal = document.getElementById("imagePreviewModal");
-
-            /* 확대 이미지 요소 */
             var largeImg = document.getElementById("imagePreviewLargeImg");
-
-            /* 필수 요소 존재 여부 */
-            var hasRequiredElement = modal && largeImg;
-
-            /* 필수 요소 없음 방어 처리 */
-            if (!hasRequiredElement) return;
-
-            /* 모달 표시 클래스 제거 처리 */
+            if (!modal || !largeImg) return;
             modal.classList.remove("is-open");
-
-            /* 확대 이미지 주소 초기화 처리 */
             largeImg.src = "";
         };
 
-        /**
-         * 이미지 확대 모달 이벤트 연결 처리
-         * - 닫기 버튼 이벤트 연결
-         * - 검은 배경 이벤트 연결
-         * - ESC 키 이벤트 연결
-         */
         function bindImagePreviewModal() {
-            /* 이미지 확대 모달 요소 */
             var modal = document.getElementById("imagePreviewModal");
-
-            /* 닫기 버튼 요소 */
             var closeBtn = document.getElementById("imagePreviewCloseBtn");
-
-            /* 필수 요소 존재 여부 */
-            var hasRequiredElement = modal && closeBtn;
-
-            /* 필수 요소 없음 방어 처리 */
-            if (!hasRequiredElement) return;
-
-            /* 닫기 버튼 클릭 이벤트 연결 처리 */
-            closeBtn.addEventListener("click", function () {
-                window.closeFacilityImagePreview();
-            });
-
-            /* 검은 배경 클릭 이벤트 연결 처리 */
-            modal.addEventListener("click", function (event) {
-                /* 검은 배경 직접 클릭 여부 */
-                var isBackdropClick = event.target === modal;
-
-                /* 확대 이미지 클릭 닫힘 방지 처리 */
-                if (!isBackdropClick) return;
-
-                /* 모달 닫기 처리 */
-                window.closeFacilityImagePreview();
-            });
-
-            /* ESC 키 이벤트 연결 처리 */
-            document.addEventListener("keydown", function (event) {
-                /* ESC 키 여부 */
-                var isEscapeKey = event.key === "Escape";
-
-                /* ESC 외 키 입력 방어 처리 */
-                if (!isEscapeKey) return;
-
-                /* 모달 닫기 처리 */
-                window.closeFacilityImagePreview();
-            });
+            if (!modal || !closeBtn) return;
+            closeBtn.addEventListener("click", window.closeFacilityImagePreview);
+            modal.addEventListener("click", function (e) { if (e.target === modal) window.closeFacilityImagePreview(); });
+            document.addEventListener("keydown", function (e) { if (e.key === "Escape") window.closeFacilityImagePreview(); });
         }
 
-        /**
-         * 기존 등록 사진 렌더링 처리
-         * - 서버에서 조회된 기존 파일 목록 표시
-         * - 사진 썸네일 클릭 시 확대 모달 표시
-         */
         function renderExistingFiles(files) {
-            /* 기존 등록 사진 목록 영역 */
             var area = getEl("facilityFileManageList");
-
-            /* 기존 등록 사진 목록 영역 없음 방어 처리 */
             if (!area) return;
-
-            /* 기존 등록 사진 없음 처리 */
-            if (!files || files.length === 0) {
-                area.innerHTML = '<div class="file-preview-empty">기존 등록 사진이 없습니다.</div>';
-                return;
-            }
-
-            /* 기존 등록 사진 HTML 생성 처리 */
+            if (!files || files.length === 0) { area.innerHTML = '<div class="file-preview-empty">기존 등록 사진이 없습니다.</div>'; return; }
             area.innerHTML = files.map(function (file) {
-                /* 이미지 표시 주소 */
                 var imgUrl = getFileImageUrl(file);
-
-                /* 이미지 파일명 */
                 var name = file.fileOgName || file.fileSaveUuid || "시설사진";
-
-                /* 삭제 처리용 파일 UUID */
                 var uuid = file.fileSaveUuid || "";
-
-                /* 기존 사진 썸네일 HTML */
                 var imageHtml = imgUrl
                     ? '<img class="file-thumb js-image-preview" src="' + imgUrl + '" alt="' + name + '" onclick="window.openFacilityImagePreview(this.src)">'
                     : '<div class="file-thumb"></div>';
-
-                /* 기존 사진 행 HTML 반환값 */
-                return '<div class="file-manage-row">'
-                    + imageHtml
+                return '<div class="file-manage-row">' + imageHtml
                     + '<div class="file-info"><div class="file-name">' + name + '</div><div class="file-meta">' + (file.fileExt || "image") + '</div></div>'
                     + '<label class="file-delete-check"><input type="checkbox" class="js-delete-file-check" value="' + uuid + '">삭제</label>'
                     + '</div>';
@@ -722,18 +579,12 @@
             formData.set("facilityNo", facilityNo);
             formData.set("locCn", buildLocationText());
             formData.set("useYn", getEl("useYn").value || "Y");
-            if (currentFacility && currentFacility.fileGroupNo) {
-                formData.set("fileGroupNo", currentFacility.fileGroupNo);
-            } else {
-                formData.delete("fileGroupNo");
-            }
+            if (currentFacility && currentFacility.fileGroupNo) formData.set("fileGroupNo", currentFacility.fileGroupNo);
+            else formData.delete("fileGroupNo");
             if (!formData.get("instlDt")) formData.delete("instlDt");
             formData.set("deleteFileUuids", getEl("deleteFileUuids").value || "");
-            //** 누적 선택 파일 전송 대상 재구성
             formData.delete("facilityFiles");
-            selectedFacilityFiles.forEach(function (file) {
-                formData.append("facilityFiles", file);
-            });
+            selectedFacilityFiles.forEach(function (file) { formData.append("facilityFiles", file); });
             return formData;
         }
 
@@ -743,25 +594,16 @@
             if (!getEl("facilityNm").value.trim()) { alertMessage("시설명을 입력하세요."); return; }
             try {
                 if (correctionUnlocked) {
-                    await postJson(apiUrl("type/correct/" + encodeURIComponent(mgmtOfcNo)), {
-                        facilityNo: facilityNo,
-                        facilityTyCd: getEl("facilityTyCd").value
-                    });
+                    await postJson(apiUrl("type/correct/" + encodeURIComponent(mgmtOfcNo)), { facilityNo: facilityNo, facilityTyCd: getEl("facilityTyCd").value });
                 }
                 await postForm(apiUrl("update/" + encodeURIComponent(mgmtOfcNo)), makeUpdateFormData());
                 alertMessage("시설 정보가 수정되었습니다.");
                 location.href = listUrl();
-            } catch (err) {
-                console.error(err);
-                alertMessage(err.message || "시설 수정 중 오류가 발생했습니다.");
-            }
+            } catch (err) { console.error(err); alertMessage(err.message || "시설 수정 중 오류가 발생했습니다."); }
         }
 
         async function openCorrection() {
-            if (correctionUnlocked) {
-                alertMessage("시설유형 드롭다운에서 변경할 유형을 선택하고 저장하세요.");
-                return;
-            }
+            if (correctionUnlocked) { alertMessage("시설유형 드롭다운에서 변경할 유형을 선택하고 저장하세요."); return; }
             try {
                 var result = await getJson(apiUrl("type/correct/check/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facilityNo)));
                 correctionUnlocked = true;
@@ -769,10 +611,7 @@
                 getEl("correctionLockText").style.display = "none";
                 getEl("correctionGuide").style.display = "";
                 alertMessage(result.message || "정정 가능한 시설입니다. 변경할 시설유형을 선택하고 저장하세요.");
-            } catch (err) {
-                console.error(err);
-                alertMessage(err.message || "시설유형 정정 가능 여부 확인 중 오류가 발생했습니다.");
-            }
+            } catch (err) { console.error(err); alertMessage(err.message || "시설유형 정정 가능 여부 확인 중 오류가 발생했습니다."); }
         }
 
         async function loadFacilityDetail() {
@@ -783,105 +622,35 @@
             renderExistingFiles(fileList);
         }
 
-        /**
-         * 새 선택 사진 미리보기 렌더링 처리
-         * - 파일 input으로 선택한 이미지 목록 표시
-         * - 선택 직후 미리보기 클릭 시 확대 모달 표시
-         */
         function renderSelectedFilePreview() {
-            /* 새 선택 사진 미리보기 영역 */
             var previewArea = getEl("facilityFilePreview");
-
-            /* 미리보기 영역 초기화 처리 */
             previewArea.innerHTML = "";
-
-            /* 선택 파일 없음 처리 */
-            if (selectedFacilityFiles.length === 0) {
-                previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>';
-                return;
-            }
-
-            /* 선택 파일 목록 순회 처리 */
+            if (selectedFacilityFiles.length === 0) { previewArea.innerHTML = '<div class="file-preview-empty">선택된 사진이 없습니다.</div>'; return; }
             selectedFacilityFiles.forEach(function (file, index) {
-                /* 미리보기 카드 요소 */
-                var item = document.createElement("div");
-
-                /* 미리보기 카드 클래스 지정 처리 */
-                item.className = "file-preview-item";
-
-                /* 이미지 파일 여부 */
-                var isImageFile = file.type && file.type.indexOf("image/") === 0;
-
-                /* 이미지 파일 미리보기 생성 처리 */
-                if (isImageFile) {
-                    /* 미리보기 이미지 요소 */
-                    var img = document.createElement("img");
-
-                    /* 확대 대상 클래스 지정 처리 */
-                    img.className = "js-image-preview";
-
-                    /* 이미지 대체 텍스트 지정 처리 */
-                    img.alt = file.name;
-
-                    /* 임시 미리보기 URL 생성 처리 */
-                    img.src = URL.createObjectURL(file);
-
-                    /* 미리보기 이미지 클릭 확대 처리 */
-                    img.addEventListener("click", function () {
-                        window.openFacilityImagePreview(this.src);
-                    });
-
-                    /* 미리보기 카드에 이미지 추가 처리 */
+                var item = document.createElement("div"); item.className = "file-preview-item";
+                if (file.type && file.type.indexOf("image/") === 0) {
+                    var img = document.createElement("img"); img.className = "js-image-preview"; img.alt = file.name; img.src = URL.createObjectURL(file);
+                    img.addEventListener("click", function () { window.openFacilityImagePreview(this.src); });
                     item.appendChild(img);
                 }
-
-                //** 누적 선택 파일 개별 제거 버튼 제공
-                var removeButton = document.createElement("button");
-                removeButton.type = "button";
-                removeButton.className = "file-preview-remove";
-                removeButton.textContent = "x";
-                removeButton.addEventListener("click", function () {
-                    selectedFacilityFiles.splice(index, 1);
-                    renderSelectedFilePreview();
-                });
+                var removeButton = document.createElement("button"); removeButton.type = "button"; removeButton.className = "file-preview-remove"; removeButton.textContent = "x";
+                removeButton.addEventListener("click", function () { selectedFacilityFiles.splice(index, 1); renderSelectedFilePreview(); });
                 item.appendChild(removeButton);
-
-                /* 파일명 표시 요소 */
-                var name = document.createElement("div");
-
-                /* 파일명 클래스 지정 처리 */
-                name.className = "file-preview-name";
-
-                /* 파일명 텍스트 지정 처리 */
-                name.textContent = file.name;
-
-                /* 미리보기 카드에 파일명 추가 처리 */
-                item.appendChild(name);
-
-                /* 미리보기 영역에 카드 추가 처리 */
+                var name = document.createElement("div"); name.className = "file-preview-name"; name.textContent = file.name; item.appendChild(name);
                 previewArea.appendChild(item);
             });
         }
 
         function previewSelectedFiles() {
             var fileInput = getEl("facilityFiles");
-            if (!fileInput.files || fileInput.files.length === 0) {
-                renderSelectedFilePreview();
-                return;
-            }
-
-            //** 파일 선택창 반복 사용 시 선택 파일 누적 처리
-            Array.from(fileInput.files).forEach(function (file) {
-                selectedFacilityFiles.push(file);
-            });
+            if (!fileInput.files || fileInput.files.length === 0) { renderSelectedFilePreview(); return; }
+            Array.from(fileInput.files).forEach(function (file) { selectedFacilityFiles.push(file); });
             fileInput.value = "";
             renderSelectedFilePreview();
         }
 
         function updateDeleteFileUuids() {
-            var checked = Array.from(document.querySelectorAll(".js-delete-file-check:checked"))
-                .map(function (box) { return box.value; })
-                .filter(Boolean);
+            var checked = Array.from(document.querySelectorAll(".js-delete-file-check:checked")).map(function (box) { return box.value; }).filter(Boolean);
             getEl("deleteFileUuids").value = checked.join(",");
         }
 
@@ -895,24 +664,15 @@
                 changeLocationTypeView();
                 if (this.value === "HOUSEHOLD" || this.value === "DONG") loadFloorList();
             });
-            getEl("dongNo").addEventListener("change", function () {
-                if (getEl("locationType").value === "HOUSEHOLD") loadFloorList();
-            });
+            getEl("dongNo").addEventListener("change", function () { if (getEl("locationType").value === "HOUSEHOLD") loadFloorList(); });
             getEl("facilityFloor").addEventListener("change", loadHoList);
             getEl("facilityHo").addEventListener("change", updateHouseholdLocationText);
-            document.addEventListener("change", function (event) {
-                if (event.target.classList.contains("js-delete-file-check")) updateDeleteFileUuids();
-            });
+            document.addEventListener("change", function (event) { if (event.target.classList.contains("js-delete-file-check")) updateDeleteFileUuids(); });
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            /* 이미지 확대 모달 닫기 이벤트 연결 처리 */
             bindImagePreviewModal();
-
-            /* 화면 기본 이벤트 연결 처리 */
             bindEvents();
-
-            /* 시설 수정 정보 조회 및 기존 사진 렌더링 처리 */
             loadFacilityDetail().catch(function (err) {
                 console.error(err);
                 alertMessage(err.message || "시설 수정 정보를 불러오지 못했습니다.");

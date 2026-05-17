@@ -19,30 +19,42 @@
     /* ============================================================
        내부 상태
     ============================================================ */
-    var _cfg          = {};    /* contextPath, mgmtOfcNo, cmnFacilityNo, isAdmin */
+    var _cfg          = {};    /* contextPath, mgmtOfcNo, cmnFacilityNo, facilityNo, isAdmin */
     var _mode         = null;  /* insert | detail | update */
     var _itemNo       = null;  /* 현재 선택된 자원번호 */
     var _facilityNo   = null;  /* 선택된 편의시설번호 */
-    var _suggestTimer = null;
+    var _suggestTimer = null;  /* 자동완성 지연 타이머 */
     var _bound        = false; /* 정적 이벤트 중복 바인딩 방지 */
 
     /* ============================================================
        초기화
     ============================================================ */
     function init(config) {
-        _cfg        = config || {};
+        _cfg = config || {};
+
+        /* 현재 모달에서 사용할 편의시설번호 */
         _facilityNo = _cfg.cmnFacilityNo || null;
-        if (!_bound) { _bindStaticEvents(); _bound = true; }
+
+        /* 정적 이벤트는 최초 1회만 바인딩 */
+        if (!_bound) {
+            _bindStaticEvents();
+            _bound = true;
+        }
     }
 
     /* ============================================================
        CSRF
     ============================================================ */
     function _csrf() {
-        var t = document.querySelector('meta[name="_csrf"]');
-        var h = document.querySelector('meta[name="_csrf_header"]');
+        var tokenMeta  = document.querySelector('meta[name="_csrf"]');
+        var headerMeta = document.querySelector('meta[name="_csrf_header"]');
         var headers = { "Content-Type": "application/json" };
-        if (t && h) headers[h.content] = t.content;
+
+        /* Spring Security CSRF 헤더 추가 */
+        if (tokenMeta && headerMeta) {
+            headers[headerMeta.content] = tokenMeta.content;
+        }
+
         return headers;
     }
 
@@ -51,34 +63,74 @@
     ============================================================ */
     async function _fetch(url, opts) {
         var res = await fetch(url, opts);
-        if (!res.ok) throw new Error("서버 오류: " + res.status);
+
+        /* HTTP 오류 처리 */
+        if (!res.ok) {
+            throw new Error("서버 오류: " + res.status);
+        }
+
         return res.json();
     }
 
     /* ============================================================
        DOM 헬퍼
     ============================================================ */
-    function _el(id)       { return document.getElementById(id); }
-    function _show(id)     { var e = _el(id); if (e) e.style.display = ""; }
-    function _hide(id)     { var e = _el(id); if (e) e.style.display = "none"; }
-    function _val(id)      { var e = _el(id); return e ? e.value : ""; }
-    function _setVal(id,v) { var e = _el(id); if (e) e.value = v; }
-    function _text(id,v)   { var e = _el(id); if (e) e.textContent = v; }
-    function _alert(msg)   { if (typeof showAlert === "function") showAlert(msg); else alert(msg); }
+    function _el(id) {
+        return document.getElementById(id);
+    }
+
+    function _show(id) {
+        var e = _el(id);
+        if (e) e.style.display = "";
+    }
+
+    function _hide(id) {
+        var e = _el(id);
+        if (e) e.style.display = "none";
+    }
+
+    function _val(id) {
+        var e = _el(id);
+        return e ? e.value : "";
+    }
+
+    function _setVal(id, value) {
+        var e = _el(id);
+        if (e) e.value = value;
+    }
+
+    function _text(id, value) {
+        var e = _el(id);
+        if (e) e.textContent = value;
+    }
+
+    function _alert(msg) {
+        if (typeof showAlert === "function") {
+            showAlert(msg);
+        } else {
+            alert(msg);
+        }
+    }
 
     /* ============================================================
        상태 배지
     ============================================================ */
     function _badge(cd) {
-        var m = {
+        var map = {
             OPEN:   ["stts-open",   "사용가능"],
             USE:    ["stts-use",    "사용중"],
             REPAIR: ["stts-repair", "점검중"],
             CLOSE:  ["stts-close",  "사용중지"]
         };
-        var s = m[cd];
-        if (!s) return '<span class="stts-badge">' + (cd || "-") + '</span>';
-        return '<span class="stts-badge ' + s[0] + '">' + s[1] + '</span>';
+
+        var status = map[cd];
+
+        /* 알 수 없는 상태 코드 표시 */
+        if (!status) {
+            return '<span class="stts-badge">' + (cd || "-") + '</span>';
+        }
+
+        return '<span class="stts-badge ' + status[0] + '">' + status[1] + '</span>';
     }
 
     /* ============================================================
@@ -88,7 +140,10 @@
         _mode   = mode;
         _itemNo = itemNo || null;
 
+        /* 이전 모달 상태 초기화 */
         _resetSections();
+
+        /* 모드별 제목 설정 */
         _setTitle(mode);
 
         if (mode === "insert") {
@@ -103,8 +158,13 @@
     ============================================================ */
     function close() {
         var modal = _el("pfItemModal");
-        if (modal) modal.classList.remove("is-open");
-        _mode = null; _itemNo = null;
+
+        if (modal) {
+            modal.classList.remove("is-open");
+        }
+
+        _mode = null;
+        _itemNo = null;
     }
 
     /* ============================================================
@@ -112,15 +172,23 @@
     ============================================================ */
     function _showModal() {
         var modal = _el("pfItemModal");
-        if (modal) modal.classList.add("is-open");
+
+        if (modal) {
+            modal.classList.add("is-open");
+        }
     }
 
     /* ============================================================
        섹션 전체 숨기기 및 초기화
     ============================================================ */
     function _resetSections() {
-        ["pfFacilitySearchSection", "pfFacilityInfoSection",
-            "pfItemInfoSection", "pfItemInsertSection", "pfSiblingSection"].forEach(_hide);
+        [
+            "pfFacilitySearchSection",
+            "pfFacilityInfoSection",
+            "pfItemInfoSection",
+            "pfItemInsertSection",
+            "pfSiblingSection"
+        ].forEach(_hide);
 
         var footer = _el("pfModalFooter");
         var rows   = _el("pfItemRows");
@@ -128,11 +196,20 @@
         var box    = _el("pfFacilitySuggestBox");
         var inp    = _el("pfFacilitySearchInput");
 
+        /* 동적 영역 초기화 */
         if (footer) footer.innerHTML = "";
         if (rows)   rows.innerHTML   = "";
         if (sib)    sib.innerHTML    = "";
-        if (box)    { box.classList.remove("is-open"); box.innerHTML = ""; }
-        if (inp)    inp.value = "";
+
+        /* 자동완성 영역 초기화 */
+        if (box) {
+            box.classList.remove("is-open");
+            box.innerHTML = "";
+        }
+
+        if (inp) {
+            inp.value = "";
+        }
     }
 
     /* ============================================================
@@ -144,6 +221,7 @@
             detail: "편의시설 자원 상세",
             update: "편의시설 자원 수정"
         };
+
         _text("pfModalTitle", map[mode] || "편의시설 자원");
     }
 
@@ -151,11 +229,17 @@
        등록 모드 열기
     ============================================================ */
     function _openInsert() {
-        _addItemRow(); /* 기본 1행 */
+        /* 기본 자원 입력 행 1개 생성 */
+        _addItemRow();
+
+        /* 등록 모드 푸터 구성 */
         _setFooter("insert");
 
         if (_facilityNo) {
-            /* 시설이 이미 정해진 경우 (detail.jsp에서 열기) */
+            /*
+             * 편의시설이 이미 정해진 경우
+             * - update/detail 화면에서 현재 편의시설 자원 등록
+             */
             _loadFacilityDetail(_facilityNo, function (facility) {
                 _fillFacilityInfo(facility, _facilityNo);
                 _show("pfFacilityInfoSection");
@@ -164,7 +248,10 @@
                 _showModal();
             });
         } else {
-            /* 시설 미정 (list.jsp에서 열기) - 검색창 표시 */
+            /*
+             * 편의시설 미정인 경우
+             * - list 화면의 자원 등록 버튼에서 검색 후 선택
+             */
             _show("pfFacilitySearchSection");
             _show("pfItemInsertSection");
             _showModal();
@@ -182,27 +269,33 @@
 
         _fetch(url)
             .then(function (data) {
-                if (!data.success) { _alert("자원 정보를 불러오지 못했습니다."); return; }
+                if (!data.success) {
+                    _alert("자원 정보를 불러오지 못했습니다.");
+                    return;
+                }
 
                 var item     = data.item        || {};
                 var facility = data.facility    || {};
                 var siblings = data.siblingList || [];
 
-                /* 편의시설 정보 */
+                /* 편의시설 정보 표시 */
                 _fillFacilityInfo(facility, item.cmnFacilityNo);
                 _show("pfFacilityInfoSection");
 
-                /* 자원 정보 */
+                /* 자원 정보 세팅 */
                 _setVal("pfItemNo",        item.cmnFacilityItemNo || "");
                 _setVal("pfItemNoDisplay", item.cmnFacilityItemNo || "");
                 _setVal("pfItemNm",        item.itemNm            || "");
                 _setVal("pfItemStts",      item.cmnFacilitySttsCd || "OPEN");
+
                 _show("pfItemInfoSection");
                 _setEditable(mode === "update");
 
-                /* 형제 자원 목록 */
+                /* 같은 시설 자원 목록 */
                 _renderSiblings(siblings, item.cmnFacilityItemNo);
-                if (siblings.length > 0) _show("pfSiblingSection");
+                if (siblings.length > 0) {
+                    _show("pfSiblingSection");
+                }
 
                 _setFooter(mode);
                 _showModal();
@@ -215,11 +308,56 @@
 
     /* ============================================================
        편의시설 정보 채우기
+       - facilityNo가 조회 결과에 없으면 기존 화면값 또는 init config 값을 유지
     ============================================================ */
     function _fillFacilityInfo(facility, cmnFacilityNo) {
-        _text("pfInfoFacilityNo",    (facility && facility.facilityNo)    || "-");
-        _text("pfInfoCmnFacilityNo", cmnFacilityNo                        || "-");
-        _text("pfInfoCmnFacilityNm", (facility && facility.cmnFacilityNm) || "-");
+        var facilityNoEl = _el("pfInfoFacilityNo");
+        var cmnNmEl      = _el("pfInfoCmnFacilityNm");
+
+        /* 현재 화면에 이미 표시된 시설번호 */
+        var currentFacilityNo = facilityNoEl
+            ? (facilityNoEl.textContent || "").trim()
+            : "";
+
+        /* init(config)에서 넘겨받은 시설번호 */
+        var configFacilityNo = (_cfg.facilityNo && _cfg.facilityNo !== "-")
+            ? _cfg.facilityNo
+            : "";
+
+        /* 조회 결과 시설번호 */
+        var fetchedFacilityNo = (facility && facility.facilityNo && facility.facilityNo !== "-")
+            ? facility.facilityNo
+            : "";
+
+        /*
+         * 시설번호 우선순위
+         * 1. 조회 결과 facilityNo
+         * 2. init config facilityNo
+         * 3. 기존 화면에 표시된 facilityNo
+         * 4. 화면 표시용 "-"
+         */
+        var facilityNo = fetchedFacilityNo
+            || configFacilityNo
+            || (currentFacilityNo && currentFacilityNo !== "-" ? currentFacilityNo : "")
+            || "-";
+
+        /* 현재 화면에 이미 표시된 편의시설명 */
+        var currentCmnFacilityNm = cmnNmEl
+            ? (cmnNmEl.textContent || "").trim()
+            : "";
+
+        /*
+         * 편의시설명
+         * - 조회 결과가 없으면 기존 화면값 유지
+         */
+        var cmnFacilityNm = (facility && facility.cmnFacilityNm)
+            ? facility.cmnFacilityNm
+            : (currentCmnFacilityNm && currentCmnFacilityNm !== "-" ? currentCmnFacilityNm : "-");
+
+        /* 모달 상단 정보 표시 */
+        _text("pfInfoFacilityNo", facilityNo);
+        _text("pfInfoCmnFacilityNo", cmnFacilityNo || _cfg.cmnFacilityNo || "-");
+        _text("pfInfoCmnFacilityNm", cmnFacilityNm);
     }
 
     /* ============================================================
@@ -228,8 +366,14 @@
     function _setEditable(editable) {
         var nm   = _el("pfItemNm");
         var stts = _el("pfItemStts");
-        if (nm)   nm.readOnly   = !editable;
-        if (stts) stts.disabled = !editable;
+
+        if (nm) {
+            nm.readOnly = !editable;
+        }
+
+        if (stts) {
+            stts.disabled = !editable;
+        }
     }
 
     /* ============================================================
@@ -237,13 +381,17 @@
     ============================================================ */
     function _renderSiblings(list, currentItemNo) {
         var wrap = _el("pfSiblingList");
+
         if (!wrap) return;
+
         if (!list || list.length === 0) {
             wrap.innerHTML = '<div style="padding:12px;font-size:12px;color:#8a9a8e;text-align:center;">등록된 자원이 없습니다.</div>';
             return;
         }
+
         wrap.innerHTML = list.map(function (item) {
             var isCurrent = item.cmnFacilityItemNo === currentItemNo;
+
             return '<div class="pf-sibling-row' + (isCurrent ? " is-current" : "") + '">'
                 + '<span class="pf-sibling-no">'   + (item.cmnFacilityItemNo || "") + '</span>'
                 + '<span class="pf-sibling-nm">'   + (item.itemNm || "-")           + '</span>'
@@ -253,15 +401,15 @@
     }
 
     /* ============================================================
-       편의시설 상세 조회 (등록 시 시설 선택 후)
-       - grid-list API에서 해당 시설만 찾아서 반환
+       편의시설 상세 조회
+       - 모달 상단 편의시설 정보 보완용
     ============================================================ */
     function _loadFacilityDetail(cmnFacilityNo, callback) {
         /*
-            * 모달용 상위 편의시설 정보 조회
-            * - PUBLIC_FACILITY 타입은 자원 탭 필터 자동완성과 분리하기 위한 값
-            * - 선택한 CMN 번호 기준으로 편의시설명/시설번호를 다시 조회
-    */
+         * 모달용 상위 편의시설 정보 조회
+         * - PUBLIC_FACILITY 타입은 자원 탭 필터 자동완성과 분리하기 위한 값
+         * - 선택한 CMN 번호 기준으로 편의시설명/시설번호를 다시 조회
+         */
         var url = _cfg.contextPath
             + "/manager/publicFacility/item/suggest/"
             + encodeURIComponent(_cfg.mgmtOfcNo)
@@ -271,16 +419,30 @@
         _fetch(url)
             .then(function (data) {
                 var list = data.list || [];
-                var found = list.find(function (f) { return f.cmnFacilityNo === cmnFacilityNo; });
-                /* suggest 결과로 cmnFacilityNm 채우고, facilityNo는 없으므로 "-" 처리 */
+
+                var found = list.find(function (row) {
+                    return row.cmnFacilityNo === cmnFacilityNo;
+                });
+
                 if (callback) {
                     callback(found ? {
+                        /* 편의시설명 */
                         cmnFacilityNm: found.cmnFacilityNm,
-                        facilityNo: found.facilityNo || "-"
+
+                        /*
+                         * 시설번호
+                         * - 모르는 값을 "-"로 넘기지 않음
+                         * - "-"는 _fillFacilityInfo()에서 최종 표시용으로만 처리
+                         */
+                        facilityNo: found.facilityNo || ""
                     } : {});
                 }
             })
-            .catch(function () { if (callback) callback({}); });
+            .catch(function () {
+                if (callback) {
+                    callback({});
+                }
+            });
     }
 
     /* ============================================================
@@ -296,10 +458,13 @@
         _fetch(url)
             .then(function (data) {
                 var list = data.list || [];
+
                 _renderSiblings(list, null);
-                _show("pfSiblingSection"); /* 자원 없어도 섹션 표시 */
+                _show("pfSiblingSection");
             })
-            .catch(function () { _show("pfSiblingSection"); });
+            .catch(function () {
+                _show("pfSiblingSection");
+            });
     }
 
     /* ============================================================
@@ -307,10 +472,12 @@
     ============================================================ */
     function _addItemRow() {
         var rows = _el("pfItemRows");
+
         if (!rows) return;
 
         var idx = rows.children.length;
         var div = document.createElement("div");
+
         div.className = "pf-field-row";
 
         div.innerHTML =
@@ -331,8 +498,12 @@
             + '<span class="material-symbols-rounded">remove</span>'
             + '</button>';
 
+        /* 행 삭제 버튼 */
         div.querySelector(".pf-row-del").addEventListener("click", function () {
-            if (rows.children.length <= 1) return; /* 최소 1행 유지 */
+            if (rows.children.length <= 1) {
+                return;
+            }
+
             div.remove();
         });
 
@@ -344,71 +515,116 @@
     ============================================================ */
     function _setFooter(mode) {
         var footer = _el("pfModalFooter");
+
         if (!footer) return;
 
         var html = '<button type="button" class="pf-btn" id="pfCloseBtnFooter">닫기</button>';
 
+        /* 상세 모드 수정 버튼 */
         if (mode === "detail" && !_cfg.isAdmin) {
-            html += '<button type="button" class="pf-btn pf-btn-primary" id="pfToUpdateBtn">수정</button>'; /* 수정 */
+            html += '<button type="button" class="pf-btn pf-btn-primary" id="pfToUpdateBtn">수정</button>';
         }
 
+        /* 수정 모드 저장 버튼 */
         if (mode === "update" && !_cfg.isAdmin) {
-            html += '<button type="button" class="pf-btn pf-btn-save" id="pfSaveBtn">저장</button>'; /* 저장 */
+            html += '<button type="button" class="pf-btn pf-btn-save" id="pfSaveBtn">저장</button>';
         }
 
+        /* 등록 모드 저장 버튼 */
         if (mode === "insert" && !_cfg.isAdmin) {
-            html += '<button type="button" class="pf-btn pf-btn-save" id="pfSaveBtn">저장</button>'; /* 등록 */
+            html += '<button type="button" class="pf-btn pf-btn-save" id="pfSaveBtn">저장</button>';
         }
 
         footer.innerHTML = html;
 
-        var c = _el("pfCloseBtnFooter");
-        var u = _el("pfToUpdateBtn");
-        var s = _el("pfSaveBtn");
+        var closeBtn = _el("pfCloseBtnFooter");
+        var updateBtn = _el("pfToUpdateBtn");
+        var saveBtn = _el("pfSaveBtn");
 
-        if (c) c.addEventListener("click", close);        /* 닫기 */
-        if (u) u.addEventListener("click", _switchToUpdate); /* 수정전환 */
-        if (s) s.addEventListener("click", save);         /* 저장 */
+        if (closeBtn) {
+            closeBtn.addEventListener("click", close);
+        }
+
+        if (updateBtn) {
+            updateBtn.addEventListener("click", _switchToUpdate);
+        }
+
+        if (saveBtn) {
+            saveBtn.addEventListener("click", save);
+        }
     }
+
     /* ============================================================
-       상세 → 수정 전환 (같은 모달)
+       상세 → 수정 전환
     ============================================================ */
     function _switchToUpdate() {
         _mode = "update";
+
         _setTitle("update");
         _setEditable(true);
         _setFooter("update");
     }
 
     /* ============================================================
-       저장 (등록/수정 분기)
+       저장
     ============================================================ */
     function save() {
-        if (_mode === "insert") _saveInsert();
-        else if (_mode === "update") _saveUpdate();
+        if (_mode === "insert") {
+            _saveInsert();
+            return;
+        }
+
+        if (_mode === "update") {
+            _saveUpdate();
+        }
     }
 
-    /* 등록 저장 */
+    /* ============================================================
+       등록 저장
+    ============================================================ */
     async function _saveInsert() {
-        if (!_facilityNo) { _alert("편의시설을 먼저 선택하세요."); return; }
+        if (!_facilityNo) {
+            _alert("편의시설을 먼저 선택하세요.");
+            return;
+        }
 
-        var rows  = _el("pfItemRows");
+        var rows = _el("pfItemRows");
         var items = [];
+
+        /* 입력된 자원 행 수집 */
         Array.from(rows.querySelectorAll(".pf-field-row")).forEach(function (row) {
-            var nm   = row.querySelector(".pf-row-nm").value.trim();
-            var stts = row.querySelector(".pf-row-stts").value;
-            if (nm) items.push({ cmnFacilityNo: _facilityNo, itemNm: nm, cmnFacilitySttsCd: stts });
+            var nmInput = row.querySelector(".pf-row-nm");
+            var sttsInput = row.querySelector(".pf-row-stts");
+
+            var nm = nmInput ? nmInput.value.trim() : "";
+            var stts = sttsInput ? sttsInput.value : "OPEN";
+
+            if (nm) {
+                items.push({
+                    cmnFacilityNo: _facilityNo,
+                    itemNm: nm,
+                    cmnFacilitySttsCd: stts
+                });
+            }
         });
 
-        if (items.length === 0) { _alert("자원명을 입력하세요."); return; }
+        if (items.length === 0) {
+            _alert("자원명을 입력하세요.");
+            return;
+        }
 
         try {
             for (var i = 0; i < items.length; i++) {
                 await _fetch(
                     _cfg.contextPath + "/manager/publicFacility/item/insert/" + encodeURIComponent(_cfg.mgmtOfcNo),
-                    { method: "POST", headers: _csrf(), body: JSON.stringify(items[i]) }
+                    {
+                        method: "POST",
+                        headers: _csrf(),
+                        body: JSON.stringify(items[i])
+                    }
                 );
             }
+
             _alert(items.length + "개 자원이 등록되었습니다.");
             close();
             _refresh();
@@ -418,25 +634,41 @@
         }
     }
 
-    /* 수정 저장 */
+    /* ============================================================
+       수정 저장
+    ============================================================ */
     async function _saveUpdate() {
-        var nm = _val("pfItemNm").trim();
-        if (!nm) { _alert("자원명을 입력하세요."); return; }
+        var itemNm = _val("pfItemNm").trim();
+
+        if (!itemNm) {
+            _alert("자원명을 입력하세요.");
+            return;
+        }
 
         var payload = {
             cmnFacilityItemNo: _val("pfItemNo"),
-            cmnFacilityNo:     _facilityNo || _cfg.cmnFacilityNo || "",
-            itemNm:            nm,
+            cmnFacilityNo: _facilityNo || _cfg.cmnFacilityNo || "",
+            itemNm: itemNm,
             cmnFacilitySttsCd: _val("pfItemStts")
         };
 
         try {
             var data = await _fetch(
                 _cfg.contextPath + "/manager/publicFacility/item/update/" + encodeURIComponent(_cfg.mgmtOfcNo),
-                { method: "POST", headers: _csrf(), body: JSON.stringify(payload) }
+                {
+                    method: "POST",
+                    headers: _csrf(),
+                    body: JSON.stringify(payload)
+                }
             );
-            if (data.success) { _alert(data.message || "수정되었습니다."); close(); _refresh(); }
-            else { _alert(data.message || "수정에 실패했습니다."); }
+
+            if (data.success) {
+                _alert(data.message || "수정되었습니다.");
+                close();
+                _refresh();
+            } else {
+                _alert(data.message || "수정에 실패했습니다.");
+            }
         } catch (e) {
             console.error(e);
             _alert("수정 중 오류가 발생했습니다.");
@@ -447,17 +679,31 @@
        삭제
     ============================================================ */
     function confirmDelete() {
-        if (!confirm("이 자원을 삭제하시겠습니까?")) return;
+        if (!confirm("이 자원을 삭제하시겠습니까?")) {
+            return;
+        }
 
         _fetch(
             _cfg.contextPath + "/manager/publicFacility/item/delete/" + encodeURIComponent(_cfg.mgmtOfcNo),
-            { method: "POST", headers: _csrf(), body: JSON.stringify({ cmnFacilityItemNo: _itemNo }) }
+            {
+                method: "POST",
+                headers: _csrf(),
+                body: JSON.stringify({ cmnFacilityItemNo: _itemNo })
+            }
         )
             .then(function (data) {
-                if (data.success) { _alert(data.message || "삭제되었습니다."); close(); _refresh(); }
-                else { _alert(data.message || "삭제에 실패했습니다."); }
+                if (data.success) {
+                    _alert(data.message || "삭제되었습니다.");
+                    close();
+                    _refresh();
+                } else {
+                    _alert(data.message || "삭제에 실패했습니다.");
+                }
             })
-            .catch(function (e) { console.error(e); _alert("삭제 중 오류가 발생했습니다."); });
+            .catch(function (e) {
+                console.error(e);
+                _alert("삭제 중 오류가 발생했습니다.");
+            });
     }
 
     /* ============================================================
@@ -468,7 +714,10 @@
         var facilityNo = _facilityNo || _cfg.cmnFacilityNo || "";
 
         if (tbody && facilityNo) {
-            /* detail.jsp 인라인 테이블 갱신 */
+            /*
+             * detail.jsp 인라인 테이블 갱신
+             * - 기존 구조 유지
+             */
             var url = _cfg.contextPath
                 + "/manager/publicFacility/item/paging/"
                 + encodeURIComponent(_cfg.mgmtOfcNo)
@@ -476,10 +725,23 @@
                 + "&pageSize=50&page=1";
 
             fetch(url)
-                .then(function (r) { return r.json(); })
-                .then(function (data) { _renderDetailTable(data.list || []); })
-                .catch(function () { location.reload(); });
+                .then(function (res) {
+                    return res.json();
+                })
+                .then(function (data) {
+                    _renderDetailTable(data.list || []);
+                })
+                .catch(function () {
+                    location.reload();
+                });
         } else {
+            /*
+             * 목록 화면 모달 저장 후 새로고침 표시
+             * - 목록 JSP의 canRestoreListState()에서 이 값을 보고 기존 탭/필터를 복원함
+             * - 실제 탭/필터 값은 목록 화면의 saveListState()가 이미 STORAGE_KEY에 저장함
+             */
+            sessionStorage.setItem("publicFacilityModalRefresh", "Y");
+
             location.reload();
         }
     }
@@ -489,19 +751,21 @@
     ============================================================ */
     function _renderDetailTable(list) {
         var tbody = document.getElementById("dtlItemBody");
+
         if (!tbody) return;
 
         if (!list.length) {
             tbody.innerHTML = '<tr id="emptyRow"><td class="item-empty" colspan="4">등록된 자원이 없습니다.</td></tr>';
             return;
         }
+
         tbody.innerHTML = list.map(function (item) {
-            return '<tr data-item-no="'  + (item.cmnFacilityItemNo || "") + '"'
-                + ' data-item-nm="'     + (item.itemNm || "").replace(/"/g, "&quot;") + '"'
-                + ' data-stts="'        + (item.cmnFacilitySttsCd || "") + '">'
+            return '<tr data-item-no="' + (item.cmnFacilityItemNo || "") + '"'
+                + ' data-item-nm="' + (item.itemNm || "").replace(/"/g, "&quot;") + '"'
+                + ' data-stts="' + (item.cmnFacilitySttsCd || "") + '">'
                 + '<td style="text-align:center;font-size:12px;">' + (item.cmnFacilityItemNo || "") + '</td>'
-                + '<td style="padding-left:10px;">'                + (item.itemNm || "-")           + '</td>'
-                + '<td style="text-align:center;">'                + _badge(item.cmnFacilitySttsCd) + '</td>'
+                + '<td style="padding-left:10px;">' + (item.itemNm || "-") + '</td>'
+                + '<td style="text-align:center;">' + _badge(item.cmnFacilitySttsCd) + '</td>'
                 + '<td><div style="display:flex;gap:4px;justify-content:center;">'
                 + '<button type="button" class="row-btn" data-action="edit">수정</button>'
                 + '<button type="button" class="row-btn row-btn-danger" data-action="delete">삭제</button>'
@@ -511,44 +775,67 @@
     }
 
     /* ============================================================
-       정적 이벤트 바인딩 (init 시 1회)
+       정적 이벤트 바인딩
     ============================================================ */
     function _bindStaticEvents() {
-        /* 모달 외부 클릭 닫기 */
         var modal = _el("pfItemModal");
+
+        /* 모달 외부 클릭 닫기 */
         if (modal) {
             modal.addEventListener("click", function (e) {
-                if (e.target === modal) close();
+                if (e.target === modal) {
+                    close();
+                }
             });
         }
 
-        /* X 버튼 */
+        /* X 버튼 닫기 */
         var xBtn = _el("pfModalCloseBtn");
-        if (xBtn) xBtn.addEventListener("click", close);
+        if (xBtn) {
+            xBtn.addEventListener("click", close);
+        }
 
-        /* + 자원 추가 버튼 */
+        /* 자원 추가 버튼 */
         var addBtn = _el("pfAddRowBtn");
-        if (addBtn) addBtn.addEventListener("click", _addItemRow);
+        if (addBtn) {
+            addBtn.addEventListener("click", _addItemRow);
+        }
 
-        /* 편의시설번호 자동완성 (등록 검색창) */
+        /* 편의시설번호 자동완성 */
         var inp = _el("pfFacilitySearchInput");
         var box = _el("pfFacilitySuggestBox");
+
         if (inp && box) {
             inp.addEventListener("input", function () {
-                var kw = this.value.trim();
+                var keyword = this.value.trim();
+
                 clearTimeout(_suggestTimer);
-                if (!kw) { box.classList.remove("is-open"); box.innerHTML = ""; return; }
+
+                if (!keyword) {
+                    box.classList.remove("is-open");
+                    box.innerHTML = "";
+                    return;
+                }
+
                 _suggestTimer = setTimeout(function () {
-                    fetch(_cfg.contextPath
+                    fetch(
+                        _cfg.contextPath
                         + "/manager/publicFacility/item/suggest/"
                         + encodeURIComponent(_cfg.mgmtOfcNo)
-                        + "?suggestType=PUBLIC_FACILITY&keyword=" + encodeURIComponent(kw))
-                        .then(function (r) { return r.json(); })
-                        .then(function (data) { _renderFacilitySuggest(data.list || []); })
+                        + "?suggestType=PUBLIC_FACILITY&keyword="
+                        + encodeURIComponent(keyword)
+                    )
+                        .then(function (res) {
+                            return res.json();
+                        })
+                        .then(function (data) {
+                            _renderFacilitySuggest(data.list || []);
+                        })
                         .catch(function () {});
                 }, 200);
             });
 
+            /* 자동완성 외부 클릭 닫기 */
             document.addEventListener("click", function (e) {
                 if (!inp.contains(e.target) && !box.contains(e.target)) {
                     box.classList.remove("is-open");
@@ -559,9 +846,11 @@
 
     /* ============================================================
        편의시설 자동완성 렌더링
+       - 리스트 화면에서 편의시설 검색 선택 시 시설번호도 함께 보존
     ============================================================ */
     function _renderFacilitySuggest(list) {
         var box = _el("pfFacilitySuggestBox");
+
         if (!box) return;
 
         if (!list.length) {
@@ -571,24 +860,54 @@
         }
 
         box.innerHTML = list.map(function (item) {
-            return '<div class="pf-suggest-item" data-no="' + (item.cmnFacilityNo || "") + '">'
-                + '<span class="pf-suggest-main">' + (item.cmnFacilityNo  || "") + '</span>'
-                + '<span class="pf-suggest-sub">'  + (item.cmnFacilityNm  || "") + '</span>'
+            return '<div class="pf-suggest-item"'
+                + ' data-no="' + (item.cmnFacilityNo || "") + '"'
+                + ' data-facility-no="' + (item.facilityNo || "") + '"'
+                + ' data-cmn-facility-nm="' + (item.cmnFacilityNm || "") + '">'
+                + '<span class="pf-suggest-main">' + (item.cmnFacilityNo || "") + '</span>'
+                + '<span class="pf-suggest-sub">' + (item.cmnFacilityNm || "") + '</span>'
                 + '</div>';
         }).join("");
+
         box.classList.add("is-open");
 
         box.querySelectorAll(".pf-suggest-item").forEach(function (item) {
             item.addEventListener("click", function () {
-                var no = item.getAttribute("data-no");
+                /* 선택한 편의시설번호 */
+                var no = item.getAttribute("data-no") || "";
+
+                /* 선택한 편의시설의 시설번호 */
+                var facilityNo = item.getAttribute("data-facility-no") || "";
+
+                /* 선택한 편의시설명 */
+                var cmnFacilityNm = item.getAttribute("data-cmn-facility-nm") || "";
+
+                /* 검색창에는 CMN 접두어를 뺀 값 표시 */
                 _el("pfFacilitySearchInput").value = no.replace(/^CMN/, "");
+
+                /* 자동완성 닫기 */
                 box.classList.remove("is-open");
+
+                /* 현재 모달의 편의시설번호 저장 */
                 _facilityNo = no;
 
-                /* 시설 정보 로드 후 표시 */
+                /*
+                 * 검색 결과 row가 가진 값을 먼저 표시
+                 * - suggest 응답에 facilityNo가 있으면 여기서 바로 표시됨
+                 */
+                _fillFacilityInfo({
+                    facilityNo: facilityNo,
+                    cmnFacilityNm: cmnFacilityNm
+                }, no);
+
+                _show("pfFacilityInfoSection");
+
+                /*
+                 * 추가 조회 결과로 보완
+                 * - 빈 facilityNo는 기존 값을 덮지 않도록 _fillFacilityInfo()에서 방어
+                 */
                 _loadFacilityDetail(no, function (facility) {
                     _fillFacilityInfo(facility, no);
-                    _show("pfFacilityInfoSection");
                     _loadSiblingsForInsert(no);
                 });
             });
@@ -599,10 +918,10 @@
        공개 API
     ============================================================ */
     window.PublicFacilityItemModal = {
-        init:          init,
-        open:          open,
-        close:         close,
-        save:          save,
+        init: init,
+        open: open,
+        close: close,
+        save: save,
         confirmDelete: confirmDelete
     };
 

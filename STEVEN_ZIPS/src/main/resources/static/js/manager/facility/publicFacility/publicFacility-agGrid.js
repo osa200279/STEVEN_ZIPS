@@ -5,7 +5,7 @@
  *
  * 역할
  * - 공용시설 / 공용 아이템 컬럼 정의
- * - 상태/예약/금액 배지 렌더링
+ * - 상태/예약 배지 렌더링
  * - 목록 행 번호 계산
  * - 상세/수정/삭제/운영등록 버튼 렌더링
  *
@@ -40,15 +40,6 @@
     }
 
     /**
-     * 숫자 포맷
-     * - 비용 표시용 콤마 처리
-     */
-    function formatNumber(value) {
-        var numberValue = Number(value || 0);
-        return numberValue.toLocaleString("ko-KR");
-    }
-
-    /**
      * 날짜 표시값 보정
      * - yyyy-MM-dd / yyyy.MM.dd 형태 모두 목록에서 보기 좋은 yyyy.MM.dd로 표시
      */
@@ -57,8 +48,8 @@
     }
 
     /**
-     * empty display fallback
-     * - missing grid data visibility
+     * 빈 값 표시 보정
+     * - 그리드에서 값이 없을 때 '-' 표시
      */
     function displayText(value) {
         var valueText = text(value).trim();
@@ -66,16 +57,16 @@
     }
 
     /**
-     * 공용시설명 표시값
-     * - PUBLIC_FACILITY 명칭이 없으면 FACILITY 명칭 사용
+     * 편의시설명 표시값
+     * - 편의시설명이 없으면 '-' 표시
      */
     function getFacilityName(row) {
-        return displayText(row.cmnFacilityNm || row.facilityNm);
+        return displayText(row.cmnFacilityNm);
     }
 
     /**
      * 카테고리 표시값
-     * - FACILITY.FACILITY_TY_CD 기준 편의시설 유형명 표시
+     * - 시설유형명 우선 표시
      */
     function getFacilityTypeName(row) {
         return displayText(row.facilityTyNm || row.facilityTyCd);
@@ -83,45 +74,48 @@
 
     /**
      * 동 표시값
-     * - 조인 컬럼명 차이를 보정
+     * - 조인 컬럼명 차이 보정
      */
     function getDongText(row) {
         var dongText = text(row.dongNm || row.dongName || row.dongNo || row.buildingNm || row.buildingNo).trim();
-        if (dongText.indexOf("_") > -1) dongText = dongText.substring(dongText.lastIndexOf("_") + 1);
+
+        if (dongText.indexOf("_") > -1) {
+            dongText = dongText.substring(dongText.lastIndexOf("_") + 1);
+        }
+
         return displayText(dongText);
     }
 
     /**
      * 위치 표시값
-     * - FACILITY.LOC_CN 표시
+     * - 상세 위치 컬럼 표시
      */
     function getLocationText(row) {
         return displayText(row.locCn || row.locationCn || row.facilityLocCn);
     }
 
     /**
-     * 운영시간 표시값
-     * - PUBLIC_FACILITY.CMN_FACILITY_OPR_HR 표시
-     */
-    function getOperationHour(row) {
-        return displayText(row.cmnFacilityOprHr || row.oprHr);
-    }
-
-    /**
      * 운영현황 코드 계산
      * - 서버 계산값이 있으면 우선 사용
-     * - 없으면 PUBLIC_ITEM 집계 수량으로 보정
+     * - 없으면 자원 집계 수량으로 보정
      */
     function getOperationStatus(row) {
-        if (!row.cmnFacilityNo) return "UNREGISTERED";
+        var directStatus;
+        var repairCount;
+        var closeCount;
 
-        var directStatus = row.operStatus || row.operationStatus || row.operStatusCd || row.operationStatusCd;
-        var repairCount = Number(row.repairCnt || row.repairItemCnt || row.itemRepairCnt || 0);
-        var closeCount = Number(row.closeCnt || row.closeItemCnt || row.itemCloseCnt || 0);
+        if (!row.cmnFacilityNo) {
+            return "UNREGISTERED";
+        }
+
+        directStatus = row.operStatus || row.operationStatus || row.operStatusCd || row.operationStatusCd;
+        repairCount = Number(row.repairCnt || row.repairItemCnt || row.itemRepairCnt || 0);
+        closeCount = Number(row.closeCnt || row.closeItemCnt || row.itemCloseCnt || 0);
 
         if (directStatus) return directStatus;
         if (closeCount > 0) return "CLOSE_PART";
         if (repairCount > 0) return "REPAIR_PART";
+
         return "NORMAL";
     }
 
@@ -135,35 +129,40 @@
 
     /**
      * 예약여부 배지 렌더링
-     * - Y: 예약제 / N: 자유이용
+     * - Y: 예약제
+     * - N: 자유이용
      */
     function renderReserveBadge(value) {
         if (value === "Y") return badge("예약제", "badge-blue");
         if (value === "N") return badge("자유이용", "badge-gray");
+
         return badge("미등록", "badge-gray");
     }
 
     /**
-     * 공용시설 운영현황 배지 렌더링
+     * 편의시설 운영현황 배지 렌더링
      * - 운영미등록 / 정상 / 일부 점검중 / 일부 사용중지
      */
     function renderFacilityStatusBadge(row) {
         var status = getOperationStatus(row);
+
         if (status === "UNREGISTERED") return badge("운영미등록", "badge-gray");
         if (status === "REPAIR_PART") return badge("일부 점검중", "badge-yellow");
         if (status === "CLOSE_PART") return badge("일부 사용중지", "badge-red");
+
         return badge("정상", "badge-green");
     }
 
     /**
-     * 공용 아이템 상태 배지 렌더링
-     * - PUBLIC_ITEM.CMN_FACILITY_STTS_CD 기준
+     * 편의시설 자원 상태 배지 렌더링
+     * - 자원상태코드 기준 표시
      */
     function renderItemStatusBadge(status) {
         if (status === "OPEN") return badge("사용가능", "badge-green");
         if (status === "USE") return badge("사용중", "badge-blue");
         if (status === "REPAIR") return badge("점검중", "badge-yellow");
         if (status === "CLOSE") return badge("사용중지", "badge-red");
+
         return badge("미등록", "badge-gray");
     }
 
@@ -177,7 +176,7 @@
 
     /**
      * 역순 번호 렌더링
-     * - 현재 그리드 표시 행 전체 개수 기준으로 10, 9, 8 형태 표시
+     * - 현재 표시 행 전체 개수 기준 역순 번호
      */
     function renderReverseNumber(params) {
         var count = params.api ? params.api.getDisplayedRowCount() : 0;
@@ -186,70 +185,90 @@
 
     /**
      * 버튼 DOM 생성
-     * - cellRenderer에서 바로 이벤트를 연결하기 위한 버튼 생성
+     * - cellRenderer 내부 클릭 이벤트 연결
      */
     function createButton(label, className, clickHandler) {
         var button = document.createElement("button");
+
         button.type = "button";
         button.className = className;
         button.textContent = label;
+
         button.addEventListener("click", function (event) {
             event.preventDefault();
             event.stopPropagation();
+
             button.blur();
             clickHandler();
         });
+
         return button;
     }
 
     /**
-     * 공용시설 액션 버튼 렌더링
+     * 편의시설 액션 버튼 렌더링
      * - 운영등록 완료: 상세/수정/삭제
-     * - 운영미등록: MNGR만 운영등록
-     * - ADMIN: 운영등록 완료 행의 상세만 표시
+     * - 운영미등록: 운영등록
+     * - ADMIN: 상세만 표시
      */
     function renderFacilityActions(params, option) {
         var row = params.data || {};
         var wrap = document.createElement("div");
+
         wrap.className = "grid-actions";
 
         if (row.cmnFacilityNo) {
             wrap.appendChild(createButton("상세", "btn btn-secondary btn-sm", function () {
-                if (typeof option.onFacilityDetail === "function") option.onFacilityDetail(row.cmnFacilityNo, row);
+                if (typeof option.onFacilityDetail === "function") {
+                    option.onFacilityDetail(row.cmnFacilityNo, row);
+                }
             }));
         }
 
-        if (option.isAdmin) return wrap;
+        if (option.isAdmin) {
+            return wrap;
+        }
 
         if (!row.cmnFacilityNo) {
             wrap.appendChild(createButton("운영등록", "btn btn-primary btn-sm", function () {
-                if (typeof option.onFacilityRegister === "function") option.onFacilityRegister(row);
+                if (typeof option.onFacilityRegister === "function") {
+                    option.onFacilityRegister(row);
+                }
             }));
+
             return wrap;
         }
 
         wrap.appendChild(createButton("수정", "btn btn-primary btn-sm", function () {
-            if (typeof option.onFacilityEdit === "function") option.onFacilityEdit(row.cmnFacilityNo, row);
+            if (typeof option.onFacilityEdit === "function") {
+                option.onFacilityEdit(row.cmnFacilityNo, row);
+            }
         }));
+
         wrap.appendChild(createButton("삭제", "btn btn-secondary btn-sm", function () {
-            if (typeof option.onFacilityDelete === "function") option.onFacilityDelete(row.cmnFacilityNo, row);
+            if (typeof option.onFacilityDelete === "function") {
+                option.onFacilityDelete(row.cmnFacilityNo, row);
+            }
         }));
 
         return wrap;
     }
 
     /**
-     * 공용 아이템 액션 버튼 렌더링
+     * 편의시설 자원 액션 버튼 렌더링
      * - ADMIN: 상세만 표시
      * - MNGR: 상세/수정/삭제 표시
      */
     function renderItemActions(params, option) {
         var row = params.data || {};
         var wrap = document.createElement("div");
+
         wrap.className = "grid-actions";
 
         wrap.appendChild(createButton("상세", "btn btn-secondary btn-sm", function () {
-            if (typeof option.onItemDetail === "function") option.onItemDetail(row.cmnFacilityItemNo, row);
+            if (typeof option.onItemDetail === "function") {
+                option.onItemDetail(row.cmnFacilityItemNo, row);
+            }
         }));
 
         if (option.isAdmin) {
@@ -257,55 +276,221 @@
         }
 
         wrap.appendChild(createButton("수정", "btn btn-primary btn-sm", function () {
-            if (typeof option.onItemEdit === "function") option.onItemEdit(row.cmnFacilityItemNo, row);
+            if (typeof option.onItemEdit === "function") {
+                option.onItemEdit(row.cmnFacilityItemNo, row);
+            }
         }));
+
         wrap.appendChild(createButton("삭제", "btn btn-secondary btn-sm", function () {
-            if (typeof option.onItemDelete === "function") option.onItemDelete(row.cmnFacilityItemNo, row);
+            if (typeof option.onItemDelete === "function") {
+                option.onItemDelete(row.cmnFacilityItemNo, row);
+            }
         }));
 
         return wrap;
     }
 
     /**
-     * 공용시설 컬럼 정의
-     * - FACILITY + PUBLIC_FACILITY 조인 목록 기준
+     * 편의시설 컬럼 정의
+     * - 시설번호 / 시설명 / 이용요금 / 운영시간 제거
+     * - 편의시설번호와 편의시설명 중심 표시
      */
     function getFacilityColumnDefs(option) {
         return [
-            { headerName:"번호", width:70, minWidth:60, maxWidth:90, valueGetter:renderReverseNumber, cellClass:"cell-center", sortable:false, resizable:true },
-            { headerName:"편의시설명", field:"cmnFacilityNm", flex:1.2, minWidth:135, cellClass:"cell-left", cellRenderer:function (p) { return renderEllipsis(getFacilityName(p.data || {})); } },
-            { headerName:"카테고리", field:"facilityTyNm", flex:.85, minWidth:105, cellClass:"cell-center", cellRenderer:function (p) { return badge(getFacilityTypeName(p.data || {}), "badge-blue"); } },
-            { headerName:"동", field:"dongNm", flex:.65, minWidth:80, cellClass:"cell-center", valueGetter:function (p) { return getDongText(p.data || {}); } },
-            { headerName:"위치", field:"locCn", flex:1.1, minWidth:130, cellClass:"cell-left", cellRenderer:function (p) { return renderEllipsis(getLocationText(p.data || {})); } },
-            { headerName:"예약", field:"cmnFacilityRsvYn", flex:.7, minWidth:90, cellClass:"cell-center", cellRenderer:function (p) { return renderReserveBadge((p.data || {}).cmnFacilityRsvYn || (p.data || {}).rsvYn); } },
-            { headerName:"이용요금", field:"cmnFacilityAmt", flex:.75, minWidth:95, cellClass:"cell-right", valueFormatter:function (p) { return p.value == null || p.value === "" ? "-" : formatNumber(p.value) + "원"; } },
-            { headerName:"운영시간", field:"cmnFacilityOprHr", flex:1, minWidth:125, cellClass:"cell-center", valueGetter:function (p) { return getOperationHour(p.data || {}); } },
-            { headerName:"운영현황", field:"operStatus", flex:.9, minWidth:110, cellClass:"cell-center", cellRenderer:function (p) { return renderFacilityStatusBadge(p.data || {}); } },
-            { headerName:"자원", field:"itemCnt", flex:.6, minWidth:75, cellClass:"cell-center", valueGetter:function (p) { return Number((p.data || {}).itemCnt || 0) + "개"; } },
-            { headerName:"수정일", field:"mdfDt", flex:.8, minWidth:95, cellClass:"cell-center", valueFormatter:function (p) { return displayText(formatDate(p.value)); } },
-            { headerName:"관리", field:"actions", flex:option.isAdmin ? .65 : 1.25, minWidth:option.isAdmin ? 90 : 150, cellClass:"cell-center", sortable:false, resizable:false, cellRenderer:function (p) { return renderFacilityActions(p, option); } }
+            {
+                headerName: "번호",
+                width: 70,
+                minWidth: 60,
+                maxWidth: 90,
+                valueGetter: renderReverseNumber,
+                cellClass: "cell-center",
+                sortable: false,
+                resizable: true
+            },
+            {
+                headerName: "편의시설번호",
+                field: "cmnFacilityNo",
+                flex: .95,
+                minWidth: 120,
+                cellClass: "cell-mono",
+                valueGetter: function (p) {
+                    return displayText((p.data || {}).cmnFacilityNo);
+                }
+            },
+            {
+                headerName: "편의시설명",
+                field: "cmnFacilityNm",
+                flex: 1.35,
+                minWidth: 155,
+                cellClass: "cell-left",
+                cellRenderer: function (p) {
+                    return renderEllipsis(getFacilityName(p.data || {}));
+                }
+            },
+            {
+                headerName: "카테고리",
+                field: "facilityTyNm",
+                flex: .8,
+                minWidth: 100,
+                cellClass: "cell-center",
+                cellRenderer: function (p) {
+                    return badge(getFacilityTypeName(p.data || {}), "badge-blue");
+                }
+            },
+            {
+                headerName: "동",
+                field: "dongNm",
+                flex: .6,
+                minWidth: 75,
+                cellClass: "cell-center",
+                valueGetter: function (p) {
+                    return getDongText(p.data || {});
+                }
+            },
+            {
+                headerName: "위치",
+                field: "locCn",
+                flex: 1.05,
+                minWidth: 120,
+                cellClass: "cell-left",
+                cellRenderer: function (p) {
+                    return renderEllipsis(getLocationText(p.data || {}));
+                }
+            },
+            {
+                headerName: "예약",
+                field: "cmnFacilityRsvYn",
+                flex: .65,
+                minWidth: 85,
+                cellClass: "cell-center",
+                cellRenderer: function (p) {
+                    return renderReserveBadge((p.data || {}).cmnFacilityRsvYn || (p.data || {}).rsvYn);
+                }
+            },
+            {
+                headerName: "운영현황",
+                field: "operStatus",
+                flex: .85,
+                minWidth: 105,
+                cellClass: "cell-center",
+                cellRenderer: function (p) {
+                    return renderFacilityStatusBadge(p.data || {});
+                }
+            },
+            {
+                headerName: "자원",
+                field: "itemCnt",
+                flex: .55,
+                minWidth: 70,
+                cellClass: "cell-center",
+                valueGetter: function (p) {
+                    return Number((p.data || {}).itemCnt || 0) + "개";
+                }
+            },
+            {
+                headerName: "수정일",
+                field: "mdfDt",
+                flex: .75,
+                minWidth: 90,
+                cellClass: "cell-center",
+                valueFormatter: function (p) {
+                    return displayText(formatDate(p.value));
+                }
+            },
+            {
+                headerName: "관리",
+                field: "actions",
+                flex: option.isAdmin ? .65 : 1.15,
+                minWidth: option.isAdmin ? 90 : 145,
+                cellClass: "cell-center",
+                sortable: false,
+                resizable: false,
+                cellRenderer: function (p) {
+                    return renderFacilityActions(p, option);
+                }
+            }
         ];
     }
 
     /**
-     * 공용 아이템 컬럼 정의
-     * - PUBLIC_ITEM 목록 기준
+     * 편의시설 자원 컬럼 정의
+     * - 자원 탭 목록 표시 기준
      */
     function getItemColumnDefs(option) {
         return [
-            { headerName:"번호", width:70, minWidth:60, maxWidth:90, valueGetter:renderReverseNumber, cellClass:"cell-center", sortable:false, resizable:true },
-            { headerName:"편의시설번호", field:"cmnFacilityNo", flex:1, minWidth:120, cellClass:"cell-mono" },
-            { headerName:"자원번호", field:"cmnFacilityItemNo", flex:1, minWidth:130, cellClass:"cell-mono" },
-            { headerName:"편의시설명", field:"cmnFacilityNm", flex:1.2, minWidth:130, cellClass:"cell-left", cellRenderer:function (p) { return renderEllipsis((p.data || {}).cmnFacilityNm); } },
-            { headerName:"자원명", field:"itemNm", flex:1.2, minWidth:130, cellClass:"cell-left", cellRenderer:function (p) { return renderEllipsis((p.data || {}).itemNm); } },
-            { headerName:"자원상태", field:"cmnFacilitySttsCd", flex:.8, minWidth:100, cellClass:"cell-center", cellRenderer:function (p) { return renderItemStatusBadge((p.data || {}).cmnFacilitySttsCd); } },
-            { headerName:"관리", field:"actions", flex:option.isAdmin ? .65 : 1.05, minWidth:option.isAdmin ? 90 : 140, cellClass:"cell-center", sortable:false, resizable:false, cellRenderer:function (p) { return renderItemActions(p, option); } }
+            {
+                headerName: "번호",
+                width: 70,
+                minWidth: 60,
+                maxWidth: 90,
+                valueGetter: renderReverseNumber,
+                cellClass: "cell-center",
+                sortable: false,
+                resizable: true
+            },
+            {
+                headerName: "편의시설번호",
+                field: "cmnFacilityNo",
+                flex: 1,
+                minWidth: 120,
+                cellClass: "cell-mono"
+            },
+            {
+                headerName: "자원번호",
+                field: "cmnFacilityItemNo",
+                flex: 1,
+                minWidth: 130,
+                cellClass: "cell-mono"
+            },
+            {
+                headerName: "편의시설명",
+                field: "cmnFacilityNm",
+                flex: 1.2,
+                minWidth: 130,
+                cellClass: "cell-left",
+                cellRenderer: function (p) {
+                    return renderEllipsis((p.data || {}).cmnFacilityNm);
+                }
+            },
+            {
+                headerName: "자원명",
+                field: "itemNm",
+                flex: 1.2,
+                minWidth: 130,
+                cellClass: "cell-left",
+                cellRenderer: function (p) {
+                    return renderEllipsis((p.data || {}).itemNm);
+                }
+            },
+            {
+                headerName: "자원상태",
+                field: "cmnFacilitySttsCd",
+                flex: .8,
+                minWidth: 100,
+                cellClass: "cell-center",
+                cellRenderer: function (p) {
+                    return renderItemStatusBadge((p.data || {}).cmnFacilitySttsCd);
+                }
+            },
+            {
+                headerName: "관리",
+                field: "actions",
+                flex: option.isAdmin ? .65 : 1.05,
+                minWidth: option.isAdmin ? 90 : 140,
+                cellClass: "cell-center",
+                sortable: false,
+                resizable: false,
+                cellRenderer: function (p) {
+                    return renderItemActions(p, option);
+                }
+            }
         ];
     }
 
     /**
      * 현재 탭 컬럼 정의 반환
-     * - PUBLIC_ITEM이면 아이템 컬럼, 아니면 공용시설 컬럼
+     * - 편의시설 자원 탭이면 자원 컬럼
+     * - 아니면 편의시설 컬럼
      */
     function getColumnDefs(viewType, option) {
         return viewType === "PUBLIC_ITEM" ? getItemColumnDefs(option) : getFacilityColumnDefs(option);
@@ -320,6 +505,7 @@
             api.setGridOption("rowData", rows || []);
             return;
         }
+
         if (api && typeof api.setRowData === "function") {
             api.setRowData(rows || []);
         }
@@ -334,6 +520,7 @@
             api.setGridOption("columnDefs", columnDefs);
             return;
         }
+
         if (api && typeof api.setColumnDefs === "function") {
             api.setColumnDefs(columnDefs);
         }
@@ -341,12 +528,15 @@
 
     /**
      * 컬럼 폭 맞춤
-     * - 가로 스크롤 방지를 위한 화면 폭 맞춤
+     * - 가로 스크롤 방지
      */
     function fitColumns(api) {
         if (!api) return;
+
         window.setTimeout(function () {
-            if (typeof api.sizeColumnsToFit === "function") api.sizeColumnsToFit();
+            if (typeof api.sizeColumnsToFit === "function") {
+                api.sizeColumnsToFit();
+            }
         }, 0);
     }
 
@@ -355,11 +545,13 @@
      * - JSP에서 window.PublicFacilityAgGrid.create(...)로 호출
      */
     function create(option) {
-        var gridEl = document.getElementById(option.gridId); // 그리드 영역
+        var gridEl = document.getElementById(option.gridId);
         var state = {
             viewType: option.viewType || "PUBLIC_FACILITY",
             rows: []
         };
+        var gridOptions;
+        var api;
 
         option.isAdmin = option.isAdmin === true || option.isAdmin === "true";
 
@@ -369,30 +561,33 @@
 
         gridEl.style.height = gridEl.style.height || "560px";
 
-        var gridOptions = {
-            theme:"legacy",
-            rowData:[],
-            columnDefs:getColumnDefs(state.viewType, option),
-            defaultColDef:{ sortable:true, resizable:true, minWidth:80 },
-            pagination:true,
-            paginationPageSize:10,
-            paginationPageSizeSelector:[10, 20, 50],
-            rowHeight:46,
-            headerHeight:42,
-            animateRows:true,
-            suppressCellFocus:true,
-            suppressHorizontalScroll:true,
-            suppressDragLeaveHidesColumns:true,
-            domLayout:"normal",
-            onGridReady:function (params) {
+        gridOptions = {
+            theme: "legacy",
+            rowData: [],
+            columnDefs: getColumnDefs(state.viewType, option),
+            defaultColDef: {
+                sortable: true,
+                resizable: true,
+                minWidth: 80
+            },
+            pagination: true,
+            paginationPageSize: 10,
+            paginationPageSizeSelector: [10, 20, 50],
+            rowHeight: 46,
+            headerHeight: 42,
+            animateRows: true,
+            suppressCellFocus: true,
+            suppressHorizontalScroll: true,
+            suppressDragLeaveHidesColumns: true,
+            domLayout: "normal",
+            onGridReady: function (params) {
                 fitColumns(params.api);
             },
-            onFirstDataRendered:function (params) {
+            onFirstDataRendered: function (params) {
                 fitColumns(params.api);
             }
         };
 
-        var api;
         if (window.agGrid && typeof window.agGrid.createGrid === "function") {
             api = window.agGrid.createGrid(gridEl, gridOptions);
         } else if (window.agGrid && typeof window.agGrid.Grid === "function") {
@@ -407,17 +602,21 @@
              * 행 데이터 교체
              * - 검색/조회 결과를 그리드에 반영
              */
-            setRows:function (rows) {
+            setRows: function (rows) {
                 state.rows = rows || [];
                 setGridRowData(api, state.rows);
                 fitColumns(api);
-                if (api && typeof api.refreshCells === "function") api.refreshCells({ force:true });
+
+                if (api && typeof api.refreshCells === "function") {
+                    api.refreshCells({ force: true });
+                }
             },
+
             /**
              * 탭 컬럼 변경
-             * - 공용시설 / 공용 아이템 탭 전환 시 호출
+             * - 편의시설 / 편의시설 자원 탭 전환 시 호출
              */
-            changeView:function (viewType) {
+            changeView: function (viewType) {
                 state.viewType = viewType || "PUBLIC_FACILITY";
                 setGridColumnDefs(api, getColumnDefs(state.viewType, option));
                 setGridRowData(api, []);
@@ -428,19 +627,29 @@
              * CSV 다운로드
              * - 엑셀 다운로드 버튼에서 호출
              */
-            exportCsv:function (fileName) {
+            exportCsv: function (fileName) {
                 if (api && typeof api.exportDataAsCsv === "function") {
-                    api.exportDataAsCsv({ fileName:fileName || "편의시설공용_목록.csv" });
+                    api.exportDataAsCsv({ fileName: fileName || "편의시설공용_목록.csv" });
                 }
             },
-            getCurrentPage:function () {
+
+            /**
+             * 현재 페이지 번호 조회
+             * - 목록 상태 복원용
+             */
+            getCurrentPage: function () {
                 if (api && typeof api.paginationGetCurrentPage === "function") {
                     return api.paginationGetCurrentPage();
                 }
+
                 return 0;
             },
 
-            goToPage:function (pageNo) {
+            /**
+             * 페이지 이동
+             * - 목록 상태 복원용
+             */
+            goToPage: function (pageNo) {
                 if (api && typeof api.paginationGoToPage === "function") {
                     api.paginationGoToPage(Number(pageNo || 0));
                 }
@@ -449,6 +658,6 @@
     }
 
     window.PublicFacilityAgGrid = {
-        create:create
+        create: create
     };
 })(window);

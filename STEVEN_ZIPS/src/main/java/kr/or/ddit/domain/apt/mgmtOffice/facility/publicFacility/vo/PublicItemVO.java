@@ -12,6 +12,10 @@ public class PublicItemVO {
 
     /** 공용시설 아이템 번호 */
     private String cmnFacilityItemNo;
+    /**
+     * 연결 시설자산 번호
+     */
+    private String facilityNo;
 
     /** 공용시설 번호 */
     private String cmnFacilityNo;
