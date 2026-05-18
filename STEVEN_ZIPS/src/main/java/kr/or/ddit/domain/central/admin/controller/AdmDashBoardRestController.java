@@ -106,10 +106,11 @@ public class AdmDashBoardRestController {
         int totalPage = (int)Math.ceil((double)totalRecord / (double)screenSize);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("dataList", ctrtList);
+        response.put("ctrtList", ctrtList);
         response.put("curPage", curPage);
         response.put("totalPage", totalPage);
         response.put("totalRecord", totalRecord);
+        // log.info("### ctrtList : {}", response.get("ctrtList"));
 
         return ResponseEntity.ok(response);
     }

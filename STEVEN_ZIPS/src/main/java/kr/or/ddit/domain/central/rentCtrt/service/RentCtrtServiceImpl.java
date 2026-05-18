@@ -23,6 +23,6 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
 
     @Override
     public int selectCtrtCount(String userNo) {
-        return 0;
+        return rentCtrtMapper.selectCtrtCount(userNo);
     }
 }

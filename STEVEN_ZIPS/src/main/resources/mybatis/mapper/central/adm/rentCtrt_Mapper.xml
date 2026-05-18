@@ -64,6 +64,35 @@
     </insert>
 
     <select id="selectCtrt" resultType="java.util.Map">
+        select  /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrt */
+                 C.RENT_CTRT_NO
+               , U.USER_ID
+               , C.USER_NO
+               , U.USER_NM
+               , A.APT_CMPLEX_NO
+               , A.APT_CMPLEX_NM
+               , C.CTRT_APRV_DT
+               , C.MVIN_DT
+               , C.MVOUT_DT
+               , C.DPST_AMT
+               , C.MTHLY_RENT_AMT
+               , C.CTRT_STTS_CD
+               , M.USER_NO as CTRT_MGR_USER_NO
+          from RENT_CTRT C
+    inner join CTRT_MGR M on(C.RENT_CTRT_NO = M.RENT_CTRT_NO)
+    inner join RENT_LISTING L on(C.RENT_LSTG_NO = L.RENT_LSTG_NO)
+    inner join APT_DETAIL H on(H.HO_NO = L.HO_NO)
+    inner join APT_UNIT D on(D.DONG_NO = H.DONG_NO)
+    inner join APT_COMPLEX A on(A.APT_CMPLEX_NO = D.APT_CMPLEX_NO)
+    inner join MEMBER U on(C.USER_NO = U.USER_NO)
+         where M.USER_NO = #{userNo}
+           and M.CHG_YN = 'N'
+    </select>
 
+    <select id="selectCtrtCount" resultType="java.lang.Integer">
+        select COUNT(*)     /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrtCount */
+          from RENT_CTRT C
+    inner join CTRT_MGR M on(C.RENT_CTRT_NO = M.RENT_CTRT_NO)
+         where M.USER_NO = #{userNo}
     </select>
 </mapper>

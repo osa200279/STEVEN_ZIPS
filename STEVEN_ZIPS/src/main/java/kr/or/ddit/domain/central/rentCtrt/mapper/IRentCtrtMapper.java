@@ -2,7 +2,6 @@ package kr.or.ddit.domain.central.rentCtrt.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Map;
@@ -17,4 +16,6 @@ public interface IRentCtrtMapper {
     String getNextRentCtrtSeq();
 
     List<Map<String, Object>> selectCtrt(String userNo);
+
+    int selectCtrtCount(@Param("userNo") String userNo);
 }
