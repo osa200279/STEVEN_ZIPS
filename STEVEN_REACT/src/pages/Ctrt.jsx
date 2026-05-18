@@ -8,13 +8,24 @@ const Ctrt = () => {
   const { admInfo } = useOutletContext() || {};
   const [list, setList] = useState([]);
 
+  const [pagination, setPagination] = useState({
+    curPage: 1,
+    totalPage: 1,
+    totalRecord: 0
+  });
+
   useEffect(() => {
     const fetchContracts = async () =>{
       try{
-        const response = await requestApi.get(`/api/react/adm/ctrt`);
+        const response = await requestApi.get(`/api/react/adm/ctrt?page=${pagination.curPage}`);
 
-        if(Array.isArray(response.data)){
-          setList(response.data);
+        if(Array.isArray(response.data.ctrtList)){
+          setList(response.data.ctrtList);
+          setPagination(prev=>({
+            ...prev,
+            totalPage: response.data.totalPage,
+            totalRecord: response.data.totalRecord
+          }));
         }else {
           console.error("서버 응답이 배열 형식이 아닙니다: ", response.data);
           setList([]);
@@ -25,8 +36,7 @@ const Ctrt = () => {
       }
     };
     fetchContracts();
-  }, []);
-
+  }, [pagination.curPage]);
 
   const board = [
     { label: '이행 중인 계약', value: '1,234', change: '+12%', icon: <FileChartLine />, color: 'bg-primary-fixed', hasTrend: true },
@@ -36,32 +46,6 @@ const Ctrt = () => {
     { label: '만료 임박 계약', value: '14', icon: <FileClock />, color: 'bg-error-container', urgent: true },
     
     { label: '만료된 계약', value: '14', icon: <FileXCorner />, color: 'bg-expired-container', expired: true },
-  ];
-
-  const contracts = [
-    { rent_ctrt_no: 'rent_ctrt_no', user_id: 'Yirho', user_name: '이용로', rent_type: '전세', aptCmplexNo: 'A101231', aptCmplexNm: 'a아파트', approvalDt: '2026.05.11' , period: '2025.04.01 ~ 2026.04.01', price: '₩1,240,000,000', ctrt_stts: '이행중', detail: '상세보기', mgr: '담당자A' , isExpiryUrgent: false },
-
-    { rent_ctrt_no: 'RC2025002', user_id: 'minsu12', user_name: '김민수', rent_type: '월세', period: '2025.03.15 ~ 2026.03.14', price: '₩850,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
-
-    { rent_ctrt_no: 'RC2025003', user_id: 'jiyeon88', user_name: '박지연', rent_type: '전세', period: '2025.02.01 ~ 2026.01.31', price: '₩980,000,000', ctrt_stts: '계약만료',mgr: '담당자A' , detail: '상세보기', isExpiryUrgent: false },
-
-    { rent_ctrt_no: 'RC2025004', user_id: 'donghyuk7', user_name: '최동혁', rent_type: '월세', period: '2025.05.01 ~ 2026.04.30', price: '₩1,200,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
-
-    { rent_ctrt_no: 'RC2025005', user_id: 'sohee99', user_name: '정소희', rent_type: '전세', period: '2024.11.10 ~ 2026.11.09', price: '₩1,450,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
-
-    { rent_ctrt_no: 'RC2025006', user_id: 'junseo21', user_name: '한준서', rent_type: '월세', period: '2025.01.20 ~ 2026.01.19', price: '₩730,000', ctrt_stts: '계약만료예정', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: true },
-
-    { rent_ctrt_no: 'RC2025007', user_id: 'yerim_k', user_name: '강예림', rent_type: '전세', period: '2025.06.01 ~ 2027.05.31', price: '₩1,120,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
-
-    { rent_ctrt_no: 'RC2025008', user_id: 'taewoo44', user_name: '임태우', rent_type: '월세', period: '2025.04.10 ~ 2026.04.09', price: '₩950,000', ctrt_stts: '계약완료', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
-
-    { rent_ctrt_no: 'RC2025009', user_id: 'eunji02', user_name: '서은지', rent_type: '전세', period: '2025.07.01 ~ 2027.06.30', price: '₩1,670,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
-
-    { rent_ctrt_no: 'RC2025010', user_id: 'hyunwoo55', user_name: '조현우', rent_type: '월세', period: '2025.08.15 ~ 2026.08.14', price: '₩670,000', ctrt_stts: '계약대기', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
-   
-    { rent_ctrt_no: 'RC2025010', user_id: 'hyunwoo55', user_name: '조현우', rent_type: '월세', period: '2025.08.15 ~ 2026.08.14', price: '₩670,000', ctrt_stts: '계약대기', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
-
-    { rent_ctrt_no: 'RC2025011', user_id: 'nari_dev', user_name: '이나리', rent_type: '전세', period: '2025.09.01 ~ 2027.08.31', price: '₩1,320,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false }
   ];
 
   return (

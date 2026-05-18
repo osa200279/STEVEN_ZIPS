@@ -1,4 +1,3 @@
-/* LexProcure 고유 디자인 테마 변수 매핑 */
 :root {
   --background: #f8f9ff;
   --on-background: #0d1c2e;
@@ -42,7 +41,6 @@
 .bg-surface-container-highest { background-color: var(--surface-container-highest); }
 .text-on-secondary-container { color: #121c2c; } /* 매핑값 고정 */
 .text-on-error-container { color: var(--on-error-container); }
-
 
 .main-content {
     background-color: var(--background);
