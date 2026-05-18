@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface IAptComplexService {
 
-   AptComplexVO selectAptComplex(String aptCmplexNo);
-
    /* public AptComplexVO selectAptDetailList(String aptCmplexNo);*/
 
 

@@ -71,17 +71,17 @@
         where apt_cmplex_no = #{aptCmplexNo}
     </select>
 
-<!--    <select id="selectAllMgmtOffice" resultType="kr.or.ddit.domain.apt.mgmtOffice.dto.MgmtOfficeVO">
-        SELECT
-            MO.MGMT_OFC_NO,
-            MO.MGMT_OFC_NM,
-            AC.APT_CMPLEX_NM
-        FROM MGMT_OFFICE MO
-                 INNER JOIN APT_COMPLEX AC
-                            ON MO.APT_CMPLEX_NO = AC.APT_CMPLEX_NO
-        WHERE MO.USE_YN = 'Y'
-        ORDER BY MO.MGMT_OFC_NM
-    </select>-->
+    <!--    <select id="selectAllMgmtOffice" resultType="kr.or.ddit.domain.apt.mgmtOffice.dto.MgmtOfficeVO">
+            SELECT
+                MO.MGMT_OFC_NO,
+                MO.MGMT_OFC_NM,
+                AC.APT_CMPLEX_NM
+            FROM MGMT_OFFICE MO
+                     INNER JOIN APT_COMPLEX AC
+                                ON MO.APT_CMPLEX_NO = AC.APT_CMPLEX_NO
+            WHERE MO.USE_YN = 'Y'
+            ORDER BY MO.MGMT_OFC_NM
+        </select>-->
 
     <!-- ADMIN 관리사무소 모달 전체 건수 조회 -->
     <select id="selectAdminMgmtOfficeCount"

@@ -39,11 +39,6 @@ public class AptComplexServiceImpl implements IAptComplexService {
     @Autowired
     private IAptAnnBoardPostMapper aptAnnBoardPostMapper;
 
-    @Override
-    public AptComplexVO selectAptComplex(String aptCmplexNo) {
-        return aptComplexMapper.selectAptComplex(aptCmplexNo);
-    }
-
    /* @Override
     public AptComplexVO selectAptDetailList(String aptCmplexNo) {
         return aptComplexMapper.selectAptDetailList(aptCmplexNo);

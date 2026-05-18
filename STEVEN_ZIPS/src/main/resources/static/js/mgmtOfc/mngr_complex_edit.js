@@ -148,21 +148,43 @@ async function saveComplex() {
     }
 }
 
+
+/*api 동기화 하는 부분 후에 추가 수정함*/
 const syncButton =
     document.getElementById("btnSyncAddress");
 
-syncButton?.addEventListener("click", function () {
+syncButton?.addEventListener(
+    "click",
+    syncAddressInfo
+);
+
+async function syncAddressInfo(){
 
     syncButton.classList.add("syncing");
 
+    try{
 
-    setTimeout(function () {
+        await new Promise(resolve => {
+            setTimeout(resolve, 700);
+        });
+
+        alert(
+            "주소 정보가 이미 최신 상태입니다."
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "주소 정보 동기화 중 오류가 발생했습니다."
+        );
+
+    }finally{
 
         syncButton.classList.remove("syncing");
-
-    }, 1500);
-});
-
+    }
+}
 
 /* =========================================================
    파일 추가 버튼

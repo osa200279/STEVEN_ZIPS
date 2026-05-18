@@ -113,33 +113,6 @@
 
                                 </div>
 
-                                <!-- 2줄 -->
-                                <div class="form-row cols-2">
-
-                                    <div class="form-field">
-                                        <label class="field-label">위도</label>
-
-                                        <input type="text"
-                                               class="form-input readonly-input"
-                                               id="latVal"
-                                               name="latVal"
-
-                                               readonly>
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label">경도</label>
-
-                                        <input type="text"
-                                               class="form-input readonly-input"
-                                               id="lonVal"
-                                               name="lonVal"
-
-                                               readonly>
-                                    </div>
-
-                                </div>
-
                                 <!-- 3줄 -->
                                 <div class="form-row cols-3 basic-info-row">
 
@@ -191,10 +164,10 @@
                                         <div class="address-inline-group">
 
                                             <input type="text"
-                                                   class="form-input readonly-input flex-1"
+                                                   class="form-input flex-1"
                                                    id="dorojuso"
                                                    name="dorojuso"
-
+                                                   placeholder="주소 검색 버튼을 눌러주세요"
                                                    readonly>
 
                                             <button type="button"

@@ -569,3 +569,16 @@
     width: 100%;
     border-radius: 8px;
 }
+
+.form-input[readonly]{
+    background: #f3f4f6;
+    color: #64748b;
+    cursor: default;
+    border-color: #d1d5db;
+}
+
+.form-input[readonly]:focus{
+    outline: none;
+    box-shadow: none;
+    border-color: #d1d5db;
+}
