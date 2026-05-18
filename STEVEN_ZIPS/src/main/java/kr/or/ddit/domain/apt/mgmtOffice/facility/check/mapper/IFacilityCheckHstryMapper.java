@@ -13,6 +13,7 @@ import java.util.List;
  * - FACILITY_CHECK_HSTRY 목록/상세/등록/수정
  * - 등록/수정 폼 선택 모달용 시설/협력업체 조회
  * - 같은 시설 기존 이력 조회
+ * - 시설 선택 모달 optgroup 렌더링용 시설유형 목록 조회
  */
 @Mapper
 public interface IFacilityCheckHstryMapper {
@@ -40,6 +41,20 @@ public interface IFacilityCheckHstryMapper {
 
     /** 공통코드 목록 조회 */
     List<FacilityCheckCodeVO> selectCommonCodeList(@Param("groupCodeNo") String groupCodeNo);
+
+    /**
+     * 일반 시설자산 유형 목록 조회
+     * - ELV/WTR/ELC/GAS/FIRE/SEC/ETC 코드 기준
+     * - 시설 선택 모달 시설유형 셀렉트 optgroup(일반시설) 렌더링용
+     */
+    List<FacilityCheckCodeVO> selectAssetFacilityTypeList();
+
+    /**
+     * 편의시설 유형 목록 조회
+     * - 일반 시설자산 코드를 제외한 나머지 FACILITY_TY 코드
+     * - 시설 선택 모달 시설유형 셀렉트 optgroup(편의시설) 렌더링용
+     */
+    List<FacilityCheckCodeVO> selectPublicFacilityTypeList();
 
     /** 시설 점검 이력 등록 */
     int insertFacilityCheckHistory(FacilityCheckHstryVO facilityCheckHstryVO);

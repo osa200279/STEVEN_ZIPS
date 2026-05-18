@@ -289,13 +289,15 @@ public class FacilityCheckController {
      * 등록/수정 폼 공통 모델 세팅
      *
      * 모델 구성
-     * - formMode              : register / update
-     * - check                 : 등록 기본값 또는 수정 대상
-     * - facilityList          : 시설 선택 모달 기본 목록
-     * - partnerList           : 협력업체 선택 모달 기본 목록
-     * - checkTypeList         : 점검유형 공통코드
-     * - checkStatusList       : 점검상태 공통코드
-     * - sameFacilityCheckList : 선택 시설의 기존 점검 이력 목록
+     * - formMode                : register / update
+     * - check                   : 등록 기본값 또는 수정 대상
+     * - facilityList            : 시설 선택 모달 기본 목록
+     * - partnerList             : 협력업체 선택 모달 기본 목록
+     * - checkTypeList           : 점검유형 공통코드
+     * - checkStatusList         : 점검상태 공통코드
+     * - assetFacilityTypeList   : 일반 시설자산 유형 목록 (모달 optgroup)
+     * - publicFacilityTypeList  : 편의시설 유형 목록 (모달 optgroup)
+     * - sameFacilityCheckList   : 선택 시설의 기존 점검 이력 목록
      */
     private void setFormModel(String mgmtOfcNo, String formMode, FacilityCheckHstryVO check, Model model) {
         /* null 방지용 기본 객체 보정 */
@@ -322,6 +324,10 @@ public class FacilityCheckController {
         /* 공통코드 목록 */
         model.addAttribute("checkTypeList", facilityCheckService.selectCheckTypeList());
         model.addAttribute("checkStatusList", facilityCheckService.selectCheckStatusList());
+
+        /* 시설유형 목록 — 모달 optgroup(일반시설 / 편의시설) 렌더링용 */
+        model.addAttribute("assetFacilityTypeList", facilityCheckService.selectAssetFacilityTypeList());
+        model.addAttribute("publicFacilityTypeList", facilityCheckService.selectPublicFacilityTypeList());
 
         /*
          * 같은 시설의 기존 점검 이력 목록

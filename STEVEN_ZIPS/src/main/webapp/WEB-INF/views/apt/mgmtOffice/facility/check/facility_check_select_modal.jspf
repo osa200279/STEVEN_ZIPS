@@ -22,11 +22,16 @@
                     <label class="field-label">시설유형</label>
                     <select class="form-select" id="facilityFilterType">
                         <option value="">전체</option>
-                        <c:forEach var="facility" items="${facilityList}">
-                            <c:if test="${not empty facility.facilityTyCd}">
-                                <option value="${fn:escapeXml(facility.facilityTyCd)}">${empty facility.facilityTyNm ? facility.facilityTyCd : facility.facilityTyNm}</option>
-                            </c:if>
-                        </c:forEach>
+                        <optgroup label="일반시설">
+                            <c:forEach var="type" items="${assetFacilityTypeList}">
+                                <option value="${fn:escapeXml(type.codeNoCd)}">${type.codeName}</option>
+                            </c:forEach>
+                        </optgroup>
+                        <optgroup label="편의시설">
+                            <c:forEach var="type" items="${publicFacilityTypeList}">
+                                <option value="${fn:escapeXml(type.codeNoCd)}">${type.codeName}</option>
+                            </c:forEach>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="form-field">

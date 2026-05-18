@@ -35,6 +35,18 @@ public interface IFacilityCheckService {
     /** 점검상태 공통코드 목록 조회 */
     List<FacilityCheckCodeVO> selectCheckStatusList();
 
+    /**
+     * 일반 시설자산 유형 목록 조회
+     * - 시설 선택 모달 optgroup(일반시설) 렌더링용
+     */
+    List<FacilityCheckCodeVO> selectAssetFacilityTypeList();
+
+    /**
+     * 편의시설 유형 목록 조회
+     * - 시설 선택 모달 optgroup(편의시설) 렌더링용
+     */
+    List<FacilityCheckCodeVO> selectPublicFacilityTypeList();
+
     /** 시설 점검 이력 등록 */
     String insertFacilityCheckHistory(FacilityCheckHstryVO facilityCheckHstryVO);
 
