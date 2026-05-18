@@ -12,6 +12,7 @@ import './styles/common.css';
 import './styles/header.css';
 import { getCookie } from './util/api/requestApi';
 import AnnRegister from './pages/AnnRegister';
+import Ann from './pages/Ann';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 function App() {
@@ -47,8 +48,10 @@ function App() {
             {/* 회원 관리 메뉴 */}
             {/* 입주민 관리 메뉴 */}
             {/* 공고 관리 */}
-            {/* 공고 등록 */}
-            <Route path="/adm/ann/register" element={<AnnRegister />} />
+            <Route path="/adm/ann" element={<Ann />} >
+              {/* 공고 등록 */}
+              <Route path="/adm/ann/register" element={<AnnRegister />} />
+            </Route>
             {/* 문의 관리 */}
             {/* 단지관리자 계정 관리 */}
             {/* 통계 */}
