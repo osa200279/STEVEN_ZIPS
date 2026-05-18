@@ -681,9 +681,10 @@
                                                 data-facility-nm="${item.facilityNm}"
                                                 data-facility-ty="${item.facilityTyCd}"
                                                 data-facility-loc="${item.locCn}">
-                                                <td>${item.facilityNm}</td>
-                                                <%-- 시설유형코드 -> 한글로 변환 --%>
+                                                    <%-- 시설유형 출력 --%>
                                                 <td>${item.facilityTyCd}</td>
+                                                    <%-- 시설명 출력 --%>
+                                                <td>${item.facilityNm}</td>
                                                 <td>
 
                                                             <c:choose>

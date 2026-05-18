@@ -13,3 +13,12 @@
 aside {
     width: 18rem !important;
 }
+
+ /* =========================
+    현재 활성화 메뉴
+    ========================= */
+ .sidebar-active {
+     background-color: #eef5f0;
+     color: #226046 !important;
+     font-weight: 700;
+ }

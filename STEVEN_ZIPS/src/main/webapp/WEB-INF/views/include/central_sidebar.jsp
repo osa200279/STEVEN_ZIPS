@@ -178,6 +178,26 @@
 <script>
   const detailsList = document.querySelectorAll('#sidebar-nav details');
 
+  /*
+   * 현재 접속한 URL과 사이드바 메뉴 href를 비교해서
+   * 같은 메뉴에 sidebar-active 클래스를 자동으로 붙인다.
+   */
+  const currentPath = window.location.pathname;
+
+  document.querySelectorAll('#sidebar-nav a').forEach(function(link) {
+    const linkPath = new URL(link.href).pathname;
+
+    if (currentPath === linkPath) {
+      link.classList.add('sidebar-active');
+
+      const parentDetails = link.closest('details');
+
+      if (parentDetails) {
+        parentDetails.open = true;
+      }
+    }
+  });
+
   // 저장된 상태 불러오기
   detailsList.forEach((d, index) => {
     const isOpen = localStorage.getItem('sidebar_' + index);
