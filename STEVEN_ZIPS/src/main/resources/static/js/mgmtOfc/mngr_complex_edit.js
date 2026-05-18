@@ -169,7 +169,7 @@ async function syncAddressInfo(){
         });
 
         alert(
-            "주소 정보가 이미 최신 상태입니다."
+            "주소 정보가 최신 기준으로 갱신되었습니다."
         );
 
     }catch(error){
