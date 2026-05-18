@@ -1,36 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import '../styles/common.css';
-import { ChartSpline, CheckCheckIcon, ContrastIcon, Download, FileChartLine, FileClock, FileXCorner, Plus, SquarePen } from 'lucide-react';
+import { ChartSpline,  ContrastIcon, Download, FileChartLine, FileClock, FileXCorner, Plus, SquarePen } from 'lucide-react';
 import requestApi from '../util/api/requestApi';
 
-const Ctrt = ({ onViewChange }) => {
+const Ctrt = () => {
   const { admInfo } = useOutletContext() || {};
   const [list, setList] = useState([]);
 
-  // useEffect(() => {
-  //   const fetchContracts = async () =>{
-  //     try{
-  //       const response = await requestApi.get(`/api/react/adm/ctrt`);
+  useEffect(() => {
+    const fetchContracts = async () =>{
+      try{
+        const response = await requestApi.get(`/api/react/adm/ctrt`);
 
-  //       if(Array.isArray(response.data)){
-  //         setList(response.data);
-  //       }else {
-  //         console.error("서버 응답이 배열 형식이 아닙니다: ", response.data);
-  //         setList([]);
-  //       }
-  //     }catch(error){
-  //       console.error("데이터 로드 실패 : ", error);
-  //       setList([]);
-  //     }
-  //   }
-  // }, []);
+        if(Array.isArray(response.data)){
+          setList(response.data);
+        }else {
+          console.error("서버 응답이 배열 형식이 아닙니다: ", response.data);
+          setList([]);
+        }
+      }catch(error){
+        console.error("데이터 로드 실패 : ", error);
+        setList([]);
+      }
+    };
+    fetchContracts();
+  }, []);
 
 
   const board = [
     { label: '이행 중인 계약', value: '1,234', change: '+12%', icon: <FileChartLine />, color: 'bg-primary-fixed', hasTrend: true },
+
     { label: '미승인 계약', value: '29', icon: <SquarePen />, color: 'bg-pending-container', pending: true },
+
     { label: '만료 임박 계약', value: '14', icon: <FileClock />, color: 'bg-error-container', urgent: true },
+    
     { label: '만료된 계약', value: '14', icon: <FileXCorner />, color: 'bg-expired-container', expired: true },
   ];
 
@@ -54,6 +58,7 @@ const Ctrt = ({ onViewChange }) => {
     { rent_ctrt_no: 'RC2025009', user_id: 'eunji02', user_name: '서은지', rent_type: '전세', period: '2025.07.01 ~ 2027.06.30', price: '₩1,670,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
 
     { rent_ctrt_no: 'RC2025010', user_id: 'hyunwoo55', user_name: '조현우', rent_type: '월세', period: '2025.08.15 ~ 2026.08.14', price: '₩670,000', ctrt_stts: '계약대기', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
+   
     { rent_ctrt_no: 'RC2025010', user_id: 'hyunwoo55', user_name: '조현우', rent_type: '월세', period: '2025.08.15 ~ 2026.08.14', price: '₩670,000', ctrt_stts: '계약대기', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false },
 
     { rent_ctrt_no: 'RC2025011', user_id: 'nari_dev', user_name: '이나리', rent_type: '전세', period: '2025.09.01 ~ 2027.08.31', price: '₩1,320,000,000', ctrt_stts: '이행중', mgr: '담당자A' ,detail: '상세보기', isExpiryUrgent: false }
