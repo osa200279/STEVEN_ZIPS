@@ -359,7 +359,6 @@ public class ManagerMainController {
 
 
     // 단지 구조 정보 수정페이지
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping({"/complex/buildingLayOut/{mgmtOfcNo}"})
     public String complexEdit(
             @PathVariable String mgmtOfcNo,
