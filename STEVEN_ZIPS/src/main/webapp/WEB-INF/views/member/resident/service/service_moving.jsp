@@ -640,23 +640,23 @@
                 <span class="cur">전입/전출신고</span>
             </div>
             <h1 class="page-title">전입/전출신고</h1>
-            <p class="page-desc">현재 메뉴 진입 경로용 화면입니다. 전입신고, 전출신고, 전출 시 관리비 정산 화면으로 나눠 이동할 수 있습니다.</p>
+            <p class="page-desc">전입신고, 전출신고, 전출 시 관리비 정산으로 이동합니다.</p>
 
             <section class="menu-grid">
                 <div class="menu-card"><h4>전입신고</h4>
-                    <p>입주신고서 작성을 위한 기본 정보를 입력합니다.</p>
+                    <p>전입신고서 작성을 위한 기본 정보를 입력합니다.</p>
                     <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/in/${aptCmplexNo}">전입신고
-                        화면</a></div>
+                        바로가기</a></div>
                 </div>
                 <div class="menu-card"><h4>전출신고</h4>
-                    <p>전출 예정일과 정산 정보를 포함한 전출신고를 작성합니다.</p>
+                    <p>전출신고서 작성을 위한 기본 정보를 입력합니다.</p>
                     <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/out/${aptCmplexNo}">전출신고
-                        화면</a></div>
+                        바로가기</a></div>
                 </div>
                 <div class="menu-card"><h4>전출 시 관리비 정산</h4>
-                    <p>공용관리비와 세대관리비 항목을 확인하고 최종 정산합니다.</p>
-                    <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/settlement/${aptCmplexNo}">정산
-                        화면</a></div>
+                    <p>공용관리비와 세대관리비 항목을 확인하고 정산합니다.</p>
+                    <div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/moving/settlement/${aptCmplexNo}">관리비 정산
+                        바로가기</a></div>
                 </div>
             </section>
 

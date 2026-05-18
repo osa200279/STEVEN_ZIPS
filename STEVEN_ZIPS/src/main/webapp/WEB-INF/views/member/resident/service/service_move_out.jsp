@@ -51,37 +51,36 @@
         <span class="cur">전출신고</span>
       </div>
       <h1 class="page-title">전출신고</h1>
-      <p class="page-desc">전출신고서 작성을 위한 정보 입력과 전출신고 버튼을 포함한 화면입니다.</p>
+      <p class="page-desc">전출신고 후 관리사무소 확인이 필요합니다.</p>
 
       <section class="panel">
-        <div class="section-hd"><h3>전출신고서 작성</h3><span>전출</span></div>
+        <div class="section-hd"><h3>전출신고서 작성</h3><span></span></div>
         <div class="form-grid">
-          <div class="th">동 / 호수</div>
+          <div class="th">동 / 호수 <span style="color: red;">*</span></div>
           <div class="td">
             <select id="hoSelect" class="fake-select">
-              <option value="">선택하세요</option>
+              <option value="">동 / 호수를 선택하세요</option>
               <c:forEach var="ho" items="${hoList}">
                 <option value="${ho.HO_NO}">${ho.DONG_NM}동 ${ho.HO}호</option>
               </c:forEach>
             </select>
           </div>
-          <div class="th">전출자 성명</div>
+          <%--<div class="th">전출자 성명</div>
           <div class="td"><input class="fake-input" value="${principal.member.userNm}" readonly/></div>
           <div class="th">연락처</div>
-          <div class="td"><input class="fake-input" value="${principal.member.userTelno}" readonly/></div>
-          <div class="th">전출 유형</div>
+          <div class="td"><input class="fake-input" value="${principal.member.userTelno}" readonly/></div>--%>
+          <div class="th">전출 유형 <span style="color: red;">*</span></div>
           <div class="td">
             <select id="inoutCd" class="fake-select">
+              <option value="">전출 유형을 선택하세요</option>
               <option value="OUT">정상 전출 (계약만료)</option>
               <option value="MID">중도 퇴거 (계약 중 해지)</option>
             </select>
           </div>
-          <div class="th">전출 예정일</div>
+          <div class="th">전출 예정일 <span style="color: red;">*</span></div>
           <div class="td"><input class="fake-input" type="date" id="mvoutPrdDt"/></div>
-          <div class="th">전출 사유</div>
+          <div class="th">전출 사유(선택)</div>
           <div class="td"><input class="fake-input" id="mvoutRsnCn" placeholder="전출 사유를 입력해주세요."/></div>
-          <div class="th">비고</div>
-          <div class="td"><textarea class="fake-textarea" id="spclCn" placeholder="특이사항을 입력해주세요."></textarea></div>
         </div>
         <div class="btn-row">
           <button class="btn-main" onclick="submitMoveOut()">전출신고</button>
