@@ -4,59 +4,63 @@
 
     <!-- 계약 시퀀스 키 생성 -->
     <select id="getNextRentCtrtSeq" resultType="java.lang.String">
-        select SEQ_RENT_CTRT.nextval from DUAL
+        select SEQ_RENT_CTRT.nextval
+        from DUAL
     </select>
 
     <!-- 가계약 인서트 -->
     <insert id="insertRentCtrt" parameterType="java.util.List">
         insert into RENT_CTRT ( /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.insertRentCtrt */
-                                RENT_CTRT_NO
-                                , USER_NO
-                                , REG_DT
-                                , CTRT_STTS_CD
-                                , RENT_LSTG_NO
-                                , DPST_AMT
-                                , MTHLY_RENT_AMT
-                                , SBMSN_DOC_NO
-                                , MVIN_DT
-                              )
+        RENT_CTRT_NO
+        , USER_NO
+        , REG_DT
+        , CTRT_STTS_CD
+        , RENT_LSTG_NO
+        , DPST_AMT
+        , MTHLY_RENT_AMT
+        , SBMSN_DOC_NO
+        , MVIN_DT
+        )
         <foreach collection="param" item="map" separator="UNION ALL">
             select
-                     #{map.rentCtrtNo}
-                    , A.USER_NO
-                    , sysdate
-                    , 'PENDING'
-                    , R.RENT_LSTG_NO
-                    , R.DPST_AMT
-                    , R.MTHLY_RENT_AMT
-                    , DOC.SBMSN_DOC_NO
-                    , ANN.MVIN_PRD_DT
-              from APLCT A
-        inner join APT_HO_TY HT on(A.HO_TY_NO = HT.HO_TY_NO)
-        inner join APT_DETAIL H on(HT.HO_TY_NO = H.HO_TY_NO)
-        inner join RENT_LISTING R on(H.HO_NO = R.HO_NO)
-        inner join SBMSN_DOC DOC on(DOC.APLCT_NO = A.APLCT_NO)
-        inner join CENTER_ANN_BOARD_POST ANN on(A.ANN_NO = ANN.ANN_NO)
-             where A.APLCT_NO = #{map.aplctNo}
-               and ROWNUM = 1
+            #{map.rentCtrtNo}
+            , A.USER_NO
+            , sysdate
+            , 'PENDING'
+            , R.RENT_LSTG_NO
+            , R.DPST_AMT
+            , R.MTHLY_RENT_AMT
+            , DOC.SBMSN_DOC_NO
+            , ANN.MVIN_PRD_DT
+            from APLCT A
+            inner join APT_HO_TY HT on(A.HO_TY_NO = HT.HO_TY_NO)
+            inner join APT_DETAIL H on(HT.HO_TY_NO = H.HO_TY_NO)
+            inner join RENT_LISTING R on(H.HO_NO = R.HO_NO)
+            inner join SBMSN_DOC DOC on(DOC.APLCT_NO = A.APLCT_NO)
+            inner join CENTER_ANN_BOARD_POST ANN on(A.ANN_NO = ANN.ANN_NO)
+            where A.APLCT_NO = #{map.aplctNo}
+            and ROWNUM = 1
         </foreach>
     </insert>
 
     <insert id="insertCtrtMgr">
-        insert into CTRT_MGR (
-                              CTRT_MGR_NO
-                              , USER_NO
-                              , MGR_ASGN_DT
-                              , CHG_YN
-                              , RENT_CTRT_NO
-                              )
+        INSERT INTO CTRT_MGR (
+                               CTRT_MGR_NO
+                               , USER_NO
+                               , MGR_ASGN_DT
+                               , CHG_YN
+                               , RENT_CTRT_NO
+                               )
+        SELECT SEQ_CTRT_MGR.nextval, T.* FROM (
         <foreach collection="param" item="map" separator="UNION ALL">
-            select SEQ_CTRT_MGR.nextval
-                    , #{manager}
-                    , sysdate
-                    , 'N'
-                    , #{map.rentCtrtNo} from DUAL
+            SELECT
+                  #{manager} AS USER_NO
+                  , sysdate AS MGR_ASGN_DT
+                  , 'N' AS CHG_YN
+                  , #{map.rentCtrtNo} AS RENT_CTRT_NO
+              FROM DUAL
         </foreach>
+        ) T
     </insert>
 
 </mapper>

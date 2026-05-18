@@ -76,6 +76,7 @@ public class AdmDashBoardRestController {
             return ResponseEntity.badRequest().body(0);
         }
 
+        // 최종 승인시 가계약 인서트 및 담당자 인서트
         int cnt = aplctService.approveAplct(updateList, adm.getUserNo());
 
         // 서비스에 트랜잭셔널 어노테이션을 써서 어떠한 값이 오더라도 성공으로 간주
@@ -91,13 +92,15 @@ public class AdmDashBoardRestController {
     public ResponseEntity<?> makeCtrt(
             @AuthenticationPrincipal CustomUser customUser
             , String aplctNo) {
-        log.info("makeCtrt() 실행");
-        AdmVO adm = (AdmVO) customUser.getMember();
-        String manager = adm.getUserNo();
-
-        // 임대계약 생성 및 담당자 배정은 한 서비스에서 한번에 실행되어야함(트랜잭션)
-        int result = rentCtrtService.makeCtrt(aplctNo, manager);
 
         return null;
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/ctrt")
+    public ResponseEntity<?> getCtrtList() {
+
+        return null;
+    }
+
 }

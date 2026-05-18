@@ -9,11 +9,10 @@ import java.util.Map;
 
 @Mapper
 public interface IRentCtrtMapper {
-    int insertRentCtrt(Map<String, Object> param);
 
     int insertRentCtrt(@Param("param") List<Map<String, Object>> param);
 
-    int insertCtrtMgr(@Param("param") List<Map<String, Object>> qualifiedList,@Param("manager") String manager);
+    int insertCtrtMgr(@Param("param") List<Map<String, Object>> qualifiedList, @Param("manager") String manager);
 
     String getNextRentCtrtSeq();
 }
