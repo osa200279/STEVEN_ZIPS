@@ -9,6 +9,6 @@ public interface IAplctService {
 
     List<AplctDTO> selectAplctList();
 
-    int approveAplct(List<Map<String, Object>> updateList);
+    int approveAplct(List<Map<String, Object>> updateList, String manager);
 
 }

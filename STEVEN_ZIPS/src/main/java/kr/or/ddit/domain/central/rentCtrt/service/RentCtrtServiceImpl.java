@@ -27,9 +27,9 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
         if (res1 <= 0) throw new RuntimeException("임대계약 생성 실패");
 
         // 2. 청약 승인한 담당자로 배정
-        //int res2 = rentCtrtMapper.insertCtrtMgr(manager);
+//        int res2 = rentCtrtMapper.insertCtrtMgr(manager);
 
-        //if(res2 <= 0) throw new RuntimeException("담당자 배정 실패");
+//        if(res2 <= 0) throw new RuntimeException("담당자 배정 실패");
 
         return res1;
     }

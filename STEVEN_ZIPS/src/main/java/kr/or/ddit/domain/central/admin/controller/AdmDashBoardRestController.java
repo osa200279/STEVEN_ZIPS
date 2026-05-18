@@ -5,6 +5,7 @@ import kr.or.ddit.domain.central.admin.service.IAplctService;
 import kr.or.ddit.domain.central.rentCtrt.service.IRentCtrtService;
 import kr.or.ddit.domain.member.admin.vo.AdmVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
+import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @CrossOrigin(origins = "http://localhost:7777")
@@ -62,24 +64,26 @@ public class AdmDashBoardRestController {
     // 청약 신청 처리(업데이트)
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/aplct/upd")
-    public ResponseEntity<Integer> updAplct(@RequestBody Map<String, Object> params) {
-        // log.info("#### 상태 변경 진입 :" + params);
+    public ResponseEntity<Integer> updAplct(@RequestBody Map<String, Object> params,
+                                            @AuthenticationPrincipal CustomUser customUser) {
+        log.info("#### 상태 변경 진입 :" + params);
+        MemberVO member = (MemberVO) customUser.getMember();
+        AdmVO adm = (AdmVO) member;
 
         List<Map<String, Object>> updateList = (List<Map<String, Object>>) params.get("aplctMapList");
 
         if (updateList == null || updateList.isEmpty()) {
-            log.warn("#### 업데이트할 데이터가 전달되지 않았습니다.");
             return ResponseEntity.badRequest().body(0);
         }
 
-        int cnt = aplctService.approveAplct(updateList);
+        int cnt = aplctService.approveAplct(updateList, adm.getUserNo());
 
-        // log.info("#### 상태변경 쿼리 끝 {}", cnt);
         // 서비스에 트랜잭셔널 어노테이션을 써서 어떠한 값이 오더라도 성공으로 간주
         // (쿼리에 익명블록 사용으로 성공해도 -1의 값이 올 수 있음)
         return cnt != 0 ? ResponseEntity.ok(cnt)
                 : ResponseEntity.badRequest().body(0);
     }
+
 
     // 임대 계약 생성 및 담당자 배정
     @PreAuthorize("hasRole('ADMIN')")
