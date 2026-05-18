@@ -46,6 +46,8 @@ function App() {
             {/* 회원 관리 메뉴 */}
             {/* 입주민 관리 메뉴 */}
             {/* 공고 관리 */}
+            {/* 공고 등록 */}
+            <Route path="/adm/ann/register" element={<AnnRegister />}
             {/* 문의 관리 */}
             {/* 단지관리자 계정 관리 */}
             {/* 통계 */}

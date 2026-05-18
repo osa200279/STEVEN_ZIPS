@@ -9,7 +9,7 @@ import axios from 'axios';
 import '../styles/ag-grid.css'
 
 const Applicant = () => {
-    const { admInfo } = useOutletContext() || {};
+    const { admInfo } = useOutletContext();
     const [rowData, setRowData] = useState([]);
 
     useEffect(() => {
@@ -175,7 +175,7 @@ const Applicant = () => {
 
             aplctMapList = validNodes.map(node => {
                 const currentStts = node.data.aplctSttsCd;
-                let nextStts = "";
+                let nextStts;
                 if (currentStts === 'SUBMIT') {
                     nextStts = isApproval ? 'WINNER' : 'LOSER';
                 } else if (currentStts === 'WINNER' && !isApproval) {
@@ -202,8 +202,8 @@ const Applicant = () => {
         } else {
             // 선택된 행이 없거나 1개만 선택된 경우 (단일 처리)
             const currentStts = p.data.aplctSttsCd;
-            let nextStts = "";
             if (['SUBMIT', 'WINNER', 'SUPPLEMENT', 'INSPECTION'].includes(currentStts)) {
+                let nextStts;
                 if (currentStts === 'SUBMIT') {
                     nextStts = isApproval ? 'WINNER' : 'LOSER';
                 } else if (currentStts === 'WINNER' && !isApproval) {
@@ -227,6 +227,7 @@ const Applicant = () => {
         }
 
         if (!window.confirm(confirmMsg)) return;
+
         updSttsRequest(aplctMapList, ag);
     };
 
@@ -298,7 +299,7 @@ const Applicant = () => {
         updSttsRequest(finalMapList, ag);
     }
 
-    // 백엔드 업데이트 요청  
+    // 백엔드 업데이트 요청
     const updSttsRequest = async (aplctMapList, agApi) => {
         if (!aplctMapList || aplctMapList.length === 0) return;
 

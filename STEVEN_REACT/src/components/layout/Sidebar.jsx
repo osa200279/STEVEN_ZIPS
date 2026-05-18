@@ -1,4 +1,4 @@
-import { Blocks, Book, Building2, ChartSpline, ChevronDown, ChevronRight, FileOutput, Files, FileSearchCorner, IdCardLanyard, MapPinHouse, Megaphone, MessageCircleQuestionMark, NotebookPen, ScrollText, SquareUserRound, UserRoundPlus, Users } from 'lucide-react';
+import { Blocks, Book, Building2, ChartSpline, ChevronDown, ChevronRight, FileOutput, Files, FileSearchCorner, IdCardLanyard, MapPinHouse, Megaphone, MessageCircleQuestionMark, NotebookPen, PenBox, PenIcon, ScrollText, SquareUserRound, UserRoundPlus, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -35,6 +35,7 @@ const MENU_DATA = [
     label: '커뮤니티',
     items: [
       { to: '/adm/ann', label: '공고 관리', icon: <Megaphone className='luci-icon' /> },
+      { to: '/adm/ann/register', label: '공고 등록', icon: <PenIcon className='luci-icon' /> },
       { to: '/adm/inqry', label: '문의 관리', icon: <MessageCircleQuestionMark className='luci-icon' /> },
     ]
   },
