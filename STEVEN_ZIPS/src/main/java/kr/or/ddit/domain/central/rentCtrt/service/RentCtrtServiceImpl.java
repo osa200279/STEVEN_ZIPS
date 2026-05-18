@@ -6,10 +6,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Transactional(rollbackFor = Exception.class)
 @Service
 public class RentCtrtServiceImpl implements IRentCtrtService {
 
+    @Autowired
+    private IRentCtrtMapper rentCtrtMapper;
+
+    @Override
+    public List<Map<String, Object>> selectCtrt(String userNo, int startRow, int endRow) {
+        return rentCtrtMapper.selectCtrt(userNo);
+    }
+
+    @Override
+    public int selectCtrtCount(String userNo) {
+        return 0;
+    }
 }

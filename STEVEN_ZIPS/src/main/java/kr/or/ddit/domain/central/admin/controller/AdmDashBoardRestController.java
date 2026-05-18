@@ -14,9 +14,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @CrossOrigin(origins = "http://localhost:7777")
@@ -85,22 +85,33 @@ public class AdmDashBoardRestController {
                 : ResponseEntity.badRequest().body(0);
     }
 
-
-    // 임대 계약 생성 및 담당자 배정
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/ctrt/make")
-    public ResponseEntity<?> makeCtrt(
-            @AuthenticationPrincipal CustomUser customUser
-            , String aplctNo) {
-
-        return null;
-    }
-
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/ctrt")
-    public ResponseEntity<?> getCtrtList() {
+    public ResponseEntity<Map<String, Object>> getCtrtList(
+            @AuthenticationPrincipal CustomUser customUser,
+            @RequestParam(value="page", required = false, defaultValue = "1") int curPage
+            ) {
+        log.info("getCtrtList() 실행");
+        String userNo = customUser.getMember().getUserNo();
 
-        return null;
+        // 리액트용 페이징
+        int screenSize = 12;
+        int startRow = (curPage - 1 ) * screenSize + 1;
+        int endRow = curPage * screenSize;
+
+        // 서비스에 startRow, endRow를 넘겨서 한페이지만큼만 리스트 가져오기
+        List<Map<String, Object>> ctrtList = rentCtrtService.selectCtrt(userNo, startRow, endRow);
+
+        int totalRecord = rentCtrtService.selectCtrtCount(userNo);
+        int totalPage = (int)Math.ceil((double)totalRecord / (double)screenSize);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("dataList", ctrtList);
+        response.put("curPage", curPage);
+        response.put("totalPage", totalPage);
+        response.put("totalRecord", totalRecord);
+
+        return ResponseEntity.ok(response);
     }
 
 }

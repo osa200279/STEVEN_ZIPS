@@ -15,4 +15,6 @@ public interface IRentCtrtMapper {
     int insertCtrtMgr(@Param("param") List<Map<String, Object>> qualifiedList, @Param("manager") String manager);
 
     String getNextRentCtrtSeq();
+
+    List<Map<String, Object>> selectCtrt(String userNo);
 }

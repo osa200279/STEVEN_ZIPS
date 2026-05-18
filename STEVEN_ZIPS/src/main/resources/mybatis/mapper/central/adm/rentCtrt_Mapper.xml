@@ -63,4 +63,7 @@
         ) T
     </insert>
 
+    <select id="selectCtrt" resultType="java.util.Map">
+
+    </select>
 </mapper>
