@@ -1,0 +1,373 @@
+<%@ page pageEncoding="UTF-8" %>
+<%--
+    시설 점검 이력 등록 모달
+    - 목록 JSP 하단에 include 해서 사용하는 등록 전용 모달
+    - 중첩 모달을 피하기 위해 시설/업체 선택 목록을 등록 모달 내부에 함께 배치
+    - 필요 model:
+      facilityList, partnerList, checkTypeList, checkStatusList, mgmtOfcNo
+--%>
+
+<div class="check-register-modal-overlay" id="checkRegisterModal">
+    <div class="check-register-modal">
+        <div class="check-register-modal-header">
+            <h3 class="check-register-modal-title">시설 점검 이력 등록</h3>
+            <button type="button" class="check-register-modal-close" id="checkRegisterModalCloseBtn" title="닫기">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+
+        <form id="checkRegisterModalForm" method="post" action="${ctx}/manager/checkHistory/register/${mgmtOfcNo}">
+            <sec:csrfInput/>
+
+            <input type="hidden" name="facilityNo" id="modalFacilityNo">
+            <input type="hidden" name="partnerNo" id="modalPartnerNo">
+
+            <div class="check-register-modal-body">
+                <%-- 왼쪽: 대상 선택 --%>
+                <section class="check-register-target-panel">
+                    <div class="modal-section-title">
+                        <span class="material-symbols-rounded">apartment</span>
+                        대상 선택
+                    </div>
+
+                    <%-- 시설 선택 --%>
+                    <div class="modal-target-card">
+                        <div class="modal-target-head">
+                            <strong>시설 정보 <span class="required">*</span></strong>
+                            <span class="target-selected-no" id="modalFacilityNoText">미선택</span>
+                        </div>
+
+                        <div class="modal-search-row">
+                            <input type="text" class="modal-form-input" id="modalFacilitySearch" placeholder="시설번호, 시설명, 시설유형, 위치 검색">
+                        </div>
+
+                        <div class="modal-mini-list" id="modalFacilityList">
+                            <c:forEach var="facility" items="${facilityList}">
+                                <button type="button"
+                                        class="modal-select-row modal-facility-row"
+                                        data-key="${facility.facilityNo} ${facility.facilityNm} ${facility.facilityTyNm} ${facility.locCn}"
+                                        data-facility-no="${facility.facilityNo}"
+                                        data-facility-nm="${facility.facilityNm}"
+                                        data-facility-ty="${facility.facilityTyNm}"
+                                        data-loc-cn="${facility.locCn}"
+                                        data-use-yn="${facility.useYn}"
+                                        data-instl-dt="${facility.instlDt}">
+                                    <span class="modal-row-main">${facility.facilityNm}</span>
+                                    <span class="modal-row-sub">${facility.facilityNo} · ${empty facility.facilityTyNm ? '-' : facility.facilityTyNm} · ${empty facility.locCn ? '-' : facility.locCn}</span>
+                                </button>
+                            </c:forEach>
+                        </div>
+
+                        <table class="modal-info-table">
+                            <tr>
+                                <th>시설명</th>
+                                <td id="modalFacilityNmText">시설을 선택해 주세요.</td>
+                                <th>시설유형</th>
+                                <td id="modalFacilityTyText">-</td>
+                            </tr>
+                            <tr>
+                                <th>위치</th>
+                                <td id="modalFacilityLocText">-</td>
+                                <th>사용여부</th>
+                                <td id="modalFacilityUseYnText">-</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <%-- 협력업체 선택 --%>
+                    <div class="modal-target-card">
+                        <div class="modal-target-head">
+                            <strong>협력업체 정보 <span class="required">*</span></strong>
+                            <span class="target-selected-no" id="modalPartnerNoText">미선택</span>
+                        </div>
+
+                        <div class="modal-search-row">
+                            <input type="text" class="modal-form-input" id="modalPartnerSearch" placeholder="업체번호, 업체명, 업종, 담당자 검색">
+                        </div>
+
+                        <div class="modal-mini-list" id="modalPartnerList">
+                            <c:forEach var="partner" items="${partnerList}">
+                                <button type="button"
+                                        class="modal-select-row modal-partner-row"
+                                        data-key="${partner.partnerNo} ${partner.partnerNm} ${partner.bizTyNm} ${partner.picNm} ${partner.picTelno}"
+                                        data-partner-no="${partner.partnerNo}"
+                                        data-partner-nm="${partner.partnerNm}"
+                                        data-biz-ty="${partner.bizTyNm}"
+                                        data-pic-nm="${partner.picNm}"
+                                        data-pic-telno="${partner.picTelno}"
+                                        data-pic-email="${partner.picEmail}">
+                                    <span class="modal-row-main">${partner.partnerNm}</span>
+                                    <span class="modal-row-sub">${partner.partnerNo} · ${empty partner.bizTyNm ? '-' : partner.bizTyNm} · ${empty partner.picNm ? '-' : partner.picNm}</span>
+                                </button>
+                            </c:forEach>
+                        </div>
+
+                        <table class="modal-info-table">
+                            <tr>
+                                <th>업체명</th>
+                                <td id="modalPartnerNmText">협력업체를 선택해 주세요.</td>
+                                <th>업종</th>
+                                <td id="modalBizTyText">-</td>
+                            </tr>
+                            <tr>
+                                <th>담당자</th>
+                                <td id="modalPartnerPicNmText">-</td>
+                                <th>연락처</th>
+                                <td id="modalPartnerPicTelText">-</td>
+                            </tr>
+                        </table>
+                    </div>
+                </section>
+
+                <%-- 오른쪽: 점검 정보 입력 --%>
+                <section class="check-register-input-panel">
+                    <div class="modal-section-title">
+                        <span class="material-symbols-rounded">edit_note</span>
+                        점검 정보
+                    </div>
+
+                    <div class="modal-form-grid">
+                        <div class="modal-form-field">
+                            <label class="modal-field-label">점검유형 <span class="required">*</span></label>
+                            <select class="modal-form-select" name="chkTyCd" id="modalChkTyCd" required>
+                                <option value="">선택</option>
+                                <c:forEach var="code" items="${checkTypeList}">
+                                    <option value="${code.codeNoCd}">${code.codeName}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+
+                        <div class="modal-form-field">
+                            <label class="modal-field-label">점검상태 <span class="required">*</span></label>
+                            <select class="modal-form-select" name="chkSttsCd" id="modalChkSttsCd" required>
+                                <option value="">선택</option>
+                                <c:forEach var="code" items="${checkStatusList}">
+                                    <option value="${code.codeNoCd}">${code.codeName}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+
+                        <div class="modal-form-field">
+                            <label class="modal-field-label">점검일자 <span class="required">*</span></label>
+                            <input type="date" class="modal-form-input" name="chkDt" id="modalChkDt" required>
+                        </div>
+
+                        <div class="modal-form-field full">
+                            <label class="modal-field-label">점검내용 <span class="required">*</span></label>
+                            <textarea class="modal-form-textarea" name="chkCn" id="modalChkCn" required></textarea>
+                        </div>
+
+                        <div class="modal-form-field full">
+                            <label class="modal-field-label">비고</label>
+                            <textarea class="modal-form-textarea note" name="rmk" id="modalRmk"></textarea>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="check-register-modal-footer">
+                <button type="button" class="btn" id="checkRegisterCancelBtn">취소</button>
+                <button type="submit" class="btn btn-primary">등록</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* 등록 모달: 목록 JSP 내부 전용 */
+    .check-register-modal-overlay { display:none; position:fixed; inset:0; z-index:1200; align-items:center; justify-content:center; padding:24px; background:rgba(15,23,42,.38); box-sizing:border-box; }
+    .check-register-modal-overlay.is-open { display:flex; }
+    .check-register-modal { width:min(1080px, 96vw); max-height:88vh; display:flex; flex-direction:column; background:#fff; border:1px solid #d7dce2; border-radius:8px; box-shadow:0 20px 50px rgba(15,23,42,.28); overflow:hidden; }
+    .check-register-modal-header { display:flex; align-items:center; justify-content:space-between; min-height:52px; padding:0 18px; border-bottom:1px solid #d7dce2; background:#fff; }
+    .check-register-modal-title { margin:0; color:#1a2e1e; font-size:15px; font-weight:900; letter-spacing:-.3px; }
+    .check-register-modal-close { border:0; background:transparent; color:#66736a; cursor:pointer; }
+    .check-register-modal-close .material-symbols-rounded { font-size:22px; }
+    .check-register-modal-body { display:grid; grid-template-columns:46% minmax(0, 1fr); gap:14px; padding:16px 18px; overflow-y:auto; background:#fff; }
+    .check-register-modal-footer { display:flex; justify-content:flex-end; gap:8px; padding:12px 18px; border-top:1px solid #d7dce2; background:#f8faf8; }
+    .check-register-target-panel, .check-register-input-panel { min-width:0; }
+    .modal-section-title { display:flex; align-items:center; gap:6px; margin-bottom:10px; padding-bottom:9px; border-bottom:1px solid #d7dce2; color:#1a2e1e; font-size:13px; font-weight:900; }
+    .modal-section-title .material-symbols-rounded { color:#2e5c38; font-size:17px; }
+    .modal-target-card { border:1px solid #d7dce2; border-radius:6px; background:#fff; overflow:hidden; }
+    .modal-target-card + .modal-target-card { margin-top:12px; }
+    .modal-target-head { display:flex; align-items:center; justify-content:space-between; min-height:36px; padding:0 11px; border-bottom:1px solid #d7dce2; background:#f8faf8; color:#1a2e1e; font-size:12px; }
+    .target-selected-no { font-family:'Consolas','SF Mono',monospace; color:#6b7280; font-size:11px; font-weight:700; }
+    .modal-search-row { padding:10px 11px; border-bottom:1px solid #eef1f3; }
+    .modal-mini-list { max-height:126px; overflow-y:auto; border-bottom:1px solid #d7dce2; background:#fff; }
+    .modal-select-row { display:block; width:100%; padding:8px 11px; border:0; border-bottom:1px solid #eef1f3; background:#fff; text-align:left; cursor:pointer; }
+    .modal-select-row:last-child { border-bottom:none; }
+    .modal-select-row:hover, .modal-select-row.is-selected { background:#f4fbf5; }
+    .modal-row-main { display:block; color:#111827; font-size:12px; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .modal-row-sub { display:block; margin-top:3px; color:#6b7280; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .modal-info-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+    .modal-info-table th { width:72px; height:34px; padding:0 9px; border-right:1px solid #d7dce2; border-bottom:1px solid #d7dce2; background:#f4f6f4; color:#27382b; font-size:11px; font-weight:800; text-align:left; white-space:nowrap; }
+    .modal-info-table td { height:34px; padding:0 10px; border-right:1px solid #d7dce2; border-bottom:1px solid #d7dce2; color:#111827; font-size:12px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .modal-info-table th:nth-child(3) { border-left:1px solid #d7dce2; }
+    .modal-info-table td:last-child { border-right:none; }
+    .modal-info-table tr:last-child th, .modal-info-table tr:last-child td { border-bottom:none; }
+    .modal-form-grid { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px 14px; }
+    .modal-form-field.full { grid-column:1 / -1; }
+    .modal-field-label { display:block; margin-bottom:5px; color:#4a5c4e; font-size:11px; font-weight:800; }
+    .modal-form-input, .modal-form-select, .modal-form-textarea { width:100%; border:1px solid #d7dce2; border-radius:4px; background:#fff; color:#1f2d23; font-size:12px; box-sizing:border-box; }
+    .modal-form-input, .modal-form-select { height:34px; padding:0 9px; }
+    .modal-form-textarea { min-height:178px; padding:10px; line-height:1.55; resize:vertical; }
+    .modal-form-textarea.note { min-height:88px; }
+    .modal-form-input:focus, .modal-form-select:focus, .modal-form-textarea:focus { border-color:#2e5c38; box-shadow:0 0 0 2px rgba(46,92,56,.08); outline:none; }
+    .required { color:#b91c1c; font-weight:900; }
+
+    @media (max-width:980px) {
+        .check-register-modal-body { grid-template-columns:1fr; }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var modal = document.getElementById("checkRegisterModal");
+        var form = document.getElementById("checkRegisterModalForm");
+        var openBtn = document.getElementById("registerBtn") || document.getElementById("checkRegisterOpenBtn");
+        var closeBtn = document.getElementById("checkRegisterModalCloseBtn");
+        var cancelBtn = document.getElementById("checkRegisterCancelBtn");
+
+        /* 등록 모달 열기 */
+        function openRegisterModal() {
+            if (!modal) return;
+            resetRegisterModal();
+            modal.classList.add("is-open");
+        }
+
+        /* 등록 모달 닫기 */
+        function closeRegisterModal() {
+            if (!modal) return;
+            modal.classList.remove("is-open");
+        }
+
+        /* 텍스트 기본값 */
+        function safeText(value, fallback) {
+            return value && value.trim() ? value : (fallback || "-");
+        }
+
+        /* 등록 모달 초기화 */
+        function resetRegisterModal() {
+            form.reset();
+
+            document.getElementById("modalFacilityNo").value = "";
+            document.getElementById("modalPartnerNo").value = "";
+
+            document.getElementById("modalFacilityNoText").textContent = "미선택";
+            document.getElementById("modalFacilityNmText").textContent = "시설을 선택해 주세요.";
+            document.getElementById("modalFacilityTyText").textContent = "-";
+            document.getElementById("modalFacilityLocText").textContent = "-";
+            document.getElementById("modalFacilityUseYnText").textContent = "-";
+
+            document.getElementById("modalPartnerNoText").textContent = "미선택";
+            document.getElementById("modalPartnerNmText").textContent = "협력업체를 선택해 주세요.";
+            document.getElementById("modalBizTyText").textContent = "-";
+            document.getElementById("modalPartnerPicNmText").textContent = "-";
+            document.getElementById("modalPartnerPicTelText").textContent = "-";
+
+            document.getElementById("modalFacilitySearch").value = "";
+            document.getElementById("modalPartnerSearch").value = "";
+
+            document.querySelectorAll(".modal-select-row").forEach(function (row) {
+                row.classList.remove("is-selected");
+                row.style.display = "";
+            });
+        }
+
+        /* 행 검색 필터 */
+        function filterRows(inputId, selector) {
+            var keyword = (document.getElementById(inputId).value || "").toLowerCase().trim();
+
+            document.querySelectorAll(selector).forEach(function (row) {
+                var key = (row.getAttribute("data-key") || "").toLowerCase();
+                row.style.display = !keyword || key.indexOf(keyword) > -1 ? "" : "none";
+            });
+        }
+
+        /* 시설 선택 */
+        document.querySelectorAll(".modal-facility-row").forEach(function (row) {
+            row.addEventListener("click", function () {
+                var facilityNo = row.getAttribute("data-facility-no") || "";
+                var facilityNm = row.getAttribute("data-facility-nm") || "";
+                var facilityTy = row.getAttribute("data-facility-ty") || "";
+                var locCn = row.getAttribute("data-loc-cn") || "";
+                var useYn = row.getAttribute("data-use-yn") || "";
+
+                document.querySelectorAll(".modal-facility-row").forEach(function (item) {
+                    item.classList.remove("is-selected");
+                });
+                row.classList.add("is-selected");
+
+                document.getElementById("modalFacilityNo").value = facilityNo;
+                document.getElementById("modalFacilityNoText").textContent = safeText(facilityNo, "미선택");
+                document.getElementById("modalFacilityNmText").textContent = safeText(facilityNm, "시설을 선택해 주세요.");
+                document.getElementById("modalFacilityTyText").textContent = safeText(facilityTy);
+                document.getElementById("modalFacilityLocText").textContent = safeText(locCn);
+                document.getElementById("modalFacilityUseYnText").textContent = useYn === "Y" ? "사용" : (useYn === "N" ? "미사용" : "-");
+            });
+        });
+
+        /* 업체 선택 */
+        document.querySelectorAll(".modal-partner-row").forEach(function (row) {
+            row.addEventListener("click", function () {
+                var partnerNo = row.getAttribute("data-partner-no") || "";
+                var partnerNm = row.getAttribute("data-partner-nm") || "";
+                var bizTy = row.getAttribute("data-biz-ty") || "";
+                var picNm = row.getAttribute("data-pic-nm") || "";
+                var picTelno = row.getAttribute("data-pic-telno") || "";
+
+                document.querySelectorAll(".modal-partner-row").forEach(function (item) {
+                    item.classList.remove("is-selected");
+                });
+                row.classList.add("is-selected");
+
+                document.getElementById("modalPartnerNo").value = partnerNo;
+                document.getElementById("modalPartnerNoText").textContent = safeText(partnerNo, "미선택");
+                document.getElementById("modalPartnerNmText").textContent = safeText(partnerNm, "협력업체를 선택해 주세요.");
+                document.getElementById("modalBizTyText").textContent = safeText(bizTy);
+                document.getElementById("modalPartnerPicNmText").textContent = safeText(picNm);
+                document.getElementById("modalPartnerPicTelText").textContent = safeText(picTelno);
+            });
+        });
+
+        /* 시설 목록 검색 */
+        document.getElementById("modalFacilitySearch").addEventListener("input", function () {
+            filterRows("modalFacilitySearch", ".modal-facility-row");
+        });
+
+        /* 업체 목록 검색 */
+        document.getElementById("modalPartnerSearch").addEventListener("input", function () {
+            filterRows("modalPartnerSearch", ".modal-partner-row");
+        });
+
+        /* 등록 버튼 연결 */
+        if (openBtn) {
+            openBtn.addEventListener("click", function (event) {
+                event.preventDefault();
+                openRegisterModal();
+            });
+        }
+
+        /* 닫기 버튼 연결 */
+        if (closeBtn) closeBtn.addEventListener("click", closeRegisterModal);
+        if (cancelBtn) cancelBtn.addEventListener("click", closeRegisterModal);
+
+        /* 배경 클릭 닫기 */
+        modal.addEventListener("click", function (event) {
+            if (event.target === modal) closeRegisterModal();
+        });
+
+        /* 저장 전 필수 검증 */
+        form.addEventListener("submit", function (event) {
+            if (!document.getElementById("modalFacilityNo").value) {
+                alert("점검 대상 시설을 선택해 주세요.");
+                event.preventDefault();
+                return;
+            }
+
+            if (!document.getElementById("modalPartnerNo").value) {
+                alert("협력업체를 선택해 주세요.");
+                event.preventDefault();
+            }
+        });
+    });
+</script>

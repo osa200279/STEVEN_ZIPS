@@ -1,0 +1,43 @@
+package kr.or.ddit.domain.apt.mgmtOffice.facility.check.service;
+
+import kr.or.ddit.common.model.PaginationInfoVO;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckCodeVO;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO;
+
+import java.util.List;
+
+/**
+ * 시설 점검 이력 Service 인터페이스
+ */
+public interface IMngrFacilityCheckService {
+
+    /** 시설 점검 이력 목록 건수 조회 */
+    int selectFacilityCheckCount(PaginationInfoVO<FacilityCheckHstryVO> pagingVO);
+
+    /** 시설 점검 이력 목록 조회 */
+    List<FacilityCheckHstryVO> selectFacilityCheckList(PaginationInfoVO<FacilityCheckHstryVO> pagingVO);
+
+    /** 시설 점검 이력 현황 카드 건수 조회 */
+    FacilityCheckHstryVO selectFacilityCheckSummary(String mgmtOfcNo);
+
+    /** 시설 점검 이력 상세 조회 */
+    FacilityCheckHstryVO selectFacilityCheckDetail(String mgmtOfcNo, String facChkHstryNo);
+
+    /** 시설 선택 모달 목록 조회 */
+    List<FacilityCheckHstryVO> selectFacilitySelectList(String mgmtOfcNo);
+
+    /** 협력업체 선택 모달 목록 조회 */
+    List<FacilityCheckHstryVO> selectPartnerSelectList(String mgmtOfcNo);
+
+    /** 점검유형 공통코드 목록 조회 */
+    List<FacilityCheckCodeVO> selectCheckTypeList();
+
+    /** 점검상태 공통코드 목록 조회 */
+    List<FacilityCheckCodeVO> selectCheckStatusList();
+
+    /** 시설 점검 이력 등록 */
+    String insertFacilityCheckHistory(FacilityCheckHstryVO facilityCheckHstryVO);
+
+    /** 시설 점검 이력 수정 */
+    boolean updateFacilityCheckHistory(FacilityCheckHstryVO facilityCheckHstryVO);
+}

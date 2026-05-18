@@ -321,17 +321,17 @@ public class ManagerMainController {
         return "apt/mgmtOffice/mngr_meterReading";
     }
 
-    // 시설 점검 이력
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/checkHistory/{mgmtOfcNo}")
-    public String checkHistory(
-            @PathVariable String mgmtOfcNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
-    ) {
-        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_facility_history";
-    }
+//    // 시설 점검 이력
+//    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+//    @GetMapping("/checkHistory/{mgmtOfcNo}")
+//    public String checkHistory(
+//            @PathVariable String mgmtOfcNo,
+//            @AuthenticationPrincipal CustomUser customUser,
+//            Model model
+//    ) {
+//        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+//        return "apt/mgmtOffice/mngr_facility_history";
+//    }
 
     // 작업 일정
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
