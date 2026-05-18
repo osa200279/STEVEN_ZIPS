@@ -286,8 +286,13 @@
             inset: 0;
             background: rgba(17, 24, 39, 0.45);
             z-index: 1000;
+
+            /* 화면 가운데 배치 */
             align-items: center;
             justify-content: center;
+
+            /* 모달이 화면보다 클 때 위아래 여백 확보 */
+            padding: 24px;
         }
 
         /* open 클래스가 붙으면 모달 보이기 */
@@ -298,10 +303,19 @@
         /* 모달 박스 */
         #noticePage .notice-modal {
             width: 560px;
+            max-width: 95vw;
+
+            /* 화면 높이보다 커지지 않게 제한 */
+            max-height: calc(100vh - 48px);
+
             background: #fff;
             border-radius: 7px;
             overflow: hidden;
             box-shadow: 0 20px 50px rgba(17, 24, 39, 0.18);
+
+            /* header/body/footer를 세로 구조로 분리 */
+            display: flex;
+            flex-direction: column;
         }
 
         /* 모달 제목 */
@@ -318,6 +332,9 @@
         /* 모달 내용 */
         #noticePage .notice-modal-body {
             padding: 18px;
+
+            /* 내용이 길면 모달 내부만 스크롤 */
+            overflow-y: auto;
         }
 
         #noticePage .form-section-title {
@@ -505,7 +522,7 @@
                                 </button>
                                 <!-- 목록 건수 -->
                                 <span class="list-count">
-                ${empty noticeList ? 0 : noticeList.size()}건
+                총 ${empty noticeList ? 0 : noticeList.size()}건
             </span>
                             </div>
                         </div>
@@ -513,68 +530,66 @@
                         <table class="notice-table">
                             <thead>
                             <tr>
+                                <th>번호</th>
                                 <th>공지번호</th>
                                 <th>제목</th>
                                 <th>작성자</th>
+                                <th>첨부파일</th>
                                 <th>작성일</th>
                                 <th>조회수</th>
                                 <th>관리</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <!--
-                                c:forEach
-                                → noticeList 반복 출력.
-                            -->
-                            <c:forEach items="${noticeList}"
-                                       var="notice">
+                            <c:forEach items="${noticeList}" var="notice">
                                 <tr>
-                                    <td>
-                                            ${notice.annNo}
-                                    </td>
+                                    <td>${notice.rowNo}</td>
+
+                                    <td>${notice.annNo}</td>
+
                                     <td class="notice-title-cell">
-
-                                        <!-- 긴급 공지 -->
                                         <c:if test="${notice.topFixYn eq 'Y'}">
-                        <span class="urgent-badge">
-                            긴급
-                        </span>
+                                            <span class="urgent-badge">긴급</span>
                                         </c:if>
-
                                             ${notice.ttl}
                                     </td>
+
+                                    <td>${notice.wrtrId}</td>
+
                                     <td>
-                                            ${notice.wrtrId}
+                                        <c:choose>
+                                            <c:when test="${notice.fileCnt > 0}">
+                    <span class="material-symbols-rounded" style="font-size:18px;">
+                        attach_file
+                    </span>
+                                            </c:when>
+                                            <c:otherwise>-</c:otherwise>
+                                        </c:choose>
                                     </td>
+
                                     <td>
-                                        <fmt:formatDate
-                                                value="${notice.regDttm}"
-                                                pattern="yyyy-MM-dd"/>
+                                        <fmt:formatDate value="${notice.regDttm}" pattern="yyyy-MM-dd"/>
                                     </td>
-                                    <td>
-                                            ${notice.inqCnt}
-                                    </td>
+
+                                    <td>${notice.inqCnt}</td>
+
                                     <td>
                                         <button type="button"
-                                                class="btn btn-write">
+                                                class="btn btn-write editNoticeBtn"
+                                                data-ann-no="${notice.annNo}">
                                             수정
                                         </button>
-                                        <button type="button"
-                                                class="btn btn-delete">
-                                            삭제
-                                        </button>
+
+                                        <form method="post"
+                                              action="${pageContext.request.contextPath}/mgmtOffice/notice/delete"
+                                              onsubmit="return confirm('삭제하시겠습니까?');">
+                                            <input type="hidden" name="mgmtOfcNo" value="${mgmtOfcNo}">
+                                            <input type="hidden" name="annNo" value="${notice.annNo}">
+                                            <button type="submit" class="btn btn-delete">삭제</button>
+                                        </form>
                                     </td>
                                 </tr>
                             </c:forEach>
-
-                            <!-- 데이터 없을 때 -->
-                            <c:if test="${empty noticeList}">
-                                <tr>
-                                    <td colspan="6">
-                                        등록된 공지사항이 없습니다.
-                                    </td>
-                                </tr>
-                            </c:if>
                             </tbody>
                         </table>
                     </div>
@@ -587,58 +602,39 @@
                                 <span>공지사항 등록</span>
                             </div>
 
-                            <form method="post"
+                            <form id="noticeForm"
+                                  method="post"
+                                  enctype="multipart/form-data"
                                   action="${pageContext.request.contextPath}/mgmtOffice/notice/insert">
 
+                                <input type="hidden" name="mgmtOfcNo" value="${mgmtOfcNo}">
+                                <input type="hidden" name="annNo" id="modalAnnNo">
+
                                 <div class="notice-modal-body">
-
-                                    <input type="hidden" name="boardNo" value="${boardNo}">
-                                    <input type="hidden" name="wrtrId" value="${loginUserId}">
-                                    <input type="hidden" name="mgmtOfcNo" value="${mgmtOfcNo}">
-
                                     <div class="form-field">
-                                        <label class="field-label">
-                                            공지 제목 <span class="req">*</span>
-                                        </label>
-
-                                        <input type="text"
-                                               name="ttl"
-                                               class="form-input"
-                                               placeholder="공지 제목을 입력하세요"
-                                               required>
+                                        <label class="field-label">공지 제목 <span class="req">*</span></label>
+                                        <input type="text" name="ttl" id="modalTtl" class="form-input" required>
                                     </div>
 
                                     <div class="form-field">
-                                        <label class="field-label">
-                                            공지 내용 <span class="req">*</span>
-                                        </label>
-
-                                        <textarea name="cn"
-                                                  class="form-textarea"
-                                                  placeholder="공지 내용을 입력하세요"
-                                                  required></textarea>
+                                        <label class="field-label">공지 내용 <span class="req">*</span></label>
+                                        <textarea name="cn" id="modalCn" class="form-textarea" required></textarea>
                                     </div>
 
-                                    <label class="check-row">
-                                        <input type="checkbox"
-                                               name="topFixYn"
-                                               value="Y">
-                                        긴급공지 등록
-                                    </label>
+                                    <div class="form-field">
+                                        <label class="field-label">첨부파일</label>
+                                        <input type="file" name="uploadFile" class="form-input">
+                                    </div>
 
+                                    <div class="check-row">
+                                        <input type="checkbox" name="topFixYn" id="modalTopFixYn" value="Y">
+                                        <label for="modalTopFixYn">긴급공지 등록</label>
+                                    </div>
                                 </div>
 
                                 <div class="notice-modal-footer">
-                                    <button type="button"
-                                            class="btn btn-reset"
-                                            id="cancelNoticeModalBtn">
-                                        취소
-                                    </button>
-
-                                    <button type="submit"
-                                            class="btn btn-search">
-                                        저장
-                                    </button>
+                                    <button type="button" class="btn btn-reset" id="closeNoticeModalBtn">취소</button>
+                                    <button type="submit" class="btn btn-search">저장</button>
                                 </div>
                             </form>
                         </div>
@@ -650,36 +646,47 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var modal = document.getElementById("noticeModal");
-        var openBtn = document.getElementById("openNoticeModalBtn");
-        var closeBtn = document.getElementById("closeNoticeModalBtn");
-        var cancelBtn = document.getElementById("cancelNoticeModalBtn");
+    const contextPath = '${pageContext.request.contextPath}';
+    const mgmtOfcNo = '${mgmtOfcNo}';
 
-        function openModal() {
-            modal.classList.add("open");
-        }
+    const modal = document.getElementById('noticeModal');
+    const form = document.getElementById('noticeForm');
+    const modalAnnNo = document.getElementById('modalAnnNo');
+    const modalTtl = document.getElementById('modalTtl');
+    const modalCn = document.getElementById('modalCn');
+    const modalTopFixYn = document.getElementById('modalTopFixYn');
 
-        function closeModal() {
-            modal.classList.remove("open");
-        }
+    document.getElementById('openNoticeModalBtn').addEventListener('click', function () {
+        form.action = contextPath + '/mgmtOffice/notice/insert';
 
-        if (openBtn) {
-            openBtn.addEventListener("click", openModal);
-        }
+        modalAnnNo.value = '';
+        modalTtl.value = '';
+        modalCn.value = '';
+        modalTopFixYn.checked = false;
 
-        if (closeBtn) {
-            closeBtn.addEventListener("click", closeModal);
-        }
+        modal.classList.add('open');
+    });
 
-        if (cancelBtn) {
-            cancelBtn.addEventListener("click", closeModal);
-        }
+    document.getElementById('closeNoticeModalBtn').addEventListener('click', function () {
+        modal.classList.remove('open');
+    });
 
-        modal.addEventListener("click", function (e) {
-            if (e.target === modal) {
-                closeModal();
-            }
+    document.querySelectorAll('.editNoticeBtn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const annNo = this.dataset.annNo;
+
+            fetch(contextPath + '/mgmtOffice/notice/detail/' + mgmtOfcNo + '/' + annNo)
+                .then(response => response.json())
+                .then(data => {
+                    form.action = contextPath + '/mgmtOffice/notice/update';
+
+                    modalAnnNo.value = data.annNo;
+                    modalTtl.value = data.ttl;
+                    modalCn.value = data.cn;
+                    modalTopFixYn.checked = data.topFixYn === 'Y';
+
+                    modal.classList.add('open');
+                });
         });
     });
 </script>

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class mngrRegidentNoticeDTO {
+public class MngrRegidentNoticeDTO {
 
     private String annNo;          // 공지번호
     private String boardNo;        // 게시판번호
@@ -24,8 +24,6 @@ public class mngrRegidentNoticeDTO {
     // Y : 삭제
     // N : 정상
 
-    private String atchFileId;     // 첨부파일ID
-
     private String topFixYn;       // 긴급공지 여부
     // Y : 긴급공지
     // N : 일반공지
@@ -36,4 +34,22 @@ public class mngrRegidentNoticeDTO {
 
     private int startRow;
     private int endRow;
+
+    private String searchAnnNo;     // 공지번호 검색어
+    private String searchWrtrId;    // 작성자 검색어
+
+    private int rowNo;              // 화면용 번호
+
+    private String atchFileId;      // 첨부파일ID
+
+    private int fileCnt;            // 첨부파일 개수
+
+    private String fileOgName;      // 원본 파일명
+    private String fileSaveUuid;    // 서버 저장용 UUID
+    private String filePath;        // 파일 저장 경로
+    private String fileExt;         // 확장자
+    private long fileSize;          // 파일 크기
+    private String mimeType;        // 파일 종류
+
+
 }

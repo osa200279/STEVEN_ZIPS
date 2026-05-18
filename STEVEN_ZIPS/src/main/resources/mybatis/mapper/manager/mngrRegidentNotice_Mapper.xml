@@ -6,76 +6,134 @@
 <mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.board.mapper.ImngrRegidentNoticeMapper">
 
     <!-- 공지 목록 개수 -->
-    <select id="selectNoticeCount" resultType="int">
-
+    <select id="selectNoticeCount"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO"
+            resultType="int">
         SELECT COUNT(*)
-        FROM APT_ANN_BOARD_POST
-        WHERE DEL_YN = 'N'
+        FROM APT_ANN_BOARD_POST P
+        INNER JOIN APT_BOARD_INSTANCE B
+        ON P.BOARD_NO = B.BOARD_NO
+        WHERE P.DEL_YN = 'N'
+        AND B.USE_YN = 'Y'
+        AND B.BOARD_TY_CD = 'NOTICE'
+        AND B.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND P.BOARD_NO = #{boardNo}
 
+        <if test="searchAnnNo != null and searchAnnNo != ''">
+            AND P.ANN_NO LIKE '%' || #{searchAnnNo} || '%'
+        </if>
+
+        <if test="searchTtl != null and searchTtl != ''">
+            AND P.TTL LIKE '%' || #{searchTtl} || '%'
+        </if>
+
+        <if test="searchWrtrId != null and searchWrtrId != ''">
+            AND P.WRTR_ID LIKE '%' || #{searchWrtrId} || '%'
+        </if>
+
+        <if test="searchStartDt != null and searchStartDt != ''">
+            AND TRUNC(P.REG_DTTM) <![CDATA[>=]]> TO_DATE(#{searchStartDt}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="searchEndDt != null and searchEndDt != ''">
+            AND TRUNC(P.REG_DTTM) <![CDATA[<=]]> TO_DATE(#{searchEndDt}, 'YYYY-MM-DD')
+        </if>
     </select>
 
     <!-- 공지 목록 -->
     <select id="selectNoticeList"
-            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO"
-            resultType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO">
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
 
         SELECT *
-        FROM
-        (
+        FROM (
         SELECT
-        ROW_NUMBER() OVER
-        (
-        ORDER BY TOP_FIX_YN DESC
-        , REG_DTTM DESC
-        ) RN
-        , ANN_NO
-        , BOARD_NO
-        , TTL
-        , CN
-        , WRTR_ID
-        , REG_DTTM
-        , MDF_DTTM
-        , INQ_CNT
-        , DEL_YN
-        , ATCH_FILE_ID
-        , TOP_FIX_YN
-        FROM APT_ANN_BOARD_POST
-        WHERE DEL_YN = 'N'
+        ROW_NUMBER() OVER (
+        ORDER BY
+        CASE WHEN P.TOP_FIX_YN = 'Y' THEN 0 ELSE 1 END,
+        P.REG_DTTM DESC,
+        TO_NUMBER(REGEXP_REPLACE(P.ANN_NO, '[^0-9]', '')) DESC
+        ) AS ROW_NO
+        , P.ANN_NO
+        , P.BOARD_NO
+        , B.APT_CMPLEX_NO
+        , P.TTL
+        , P.CN
+        , P.WRTR_ID
+        , P.REG_DTTM
+        , P.MDF_DTTM
+        , NVL(P.INQ_CNT, 0) AS INQ_CNT
+        , P.DEL_YN
+        , P.ATCH_FILE_ID
+        , P.TOP_FIX_YN
+        , CASE
+        WHEN P.ATCH_FILE_ID IS NOT NULL THEN 1
+        ELSE 0
+        END AS FILE_CNT
+        FROM APT_ANN_BOARD_POST P
+        INNER JOIN APT_BOARD_INSTANCE B
+        ON P.BOARD_NO = B.BOARD_NO
+        WHERE P.DEL_YN = 'N'
+        AND B.USE_YN = 'Y'
+        AND B.BOARD_TY_CD = 'NOTICE'
+        AND B.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND P.BOARD_NO = #{boardNo}
 
-        <if test="searchTtl != null and searchTtl != ''">
-            AND TTL LIKE '%' || #{searchTtl} || '%'
+        <if test="searchAnnNo != null and searchAnnNo != ''">
+            AND P.ANN_NO LIKE '%' || #{searchAnnNo} || '%'
         </if>
 
-        )
-        WHERE RN BETWEEN #{startRow} AND #{endRow}
+        <if test="searchTtl != null and searchTtl != ''">
+            AND P.TTL LIKE '%' || #{searchTtl} || '%'
+        </if>
 
+        <if test="searchWrtrId != null and searchWrtrId != ''">
+            AND P.WRTR_ID LIKE '%' || #{searchWrtrId} || '%'
+        </if>
+
+        <if test="searchStartDt != null and searchStartDt != ''">
+            AND TRUNC(P.REG_DTTM) <![CDATA[>=]]> TO_DATE(#{searchStartDt}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="searchEndDt != null and searchEndDt != ''">
+            AND TRUNC(P.REG_DTTM) <![CDATA[<=]]> TO_DATE(#{searchEndDt}, 'YYYY-MM-DD')
+        </if>
+        )
+        WHERE ROW_NO BETWEEN #{startRow} AND #{endRow}
     </select>
 
-    <!-- 상세조회 -->
+    <!-- 수정 모달용 상세조회 -->
     <select id="selectNoticeDetail"
-            parameterType="string"
-            resultType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO">
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
 
         SELECT
-            ANN_NO
-             , BOARD_NO
-             , TTL
-             , CN
-             , WRTR_ID
-             , REG_DTTM
-             , MDF_DTTM
-             , INQ_CNT
-             , DEL_YN
-             , ATCH_FILE_ID
-             , TOP_FIX_YN
-        FROM APT_ANN_BOARD_POST
-        WHERE ANN_NO = #{annNo}
-
+            P.ANN_NO
+             , P.BOARD_NO
+             , B.APT_CMPLEX_NO
+             , P.TTL
+             , P.CN
+             , P.WRTR_ID
+             , P.REG_DTTM
+             , P.MDF_DTTM
+             , NVL(P.INQ_CNT, 0) AS INQ_CNT
+             , P.DEL_YN
+             , P.ATCH_FILE_ID
+             , P.TOP_FIX_YN
+        FROM APT_ANN_BOARD_POST P
+                 INNER JOIN APT_BOARD_INSTANCE B
+                            ON P.BOARD_NO = B.BOARD_NO
+        WHERE P.ANN_NO = #{annNo}
+          AND P.BOARD_NO = #{boardNo}
+          AND B.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND B.BOARD_TY_CD = 'NOTICE'
+          AND B.USE_YN = 'Y'
+          AND P.DEL_YN = 'N'
     </select>
 
     <!-- 등록 -->
     <insert id="insertNotice"
-            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO">
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
 
         INSERT INTO APT_ANN_BOARD_POST
         (
@@ -86,25 +144,28 @@
         , WRTR_ID
         , TOP_FIX_YN
         , REG_DTTM
+        , INQ_CNT
         , DEL_YN
+        , ATCH_FILE_ID
         )
         VALUES
             (
-              'ANN' || LPAD(SEQ_APT_ANN_BOARD_POST.NEXTVAL, 8, '0')
+              'NTC' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD(SEQ_ANN_BOARD_POST.NEXTVAL, 4, '0')
             , #{boardNo}
             , #{ttl}
             , #{cn}
             , #{wrtrId}
             , #{topFixYn}
             , SYSDATE
+            , 0
             , 'N'
+            , #{atchFileId}
             )
-
     </insert>
 
     <!-- 수정 -->
     <update id="updateNotice"
-            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO">
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
 
         UPDATE APT_ANN_BOARD_POST
         SET TTL = #{ttl}
@@ -112,17 +173,20 @@
           , TOP_FIX_YN = #{topFixYn}
           , MDF_DTTM = SYSDATE
         WHERE ANN_NO = #{annNo}
-
+          AND BOARD_NO = #{boardNo}
+          AND DEL_YN = 'N'
     </update>
 
     <!-- 삭제 -->
     <update id="deleteNotice"
-            parameterType="string">
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
 
         UPDATE APT_ANN_BOARD_POST
         SET DEL_YN = 'Y'
+          , MDF_DTTM = SYSDATE
         WHERE ANN_NO = #{annNo}
-
+          AND BOARD_NO = #{boardNo}
+          AND DEL_YN = 'N'
     </update>
 
 
@@ -146,5 +210,43 @@
           AND board_ty_cd = 'NOTICE'
           AND use_yn = 'Y'
     </select>
+
+
+    <select id="selectAttachFileGroupNo" resultType="int">
+        SELECT SEQ_ATTACH_FILE_GROUP_NO.NEXTVAL
+        FROM DUAL
+    </select>
+
+    <insert id="insertAttachFile"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
+        INSERT INTO ATTACH_FILE
+        (
+          FILE_GROUP_NO
+        , FILE_OG_NAME
+        , FILE_SAVE_UUID
+        , FILE_PATH
+        , FILE_EXT
+        , FILE_SIZE
+        , MIME_TYPE
+        , REG_DT
+        , FILE_SORT_ORDER
+        , DOWN_CNT
+        , CAT
+        )
+        VALUES
+            (
+              TO_NUMBER(#{atchFileId})
+            , #{fileOgName}
+            , #{fileSaveUuid}
+            , #{filePath}
+            , #{fileExt}
+            , #{fileSize}
+            , #{mimeType}
+            , SYSDATE
+            , 1
+            , 0
+            , 'NOTICE'
+            )
+    </insert>
 
 </mapper>

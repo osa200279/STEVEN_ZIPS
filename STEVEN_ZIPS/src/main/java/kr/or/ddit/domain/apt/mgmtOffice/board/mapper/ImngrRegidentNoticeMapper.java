@@ -1,6 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.board.mapper;
 
-import kr.or.ddit.domain.apt.mgmtOffice.board.dto.mngrRegidentNoticeDTO;
+import kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -8,17 +8,21 @@ import java.util.List;
 @Mapper
 public interface ImngrRegidentNoticeMapper {
 
-    public int selectNoticeCount(mngrRegidentNoticeDTO dto);
+    int selectNoticeCount(MngrRegidentNoticeDTO dto);
 
-    public List<mngrRegidentNoticeDTO> selectNoticeList(mngrRegidentNoticeDTO dto);
+    List<MngrRegidentNoticeDTO> selectNoticeList(MngrRegidentNoticeDTO dto);
 
-    public mngrRegidentNoticeDTO selectNoticeDetail(String annNo);
+    MngrRegidentNoticeDTO selectNoticeDetail(MngrRegidentNoticeDTO dto);
 
-    public int insertNotice(mngrRegidentNoticeDTO dto);
+    int insertNotice(MngrRegidentNoticeDTO dto);
 
-    public int updateNotice(mngrRegidentNoticeDTO dto);
+    int selectAttachFileGroupNo();
 
-    public int deleteNotice(String annNo);
+    int insertAttachFile(MngrRegidentNoticeDTO fileDTO);
+
+    int updateNotice(MngrRegidentNoticeDTO dto);
+
+    int deleteNotice(MngrRegidentNoticeDTO dto);
 
     String selectAptCmplexNoByMgmtOfcNo(String mgmtOfcNo);
 
