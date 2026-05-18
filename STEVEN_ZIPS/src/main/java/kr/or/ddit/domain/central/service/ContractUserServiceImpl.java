@@ -5,7 +5,6 @@ import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.central.mapper.IContractUserMapper;
 import kr.or.ddit.domain.central.vo.ContractUserVO;
-import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -159,32 +158,6 @@ public class ContractUserServiceImpl implements IContractUserService {
     public List<ContractUserVO> selectContractDoc(String userNo) {
         return contractUserMapper.selectContractDoc(userNo);
     }*/
-
-    /**
-     * 임대 계약(RentCtrt)을 신규 생성하는 메소드
-     *
-     * 처리 순서:
-     *   1. 아파트 단지 번호(aptCmplexNo)로 매물 번호(rentLstgNo) 조회
-     *   2. 조회한 매물 번호를 VO에 세팅
-     *   3. 임대 계약 정보를 DB에 저장 (selectKey로 계약 번호 자동 채번)
-     *   4. DB에서 채번된 계약 번호(rentCtrtNo)를 ctrtId에도 동일하게 세팅
-     *
-     * rentCtrtVO 저장할 임대 계약 정보 VO (단지번호, 사용자 정보 등 포함)
-     */
-    @Transactional
-    @Override
-    public void insertRentCtrt(RentCtrtVO rentCtrtVO) {
-        log.info("aptCmplexNo: {}", rentCtrtVO.getAptCmplexNo());
-
-        // 단지번호로 매물번호 조회
-        String rentLstgNo = contractUserMapper.selectRentLstgNo(rentCtrtVO.getAptCmplexNo());
-        log.info("rentLstgNo: {}", rentLstgNo);
-        rentCtrtVO.setRentLstgNo(rentLstgNo);
-
-        // ctrt_id는 rentCtrtNo와 동일하게 세팅 (selectKey 실행 후)
-        contractUserMapper.insertRentCtrtVO(rentCtrtVO);
-        rentCtrtVO.setCtrtId(rentCtrtVO.getRentCtrtNo());
-    }
 
     // 계약공고 조회수 증가 메소드
     @Transactional

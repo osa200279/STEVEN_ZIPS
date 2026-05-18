@@ -5,7 +5,6 @@ import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.central.admin.dto.AnnouncementDTO;
 import kr.or.ddit.domain.central.admin.service.IAnnouncementService;
 import kr.or.ddit.domain.central.service.IContractUserService;
-import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
@@ -180,25 +179,6 @@ public class ContractUserController {
         log.info("aplctList: {}", list);
         model.addAttribute("list", list);
         return "central/contract/contractAList";
-    }
-
-    /**
-     * 계약을 수정하는 메소드(미완성)
-     *
-     * rentCtrtVO 수정할 계약 정보가 담긴 VO 객체
-     * principal  현재 로그인한 사용자 정보
-     * 처리 결과 Map {"success": true}
-     */
-    @PreAuthorize("hasRole('MEMBER')")
-    @PutMapping("/update.do")
-    @ResponseBody
-    public Map<String, Object> contractUpdate(@RequestBody RentCtrtVO rentCtrtVO,
-                                              @AuthenticationPrincipal CustomUser principal) {
-        String userNo = principal.getMember().getUserNo();
-        rentCtrtVO.setUserNo(userNo);
-        Map<String, Object> result = new HashMap<>();
-        result.put("success", true);
-        return result;
     }
 
     /**

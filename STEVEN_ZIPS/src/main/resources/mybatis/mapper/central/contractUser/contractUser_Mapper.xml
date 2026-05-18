@@ -76,15 +76,6 @@
         ORDER BY sd.reg_dt DESC
     </select>-->
 
-    <!--<select id="selectRentLstgNo" parameterType="string" resultType="string">
-        SELECT rl.rent_lstg_no              /*kr.or.ddit.domain.central.mapper.IContractUserMapper.selectRentLsgtNo*/
-        FROM rent_listing rl
-                 INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
-                 INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
-        WHERE au.apt_cmplex_no = #{aptCmplexNo}
-          AND ROWNUM = 1
-    </select>-->
-
     <!--rent_listing + apt_detail + apt_ho_ty + apt_unit + apt_complex JOIN
     단지번호로 매물 정보(면적, 보증금, 월임대료, 세대수 등) 조회 -->
     <select id="selectRentListingByAptCmplexNo" parameterType="string" resultType="map">

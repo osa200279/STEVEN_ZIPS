@@ -1,7 +1,6 @@
 package kr.or.ddit.domain.central.mapper;
 
 import kr.or.ddit.domain.central.vo.ContractUserVO;
-import kr.or.ddit.domain.central.vo.RentCtrtVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,12 +14,6 @@ public interface IContractUserMapper {
 
     void insertContractDoc(ContractUserVO contractUserVO);
     
-
-    // 지금 안씀
-    void insertRentCtrtVO(RentCtrtVO rentCtrtVO);
-
-    // 지금 안씀
-    String selectRentLstgNo(String aptCmplexNo);
 
     void updateInqCnt(String annNo);
 
