@@ -26,6 +26,7 @@ public class BillVO {
     private String mgmtOfcNo;
 
     // 세대 표시용
+    private String userNo;
     private String dongNo;
     private String dongNm;
     private String ho;

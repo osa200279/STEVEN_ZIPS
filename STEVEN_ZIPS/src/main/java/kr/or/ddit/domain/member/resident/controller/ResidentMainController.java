@@ -588,29 +588,6 @@ public class ResidentMainController {
     }
 
     /* =========================
-     * 아파트관리비
-     * ========================= */
-    @GetMapping("/bill/inquiry")
-    public String billInquiry() {
-        return "member/resident/bill/bill_inquiry";
-    }
-
-    @GetMapping("/bill/guide")
-    public String billGuide() {
-        return "member/resident/bill/bill_guide";
-    }
-
-    @GetMapping("/bill/auto")
-    public String billAuto() {
-        return "member/resident/bill/bill_auto";
-    }
-
-    @GetMapping("/bill/receipt")
-    public String billReceipt() {
-        return "member/resident/bill/bill_receipt";
-    }
-
-    /* =========================
      * 생활지원서비스
      * ========================= */
 
