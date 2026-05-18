@@ -11,7 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -120,8 +122,23 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
         String aptCmplexNo = mapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
         String boardNo = mapper.selectNoticeBoardNoByAptCmplexNo(aptCmplexNo);
 
+        /*
+         * boardNo
+         * → 현재 단지의 공지사항 게시판 번호.
+         * null이면 insert는 되더라도 목록 조회 조건과 맞지 않아 화면에 안 나올 수 있음.
+         */
+        if (boardNo == null || boardNo.isBlank()) {
+            throw new IllegalStateException("공지사항 게시판 번호가 없습니다. APT_BOARD_INSTANCE 데이터를 확인하세요.");
+        }
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("aptCmplexNo", aptCmplexNo);
+        paramMap.put("userNo", customUser.getMember().getUserNo());
+
+        String writerName = mapper.selectNoticeWriterName(paramMap);
+
         dto.setAptCmplexNo(aptCmplexNo);
         dto.setBoardNo(boardNo);
-        dto.setWrtrId(customUser.getMember().getUserId());
+        dto.setWrtrId(writerName);
     }
 }

@@ -51,5 +51,40 @@ public class MngrRegidentNoticeDTO {
     private long fileSize;          // 파일 크기
     private String mimeType;        // 파일 종류
 
+    /*
+     * 긴급공지 검색 여부
+     * Y이면 TOP_FIX_YN = 'Y'인 게시글만 조회
+     */
+    private String searchTopFixYn;
+
+    /*
+     * 첨부파일 검색 여부
+     * Y이면 첨부파일 있는 글만 조회
+     * N이면 첨부파일 없는 글만 조회
+     */
+    private String searchAttachYn;
+
+    /*
+     * 공고 시작일
+     * 화면 input type="date" 값이 문자열로 들어옴.
+     */
+    private String pblancBgngDt;
+
+    /*
+     * 공고 종료일
+     */
+    private String pblancEndDt;
+
+    /*
+     * 정렬 컬럼
+     * 예: REG_DTTM, ANN_NO
+     */
+    private String sortColumn;
+
+    /*
+     * 정렬 방향
+     * ASC / DESC
+     */
+    private String sortOrder;
 
 }

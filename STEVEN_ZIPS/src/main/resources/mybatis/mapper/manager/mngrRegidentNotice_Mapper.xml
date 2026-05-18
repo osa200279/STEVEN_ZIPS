@@ -38,6 +38,17 @@
         <if test="searchEndDt != null and searchEndDt != ''">
             AND TRUNC(P.REG_DTTM) <![CDATA[<=]]> TO_DATE(#{searchEndDt}, 'YYYY-MM-DD')
         </if>
+
+        <!-- 긴급공지 체크 시: 긴급공지인 글만 조회 -->
+        <if test='searchTopFixYn != null and searchTopFixYn.equals("Y")'>
+            AND P.TOP_FIX_YN = 'Y'
+        </if>
+
+        <!-- 첨부파일 여부 검색 -->
+        <!-- 첨부파일 체크 시: 첨부파일 있는 공지만 조회 -->
+        <if test='searchAttachYn != null and searchAttachYn.equals("Y")'>
+            AND P.ATCH_FILE_ID IS NOT NULL
+        </if>
     </select>
 
     <!-- 공지 목록 -->
@@ -50,9 +61,46 @@
         SELECT
         ROW_NUMBER() OVER (
         ORDER BY
-        CASE WHEN P.TOP_FIX_YN = 'Y' THEN 0 ELSE 1 END,
+        /* 1순위: 긴급공지 우선 */
+        CASE WHEN P.TOP_FIX_YN = 'Y' THEN 0 ELSE 1 END ASC,
+
+        /* 2순위: 사용자가 클릭한 컬럼 정렬 */
+        <choose>
+            <when test='sortColumn == "ANN_NO"'>
+                P.ANN_NO
+            </when>
+            <when test='sortColumn == "TTL"'>
+                P.TTL
+            </when>
+            <when test='sortColumn == "WRTR_ID"'>
+                P.WRTR_ID
+            </when>
+            <when test='sortColumn == "REG_DTTM"'>
+                P.REG_DTTM
+            </when>
+            <when test='sortColumn == "INQ_CNT"'>
+                P.INQ_CNT
+            </when>
+            <otherwise>
+                P.REG_DTTM
+            </otherwise>
+        </choose>
+
+        <choose>
+            <when test='sortOrder == "ASC"'>
+                ASC
+            </when>
+            <otherwise>
+                DESC
+            </otherwise>
+        </choose>,
+
+        /* 3순위: 작성일 최신순 */
         P.REG_DTTM DESC,
-        TO_NUMBER(REGEXP_REPLACE(P.ANN_NO, '[^0-9]', '')) DESC
+
+        /* 4순위: 공지번호 최신순 */
+        P.ANN_NO DESC
+
         ) AS ROW_NO
         , P.ANN_NO
         , P.BOARD_NO
@@ -98,8 +146,34 @@
         <if test="searchEndDt != null and searchEndDt != ''">
             AND TRUNC(P.REG_DTTM) <![CDATA[<=]]> TO_DATE(#{searchEndDt}, 'YYYY-MM-DD')
         </if>
+
+        <if test='searchTopFixYn != null and searchTopFixYn.equals("Y")'>
+            AND P.TOP_FIX_YN = 'Y'
+        </if>
+
+        <if test='searchAttachYn != null and searchAttachYn.equals("Y")'>
+            AND P.ATCH_FILE_ID IS NOT NULL
+        </if>
         )
         WHERE ROW_NO BETWEEN #{startRow} AND #{endRow}
+
+    </select>
+
+    <select id="selectNoticeWriterName"
+            parameterType="map"
+            resultType="string">
+        /*
+         * MEMBER.USER_NM에 이미 단지명이 포함되어 있으면 그대로 사용.
+         * 포함되어 있지 않으면 단지명_사용자명 형태로 생성.
+         */
+        SELECT CASE
+                   WHEN M.USER_NM LIKE A.APT_CMPLEX_NM || '_%' THEN M.USER_NM
+                   ELSE A.APT_CMPLEX_NM || '_' || M.USER_NM
+                   END AS WRTR_NM
+        FROM APT_COMPLEX A
+                 INNER JOIN MEMBER M
+                            ON M.USER_NO = #{userNo}
+        WHERE A.APT_CMPLEX_NO = #{aptCmplexNo}
     </select>
 
     <!-- 수정 모달용 상세조회 -->
@@ -143,7 +217,10 @@
         , CN
         , WRTR_ID
         , TOP_FIX_YN
+        , PBLANC_BGNG_DT
+        , PBLANC_END_DT
         , REG_DTTM
+        , MDF_DTTM
         , INQ_CNT
         , DEL_YN
         , ATCH_FILE_ID
@@ -156,7 +233,19 @@
             , #{cn}
             , #{wrtrId}
             , #{topFixYn}
+
+                /* 공고 시작일: 화면에서 값이 오면 그 값, 없으면 오늘 */
+            , NVL(TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD'), TRUNC(SYSDATE))
+
+                /* 공고 종료일: 화면에서 값이 오면 그 값, 없으면 시작일 기준 7일 */
+            , NVL(TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD'), TRUNC(SYSDATE) + 7)
+
+                /* 등록일 */
             , SYSDATE
+
+                /* 최초 등록 시 수정일도 등록일과 동일하게 저장 */
+            , SYSDATE
+
             , 0
             , 'N'
             , #{atchFileId}

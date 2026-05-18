@@ -6,10 +6,13 @@ import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import kr.or.ddit.domain.apt.board.free.vo.PaginationInfoVO;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -28,6 +31,7 @@ public class MngrResidentNoticeController {
      * 관리사무소 공지사항 목록 조회
      * @author 김보라
      * @param mgmtOfcNo 관리사무소번호
+     * @param currentPage 현재 페이지 번호
      * @param dto 공지사항 검색조건 DTO
      * @param customUser 로그인 사용자 정보
      * @param model 화면 전달 데이터
@@ -37,10 +41,25 @@ public class MngrResidentNoticeController {
     @GetMapping("/mngrResidentNotice/{mgmtOfcNo}")
     public String mngrResidentNotice(
             @PathVariable String mgmtOfcNo,
+            @RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
             @ModelAttribute MngrRegidentNoticeDTO dto,
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
+
+        /*
+         * 기본 정렬
+         * 1순위: 긴급공지
+         * 2순위: 작성일 DESC
+         * 3순위: 공지번호 DESC
+         */
+        if (dto.getSortColumn() == null || dto.getSortColumn().isBlank()) {
+            dto.setSortColumn("REG_DTTM");
+        }
+
+        if (dto.getSortOrder() == null || dto.getSortOrder().isBlank()) {
+            dto.setSortOrder("DESC");
+        }
 
         /*
          * 로그인 관리사무소 기준
@@ -53,34 +72,65 @@ public class MngrResidentNoticeController {
         );
 
         /*
-         * 현재는 전체 조회.
-         * 나중에 페이징 적용 시 startRow/endRow 계산 변경 예정.
+         * PaginationInfoVO
+         * → 페이징 계산 전용 객체.
+         * screenSize = 한 페이지에 보여줄 글 개수.
+         * blockSize = 화면 아래에 보여줄 페이지 번호 개수.
+         *
+         * new PaginationInfoVO<>(10, 5)
+         * → 게시글은 10개씩, 페이지 번호는 5개씩 보여주겠다는 뜻.
          */
-        dto.setStartRow(1);
-        dto.setEndRow(9999);
+        PaginationInfoVO<MngrRegidentNoticeDTO> pagingVO =
+                new PaginationInfoVO<>(10, 5);
 
         /*
-         * 공지 목록 조회
+         * 현재 페이지 세팅.
+         * setCurrentPage()를 호출하면 startRow/endRow가 자동 계산됨.
+         * 예)
+         * currentPage = 1 → startRow 1, endRow 10
+         * currentPage = 2 → startRow 11, endRow 20
+         */
+        pagingVO.setCurrentPage(currentPage);
+
+        /*
+         * 검색조건 + 페이징 row 범위를 DTO에 세팅.
+         * MyBatis XML에서 ROW_NO BETWEEN #{startRow} AND #{endRow}로 사용 중.
+         */
+        dto.setStartRow(pagingVO.getStartRow());
+        dto.setEndRow(pagingVO.getEndRow());
+
+        /*
+         * 전체 게시글 수 조회.
+         * 검색조건이 있으면 검색 결과 개수만 계산됨.
+         */
+        int noticeCount = mngrRegidentNoticeService.selectNoticeCount(dto);
+
+        /*
+         * 총 게시글 수를 넣으면 totalPage가 자동 계산됨.
+         */
+        pagingVO.setTotalRecord(noticeCount);
+
+        /*
+         * 현재 페이지에 해당하는 공지 목록만 조회.
          */
         List<MngrRegidentNoticeDTO> noticeList =
                 mngrRegidentNoticeService.selectNoticeList(dto);
 
         /*
-         * 공지 총 개수 조회
+         * 조회된 목록을 pagingVO 안에도 넣어둠.
          */
-        int noticeCount =
-                mngrRegidentNoticeService.selectNoticeCount(dto);
+        pagingVO.setDataList(noticeList);
 
         /*
          * JSP 전달 데이터
          */
         model.addAttribute("noticeList", noticeList);
         model.addAttribute("noticeCount", noticeCount);
+        model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchDTO", dto);
 
         /*
          * 공통 화면 정보 세팅
-         * (관리사무소 번호, 게시판번호 등)
          */
         mngrRegidentNoticeService.addManagerViewModel(
                 model,
@@ -88,9 +138,6 @@ public class MngrResidentNoticeController {
                 mgmtOfcNo
         );
 
-        /*
-         * JSP 이동
-         */
         return "apt/mgmtOffice/mngrResidentNotice";
     }
 
@@ -104,33 +151,35 @@ public class MngrResidentNoticeController {
      * @return 공지사항 목록 화면 redirect
      * @throws Exception 파일 업로드 및 저장 예외
      */
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @PostMapping("/notice/insert")
+    @PostMapping("/notice/insert/{mgmtOfcNo}")
     public String insertNotice(
-            @RequestParam String mgmtOfcNo,
+            @PathVariable("mgmtOfcNo") String mgmtOfcNo,
             MngrRegidentNoticeDTO dto,
-            @RequestParam(value = "uploadFile", required = false)
-            MultipartFile uploadFile,
-            @AuthenticationPrincipal CustomUser customUser
-    ) throws Exception {
+            @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile,
+            @AuthenticationPrincipal CustomUser customUser,
+            RedirectAttributes ra
+    ) {
+        try {
+            mngrRegidentNoticeService.setManagerNoticeBaseInfo(dto, customUser, mgmtOfcNo);
+            int result = mngrRegidentNoticeService.insertNotice(dto, uploadFile);
 
-        /*
-         * 현재 로그인 관리사무소 정보 세팅.
-         */
-        mngrRegidentNoticeService.setManagerNoticeBaseInfo(
-                dto,
-                customUser,
-                mgmtOfcNo
-        );
+            /*
+             * 처리 결과 메시지
+             * → redirect 후 JSP에서 모달로 보여줄 값.
+             */
+            if (result > 0) {
+                ra.addFlashAttribute("modalMsg", "공지사항이 등록되었습니다.");
+                ra.addFlashAttribute("modalType", "success");
+            } else {
+                ra.addFlashAttribute("modalMsg", "공지사항 등록에 실패했습니다.");
+                ra.addFlashAttribute("modalType", "fail");
+            }
 
-        /*
-         * 공지 저장
-         */
-        mngrRegidentNoticeService.insertNotice(dto, uploadFile);
+        } catch (Exception e) {
+            ra.addFlashAttribute("modalMsg", "공지사항 등록 중 오류가 발생했습니다.");
+            ra.addFlashAttribute("modalType", "fail");
+        }
 
-        /*
-         * 저장 후 목록 재조회
-         */
         return "redirect:/mgmtOffice/mngrResidentNotice/" + mgmtOfcNo;
     }
 
@@ -184,31 +233,31 @@ public class MngrResidentNoticeController {
      * @param customUser 로그인 사용자 정보
      * @return 공지사항 목록 화면 redirect
      */
+    @PostMapping("/notice/update/{mgmtOfcNo}")
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @PostMapping("/notice/update")
     public String updateNotice(
-            @RequestParam String mgmtOfcNo,
+            @PathVariable("mgmtOfcNo") String mgmtOfcNo,
             MngrRegidentNoticeDTO dto,
-            @AuthenticationPrincipal CustomUser customUser
+            @AuthenticationPrincipal CustomUser customUser,
+            RedirectAttributes ra
     ) {
+        try {
+            mngrRegidentNoticeService.setManagerNoticeBaseInfo(dto, customUser, mgmtOfcNo);
+            int result = mngrRegidentNoticeService.updateNotice(dto);
 
-        /*
-         * 현재 로그인 사용자 기준 boardNo 세팅.
-         */
-        mngrRegidentNoticeService.setManagerNoticeBaseInfo(
-                dto,
-                customUser,
-                mgmtOfcNo
-        );
+            if (result > 0) {
+                ra.addFlashAttribute("modalMsg", "공지사항이 수정되었습니다.");
+                ra.addFlashAttribute("modalType", "success");
+            } else {
+                ra.addFlashAttribute("modalMsg", "수정할 공지사항을 찾을 수 없습니다.");
+                ra.addFlashAttribute("modalType", "fail");
+            }
 
-        /*
-         * 수정 실행
-         */
-        mngrRegidentNoticeService.updateNotice(dto);
+        } catch (Exception e) {
+            ra.addFlashAttribute("modalMsg", "공지사항 수정 중 오류가 발생했습니다.");
+            ra.addFlashAttribute("modalType", "fail");
+        }
 
-        /*
-         * 수정 후 목록 이동
-         */
         return "redirect:/mgmtOffice/mngrResidentNotice/" + mgmtOfcNo;
     }
 
@@ -220,38 +269,34 @@ public class MngrResidentNoticeController {
      * @param customUser 로그인 사용자 정보
      * @return 공지사항 목록 화면 redirect
      */
+    @PostMapping("/notice/delete/{mgmtOfcNo}")
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @PostMapping("/notice/delete")
     public String deleteNotice(
-            @RequestParam String mgmtOfcNo,
-            @RequestParam String annNo,
-            @AuthenticationPrincipal CustomUser customUser
+            @PathVariable("mgmtOfcNo") String mgmtOfcNo,
+            @RequestParam("annNo") String annNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            RedirectAttributes ra
     ) {
+        try {
+            MngrRegidentNoticeDTO dto = new MngrRegidentNoticeDTO();
+            dto.setAnnNo(annNo);
 
-        /*
-         * 삭제 조건 DTO 생성
-         */
-        MngrRegidentNoticeDTO dto = new MngrRegidentNoticeDTO();
+            mngrRegidentNoticeService.setManagerNoticeBaseInfo(dto, customUser, mgmtOfcNo);
+            int result = mngrRegidentNoticeService.deleteNotice(dto);
 
-        dto.setAnnNo(annNo);
+            if (result > 0) {
+                ra.addFlashAttribute("modalMsg", "공지사항이 삭제되었습니다.");
+                ra.addFlashAttribute("modalType", "success");
+            } else {
+                ra.addFlashAttribute("modalMsg", "삭제할 공지사항을 찾을 수 없습니다.");
+                ra.addFlashAttribute("modalType", "fail");
+            }
 
-        /*
-         * 현재 관리사무소 boardNo 세팅.
-         */
-        mngrRegidentNoticeService.setManagerNoticeBaseInfo(
-                dto,
-                customUser,
-                mgmtOfcNo
-        );
+        } catch (Exception e) {
+            ra.addFlashAttribute("modalMsg", "공지사항 삭제 중 오류가 발생했습니다.");
+            ra.addFlashAttribute("modalType", "fail");
+        }
 
-        /*
-         * 삭제 실행
-         */
-        mngrRegidentNoticeService.deleteNotice(dto);
-
-        /*
-         * 삭제 후 목록 재조회
-         */
         return "redirect:/mgmtOffice/mngrResidentNotice/" + mgmtOfcNo;
     }
 }

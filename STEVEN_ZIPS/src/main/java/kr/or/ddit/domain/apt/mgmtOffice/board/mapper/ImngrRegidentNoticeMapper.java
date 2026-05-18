@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ImngrRegidentNoticeMapper {
@@ -27,4 +28,6 @@ public interface ImngrRegidentNoticeMapper {
     String selectAptCmplexNoByMgmtOfcNo(String mgmtOfcNo);
 
     String selectNoticeBoardNoByAptCmplexNo(String aptCmplexNo);
+
+    String selectNoticeWriterName(Map<String, Object> paramMap);
 }

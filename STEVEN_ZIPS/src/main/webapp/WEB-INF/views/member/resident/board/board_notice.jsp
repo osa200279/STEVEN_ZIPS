@@ -28,7 +28,7 @@
     .grid-2 {display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-bottom:22px;} .grid-2.equal {grid-template-columns:1fr 1fr;} .grid-3 {display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;}
     .section-hd {display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);} .section-hd h3 {margin:0;font-size:15px;font-weight:800;color:var(--text-dark);} .section-hd span {font-size:12px;color:var(--text-light);} .card,.panel {padding:20px;margin-bottom:20px;}
     .bullet-list {margin:0;padding-left:18px;color:var(--text-mid);line-height:1.8;font-size:13px;} .bullet-list li + li {margin-top:6px;}
-    .data-table {width:100%;border-collapse:collapse;font-size:13px;background:#fff;overflow:hidden;border-radius:12px;} .data-table thead th {background:var(--green-pale);color:var(--text-mid);padding:12px 14px;text-align:left;font-weight:700;border-bottom:1px solid var(--border);} .data-table tbody td {padding:13px 14px;border-bottom:1px solid #edf0eb;color:var(--text-dark);vertical-align:top;} .data-table tbody tr:last-child td {border-bottom:none;} .mini-table td,.mini-table th {padding:10px 12px !important;}
+    .data-table {width:100%;border-collapse:collapse;font-size:13px;background:#fff;overflow:hidden;border-radius:12px;} .data-table thead th {background: var(--green-pale);color: var(--text-mid);padding: 12px 14px;text-align: center;font-weight: 700;border-bottom: 1px solid var(--border);} .data-table tbody td {padding:13px 14px;border-bottom:1px solid #edf0eb;color:var(--text-dark);vertical-align:top;} .data-table tbody tr:last-child td {border-bottom:none;} .mini-table td,.mini-table th {padding:10px 12px !important;}
     .label-grid {display:grid;grid-template-columns:160px 1fr 160px 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);overflow:hidden;border-radius:12px;margin-bottom:18px;} .label-grid div {padding:13px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:13px;} .label-grid .th {background:var(--green-pale);color:var(--text-mid);font-weight:700;}
     .form-grid {display:grid;grid-template-columns:160px 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);overflow:hidden;border-radius:12px;} .form-grid .th,.form-grid .td {padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);} .form-grid .th {background:var(--green-pale);color:var(--text-mid);font-size:13px;font-weight:700;}
     .fake-input,.fake-select,.fake-textarea {width:100%;border:1px solid #d8ddd4;background:#fff;border-radius:10px;padding:11px 13px;font-size:13px;color:var(--text-dark);box-sizing:border-box;} .fake-textarea {min-height:110px;resize:vertical;}
@@ -299,6 +299,26 @@
       vertical-align: middle;
     }
 
+    /* 첨부파일 없을 때 '-' 표시 */
+    .notice-no-file {
+      color: #9aa3af;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    /* 테이블 전체 컬럼 기본 중앙정렬 */
+    .data-table th,
+    .data-table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    /* 제목 컬럼만 왼쪽 정렬 */
+    .data-table th.title-col,
+    .data-table td.title-col {
+      text-align: left;
+      padding-left: 26px;
+    }
 
   </style>
 
@@ -406,9 +426,9 @@
             <thead>
             <tr>
               <th>번호</th>
-              <th>제목</th>
+              <th class="title-col">제목</th>
               <th>작성자</th>
-              <th>첨부</th>
+              <th>첨부파일</th>
               <th>작성일</th>
               <th>조회수</th>
             </tr>
@@ -434,8 +454,7 @@
                                 - ((pagingVO.currentPage - 1) * pagingVO.screenSize)
                                 - status.index}
                     </td>
-
-                    <td>
+                    <td class="title-col">
                       <a href="${pageContext.request.contextPath}/resident/board/notice/detail/${aptCmplexNo}/${notice.annNo}"
                          style="color:var(--text-dark); text-decoration:none; font-weight:700;">
 
@@ -451,12 +470,18 @@
 
                     <td>
                       <c:choose>
+
                         <c:when test="${not empty notice.atchFileId}">
-                          <span class="notice-attach-icon has-file" title="첨부파일 있음">📎</span>
+                          <span class="notice-attach-icon has-file"
+                                title="첨부파일 있음">
+                            📎
+                          </span>
                         </c:when>
+
                         <c:otherwise>
-                          <span class="notice-attach-icon no-file" title="첨부파일 없음">📎</span>
+                          <span class="notice-no-file">-</span>
                         </c:otherwise>
+
                       </c:choose>
                     </td>
 
