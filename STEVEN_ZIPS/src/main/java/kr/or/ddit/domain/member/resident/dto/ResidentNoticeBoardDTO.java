@@ -37,5 +37,4 @@ public class ResidentNoticeBoardDTO {
 
     private String topFixYn;    // 상단고정여부, Y이면 긴급 공지로 표시
 
-
 }

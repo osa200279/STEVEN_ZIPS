@@ -53,28 +53,28 @@
       margin-bottom: 24px;
     }
 
-    /* 날짜 input 고정 */
+    /* 날짜 input 너비 */
     .notice-search-date {
-      width: 220px;      /* 날짜는 고정 */
-      flex: 0 0 220px;
+      width: 95px;
+      flex: 0 0 95px;
     }
 
-    /* 제목 검색만 늘어나게 */
+    /* 제목 검색 너비 */
     .notice-search-keyword {
       flex: 1;
-      min-width: 260px;
-      max-width: 420px;  /* 최대 너비 제한 */
+      min-width: 700px;
+      max-width: 1400px;
     }
 
     /* input 공통 */
     .notice-search-input {
       width: 100%;
-      height: 64px;
-      padding: 0 28px;
+      height: 52px;
+      padding: 0 14px;
       border: none;
       border-radius: 32px;
       background: #f0f3ef;
-      font-size: 20px;
+      font-size: 15px;
       font-weight: 500;
       box-sizing: border-box;
     }
@@ -325,6 +325,7 @@
           <input type="hidden" name="currentPage" value="${pagingVO.currentPage}">
 
           <input type="date"
+                 id="searchStartDt"
                  name="searchStartDt"
                  class="notice-search-input notice-search-date"
                  value="${searchStartDt}">
@@ -332,6 +333,7 @@
           <span class="notice-search-tilde">~</span>
 
           <input type="date"
+                 id="searchEndDt"
                  name="searchEndDt"
                  class="notice-search-input notice-search-date"
                  value="${searchEndDt}">
@@ -405,7 +407,7 @@
             <tr>
               <th>번호</th>
               <th>제목</th>
-              <th>글쓴이</th>
+              <th>작성자</th>
               <th>첨부</th>
               <th>작성일</th>
               <th>조회수</th>
@@ -434,9 +436,7 @@
                     </td>
 
                     <td>
-                      <a href="javascript:void(0);"
-                         class="notice-title-link"
-                         data-ann-no="${notice.annNo}"
+                      <a href="${pageContext.request.contextPath}/resident/board/notice/detail/${aptCmplexNo}/${notice.annNo}"
                          style="color:var(--text-dark); text-decoration:none; font-weight:700;">
 
                         <c:if test="${notice.topFixYn eq 'Y'}">
@@ -618,6 +618,45 @@
           form.submit();
         });
       });
+    });
+
+
+    /*
+ * 시작일보다 종료일이 빠르면 검색을 막는다.
+ * → 2026-05-20 ~ 2026-05-10 같은 잘못된 기간 검색을 방지하기 위해.
+ */
+    const noticeSearchForm = document.querySelector(".notice-search-wrap");
+    const searchStartDt = document.getElementById("searchStartDt");
+    const searchEndDt = document.getElementById("searchEndDt");
+
+    noticeSearchForm.addEventListener("submit", function(e) {
+      if (searchStartDt.value && searchEndDt.value) {
+        if (searchStartDt.value > searchEndDt.value) {
+          e.preventDefault();
+          alert("종료일은 시작일보다 같거나 뒤 날짜여야 합니다.");
+          searchEndDt.focus();
+        }
+      }
+    });
+
+    /*
+     * 시작일 선택 시
+     * 종료일은 시작일 이전 날짜 선택 불가
+     */
+    searchStartDt.addEventListener("change", function() {
+
+      /*
+       * min 속성
+       * → 선택 가능한 최소 날짜 제한
+       */
+      searchEndDt.min = this.value;
+
+      /*
+       * 이미 선택된 종료일이 시작일보다 빠르면 초기화
+       */
+      if (searchEndDt.value && searchEndDt.value < this.value) {
+        searchEndDt.value = "";
+      }
     });
   </script>
 </body>

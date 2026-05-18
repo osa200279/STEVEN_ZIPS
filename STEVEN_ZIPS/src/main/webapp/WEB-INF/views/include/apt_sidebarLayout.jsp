@@ -228,14 +228,15 @@
       </div>
     </details>
 
-    <details class="side-nav-item group" ${fn:contains(pageContext.request.requestURI, '/resident/apt') ? 'open="open"' : ''}>
-      <summary class="flex items-center justify-between px-4 py-3 rounded-full cursor-pointer hover:bg-primary/5 transition-colors text-on-surface">
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-primary">forum</span>
-          <span class="font-label font-bold text-sm">입주민 게시판</span>
-        </div>
-        <span class="material-symbols-outlined text-sm expand-icon transition-transform">expand_more</span>
-      </summary>
+        <%-- 왼쪽 사이드바에 현재페이지 활성화 --%>
+        <details class="side-nav-item group">
+        <summary class="flex items-center justify-between px-4 py-3 rounded-full cursor-pointer hover:bg-primary/5 transition-colors text-on-surface">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary">forum</span>
+            <span class="font-label font-bold text-sm">입주민 게시판</span>
+          </div>
+          <span class="material-symbols-outlined text-sm expand-icon transition-transform">expand_more</span>
+        </summary>
       <div class="block w-full flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/apt/ann') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}">공지사항</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/apt/apt') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/board/free/${aptCmplexNo}">자유게시판</a>
@@ -263,6 +264,37 @@
 <script>
   const details = document.querySelectorAll('.side-nav-item');
 
+  /*
+   * 현재 URL 기준으로 사이드바 메뉴 자동 활성화
+   *
+   * currentPath란?
+   * → 현재 접속한 주소의 경로.
+   * 예: /resident/board/notice/A10023118
+   */
+  const currentPath = window.location.pathname;
+
+  document.querySelectorAll('aside nav a').forEach(function(link) {
+    const linkPath = new URL(link.href).pathname;
+
+    /*
+     * startsWith란?
+     * → 현재 URL이 메뉴 URL로 시작하는지 확인.
+     */
+    if (currentPath === linkPath || currentPath.startsWith(linkPath + "/")) {
+      link.classList.add('bg-primary/5', 'text-primary', 'font-bold');
+      link.classList.remove('text-on-surface-variant/80');
+
+      const parentDetail = link.closest('details');
+
+      if (parentDetail) {
+        parentDetail.open = true;
+      }
+    }
+  });
+
+  /*
+   * 사용자가 한 메뉴를 열면 다른 메뉴는 닫기
+   */
   details.forEach((targetDetail) => {
     targetDetail.addEventListener('click', () => {
       details.forEach((detail) => {

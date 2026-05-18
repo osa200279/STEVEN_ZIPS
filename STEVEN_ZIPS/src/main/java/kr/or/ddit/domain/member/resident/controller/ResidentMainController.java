@@ -152,7 +152,8 @@ public class ResidentMainController {
             aptCmplexNo = residentFacilityService.getResidentAptCmplexNo(userNo);
         }
 
-        int screenSize = 5;
+        /* 공지게시글 수 */
+        int screenSize = 10;
         int startRow = (currentPage - 1) * screenSize + 1;
         int endRow = currentPage * screenSize;
 
@@ -904,7 +905,7 @@ public class ResidentMainController {
             @RequestParam(value = "searchEndDt", required = false) String searchEndDt,
             Model model
     ) {
-        PaginationInfoVO<ResidentNoticeBoardDTO> pagingVO = new PaginationInfoVO<>(5, 5);
+        PaginationInfoVO<ResidentNoticeBoardDTO> pagingVO = new PaginationInfoVO<>(10, 5);
         // 10: 한 페이지에 10개 출력
         // 5: 페이지 번호를 5개 단위로 출력
 
@@ -939,6 +940,55 @@ public class ResidentMainController {
         model.addAttribute("searchEndDt", searchEndDt);
 
         return "member/resident/board/board_notice";
+    }
+
+    /**
+     * 입주민 공지사항 상세 조회 페이지
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/board/notice/detail/{aptCmplexNo}/{annNo}")
+    public String boardNoticeDetail(
+            @PathVariable String aptCmplexNo,
+            @PathVariable String annNo,
+            Model model
+    ) {
+
+        /*
+         * DTO 생성
+         * → 검색조건/조회조건 담는 객체
+         */
+        ResidentNoticeBoardDTO searchDTO = new ResidentNoticeBoardDTO();
+
+        searchDTO.setAptCmplexNo(aptCmplexNo);
+        searchDTO.setAnnNo(annNo);
+
+        /*
+         * 공지 상세 조회
+         */
+        ResidentNoticeBoardDTO notice =
+                residentNoticeBoardService.selectResidentBoardNoticeDetail(searchDTO);
+
+        /*
+         * 이전글 / 다음글 조회
+         */
+        ResidentNoticeBoardDTO prevNotice =
+                residentNoticeBoardService.selectPrevResidentNotice(searchDTO);
+
+        ResidentNoticeBoardDTO nextNotice =
+                residentNoticeBoardService.selectNextResidentNotice(searchDTO);
+
+        /*
+         * JSP로 데이터 전달
+         */
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
+        model.addAttribute("notice", notice);
+        model.addAttribute("prevNotice", prevNotice);
+        model.addAttribute("nextNotice", nextNotice);
+
+        /*
+         * 이동할 JSP
+         */
+        return "member/resident/board/board_notice_detail";
     }
 
     /**
@@ -1022,6 +1072,7 @@ public class ResidentMainController {
     public String statsApartment() {
         return "member/resident/stats_apartment";
     }
+
 
 
 

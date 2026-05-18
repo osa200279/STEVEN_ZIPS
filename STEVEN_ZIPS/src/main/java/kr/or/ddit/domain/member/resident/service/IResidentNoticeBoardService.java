@@ -11,4 +11,8 @@ public interface IResidentNoticeBoardService {
     List<ResidentNoticeBoardDTO> selectResidentBoardNoticeList(ResidentNoticeBoardDTO searchDTO);
 
     ResidentNoticeBoardDTO selectResidentBoardNoticeDetail(ResidentNoticeBoardDTO searchDTO);
+
+    ResidentNoticeBoardDTO selectPrevResidentNotice(ResidentNoticeBoardDTO searchDTO);
+
+    ResidentNoticeBoardDTO selectNextResidentNotice(ResidentNoticeBoardDTO searchDTO);
 }

@@ -15,4 +15,8 @@ public interface IResidentNoticeBoardMapper {
     ResidentNoticeBoardDTO selectResidentBoardNoticeDetail(ResidentNoticeBoardDTO searchDTO);
 
     int updateResidentBoardNoticeInqCnt(ResidentNoticeBoardDTO searchDTO);
+
+    ResidentNoticeBoardDTO selectPrevResidentNotice(ResidentNoticeBoardDTO searchDTO);
+
+    ResidentNoticeBoardDTO selectNextResidentNotice(ResidentNoticeBoardDTO searchDTO);
 }

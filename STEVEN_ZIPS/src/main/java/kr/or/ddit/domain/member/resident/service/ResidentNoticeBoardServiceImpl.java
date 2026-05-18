@@ -38,4 +38,15 @@ public class ResidentNoticeBoardServiceImpl implements IResidentNoticeBoardServi
 
         return residentBoardNoticeMapper.selectResidentBoardNoticeDetail(searchDTO);
     }
+
+    @Override
+    public ResidentNoticeBoardDTO selectPrevResidentNotice(ResidentNoticeBoardDTO searchDTO) {
+        return residentBoardNoticeMapper.selectPrevResidentNotice(searchDTO);
+    }
+
+    @Override
+    public ResidentNoticeBoardDTO selectNextResidentNotice(ResidentNoticeBoardDTO searchDTO) {
+        return residentBoardNoticeMapper.selectNextResidentNotice(searchDTO);
+    }
+
 }
