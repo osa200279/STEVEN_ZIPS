@@ -1,0 +1,40 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%--
+    기존 점검 이력 상세 모달
+    - 왼쪽 이력 목록의 보기 버튼 클릭 시 해당 이력 1건만 표시함
+    - manager-common.js 기준 닫기 속성(data-modal-close)을 사용함
+--%>
+<div class="modal-overlay" id="historyDetailModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">점검 이력 상세</h3>
+            <button type="button" class="modal-close" data-modal-close>
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <table class="info-compact">
+                <tr>
+                    <th>이력번호</th>
+                    <td><span class="mono" id="modalHistoryNo">-</span></td>
+                    <th>점검일자</th>
+                    <td><span id="modalHistoryDt">-</span></td>
+                </tr>
+                <tr>
+                    <th>점검유형</th>
+                    <td><span id="modalHistoryTy">-</span></td>
+                    <th>점검상태</th>
+                    <td><span id="modalHistoryStts">-</span></td>
+                </tr>
+                <tr>
+                    <th>점검내용</th>
+                    <td colspan="3"><span id="modalHistoryCn">-</span></td>
+                </tr>
+                <tr>
+                    <th>비고</th>
+                    <td colspan="3"><span id="modalHistoryRmk">-</span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

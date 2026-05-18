@@ -6,6 +6,7 @@ import lombok.Data;
  * 시설 점검 이력 VO
  * - FACILITY_CHECK_HSTRY 테이블 기준 CRUD
  * - 목록/상세 화면에서 필요한 FACILITY, PARTNER, COMMON_CODE 조인 표시값 포함
+ * - 시설 선택 모달, 협력업체 선택 모달 검색 조건 포함
  */
 @Data
 public class FacilityCheckHstryVO {
@@ -103,4 +104,24 @@ public class FacilityCheckHstryVO {
     /** 현황 카드 이상발견 건수 */
     private Integer faultCnt;
 
+    /** 동 번호 */
+    private String dongNo;
+
+    /** 동 이름 */
+    private String dongNm;
+
+    /** 시설 선택 모달 검색어 */
+    private String facilitySearchWord;
+
+    /** 시설 선택 모달 사용여부 검색 조건 */
+    private String facilityUseYn;
+
+    /** 시설 선택 모달 위치 검색 조건 */
+    private String facilityLocCn;
+
+    /** 협력업체 선택 모달 사용여부 검색 조건 */
+    private String partnerUseYn;
+
+    /** 협력업체 선택 모달 검색어 */
+    private String partnerSearchWord;
 }

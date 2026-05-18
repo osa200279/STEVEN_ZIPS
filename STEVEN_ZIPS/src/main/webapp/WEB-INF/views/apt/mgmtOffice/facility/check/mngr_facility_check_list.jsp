@@ -96,14 +96,7 @@
                         <h2>시설 점검 이력</h2>
                         <p>시설별 점검일자, 점검유형, 점검상태, 협력업체 정보를 관리합니다.</p>
                     </div>
-                    <div class="page-actions">
-                        <%-- ADMIN은 조회 전용이므로 등록 버튼 숨김 --%>
-                        <sec:authorize access="!hasRole('ADMIN')">
-                            <button type="button" id="registerBtn" class="btn btn-primary">
-                                <span class="material-symbols-rounded">add</span>점검 이력 등록
-                            </button>
-                        </sec:authorize>
-                    </div>
+                    <div class="page-actions"></div>
                 </div>
 
                 <%-- 현황 카드 - 요약 확인용이며 클릭 필터 기능 없음 --%>
@@ -183,8 +176,18 @@
                     <div class="panel-header">
                         <div style="display:flex;align-items:center;gap:8px;">
                             <h3 class="panel-title"><span class="material-symbols-rounded">fact_check</span>시설 점검 이력 목록</h3>
-                            <span class="list-count">${pagingVO.totalRecord}건</span>
+                            <span class="list-count">
+                                ${pagingVO.totalRecord}건
+                                <c:if test="${pagingVO.totalRecord ne summary.totalCnt}">
+                                    / 전체 ${summary.totalCnt}건
+                                </c:if>
+                            </span>
                         </div>
+                        <sec:authorize access="!hasRole('ADMIN')">
+                            <a href="${ctx}/manager/checkHistory/register/${mgmtOfcNo}" class="btn btn-primary">
+                                <span class="material-symbols-rounded">add</span>점검 이력 등록
+                            </a>
+                        </sec:authorize>
                     </div>
                     <div class="table-wrap">
                         <table class="tbl">
@@ -240,7 +243,7 @@
 
                                                         <%-- ADMIN은 조회 전용이므로 수정 버튼 숨김 --%>
                                                     <sec:authorize access="!hasRole('ADMIN')">
-                                                        <a class="btn" href="${ctx}/manager/checkHistory/update/${mgmtOfcNo}/${check.facChkHstryNo}">수정</a>
+                                                        <a class="btn btn-primary" href="${ctx}/manager/checkHistory/update/${mgmtOfcNo}/${check.facChkHstryNo}">수정</a>
                                                     </sec:authorize>
                                                 </div>
                                             </td>
@@ -275,8 +278,5 @@
         });
     });
 </script>
-
-<%-- 등록 모달: registerBtn 버튼과 연결됨 --%>
-<%@ include file="/WEB-INF/views/apt/mgmtOffice/facility/check/facility_check_register_modal.jspf" %>
 </body>
 </html>

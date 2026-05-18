@@ -103,6 +103,26 @@
         #chkDetailPage .badge-done { background:#dceee0; color:#1f7a3f; border-color:#c7e4cf; }
         #chkDetailPage .badge-fault { background:#fee2e2; color:#b42318; border-color:#fecaca; }
 
+
+        /* 상세 화면 좌측 이력: 간략 표 + 모달 상세보기 */
+        #chkDetailPage .history-table-wrap { max-height:402px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; background:#fff; }
+        #chkDetailPage .history-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+        #chkDetailPage .history-table th { height:34px; padding:0 7px; border-bottom:1px solid var(--line); background:var(--th-bg); color:#4a5c4e; font-size:11px; font-weight:800; text-align:center; white-space:nowrap; }
+        #chkDetailPage .history-table td { height:38px; padding:6px 7px; border-bottom:1px solid #eef1f3; color:#243027; font-size:11px; text-align:center; vertical-align:middle; }
+        #chkDetailPage .history-table tr:last-child td { border-bottom:none; }
+        #chkDetailPage .history-table .is-current td { font-weight:800; background:#f4fbf5; }
+        #chkDetailPage .history-table .btn { min-height:26px; height:26px; padding:0 9px; font-size:11px; }
+
+        /* 상세 모달 */
+        #chkDetailPage .modal-overlay { display:none; position:fixed; inset:0; z-index:1000; align-items:center; justify-content:center; padding:24px; background:rgba(15,23,42,.35); box-sizing:border-box; }
+        #chkDetailPage .modal-overlay.open,
+        #chkDetailPage .modal-overlay.is-open { display:flex; }
+        #chkDetailPage .modal { width:min(760px, 96vw); max-height:84vh; display:flex; flex-direction:column; background:#fff; border:1px solid var(--line); border-radius:8px; box-shadow:0 18px 45px rgba(15,23,42,.25); overflow:hidden; }
+        #chkDetailPage .modal-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--line); }
+        #chkDetailPage .modal-title { margin:0; color:var(--text-head); font-size:14px; font-weight:900; }
+        #chkDetailPage .modal-close { border:0; background:transparent; cursor:pointer; color:#66736a; }
+        #chkDetailPage .modal-body { padding:14px 16px; overflow:auto; }
+
         /* 버튼 */
         #chkDetailPage .btn { display:inline-flex; align-items:center; justify-content:center; gap:4px; min-height:34px; height:34px; padding:0 14px; border-radius:4px; border:1px solid var(--line); background:var(--surface); color:#39443d; font-size:12px; font-weight:700; cursor:pointer; text-decoration:none; box-sizing:border-box; }
         #chkDetailPage .btn:hover { background:#f4f7f4; }
@@ -240,60 +260,61 @@
                                     <div class="split-title">
                                         <span class="material-symbols-rounded">history</span>같은 시설의 점검 이력
                                     </div>
-                                    <div class="split-desc">최근 점검 흐름</div>
+                                    <div class="split-desc">간략 이력</div>
                                 </div>
 
-                                <div class="history-list">
-                                    <c:choose>
-                                        <c:when test="${not empty sameFacilityCheckList}">
-                                            <c:forEach var="history" items="${sameFacilityCheckList}">
-                                                <a class="history-item ${history.facChkHstryNo eq check.facChkHstryNo ? 'is-current' : ''}"
-                                                   href="${ctx}/manager/checkHistory/detail/${mgmtOfcNo}/${history.facChkHstryNo}">
-                                                    <div class="history-date">${empty history.chkDt ? '-' : history.chkDt}</div>
-                                                    <div class="history-main">
-                                                        <div class="history-meta">
-                                                            <span class="history-type">${empty history.chkTyNm ? '-' : history.chkTyNm}</span>
+                                <div class="history-table-wrap">
+                                    <table class="history-table">
+                                        <colgroup>
+                                            <col style="width:28%;">
+                                            <col style="width:27%;">
+                                            <col style="width:23%;">
+                                            <col style="width:22%;">
+                                        </colgroup>
+                                        <thead>
+                                        <tr>
+                                            <th>점검일자</th>
+                                            <th>점검유형</th>
+                                            <th>상태</th>
+                                            <th>상세</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <c:choose>
+                                            <c:when test="${not empty sameFacilityCheckList}">
+                                                <c:forEach var="history" items="${sameFacilityCheckList}">
+                                                    <tr class="${history.facChkHstryNo eq check.facChkHstryNo ? 'is-current' : ''}">
+                                                        <td>${empty history.chkDt ? '-' : history.chkDt}</td>
+                                                        <td>${empty history.chkTyNm ? '-' : history.chkTyNm}</td>
+                                                        <td>
                                                             <span class="badge ${history.chkSttsCd eq 'WAIT' ? 'badge-wait' : history.chkSttsCd eq 'ING' ? 'badge-ing' : history.chkSttsCd eq 'DONE' ? 'badge-done' : history.chkSttsCd eq 'FAULT' ? 'badge-fault' : 'badge-wait'}">
                                                                     ${empty history.chkSttsNm ? '-' : history.chkSttsNm}
                                                             </span>
-                                                        </div>
-                                                        <span class="history-partner">${empty history.partnerNm ? '-' : history.partnerNm}</span>
-                                                        <span class="history-content">${empty history.chkCn ? '-' : history.chkCn}</span>
-                                                    </div>
-                                                </a>
-                                            </c:forEach>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <%-- DB 연결 전 화면 확인용 샘플 행 --%>
-                                            <div class="history-item is-current">
-                                                <div class="history-date">${empty check.chkDt ? '2026.05.17' : check.chkDt}</div>
-                                                <div class="history-main">
-                                                    <div class="history-meta">
-                                                        <span class="history-type">${empty check.chkTyNm ? '정기점검' : check.chkTyNm}</span>
-                                                        <span class="badge ${check.chkSttsCd eq 'FAULT' ? 'badge-fault' : check.chkSttsCd eq 'ING' ? 'badge-ing' : 'badge-done'}">${empty check.chkSttsNm ? '점검완료' : check.chkSttsNm}</span>
-                                                    </div>
-                                                    <span class="history-partner">${empty check.partnerNm ? '대한시설관리' : check.partnerNm}</span>
-                                                    <span class="history-content">${empty check.chkCn ? '공용부 설비 상태 및 안전 점검을 진행했습니다.' : check.chkCn}</span>
-                                                </div>
-                                            </div>
-                                            <div class="history-item">
-                                                <div class="history-date">2026.05.10</div>
-                                                <div class="history-main">
-                                                    <div class="history-meta">
-                                                        <span class="history-type">보수점검</span>
-                                                        <span class="badge badge-fault">이상발견</span>
-                                                    </div>
-                                                    <span class="history-partner">대한시설관리</span>
-                                                    <span class="history-content">점검 중 일부 부품 이상이 확인되어 후속 조치가 필요합니다.</span>
-                                                </div>
-                                            </div>
-                                        </c:otherwise>
-                                    </c:choose>
+                                                        </td>
+                                                        <td>
+                                                            <button type="button"
+                                                                    class="btn history-detail-btn"
+                                                                    data-history-no="${fn:escapeXml(history.facChkHstryNo)}"
+                                                                    data-check-date="${fn:escapeXml(history.chkDt)}"
+                                                                    data-check-type="${fn:escapeXml(history.chkTyNm)}"
+                                                                    data-check-status="${fn:escapeXml(history.chkSttsNm)}"
+                                                                    data-check-content="${fn:escapeXml(history.chkCn)}"
+                                                                    data-check-remark="${fn:escapeXml(history.rmk)}">
+                                                                보기
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <tr>
+                                                    <td colspan="4">같은 시설의 점검 이력이 없습니다.</td>
+                                                </tr>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        </tbody>
+                                    </table>
                                 </div>
-
-                                <c:if test="${empty sameFacilityCheckList}">
-                                    <div class="sample-note">※ 같은 시설 이력 조회 연결 전 화면 확인용 샘플 2건입니다.</div>
-                                </c:if>
                             </div>
 
                             <%-- 현재 점검 결과 --%>
@@ -359,12 +380,48 @@
 
                 <div class="detail-actions">
                     <a class="btn" href="${ctx}/manager/checkHistory/${mgmtOfcNo}">목록</a>
-                    <a class="btn btn-primary" href="${ctx}/manager/checkHistory/update/${mgmtOfcNo}/${check.facChkHstryNo}">수정</a>
+                    <%-- ADMIN은 조회 전용이므로 수정 버튼 숨김 --%>
+                    <sec:authorize access="!hasRole('ADMIN')">
+                        <a class="btn btn-primary" href="${ctx}/manager/checkHistory/update/${mgmtOfcNo}/${check.facChkHstryNo}">수정</a>
+                    </sec:authorize>
                 </div>
+
+                <%-- 같은 시설 이력 상세 모달 --%>
+                <%@ include file="/WEB-INF/views/apt/mgmtOffice/facility/check/facility_check_history_modal.jspf" %>
+
 
             </div>
         </main>
     </div>
 </div>
+
+<script src="${ctx}/js/manager/manager-common.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        /* 값이 없을 때 표시값 보정 */
+        function safeText(value) {
+            return value && String(value).trim() ? String(value) : "-";
+        }
+
+        /* 이력 보기 버튼 클릭 시 모달에 상세값 세팅 */
+        document.addEventListener("click", function (event) {
+            var button = event.target.closest(".history-detail-btn");
+            if (!button) return;
+
+            document.getElementById("modalHistoryNo").textContent = safeText(button.getAttribute("data-history-no"));
+            document.getElementById("modalHistoryDt").textContent = safeText(button.getAttribute("data-check-date"));
+            document.getElementById("modalHistoryTy").textContent = safeText(button.getAttribute("data-check-type"));
+            document.getElementById("modalHistoryStts").textContent = safeText(button.getAttribute("data-check-status"));
+            document.getElementById("modalHistoryCn").textContent = safeText(button.getAttribute("data-check-content"));
+            document.getElementById("modalHistoryRmk").textContent = safeText(button.getAttribute("data-check-remark"));
+
+            if (typeof window.openModal === "function") {
+                window.openModal("historyDetailModal");
+            } else {
+                document.getElementById("historyDetailModal").classList.add("open");
+            }
+        });
+    });
+</script>
 </body>
 </html>

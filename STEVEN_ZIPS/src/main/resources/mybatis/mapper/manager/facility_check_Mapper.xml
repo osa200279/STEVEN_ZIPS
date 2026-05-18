@@ -9,251 +9,449 @@
     <sql id="facilityCheckListFromWhere">
         from facility_check_hstry fch
         inner join facility f
-                on fch.facility_no = f.facility_no
+        on fch.facility_no = f.facility_no
         inner join partner p
-                on fch.partner_no = p.partner_no
+        on fch.partner_no = p.partner_no
         inner join mgmt_office mo
-                on mo.apt_cmplex_no = f.apt_cmplex_no
+        on mo.apt_cmplex_no = f.apt_cmplex_no
         left join common_code fac_ty
-               on fac_ty.group_code_no = 'FACILITY_TY'
-              and fac_ty.code_no_cd = f.facility_ty_cd
-              and fac_ty.use_yn = 'Y'
+        on fac_ty.group_code_no = 'FACILITY_TY'
+        and fac_ty.code_no_cd = f.facility_ty_cd
+        and fac_ty.use_yn = 'Y'
         left join common_code chk_ty
-               on chk_ty.group_code_no = 'CHECK_TY'
-              and chk_ty.code_no_cd = fch.chk_ty_cd
-              and chk_ty.use_yn = 'Y'
+        on chk_ty.group_code_no = 'CHECK_TY'
+        and chk_ty.code_no_cd = fch.chk_ty_cd
+        and chk_ty.use_yn = 'Y'
         left join common_code chk_stts
-               on chk_stts.group_code_no = 'CHECK_STTS'
-              and chk_stts.code_no_cd = fch.chk_stts_cd
-              and chk_stts.use_yn = 'Y'
+        on chk_stts.group_code_no = 'CHECK_STTS'
+        and chk_stts.code_no_cd = fch.chk_stts_cd
+        and chk_stts.use_yn = 'Y'
         where mo.mgmt_ofc_no = #{searchVO.mgmtOfcNo}
         and p.apt_cmplex_no = f.apt_cmplex_no
+
+        <!-- 통합 검색: 이력번호, 시설번호, 시설명, 업체명, 점검내용 -->
         <if test="searchWord != null and searchWord != ''">
             and (
-                upper(fch.facility_no) like '%' || upper(#{searchWord}) || '%'
-                or upper(f.facility_nm) like '%' || upper(#{searchWord}) || '%'
-                or upper(p.partner_nm) like '%' || upper(#{searchWord}) || '%'
+            upper(fch.fac_chk_hstry_no) like '%' || upper(#{searchWord}) || '%'
+            or upper(fch.facility_no) like '%' || upper(#{searchWord}) || '%'
+            or upper(f.facility_nm) like '%' || upper(#{searchWord}) || '%'
+            or upper(p.partner_nm) like '%' || upper(#{searchWord}) || '%'
+            or upper(fch.chk_cn) like '%' || upper(#{searchWord}) || '%'
             )
         </if>
+
+        <!-- 점검유형 필터 -->
         <if test="searchVO.chkTyCd != null and searchVO.chkTyCd != ''">
             and fch.chk_ty_cd = #{searchVO.chkTyCd}
         </if>
+
+        <!-- 점검상태 필터 -->
         <if test="searchVO.chkSttsCd != null and searchVO.chkSttsCd != ''">
             and fch.chk_stts_cd = #{searchVO.chkSttsCd}
         </if>
+
+        <!-- 점검 시작일 필터 -->
         <if test="searchVO.chkStartDt != null and searchVO.chkStartDt != ''">
             and fch.chk_dt &gt;= to_date(#{searchVO.chkStartDt}, 'yyyy-mm-dd')
         </if>
+
+        <!-- 점검 종료일 필터 -->
         <if test="searchVO.chkEndDt != null and searchVO.chkEndDt != ''">
             and fch.chk_dt &lt; to_date(#{searchVO.chkEndDt}, 'yyyy-mm-dd') + 1
         </if>
     </sql>
 
     <!-- 시설 점검 이력 목록 건수 조회 -->
-    <select id="selectFacilityCheckCount" parameterType="kr.or.ddit.common.model.PaginationInfoVO" resultType="int">
+    <select id="selectFacilityCheckCount"
+            parameterType="kr.or.ddit.common.model.PaginationInfoVO"
+            resultType="int">
         select count(*)
         <include refid="facilityCheckListFromWhere" />
     </select>
 
     <!-- 시설 점검 이력 목록 조회 -->
-    <select id="selectFacilityCheckList" parameterType="kr.or.ddit.common.model.PaginationInfoVO"
+    <select id="selectFacilityCheckList"
+            parameterType="kr.or.ddit.common.model.PaginationInfoVO"
             resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
         select
-            x.fac_chk_hstry_no
-            , x.facility_no
-            , x.facility_nm
-            , x.facility_ty_cd
-            , x.facility_ty_nm
-            , x.partner_no
-            , x.partner_nm
-            , x.chk_ty_cd
-            , x.chk_ty_nm
-            , x.chk_stts_cd
-            , x.chk_stts_nm
-            , x.chk_dt
+        x.fac_chk_hstry_no
+        , x.facility_no
+        , x.facility_nm
+        , x.facility_ty_cd
+        , x.facility_ty_nm
+        , x.partner_no
+        , x.partner_nm
+        , x.biz_ty_nm
+        , x.chk_ty_cd
+        , x.chk_ty_nm
+        , x.chk_stts_cd
+        , x.chk_stts_nm
+        , x.chk_dt
+        , x.chk_cn
         from (
-            select
-                row_number() over(order by fch.chk_dt desc, fch.fac_chk_hstry_no desc) as rn
-                , fch.fac_chk_hstry_no
-                , fch.facility_no
-                , f.facility_nm
-                , f.facility_ty_cd
-                , fac_ty.code_name as facility_ty_nm
-                , fch.partner_no
-                , p.partner_nm
-                , fch.chk_ty_cd
-                , chk_ty.code_name as chk_ty_nm
-                , fch.chk_stts_cd
-                , chk_stts.code_name as chk_stts_nm
-                , to_char(fch.chk_dt, 'yyyy-mm-dd') as chk_dt
-            <include refid="facilityCheckListFromWhere" />
+        select
+        row_number() over(order by fch.chk_dt desc, fch.fac_chk_hstry_no desc) as rn
+        , fch.fac_chk_hstry_no
+        , fch.facility_no
+        , f.facility_nm
+        , f.facility_ty_cd
+        , fac_ty.code_name as facility_ty_nm
+        , fch.partner_no
+        , p.partner_nm
+        , p.biz_ty_nm
+        , fch.chk_ty_cd
+        , chk_ty.code_name as chk_ty_nm
+        , fch.chk_stts_cd
+        , chk_stts.code_name as chk_stts_nm
+        , to_char(fch.chk_dt, 'yyyy-mm-dd') as chk_dt
+        , fch.chk_cn
+        <include refid="facilityCheckListFromWhere" />
         ) x
         where x.rn between #{startRow} and #{endRow}
         order by x.rn
     </select>
 
-
     <!-- 시설 점검 이력 현황 카드 건수 조회 -->
-    <select id="selectFacilityCheckSummary" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+    <select id="selectFacilityCheckSummary"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
         select
-            count(*) as total_cnt
-            , sum(case when fch.chk_stts_cd = 'WAIT' then 1 else 0 end) as wait_cnt
-            , sum(case when fch.chk_stts_cd = 'ING' then 1 else 0 end) as ing_cnt
-            , sum(case when fch.chk_stts_cd = 'FAULT' then 1 else 0 end) as fault_cnt
+            nvl(count(*), 0) as total_cnt
+             , nvl(sum(case when fch.chk_stts_cd = 'WAIT' then 1 else 0 end), 0) as wait_cnt
+             , nvl(sum(case when fch.chk_stts_cd = 'ING' then 1 else 0 end), 0) as ing_cnt
+             , nvl(sum(case when fch.chk_stts_cd = 'FAULT' then 1 else 0 end), 0) as fault_cnt
         from facility_check_hstry fch
-        inner join facility f
-                on fch.facility_no = f.facility_no
-        inner join partner p
-                on fch.partner_no = p.partner_no
-        inner join mgmt_office mo
-                on mo.apt_cmplex_no = f.apt_cmplex_no
+                 inner join facility f
+                            on fch.facility_no = f.facility_no
+                 inner join partner p
+                            on fch.partner_no = p.partner_no
+                 inner join mgmt_office mo
+                            on mo.apt_cmplex_no = f.apt_cmplex_no
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
-        and p.apt_cmplex_no = f.apt_cmplex_no
+          and p.apt_cmplex_no = f.apt_cmplex_no
     </select>
 
     <!-- 시설 점검 이력 상세 조회 -->
-    <select id="selectFacilityCheckDetail" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+    <select id="selectFacilityCheckDetail"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
         select
             fch.fac_chk_hstry_no
-            , fch.facility_no
-            , f.facility_nm
-            , f.facility_ty_cd
-            , fac_ty.code_name as facility_ty_nm
-            , f.loc_cn
-            , to_char(f.instl_dt, 'yyyy-mm-dd') as instl_dt
-            , f.use_yn
-            , fch.partner_no
-            , p.partner_nm
-            , p.biz_ty_nm
-            , p.bizrno
-            , p.pic_nm
-            , p.pic_telno
-            , p.pic_email
-            , fch.chk_ty_cd
-            , chk_ty.code_name as chk_ty_nm
-            , fch.chk_stts_cd
-            , chk_stts.code_name as chk_stts_nm
-            , to_char(fch.chk_dt, 'yyyy-mm-dd') as chk_dt
-            , fch.chk_cn
-            , fch.rmk
-            , to_char(fch.reg_dt, 'yyyy-mm-dd') as reg_dt
-            , to_char(fch.mdf_dt, 'yyyy-mm-dd') as mdf_dt
+             , fch.facility_no
+             , f.facility_nm
+             , f.facility_ty_cd
+             , fac_ty.code_name as facility_ty_nm
+             , f.loc_cn
+             , to_char(f.instl_dt, 'yyyy-mm-dd') as instl_dt
+             , f.use_yn
+             , fch.partner_no
+             , p.partner_nm
+             , p.biz_ty_nm
+             , p.bizrno
+             , p.pic_nm
+             , p.pic_telno
+             , p.pic_email
+             , fch.chk_ty_cd
+             , chk_ty.code_name as chk_ty_nm
+             , fch.chk_stts_cd
+             , chk_stts.code_name as chk_stts_nm
+             , to_char(fch.chk_dt, 'yyyy-mm-dd') as chk_dt
+             , fch.chk_cn
+             , fch.rmk
+             , to_char(fch.reg_dt, 'yyyy-mm-dd') as reg_dt
+             , to_char(fch.mdf_dt, 'yyyy-mm-dd') as mdf_dt
         from facility_check_hstry fch
-        inner join facility f
-                on fch.facility_no = f.facility_no
-        inner join partner p
-                on fch.partner_no = p.partner_no
-        inner join mgmt_office mo
-                on mo.apt_cmplex_no = f.apt_cmplex_no
-        left join common_code fac_ty
-               on fac_ty.group_code_no = 'FACILITY_TY'
-              and fac_ty.code_no_cd = f.facility_ty_cd
-              and fac_ty.use_yn = 'Y'
-        left join common_code chk_ty
-               on chk_ty.group_code_no = 'CHECK_TY'
-              and chk_ty.code_no_cd = fch.chk_ty_cd
-              and chk_ty.use_yn = 'Y'
-        left join common_code chk_stts
-               on chk_stts.group_code_no = 'CHECK_STTS'
-              and chk_stts.code_no_cd = fch.chk_stts_cd
-              and chk_stts.use_yn = 'Y'
+                 inner join facility f
+                            on fch.facility_no = f.facility_no
+                 inner join partner p
+                            on fch.partner_no = p.partner_no
+                 inner join mgmt_office mo
+                            on mo.apt_cmplex_no = f.apt_cmplex_no
+                 left join common_code fac_ty
+                           on fac_ty.group_code_no = 'FACILITY_TY'
+                               and fac_ty.code_no_cd = f.facility_ty_cd
+                               and fac_ty.use_yn = 'Y'
+                 left join common_code chk_ty
+                           on chk_ty.group_code_no = 'CHECK_TY'
+                               and chk_ty.code_no_cd = fch.chk_ty_cd
+                               and chk_ty.use_yn = 'Y'
+                 left join common_code chk_stts
+                           on chk_stts.group_code_no = 'CHECK_STTS'
+                               and chk_stts.code_no_cd = fch.chk_stts_cd
+                               and chk_stts.use_yn = 'Y'
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
-        and fch.fac_chk_hstry_no = #{facChkHstryNo}
+          and p.apt_cmplex_no = f.apt_cmplex_no
+          and fch.fac_chk_hstry_no = #{facChkHstryNo}
     </select>
 
-    <!-- 시설 선택 모달 목록 조회 -->
-    <select id="selectFacilitySelectList" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+    <!-- 시설 선택 모달 기본 목록 조회 -->
+    <select id="selectFacilitySelectList"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
         select
             f.facility_no
-            , f.facility_nm
-            , f.facility_ty_cd
-            , fac_ty.code_name as facility_ty_nm
-            , f.loc_cn
-            , f.use_yn
+             , f.facility_nm
+             , f.facility_ty_cd
+             , fac_ty.code_name as facility_ty_nm
+             , f.dong_no
+             , au.dong_nm
+             , f.loc_cn
+             , f.use_yn
+             , to_char(f.instl_dt, 'yyyy-mm-dd') as instl_dt
         from facility f
-        inner join mgmt_office mo
-                on mo.apt_cmplex_no = f.apt_cmplex_no
-        left join common_code fac_ty
-               on fac_ty.group_code_no = 'FACILITY_TY'
-              and fac_ty.code_no_cd = f.facility_ty_cd
-              and fac_ty.use_yn = 'Y'
+                 inner join mgmt_office mo
+                            on mo.apt_cmplex_no = f.apt_cmplex_no
+                 left join (
+            select
+                apt_cmplex_no
+                 , dong_no
+                 , max(dong_nm) as dong_nm
+            from apt_unit
+            group by apt_cmplex_no, dong_no
+        ) au
+                           on au.apt_cmplex_no = f.apt_cmplex_no
+                               and au.dong_no = f.dong_no
+                 left join common_code fac_ty
+                           on fac_ty.group_code_no = 'FACILITY_TY'
+                               and fac_ty.code_no_cd = f.facility_ty_cd
+                               and fac_ty.use_yn = 'Y'
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
         order by f.facility_nm, f.facility_no
     </select>
 
-    <!-- 협력업체 선택 모달 목록 조회 -->
-    <select id="selectPartnerSelectList" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+    <!-- 협력업체 선택 모달 기본 목록 조회 -->
+    <select id="selectPartnerSelectList"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
         select
             p.partner_no
-            , p.partner_nm
-            , p.biz_ty_nm
-            , p.pic_nm
-            , p.pic_telno
-            , p.pic_email
+             , p.partner_nm
+             , p.biz_ty_nm
+             , p.bizrno
+             , p.use_yn
+             , p.pic_nm
+             , p.pic_telno
+             , p.pic_email
         from partner p
-        inner join mgmt_office mo
-                on mo.apt_cmplex_no = p.apt_cmplex_no
+                 inner join mgmt_office mo
+                            on mo.apt_cmplex_no = p.apt_cmplex_no
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
-        and p.use_yn = 'Y'
+          and p.use_yn = 'Y'
         order by p.partner_nm, p.partner_no
     </select>
 
     <!-- 공통코드 목록 조회 -->
-    <select id="selectCommonCodeList" resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckCodeVO">
+    <select id="selectCommonCodeList"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckCodeVO">
         select
             group_code_no
-            , code_no_cd
-            , code_name
-            , code_content
-            , sort_order
-            , use_yn
+             , code_no_cd
+             , code_name
+             , code_content
+             , sort_order
+             , use_yn
         from common_code
         where group_code_no = #{groupCodeNo}
-        and use_yn = 'Y'
+          and use_yn = 'Y'
         order by sort_order, code_no_cd
     </select>
 
     <!-- 시설 점검 이력 등록 -->
-    <insert id="insertFacilityCheckHistory" parameterType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+    <insert id="insertFacilityCheckHistory"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
         <selectKey keyProperty="facChkHstryNo" resultType="string" order="BEFORE">
             select 'FCH' || lpad(seq_facility_check_hstry.nextval, 4, '0')
             from dual
         </selectKey>
+
         insert into facility_check_hstry (
-            fac_chk_hstry_no
-            , facility_no
-            , partner_no
-            , chk_dt
-            , chk_stts_cd
-            , chk_cn
-            , rmk
-            , reg_dt
-            , chk_ty_cd
+        fac_chk_hstry_no
+        , facility_no
+        , partner_no
+        , chk_dt
+        , chk_stts_cd
+        , chk_cn
+        , rmk
+        , reg_dt
+        , chk_ty_cd
         ) values (
-            #{facChkHstryNo}
-            , #{facilityNo}
-            , #{partnerNo}
-            , to_date(#{chkDt}, 'yyyy-mm-dd')
-            , #{chkSttsCd}
-            , #{chkCn}
-            , #{rmk}
-            , sysdate
-            , #{chkTyCd}
+        #{facChkHstryNo}
+        , #{facilityNo}
+        , #{partnerNo}
+        , to_date(#{chkDt}, 'yyyy-mm-dd')
+        , #{chkSttsCd}
+        , #{chkCn}
+        , #{rmk}
+        , sysdate
+        , #{chkTyCd}
         )
     </insert>
 
     <!-- 시설 점검 이력 수정 -->
-    <update id="updateFacilityCheckHistory" parameterType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+    <update id="updateFacilityCheckHistory"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
         update facility_check_hstry
-        set partner_no = #{partnerNo}
-            , chk_dt = to_date(#{chkDt}, 'yyyy-mm-dd')
-            , chk_stts_cd = #{chkSttsCd}
-            , chk_cn = #{chkCn}
-            , rmk = #{rmk}
-            , mdf_dt = sysdate
-            , chk_ty_cd = #{chkTyCd}
+        set facility_no = #{facilityNo}
+          , partner_no = #{partnerNo}
+          , chk_dt = to_date(#{chkDt}, 'yyyy-mm-dd')
+          , chk_stts_cd = #{chkSttsCd}
+          , chk_cn = #{chkCn}
+          , rmk = #{rmk}
+          , mdf_dt = sysdate
+          , chk_ty_cd = #{chkTyCd}
         where fac_chk_hstry_no = #{facChkHstryNo}
-        and facility_no = #{facilityNo}
     </update>
+
+    <!-- 선택한 시설의 기존 점검 이력 목록 조회 -->
+    <select id="selectSameFacilityCheckList"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+        select
+            fch.fac_chk_hstry_no
+             , fch.facility_no
+             , f.facility_nm
+             , fch.partner_no
+             , p.partner_nm
+             , p.biz_ty_nm
+             , fch.chk_ty_cd
+             , chk_ty.code_name as chk_ty_nm
+             , fch.chk_stts_cd
+             , chk_stts.code_name as chk_stts_nm
+             , to_char(fch.chk_dt, 'yyyy-mm-dd') as chk_dt
+             , fch.chk_cn
+             , fch.rmk
+             , to_char(fch.reg_dt, 'yyyy-mm-dd') as reg_dt
+             , to_char(fch.mdf_dt, 'yyyy-mm-dd') as mdf_dt
+        from facility_check_hstry fch
+                 inner join facility f
+                            on fch.facility_no = f.facility_no
+                 inner join partner p
+                            on fch.partner_no = p.partner_no
+                 inner join mgmt_office mo
+                            on mo.apt_cmplex_no = f.apt_cmplex_no
+                 left join common_code chk_ty
+                           on chk_ty.group_code_no = 'CHECK_TY'
+                               and chk_ty.code_no_cd = fch.chk_ty_cd
+                               and chk_ty.use_yn = 'Y'
+                 left join common_code chk_stts
+                           on chk_stts.group_code_no = 'CHECK_STTS'
+                               and chk_stts.code_no_cd = fch.chk_stts_cd
+                               and chk_stts.use_yn = 'Y'
+        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+          and p.apt_cmplex_no = f.apt_cmplex_no
+          and fch.facility_no = #{facilityNo}
+        order by fch.chk_dt desc, fch.fac_chk_hstry_no desc
+    </select>
+
+    <!-- 시설 선택 모달 서버 검색 목록 조회 -->
+    <select id="selectFacilitySearchList"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+        select
+        f.facility_no
+        , f.facility_nm
+        , f.facility_ty_cd
+        , fac_ty.code_name as facility_ty_nm
+        , f.dong_no
+        , au.dong_nm
+        , f.loc_cn
+        , f.use_yn
+        , to_char(f.instl_dt, 'yyyy-mm-dd') as instl_dt
+        from facility f
+        inner join mgmt_office mo
+        on mo.apt_cmplex_no = f.apt_cmplex_no
+        left join (
+        select
+        apt_cmplex_no
+        , dong_no
+        , max(dong_nm) as dong_nm
+        from apt_unit
+        group by apt_cmplex_no, dong_no
+        ) au
+        on au.apt_cmplex_no = f.apt_cmplex_no
+        and au.dong_no = f.dong_no
+        left join common_code fac_ty
+        on fac_ty.group_code_no = 'FACILITY_TY'
+        and fac_ty.code_no_cd = f.facility_ty_cd
+        and fac_ty.use_yn = 'Y'
+        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+
+        <!-- 시설유형 필터 -->
+        <if test="facilityTyCd != null and facilityTyCd != ''">
+            and f.facility_ty_cd = #{facilityTyCd}
+        </if>
+
+        <!-- 동 필터 -->
+        <if test="dongNo != null and dongNo != ''">
+            and f.dong_no = #{dongNo}
+        </if>
+
+        <!-- 시설 사용여부 필터 -->
+        <if test="facilityUseYn != null and facilityUseYn != ''">
+            and f.use_yn = #{facilityUseYn}
+        </if>
+
+        <!-- 시설 위치 필터 -->
+        <if test="facilityLocCn != null and facilityLocCn != ''">
+            and upper(f.loc_cn) like '%' || upper(#{facilityLocCn}) || '%'
+        </if>
+
+        <!-- 시설 통합검색 -->
+        <if test="facilitySearchWord != null and facilitySearchWord != ''">
+            and (
+            upper(f.facility_no) like '%' || upper(#{facilitySearchWord}) || '%'
+            or upper(f.facility_nm) like '%' || upper(#{facilitySearchWord}) || '%'
+            or upper(f.loc_cn) like '%' || upper(#{facilitySearchWord}) || '%'
+            or upper(fac_ty.code_name) like '%' || upper(#{facilitySearchWord}) || '%'
+            or upper(f.dong_no) like '%' || upper(#{facilitySearchWord}) || '%'
+            or upper(au.dong_nm) like '%' || upper(#{facilitySearchWord}) || '%'
+            )
+        </if>
+
+        order by f.facility_nm, f.facility_no
+    </select>
+
+    <!-- 협력업체 선택 모달 서버 검색 목록 조회 -->
+    <select id="selectPartnerSearchList"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+        select
+        p.partner_no
+        , p.partner_nm
+        , p.biz_ty_nm
+        , p.bizrno
+        , p.use_yn
+        , p.pic_nm
+        , p.pic_telno
+        , p.pic_email
+        from partner p
+        inner join mgmt_office mo
+        on mo.apt_cmplex_no = p.apt_cmplex_no
+        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+
+        <!-- 업종 필터 -->
+        <if test="bizTyNm != null and bizTyNm != ''">
+            and p.biz_ty_nm = #{bizTyNm}
+        </if>
+
+        <!-- 협력업체 사용여부 필터 -->
+        <if test="partnerUseYn != null and partnerUseYn != ''">
+            and p.use_yn = #{partnerUseYn}
+        </if>
+
+        <!-- 담당자명 필터 -->
+        <if test="picNm != null and picNm != ''">
+            and upper(p.pic_nm) like '%' || upper(#{picNm}) || '%'
+        </if>
+
+        <!-- 협력업체 통합검색 -->
+        <if test="partnerSearchWord != null and partnerSearchWord != ''">
+            and (
+            upper(p.partner_no) like '%' || upper(#{partnerSearchWord}) || '%'
+            or upper(p.partner_nm) like '%' || upper(#{partnerSearchWord}) || '%'
+            or upper(p.bizrno) like '%' || upper(#{partnerSearchWord}) || '%'
+            or upper(p.biz_ty_nm) like '%' || upper(#{partnerSearchWord}) || '%'
+            or upper(p.pic_nm) like '%' || upper(#{partnerSearchWord}) || '%'
+            or upper(p.pic_telno) like '%' || upper(#{partnerSearchWord}) || '%'
+            )
+        </if>
+
+        order by p.use_yn desc, p.partner_nm, p.partner_no
+    </select>
 
 </mapper>

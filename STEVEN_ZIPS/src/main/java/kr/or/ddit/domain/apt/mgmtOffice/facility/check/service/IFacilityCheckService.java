@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 시설 점검 이력 Service 인터페이스
  */
-public interface IMngrFacilityCheckService {
+public interface IFacilityCheckService {
 
     /** 시설 점검 이력 목록 건수 조회 */
     int selectFacilityCheckCount(PaginationInfoVO<FacilityCheckHstryVO> pagingVO);
@@ -23,10 +23,10 @@ public interface IMngrFacilityCheckService {
     /** 시설 점검 이력 상세 조회 */
     FacilityCheckHstryVO selectFacilityCheckDetail(String mgmtOfcNo, String facChkHstryNo);
 
-    /** 시설 선택 모달 목록 조회 */
+    /** 시설 선택 모달 기본 목록 조회 */
     List<FacilityCheckHstryVO> selectFacilitySelectList(String mgmtOfcNo);
 
-    /** 협력업체 선택 모달 목록 조회 */
+    /** 협력업체 선택 모달 기본 목록 조회 */
     List<FacilityCheckHstryVO> selectPartnerSelectList(String mgmtOfcNo);
 
     /** 점검유형 공통코드 목록 조회 */
@@ -40,4 +40,13 @@ public interface IMngrFacilityCheckService {
 
     /** 시설 점검 이력 수정 */
     boolean updateFacilityCheckHistory(FacilityCheckHstryVO facilityCheckHstryVO);
+
+    /** 선택한 시설의 기존 점검 이력 목록 조회 */
+    List<FacilityCheckHstryVO> selectSameFacilityCheckList(String mgmtOfcNo, String facilityNo);
+
+    /** 시설 선택 모달 서버 검색 목록 조회 */
+    List<FacilityCheckHstryVO> selectFacilitySearchList(FacilityCheckHstryVO searchVO);
+
+    /** 협력업체 선택 모달 서버 검색 목록 조회 */
+    List<FacilityCheckHstryVO> selectPartnerSearchList(FacilityCheckHstryVO searchVO);
 }
