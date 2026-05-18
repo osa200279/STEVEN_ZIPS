@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.survey.mapper.IMngSurveyMapper">
+
+
+
+
+
+    <insert id="insertSurvey">
+
+        INSERT INTO SURVEY (
+
+            SURVEY_NO,
+            SURVEY_NM,
+            SURVEY_CN,
+            SURVEY_TYPE_CD,
+            SURVEY_QITEM_CN,
+            SURVEY_BGNG_DT,
+            SURVEY_END_DT,
+            SURVEY_STTS_CD,
+            RGTR_ID
+
+        )
+        VALUES (
+
+                   'SV' || TO_CHAR(SYSDATE, 'MMDDHH24MISS'),
+
+                   #{surveyNm},
+                   #{surveyCn},
+                   #{surveyTypeCd},
+                   #{surveyQitemCn},
+
+                   TO_DATE(#{surveyBgngDt}, 'YYYY-MM-DD'),
+                   TO_DATE(#{surveyEndDt}, 'YYYY-MM-DD'),
+
+                   #{surveySttsCd},
+                   #{rgtrId}
+               )
+
+    </insert>
+
+
+
+
+    <select id="selectSurveyList"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO">
+
+        SELECT
+
+            SURVEY_NO       AS surveyNo,
+            SURVEY_NM       AS surveyNm,
+            SURVEY_CN       AS surveyCn,
+            SURVEY_TYPE_CD  AS surveyTypeCd,
+            SURVEY_QITEM_CN AS surveyQitemCn,
+            SURVEY_BGNG_DT  AS surveyBgngDt,
+            SURVEY_END_DT   AS surveyEndDt,
+            SURVEY_STTS_CD  AS surveySttsCd,
+            RGTR_ID         AS rgtrId
+
+        FROM SURVEY
+
+        ORDER BY SURVEY_BGNG_DT DESC
+
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
+
+
+

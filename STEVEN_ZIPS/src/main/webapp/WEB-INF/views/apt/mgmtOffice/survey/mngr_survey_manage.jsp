@@ -592,6 +592,8 @@
 </div>
 
 <script>
+    const mgmtOfcNo = "${mgmtOfcNo}";
+
     (function () {
         var page = document.getElementById("surveyManagePage");
         if (!page || page.dataset.bound === "true") return;
@@ -602,12 +604,10 @@
         var surveyList = document.getElementById("surveyList");
         var surveyForm = document.getElementById("surveyForm");
 
-        var surveys = [
-            { type: "VOTE", title: "단지 내 주차질서 개선안", status: "RUNNING", start: "2026-05-10", end: "2026-05-17", answers: 124, rate: 72, writer: "관리사무소", round: "2026-05-01" },
-            { type: "SURVEY", title: "공용시설 이용 만족도 조사", status: "WAITING", start: "2026-05-18", end: "2026-05-24", answers: 0, rate: 0, writer: "관리사무소", round: "2026-05-02" },
-            { type: "VOTE", title: "경비실 운영시간 조정", status: "CLOSED", start: "2026-04-20", end: "2026-04-27", answers: 216, rate: 84, writer: "관리사무소", round: "2026-04-04" },
-            { type: "SURVEY", title: "엘리베이터 점검 안내 확인", status: "RUNNING", start: "2026-05-11", end: "2026-05-18", answers: 88, rate: 61, writer: "관리사무소", round: "2026-05-03" }
-        ];
+
+        var surveys = [];
+
+
 
         function typeText(type) {
             return type === "VOTE" ? "투표" : "설문";
@@ -628,22 +628,35 @@
         }
 
         function renderStats(data) {
-            var running = data.filter(function (item) { return item.status === "RUNNING"; }).length;
-            var waiting = data.filter(function (item) { return item.status === "WAITING"; }).length;
-            var closed = data.filter(function (item) { return item.status === "CLOSED"; }).length;
-            var answers = data.reduce(function (sum, item) { return sum + item.answers; }, 0);
-            var avgRate = data.length ? Math.round(data.reduce(function (sum, item) { return sum + item.rate; }, 0) / data.length) : 0;
-            var monthly = data.filter(function (item) { return item.round.indexOf("2026-05") === 0; }).length;
-            var weekly = data.filter(function (item) { return item.status !== "CLOSED"; }).length;
+
+            var running = data.filter(function (item) {
+                return item.surveySttsCd === "RUNNING";
+            }).length;
+
+            var waiting = data.filter(function (item) {
+                return item.surveySttsCd === "WAITING";
+            }).length;
+
+            var closed = data.filter(function (item) {
+                return item.surveySttsCd === "CLOSED";
+            }).length;
 
             document.getElementById("kpiRunning").textContent = running;
             document.getElementById("kpiWaiting").textContent = waiting;
             document.getElementById("kpiClosed").textContent = closed;
-            document.getElementById("kpiAnswers").textContent = answers;
-            document.getElementById("sideMonthly").textContent = monthly + "건";
-            document.getElementById("sideWeekly").textContent = weekly + "건";
-            document.getElementById("sideRate").textContent = avgRate + "%";
-            document.getElementById("surveyCount").textContent = data.length + "건";
+            document.getElementById("kpiAnswers").textContent = 0;
+
+            document.getElementById("sideMonthly").textContent =
+                data.length + "건";
+
+            document.getElementById("sideWeekly").textContent =
+                data.length + "건";
+
+            document.getElementById("sideRate").textContent =
+                "0%";
+
+            document.getElementById("surveyCount").textContent =
+                data.length + "건";
         }
 
         function renderList(data) {
@@ -658,16 +671,16 @@
                 return ''
                     + '<div class="survey-list-item">'
                     + '  <div class="survey-list-main">'
-                    + '    <div class="survey-list-title">' + item.title + '</div>'
+                    + '    <div class="survey-list-title">' + item.surveyNm + '</div>'
                     + '    <div class="survey-list-sub">'
-                    +          typeText(item.type) + ' · ' + item.writer + ' · ' + item.round + '회차'
+
+                    +          typeText(item.surveyTypeCd)
                     + '    </div>'
-                    + '    <div class="survey-list-sub">' + item.start + ' ~ ' + item.end + '</div>'
-                    + '    <div class="survey-progress"><span style="width:' + item.rate + '%"></span></div>'
+                    + '    <div class="survey-list-sub">' + item.surveyBgngDt + ' ~ ' + item.surveyEndDt + '</div>'
                     + '  </div>'
                     + '  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0;">'
-                    + '    <span class="survey-status ' + statusClass(item.status) + '">' + statusText(item.status) + '</span>'
-                    + '    <div style="font-size:12px; color:var(--text-tertiary);">응답률 ' + item.rate + '%</div>'
+                    + '    <span class="survey-status ' + statusClass(item.surveySttsCd) + '">' + statusText(item.surveySttsCd) + '</span>'
+                    + '    <div style="font-size:12px; color:var(--text-tertiary);">상태: ' + statusText(item.surveySttsCd) + '</div>'
                     + '    <div style="display:flex; gap:6px;">'
                     + '      <button type="button" class="btn btn-secondary btn-sm" data-action="detail" data-idx="' + idx + '">상세</button>'
                     + '      <button type="button" class="btn btn-primary btn-sm" data-action="result" data-idx="' + idx + '">결과</button>'
@@ -683,9 +696,9 @@
             var keyword = document.getElementById("filterKeyword").value.trim();
 
             return surveys.filter(function (item) {
-                return (!type || item.type === type)
-                    && (!status || item.status === status)
-                    && (!keyword || item.title.indexOf(keyword) > -1 || item.writer.indexOf(keyword) > -1 || item.round.indexOf(keyword) > -1);
+                return (!type || item.surveyTypeCd === type)
+                    && (!status || item.surveySttsCd === status)
+                    && (!keyword || item.surveyNm.indexOf(keyword) > -1);
             });
         }
 
@@ -719,25 +732,101 @@
                 document.getElementById("filterStatus").value = "";
                 document.getElementById("filterKeyword").value = "";
 
-
-
-
                 renderList(surveys);
+
+
             }
             if (action === "detail") {
+
                 var row = surveys[Number(btn.dataset.idx)];
-                alert(row.type + " 상세\n제목: " + row.title + "\n기간: " + row.start + " ~ " + row.end);
+
+                alert(
+                    typeText(row.surveyTypeCd)
+                    + " 상세\n제목: "
+                    + row.surveyNm
+                    + "\n기간: "
+                    + row.surveyBgngDt
+                    + " ~ "
+                    + row.surveyEndDt
+                );
             }
+
             if (action === "result") {
+
                 var resultRow = surveys[Number(btn.dataset.idx)];
-                alert(resultRow.title + "\n응답률: " + resultRow.rate + "%");
+
+                alert(
+                    resultRow.surveyNm
+                    + "\n상태: "
+                    + statusText(resultRow.surveySttsCd)
+                );
             }
         });
 
-        surveyForm.addEventListener("submit", function (e) {
+        surveyForm.addEventListener("submit", async function (e) {
+
             e.preventDefault();
-            alert("저장 기능은 아직 연결되지 않았습니다.");
-            closeModal();
+
+            const payload = {
+
+                surveyNm:
+                document.getElementById("surveyTitle").value,
+
+                surveyCn:
+                document.getElementById("surveyDesc").value,
+
+                surveyTypeCd:
+                document.getElementById("surveyType").value,
+
+                surveySttsCd:
+                document.getElementById("surveyStatus").value,
+
+                surveyBgngDt:
+                document.getElementById("surveyStartDt").value,
+
+                surveyEndDt:
+                document.getElementById("surveyEndDt").value,
+
+                surveyQitemCn:
+                    "테스트 질문 JSON"
+            };
+
+            console.log(payload);
+
+            try {
+
+                const response = await fetch(
+                    `/manager/survey/${mgmtOfcNo}/register`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    }
+                );
+
+                console.log(response);
+
+                if (response.ok) {
+
+                    alert("저장 성공");
+
+                    window.location.href = `/manager/survey/${mgmtOfcNo}`;
+
+                } else {
+
+                    alert("서버 오류 발생");
+
+                    console.error(await response.text());
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert("fetch 에러 발생");
+            }
         });
 
         modal.addEventListener("click", function (e) {
@@ -908,7 +997,21 @@
 `
                     );
             });
-        renderList(surveys);
+        async function loadSurveyList() {
+
+            const response = await fetch(
+                `/manager/survey/${mgmtOfcNo}/list`
+            );
+
+            surveys = await response.json();
+
+            console.log(surveys);
+
+            renderList(surveys);
+        }
+
+        loadSurveyList();
+
     })();
 </script>
 </body>
