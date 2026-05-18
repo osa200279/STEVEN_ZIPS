@@ -24,4 +24,6 @@ public interface ICentralAptComplexService {
     AptComplexVO selectAptComplexDetail(String aptCmplexNo);
 
     List<AptComplexVO> selectAptMapList();
+
+    List<String> selectDongList(String sidoNm, String sigunguNm);
 }

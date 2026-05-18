@@ -298,6 +298,17 @@
         ORDER BY SIDO_NM
     </select>
 
+    <select id="selectDongList" resultType="string">
+
+        SELECT DISTINCT EMD_NM
+        FROM APT_COMPLEX
+        WHERE SIDO_NM = #{sidoNm}
+          AND SIGUNGU_NM = #{SigunguNm}
+          AND EMD_NM IS NOT NULL
+        ORDER BY EMD_NM
+
+    </select>
+
     <select id="selectAptComplexDetail"
             parameterType="string"
             resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">

@@ -1,5 +1,7 @@
 package kr.or.ddit.domain.member.resident.controller;
 
+import kr.or.ddit.common.notification.dto.NotificationDTO;
+import kr.or.ddit.common.notification.service.NotificationService;
 import kr.or.ddit.domain.member.resident.service.IResidentVhclService;
 import kr.or.ddit.domain.member.resident.vo.RsidVhclVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -24,6 +26,9 @@ public class ResidentVhclController {
 
     @Autowired
     private IResidentVhclService residentVhclService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     /**
      * 차량 목록 조회
@@ -71,6 +76,7 @@ public class ResidentVhclController {
                         hoNo
                 );
 
+
         return isExtra ? "EXTRA_REQUIRED" : "OK";
     }
 
@@ -103,6 +109,11 @@ public class ResidentVhclController {
                 dong,
                 ho,
                 file
+        );
+
+        notificationService.send(
+                member.getUserNo(),
+                NotificationDTO.success("등록완료","등록이완료되었습니다")
         );
 
         return "OK";

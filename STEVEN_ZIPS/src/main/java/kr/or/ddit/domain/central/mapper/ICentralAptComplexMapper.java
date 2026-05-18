@@ -39,5 +39,9 @@ public interface ICentralAptComplexMapper {
     AptComplexVO selectAptComplexDetail(@Param("aptCmplexNo") String aptCmplexNo);
 
     List<AptComplexVO> selectAptMapList();
+
+    // api 에서 쓰려고 추가했습니다 by 도선호 (시도랑 시군구는 여기서 만든거 쓰고있는데, 읍면동이 없길래 써용)
+    List<String> selectDongList(@Param("sidoNm") String sidoNm,@Param("SigunguNm") String SigunguNm);
+
 }
 

@@ -130,7 +130,8 @@ async function saveComplex() {
             complexFileState.layout = [];
             complexFileState.complex = [];
 
-            await loadComplexDetail();
+
+            location.reload();
 
         }else{
 

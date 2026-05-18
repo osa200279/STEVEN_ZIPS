@@ -63,4 +63,9 @@ public class CentralAptComplexServiceImpl implements ICentralAptComplexService {
     public List<AptComplexVO> selectAptMapList() {
         return aptComplexMapper.selectAptMapList();
     }
+
+    @Override
+    public List<String> selectDongList(String sidoNm, String sigunguNm) {
+        return aptComplexMapper.selectDongList(sidoNm, sigunguNm);
+    }
 }

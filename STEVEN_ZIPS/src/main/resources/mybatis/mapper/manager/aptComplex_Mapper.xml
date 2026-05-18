@@ -13,7 +13,9 @@
     <update id="updateComplex" parameterType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
 
         UPDATE APT_COMPLEX
-        SET BJD_CD             = #{bjdCd},
+        SET
+            APT_CMPLEX_NM    = #{aptCmplexNm},
+            BJD_CD             = #{bjdCd},
             SIDO_NM            = #{sidoNm},
             SIGUNGU_NM         = #{sigunguNm},
             EMD_NM             = #{emdNm},

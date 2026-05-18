@@ -2,8 +2,8 @@ package kr.or.ddit.domain.central.controller;
 
 import kr.or.ddit.common.file.service.IAttachFileService;
 import kr.or.ddit.common.file.vo.AttachFileVO;
-import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.common.model.PaginationInfoVO;
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.central.service.ICentralAptComplexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +89,16 @@ public class AptRetrieveController {
     }
 
     /*
+    * 시, 도 만 조회용, react 검색필터에서 사용중
+    * */
+    @ResponseBody
+    @GetMapping("/sido.do")
+    public List<String> sidoList(){
+        return aptComplexService.selectSidoList();
+    }
+
+
+    /*
      * 시/도 선택 시 시/군/구 목록 조회 Ajax
      */
     @ResponseBody
@@ -96,6 +106,18 @@ public class AptRetrieveController {
     public List<String> sigunguList(@RequestParam("sidoNm") String sidoNm) {
         return aptComplexService.selectSigunguList(sidoNm);
     }
+
+    /*
+    * 시도/시군구 선택시 읍면동 목록 조회
+    */
+    @ResponseBody
+    @GetMapping("/dong.do")
+    public List<String> selectDongList(
+            @RequestParam("sidoNm") String sidoNm
+            ,@RequestParam("sigunguNm") String sigunguNm){
+        return aptComplexService.selectDongList(sidoNm,sigunguNm);
+    }
+
 
     @GetMapping("/search.do")
     public String search(

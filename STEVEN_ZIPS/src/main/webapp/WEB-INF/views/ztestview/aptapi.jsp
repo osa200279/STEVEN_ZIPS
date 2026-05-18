@@ -48,6 +48,48 @@
     label {
         cursor: pointer;
     }
+
+    #toastContainer{
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 9999;
+    }
+
+    .toast-item{
+        min-width: 320px;
+        background: white;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border-left: 6px solid #22c55e;
+        animation: toastShow .25s ease;
+    }
+
+    .toast-title{
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .toast-message{
+        color: #555;
+    }
+
+    @keyframes toastShow {
+
+        from{
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to{
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <body>
@@ -85,6 +127,15 @@
     <input type="number" id="assignCount" placeholder="입주시킬 인원 수" min="1">
     <button id="assignBtn">입주시키기</button>
 </div>
+<div style="margin-top:20px;">
+
+    <button id="toastTestBtn">
+        토스트 테스트
+    </button>
+
+</div>
+
+<div id="toastContainer"></div>
 
 </body>
 <script>
@@ -404,6 +455,17 @@
         }
     });
 
+    $("#toastTestBtn").on("click", function(){
+
+        showToast({
+            title: "테스트 알림",
+            message: "실시간 토스트 테스트입니다.",
+            type: "success"
+        });
+
+    });
+
 </script>
+<jsp:include page="/WEB-INF/views/include/websocket.jsp"/>
 
 </html>
