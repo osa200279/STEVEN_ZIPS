@@ -1,18 +1,19 @@
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom';
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 import MainLayout from "./components/layout/MainLayout";
+import Ann from './pages/Ann';
+import AnnRegister from './pages/AnnRegister';
 import Applicant from "./pages/Applicant";
 import AptRegister from "./pages/AptRegister";
 import Ctrt from "./pages/Ctrt";
 import Home from "./pages/Home";
-import './styles/sidebar.css';
+import SalesList from './pages/sales/SalesList';
 import './styles/common.css';
 import './styles/header.css';
+import './styles/sidebar.css';
 import { getCookie } from './util/api/requestApi';
-import AnnRegister from './pages/AnnRegister';
-import Ann from './pages/Ann';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 function App() {
@@ -38,8 +39,8 @@ function App() {
             {/* 아파트 등록 메뉴 */}
             <Route path="/adm/apt/register" element={<AptRegister />} />
             {/* 아파트 통합 검색 메뉴 */}
-            {/* 매물 등록 메뉴 */}
-            {/* 매물 통합 검색 메뉴 */}
+            {/* 임대 매물 관리 */}
+            <Route path="/adm/sales" element={<SalesList />}></Route>
             {/* 청약 신청 관리 */}
             <Route path="/adm/applicant" element={<Applicant />} />
             {/* 계약 관리 */}
@@ -50,7 +51,7 @@ function App() {
             {/* 공고 관리 */}
             <Route path="/adm/ann" element={<Ann />} >
               {/* 공고 등록 */}
-              <Route path="/adm/ann/register" element={<AnnRegister />} />
+              <Route path="register" element={<AnnRegister />} />
             </Route>
             {/* 문의 관리 */}
             {/* 단지관리자 계정 관리 */}

@@ -9,7 +9,7 @@ const MENU_DATA = [
     items: [
       { to: '/adm/apt/register', label: '아파트 관리', icon: <Building2 className='luci-icon' /> },
       // { to: '/adm/apt/search', label: '아파트 통합 검색', icon: <Building2 className='luci-icon' /> },
-      { to: '/adm/sales/register', label: '임대 매물 관리', icon: <NotebookPen className='luci-icon' /> },
+      { to: '/adm/sales', label: '임대 매물 관리', icon: <NotebookPen className='luci-icon' /> },
       // { to: '/adm/sales/list', label: '임대 매물 검색', icon: <FileSearchCorner className='luci-icon' /> },
     ]
   },
