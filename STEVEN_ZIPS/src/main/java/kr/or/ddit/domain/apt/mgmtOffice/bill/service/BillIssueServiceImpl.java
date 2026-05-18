@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.bill.service;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.mapper.IBillIssueMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillDetailVO;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO;
@@ -15,8 +16,26 @@ public class BillIssueServiceImpl implements IBillIssueService{
     private IBillIssueMapper billIssueMapper;
 
     @Override
-    public List<BillVO> selectBillIssueList(BillVO billVO) {
-        return billIssueMapper.selectBillIssueList(billVO);
+    public List<BillVO> selectBillDongList(String aptCmplexNo) {
+        return billIssueMapper.selectBillDongList(aptCmplexNo);
+    }
+
+    @Override
+    public PaginationInfoVO<BillVO> selectBillIssueList(PaginationInfoVO<BillVO> pagingVO) {
+        // 1. 총 건수 조회
+        int totalRecord = billIssueMapper.selectBillIssueCount(pagingVO);
+
+        // 2. totalRecord 세팅 시 totalPage 자동 계산
+        pagingVO.setTotalRecord(totalRecord);
+
+        // 3. currentPage 세팅 시 startRow/endRow/startPage/endPage 자동 계산
+        pagingVO.setCurrentPage(pagingVO.getCurrentPage());
+
+        // 4. 목록 조회
+        List<BillVO> dataList = billIssueMapper.selectBillIssueList(pagingVO);
+        pagingVO.setDataList(dataList);
+
+        return pagingVO;
     }
 
     @Override

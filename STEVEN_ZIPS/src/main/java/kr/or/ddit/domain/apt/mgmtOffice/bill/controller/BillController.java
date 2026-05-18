@@ -1,13 +1,12 @@
 package kr.or.ddit.domain.apt.mgmtOffice.bill.controller;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.service.IBillChargeService;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.service.IBillIssueService;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
-import kr.or.ddit.domain.apt.mgmtOffice.facility.service.IFacilityService;
-import kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IMgmtOfficeMapper;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +28,6 @@ import java.util.Map;
 @PreAuthorize("hasRole('MNGR')")  // 계층 구조상 ADMIN도 통과
 @RequiredArgsConstructor
 public class BillController {
-
-    // 관리사무소 목록 조회용 Mapper
-    @Autowired
-    private IMgmtOfficeMapper mgmtOfficeMapper;
 
     // ADMIN/MNGR 접근 기준 및 화면 공통 모델 처리
     @Autowired
@@ -165,6 +160,39 @@ public class BillController {
         return "apt/mgmtOffice/mngr_billIssue";
     }
 
+    // 고지서 동 목록 조회
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/bill/issue/dong-list/{mgmtOfcNo}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> selectBillDongList(
+            @PathVariable String mgmtOfcNo
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+            if (aptComplexVO == null) {
+                result.put("success", false);
+                result.put("message", "관리사무소에 연결된 아파트 단지 정보가 없습니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            List<BillVO> dongList =
+                    billIssueService.selectBillDongList(aptComplexVO.getAptCmplexNo());
+
+            result.put("success", true);
+            result.put("dongList", dongList);
+
+        } catch (Exception e) {
+            log.error("고지서 동 목록 조회 실패", e);
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
     // 고지서 목록 조회
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/bill/issue/list/{mgmtOfcNo}")
@@ -174,7 +202,8 @@ public class BillController {
             @RequestParam(required = false) String billYm,
             @RequestParam(required = false) String pymtSttsCd,
             @RequestParam(required = false) String dongNo,
-            @RequestParam(required = false) String ho
+            @RequestParam(required = false) String ho,
+            @RequestParam(defaultValue = "1") int currentPage
     ) {
         Map<String, Object> result = new HashMap<>();
 
@@ -194,19 +223,32 @@ public class BillController {
             searchVO.setDongNo(dongNo);
             searchVO.setHo(ho);
 
-            List<BillVO> list = billIssueService.selectBillIssueList(searchVO);
+            PaginationInfoVO<BillVO> pagingVO = new PaginationInfoVO<>(10, 5);
+            pagingVO.setSearchVO(searchVO);
+            pagingVO.setCurrentPage(currentPage);
 
-            long totalAmount = 0L;
-            for (BillVO billVO : list) {
-                if (billVO.getBillTotAmt() != null) {
-                    totalAmount += billVO.getBillTotAmt();
+            pagingVO = billIssueService.selectBillIssueList(pagingVO);
+
+
+            long pageTotalAmount = 0L;
+            if (pagingVO.getDataList() != null) {
+                for (BillVO billVO : pagingVO.getDataList()) {
+                    if (billVO.getBillTotAmt() != null) {
+                        pageTotalAmount += billVO.getBillTotAmt();
+                    }
                 }
             }
 
             result.put("success", true);
-            result.put("list", list);
-            result.put("totalCount", list.size());
-            result.put("totalAmount", totalAmount);
+            result.put("list", pagingVO.getDataList());
+            result.put("totalCount", pagingVO.getTotalRecord());
+            result.put("totalPage", pagingVO.getTotalPage());
+            result.put("currentPage", pagingVO.getCurrentPage());
+            result.put("startPage", pagingVO.getStartPage());
+            result.put("endPage", pagingVO.getEndPage());
+            result.put("screenSize", pagingVO.getScreenSize());
+            result.put("pagingHTML", pagingVO.getPagingHTML());
+            result.put("pageTotalAmount", pageTotalAmount);
 
         } catch (Exception e) {
             log.error("고지서 목록 조회 실패", e);

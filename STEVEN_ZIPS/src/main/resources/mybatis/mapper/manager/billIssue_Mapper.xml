@@ -36,12 +36,84 @@
         <result property="billItemContent" column="BILL_ITEM_CONTENT"/>
     </resultMap>
 
-    <!-- 고지서 목록 조회 -->
-    <select id="selectBillIssueList"
-            parameterType="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO"
+    <!-- 동 목록 조회 -->
+    <select id="selectBillDongList"
+            parameterType="string"
             resultMap="billMap">
 
         SELECT
+            U.APT_CMPLEX_NO,
+            U.DONG_NO,
+            U.DONG_NM
+        FROM APT_UNIT U
+        WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+        ORDER BY U.DONG_NM
+
+    </select>
+
+    <!-- =========================================================
+     고지서 목록 공통 검색 조건
+     - PaginationInfoVO<BillVO> 기준
+     - 검색 조건은 searchVO 안에 들어있으므로 #{searchVO.xxx} 사용
+     ========================================================= -->
+    <sql id="billIssueWhere">
+
+        WHERE U.APT_CMPLEX_NO = #{searchVO.aptCmplexNo}
+
+        <if test="searchVO.billYm != null and searchVO.billYm != ''">
+            AND B.BILL_YM = #{searchVO.billYm}
+        </if>
+
+        <if test="searchVO.pymtSttsCd != null and searchVO.pymtSttsCd != ''">
+            AND B.PYMT_STTS_CD = #{searchVO.pymtSttsCd}
+        </if>
+
+        <if test="searchVO.dongNo != null and searchVO.dongNo != ''">
+            AND U.DONG_NO = #{searchVO.dongNo}
+        </if>
+
+        <if test="searchVO.ho != null and searchVO.ho != ''">
+            AND H.HO LIKE '%' || #{searchVO.ho} || '%'
+        </if>
+
+    </sql>
+
+
+    <!-- =========================================================
+         고지서 총 개수 조회
+         - 페이징 totalRecord 계산용
+         ========================================================= -->
+    <select id="selectBillIssueCount"
+            parameterType="kr.or.ddit.common.model.PaginationInfoVO"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM BILL B
+        JOIN APT_DETAIL H
+        ON B.HO_NO = H.HO_NO
+        JOIN APT_UNIT U
+        ON H.DONG_NO = U.DONG_NO
+        LEFT JOIN COMMON_CODE C
+        ON C.GROUP_CODE_NO = 'PAY_ST'
+        AND C.CODE_NO_CD = B.PYMT_STTS_CD
+        AND C.USE_YN = 'Y'
+
+        <include refid="billIssueWhere"/>
+
+    </select>
+
+    <!-- 고지서 목록 조회 -->
+    <select id="selectBillIssueList"
+            parameterType="kr.or.ddit.common.model.PaginationInfoVO"
+            resultMap="billMap">
+
+        SELECT *
+        FROM (
+        SELECT
+        ROW_NUMBER() OVER (
+        ORDER BY B.BILL_YM DESC, U.DONG_NM ASC, H.HO ASC
+        ) AS RN,
+
         B.BILL_NO,
         B.HO_NO,
         B.BILL_YM,
@@ -72,25 +144,10 @@
         ON C.GROUP_CODE_NO = 'PAY_ST'
         AND C.CODE_NO_CD = B.PYMT_STTS_CD
         AND C.USE_YN = 'Y'
-        WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
 
-        <if test="billYm != null and billYm != ''">
-            AND B.BILL_YM = #{billYm}
-        </if>
-
-        <if test="pymtSttsCd != null and pymtSttsCd != ''">
-            AND B.PYMT_STTS_CD = #{pymtSttsCd}
-        </if>
-
-        <if test="dongNo != null and dongNo != ''">
-            AND U.DONG_NO = #{dongNo}
-        </if>
-
-        <if test="ho != null and ho != ''">
-            AND H.HO LIKE '%' || #{ho} || '%'
-        </if>
-
-        ORDER BY B.BILL_YM DESC, U.DONG_NM, H.HO
+        <include refid="billIssueWhere"/>
+        )
+        WHERE RN BETWEEN #{startRow} AND #{endRow}
 
     </select>
 

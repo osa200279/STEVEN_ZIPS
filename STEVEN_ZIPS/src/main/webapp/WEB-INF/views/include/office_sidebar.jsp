@@ -186,7 +186,7 @@
                     </a>
                     <a href="${ctx}/manager/bill/issue${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/issue') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">고지서 등록</span>
+                        <span class="nav-text">고지서 조회</span>
                     </a>
                     <a href="${ctx}/manager/bill/item-summary${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/item-summary') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>

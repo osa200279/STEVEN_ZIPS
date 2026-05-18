@@ -48,6 +48,12 @@
             width: 140px;
         }
 
+        .issue-page input:disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
         .issue-summary-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -86,6 +92,10 @@
             text-align: center;
         }
 
+        .td-bold {
+            font-weight: 800;
+        }
+
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -119,6 +129,67 @@
             background: #fef2f2;
             color: #991b1b;
             border-color: #fecaca;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            background: #fff;
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        #pagingArea ul.pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            padding: 0;
+            margin: 0;
+            border-top: 0;
+            background: transparent;
+            list-style: none;
+        }
+
+        #pagingArea .page-item {
+            list-style: none;
+        }
+
+        #pagingArea .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #pagingArea .page-item.active .page-link,
+        #pagingArea .page-item.active span.page-link {
+            background: #166534;
+            border-color: #166534;
+            color: #fff;
+        }
+
+        #pagingArea .page-item.disabled .page-link {
+            color: #9ca3af;
+            cursor: default;
         }
 
         .detail-total {
@@ -157,6 +228,24 @@
             font-weight: 700;
             color: var(--text-primary);
         }
+
+        @media (max-width: 1280px) {
+            .issue-summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .issue-summary-grid,
+            .detail-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pagination {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 
@@ -179,6 +268,7 @@
                     </div>
                 </div>
 
+                <!-- 조회 조건 -->
                 <div class="panel">
                     <div class="panel-header">
                         <h3 class="panel-title">
@@ -218,10 +308,15 @@
                                 <option value="OVERDUE">연체</option>
                             </select>
 
-                            <label for="ho">호수</label>
-                            <input type="text" id="ho" placeholder="예: 101">
+                            <label for="dongNo">동</label>
+                            <select id="dongNo" onchange="onDongChange()">
+                                <option value="">전체</option>
+                            </select>
 
-                            <button type="button" class="btn btn-primary" onclick="loadBillIssueList()">
+                            <label for="ho">호수</label>
+                            <input type="text" id="ho" placeholder="동 선택 후 입력" disabled>
+
+                            <button type="button" class="btn btn-primary" onclick="loadBillIssueList(1)">
                                 <span class="material-symbols-rounded">search</span>
                                 조회
                             </button>
@@ -233,6 +328,7 @@
                     </div>
                 </div>
 
+                <!-- 요약 -->
                 <div class="issue-summary-grid">
                     <div class="issue-summary-card">
                         <div class="issue-summary-label">조회 건수</div>
@@ -240,7 +336,7 @@
                     </div>
 
                     <div class="issue-summary-card">
-                        <div class="issue-summary-label">조회 총액</div>
+                        <div class="issue-summary-label">현재 페이지 총액</div>
                         <div class="issue-summary-value" id="summaryTotalAmount">0원</div>
                     </div>
 
@@ -250,6 +346,7 @@
                     </div>
                 </div>
 
+                <!-- 목록 -->
                 <div class="panel">
                     <div class="panel-header">
                         <h3 class="panel-title">
@@ -277,6 +374,13 @@
                             </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="pagination">
+                        <div class="pagination-info" id="paginationInfo">
+                            총 0건
+                        </div>
+                        <div id="pagingArea"></div>
                     </div>
                 </div>
 
@@ -352,11 +456,44 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         initSearchDate();
-        loadBillIssueList();
+        loadDongList();
+
+        // 처음 화면 진입 시 목록은 조회하지 않음
+        renderInitialEmptyState();
+    });
+
+    function renderInitialEmptyState() {
+        document.getElementById('billIssueTbody').innerHTML =
+            '<tr><td colspan="7" class="empty">동을 선택한 뒤 조회 버튼을 눌러 주세요.</td></tr>';
+
+        document.getElementById('summaryTotalCount').textContent = '0건';
+        document.getElementById('summaryTotalAmount').textContent = '0원';
+        document.getElementById('summaryBillYm').textContent = '-';
+
+        document.getElementById('paginationInfo').textContent = '총 0건';
+        document.getElementById('pagingArea').innerHTML = '';
+    }
+
+    // PaginationInfoVO.getPagingHTML()에서 생성한 a.page-link 클릭 처리
+    document.addEventListener('click', function (e) {
+        const target = e.target.closest('#pagingArea .page-link');
+
+        if (!target) {
+            return;
+        }
+
+        e.preventDefault();
+
+        const page = target.dataset.page;
+
+        if (page) {
+            loadBillIssueList(Number(page));
+        }
     });
 
     function initSearchDate() {
         const now = new Date();
+
         document.getElementById('searchYear').value = now.getFullYear();
         document.getElementById('searchMonth').value = now.getMonth() + 1;
     }
@@ -372,14 +509,72 @@
         return String(year) + String(month).padStart(2, '0');
     }
 
-    async function loadBillIssueList() {
+    async function loadDongList() {
+        const url = contextPath + '/manager/bill/issue/dong-list/' + mgmtOfcNo;
+
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                console.error('동 목록 조회 실패:', response.status);
+                return;
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+                console.error(result.message || '동 목록 조회 실패');
+                return;
+            }
+
+            const select = document.getElementById('dongNo');
+            select.innerHTML = '<option value="">전체</option>';
+
+            (result.dongList || []).forEach(function (dong) {
+                const option = document.createElement('option');
+                option.value = dong.dongNo;
+                option.textContent = dong.dongNm || dong.dongNo;
+                select.appendChild(option);
+            });
+
+        } catch (e) {
+            console.error('동 목록 조회 중 오류:', e);
+        }
+    }
+
+    function onDongChange() {
+        const dongNo = document.getElementById('dongNo').value;
+        const hoInput = document.getElementById('ho');
+
+        if (dongNo) {
+            hoInput.disabled = false;
+            hoInput.placeholder = '호수 입력';
+        } else {
+            hoInput.value = '';
+            hoInput.disabled = true;
+            hoInput.placeholder = '동 선택 후 입력';
+        }
+    }
+
+    async function loadBillIssueList(currentPage) {
+        currentPage = currentPage || 1;
+
         const billYm = getBillYm();
         const pymtSttsCd = document.getElementById('pymtSttsCd').value;
+        const dongNo = document.getElementById('dongNo').value;
         const ho = document.getElementById('ho').value;
+
+        // 동 선택 필수
+        if (!dongNo) {
+            alert('동을 선택해 주세요.');
+            renderInitialEmptyState();
+            return;
+        }
 
         let url = contextPath + '/manager/bill/issue/list/' + mgmtOfcNo;
 
         const params = [];
+        params.push('currentPage=' + encodeURIComponent(currentPage));
 
         if (billYm) {
             params.push('billYm=' + encodeURIComponent(billYm));
@@ -389,33 +584,51 @@
             params.push('pymtSttsCd=' + encodeURIComponent(pymtSttsCd));
         }
 
+        params.push('dongNo=' + encodeURIComponent(dongNo));
+
         if (ho) {
             params.push('ho=' + encodeURIComponent(ho));
         }
 
-        if (params.length > 0) {
-            url += '?' + params.join('&');
+        url += '?' + params.join('&');
+
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                alert('고지서 목록 조회 중 오류가 발생했습니다. 상태코드: ' + response.status);
+                return;
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+                alert(result.message || '고지서 목록 조회에 실패했습니다.');
+                return;
+            }
+
+            renderBillIssueList(result.list || []);
+
+            document.getElementById('summaryTotalCount').textContent =
+                formatNumber(result.totalCount || 0) + '건';
+
+            document.getElementById('summaryTotalAmount').textContent =
+                formatNumber(result.pageTotalAmount || 0) + '원';
+
+            document.getElementById('summaryBillYm').textContent =
+                billYm ? formatBillYm(billYm) : '전체';
+
+            document.getElementById('paginationInfo').textContent =
+                '총 ' + formatNumber(result.totalCount || 0) + '건 / '
+                + formatNumber(result.currentPage || 1) + ' / '
+                + formatNumber(result.totalPage || 1) + '페이지';
+
+            document.getElementById('pagingArea').innerHTML = result.pagingHTML || '';
+
+        } catch (e) {
+            console.error('고지서 목록 조회 중 오류:', e);
+            alert('고지서 목록 조회 중 오류가 발생했습니다.');
         }
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            alert('고지서 목록 조회 중 오류가 발생했습니다. 상태코드: ' + response.status);
-            return;
-        }
-
-        const result = await response.json();
-
-        if (!result.success) {
-            alert(result.message || '고지서 목록 조회에 실패했습니다.');
-            return;
-        }
-
-        renderBillIssueList(result.list || []);
-
-        document.getElementById('summaryTotalCount').textContent = formatNumber(result.totalCount || 0) + '건';
-        document.getElementById('summaryTotalAmount').textContent = formatNumber(result.totalAmount || 0) + '원';
-        document.getElementById('summaryBillYm').textContent = billYm ? formatBillYm(billYm) : '전체';
     }
 
     function renderBillIssueList(list) {
@@ -448,22 +661,28 @@
     async function openDetailModal(billNo) {
         const url = contextPath + '/manager/bill/issue/detail/' + mgmtOfcNo + '/' + billNo;
 
-        const response = await fetch(url);
+        try {
+            const response = await fetch(url);
 
-        if (!response.ok) {
-            alert('고지서 상세 조회 중 오류가 발생했습니다. 상태코드: ' + response.status);
-            return;
+            if (!response.ok) {
+                alert('고지서 상세 조회 중 오류가 발생했습니다. 상태코드: ' + response.status);
+                return;
+            }
+
+            const result = await response.json();
+
+            if (!result.success) {
+                alert(result.message || '고지서 상세 조회에 실패했습니다.');
+                return;
+            }
+
+            renderBillDetail(result.bill);
+            document.getElementById('billDetailModal').classList.add('open');
+
+        } catch (e) {
+            console.error('고지서 상세 조회 중 오류:', e);
+            alert('고지서 상세 조회 중 오류가 발생했습니다.');
         }
-
-        const result = await response.json();
-
-        if (!result.success) {
-            alert(result.message || '고지서 상세 조회에 실패했습니다.');
-            return;
-        }
-
-        renderBillDetail(result.bill);
-        document.getElementById('billDetailModal').classList.add('open');
     }
 
     function renderBillDetail(bill) {
@@ -501,9 +720,15 @@
 
     function resetSearch() {
         initSearchDate();
+
         document.getElementById('pymtSttsCd').value = '';
+        document.getElementById('dongNo').value = '';
         document.getElementById('ho').value = '';
-        loadBillIssueList();
+        document.getElementById('ho').disabled = true;
+        document.getElementById('ho').placeholder = '동 선택 후 입력';
+
+        // 초기화 시에도 목록 자동 조회하지 않음
+        renderInitialEmptyState();
     }
 
     function renderStatusBadge(code, name) {
