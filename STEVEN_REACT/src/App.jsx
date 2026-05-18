@@ -11,6 +11,7 @@ import './styles/sidebar.css';
 import './styles/common.css';
 import './styles/header.css';
 import { getCookie } from './util/api/requestApi';
+import AnnRegister from './pages/AnnRegister';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 function App() {
