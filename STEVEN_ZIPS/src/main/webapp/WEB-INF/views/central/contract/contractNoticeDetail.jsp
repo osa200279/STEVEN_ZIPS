@@ -171,37 +171,44 @@
         </section>
 
         <!-- 공고 내용 + 제출서류 탭 -->
+        <!-- 공고 내용 섹션 -->
         <section class="bg-white border border-slate-200 shadow-sm">
-            <div class="flex border-b border-slate-200">
-                <button class="tab-btn active" data-tab="detail">공고 내용</button>
-                <button class="tab-btn" data-tab="doc">제출 서류</button>
+            <div class="flex items-center gap-2 px-6 py-4 border-b border-slate-200 bg-[#f8faf6]">
+                <span class="w-1.5 h-5 bg-[#004830] rounded-sm inline-block"></span>
+                <h2 class="text-sm font-bold text-[#004830]">공고 내용</h2>
             </div>
             <div class="p-8">
-                <div class="tab-panel active" id="tab-detail">
-                    <div class="text-sm text-slate-700 leading-relaxed whitespace-pre-line min-h-[120px]">
-                        <c:choose>
-                            <c:when test="${not empty announcement.cn}">${announcement.cn}</c:when>
-                            <c:otherwise><span class="text-slate-400">공고 내용이 없습니다.</span></c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
-                <div class="tab-panel" id="tab-doc">
+                <div class="text-sm text-slate-700 leading-relaxed whitespace-pre-line min-h-[120px]">
                     <c:choose>
-                        <c:when test="${not empty announcement.sbmsnDoc}">
-                            <div class="space-y-2">
-                                <c:forEach var="doc" items="${fn:split(announcement.sbmsnDoc, ',')}">
-                                    <div class="flex items-center gap-3 p-3 bg-[#f8faf6] rounded border border-slate-200">
-                                        <span class="material-symbols-outlined text-[#226046] text-[18px]">description</span>
-                                        <span class="text-sm text-slate-700">${fn:trim(doc)}</span>
-                                    </div>
-                                </c:forEach>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <p class="text-sm text-slate-400">제출 서류 정보가 없습니다.</p>
-                        </c:otherwise>
+                        <c:when test="${not empty announcement.cn}">${announcement.cn}</c:when>
+                        <c:otherwise><span class="text-slate-400">공고 내용이 없습니다.</span></c:otherwise>
                     </c:choose>
                 </div>
+            </div>
+        </section>
+
+        <!-- 제출 서류 섹션 -->
+        <section class="bg-white border border-slate-200 shadow-sm mt-4">
+            <div class="flex items-center gap-2 px-6 py-4 border-b border-slate-200 bg-[#f8faf6]">
+                <span class="w-1.5 h-5 bg-[#004830] rounded-sm inline-block"></span>
+                <h2 class="text-sm font-bold text-[#004830]">제출 서류</h2>
+            </div>
+            <div class="p-8">
+                <c:choose>
+                    <c:when test="${not empty announcement.sbmsnDoc}">
+                        <div class="space-y-2">
+                            <c:forEach var="doc" items="${fn:split(announcement.sbmsnDoc, ',')}">
+                                <div class="flex items-center gap-3 p-3 bg-[#f8faf6] rounded border border-slate-200">
+                                    <span class="material-symbols-outlined text-[#226046] text-[18px]">description</span>
+                                    <span class="text-sm text-slate-700">${fn:trim(doc)}</span>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <p class="text-sm text-slate-400">제출 서류 정보가 없습니다.</p>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </section>
 
