@@ -144,6 +144,7 @@ public class MngSurveyController {
                         .selectSurveyDetail(surveyNo)
         );
     }
+
     @PutMapping("/{mgmtOfcNo}/detail/{surveyNo}")
     @ResponseBody
     public ResponseEntity<?> updateSurvey(
@@ -172,6 +173,42 @@ public class MngSurveyController {
 
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/{mgmtOfcNo}/result/{surveyNo}")
+    public String resultPage(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String surveyNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
 
+        managerAccessService.addManagerViewModel(
+                model,
+                customUser,
+                mgmtOfcNo
+        );
 
+        model.addAttribute(
+                "mgmtOfcNo",
+                mgmtOfcNo
+        );
+
+        model.addAttribute(
+                "surveyNo",
+                surveyNo
+        );
+
+        return "apt/mgmtOffice/survey/mngr_survey_result";
+    }
+
+    @GetMapping("/{mgmtOfcNo}/result/{surveyNo}/data")
+    @ResponseBody
+    public ResponseEntity<?> selectSurveyResult(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String surveyNo
+    ) {
+
+        return ResponseEntity.ok(
+                surveyService.selectSurveyResult(surveyNo)
+        );
+    }
 }

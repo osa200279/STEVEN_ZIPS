@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
@@ -599,7 +599,7 @@
 <script>
     const ctx = "${pageContext.request.contextPath}";
     const mgmtOfcNo = "${mgmtOfcNo}";
-
+    var surveys = [];
     (function () {
         var page = document.getElementById("surveyManagePage");
         if (!page || page.dataset.bound === "true") return;
@@ -617,7 +617,7 @@
         }
 
 
-        var surveys = [];
+
 
 
 
@@ -760,11 +760,9 @@
 
                 console.log(row);
 
+                // 수정: 상세 버튼은 실제 상세 JSP 경로로 이동
                 location.href =
-                    "/manager/survey/"
-                    + mgmtOfcNo
-                    + "/detail/"
-                    + row.surveyNo;
+                    `${ctx}/manager/survey/${mgmtOfcNo}/detail/${row.surveyNo}`;
             }
 
 
@@ -778,11 +776,9 @@
 
                 var resultRow = surveys[Number(btn.dataset.idx)];
 
-                alert(
-                    resultRow.surveyNm
-                    + "\n상태: "
-                    + statusText(resultRow.surveySttsCd)
-                );
+                // 수정: 결과 버튼은 결과 JSP로 바로 이동
+                location.href =
+                    `${ctx}/manager/survey/${mgmtOfcNo}/result/${resultRow.surveyNo}`;
             }
         });
 
@@ -869,14 +865,6 @@
             if (e.target === modal) closeModal();
         });
 
-        document
-
-            .addEventListener("click", function () {
-
-                document
-                    .getElementById("detailModal")
-                    .classList.remove("open");
-            });
 
 
 
@@ -1073,6 +1061,29 @@
         loadSurveyList();
 
     })();
+</script>
+<script>
+    document.addEventListener("click", function (e) {
+        var btn = e.target.closest('[data-action="result"]');
+        if (!btn) return;
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        var page = document.getElementById("surveyManagePage");
+        if (!page) return;
+
+        var idx = Number(btn.getAttribute("data-idx"));
+        if (Number.isNaN(idx) || !window.surveys || !window.surveys[idx]) {
+            return;
+        }
+
+        var row = window.surveys[idx];
+        console.log(`${row.surveyNo}`);
+        console.log(`\${row.surveyNo}`);
+        window.location.href =
+            `${ctx}/manager/survey/${mgmtOfcNo}/result/\${row.surveyNo}`;
+    }, true);
 </script>
 </body>
 </html>

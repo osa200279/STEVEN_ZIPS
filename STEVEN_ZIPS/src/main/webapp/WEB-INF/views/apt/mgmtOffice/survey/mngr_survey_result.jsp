@@ -1,0 +1,518 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>투표/설문 결과</title>
+
+    <sec:csrfMetaTags/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/office-layout.css">
+
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/manager/manager-common.css">
+
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/style.css">
+
+    <style>
+
+        #surveyResultPage .result-layout{
+            display:flex;
+            flex-direction:column;
+            gap:16px;
+        }
+
+        #surveyResultPage .summary-grid{
+            display:grid;
+            grid-template-columns:repeat(4,minmax(0,1fr));
+            gap:12px;
+        }
+
+        #surveyResultPage .summary-card{
+            background:#fff;
+            border:1px solid var(--border);
+            border-radius:10px;
+            padding:18px;
+        }
+
+        #surveyResultPage .summary-label{
+            font-size:12px;
+            color:var(--text-tertiary);
+            margin-bottom:8px;
+        }
+
+        #surveyResultPage .summary-value{
+            font-size:28px;
+            font-weight:800;
+            color:var(--text-primary);
+        }
+
+        #surveyResultPage .question-card{
+            border:1px solid #dfe5ec;
+            border-radius:12px;
+            background:#fff;
+            overflow:hidden;
+        }
+
+        #surveyResultPage .question-header{
+            padding:18px;
+            border-bottom:1px solid #edf1f5;
+            background:#fafbfc;
+        }
+
+        #surveyResultPage .question-title{
+            font-size:17px;
+            font-weight:700;
+            color:#111827;
+        }
+
+        #surveyResultPage .question-sub{
+            margin-top:6px;
+            font-size:13px;
+            color:#6b7280;
+        }
+
+        #surveyResultPage .question-body{
+            padding:20px;
+        }
+
+        #surveyResultPage .result-row{
+            margin-bottom:18px;
+        }
+
+        #surveyResultPage .result-row:last-child{
+            margin-bottom:0;
+        }
+
+        #surveyResultPage .result-info{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:8px;
+            gap:12px;
+        }
+
+        #surveyResultPage .result-label{
+            font-size:14px;
+            font-weight:600;
+            color:#111827;
+        }
+
+        #surveyResultPage .result-count{
+            font-size:13px;
+            color:#6b7280;
+            flex-shrink:0;
+        }
+
+        #surveyResultPage .progress{
+            width:100%;
+            height:14px;
+            background:#edf1f5;
+            border-radius:999px;
+            overflow:hidden;
+        }
+
+        #surveyResultPage .progress-bar{
+            height:100%;
+            border-radius:999px;
+            background:#2f6b3d;
+        }
+
+        #surveyResultPage .essay-box{
+            border:1px solid #e5e7eb;
+            border-radius:10px;
+            padding:14px;
+            background:#fafafa;
+            margin-bottom:12px;
+            font-size:14px;
+            line-height:1.6;
+            color:#374151;
+        }
+
+        @media (max-width:1180px){
+
+            #surveyResultPage .summary-grid{
+                grid-template-columns:repeat(2,minmax(0,1fr));
+            }
+        }
+
+        @media (max-width:720px){
+
+            #surveyResultPage .summary-grid{
+                grid-template-columns:1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="app-wrapper">
+
+    <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
+
+    <div class="main-wrap">
+
+        <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
+
+        <main class="main-content">
+
+            <div class="office-page"
+                 id="surveyResultPage">
+
+                <div class="result-layout">
+
+                    <!-- 상단 -->
+                    <div class="panel">
+
+                        <div class="panel-body">
+
+                            <div style="
+                                display:flex;
+                                justify-content:space-between;
+                                align-items:flex-start;
+                                gap:16px;
+                                flex-wrap:wrap;
+                            ">
+
+                                <div>
+
+                                    <h2 id="surveyTitle"
+                                        style="
+                                            font-size:28px;
+                                            font-weight:800;
+                                            margin-bottom:10px;
+                                        ">
+                                        설문 제목
+                                    </h2>
+
+                                    <div id="surveyContent"
+                                         style="
+                                            color:#6b7280;
+                                            font-size:14px;
+                                            line-height:1.7;
+                                         ">
+                                        설문 설명
+                                    </div>
+
+                                </div>
+
+                                <div style="
+                                    display:flex;
+                                    gap:8px;
+                                    flex-wrap:wrap;
+                                ">
+
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            id="backBtn">
+
+                                        목록
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- 요약 -->
+                    <div class="summary-grid">
+
+                        <div class="summary-card">
+
+                            <div class="summary-label">
+                                총 응답 수
+                            </div>
+
+                            <div class="summary-value"
+                                 id="totalAnswerCount">
+
+                                0
+
+                            </div>
+
+                        </div>
+
+                        <div class="summary-card">
+
+                            <div class="summary-label">
+                                참여 세대
+                            </div>
+
+                            <div class="summary-value"
+                                 id="participantCount">
+
+                                0
+
+                            </div>
+
+                        </div>
+
+                        <div class="summary-card">
+
+                            <div class="summary-label">
+                                진행 상태
+                            </div>
+
+                            <div class="summary-value"
+                                 id="surveyStatus">
+
+                                진행중
+
+                            </div>
+
+                        </div>
+
+                        <div class="summary-card">
+
+                            <div class="summary-label">
+                                응답률
+                            </div>
+
+                            <div class="summary-value"
+                                 id="answerRate">
+
+                                0%
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- 결과 -->
+                    <div class="panel">
+
+                        <div class="panel-header">
+
+                            <h3 class="panel-title">
+
+                                <span class="material-symbols-rounded">
+                                    analytics
+                                </span>
+
+                                설문 결과
+
+                            </h3>
+
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div id="resultContainer">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+<script>
+
+    const ctx = "${pageContext.request.contextPath}";
+    const mgmtOfcNo = "${mgmtOfcNo}";
+    const surveyNo = "${surveyNo}";
+
+    function statusText(status){
+
+        if(status === "READY") return "대기중";
+        if(status === "OPEN") return "진행중";
+        if(status === "CLOSED") return "종료";
+
+        return "-";
+    }
+
+    document
+        .getElementById("backBtn")
+        .addEventListener("click", function () {
+
+            location.href =
+                `${ctx}/manager/survey/${mgmtOfcNo}`;
+        });
+
+    async function loadResult(){
+
+        try{
+
+            const response = await fetch(
+                `${ctx}/manager/survey/${mgmtOfcNo}/result/${surveyNo}/data`
+            );
+
+            const data = await response.json();
+
+            console.log(data);
+
+            renderResult(data);
+
+        }catch (e){
+
+            console.error(e);
+
+            document
+                .getElementById("resultContainer")
+                .innerHTML =
+                `
+                    <div style="
+                        padding:40px;
+                        text-align:center;
+                        color:#6b7280;
+                    ">
+                        결과를 불러오지 못했습니다.
+                    </div>
+                    `;
+        }
+    }
+
+    function renderResult(data){
+
+        document
+            .getElementById("surveyTitle")
+            .textContent =
+            data.surveyNm || "-";
+
+        document
+            .getElementById("surveyContent")
+            .textContent =
+            data.surveyCn || "-";
+
+        document
+            .getElementById("surveyStatus")
+            .textContent =
+            statusText(data.surveySttsCd);
+
+        document
+            .getElementById("totalAnswerCount")
+            .textContent =
+            data.totalAnswerCount || 0;
+
+        document
+            .getElementById("participantCount")
+            .textContent =
+            data.participantCount || 0;
+
+        document
+            .getElementById("answerRate")
+            .textContent =
+            (data.answerRate || 0) + "%";
+
+        const container =
+            document.getElementById("resultContainer");
+
+        if(!data.questions || !data.questions.length){
+
+            container.innerHTML =
+                `
+                <div style="
+                    padding:40px;
+                    text-align:center;
+                    color:#6b7280;
+                ">
+                    결과 데이터가 없습니다.
+                </div>
+                `;
+
+            return;
+        }
+
+        let html = "";
+
+        data.questions.forEach(function (question, idx){
+
+            html +=
+                '<div class="question-card" style="margin-bottom:16px;">'
+
+                + '<div class="question-header">'
+
+                +   '<div class="question-title">'
+                +       'Q' + (idx + 1) + '. '
+                +       question.question
+                +   '</div>'
+
+                +   '<div class="question-sub">'
+                +       '응답 수 '
+                +       (question.totalCount || 0)
+                +       '명'
+                +   '</div>'
+
+                + '</div>'
+
+                + '<div class="question-body">';
+
+            question.answers.forEach(function (answer){
+
+                html +=
+                    '<div class="result-row">'
+
+                    + '<div class="result-info">'
+
+                    +   '<div class="result-label">'
+                    +       answer.label
+                    +   '</div>'
+
+                    +   '<div class="result-count">'
+                    +       answer.count
+                    +       '명 ('
+                    +       answer.percent
+                    +       '%)'
+                    +   '</div>'
+
+                    + '</div>'
+
+                    + '<div class="progress">'
+
+                    +   '<div class="progress-bar" '
+                    +       'style="width:'
+                    +       answer.percent
+                    +       '%">'
+
+                    +   '</div>'
+
+                    + '</div>'
+
+                    + '</div>';
+            });
+
+            html +=
+                '</div>'
+                + '</div>';
+        });
+
+        container.innerHTML = html;
+    }
+
+    loadResult();
+
+</script>
+
+
+</body>
+</html>

@@ -89,7 +89,6 @@
 
     </select>
 
-
     <update id="updateSurvey">
 
         UPDATE SURVEY
@@ -123,7 +122,29 @@
 
 
 
+    <select id="selectSurveyResult"
+            parameterType="string"
+            resultType="map">
 
+        SELECT
+
+            SURVEY_NO        AS surveyNo,
+            SURVEY_NM        AS surveyNm,
+            SURVEY_CN        AS surveyCn,
+            SURVEY_TY_CD     AS surveyTypeCd,
+            SURVEY_STTS_CD   AS surveySttsCd,
+            SURVEY_BGNG_DT   AS surveyBgngDt,
+            SURVEY_END_DT    AS surveyEndDt,
+
+            0 AS totalAnswerCount,
+            0 AS participantCount,
+            0 AS answerRate
+
+        FROM SURVEY
+
+        WHERE SURVEY_NO = #{surveyNo}
+
+    </select>
 
 
 

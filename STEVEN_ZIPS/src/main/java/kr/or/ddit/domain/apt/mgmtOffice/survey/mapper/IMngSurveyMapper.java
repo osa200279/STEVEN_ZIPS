@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface IMngSurveyMapper {
@@ -18,4 +19,6 @@ public interface IMngSurveyMapper {
     void updateSurvey(MngSurveyDTO dto);
 
     void deleteSurvey(String surveyNo);
+
+    Map<String, Object> selectSurveyResult(String surveyNo);
 }

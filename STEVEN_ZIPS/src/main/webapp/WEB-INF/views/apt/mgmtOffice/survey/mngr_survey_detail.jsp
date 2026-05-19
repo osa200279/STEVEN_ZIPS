@@ -264,7 +264,8 @@
     });
 
     document.getElementById("resultBtn").addEventListener("click", function () {
-        alert("결과 화면은 아직 연결되지 않았습니다.");
+        // 수정: 상세 화면의 결과 버튼도 결과 JSP로 연결
+        window.location.href = `${ctx}/manager/survey/${mgmtOfcNo}/result/${surveyNo}`;
     });
 </script>
 
