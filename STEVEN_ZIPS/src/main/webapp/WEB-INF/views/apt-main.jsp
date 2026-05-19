@@ -297,6 +297,138 @@ img { display: block; width: 100%; }
 .delay-2 { animation-delay:.2s; }
 .delay-3 { animation-delay:.3s; }
 .delay-4 { animation-delay:.4s; }
+
+/* ═══════════════════════════════════════
+   아파트 위치 지도 모달
+═══════════════════════════════════════ */
+.apt-map-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+}
+
+.apt-map-modal.show {
+    display: block;
+}
+
+.apt-map-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .52);
+    backdrop-filter: blur(3px);
+}
+
+.apt-map-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(920px, calc(100% - 32px));
+    max-height: calc(100vh - 60px);
+    transform: translate(-50%, -50%);
+    background: var(--white);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+}
+
+.apt-map-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--green-pale);
+}
+
+.apt-map-header h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--green-dark);
+    letter-spacing: -.5px;
+}
+
+.apt-map-header p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.6;
+}
+
+.apt-map-close {
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--text-dark);
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+}
+
+.apt-map-close:hover {
+    background: var(--green-light);
+    color: var(--green-dark);
+}
+
+.apt-map-body {
+    padding: 22px 24px 24px;
+}
+
+.apt-map-box {
+    width: 100%;
+    height: 460px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: #f2f4f3;
+}
+
+.apt-map-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 14px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: var(--green-pale);
+    border: 1px solid var(--border);
+}
+
+.apt-map-info strong {
+    font-size: 16px;
+    color: var(--green-dark);
+}
+
+.apt-map-info span {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+}
+
+body.map-modal-open {
+    overflow: hidden;
+}
+
+@media (max-width: 640px) {
+    .apt-map-dialog {
+        width: calc(100% - 20px);
+    }
+    .apt-map-header {
+        padding: 18px;
+    }
+    .apt-map-body {
+        padding: 16px;
+    }
+    .apt-map-box {
+        height: 360px;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -410,17 +542,22 @@ img { display: block; width: 100%; }
           </div>
       </c:otherwise>
     </c:choose>
-    <button class="quick-consult-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
-      </svg>
-      아파트 위치 자세히보기
+    <button type="button"
+            class="quick-consult-btn"
+            id="openAptMapBtn"
+            data-address="${fn:escapeXml(apt.dorojuso)}"
+            data-apt-name="${fn:escapeXml(apt.aptCmplexNm)}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+        </svg>
+        아파트 위치 자세히보기
     </button>
   </div>
   <div class="quick-menus">
 
   <!-- 공지사항 -->
-  <a href="${pageContext.request.contextPath}/resident/manage/intro" class="quick-menu-item">
+  <a href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}" class="quick-menu-item">
     <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 11v2a2 2 0 002 2h3l5 3V6l-5 3H5a2 2 0 00-2 2z"/>
       <path d="M16 8a4 4 0 010 8"/>
@@ -429,7 +566,7 @@ img { display: block; width: 100%; }
   </a>
 
   <!-- 관리비조회 -->
-  <a href="${pageContext.request.contextPath}/resident/bill/guide" class="quick-menu-item">
+  <a href="${pageContext.request.contextPath}/resident/bill/inquiry/${apt.aptCmplexNo}" class="quick-menu-item">
     <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
       <polyline points="14 2 14 8 20 8"/>
@@ -440,7 +577,7 @@ img { display: block; width: 100%; }
   </a>
 
   <!-- 입주민 게시판 -->
-  <a href="${pageContext.request.contextPath}/resident/manage/facility" class="quick-menu-item">
+  <a href="${pageContext.request.contextPath}/resident/board/free/list/${aptCmplexNo}" class="quick-menu-item">
     <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
     </svg>
@@ -461,6 +598,32 @@ img { display: block; width: 100%; }
 </div>
 </div>
 
+    <div class="apt-map-modal" id="aptMapModal" aria-hidden="true">
+        <div class="apt-map-backdrop" id="aptMapBackdrop"></div>
+
+        <div class="apt-map-dialog">
+            <div class="apt-map-header">
+                <div>
+                    <h3 id="aptMapTitle">아파트 위치</h3>
+                    <p id="aptMapAddress">${apt.dorojuso}</p>
+                </div>
+
+                <button type="button" class="apt-map-close" id="closeAptMapBtn" aria-label="지도 모달 닫기">
+                    ×
+                </button>
+            </div>
+
+            <div class="apt-map-body">
+                <div id="aptMap" class="apt-map-box"></div>
+
+                <div class="apt-map-info">
+                    <strong>${apt.aptCmplexNm}</strong>
+                    <span>${apt.dorojuso}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <%-- ══════════════ 최신 뉴스 ══════════════ --%>
 <section class="news-section">
   <div class="news-inner">
@@ -469,7 +632,7 @@ img { display: block; width: 100%; }
         <span class="section-badge">입주민 소식</span>
         <h2 class="section-title" style="margin-top:6px">Latest <em>News</em></h2>
       </div>
-      <a href="${pageContext.request.contextPath}/resident/board/notice" class="more-btn">
+      <a href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}" class="more-btn">
         more view
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
@@ -513,6 +676,8 @@ img { display: block; width: 100%; }
 
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 </main>
+<script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46f7d3996e1205738757a1e4f1ed1f04&libraries=services"></script>
 <script>
 (function () {
 
@@ -586,6 +751,157 @@ img { display: block; width: 100%; }
     observer.observe(el);
   });
 })();
+
+/* ── 아파트 위치 지도 모달 ── */
+var openAptMapBtn = document.getElementById('openAptMapBtn');
+var aptMapModal = document.getElementById('aptMapModal');
+var closeAptMapBtn = document.getElementById('closeAptMapBtn');
+var aptMapBackdrop = document.getElementById('aptMapBackdrop');
+var aptMapTitle = document.getElementById('aptMapTitle');
+var aptMapAddress = document.getElementById('aptMapAddress');
+
+var aptMap = null;
+var aptMapMarker = null;
+var aptMapInfoWindow = null;
+var aptMapLoaded = false;
+
+function openAptMapModal() {
+    if (!openAptMapBtn || !aptMapModal) {
+        return;
+    }
+
+    var address = openAptMapBtn.getAttribute('data-address');
+    var aptName = openAptMapBtn.getAttribute('data-apt-name');
+
+    if (!address) {
+        alert('아파트 주소 정보가 없습니다.');
+        return;
+    }
+
+    aptMapTitle.textContent = aptName || '아파트 위치';
+    aptMapAddress.textContent = address;
+
+    aptMapModal.classList.add('show');
+    aptMapModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('map-modal-open');
+
+    /*
+      display:none 상태였던 영역에 지도를 그리면 깨질 수 있어서
+      모달을 먼저 보여준 뒤 relayout 처리
+    */
+    setTimeout(function () {
+        loadAptMap(address, aptName);
+    }, 80);
+}
+
+function closeAptMapModal() {
+    if (!aptMapModal) {
+        return;
+    }
+
+    aptMapModal.classList.remove('show');
+    aptMapModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('map-modal-open');
+}
+
+function loadAptMap(address, aptName) {
+    if (typeof kakao === 'undefined' || !kakao.maps) {
+        alert('카카오 지도 스크립트를 불러오지 못했습니다. JavaScript 키를 확인해 주세요.');
+        return;
+    }
+
+    var mapContainer = document.getElementById('aptMap');
+
+    if (!mapContainer) {
+        return;
+    }
+
+    var geocoder = new kakao.maps.services.Geocoder();
+
+    geocoder.addressSearch(address, function (result, status) {
+        if (status !== kakao.maps.services.Status.OK || !result || result.length === 0) {
+            mapContainer.innerHTML =
+                '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;font-size:14px;">주소로 위치를 찾을 수 없습니다.</div>';
+            return;
+        }
+
+        var lat = Number(result[0].y);
+        var lng = Number(result[0].x);
+        var coords = new kakao.maps.LatLng(lat, lng);
+
+        if (!aptMapLoaded) {
+            aptMap = new kakao.maps.Map(mapContainer, {
+                center: coords,
+                level: 3
+            });
+
+            aptMapMarker = new kakao.maps.Marker({
+                map: aptMap,
+                position: coords
+            });
+
+            aptMapInfoWindow = new kakao.maps.InfoWindow({
+                content:
+                    '<div style="padding:8px 12px;font-size:13px;font-weight:700;color:#2d5a3d;white-space:nowrap;">'
+                    + escapeHtmlForMap(aptName || '아파트 위치')
+                    + '</div>'
+            });
+
+            aptMapInfoWindow.open(aptMap, aptMapMarker);
+
+            aptMapLoaded = true;
+        } else {
+            aptMap.setCenter(coords);
+            aptMapMarker.setPosition(coords);
+            aptMapInfoWindow.setContent(
+                '<div style="padding:8px 12px;font-size:13px;font-weight:700;color:#2d5a3d;white-space:nowrap;">'
+                + escapeHtmlForMap(aptName || '아파트 위치')
+                + '</div>'
+            );
+            aptMapInfoWindow.open(aptMap, aptMapMarker);
+        }
+
+        /*
+          모달 내부 지도 깨짐 방지
+        */
+        setTimeout(function () {
+            aptMap.relayout();
+            aptMap.setCenter(coords);
+        }, 120);
+    });
+}
+
+function escapeHtmlForMap(value) {
+    if (value === null || value === undefined) {
+        return '';
+    }
+
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+if (openAptMapBtn) {
+    openAptMapBtn.addEventListener('click', openAptMapModal);
+}
+
+if (closeAptMapBtn) {
+    closeAptMapBtn.addEventListener('click', closeAptMapModal);
+}
+
+if (aptMapBackdrop) {
+    aptMapBackdrop.addEventListener('click', closeAptMapModal);
+}
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && aptMapModal && aptMapModal.classList.contains('show')) {
+        closeAptMapModal();
+    }
+});
+
 </script>
 </body>
 </html>
