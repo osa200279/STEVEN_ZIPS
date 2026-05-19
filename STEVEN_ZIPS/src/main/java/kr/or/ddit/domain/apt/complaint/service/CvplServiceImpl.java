@@ -129,4 +129,9 @@ public class CvplServiceImpl implements ICvplService {
     public List<CvplVO> selectMyCvplList(PaginationInfoVO<CvplVO> page) {
         return cvplMapper.selectMyCvplList(page);
     }
+
+    @Override
+    public List<CvplVO> selectCvplListAllByAptCmplexNo(String aptCmplexNo) {
+        return cvplMapper.selectCvplListAllByAptCmplexNo(aptCmplexNo);
+    }
 }

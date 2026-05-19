@@ -21,4 +21,6 @@ public interface ICvplService {
 
     // 페이징 처리할 민원리스트 조회
     List<CvplVO> selectMyCvplList(PaginationInfoVO<CvplVO> page);
+
+    List<CvplVO> selectCvplListAllByAptCmplexNo(String aptCmplexNo);
 }

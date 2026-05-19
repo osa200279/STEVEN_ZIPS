@@ -125,4 +125,30 @@
              )
         where rnum >= #{startRow}
     </select>
+
+    <!-- 해당 아파트 모든 민원내역 -->
+    <select id="selectCvplListAllByAptCmplexNo" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
+        select  /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectCvplListAllByAptCmplexNo */
+            CVPL_NO
+             , CVPL_TY_CD
+             , CVPL_LOC
+             , CVPL_CN
+             , CVPL_STTS_CD
+             , CVPL_REG_DT
+             , CVPL_MDF_DT
+             , CVPL_RCPT_DT
+             , CVPL_END_DT
+             , CVPL_PRRT
+             , CVPL_FILE_NO
+             , CVPL_TTL
+             , C.USER_NO
+             , M.USER_ID
+             , M.USER_NM
+             , HO_NO
+             , APT_CMPLEX_NO
+         from CVPL  C
+   inner join MEMBER M on(M.USER_NO = C.USER_NO)
+        where APT_CMPLEX_NO = #{aptCmplexNo}
+        order by CVPL_REG_DT desc
+    </select>
 </mapper>

@@ -180,7 +180,7 @@ public class CvplController {
             , @PathVariable String aptCmplexNo
             , Model model) {
         ResidentVO resident = (ResidentVO) customUser.getMember();
-        List<CvplVO> cvplList = cvplService.selectCvplListByAptCmplexNo(aptCmplexNo, resident.getUserNo());
+        List<CvplVO> cvplList = cvplService.selectCvplListAllByAptCmplexNo(aptCmplexNo);
 
         model.addAttribute("cvplList", cvplList);
 
