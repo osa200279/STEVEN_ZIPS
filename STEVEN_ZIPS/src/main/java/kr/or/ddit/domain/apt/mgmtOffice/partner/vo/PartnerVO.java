@@ -16,7 +16,7 @@ public class PartnerVO {
     /** 아파트단지번호 */
     private String aptCmplexNo;
 
-    /** 아파트단지명 */
+    /** 아파트단지명  join용*/
     private String aptCmplexNm;
 
     /** 업종명 */
@@ -49,6 +49,8 @@ public class PartnerVO {
     /** 전체 계약건수 */
     private int contractCnt;
 
+
+/******************** join용*/
     /** 유효 계약건수 */
     private int activeContractCnt;
 
@@ -69,4 +71,5 @@ public class PartnerVO {
 
     /** 최근 검침일자 */
     private String recentMeterDt;
+
 }
