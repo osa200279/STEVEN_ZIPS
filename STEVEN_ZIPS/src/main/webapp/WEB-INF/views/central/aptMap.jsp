@@ -143,6 +143,37 @@
             text-align: center;
             box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
         }
+
+        /* 매물 정보 표시 */
+        .map-info-rent-box {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #fff5f5;
+            border: 1px solid #fecaca;
+        }
+
+        .map-info-rent-title {
+            display: block;
+            color: #dc2626;
+            font-size: 12px;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .map-info-rent-line {
+            display: block;
+            color: #475569;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .map-info-rent-empty {
+            display: block;
+            margin-top: 8px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
     </style>
 </head>
 
@@ -229,6 +260,8 @@
         src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46f7d3996e1205738757a1e4f1ed1f04"></script>
 
 <script>
+    const CONTEXT_PATH = '${pageContext.request.contextPath}';
+
     /*
      * Controller에서 model.addAttribute("aptList", aptList)로 넘긴 데이터
      */
@@ -242,22 +275,30 @@
             dorojuso: "${fn:escapeXml(apt.dorojuso)}",
             latVal: ${empty apt.latVal ? "null" : apt.latVal},
             lonVal: ${empty apt.lonVal ? "null" : apt.lonVal},
-            unitCnt: ${apt.unitCnt},
-            dongCnt: ${apt.dongCnt}
+            unitCnt: ${empty apt.unitCnt ? 0 : apt.unitCnt},
+            dongCnt: ${empty apt.dongCnt ? 0 : apt.dongCnt}
         }<c:if test="${!status.last}">,</c:if>
         </c:forEach>
     ];
 
     /*
-     * 기본 중심 좌표
-     * 좌표 목록이 없을 경우 대전 중심으로 표시
+     * aptCmplexNo 기준 매물 요약 Map
+     * 예:
+     * rentSummaryMap["A10023118"] = {
+     *   count: 2,
+     *   jsCount: 1,
+     *   peCount: 1,
+     *   jsMinDpstAmt: 120000000,
+     *   peMinDpstAmt: 10000000,
+     *   peMinMonthlyRentAmt: 480000,
+     *   list: [...]
+     * }
      */
+    let rentSummaryMap = {};
+
     let centerLat = 36.3504;
     let centerLng = 127.3845;
 
-    /*
-     * 좌표가 있는 첫 번째 단지를 지도 중심으로 사용
-     */
     const firstApt = aptList.find(function (apt) {
         return apt.latVal !== null && apt.lonVal !== null;
     });
@@ -276,73 +317,259 @@
 
     const map = new kakao.maps.Map(mapContainer, mapOption);
 
-    /*
-     * 지도 컨트롤 추가
-     */
     const zoomControl = new kakao.maps.ZoomControl();
     map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
 
     const mapTypeControl = new kakao.maps.MapTypeControl();
     map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
 
-    /*
-     * 여러 마커의 범위를 자동으로 맞추기 위한 bounds
-     */
     const bounds = new kakao.maps.LatLngBounds();
 
-    /*
-     * 현재 열려있는 인포윈도우 관리
-     */
     let openedInfoWindow = null;
 
-    aptList.forEach(function (apt) {
-        const lat = Number(apt.latVal); // 위도
-        const lng = Number(apt.lonVal); // 경도
+    /*
+     * 1. 매물 데이터 먼저 조회
+     * 2. aptList와 aptCmplexNo 기준으로 매칭
+     * 3. 매물이 있으면 빨간 마커, 없으면 파란 마커
+     */
+    loadRentSummaryAndDrawMarkers();
 
-        if (!lat || !lng) {
-            return;
-        }
+    function loadRentSummaryAndDrawMarkers() {
+        fetch(CONTEXT_PATH + "/rent/list-data")
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("매물 목록 조회 실패");
+                }
 
-        const position = new kakao.maps.LatLng(lat, lng);
+                return response.json();
+            })
+            .then(function (data) {
+                if (data.success) {
+                    rentSummaryMap = buildRentSummaryMap(data.list || []);
+                } else {
+                    console.warn(data.message || "매물 목록 조회 실패");
+                    rentSummaryMap = {};
+                }
 
-        const marker = new kakao.maps.Marker({
-            map: map,
-            position: position,
-            title: apt.aptCmplexNm
-        });
+                drawAptMarkers();
+            })
+            .catch(function (error) {
+                console.error("매물 목록 조회 오류:", error);
 
-        bounds.extend(position);
+                /*
+                 * 매물 API가 실패해도 아파트 지도는 정상 표시
+                 */
+                rentSummaryMap = {};
+                drawAptMarkers();
+            });
+    }
 
-        const detailUrl = "${pageContext.request.contextPath}/main/apt/detail.do?aptCmplexNo=" + encodeURIComponent(apt.aptCmplexNo);
+    function buildRentSummaryMap(rentList) {
+        const map = {};
 
-        const content =
-            '<div class="map-info-window">' +
-            '  <span class="map-info-title">' + apt.aptCmplexNm + '</span>' +
-            '  <span class="map-info-address">' + apt.dorojuso + '</span>' +
-            '  <span class="map-info-meta">' + apt.unitCnt + '세대 / ' + apt.dongCnt + '동</span>' +
-            '  <a class="map-info-link" href="' + detailUrl + '">상세보기</a>' +
-            '</div>';
+        rentList.forEach(function (rent) {
+            const aptCmplexNo = rent.aptCmplexNo;
 
-        const infowindow = new kakao.maps.InfoWindow({
-            content: content,
-            removable: true
-        });
-
-        kakao.maps.event.addListener(marker, "click", function () {
-            if (openedInfoWindow) {
-                openedInfoWindow.close();
+            if (!aptCmplexNo) {
+                return;
             }
 
-            infowindow.open(map, marker);
-            openedInfoWindow = infowindow;
+            if (!map[aptCmplexNo]) {
+                map[aptCmplexNo] = {
+                    count: 0,
+                    jsCount: 0,
+                    peCount: 0,
+                    jsMinDpstAmt: null,
+                    peMinDpstAmt: null,
+                    peMinMonthlyRentAmt: null,
+                    list: []
+                };
+            }
+
+            const summary = map[aptCmplexNo];
+
+            summary.count++;
+            summary.list.push(rent);
+
+            /*
+             * JS : 전세임대
+             * PE : 영구임대(월세)
+             */
+            if (rent.rentTypeCd === "JS") {
+                summary.jsCount++;
+
+                const dpstAmt = Number(rent.dpstAmt || 0);
+
+                if (summary.jsMinDpstAmt === null || dpstAmt < summary.jsMinDpstAmt) {
+                    summary.jsMinDpstAmt = dpstAmt;
+                }
+            }
+
+            if (rent.rentTypeCd === "PE") {
+                summary.peCount++;
+
+                const dpstAmt = Number(rent.dpstAmt || 0);
+                const monthlyRentAmt = Number(rent.mthlyRentAmt || 0);
+
+                if (summary.peMinDpstAmt === null || dpstAmt < summary.peMinDpstAmt) {
+                    summary.peMinDpstAmt = dpstAmt;
+                }
+
+                if (summary.peMinMonthlyRentAmt === null || monthlyRentAmt < summary.peMinMonthlyRentAmt) {
+                    summary.peMinMonthlyRentAmt = monthlyRentAmt;
+                }
+            }
         });
-    });
+
+        return map;
+    }
+
+    function drawAptMarkers() {
+        aptList.forEach(function (apt) {
+            const lat = Number(apt.latVal);
+            const lng = Number(apt.lonVal);
+
+            if (!lat || !lng) {
+                return;
+            }
+
+            const position = new kakao.maps.LatLng(lat, lng);
+            const rentSummary = rentSummaryMap[apt.aptCmplexNo];
+            const hasRent = !!rentSummary && rentSummary.count > 0;
+
+            const marker = new kakao.maps.Marker({
+                map: map,
+                position: position,
+                title: apt.aptCmplexNm,
+                image: hasRent ? createMarkerImage("#dc2626") : createMarkerImage("#1e88ff")
+            });
+
+            bounds.extend(position);
+
+            const detailUrl = CONTEXT_PATH + "/main/apt/detail.do?aptCmplexNo=" + encodeURIComponent(apt.aptCmplexNo);
+
+            const content =
+                '<div class="map-info-window">' +
+                '  <span class="map-info-title">' + escapeHtml(apt.aptCmplexNm) + '</span>' +
+                '  <span class="map-info-address">' + escapeHtml(apt.dorojuso) + '</span>' +
+                '  <span class="map-info-meta">' + escapeHtml(apt.unitCnt) + '세대 / ' + escapeHtml(apt.dongCnt) + '동</span>' +
+                makeRentInfoHtml(rentSummary) +
+                '  <a class="map-info-link" href="' + detailUrl + '">상세보기</a>' +
+                '</div>';
+
+            const infowindow = new kakao.maps.InfoWindow({
+                content: content,
+                removable: true
+            });
+
+            kakao.maps.event.addListener(marker, "click", function () {
+                if (openedInfoWindow) {
+                    openedInfoWindow.close();
+                }
+
+                infowindow.open(map, marker);
+                openedInfoWindow = infowindow;
+            });
+        });
+
+        if (aptList.length > 1 && firstApt) {
+            map.setBounds(bounds);
+        }
+    }
 
     /*
-     * 마커가 2개 이상이면 전체 마커가 보이도록 지도 범위 조정
+     * 빨간/파란 마커 이미지 생성
      */
-    if (aptList.length > 1 && firstApt) {
-        map.setBounds(bounds);
+    function createMarkerImage(color) {
+        const svg =
+            '<svg width="36" height="48" viewBox="0 0 36 48" xmlns="http://www.w3.org/2000/svg">' +
+            '  <path d="M18 46C18 46 33 28.8 33 16.5C33 7.94 26.28 1 18 1C9.72 1 3 7.94 3 16.5C3 28.8 18 46 18 46Z" fill="' + color + '" stroke="white" stroke-width="2"/>' +
+            '  <circle cx="18" cy="16.5" r="6.5" fill="white"/>' +
+            '</svg>';
+
+        const imageSrc = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+        const imageSize = new kakao.maps.Size(36, 48);
+        const imageOption = {
+            offset: new kakao.maps.Point(18, 48)
+        };
+
+        return new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+    }
+
+    function makeRentInfoHtml(summary) {
+        if (!summary || summary.count === 0) {
+            return '<span class="map-info-rent-empty">등록된 매물 없음</span>';
+        }
+
+        let html = '';
+
+        html += '<div class="map-info-rent-box">';
+        html += '  <span class="map-info-rent-title">등록 매물 ' + summary.count + '건</span>';
+
+        if (summary.jsCount > 0) {
+            html += '  <span class="map-info-rent-line">전세임대 ' + summary.jsCount + '건';
+            if (summary.jsMinDpstAmt !== null) {
+                html += ' · 전세 ' + formatMoney(summary.jsMinDpstAmt) + '부터';
+            }
+            html += '</span>';
+        }
+
+        if (summary.peCount > 0) {
+            html += '  <span class="map-info-rent-line">영구임대(월세) ' + summary.peCount + '건';
+
+            if (summary.peMinDpstAmt !== null || summary.peMinMonthlyRentAmt !== null) {
+                html += ' · 보증금 ' + formatMoney(summary.peMinDpstAmt) +
+                    ' / 월 ' + formatMoney(summary.peMinMonthlyRentAmt) + '부터';
+            }
+
+            html += '</span>';
+        }
+
+        html += '</div>';
+
+        return html;
+    }
+
+    function formatMoney(value) {
+        if (value === null || value === undefined || value === "") {
+            return "-";
+        }
+
+        const num = Number(value);
+
+        if (num === 0) {
+            return "0원";
+        }
+
+        const eok = Math.floor(num / 100000000);
+        const man = Math.floor((num % 100000000) / 10000);
+
+        if (eok > 0 && man > 0) {
+            return eok + "억 " + man.toLocaleString() + "만";
+        }
+
+        if (eok > 0) {
+            return eok + "억";
+        }
+
+        if (man > 0) {
+            return man.toLocaleString() + "만";
+        }
+
+        return num.toLocaleString() + "원";
+    }
+
+    function escapeHtml(value) {
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
     }
 </script>
 
