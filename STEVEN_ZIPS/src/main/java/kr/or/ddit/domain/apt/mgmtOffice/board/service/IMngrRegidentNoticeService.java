@@ -15,24 +15,34 @@ public interface IMngrRegidentNoticeService {
 
     MngrRegidentNoticeDTO selectNoticeDetail(MngrRegidentNoticeDTO dto);
 
-    int insertNotice(MngrRegidentNoticeDTO dto, MultipartFile[] uploadFiles) throws Exception;
+    int insertNotice(
+            MngrRegidentNoticeDTO dto,
+            MultipartFile[] uploadFiles
+    ) throws Exception;
 
+    /*
+     * 공지사항 수정
+     *
+     * deleteFileNos
+     * → 수정 모달에서 삭제 버튼을 누른 기존 첨부파일 번호 목록
+     */
     int updateNotice(
             MngrRegidentNoticeDTO dto,
             MultipartFile[] uploadFiles,
-            String deleteAttachYn
+            List<Integer> deleteFileNos
     ) throws Exception;
 
     int deleteNotice(MngrRegidentNoticeDTO dto);
 
-    void addManagerViewModel(Model model, CustomUser customUser, String mgmtOfcNo);
+    void addManagerViewModel(
+            Model model,
+            CustomUser customUser,
+            String mgmtOfcNo
+    );
 
     void setManagerNoticeBaseInfo(
             MngrRegidentNoticeDTO dto,
             CustomUser customUser,
             String mgmtOfcNo
     );
-
-
-
 }

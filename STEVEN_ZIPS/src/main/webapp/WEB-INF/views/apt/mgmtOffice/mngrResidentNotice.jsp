@@ -985,6 +985,14 @@
                                        value="${_csrf.token}">
 
                                 <input type="hidden" name="annNo" id="modalAnnNo">
+                                    <%--
+                                        삭제할 기존 첨부파일 번호를 담는 영역
+
+                                        왜 필요?
+                                        → 화면에서 이미지를 remove()로 없애도,
+                                          서버에는 deleteFileNos 값이 전송되어야 하기 때문.
+                                    --%>
+                                    <div id="deleteFileNoBox"></div>
 
                                 <div class="notice-modal-body">
                                     <div class="form-field">
@@ -1280,6 +1288,10 @@
     const modalTopFixYn = document.getElementById('modalTopFixYn');
 
     const currentFileList = document.getElementById('currentFileList');
+    /*
+     * 삭제할 기존 첨부파일 번호를 담는 박스
+     */
+    const deleteFileNoBox = document.getElementById('deleteFileNoBox');
 
     /*
      * 글쓰기 버튼 클릭
@@ -1293,6 +1305,12 @@
         selectedFileStore = new DataTransfer();
         modalUploadFile.files = selectedFileStore.files;
         renderNewFilePreview();
+
+        /*
+         * 삭제 예정 파일번호 초기화
+         * 등록 모드에서는 삭제할 기존 파일이 없음
+         */
+        deleteFileNoBox.innerHTML = '';
 
         /*
          * form.action
@@ -1357,6 +1375,12 @@
                     form.action = contextPath + '/mgmtOffice/notice/update/' + mgmtOfcNo;
 
                     /*
+                     * 수정 모달을 새로 열 때마다
+                     * 이전에 삭제 선택했던 파일번호 초기화
+                     */
+                    deleteFileNoBox.innerHTML = '';
+
+                    /*
                      * 공지사항 기본값 세팅
                      */
                     modalAnnNo.value = data.annNo;
@@ -1398,12 +1422,28 @@
                          */
                         data.attachFileList.forEach(function (file) {
 
+                            /*
+                             * 기존 첨부파일 전체 영역
+                             * 파일명 + 삭제버튼 + 미리보기를 하나로 묶음
+                             *
+                             * 왜 사용?
+                             * -> 삭제 시 이미지까지 같이 제거하기 위해
+                             */
+                            const fileWrapper = document.createElement('div');
+
+                            fileWrapper.style.border = '1px solid #e5e7eb';
+                            fileWrapper.style.borderRadius = '8px';
+                            fileWrapper.style.padding = '10px';
+                            fileWrapper.style.marginBottom = '12px';
+
+                            /*
+                             * 상단 파일 정보 영역
+                             */
                             const fileRow = document.createElement('div');
 
                             fileRow.style.display = 'flex';
                             fileRow.style.alignItems = 'center';
                             fileRow.style.gap = '8px';
-                            fileRow.style.marginBottom = '6px';
 
                             fileRow.innerHTML =
 
@@ -1421,7 +1461,7 @@
 
                                 /*
                                  * 삭제할 파일번호 hidden
-                                 * disabled 상태면 form 전송 안 됨
+                                 * disabled 상태면 서버 전송 안됨
                                  */
                                 '<input type="hidden" ' +
                                 'name="deleteFileNos" ' +
@@ -1429,57 +1469,84 @@
                                 'disabled>' +
 
                                 /*
-                                 * 파일 개별 삭제 버튼
+                                 * 삭제 버튼
                                  */
                                 '<button type="button" ' +
                                 'class="btn btn-reset btn-old-file-delete" ' +
-                                'style="height:28px; min-width:50px;">삭제</button>';
+                                'style="height:32px; min-width:60px;">삭제</button>';
 
                             /*
-                             * 목록에 추가
+                             * wrapper에 추가
                              */
-                            currentFileList.appendChild(fileRow);
-
-                            fileRow.querySelector('.btn-old-file-delete').addEventListener('click', function () {
-
-                                /*
-                                 * 삭제 버튼 누른 파일만 서버로 전송되게 disabled 해제
-                                 */
-                                const hiddenInput = fileRow.querySelector('input[name="deleteFileNos"]');
-                                hiddenInput.disabled = false;
-
-                                /*
-                                 * 화면에서는 삭제된 것처럼 숨김
-                                 */
-                                fileRow.style.display = 'none';
-                            });
+                            fileWrapper.appendChild(fileRow);
 
                             /*
-                             * 이미지 파일 미리보기
-                             * image/png, image/jpeg 등
+                             * 이미지 파일이면 미리보기 추가
                              */
                             if (file.mimeType && file.mimeType.startsWith('image/')) {
 
                                 const previewBox = document.createElement('div');
 
-                                previewBox.style.marginTop = '6px';
+                                previewBox.style.marginTop = '10px';
 
                                 previewBox.innerHTML =
                                     '<img src="' + contextPath + '/file/display/' + file.googleId + '" ' +
-                                    'style="max-width:120px; max-height:120px; border:1px solid #d5dbe5; border-radius:6px; object-fit:contain; cursor:pointer;">';
+                                    'style="width:120px; height:120px; border:1px solid #d5dbe5; border-radius:6px; object-fit:cover; cursor:pointer;">';
 
                                 /*
-                                 * 이미지 클릭 시 새창
+                                 * 이미지 클릭 시 원본 새창
                                  */
                                 previewBox.querySelector('img').addEventListener('click', function () {
+
                                     window.open(
                                         contextPath + '/file/display/' + file.googleId,
                                         '_blank'
                                     );
                                 });
 
-                                currentFileList.appendChild(previewBox);
+                                fileWrapper.appendChild(previewBox);
                             }
+
+                            /*
+ * 삭제 버튼 이벤트
+ */
+                            fileRow.querySelector('.btn-old-file-delete').addEventListener('click', function () {
+
+                                /*
+                                 * 삭제할 파일번호를 서버로 보내기 위한 hidden input 생성
+                                 *
+                                 * 왜 wrapper 안에 두지 않음?
+                                 * → fileWrapper.remove()를 하면 wrapper 안의 hidden도 같이 사라짐.
+                                 *   그래서 form 안의 deleteFileNoBox에 따로 보관해야 함.
+                                 */
+                                const deleteInput = document.createElement('input');
+
+                                deleteInput.type = 'hidden';
+                                deleteInput.name = 'deleteFileNos';
+                                deleteInput.value = file.fileNo;
+
+                                /*
+                                 * 서버 전송용 hidden input 추가
+                                 */
+                                deleteFileNoBox.appendChild(deleteInput);
+
+                                /*
+                                 * 화면에서도 즉시 이미지 영역 제거
+                                 */
+                                fileWrapper.remove();
+
+                                /*
+                                 * 기존 첨부파일이 모두 사라지면 박스 숨김
+                                 */
+                                if (currentFileList.children.length === 0) {
+                                    currentFileBox.style.display = 'none';
+                                }
+                            });
+
+                            /*
+                             * 최종 추가
+                             */
+                            currentFileList.appendChild(fileWrapper);
                         });
 
                     } else {

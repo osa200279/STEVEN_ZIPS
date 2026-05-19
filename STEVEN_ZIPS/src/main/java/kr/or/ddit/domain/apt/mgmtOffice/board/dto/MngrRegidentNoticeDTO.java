@@ -98,5 +98,17 @@ public class MngrRegidentNoticeDTO {
      */
     private List<MngrRegidentNoticeDTO> attachFileList;
 
+    /*
+     * 첨부파일 번호
+     *
+     * FILE_NO란?
+     * → ATTACH_FILE 테이블에서 첨부파일 1개를 구분하는 고유번호.
+     *
+     * 왜 필요?
+     * → 수정 모달에서 특정 이미지의 삭제 버튼을 눌렀을 때
+     *   어떤 파일을 삭제할지 서버에 알려주기 위해 필요.
+     */
+    private Integer fileNo;
+
 
 }

@@ -143,6 +143,75 @@ public class MngrResidentNoticeController {
     }
 
     /**
+     * 관리사무소 공지사항 수정
+     *
+     * @author 김보라
+     * @param mgmtOfcNo 관리사무소번호
+     * @param dto 공지사항 수정 정보 DTO
+     * @param uploadFiles 새로 추가할 첨부파일 목록
+     * @param deleteAttachYn 기존 첨부파일 삭제 여부
+     * @param customUser 로그인 사용자 정보
+     * @param ra redirect 후 모달 메시지 전달 객체
+     * @return 공지사항 목록 화면 redirect
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @PostMapping("/notice/update/{mgmtOfcNo}")
+    public String updateNotice(
+            @PathVariable("mgmtOfcNo") String mgmtOfcNo,
+            @ModelAttribute MngrRegidentNoticeDTO dto,
+            @RequestParam(value = "uploadFiles", required = false) MultipartFile[] uploadFiles,
+            /*
+             * deleteFileNos
+             * → 수정 모달에서 삭제 버튼 누른 기존 첨부파일 번호들
+             *
+             * 예:
+             * deleteFileNos=12
+             * deleteFileNos=15
+             */
+            @RequestParam(value = "deleteFileNos", required = false)
+            List<Integer> deleteFileNos,
+            @AuthenticationPrincipal CustomUser customUser,
+            RedirectAttributes ra
+    ) {
+        try {
+            /*
+             * boardNo, aptCmplexNo, wrtrId 세팅
+             */
+            mngrRegidentNoticeService.setManagerNoticeBaseInfo(dto, customUser, mgmtOfcNo);
+
+            /*
+             * 파일 저장 경로 만들 때 관리사무소번호 사용
+             */
+            dto.setMgmtOfcNo(mgmtOfcNo);
+
+            /*
+             * 공지사항 내용 수정 + 첨부파일 추가/삭제 처리
+             */
+            int result =
+                    mngrRegidentNoticeService.updateNotice(
+                            dto,
+                            uploadFiles,
+                            deleteFileNos
+                    );
+            if (result > 0) {
+                ra.addFlashAttribute("modalType", "success");
+                ra.addFlashAttribute("modalMsg", "공지사항이 수정되었습니다.");
+            } else {
+                ra.addFlashAttribute("modalType", "fail");
+                ra.addFlashAttribute("modalMsg", "수정할 공지사항을 찾을 수 없습니다.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            ra.addFlashAttribute("modalType", "fail");
+            ra.addFlashAttribute("modalMsg", "공지사항 수정 중 오류가 발생했습니다.");
+        }
+
+        return "redirect:/mgmtOffice/mngrResidentNotice/" + mgmtOfcNo;
+    }
+
+    /**
      * 관리사무소 공지사항 등록
      *
      * @author 김보라
@@ -239,62 +308,6 @@ public class MngrResidentNoticeController {
          * 상세조회 결과 반환(JSON)
          */
         return mngrRegidentNoticeService.selectNoticeDetail(dto);
-    }
-
-    /**
-     * 관리사무소 공지사항 수정
-     *
-     * @author 김보라
-     * @param mgmtOfcNo 관리사무소번호
-     * @param dto 공지사항 수정 정보 DTO
-     * @param uploadFiles 새로 추가할 첨부파일 목록
-     * @param deleteAttachYn 기존 첨부파일 삭제 여부
-     * @param customUser 로그인 사용자 정보
-     * @param ra redirect 후 모달 메시지 전달 객체
-     * @return 공지사항 목록 화면 redirect
-     */
-    @PostMapping("/notice/update/{mgmtOfcNo}")
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    public String updateNotice(
-            @PathVariable("mgmtOfcNo") String mgmtOfcNo,
-            @ModelAttribute MngrRegidentNoticeDTO dto,
-            @RequestParam(value = "uploadFiles", required = false) MultipartFile[] uploadFiles,
-            @RequestParam(value = "deleteAttachYn", required = false) String deleteAttachYn,
-            @AuthenticationPrincipal CustomUser customUser,
-            RedirectAttributes ra
-    ) {
-        try {
-            /*
-             * boardNo, aptCmplexNo, wrtrId 세팅
-             */
-            mngrRegidentNoticeService.setManagerNoticeBaseInfo(dto, customUser, mgmtOfcNo);
-
-            /*
-             * 파일 저장 경로 만들 때 관리사무소번호 사용
-             */
-            dto.setMgmtOfcNo(mgmtOfcNo);
-
-            /*
-             * 공지사항 내용 수정 + 첨부파일 추가/삭제 처리
-             */
-            int result = mngrRegidentNoticeService.updateNotice(dto, uploadFiles, deleteAttachYn);
-
-            if (result > 0) {
-                ra.addFlashAttribute("modalType", "success");
-                ra.addFlashAttribute("modalMsg", "공지사항이 수정되었습니다.");
-            } else {
-                ra.addFlashAttribute("modalType", "fail");
-                ra.addFlashAttribute("modalMsg", "수정할 공지사항을 찾을 수 없습니다.");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            ra.addFlashAttribute("modalType", "fail");
-            ra.addFlashAttribute("modalMsg", "공지사항 수정 중 오류가 발생했습니다.");
-        }
-
-        return "redirect:/mgmtOffice/mngrResidentNotice/" + mgmtOfcNo;
     }
 
     /**

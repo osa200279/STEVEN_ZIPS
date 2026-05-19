@@ -38,4 +38,10 @@ public interface ImngrRegidentNoticeMapper {
      */
     List<MngrRegidentNoticeDTO> selectNoticeAttachFileList(MngrRegidentNoticeDTO dto);
 
+    int deleteAttachFileByGoogleId(String googleId);
+
+
+
+
+
 }
