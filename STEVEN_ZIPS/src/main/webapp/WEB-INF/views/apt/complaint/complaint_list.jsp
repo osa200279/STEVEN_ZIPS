@@ -86,11 +86,10 @@
                 <span>›</span>
                 <span class="cur">민원 내역</span>
             </div>
-            <h1 class="page-title">민원 내역</h1>
-            <p class="page-desc"><sec:authentication property="principal.member.userNm"/>님의 민원 내역입니다 </p>
+            <h1 class="page-title">우리 아파트 민원 내역</h1>
             <div class="panel">
                 <div class="section-hd">
-                    <h3>내 민원 내역</h3>
+                    <h3>민원 내역</h3>
                 </div>
                 <table class="data-table">
                     <thead>
