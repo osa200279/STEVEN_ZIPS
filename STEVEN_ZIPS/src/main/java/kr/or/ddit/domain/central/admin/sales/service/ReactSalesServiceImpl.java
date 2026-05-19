@@ -1,6 +1,6 @@
-package kr.or.ddit.domain.central.sales.service;
+package kr.or.ddit.domain.central.admin.sales.service;
 
-import kr.or.ddit.domain.central.sales.mapper.IReactSalesMapper;
+import kr.or.ddit.domain.central.admin.sales.mapper.IReactSalesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

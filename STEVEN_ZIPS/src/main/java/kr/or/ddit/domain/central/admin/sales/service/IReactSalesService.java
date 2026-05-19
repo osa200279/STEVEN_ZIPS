@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.central.sales.service;
+package kr.or.ddit.domain.central.admin.sales.service;
 
 import java.util.List;
 
