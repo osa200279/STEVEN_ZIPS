@@ -64,7 +64,7 @@ function RentRegisterModal({
 
                 if (
                     form.rentTypeCd ===
-                    'MONTHLY' &&
+                    'PE' &&
                     !form.mthlyRentAmt
                 ) {
 
@@ -415,11 +415,11 @@ function RentRegisterModal({
                             }}
                         >
 
-                            <option value="JEONSE">
+                            <option value="JS">
                                 전세
                             </option>
 
-                            <option value="MONTHLY">
+                            <option value="PE">
                                 월세
                             </option>
 
@@ -494,7 +494,7 @@ function RentRegisterModal({
 
                             disabled={
                                 form.rentTypeCd !==
-                                'MONTHLY'
+                                'PE'
                             }
 
                             placeholder="월 임대금액"
@@ -513,21 +513,69 @@ function RentRegisterModal({
 
                                 background:
                                     form.rentTypeCd !==
-                                        'MONTHLY'
+                                        'PE'
                                         ? '#f8fafc'
                                         : '#fff',
 
                                 color:
                                     form.rentTypeCd !==
-                                        'MONTHLY'
+                                        'PE'
                                         ? '#94a3b8'
                                         : '#111827'
                             }}
                         />
 
+                </div>
+                
                     </div>
 
-                </div>
+                                        <div
+                        style={{
+                            marginBottom: '20px'
+                        }}
+                    >
+
+                        <div
+                            style={{
+                                fontSize: '13px',
+
+                                fontWeight: '600',
+
+                                marginBottom: '8px'
+                            }}
+                        >
+                            임대 매물 내용
+                        </div>
+
+                        <textarea
+                            name="rentLstgCn"
+
+                            value={form.rentLstgCn}
+
+                            onChange={handleChange}
+
+                            placeholder="임대 매물 내용을 입력해주세요."
+
+                            rows={5}
+
+                            style={{
+                                width: '100%',
+
+                                border:
+                                    '1px solid #d1d5db',
+
+                                borderRadius: '8px',
+
+                                padding: '12px 14px',
+
+                                fontSize: '14px',
+
+                                resize: 'none'
+                            }}
+                        />
+
+                    </div>
+
                 <div
                     style={{
                         display: 'flex',
