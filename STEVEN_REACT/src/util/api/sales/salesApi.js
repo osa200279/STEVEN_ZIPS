@@ -107,3 +107,18 @@ export const getHoList = async (
 
   return res.data;
 };
+
+/**
+ * 매물 등록
+ */
+export const registerRentListing =
+  async (payload) => {
+
+    const res =
+      await requestApi.post(
+        '/api/sales/rent/register',
+        payload
+      );
+
+    return res.data;
+};

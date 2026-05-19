@@ -1,53 +1,49 @@
 import { useState } from 'react';
 
-import { getBuildingList, getHoList } from '../../util/api/sales/salesApi';
+import { getBuildingList } from '../../util/api/sales/salesApi';
 
 
-function SalesExplorer({ pagingVO, onPageChange }) {
+function SalesExplorer({
+  pagingVO,
+  selectedAptNm,
+  setSelectedAptNm,
+  selectedDongNm,
+  onSelectDong,
+  onPageChange
+}) {
 
 
-  const [openAptMap, setOpenAptMap] = useState({});
+  const [mode, setMode] = useState('APT');
 
-  const [buildingMap, setBuildingMap] = useState({});
+  const [selectedAptNo, setSelectedAptNo] = useState(null);
 
-  const [openDongMap, setOpenDongMap] = useState({});
+  const [currentApt, setCurrentApt] = useState(null);
 
-  const [hoMap, setHoMap] = useState({});
+  const [buildingList, setBuildingList] = useState([]);
 
 
-  const handleAptToggle = async (apt) => {
-
-    const aptNo = apt.aptCmplexNo;
-
-    // 이미 열려있으면 닫기
-    if (openAptMap[aptNo]) {
-
-      setOpenAptMap(prev => ({
-        ...prev,
-        [aptNo]: false
-      }));
-
-      return;
-    }
+  const handleAptEnter = async (apt) => {
 
     try {
 
-      // 최초 조회
-      if (!buildingMap[aptNo]) {
+      const data =
+        await getBuildingList(
+          apt.aptCmplexNo
+        );
 
-        const data =
-          await getBuildingList(aptNo);
+      setCurrentApt(apt);
 
-        setBuildingMap(prev => ({
-          ...prev,
-          [aptNo]: data
-        }));
-      }
+      setSelectedAptNm(
+        apt.aptCmplexNm
+      );
 
-      setOpenAptMap(prev => ({
-        ...prev,
-        [aptNo]: true
-      }));
+      setSelectedAptNo(
+        apt.aptCmplexNo
+      );
+
+      setBuildingList(data);
+
+      setMode('DONG');
 
     } catch (err) {
 
@@ -56,50 +52,22 @@ function SalesExplorer({ pagingVO, onPageChange }) {
     }
   };
 
-  const handleDongToggle = async (
-    aptNo,
-    dongNm
-  ) => {
+  const handleDongEnter = (dongNm) => {
 
-    const key = `${aptNo}_${dongNm}`;
+    onSelectDong({
+      dongNm,
+      aptCmplexNo: selectedAptNo
+    });
 
-    // 이미 열려있으면 닫기
-    if (openDongMap[key]) {
+  };
 
-      setOpenDongMap(prev => ({
-        ...prev,
-        [key]: false
-      }));
+  const handleBack = () => {
+
+    if (mode === 'DONG') {
+
+      setMode('APT');
 
       return;
-    }
-
-    try {
-
-      // 최초 조회
-      if (!hoMap[key]) {
-
-        const data =
-          await getHoList(
-            aptNo,
-            dongNm
-          );
-
-        setHoMap(prev => ({
-          ...prev,
-          [key]: data
-        }));
-      }
-
-      setOpenDongMap(prev => ({
-        ...prev,
-        [key]: true
-      }));
-
-    } catch (err) {
-
-      console.error(err);
-
     }
   };
 
@@ -149,274 +117,271 @@ function SalesExplorer({ pagingVO, onPageChange }) {
         }}
       >
 
-        {pagingVO?.dataList?.length > 0 ? (
+        {/* 아파트 목록 */}
+        {mode === 'APT' && (
 
-          pagingVO.dataList.map((apt) => {
+          pagingVO?.dataList
+            .map((apt) => (
 
-            const isSelected =
-              openAptMap[apt.aptCmplexNo];
-
-            return (
               <div
                 key={apt.aptCmplexNo}
 
-                onDoubleClick={() =>
-                  handleAptToggle(apt)
+                onClick={() =>
+                  handleAptEnter(apt)
                 }
 
                 style={{
-                  padding: '5px 14px',
+                  height: '42px',
+
+                  background:
+                    selectedAptNo === apt.aptCmplexNo
+                      ? '#eff6ff'
+                      : '#fff',
+
+                  color:
+                    selectedAptNo === apt.aptCmplexNo
+                      ? '#2563eb'
+                      : '#374151',
+
+                  fontWeight:
+                    selectedAptNo === apt.aptCmplexNo
+                      ? '600'
+                      : '400',
+
+                  transition: '0.15s',
+
+                  display: 'flex',
+                  alignItems: 'center',
+
+                  padding: '0 14px',
 
                   borderBottom:
                     '1px solid #f3f4f6',
 
                   cursor: 'pointer',
 
-                  transition: '0.2s',
-
-                  background:
-                    isSelected
-                      ? '#eff6ff'
-                      : '#fff'
+                  fontSize: '13px'
                 }}
               >
 
-                {/* 단지명 */}
+                📁 {apt.aptCmplexNm}
+
+              </div>
+
+            ))
+
+        )}
+
+        {/* 동 목록 */}
+        {mode === 'DONG' && (
+
+          <>
+            <div
+              onClick={handleBack}
+
+              style={{
+                height: '42px',
+
+                display: 'flex',
+                alignItems: 'center',
+
+                padding: '0 14px',
+
+                borderBottom:
+                  '1px solid #f3f4f6',
+
+                cursor: 'pointer',
+
+                fontSize: '13px',
+
+                fontWeight: '600',
+
+                background: '#f8fafc',
+
+                color: '#374151'
+              }}
+            >
+              ← 상위 목록
+            </div>
+
+            {buildingList
+              .map((dongNm) => (
+
                 <div
+                  key={dongNm}
+
+                  onClick={() =>
+                    handleDongEnter(dongNm)
+                  }
+
                   style={{
-                    fontSize: '14px',
-                    fontWeight: '700',
+                    height: '42px',
+
+                    background:
+                      selectedDongNm === dongNm
+                        ? '#eff6ff'
+                        : '#fff',
+
+                    color:
+                      selectedDongNm === dongNm
+                        ? '#2563eb'
+                        : '#374151',
+
+                    fontWeight:
+                      selectedDongNm === dongNm
+                        ? '600'
+                        : '400',
+
+                    transition: '0.15s',
 
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px'
+
+                    padding: '0 14px',
+
+                    borderBottom:
+                      '1px solid #f3f4f6',
+
+                    cursor: 'pointer',
+
+                    fontSize: '13px'
                   }}
                 >
 
-                  <span>📁</span>
-
-                  <span>
-                    {apt.aptCmplexNm}
-                  </span>
+                  📁 {dongNm} 동
 
                 </div>
 
-                {/* 주소 */}
-                <div
-                  style={{
-                    marginTop: '6px',
+              ))}
 
-                    fontSize: '12px',
-                    color: '#6b7280'
-                  }}
-                >
-                  {apt.dorojuso}
-                </div>
-
-                {/* 하단 정보 */}
-                <div
-                  style={{
-                    marginTop: '0px',
-
-                    display: 'flex',
-                    gap: '12px',
-
-                    fontSize: '11px',
-                    color: '#9ca3af'
-                  }}
-                >
-                </div>
-                {openAptMap[apt.aptCmplexNo] &&
-                  buildingMap[apt.aptCmplexNo]?.length > 0 && (
-
-                    <div
-                      style={{
-                        marginTop: '8px',
-                        paddingLeft: '24px',
-
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '4px'
-                      }}
-                    >
-
-                      {buildingMap[apt.aptCmplexNo]
-                        .map((dongNm) => {
-
-                          const key =
-                            `${apt.aptCmplexNo}_${dongNm}`;
-
-                          return (
-
-                            <div key={key}>
-
-                              {/* 동 */}
-                              <div
-                                onDoubleClick={() =>
-                                  handleDongToggle(
-                                    apt.aptCmplexNo,
-                                    dongNm
-                                  )
-                                }
-
-                                style={{
-                                  height: '30px',
-
-                                  display: 'flex',
-                                  alignItems: 'center',
-
-                                  padding: '0 10px',
-
-                                  borderRadius: '8px',
-
-                                  background: '#f8fafc',
-
-                                  border:
-                                    '1px solid #e5e7eb',
-
-                                  cursor: 'pointer',
-
-                                  fontSize: '13px'
-                                }}
-                              >
-
-                                🏢 {dongNm}
-
-                              </div>
-
-                              {/* 호 리스트 */}
-                              {openDongMap[key] &&
-                                hoMap[key]?.length > 0 && (
-
-                                  <div
-                                    style={{
-                                      marginTop: '4px',
-                                      marginLeft: '20px',
-
-                                      display: 'flex',
-                                      flexDirection: 'column',
-                                      gap: '4px'
-                                    }}
-                                  >
-
-                                    {hoMap[key].map((ho) => (
-
-                                      <label
-                                        key={ho}
-
-                                        style={{
-                                          display: 'flex',
-                                          alignItems: 'center',
-                                          gap: '8px',
-
-                                          fontSize: '12px',
-
-                                          color: '#4b5563'
-                                        }}
-                                      >
-
-                                        <input type="checkbox" />
-
-                                        🏠 {ho}
-
-                                      </label>
-
-                                    ))}
-
-                                  </div>
-
-                                )}
-
-                            </div>
-
-                          );
-                        })}
-
-                    </div>
-
-                  )}
-
-              </div>
-            );
-          })
-
-        ) : (
-
-          <div
-            style={{
-              height: '100%',
-
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-
-              color: '#9ca3af',
-              fontSize: '14px'
-            }}
-          >
-            검색 결과가 없습니다.
-          </div>
+          </>
 
         )}
 
       </div>
       {/* 페이지네이션 */}
-      {pagingVO?.totalPage > 1 && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '12px',
-            borderTop: '1px solid #eee',
-            background: '#fafafa'
-          }}
-        >
+      {mode === 'APT' &&
+        pagingVO?.totalPage > 1 && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '12px',
+              borderTop: '1px solid #eee',
+              background: '#fafafa'
+            }}
+          >
 
-          {Array.from(
-            { length: pagingVO.totalPage },
-            (_, i) => i + 1
-          ).map((page) => (
+            {pagingVO.startPage > 1 && (
 
-            <button
-              key={page}
+              <button
+                onClick={() =>
+                  onPageChange(
+                    pagingVO.startPage -
+                    pagingVO.blockSize
+                  )
+                }
 
-              onClick={() =>
-                onPageChange(page)
-              }
+                style={{
+                  height: '30px',
+                  padding: '0 10px',
 
-              style={{
-                width: '30px',
-                height: '30px',
+                  borderRadius: '8px',
 
-                borderRadius: '8px',
-                border:
-                  page === pagingVO.currentPage
-                    ? '1px solid #2563eb'
-                    : '1px solid #d1d5db',
+                  border: '1px solid #d1d5db',
 
-                background:
-                  page === pagingVO.currentPage
-                    ? '#2563eb'
-                    : '#fff',
+                  background: '#fff',
 
-                color:
-                  page === pagingVO.currentPage
-                    ? '#fff'
-                    : '#374151',
+                  cursor: 'pointer'
+                }}
+              >
+                Prev
+              </button>
 
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}
-            >
-              {page}
-            </button>
+            )}
 
-          ))}
+            {Array.from(
+              {
+                length:
+                  pagingVO.endPage -
+                  pagingVO.startPage + 1
+              },
 
-        </div>
-      )}
+              (_, i) =>
+                pagingVO.startPage + i
+
+            ).map((page) => (
+
+              <button
+                key={page}
+
+                onClick={() =>
+                  onPageChange(page)
+                }
+
+                style={{
+                  width: '30px',
+                  height: '30px',
+
+                  borderRadius: '8px',
+
+                  border:
+                    page === pagingVO.currentPage
+                      ? '1px solid #2563eb'
+                      : '1px solid #d1d5db',
+
+                  background:
+                    page === pagingVO.currentPage
+                      ? '#2563eb'
+                      : '#fff',
+
+                  color:
+                    page === pagingVO.currentPage
+                      ? '#fff'
+                      : '#374151',
+
+                  fontWeight: '600',
+
+                  cursor: 'pointer'
+                }}
+              >
+                {page}
+              </button>
+
+            ))}
+
+            {pagingVO.endPage <
+              pagingVO.totalPage && (
+
+                <button
+                  onClick={() =>
+                    onPageChange(
+                      pagingVO.endPage + 1
+                    )
+                  }
+
+                  style={{
+                    height: '30px',
+                    padding: '0 10px',
+
+                    borderRadius: '8px',
+
+                    border: '1px solid #d1d5db',
+
+                    background: '#fff',
+
+                    cursor: 'pointer'
+                  }}
+                >
+                  Next
+                </button>
+
+              )}
+
+          </div>
+        )}
     </div>
   );
 }

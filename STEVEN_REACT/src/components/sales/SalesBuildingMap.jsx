@@ -1,28 +1,67 @@
+
 function SalesBuildingMap({
-  selectedBuilding,
-  setSelectedBuilding,
+  floorData,
   selectedRooms,
   setSelectedRooms
 }) {
 
-  const floorData = [
-    { floor: '3F', rooms: ['301', '302', '303', '304'] },
-    { floor: '2F', rooms: ['201', '202', '203', '204'] },
-    { floor: '1F', rooms: ['101', '102', '103', '104'] },
-  ];
+  if (!floorData?.length) {
 
-  const handleRoomClick = (roomNo) => {
+    return (
+      <div
+        style={{
+          flex: 1,
 
-    const exists = selectedRooms.includes(roomNo);
+          background: '#fff',
+
+          border:
+            '1px solid var(--outline-variant)',
+
+          borderRadius: '16px',
+
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+
+          color: '#94a3b8',
+
+          fontSize: '14px',
+
+          fontWeight: '500'
+        }}
+      >
+        동을 선택해주세요.
+      </div>
+    );
+  }
+
+  const handleRoomClick = (
+    roomNo
+  ) => {
+
+    const exists =
+      selectedRooms.some(
+        item => item.ho === roomNo
+      );
 
     if (exists) {
+
       setSelectedRooms(
-        selectedRooms.filter(room => room !== roomNo)
+
+        selectedRooms.filter(
+          item => item.ho !== roomNo
+        )
+
       );
+
     } else {
+
       setSelectedRooms([
         ...selectedRooms,
-        roomNo
+
+        {
+          ho: roomNo
+        }
       ]);
     }
   };
@@ -47,19 +86,6 @@ function SalesBuildingMap({
           borderBottom: '1px solid #eee'
         }}
       >
-
-        <select
-          value={selectedBuilding}
-          onChange={(e) => setSelectedBuilding(e.target.value)}
-          style={{
-            width: '100%',
-            height: '40px'
-          }}
-        >
-          <option>101동</option>
-          <option>102동</option>
-        </select>
-
       </div>
 
       {/* 배치도 */}
@@ -78,7 +104,7 @@ function SalesBuildingMap({
             style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
+              alignItems: 'flex-start',
               marginBottom: '8px'
             }}
           >
@@ -86,7 +112,8 @@ function SalesBuildingMap({
             {/* 층 */}
             <div
               style={{
-                width: '32px',
+                width: '42px',
+                flexShrink: 0,
                 fontSize: '12px',
                 fontWeight: '700'
               }}
@@ -98,15 +125,22 @@ function SalesBuildingMap({
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: `repeat(${floorObj.rooms.length}, auto)`,
-                gap: '6px'
+
+                gridTemplateColumns:
+                  'repeat(auto-fill, minmax(54px, 1fr))',
+
+                gap: '6px',
+
+                width: '100%'
               }}
             >
 
               {floorObj.rooms.map((room) => {
 
                 const isSelected =
-                  selectedRooms.includes(room);
+                  selectedRooms.some(
+                    item => item.ho === room
+                  );
 
                 return (
                   <button
