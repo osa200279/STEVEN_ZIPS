@@ -1,4 +1,4 @@
-package kr.or.ddit.domain.central.admin.sales.mapper;
+package kr.or.ddit.domain.central.admin.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 

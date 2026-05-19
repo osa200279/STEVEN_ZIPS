@@ -1,8 +1,8 @@
-package kr.or.ddit.domain.central.admin.sales.controller;
+package kr.or.ddit.domain.central.admin.controller;
 
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
-import kr.or.ddit.domain.central.admin.sales.service.IReactSalesService;
+import kr.or.ddit.domain.central.admin.service.IReactSalesService;
 import kr.or.ddit.domain.central.service.ICentralAptComplexService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
