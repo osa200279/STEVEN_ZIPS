@@ -6,10 +6,12 @@ function CtrtBoard() {
 
   // 대시보드 통계 상태
   const [stats, setStats] = useState({
-    activeCnt: 0,
+    totalCnt: 0,
     pendingCnt: 0,
-    urgentCnt: 0,
-    expiredCnt: 0
+    approvedCnt: 0,
+    terminatedCnt: 0,
+    rejectCnt: 0,
+    cancelCnt: 0,
   });
 
   // 대시보드 통계 API 호출
@@ -17,32 +19,36 @@ function CtrtBoard() {
     const fetchDashboardStats = async () => {
       try {
         const response = await requestApi.get(`/api/react/adm/ctrt/dashboard`);
-        if (response.data) {
+        if (response.data && response.data.dashboard) {
+          const stts = response.data.dashboard;
           setStats({
-            totalCnt: response.data.totalCnt,
-            activeCnt: response.data.activeCnt,
-            pendingCnt: response.data.pendingCnt,
-            urgentCnt: response.data.urgentCnt,
-            expiredCnt: response.data.expiredCnt
+            totalCnt: stts.totalCnt || 0,
+            pendingCnt: stts.pendingCnt || 0,
+            approvedCnt: stts.approvedCnt || 0,
+            terminatedCnt: stts.terminatedCnt || 0,
+            rejectCnt: stts.rejectCnt || 0,
+            cancelCnt: stts.cancelCnt || 0,
+            expiredCnt: stts.expiredCnt || 0,
           });
         }
       } catch (error) {
         console.error("대시보드 데이터 로드 실패", error);
       }
-    }
+    };
+    fetchDashboardStats();
   }, []);
 
 
   const board = [
-    { label: '총 계약', value: '1,234', change: '+12%', icon: <FileChartLine />, color: 'bg-primary-fixed', hasTrend: true },
+    { label: '총 계약', value: stats.totalCnt, change: '+12%', icon: <FileChartLine />, color: 'bg-primary-fixed'},
 
-    { label: '유효 계약', value: '1,234', icon: <FileBracesCorner />, color: 'bg-primary-fixed' },
+    { label: '승인된 계약', value: stats.approvedCnt , icon: <FileBracesCorner />, color: 'bg-primary-green', hasTrend: true },
 
-    { label: '미승인 계약', value: '29', icon: <SquarePen />, color: 'bg-pending-container', pending: true },
+    { label: '미승인 계약', value: stats.pendingCnt , icon: <SquarePen />, color: 'bg-pending-container', pending: true },
 
-    { label: '만료 임박 계약', value: '14', icon: <FileClock />, color: 'bg-error-container', urgent: true },
+    { label: '만료 임박 계약', value: stats.terminatedCnt , icon: <FileClock />, color: 'bg-error-container', urgent: true },
 
-    { label: '만료된 계약', value: '14', icon: <FileXCorner />, color: 'bg-expired-container', expired: true },
+    { label: '만료된 계약', value: stats.expiredCnt , icon: <FileXCorner />, color: 'bg-expired-container', expired: true },
   ];
 
   return (
@@ -59,14 +65,14 @@ function CtrtBoard() {
               </div>
               {stat.hasTrend && (
                 <span className="stat-change">
-                  <ChartSpline size={16} /><span className='text-[15px]'>{stat.change}</span>
+                  <ChartSpline size={16} />지난달 대비 증감 : <span className='text-[15px]'>123%</span>    {/* 지난달 대비 */}
                 </span>
               )}
               {stat.expired && <span className="badge-expired">Expired</span>}
               {stat.urgent && <span className="badge-urgent">Urgent</span>}
             </div>
             <p className="stat-label">{stat.label}</p>
-            <div style={{display:'flex', justifyContent:'space-between'}}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <h3 className="stat-value">{stat.value}</h3>
               {stat.expired && <p className='sub-info'>중도 해지 : stat.terminated 건 </p>}
             </div>

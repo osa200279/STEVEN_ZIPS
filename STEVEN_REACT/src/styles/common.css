@@ -28,6 +28,7 @@
 
 /* 동적 테마 배경 에셋 수집 */
 .bg-primary-fixed { background-color: var(--primary-fixed); }
+.bg-primary-green { background-color: rgba(127, 253, 155, 0.808); }
 .text-primary { color: var(--primary); }
 .bg-secondary-container { background-color: var(--secondary-container); }
 .text-secondary { color: var(--secondary); }

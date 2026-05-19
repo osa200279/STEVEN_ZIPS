@@ -11,7 +11,7 @@ export const getNameByStatus = (ctrtSttsCd, mvinDt, mvoutDt) => {
 
         case 'CANCEL':
             return { text: '취소', className: 'badge-expired' };
-   
+
         case 'TERMINATED':
             return { text: '중도 해지', className: 'badge-expired' };
 
@@ -32,5 +32,15 @@ export const getNameByStatus = (ctrtSttsCd, mvinDt, mvoutDt) => {
 
         default:
             return { text: status || '미정', className: '' };
+    }
+};
+
+export const getNameOfJm = (rentTypeCode) => {
+    switch (rentTypeCode) {
+        case 'JS':
+            return { text: '전세' }
+
+        default:
+            return { text: '월세' }
     }
 };
