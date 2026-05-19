@@ -18,4 +18,6 @@ public class MngSurveyDTO {
 
     private String rgtrId;
     private String surveyNo;
+
+    private String aptCd;
 }

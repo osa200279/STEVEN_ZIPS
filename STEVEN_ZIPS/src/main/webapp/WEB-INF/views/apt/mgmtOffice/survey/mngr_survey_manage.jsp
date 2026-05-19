@@ -338,8 +338,8 @@
                                 <label class="field-label">상태</label>
                                 <select class="form-select" id="filterStatus">
                                     <option value="">전체</option>
-                                    <option value="RUNNING">진행중</option>
-                                    <option value="WAITING">대기중</option>
+                                    <option value="READY">대기중</option>
+                                    <option value="OPEN">진행중</option>
                                     <option value="CLOSED">종료</option>
                                 </select>
                             </div>
@@ -422,11 +422,12 @@
                                     <div class="form-field">
                                         <label class="field-label">상태</label>
                                         <select class="form-select" id="surveyStatus">
-                                            <option value="WAITING">대기중</option>
-                                            <option value="RUNNING">진행중</option>
+                                            <option value="READY">대기중</option>
+                                            <option value="OPEN">진행중</option>
                                             <option value="CLOSED">종료</option>
                                         </select>
                                     </div>
+                                </div>
 
                                 <div class="form-row cols-1">
                                     <div class="form-field">
@@ -586,12 +587,17 @@
                         </form>
                     </div>
                 </div>
+
+
+
+
             </div>
         </main>
     </div>
 </div>
 
 <script>
+    const ctx = "${pageContext.request.contextPath}";
     const mgmtOfcNo = "${mgmtOfcNo}";
 
     (function () {
@@ -612,17 +618,16 @@
         function typeText(type) {
             return type === "VOTE" ? "투표" : "설문";
         }
-
         function statusText(status) {
-            if (status === "RUNNING") return "진행중";
-            if (status === "WAITING") return "대기중";
+            if (status === "OPEN") return "진행중";
+            if (status === "READY") return "대기중";
             if (status === "CLOSED") return "종료";
             return "-";
         }
 
         function statusClass(status) {
-            if (status === "RUNNING") return "status-running";
-            if (status === "WAITING") return "status-waiting";
+            if (status === "OPEN") return "status-running";
+            if (status === "READY") return "status-waiting";
             if (status === "CLOSED") return "status-closed";
             return "";
         }
@@ -630,11 +635,11 @@
         function renderStats(data) {
 
             var running = data.filter(function (item) {
-                return item.surveySttsCd === "RUNNING";
+                return item.surveySttsCd === "OPEN";
             }).length;
 
             var waiting = data.filter(function (item) {
-                return item.surveySttsCd === "WAITING";
+                return item.surveySttsCd === "READY";
             }).length;
 
             var closed = data.filter(function (item) {
@@ -674,7 +679,7 @@
                     + '    <div class="survey-list-title">' + item.surveyNm + '</div>'
                     + '    <div class="survey-list-sub">'
 
-                    +          typeText(item.surveyTypeCd)
+                    +         typeText(item.surveyTypeCd)
                     + '    </div>'
                     + '    <div class="survey-list-sub">' + item.surveyBgngDt + ' ~ ' + item.surveyEndDt + '</div>'
                     + '  </div>'
@@ -696,7 +701,7 @@
             var keyword = document.getElementById("filterKeyword").value.trim();
 
             return surveys.filter(function (item) {
-                return (!type || item.surveyTypeCd === type)
+                return (!type || item.surveyTypeCd=== type)
                     && (!status || item.surveySttsCd === status)
                     && (!keyword || item.surveyNm.indexOf(keyword) > -1);
             });
@@ -705,7 +710,7 @@
         function openModal(mode) {
             modalTitle.textContent = mode === "survey" ? "설문 등록" : "투표 등록";
             document.getElementById("surveyType").value = mode === "survey" ? "SURVEY" : "VOTE";
-            document.getElementById("surveyStatus").value = "WAITING";
+            document.getElementById("surveyStatus").value = "READY";
             document.getElementById("surveyTitle").value = "";
             document.getElementById("surveyStartDt").value = "";
             document.getElementById("surveyEndDt").value = "";
@@ -716,6 +721,11 @@
         function closeModal() {
             modal.classList.remove("open");
         }
+
+
+
+
+
 
         page.addEventListener("click", function (e) {
             var btn = e.target.closest("[data-action]");
@@ -738,18 +748,25 @@
             }
             if (action === "detail") {
 
-                var row = surveys[Number(btn.dataset.idx)];
+                const idx = btn.getAttribute("data-idx");
 
-                alert(
-                    typeText(row.surveyTypeCd)
-                    + " 상세\n제목: "
-                    + row.surveyNm
-                    + "\n기간: "
-                    + row.surveyBgngDt
-                    + " ~ "
-                    + row.surveyEndDt
-                );
+                const row = surveys[idx];
+
+                console.log(row);
+
+                location.href =
+                    "/manager/survey/"
+                    + mgmtOfcNo
+                    + "/detail/"
+                    + row.surveyNo;
             }
+
+
+
+
+
+
+
 
             if (action === "result") {
 
@@ -791,16 +808,29 @@
                     "테스트 질문 JSON"
             };
 
-            console.log(payload);
+            if (!payload.surveyBgngDt || !payload.surveyEndDt) {
+
+                alert("시작일과 종료일을 선택하세요.");
+
+                return;
+            }
+
+            const csrfHeader =
+                document.querySelector("meta[name='_csrf_header']").content;
+
+            const csrfToken =
+                document.querySelector("meta[name='_csrf']").content;
+
 
             try {
 
                 const response = await fetch(
-                    `/manager/survey/${mgmtOfcNo}/register`,
+                    `${ctx}/manager/survey/${mgmtOfcNo}/register`,
                     {
                         method: "POST",
                         headers: {
-                            "Content-Type": "application/json"
+                            "Content-Type": "application/json",
+                            [csrfHeader]: csrfToken
                         },
                         body: JSON.stringify(payload)
                     }
@@ -812,7 +842,7 @@
 
                     alert("저장 성공");
 
-                    window.location.href = `/manager/survey/${mgmtOfcNo}`;
+                    location.reload();
 
                 } else {
 
@@ -825,7 +855,7 @@
 
                 console.error(error);
 
-                alert("fetch 에러 발생");
+                alert(error);
             }
         });
 
@@ -833,9 +863,25 @@
             if (e.target === modal) closeModal();
         });
 
+        document
+
+            .addEventListener("click", function () {
+
+                document
+                    .getElementById("detailModal")
+                    .classList.remove("open");
+            });
+
+
+
         document.addEventListener("keydown", function (e) {
             if (e.key === "Escape") closeModal();
         });
+
+
+
+
+
 
         /* 보기 추가/삭제 */
         document.addEventListener("click", function (e) {
@@ -998,16 +1044,24 @@
                     );
             });
         async function loadSurveyList() {
+            try {
+                const response = await fetch(
+                    `${ctx}/manager/survey/${mgmtOfcNo}/list`
+                );
 
-            const response = await fetch(
-                `/manager/survey/${mgmtOfcNo}/list`
-            );
+                if (!response.ok) {
+                    throw new Error(`survey list request failed: ${response.status}`);
+                }
 
-            surveys = await response.json();
+                surveys = await response.json();
 
-            console.log(surveys);
+                console.log(surveys);
 
-            renderList(surveys);
+                renderList(surveys);
+            } catch (error) {
+                console.error(error);
+                surveyList.innerHTML = '<div class="survey-empty">목록을 불러오지 못했습니다.</div>';
+            }
         }
 
         loadSurveyList();

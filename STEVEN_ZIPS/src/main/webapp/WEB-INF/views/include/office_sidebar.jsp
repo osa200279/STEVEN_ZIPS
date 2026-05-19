@@ -234,8 +234,7 @@
 
                     <span class="sub-group-label">투표/설문</span>
                     <a href="${ctx}/manager/survey/${mgmtOfcNo}"
-                       class="nav-item ${fn:contains(uri, '/manager/survey') ? 'active' : ''}">
-
+                       class="nav-item ${fn:contains(uri, '/manager/survey/') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">투표 등록/관리</span>
                     </a>

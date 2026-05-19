@@ -13,17 +13,18 @@
             SURVEY_NO,
             SURVEY_NM,
             SURVEY_CN,
-            SURVEY_TYPE_CD,
+            SURVEY_TY_CD,
             SURVEY_QITEM_CN,
             SURVEY_BGNG_DT,
             SURVEY_END_DT,
             SURVEY_STTS_CD,
-            RGTR_ID
+            RGTR_ID,
+            APT_CD
 
         )
         VALUES (
 
-                   'SV' || TO_CHAR(SYSDATE, 'MMDDHH24MISS'),
+                   'SV' || TO_CHAR(SYSTIMESTAMP, 'MMDDHH24MISSFF3'),
 
                    #{surveyNm},
                    #{surveyCn},
@@ -34,13 +35,12 @@
                    TO_DATE(#{surveyEndDt}, 'YYYY-MM-DD'),
 
                    #{surveySttsCd},
-                   #{rgtrId}
+                   #{rgtrId},
+                   #{aptCd}
+
                )
 
     </insert>
-
-
-
 
     <select id="selectSurveyList"
             parameterType="string"
@@ -48,23 +48,22 @@
 
         SELECT
 
-            SURVEY_NO       AS surveyNo,
-            SURVEY_NM       AS surveyNm,
-            SURVEY_CN       AS surveyCn,
-            SURVEY_TYPE_CD  AS surveyTypeCd,
-            SURVEY_QITEM_CN AS surveyQitemCn,
-            SURVEY_BGNG_DT  AS surveyBgngDt,
-            SURVEY_END_DT   AS surveyEndDt,
-            SURVEY_STTS_CD  AS surveySttsCd,
-            RGTR_ID         AS rgtrId
+            SURVEY_NO         surveyNo,
+            SURVEY_NM         surveyNm,
+            SURVEY_CN         surveyCn,
+            SURVEY_TY_CD      surveyTypeCd,
+            SURVEY_QITEM_CN   surveyQitemCn,
+            SURVEY_BGNG_DT    surveyBgngDt,
+            SURVEY_END_DT     surveyEndDt,
+            SURVEY_STTS_CD    surveySttsCd,
+            RGTR_ID           rgtrId,
+            APT_CD            aptCd
 
         FROM SURVEY
 
         ORDER BY SURVEY_BGNG_DT DESC
 
     </select>
-
-
 
 
 

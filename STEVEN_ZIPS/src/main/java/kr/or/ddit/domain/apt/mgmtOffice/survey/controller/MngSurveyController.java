@@ -25,7 +25,7 @@ public class MngSurveyController {
      * 설문 관리 페이지
      * GET /manager/survey/{mgmtOfcNo}
      */
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+ /*   @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")*/
     @GetMapping("/{mgmtOfcNo}")
     public String surveyManage(
             @PathVariable String mgmtOfcNo,
@@ -51,7 +51,7 @@ public class MngSurveyController {
      * 설문 등록 API
      * POST /manager/survey/{mgmtOfcNo}/register
      */
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+  /*  @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")*/
     @PostMapping("/{mgmtOfcNo}/register")
     @ResponseBody
     public ResponseEntity<?> registerSurvey(
@@ -68,17 +68,29 @@ public class MngSurveyController {
                 customUser.getMember().getUserNo()
         );
 
+        dto.setAptCd(mgmtOfcNo);
 
-        surveyService.registerSurvey(dto);
+        try {
 
-        return ResponseEntity.ok().build();
+            surveyService.registerSurvey(dto);
+
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
+        }
     }
 
     /**
      * 설문 목록 조회 API
      * GET /manager/survey/{mgmtOfcNo}/list
      */
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+   /* @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")*/
     @GetMapping("/{mgmtOfcNo}/list")
     @ResponseBody
     public ResponseEntity<?> selectSurveyList(
@@ -91,5 +103,32 @@ public class MngSurveyController {
         return ResponseEntity.ok(
                 surveyService.selectSurveyList(mgmtOfcNo)
         );
+    }
+
+    @GetMapping("/{mgmtOfcNo}/detail/{surveyNo}")
+    public String surveyDetailPage(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String surveyNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+
+        managerAccessService.addManagerViewModel(
+                model,
+                customUser,
+                mgmtOfcNo
+        );
+
+        model.addAttribute(
+                "mgmtOfcNo",
+                mgmtOfcNo
+        );
+
+        model.addAttribute(
+                "surveyNo",
+                surveyNo
+        );
+
+        return "apt/mgmtOffice/survey/mngr_survey_detail";
     }
 }
