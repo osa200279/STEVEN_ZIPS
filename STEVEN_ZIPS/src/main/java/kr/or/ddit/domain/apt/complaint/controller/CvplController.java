@@ -190,4 +190,23 @@ public class CvplController {
 
         return "apt/complaint/complaint_list";
     }
+
+    // 민원 상세 뷰 컨트롤러
+    @PreAuthorize("@authService.isWriter(principal, #writerNo, #aptCmplexNo)")
+    @ResponseBody
+    @GetMapping("/detail/{writerNo}/{aptCmplexNo}")
+    public Map<String, Object> cvplDetail(
+            @AuthenticationPrincipal CustomUser customUser
+            , @PathVariable String writerNo
+            , @PathVariable String aptCmplexNo) {
+
+        return null;
+    }
+
+    // 민원 테스트용 뷰 컨트롤러
+    @GetMapping("/abc")
+    public String cvpltestabc() {
+        return "apt/complaint/complaint_status";
+    }
+
 }

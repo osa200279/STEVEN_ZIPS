@@ -144,6 +144,7 @@
     </main>
 </div>
 
+<%-- 민원 상세 내역 모달창 --%>
 <div id="cvplDetailModal" class="modal-overlay" style="display: none;">
     <div class="modal-content panel">
         <div class="section-hd">

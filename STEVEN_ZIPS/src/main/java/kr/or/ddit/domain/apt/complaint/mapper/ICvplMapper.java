@@ -21,4 +21,6 @@ public interface ICvplMapper {
     List<CvplVO> selectMyCvplList(PaginationInfoVO<CvplVO> page);
 
     List<CvplVO> selectCvplListAllByAptCmplexNo(String aptCmplexNo);
+
+    CvplVO selectOneCvplDetail(String cvplNo);
 }
