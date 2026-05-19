@@ -271,8 +271,8 @@
                     <span class="sub-group-label">일정</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">단지 일정 캘린더</span></a>
 
-                    <span class="sub-group-label">대여시설</span>
-                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">대여시설 목록</span></a>
+                    <span class="sub-group-label">공용시설</span>
+                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">공용시설 목록</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">예약 접수·확인</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">시설 이용 내역</span></a>
 

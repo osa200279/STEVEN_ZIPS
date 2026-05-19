@@ -194,6 +194,7 @@
          * 마우스 올리면 살짝 확대
          */
         .notice-file-image:hover {
+
             transform: scale(1.02);
         }
 
