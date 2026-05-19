@@ -7,7 +7,7 @@ import Ann from './pages/Ann';
 import AnnRegister from './pages/AnnRegister';
 import Applicant from "./pages/Applicant";
 import AptRegister from "./pages/AptRegister";
-import Ctrt from "./pages/Ctrt";
+import Ctrt from "./pages/ctrt/Ctrt";
 import Home from "./pages/Home";
 import SalesList from './pages/sales/SalesList';
 import './styles/common.css';

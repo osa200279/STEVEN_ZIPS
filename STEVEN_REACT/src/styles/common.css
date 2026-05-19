@@ -240,12 +240,12 @@
 }
 
 @media (min-width: 768px) {
-  .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .stats-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 
 .stat-card {
   background-color: var(--surface-container-lowest);
-  padding: 24px;
+  padding: 14px 20px;
   border-radius: 12px;
   border: 1px solid var(--outline-variant);
 }
@@ -625,4 +625,9 @@
 .material-symbols-outlined {
   display: inline-block;
   vertical-align: middle;
+}
+
+.sub-info{
+  font-size: 12px;
+  color: var(--secondary); 
 }

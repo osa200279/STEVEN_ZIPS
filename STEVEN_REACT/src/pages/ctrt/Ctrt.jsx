@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import '../styles/common.css';
+import '../../styles/common.css';
 import { ChartSpline,  ContrastIcon, Download, FileChartLine, FileClock, FileXCorner, Plus, SquarePen } from 'lucide-react';
-import requestApi from '../util/api/requestApi';
+import requestApi from '../../util/api/requestApi';
+import CtrtBoard from './CtrtBoard';
+import { getNameByStatus } from '../../util/ctrt/ctrt';
 
 const Ctrt = () => {
   const { admInfo } = useOutletContext() || {};
@@ -14,12 +16,16 @@ const Ctrt = () => {
     totalRecord: 0
   });
 
+  // 필터 상태값 정의
+  const [filterStatus, setFilterStatus] = useState('ALL');
+  
+  // 리스트 조회 API 호출
   useEffect(() => {
     const fetchContracts = async () =>{
       try{
         const response = await requestApi.get(`/api/react/adm/ctrt?page=${pagination.curPage}`);
 
-        if(Array.isArray(response.data.ctrtList)){
+        if(response.data && Array.isArray(response.data.ctrtList)){
           setList(response.data.ctrtList);
           setPagination(prev=>({
             ...prev,
@@ -36,17 +42,8 @@ const Ctrt = () => {
       }
     };
     fetchContracts();
-  }, [pagination.curPage]);
 
-  const board = [
-    { label: '이행 중인 계약', value: '1,234', change: '+12%', icon: <FileChartLine />, color: 'bg-primary-fixed', hasTrend: true },
-
-    { label: '미승인 계약', value: '29', icon: <SquarePen />, color: 'bg-pending-container', pending: true },
-
-    { label: '만료 임박 계약', value: '14', icon: <FileClock />, color: 'bg-error-container', urgent: true },
-    
-    { label: '만료된 계약', value: '14', icon: <FileXCorner />, color: 'bg-expired-container', expired: true },
-  ];
+  }, [pagination.curPage, filterStatus]);
 
   return (
     <div className="content-wrapper" style={{paddingTop:'0px'}}>
@@ -64,28 +61,7 @@ const Ctrt = () => {
       </div>
 
       {/* 대시보드 통계 그리드*/}
-      <div className="stats-grid">
-        {board.map((stat, i) => (
-          <div key={i} className="stat-card">
-            <div className="stat-icon-row">
-              <div className={`icon-box-wrapper ${stat.color}`}>
-                <span className="material-symbols-outlined">
-                  {stat.icon}
-                </span>
-              </div>
-              {stat.hasTrend && (
-                <span className="stat-change">
-                  <ChartSpline size={16} /><span className='text-[15px]'>{stat.change}</span>
-                </span>
-              )}
-              {stat.expired && <span className="badge-expired">Expired</span>}
-              {stat.urgent && <span className="badge-urgent">Urgent</span>}
-            </div>
-            <p className="stat-label">{stat.label}</p>
-            <h3 className="stat-value">{stat.value}</h3>
-          </div>
-        ))}
-      </div>
+      <CtrtBoard />
 
       {/* 필터 및 컨트롤 바 */}
       <div className="filter-bar">
@@ -131,50 +107,64 @@ const Ctrt = () => {
               </tr>
             </thead>
             <tbody>
-              {contracts.map((item, i) => (
+              {list.length === 0 ? (
+                <tr>
+                  <td colSpan="9" className="text-center py-4" style={{color: '#888'}}>배정된 계약 건이 없습니다.</td>
+                </tr>
+              ) : (
+              list.map((item, i) => {
+                
+                return (
                 <tr key={i}>
                   <td style={{ textAlign: 'left', marginRight: '0px', paddingRight: '0px' }}>  {/* 계약 번호 */}
                     <div>
-                      <p className="cell-title" style={{marginRight: '0px'}}>{item.rent_ctrt_no}</p>
+                      <p className="cell-title" style={{marginRight: '0px'}}>{item.RENT_CTRT_NO}</p>
                     </div>
                   </td>
                   <td> {/* ID */}
                     <div>
-                      <p className="cell-title">{item.user_id}</p>
-                      <p className="cell-sub">이름 : {item.user_name}</p>
+                      <p className="cell-title">{item.USER_ID}</p>
+                      <p className="cell-sub">이름 : {item.USER_NM}</p>
                     </div>
                   </td>
                   <td> {/* 아파트 */}
-                    <p className="cell-title">{item.aptCmplexNo}</p>
-                    <p className="cell-sub">{item.aptCmplexNm}</p>
+                    <p className="cell-title">{item.APT_CMPLEX_NO}</p>
+                    <p className="cell-sub">{item.APT_CMPLEX_NM}</p>
                   </td>
                   <td> {/* 계약 승인일 */}
-                    <span className="cell-title">{item.approvalDt}</span>
+                    <span className="cell-title">{item.CTRT_APRV_DT ? new Date(item.CTRT_APRV_DT).toLocaleDateString() : "미승인"}</span>
                   </td>
                   <td> {/* 기간 */}
-                    <span className="cell-title">{item.period}</span>
+                    {item.MVIN_DT && item.MVOUT_DT ? <span className="cell-title">{new Date(item.MVIN_DT).toLocaleDateString()} ~ {new Date(item.MVOUT_DT).toLocaleDateString()}</span>
+                                                      : <span className='cell-title'>미정</span>}
                   </td>
                   <td> {/* 임대 타입 */}
                     <span className="cell-title">
-                      {item.rent_type}
+                      {item.RENT_TYPE_CD}
                     </span>
                   </td>
                   <td className='price'> {/* 임대료 */}
                     <span className='cell-title'>
-                      {item.price}
+                      {((!item.MTHLY_RENT_AMT && item.DPST_AMT) || 0).toLocaleString()} 원
                     </span>
                   </td>
                   <td> {/* 상태 */}
-                    <span className={`cell-text ${item.isExpiryUrgent ? 'text-error font-semibold' : ''} `}>{item.ctrt_stts}</span>
+                    <span className={`cell-text ${item.isExpiryUrgent ? 'text-error font-semibold' : ''} `}>
+                      {(item.CTRT_STTS_CD === 'ACTIVE') && "유효"}
+                    </span>
                   </td>
                   <td> {/* 담당자 */}
-                    <p className='cell-title'>{item.mgr}</p>
+                      <div>
+                      <p className="cell-title">{item.CTRT_MGR_USER_NM}</p>
+                      <p className="cell-sub">관리자 번호 : {item.CTRT_MGR_USER_NO}</p>
+                    </div>
                   </td>
                   <td>{/* 상세 버튼 */}
                     <button className='btn-cell'>상세보기</button>
                   </td>
                 </tr>
-              ))}
+              )})
+            )}
             </tbody>
           </table>
         </div>
