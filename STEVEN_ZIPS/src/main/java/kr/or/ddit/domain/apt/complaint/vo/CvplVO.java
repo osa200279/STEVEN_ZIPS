@@ -20,6 +20,8 @@ public class CvplVO {
     private String cvplFileNo;    // 첨부파일
     private String cvplTtl;       // 제목
     private String userNo;        // 작성자 유저 번호
+    private String userId;
+    private String userNm;
     private String hoNo;          // 세대번호
     private String aptCmplexNo;   // 아파트 코드
 }
