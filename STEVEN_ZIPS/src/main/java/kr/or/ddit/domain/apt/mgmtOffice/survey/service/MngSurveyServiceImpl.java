@@ -30,5 +30,28 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
         return iMngSurveyMapper.selectSurveyList(mgmtOfcNo);
     }
 
+    @Override
+    public MngSurveyDTO selectSurveyDetail(String surveyNo) {
+
+        return iMngSurveyMapper
+                .selectSurveyDetail(surveyNo);
+    }
+
+    @Override
+    public void updateSurvey(
+            MngSurveyDTO dto
+    ) {
+
+        iMngSurveyMapper.updateSurvey(dto);
+    }
+
+    @Override
+    public void deleteSurvey(
+            String surveyNo
+    ) {
+
+        iMngSurveyMapper.deleteSurvey(surveyNo);
+    }
+
 
 }

@@ -609,6 +609,12 @@
         var modalTitle = document.getElementById("surveyModalTitle");
         var surveyList = document.getElementById("surveyList");
         var surveyForm = document.getElementById("surveyForm");
+        var modalBody = modal.querySelector(".modal-body");
+        var questionRow = document.getElementById("questionContainer").closest(".form-row.cols-1");
+
+        if (modalBody && questionRow && !modalBody.contains(questionRow)) {
+            modalBody.appendChild(questionRow);
+        }
 
 
         var surveys = [];

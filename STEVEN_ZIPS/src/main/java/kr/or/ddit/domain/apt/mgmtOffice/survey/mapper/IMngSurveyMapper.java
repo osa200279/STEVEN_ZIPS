@@ -12,4 +12,10 @@ public interface IMngSurveyMapper {
     void insertSurvey(MngSurveyDTO dto);
 
     List<MngSurveyDTO> selectSurveyList(String mgmtOfcNo);
+
+    MngSurveyDTO selectSurveyDetail(String surveyNo);
+
+    void updateSurvey(MngSurveyDTO dto);
+
+    void deleteSurvey(String surveyNo);
 }

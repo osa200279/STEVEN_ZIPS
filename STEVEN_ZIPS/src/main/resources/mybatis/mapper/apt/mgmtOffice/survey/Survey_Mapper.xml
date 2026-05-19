@@ -66,7 +66,59 @@
     </select>
 
 
+    <select id="selectSurveyDetail"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO">
 
+        SELECT
+
+            SURVEY_NO         surveyNo,
+            SURVEY_NM         surveyNm,
+            SURVEY_CN         surveyCn,
+            SURVEY_TY_CD      surveyTypeCd,
+            SURVEY_QITEM_CN   surveyQitemCn,
+            SURVEY_BGNG_DT    surveyBgngDt,
+            SURVEY_END_DT     surveyEndDt,
+            SURVEY_STTS_CD    surveySttsCd,
+            RGTR_ID           rgtrId,
+            APT_CD            aptCd
+
+        FROM SURVEY
+
+        WHERE SURVEY_NO = #{surveyNo}
+
+    </select>
+
+
+    <update id="updateSurvey">
+
+        UPDATE SURVEY
+        SET
+
+            SURVEY_NM = #{surveyNm},
+            SURVEY_CN = #{surveyCn},
+            SURVEY_TY_CD = #{surveyTypeCd},
+            SURVEY_QITEM_CN = #{surveyQitemCn},
+            SURVEY_BGNG_DT =
+                TO_DATE(#{surveyBgngDt}, 'YYYY-MM-DD'),
+
+            SURVEY_END_DT =
+                TO_DATE(#{surveyEndDt}, 'YYYY-MM-DD'),
+
+            SURVEY_STTS_CD = #{surveySttsCd},
+            MDF_DT = SYSDATE
+
+        WHERE SURVEY_NO = #{surveyNo}
+
+    </update>
+
+
+    <delete id="deleteSurvey">
+
+        DELETE FROM SURVEY
+        WHERE SURVEY_NO = #{surveyNo}
+
+    </delete>
 
 
 

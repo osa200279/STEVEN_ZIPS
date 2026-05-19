@@ -131,4 +131,47 @@ public class MngSurveyController {
 
         return "apt/mgmtOffice/survey/mngr_survey_detail";
     }
+
+    @GetMapping("/{mgmtOfcNo}/detail/{surveyNo}/data")
+    @ResponseBody
+    public ResponseEntity<?> selectSurveyDetail(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String surveyNo
+    ) {
+
+        return ResponseEntity.ok(
+                surveyService
+                        .selectSurveyDetail(surveyNo)
+        );
+    }
+    @PutMapping("/{mgmtOfcNo}/detail/{surveyNo}")
+    @ResponseBody
+    public ResponseEntity<?> updateSurvey(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String surveyNo,
+            @RequestBody MngSurveyDTO dto
+    ) {
+
+        dto.setSurveyNo(surveyNo);
+
+        surveyService.updateSurvey(dto);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+
+    @DeleteMapping("/{mgmtOfcNo}/detail/{surveyNo}")
+    @ResponseBody
+    public ResponseEntity<?> deleteSurvey(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String surveyNo
+    ) {
+
+        surveyService.deleteSurvey(surveyNo);
+
+        return ResponseEntity.ok().build();
+    }
+
+
 }

@@ -10,4 +10,9 @@ public interface IMngSurveyService {
 
     List<MngSurveyDTO> selectSurveyList(String mgmtOfcNo);
 
+    MngSurveyDTO selectSurveyDetail(String surveyNo);
+
+    void updateSurvey(MngSurveyDTO dto);
+
+    void deleteSurvey(String surveyNo);
 }
