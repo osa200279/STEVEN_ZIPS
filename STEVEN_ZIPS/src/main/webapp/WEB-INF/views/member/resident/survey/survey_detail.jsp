@@ -99,20 +99,9 @@
 
 
 
-        <div class="card"><strong>Q1. 최근 이용한 공용시설의 전반적인 만족도는 어떠셨나요?</strong>
-          <div class="inline-fields" style="flex-direction:column; align-items:flex-start; margin-top:12px;">
-            <label><input type="radio" checked> 매우 만족</label>
-            <label><input type="radio"> 만족</label>
-            <label><input type="radio"> 보통</label>
-            <label><input type="radio"> 불만족</label>
-          </div>
-        </div>
-        <div class="card"><strong>Q2. 추가로 개선이 필요한 항목이 있다면 선택해 주세요.</strong>
-          <div class="inline-fields" style="flex-direction:column; align-items:flex-start; margin-top:12px;"><label><input type="checkbox" checked> 예약 편의성</label>
-            <label><input type="checkbox"> 시설 청결</label>
-            <label><input type="checkbox"> 운영 시간</label>
-          </div>
-        </div>
+
+
+        <div id="questionArea"></div>
         <div class="btn-row"><button class="btn-main">설문 제출</button>
         <a class="btn-ghost" href="${pageContext.request.contextPath}/resident/survey/list">목록으로</a>
         </div>
@@ -122,5 +111,79 @@
     </main>
   </div>
   <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
+
+  <script>
+
+    const questionList =
+            JSON.parse('${survey.surveyQitemCn}');
+
+    const questionArea =
+            document.getElementById("questionArea");
+
+    questionList.forEach((q, idx) => {
+
+      let html = `
+        <div class="card">
+
+            <strong>
+                Q${idx + 1}. ${q.question}
+            </strong>
+
+            <div class="inline-fields"
+                 style="
+                    flex-direction:column;
+                    align-items:flex-start;
+                    margin-top:12px;
+                 ">
+    `;
+
+      if (q.type === "MULTI" || q.type === "YN") {
+
+        q.items.forEach(item => {
+
+          html += `
+                <label>
+
+                    <input type="radio"
+                           name="q${idx}">
+
+                    ${item}
+
+                </label>
+            `;
+        });
+      }
+
+      if (q.type === "SHORT") {
+
+        html += `
+            <input type="text"
+                   class="fake-input"
+                   placeholder="답변 입력">
+        `;
+      }
+
+      if (q.type === "LONG") {
+
+        html += `
+            <textarea class="fake-textarea"
+                      rows="5"></textarea>
+        `;
+      }
+
+      html += `
+            </div>
+        </div>
+    `;
+
+      questionArea.insertAdjacentHTML(
+              "beforeend",
+              html
+      );
+
+    });
+
+  </script>
+
 </body>
 </html>

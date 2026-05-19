@@ -819,6 +819,41 @@
 
             e.preventDefault();
 
+            const questionList = [];
+
+            document.querySelectorAll(".question-box")
+                .forEach(box => {
+
+                    const question = box
+                        .querySelector(".question-input")
+                        .value;
+
+                    const type = box
+                        .querySelector(".question-type-select")
+                        .value;
+
+                    const items = [];
+
+                    box.querySelectorAll(".option-input")
+                        .forEach(input => {
+
+                            if (input.value.trim() !== "") {
+
+                                items.push(input.value);
+
+                            }
+                        });
+
+                    questionList.push({
+
+                        question: question,
+                        type: type,
+                        items: items
+
+                    });
+
+                });
+
             const payload = {
 
                 surveyNm:
@@ -840,7 +875,8 @@
                 document.getElementById("surveyEndDt").value,
 
                 surveyQitemCn:
-                    "테스트 질문 JSON"
+                    JSON.stringify(questionList)
+
             };
 
             if (!payload.surveyBgngDt || !payload.surveyEndDt) {
