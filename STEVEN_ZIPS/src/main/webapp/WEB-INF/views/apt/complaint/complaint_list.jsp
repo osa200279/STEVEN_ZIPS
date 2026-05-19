@@ -96,6 +96,7 @@
                     <thead>
                     <tr>
                         <th>접수일</th>
+                        <th>민원인ID</th>
                         <th>카테고리</th>
                         <th>제목</th>
                         <th>발생장소</th>
@@ -107,6 +108,7 @@
                     <c:forEach var="cvpl" items="${cvplList}">
                         <tr onclick="openCvplDetail('${cvpl.cvplNo}')" style="cursor:pointer;">
                             <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
+                            <td>${cvpl.userId}</td>
                             <td>${cvpl.cvplTyCd}</td>
                             <td>${cvpl.cvplTtl}</td>
                             <td>${cvpl.cvplLoc}</td>
@@ -133,7 +135,7 @@
                                     <td><span class="badge info">종결</span></td>
                                 </c:when>
                             </c:choose>
-                            <td><button class="btn-sz-outline">상세보기</button></td>
+                            <%--<td><button class="btn-sz-outline">상세보기</button></td>--%>
                         </tr>
                     </c:forEach>
                     </tbody>
