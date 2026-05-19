@@ -670,6 +670,10 @@
                 data.length + "건";
         }
 
+        function resolveSurveyNo(item) {
+            return item?.surveyNo || item?.SURVEY_NO || item?.survey_no || item?.surveyno || "";
+        }
+
         function renderList(data) {
             renderStats(data);
 
@@ -679,8 +683,15 @@
             }
 
             surveyList.innerHTML = data.map(function (item, idx) {
+                var surveyNo = resolveSurveyNo(item);
+                var detailUrl = surveyNo
+                    ? ctx + "/manager/survey/" + mgmtOfcNo + "/detail/" + encodeURIComponent(surveyNo)
+                    : "#";
+                var resultUrl = surveyNo
+                    ? ctx + "/manager/survey/" + mgmtOfcNo + "/result/" + encodeURIComponent(surveyNo)
+                    : "#";
                 return ''
-                    + '<div class="survey-list-item">'
+                    + '<div class="survey-list-item" data-survey-no="' + surveyNo + '">'
                     + '  <div class="survey-list-main">'
                     + '    <div class="survey-list-title">' + item.surveyNm + '</div>'
                     + '    <div class="survey-list-sub">'
@@ -693,8 +704,8 @@
                     + '    <span class="survey-status ' + statusClass(item.surveySttsCd) + '">' + statusText(item.surveySttsCd) + '</span>'
                     + '    <div style="font-size:12px; color:var(--text-tertiary);">상태: ' + statusText(item.surveySttsCd) + '</div>'
                     + '    <div style="display:flex; gap:6px;">'
-                    + '      <button type="button" class="btn btn-secondary btn-sm" data-action="detail" data-idx="' + idx + '">상세</button>'
-                    + '      <button type="button" class="btn btn-primary btn-sm" data-action="result" data-idx="' + idx + '">결과</button>'
+                    + '      <a class="btn btn-secondary btn-sm" href="' + detailUrl + '" data-action="detail" data-idx="' + idx + '" data-survey-no="' + surveyNo + '">상세</a>'
+                    + '      <a class="btn btn-primary btn-sm" href="' + resultUrl + '" data-action="result" data-idx="' + idx + '" data-survey-no="' + surveyNo + '">결과</a>'
                     + '    </div>'
                     + '  </div>'
                     + '</div>';
@@ -757,12 +768,23 @@
                 const idx = btn.getAttribute("data-idx");
 
                 const row = surveys[idx];
+                const resolvedSurveyNo =
+                    btn.dataset.surveyNo ||
+                    row?.surveyNo ||
+                    row?.SURVEY_NO ||
+                    row?.survey_no ||
+                    row?.surveyno ||
+                    "";
 
                 console.log(row);
 
-                // 수정: 상세 버튼은 실제 상세 JSP 경로로 이동
+                if (!resolvedSurveyNo) {
+                    alert("선택한 설문의 번호를 찾지 못했습니다.");
+                    return;
+                }
+
                 location.href =
-                    `${ctx}/manager/survey/${mgmtOfcNo}/detail/${row.surveyNo}`;
+                    `${ctx}/manager/survey/${mgmtOfcNo}/detail/${resolvedSurveyNo}`;
             }
 
 
@@ -775,10 +797,21 @@
             if (action === "result") {
 
                 var resultRow = surveys[Number(btn.dataset.idx)];
+                var resolvedResultSurveyNo =
+                    btn.dataset.surveyNo ||
+                    resultRow?.surveyNo ||
+                    resultRow?.SURVEY_NO ||
+                    resultRow?.survey_no ||
+                    resultRow?.surveyno ||
+                    "";
 
-                // 수정: 결과 버튼은 결과 JSP로 바로 이동
+                if (!resolvedResultSurveyNo) {
+                    alert("선택한 설문의 번호를 찾지 못했습니다.");
+                    return;
+                }
+
                 location.href =
-                    `${ctx}/manager/survey/${mgmtOfcNo}/result/${resultRow.surveyNo}`;
+                    `${ctx}/manager/survey/${mgmtOfcNo}/result/${resolvedResultSurveyNo}`;
             }
         });
 
@@ -1061,29 +1094,6 @@
         loadSurveyList();
 
     })();
-</script>
-<script>
-    document.addEventListener("click", function (e) {
-        var btn = e.target.closest('[data-action="result"]');
-        if (!btn) return;
-
-        e.preventDefault();
-        e.stopImmediatePropagation();
-
-        var page = document.getElementById("surveyManagePage");
-        if (!page) return;
-
-        var idx = Number(btn.getAttribute("data-idx"));
-        if (Number.isNaN(idx) || !window.surveys || !window.surveys[idx]) {
-            return;
-        }
-
-        var row = window.surveys[idx];
-        console.log(`${row.surveyNo}`);
-        console.log(`\${row.surveyNo}`);
-        window.location.href =
-            `${ctx}/manager/survey/${mgmtOfcNo}/result/\${row.surveyNo}`;
-    }, true);
 </script>
 </body>
 </html>

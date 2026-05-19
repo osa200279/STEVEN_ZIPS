@@ -132,6 +132,14 @@ public class MngSurveyController {
         return "apt/mgmtOffice/survey/mngr_survey_detail";
     }
 
+    @GetMapping({"/{mgmtOfcNo}/detail", "/{mgmtOfcNo}/detail/"})
+    public String surveyDetailFallback(
+            @PathVariable String mgmtOfcNo
+    ) {
+
+        return "redirect:/manager/survey/" + mgmtOfcNo;
+    }
+
     @GetMapping("/{mgmtOfcNo}/detail/{surveyNo}/data")
     @ResponseBody
     public ResponseEntity<?> selectSurveyDetail(
@@ -198,6 +206,14 @@ public class MngSurveyController {
         );
 
         return "apt/mgmtOffice/survey/mngr_survey_result";
+    }
+
+    @GetMapping({"/{mgmtOfcNo}/result", "/{mgmtOfcNo}/result/"})
+    public String resultFallback(
+            @PathVariable String mgmtOfcNo
+    ) {
+
+        return "redirect:/manager/survey/" + mgmtOfcNo;
     }
 
     @GetMapping("/{mgmtOfcNo}/result/{surveyNo}/data")

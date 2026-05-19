@@ -207,7 +207,7 @@
                                             font-size:14px;
                                             line-height:1.7;
                                          ">
-                                        설문 설명
+                                        설문 내용
                                     </div>
 
                                 </div>
@@ -255,7 +255,7 @@
                         <div class="summary-card">
 
                             <div class="summary-label">
-                                참여 세대
+                                참여 인원
                             </div>
 
                             <div class="summary-value"
@@ -458,9 +458,9 @@
                 +   '</div>'
 
                 +   '<div class="question-sub">'
-                +       '응답 수 '
+                +       '응답 수: '
                 +       (question.totalCount || 0)
-                +       '명'
+                +       '건'
                 +   '</div>'
 
                 + '</div>'
@@ -480,7 +480,7 @@
 
                     +   '<div class="result-count">'
                     +       answer.count
-                    +       '명 ('
+                    +       '명('
                     +       answer.percent
                     +       '%)'
                     +   '</div>'
@@ -513,6 +513,7 @@
 
 </script>
 
+<script src="${pageContext.request.contextPath}/js/office-layout.js"></script>
 
 </body>
 </html>

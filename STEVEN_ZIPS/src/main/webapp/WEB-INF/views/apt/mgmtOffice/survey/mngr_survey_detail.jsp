@@ -264,8 +264,16 @@
     });
 
     document.getElementById("resultBtn").addEventListener("click", function () {
-        // 수정: 상세 화면의 결과 버튼도 결과 JSP로 연결
-        window.location.href = `${ctx}/manager/survey/${mgmtOfcNo}/result/${surveyNo}`;
+        const match = window.location.pathname.match(/\/manager\/survey\/([^/]+)\/(?:detail|result)\/([^/]+)/);
+        const resolvedMgmtOfcNo = mgmtOfcNo || (match ? match[1] : "");
+        const resolvedSurveyNo = surveyNo || (match ? match[2] : "");
+
+        if (!resolvedMgmtOfcNo || !resolvedSurveyNo) {
+            alert("설문 번호를 찾지 못했습니다.");
+            return;
+        }
+
+        window.location.href = `${ctx}/manager/survey/${resolvedMgmtOfcNo}/result/${resolvedSurveyNo}`;
     });
 </script>
 
