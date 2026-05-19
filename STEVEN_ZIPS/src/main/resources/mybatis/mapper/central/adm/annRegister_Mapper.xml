@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper">
+
+    <select id="selectAptList" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
+        SELECT apt_cmplex_no
+              ,apt_cmplex_nm
+        FROM apt_complex
+        WHERE 1=1
+        <if test="sidoNm != null and sidoNm != ''">
+            AND sido_nm = #{sidoNm}
+        </if>
+        <if test="sigunguNm != null and sigunguNm != ''">
+            AND sigungu_nm = #{sigunguNm}
+        </if>
+        <if test="emdNm != null and emdNm != ''">
+            AND emd_nm = #{emdNm}
+        </if>
+        ORDER BY apt_cmplex_nm asc
+    </select>
+</mapper>
