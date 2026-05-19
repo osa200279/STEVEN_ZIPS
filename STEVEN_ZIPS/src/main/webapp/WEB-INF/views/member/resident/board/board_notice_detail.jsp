@@ -133,6 +133,75 @@
             white-space: nowrap;
         }
 
+        .notice-file-box {
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid var(--border);
+        }
+
+        .notice-file-title {
+            font-size: 15px;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+
+        .notice-file-empty {
+            color: #98a2b3;
+            font-size: 14px;
+        }
+
+        .notice-file-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .notice-file-name a {
+            margin-left: 12px;
+            color: var(--green-dark);
+            text-decoration: none;
+            font-weight: 900;
+        }
+
+        .notice-file-image {
+            display: block;
+
+            /*
+             * 미리보기 썸네일 크기
+             * 세로 이미지도 너무 커지지 않게 제한
+             */
+            width: 220px;
+            max-width: 100%;
+
+            /*
+             * 비율 유지
+             * height:auto가 핵심
+             */
+            height: auto;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            /*
+             * 부드러운 확대 효과
+             */
+            transition: transform 0.2s ease;
+        }
+
+        /*
+         * 마우스 올리면 살짝 확대
+         */
+        .notice-file-image:hover {
+            transform: scale(1.02);
+        }
+
+        .notice-image-link {
+            display: inline-block;
+            line-height: 0;
+        }
+
     </style>
 </head>
 
@@ -161,12 +230,48 @@
                 </div>
 
                 <div class="notice-meta">
-                    작성자 ${notice.wrtrId}
-                    · 작성일 ${notice.regDttm}
-                    · 조회 ${notice.inqCnt}
+                    작성자 : ${notice.wrtrId}
+                    · 작성일 : ${notice.regDttm}
+                    · 조회수 : ${notice.inqCnt}
                 </div>
 
                 <div class="notice-content">${notice.cn}</div>
+
+                <!-- 첨부파일 영역 -->
+                <div class="notice-file-box">
+                    <div class="notice-file-title">첨부파일</div>
+
+                    <c:choose>
+                        <c:when test="${empty notice.atchFileId}">
+                            <div class="notice-file-empty">첨부파일 없음</div>
+                        </c:when>
+
+                        <c:otherwise>
+                            <div class="notice-file-name">
+                                📎 ${notice.fileOgName}
+
+                                <a href="${pageContext.request.contextPath}/file/download/${notice.googleId}">
+                                    다운로드
+                                </a>
+                            </div>
+
+                            <c:if test="${not empty notice.googleId
+                      and not empty notice.mimeType
+                      and notice.mimeType.startsWith('image/')}">
+                                <a href="${pageContext.request.contextPath}/file/display/${notice.googleId}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="notice-image-link">
+
+                                    <img src="${pageContext.request.contextPath}/file/display/${notice.googleId}"
+                                         alt="첨부이미지"
+                                         class="notice-file-image">
+
+                                </a>
+                            </c:if>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
 
                 <div class="notice-nav-list">
 

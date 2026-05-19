@@ -37,4 +37,26 @@ public class ResidentNoticeBoardDTO {
 
     private String topFixYn;    // 상단고정여부, Y이면 긴급 공지로 표시
 
+    /*
+     * MIME 타입
+     * 예:
+     * image/jpeg
+     * image/png
+     * application/pdf
+     *
+     * MIME 타입이란?
+     * → 파일 종류를 나타내는 인터넷 표준 형식.
+     * 왜 사용?
+     * → 이미지인지 PDF인지 구분해서 화면 처리하기 위해.
+     */
+    private String mimeType;
+
+    /*
+     * 구글드라이브 파일 고유 ID
+     * → /file/display/{googleId} 미리보기에 사용.
+     */
+    private String googleId;
+
+
+
 }

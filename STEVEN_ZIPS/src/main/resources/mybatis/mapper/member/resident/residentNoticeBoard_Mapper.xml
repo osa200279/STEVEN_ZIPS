@@ -18,6 +18,8 @@
             <result property="boardTyCd" column="board_ty_cd"/>
             <result property="boardNm" column="board_nm"/>
             <result property="fileOgName" column="file_og_name"/>
+            <result property="mimeType" column="mime_type"/>
+            <result property="googleId" column="google_id"/>
             <result property="topFixYn" column="top_fix_yn"/>
         </resultMap>
 
@@ -125,33 +127,69 @@
         WHERE rnum <![CDATA[>=]]> #{startRow}
     </select>
 
-        <select id="selectResidentBoardNoticeDetail"
-                parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO"
-                resultMap="residentBoardNoticeMap">
-            /* IResidentBoardNoticeMapper.selectResidentBoardNoticeDetail */
-            SELECT aabp.ann_no
-                 , aabp.board_no
-                 , abi.apt_cmplex_no
-                 , aabp.ttl
-                 , aabp.cn
-                 , aabp.wrtr_id
-                 , TO_CHAR(aabp.reg_dttm, 'YYYY-MM-DD') reg_dttm
-                 , TO_CHAR(aabp.mdf_dttm, 'YYYY-MM-DD') mdf_dttm
-                 , NVL(aabp.inq_cnt, 0) inq_cnt
-                 , aabp.del_yn
-                 , aabp.atch_file_id
-                 , abi.board_ty_cd
-                 , abi.board_nm
-                 , aabp.top_fix_yn
-            FROM apt_ann_board_post aabp
-                     INNER JOIN apt_board_instance abi
-                                ON aabp.board_no = abi.board_no
-            WHERE aabp.del_yn = 'N'
-              AND abi.use_yn = 'Y'
-              AND abi.board_ty_cd = 'NOTICE'
-              AND abi.apt_cmplex_no = #{aptCmplexNo}
-              AND aabp.ann_no = #{annNo}
-        </select>
+    <select id="selectResidentBoardNoticeDetail"
+            parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO"
+            resultMap="residentBoardNoticeMap">
+        /* IResidentBoardNoticeMapper.selectResidentBoardNoticeDetail */
+        SELECT aabp.ann_no
+             , aabp.board_no
+             , abi.apt_cmplex_no
+             , aabp.ttl
+             , aabp.cn
+             , aabp.wrtr_id
+             , TO_CHAR(aabp.reg_dttm, 'YYYY-MM-DD') reg_dttm
+             , TO_CHAR(aabp.mdf_dttm, 'YYYY-MM-DD') mdf_dttm
+             , NVL(aabp.inq_cnt, 0) inq_cnt
+             , aabp.del_yn
+             , aabp.atch_file_id
+             , abi.board_ty_cd
+             , abi.board_nm
+             , aabp.top_fix_yn
+             , af.file_og_name
+             , af.mime_type
+             , af.google_id
+        FROM apt_ann_board_post aabp
+                 INNER JOIN apt_board_instance abi
+                            ON aabp.board_no = abi.board_no
+                 LEFT OUTER JOIN attach_file af
+                                 ON TO_CHAR(af.file_group_no) = aabp.atch_file_id
+                                     AND af.file_sort_order = 1
+        WHERE aabp.del_yn = 'N'
+          AND abi.use_yn = 'Y'
+          AND abi.board_ty_cd = 'NOTICE'
+          AND abi.apt_cmplex_no = #{aptCmplexNo}
+          AND aabp.ann_no = #{annNo}
+    </select>
+
+<!--        <select id="selectResidentBoardNoticeDetail"-->
+<!--                parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO"-->
+<!--                resultMap="residentBoardNoticeMap">-->
+<!--            /* IResidentBoardNoticeMapper.selectResidentBoardNoticeDetail */-->
+<!--            SELECT aabp.ann_no-->
+<!--                 , aabp.board_no-->
+<!--                 , abi.apt_cmplex_no-->
+<!--                 , aabp.ttl-->
+<!--                 , aabp.cn-->
+<!--                 , aabp.wrtr_id-->
+<!--                 , TO_CHAR(aabp.reg_dttm, 'YYYY-MM-DD') reg_dttm-->
+<!--                 , TO_CHAR(aabp.mdf_dttm, 'YYYY-MM-DD') mdf_dttm-->
+<!--                 , NVL(aabp.inq_cnt, 0) inq_cnt-->
+<!--                 , aabp.del_yn-->
+<!--                 , aabp.atch_file_id-->
+<!--                 , abi.board_ty_cd-->
+<!--                 , abi.board_nm-->
+<!--                 , aabp.top_fix_yn-->
+<!--            FROM apt_ann_board_post aabp-->
+<!--                     INNER JOIN apt_board_instance abi-->
+<!--                                ON aabp.board_no = abi.board_no-->
+<!--                     LEFT JOIN ATTACH_FILE F-->
+<!--                               ON TO_CHAR(F.FILE_GROUP_NO) = P.ATCH_FILE_ID-->
+<!--            WHERE aabp.del_yn = 'N'-->
+<!--              AND abi.use_yn = 'Y'-->
+<!--              AND abi.board_ty_cd = 'NOTICE'-->
+<!--              AND abi.apt_cmplex_no = #{aptCmplexNo}-->
+<!--              AND aabp.ann_no = #{annNo}-->
+<!--        </select>-->
 
         <update id="updateResidentBoardNoticeInqCnt"
                 parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO">
