@@ -3,6 +3,7 @@ package kr.or.ddit.domain.member.resident.controller;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtOfficeService;
+import kr.or.ddit.domain.apt.mgmtOffice.survey.service.IMngSurveyService;
 import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO;
 import kr.or.ddit.domain.member.resident.service.IResidentFacilityService;
@@ -51,6 +52,8 @@ public class ResidentMainController {
     @Autowired
     private IResidentNoticeBoardService residentNoticeBoardService;
 
+    @Autowired
+    private IMngSurveyService surveyService;
     /**
      * 내 아파트 목록 조회 컨트롤러
      * @author 이용로
@@ -826,7 +829,13 @@ public class ResidentMainController {
     }
 
     @GetMapping("/vote/list")
-    public String voteList() {
+    public String voteList(Model model) {
+
+        model.addAttribute(
+                "surveyList",
+                surveyService.selectSurveyList(null)
+        );
+
         return "member/resident/survey/vote_resident_list";
     }
 
@@ -845,8 +854,17 @@ public class ResidentMainController {
         return "member/resident/survey/survey";
     }
 
-    @GetMapping("/survey/detail")
-    public String surveyDetail() {
+    @GetMapping("/survey/detail/{surveyNo}")
+    public String surveyDetail(
+            @PathVariable String surveyNo,
+            Model model
+    ) {
+
+        model.addAttribute(
+                "survey",
+                surveyService.selectSurveyDetail(surveyNo)
+        );
+
         return "member/resident/survey/survey_detail";
     }
 
@@ -856,10 +874,15 @@ public class ResidentMainController {
     }
 
     @GetMapping("/survey/list")
-    public String surveyList() {
+    public String surveyList(Model model) {
+
+        model.addAttribute(
+                "surveyList",
+                surveyService.selectSurveyList(null)
+        );
+
         return "member/resident/survey/survey_list";
     }
-
 
     /**
      * 입주민 공지게시판 조회

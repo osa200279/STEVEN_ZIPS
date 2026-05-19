@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -62,7 +63,42 @@
         <h1 class="page-title">설문조사 - 상세</h1>
         <p class="page-desc">설문 질문과 선택지, 설문 제출 및 목록 버튼을 포함한 설문조사 상세 화면입니다.</p>
 
-      <section class="panel"><div class="section-hd"><h3>공용시설 만족도 조사</h3><span>설문 참여</span></div>
+      <section class="panel"><div class="section-hd"><h3>${survey.surveyNm}</h3><c:choose>
+
+        <c:when test="${survey.surveySttsCd eq 'OPEN'}">
+          <span class="badge ok">진행중</span>
+        </c:when>
+
+        <c:when test="${survey.surveySttsCd eq 'READY'}">
+          <span class="badge wait">대기중</span>
+        </c:when>
+
+        <c:otherwise>
+          <span class="badge info">종료</span>
+        </c:otherwise>
+
+      </c:choose></div>
+
+
+        <div class="card">
+
+          <div style="line-height:1.8;">
+            ${survey.surveyCn}
+          </div>
+
+          <div style="margin-top:12px; color:var(--text-light);">
+
+            설문기간 :
+            ${survey.surveyBgngDt}
+            ~
+            ${survey.surveyEndDt}
+
+          </div>
+
+        </div>
+
+
+
         <div class="card"><strong>Q1. 최근 이용한 공용시설의 전반적인 만족도는 어떠셨나요?</strong>
           <div class="inline-fields" style="flex-direction:column; align-items:flex-start; margin-top:12px;">
             <label><input type="radio" checked> 매우 만족</label>

@@ -1,4 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
+
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -82,22 +85,56 @@
               <th>참여자</th>
             </tr>
             </thead>
+
             <tbody>
-            <tr>
-              <td>
-                <a href="${pageContext.request.contextPath}/resident/survey/detail">공용시설 만족도 조사</a>
-              </td>
-              <td>2026-04-18 ~ 2026-04-30</td>
-              <td><span class="badge ok">진행중</span></td>
-              <td>92명</td>
-            </tr>
-            <tr>
-              <td>주차 서비스 개선 설문</td>
-              <td>2026-04-01 ~ 2026-04-10</td>
-              <td><span class="badge info">종료</span></td>
-              <td>174명</td>
-            </tr>
+
+            <c:forEach items="${surveyList}" var="survey">
+
+              <tr>
+
+                <td>
+                  <a href="${pageContext.request.contextPath}/resident/survey/detail/${survey.surveyNo}">
+                      ${survey.surveyNm}
+                  </a>
+                </td>
+
+                <td>
+                    ${survey.surveyBgngDt}
+                  ~
+                        ${survey.surveyEndDt}
+                </td>
+
+                <td>
+
+                  <c:choose>
+
+                    <c:when test="${survey.surveySttsCd eq 'OPEN'}">
+                      <span class="badge ok">진행중</span>
+                    </c:when>
+
+                    <c:when test="${survey.surveySttsCd eq 'READY'}">
+                      <span class="badge wait">대기중</span>
+                    </c:when>
+
+                    <c:otherwise>
+                      <span class="badge info">종료</span>
+                    </c:otherwise>
+
+                  </c:choose>
+
+                </td>
+
+                <td>-</td>
+
+              </tr>
+
+            </c:forEach>
+
             </tbody>
+
+
+
+
           </table>
         </section>
       </div>
