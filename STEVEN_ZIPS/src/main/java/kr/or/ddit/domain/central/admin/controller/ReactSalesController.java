@@ -2,6 +2,7 @@ package kr.or.ddit.domain.central.admin.controller;
 
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
+import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.central.admin.service.IReactSalesService;
 import kr.or.ddit.domain.central.service.ICentralAptComplexService;
 import lombok.extern.slf4j.Slf4j;
@@ -99,5 +100,18 @@ public class ReactSalesController {
 
         return ReactSalesService.selectBuildingList(aptCmplexNo);
     }
+
+    @GetMapping("/ho.do")
+    public List<AptDetailVO> getHoList(
+            @RequestParam String aptCmplexNo,
+            @RequestParam String dongNm
+    ) {
+
+        return ReactSalesService.selectHoList(
+                aptCmplexNo,
+                dongNm
+        );
+    }
+
 
 }

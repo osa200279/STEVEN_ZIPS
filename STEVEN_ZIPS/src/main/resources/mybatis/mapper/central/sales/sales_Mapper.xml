@@ -13,5 +13,19 @@
                     REGEXP_REPLACE(dong_nm, '[^0-9]')
             )
     </select>
+    <select id="selectHoList" resultType="kr.or.ddit.domain.apt.main.vo.AptDetailVO">
+        SELECT AD.HO_NO,
+               AD.FLOOR,
+               AD.HO_TY_NO,
+               AD.HO_STTS_CD,
+               AD.HO
+        FROM APT_DETAIL AD
+                 JOIN APT_UNIT D
+                      ON AD.DONG_NO = D.DONG_NO
+        WHERE D.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND D.DONG_NM = #{dongNm}
+        ORDER BY FLOOR DESC,
+                 TO_NUMBER(AD.HO)
+    </select>
 
 </mapper>
