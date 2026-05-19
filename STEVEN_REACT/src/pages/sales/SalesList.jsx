@@ -1,5 +1,9 @@
+
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { searchApartmentList } from '../../util/api/sales/salesApi';
+import SalesExplorer from '../../components/sales/SalesExplorer';
+import SalesSearchBar from '../../components/sales/SalesSearchBar';
 
 function SalesList() {
 
@@ -7,12 +11,44 @@ function SalesList() {
 
   const [selectedBuilding, setSelectedBuilding] = useState('101동');
 
+  const [pagingVO, setPagingVO] = useState(null);
+
+  const [searchForm, setSearchForm] = useState(null);
+
   useEffect(() => {
     setPageInfo({
       parent: '건물 · 매물',
       current: '임대 매물 관리'
     });
   }, []);
+
+  /**
+   * 검색
+   */
+  const handleSearch = async (
+    form,
+    currentPage = 1
+  ) => {
+
+    try {
+
+      setSearchForm(form);
+
+      const data =
+        await searchApartmentList(
+          form,
+          currentPage
+        );
+
+      setPagingVO(data);
+
+    } catch (err) {
+
+      console.error(err);
+
+    }
+  };
+
 
   const floorData = [
     { floor: '17F', rooms: ['1701', '1702', '1703', '1704'] },
@@ -37,72 +73,10 @@ function SalesList() {
   return (
     <div className="content-wrapper">
 
-      {/* 검색 영역 */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '12px',
-          alignItems: 'center'
-        }}
-      >
 
-        <select
-          style={{
-            height: '42px',
-            minWidth: '160px',
-            border: '1px solid var(--outline)',
-            borderRadius: '8px',
-            padding: '0 12px',
-            background: '#fff'
-          }}
-        >
-          <option>시, 도 검색</option>
-        </select>
-
-        <select
-          style={{
-            height: '42px',
-            minWidth: '160px',
-            border: '1px solid var(--outline)',
-            borderRadius: '8px',
-            padding: '0 12px',
-            background: '#fff'
-          }}
-        >
-          <option>시 군 구 검색</option>
-        </select>
-
-        <select
-          style={{
-            height: '42px',
-            minWidth: '160px',
-            border: '1px solid var(--outline)',
-            borderRadius: '8px',
-            padding: '0 12px',
-            background: '#fff'
-          }}
-        >
-          <option>동읍면 검색</option>
-        </select>
-
-        <input
-          type="text"
-          placeholder="아파트 이름으로 검색"
-          style={{
-            flex: 1,
-            height: '42px',
-            border: '1px solid var(--outline)',
-            borderRadius: '8px',
-            padding: '0 14px',
-            background: '#fff'
-          }}
-        />
-
-        <button className="btn btn-primary">
-          검색
-        </button>
-
-      </div>
+      <SalesSearchBar
+        onSearch={handleSearch}
+      />
 
       {/* 메인 레이아웃 */}
       <div
@@ -245,7 +219,7 @@ function SalesList() {
                     marginBottom: '6px',
                     width: '100%',
                   }}
->
+                >
 
                   {/* 층 */}
                   <div
@@ -260,15 +234,15 @@ function SalesList() {
                   </div>
 
                   {/* 호 리스트 */}
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: `repeat(${floorObj.rooms.length}, auto)`,
-                        gap: '6px',
-                        justifyContent: 'center',
-                        flex: 1
-                      }}
-                    >
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: `repeat(${floorObj.rooms.length}, auto)`,
+                      gap: '6px',
+                      justifyContent: 'center',
+                      flex: 1
+                    }}
+                  >
 
                     {floorObj.rooms.map((room) => (
                       <button
@@ -320,22 +294,13 @@ function SalesList() {
           }}
         >
 
-          {/* grid 영역 */}
-          <div
-            style={{
-              flex: 1,
-              background: '#fff',
-              border: '1px solid var(--outline-variant)',
-              borderRadius: '12px',
-              overflow: 'hidden'
-            }}
-          >
-
-            <div style={{ padding: '24px', lineHeight: '2' }}>
-              우측 트리/grid 영역
-            </div>
-
-          </div>
+          {/* 탐색기 */}
+          <SalesExplorer
+            pagingVO={pagingVO}
+            onPageChange={(page) =>
+              handleSearch(searchForm, page)
+            }
+          />
 
           {/* 하단 버튼 */}
           <div
@@ -353,6 +318,7 @@ function SalesList() {
           </div>
 
         </div>
+
 
       </div>
 
