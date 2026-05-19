@@ -3,6 +3,51 @@
 <mapper namespace="kr.or.ddit.domain.central.admin.mapper.IReactSalesMapper">
 
 
+    <insert id="insertRentListing">
+
+        <selectKey
+                resultType="string"
+                keyProperty="rentLstgNo"
+                order="BEFORE">
+
+            SELECT
+            'RENT_'
+            || LPAD(
+            SEQ_RENT_LISTING.NEXTVAL,
+            6,
+            '0'
+            )
+            FROM DUAL
+
+        </selectKey>
+
+        INSERT INTO RENT_LISTING (
+
+        RENT_LSTG_NO,
+        HO_NO,
+        RENT_TTL,
+        RENT_TYPE_CD,
+        DPST_AMT,
+        MTHLY_RENT_AMT,
+        RENT_LSTG_CN,
+        RCRT_LSTG_STTS_CD
+
+        ) VALUES (
+
+        #{rentLstgNo},
+        #{hoNo},
+        #{rentTtl},
+        #{rentTypeCd},
+        #{dpstAmt},
+        #{mthlyRentAmt},
+        #{rentLstgCn},
+        #{rcrtLstgSttsCd}
+
+        )
+
+    </insert>
+
+
     <select id="selectBuildingList" resultType="java.lang.String">
         SELECT dong_nm
         FROM APT_UNIT
