@@ -43,7 +43,7 @@ public class AptController {
      * @param model
      * @return 우리아파트 페이지
      */
-    @GetMapping("/main/{aptCmplexNo}/aptInfo")
+    @GetMapping("/main/aptInfo/{aptCmplexNo}")
     public String aptInfo(@PathVariable String aptCmplexNo, Model model) {
 
         // 아파트 메인페이지 DTO정보 가져오기
@@ -59,7 +59,7 @@ public class AptController {
      * @param model
      * @return 관리사무소 소개 페이지
      */
-    @GetMapping("/main/{aptCmplexNo}/intro")
+    @GetMapping("/main/mgmtInfo/{aptCmplexNo}")
     public String mgmtOfficeIntro(@PathVariable String aptCmplexNo, Authentication authentication, Model model) {
 
         // 1. 로그인 여부 체크
