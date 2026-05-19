@@ -1,7 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper">
+    <insert id="insertAnn" parameterType="map">
+        <selectKey keyProperty="annNo" resultType="string" order="BEFORE">
+            SELECT 'ANN' || LPAD(
+            NVL(MAX(TO_NUMBER(REGEXP_REPLACE(ann_no, '[^0-9]', ''))), 0) + 1
+            , 4, '0')
+            FROM center_ann_board_post
+        </selectKey>
+        INSERT INTO center_ann_board_post (
+        ann_no
+        , board_no
+        , ttl
+        , cn
+        , apt_cmplex_no
+        , pblanc_bgng_dt
+        , pblanc_end_dt
+        , rcrt_bgng_dt
+        , rcrt_end_dt
+        , mvin_prd_dt
+        , wrtr_id
+        , reg_dttm
+        , del_yn
+        , opn_yn
+        ) VALUES (
+        #{annNo}
+        , (SELECT board_no FROM center_board_instance
+        WHERE apt_cmplex_no = #{aptCmplexNo}
+        AND ROWNUM = 1)
+        , #{ttl}
+        , #{cn}
+        , #{aptCmplexNo}
+        , TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')
+        , TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')
+        , TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')
+        , TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')
+        , TO_DATE(#{mvinPrdDt}, 'YYYY-MM-DD')
+        , #{wrtrId}
+        , SYSDATE
+        , 'N'
+        , 'Y'
+        )
+    </insert>
 
+    <!-- 아파트 목록 조회하기 -->
     <select id="selectAptList" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
         SELECT apt_cmplex_no
               ,apt_cmplex_nm
@@ -18,4 +60,55 @@
         </if>
         ORDER BY apt_cmplex_nm asc
     </select>
+
+    <!-- 도로명주소 조회하기 -->
+    <select id="selectDorojuso" resultType="String" parameterType="string">
+        SELECT dorojuso
+        FROM apt_complex
+        WHERE apt_cmplex_no = #{aptCmplexNo}
+    </select>
+
+    <!-- 아파트 호 타입 및 상세정보 조회하기 -->
+    <select id="selectHoTyNo" resultType="map" parameterType="string">
+        SELECT aht.ho_ty_no
+              ,aht.ty_nm
+              ,aht.exclusive_size
+              ,aht.room_cnt
+              ,aht.bathroom_cnt
+              ,COUNT(ad.ho_no) AS unit_cnt
+        FROM apt_ho_ty aht
+        LEFT JOIN apt_detail ad ON ad.ho_ty_no = aht.ho_ty_no
+        WHERE aht.apt_cmplex_no = #{aptCmplexNo}
+        GROUP BY aht.ho_ty_no
+               , aht.ty_nm
+               , aht.exclusive_size
+               , aht.room_cnt
+               , aht.bathroom_cnt
+    </select>
+
+    <!--  -->
+    <select id="selectSbmsnDocList" resultType="map" parameterType="string">
+        SELECT DISTINCT rcd.sbmsn_doc_ty_cd,
+                        cc.code_name
+        FROM rent_ctrt_doc rcd
+        INNER JOIN rent_listing rl ON rcd.rent_lstg_no = rl.rent_lstg_no
+        INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
+        INNER JOIN common_code cc ON rcd.sbmsn_doc_ty_cd = cc.code_no_cd
+                                 AND cc.GROUP_CODE_NO = 'SUBMIT_DOC_TY'
+        WHERE aht.apt_cmplex_no = #{aptCmplexNo}
+
+
+        SELECT DISTINCT rcd.sbmsn_doc_ty_cd,
+                        cc.code_name
+        FROM rent_ctrt_doc rcd
+        INNER JOIN rent_listing rl ON rcd.rent_lstg_no = rl.rent_lstg_no
+        INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
+        INNER JOIN common_code cc ON rcd.sbmsn_doc_ty_cd = cc.code_no_cd
+                                 AND cc.GROUP_CODE_NO = 'SUBMIT_DOC_TY'
+        WHERE aht.apt_cmplex_no = 'A12102002'
+    </select>
+
+
 </mapper>

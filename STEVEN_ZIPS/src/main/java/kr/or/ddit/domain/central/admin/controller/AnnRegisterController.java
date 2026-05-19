@@ -3,12 +3,16 @@ package kr.or.ddit.domain.central.admin.controller;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.central.admin.service.IAnnRegisterService;
 import kr.or.ddit.domain.central.service.ICentralAptComplexService;
+import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -53,12 +57,59 @@ public class AnnRegisterController {
             @RequestParam(required = false) String sidoNm,
             @RequestParam(required = false) String sigunguNm,
             @RequestParam(required = false) String emdNm
-    ){
+    ) {
         return annRegisterService.selectAptList(
                 sidoNm, sigunguNm, emdNm);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/aptDetail")
+    public Map<String, Object> getAptDetail(
+            @RequestParam String aptCmplexNo) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Map<String, Object> data = annRegisterService.selectOneAptDetail(aptCmplexNo);
+            result.put("success", true);
+            result.put("dorojuso", data.get("dorojuso"));
+            result.put("hoTyNo", data.get("hoTyNo"));
+        } catch (Exception e) {
+            log.error("단지 상세 정보 오류:{}", e.getMessage());
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/sbmsnDocList")
+    public Map<String, Object> getSbmsnDocList(@RequestParam String aptCmplexNo) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<Map<String, Object>> list = annRegisterService.selectSbmsnDocList(aptCmplexNo);
+            result.put("success", true);
+            result.put("list", list);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
 
+        return result;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/insertAnn")
+    public Map<String, Object> insertAnn(@RequestBody Map<String, Object> params,
+                                         @AuthenticationPrincipal CustomUser principal){
+        Map<String, Object> result = new HashMap<>();
+        try {
+            params.put("wrtrId", principal.getMember().getUserNo());
+            annRegisterService.insertAnn(params);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("messeage", e.getMessage());
+        }
+        return result;
+    }
 
 }
