@@ -194,15 +194,22 @@
              , P.DEL_YN
              , P.ATCH_FILE_ID
              , P.TOP_FIX_YN
+             , F.FILE_OG_NAME AS FILE_OG_NAME
+             , F.FILE_PATH AS FILE_PATH
+             , F.MIME_TYPE AS MIME_TYPE
+             , F.GOOGLE_ID AS GOOGLE_ID
         FROM APT_ANN_BOARD_POST P
                  INNER JOIN APT_BOARD_INSTANCE B
                             ON P.BOARD_NO = B.BOARD_NO
+                 LEFT JOIN ATTACH_FILE F
+                           ON TO_CHAR(F.FILE_GROUP_NO) = P.ATCH_FILE_ID
         WHERE P.ANN_NO = #{annNo}
           AND P.BOARD_NO = #{boardNo}
           AND B.APT_CMPLEX_NO = #{aptCmplexNo}
           AND B.BOARD_TY_CD = 'NOTICE'
           AND B.USE_YN = 'Y'
           AND P.DEL_YN = 'N'
+
     </select>
 
     <!-- 등록 -->
@@ -308,6 +315,7 @@
 
     <insert id="insertAttachFile"
             parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
+
         INSERT INTO ATTACH_FILE
         (
           FILE_GROUP_NO
@@ -320,6 +328,7 @@
         , REG_DT
         , FILE_SORT_ORDER
         , DOWN_CNT
+        , GOOGLE_ID
         , CAT
         )
         VALUES
@@ -334,8 +343,10 @@
             , SYSDATE
             , 1
             , 0
+            , #{googleId}
             , 'NOTICE'
             )
+
     </insert>
 
 </mapper>

@@ -1,17 +1,16 @@
 package kr.or.ddit.domain.apt.mgmtOffice.board.controller;
 
+import kr.or.ddit.domain.apt.board.free.vo.PaginationInfoVO;
 import kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.board.service.IMngrRegidentNoticeService;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import kr.or.ddit.domain.apt.board.free.vo.PaginationInfoVO;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -26,6 +25,8 @@ public class MngrResidentNoticeController {
      * → Controller는 DB 직접 접근하지 않고 Service를 통해 처리함.
      */
     private final IMngrRegidentNoticeService mngrRegidentNoticeService;
+
+
 
     /**
      * 관리사무소 공지사항 목록 조회
@@ -143,41 +144,56 @@ public class MngrResidentNoticeController {
 
     /**
      * 관리사무소 공지사항 등록
+     *
      * @author 김보라
-     * @param mgmtOfcNo 관리사무소번호
-     * @param dto 공지사항 등록 DTO
-     * @param uploadFile 첨부파일
+     * @param mgmtOfcNo 관리사무소 번호
+     * @param dto 공지사항 등록 정보 DTO
+     * @param uploadFile 첨부파일 객체
      * @param customUser 로그인 사용자 정보
-     * @return 공지사항 목록 화면 redirect
-     * @throws Exception 파일 업로드 및 저장 예외
+     * @param rttr redirect 후 모달 메시지 전달 객체
+     * @return 공지사항 목록 화면으로 redirect
      */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @PostMapping("/notice/insert/{mgmtOfcNo}")
     public String insertNotice(
-            @PathVariable("mgmtOfcNo") String mgmtOfcNo,
-            MngrRegidentNoticeDTO dto,
+            @PathVariable String mgmtOfcNo,
+            @ModelAttribute MngrRegidentNoticeDTO dto,
             @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile,
             @AuthenticationPrincipal CustomUser customUser,
-            RedirectAttributes ra
+            RedirectAttributes rttr
     ) {
         try {
-            mngrRegidentNoticeService.setManagerNoticeBaseInfo(dto, customUser, mgmtOfcNo);
-            int result = mngrRegidentNoticeService.insertNotice(dto, uploadFile);
+            /*
+             * 1. 공지사항 기본 정보 세팅
+             * → boardNo, aptCmplexNo, wrtrId 등을 DTO에 넣는다.
+             */
+            mngrRegidentNoticeService.setManagerNoticeBaseInfo(
+                    dto,
+                    customUser,
+                    mgmtOfcNo
+            );
 
             /*
-             * 처리 결과 메시지
-             * → redirect 후 JSP에서 모달로 보여줄 값.
+             * 2. 관리사무소 번호 세팅
+             * → ServiceImpl에서 파일 경로 만들 때 사용한다.
+             * 예: apt/notice/4/uuid_파일명.jpg
              */
-            if (result > 0) {
-                ra.addFlashAttribute("modalMsg", "공지사항이 등록되었습니다.");
-                ra.addFlashAttribute("modalType", "success");
-            } else {
-                ra.addFlashAttribute("modalMsg", "공지사항 등록에 실패했습니다.");
-                ra.addFlashAttribute("modalType", "fail");
-            }
+            dto.setMgmtOfcNo(mgmtOfcNo);
+
+            /*
+             * 3. 공지사항 + 첨부파일 등록
+             * → 파일 저장, ATTACH_FILE insert, 공지사항 insert를 Service에서 처리한다.
+             */
+            mngrRegidentNoticeService.insertNotice(dto, uploadFile);
+
+            rttr.addFlashAttribute("modalType", "success");
+            rttr.addFlashAttribute("modalMsg", "공지사항이 등록되었습니다.");
 
         } catch (Exception e) {
-            ra.addFlashAttribute("modalMsg", "공지사항 등록 중 오류가 발생했습니다.");
-            ra.addFlashAttribute("modalType", "fail");
+            e.printStackTrace();
+
+            rttr.addFlashAttribute("modalType", "fail");
+            rttr.addFlashAttribute("modalMsg", "공지사항 등록 중 오류가 발생했습니다.");
         }
 
         return "redirect:/mgmtOffice/mngrResidentNotice/" + mgmtOfcNo;

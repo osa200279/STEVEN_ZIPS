@@ -646,6 +646,41 @@
             color: #265c30;
         }
 
+        /* 파일 업로드 input 전용 */
+        #noticePage input[type="file"].form-input {
+            padding: 6px 12px;
+            height: auto;
+            line-height: normal;
+        }
+
+        /* 파일 업로드 input */
+        #noticePage input[type="file"].form-input {
+            height: 37px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* 파일 선택 버튼 */
+        #noticePage input[type="file"].form-input::file-selector-button {
+            height: 37px;
+            padding: 0 14px;
+            border: none;
+            border-right: 1px solid #d5dbe5;
+            background: #f8fafc;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 12px;
+        }
+
+        /* hover 효과 */
+        #noticePage input[type="file"].form-input::file-selector-button:hover {
+            background: #eef2f7;
+        }
+
     </style>
 
 </head>
@@ -964,7 +999,26 @@
 
                                     <div class="form-field">
                                         <label class="field-label">첨부파일</label>
-                                        <input type="file" name="uploadFile" class="form-input">
+
+                                        <input type="file" name="uploadFile" id="modalUploadFile" class="form-input">
+
+                                        <div id="currentFileBox" style="display:none; margin-top:8px;">
+                                            <div style="font-size:12px; font-weight:700; color:#374151; margin-bottom:6px;">
+                                                현재 첨부파일
+                                            </div>
+
+                                            <div style="display:flex; align-items:center; gap:8px;">
+                                                <span class="material-symbols-rounded" style="font-size:18px;">attach_file</span>
+                                                <span id="currentFileName" style="font-size:13px; color:#111827;"></span>
+                                            </div>
+
+                                            <div id="imagePreviewBox" style="display:none; margin-top:10px;">
+                                                <img id="imagePreview"
+                                                     src=""
+                                                     alt="첨부파일 미리보기"
+                                                     style="max-width:100%; max-height:180px; border:1px solid #d5dbe5; border-radius:6px;">
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="check-row">
@@ -1007,6 +1061,12 @@
 </div>
 
 <script>
+
+    const currentFileBox = document.getElementById('currentFileBox');
+    const currentFileName = document.getElementById('currentFileName');
+    const imagePreviewBox = document.getElementById('imagePreviewBox');
+    const imagePreview = document.getElementById('imagePreview');
+    const modalUploadFile = document.getElementById('modalUploadFile');
 
     <c:if test="${not empty modalMsg}">
     const resultModal = document.getElementById('resultModal');
@@ -1125,13 +1185,38 @@
     const modalTopFixYn = document.getElementById('modalTopFixYn');
 
     document.getElementById('openNoticeModalBtn').addEventListener('click', function () {
+        /*
+         * 글쓰기 모드
+         * → 신규 등록 URL로 변경
+         */
         form.action = contextPath + '/mgmtOffice/notice/insert/' + mgmtOfcNo;
 
+        /*
+         * 입력값 초기화
+         */
         modalAnnNo.value = '';
         modalTtl.value = '';
         modalCn.value = '';
         modalTopFixYn.checked = false;
 
+        /*
+         * 파일 input 초기화
+         * input type="file"은 보안상 JS로 기존 파일명을 넣을 수 없음.
+         */
+        modalUploadFile.value = '';
+
+        /*
+         * 기존 첨부파일 표시 영역 숨김
+         * 글쓰기에는 기존 파일이 없기 때문.
+         */
+        currentFileBox.style.display = 'none';
+        currentFileName.textContent = '';
+        imagePreviewBox.style.display = 'none';
+        imagePreview.src = '';
+
+        /*
+         * 모달 열기
+         */
         modal.classList.add('open');
     });
 
@@ -1146,12 +1231,54 @@
             fetch(contextPath + '/mgmtOffice/notice/detail/' + mgmtOfcNo + '/' + annNo)
                 .then(response => response.json())
                 .then(data => {
+                    /*
+                     * 수정 모드 URL
+                     */
                     form.action = contextPath + '/mgmtOffice/notice/update/' + mgmtOfcNo;
 
+                    /*
+                     * 공지사항 기본값 세팅
+                     */
                     modalAnnNo.value = data.annNo;
                     modalTtl.value = data.ttl;
                     modalCn.value = data.cn;
                     modalTopFixYn.checked = data.topFixYn === 'Y';
+
+                    /*
+                     * 파일 input 초기화
+                     * 기존 파일명은 보안상 input type="file" 안에 넣을 수 없음
+                     */
+                    modalUploadFile.value = '';
+
+                    /*
+                     * 기존 첨부파일 표시
+                     */
+                    if (data.fileOgName) {
+                        currentFileBox.style.display = 'block';
+                        currentFileName.textContent = data.fileOgName;
+
+                        /*
+                         * 이미지 파일이면 미리보기 표시
+                         */
+                        if (data.mimeType && data.mimeType.startsWith('image/')) {
+                            imagePreviewBox.style.display = 'block';
+
+                            /*
+                             * 구글드라이브 파일 미리보기
+                             * /file/display/{googleId}
+                             * → FileDisplayController의 displayFile() 사용
+                             */
+                            imagePreview.src = contextPath + '/file/display/' + data.googleId;
+                        } else {
+                            imagePreviewBox.style.display = 'none';
+                            imagePreview.src = '';
+                        }
+                    } else {
+                        currentFileBox.style.display = 'none';
+                        currentFileName.textContent = '';
+                        imagePreviewBox.style.display = 'none';
+                        imagePreview.src = '';
+                    }
 
                     modal.classList.add('open');
                 });

@@ -87,4 +87,11 @@ public class MngrRegidentNoticeDTO {
      */
     private String sortOrder;
 
+    /* 파일 업로드 */
+    private String googleId;
+
+    private String mgmtOfcNo;
+
+
+
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
+import kr.or.ddit.common.api.google.service.GoogleDriveService;
 
 import java.io.File;
 import java.util.HashMap;
@@ -21,6 +22,8 @@ import java.util.UUID;
 public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService {
 
     private final ImngrRegidentNoticeMapper mapper;
+
+    private final GoogleDriveService googleDriveService;
 
     @Value("${file.upload.path:C:/upload/notice}")
     private String uploadPath;
@@ -44,46 +47,90 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
     @Transactional
     public int insertNotice(MngrRegidentNoticeDTO dto, MultipartFile uploadFile) throws Exception {
 
+        /*
+         * 긴급공지 체크 안 했을 때 기본값 N
+         */
         if (dto.getTopFixYn() == null) {
             dto.setTopFixYn("N");
         }
 
+        /*
+         * 첨부파일이 있을 때만 파일 테이블 insert
+         */
         if (uploadFile != null && !uploadFile.isEmpty()) {
-
+            /*
+             * 1. 파일 그룹 번호 생성
+             */
             int fileGroupNo = mapper.selectAttachFileGroupNo();
 
+            /*
+             * 2. 원본 파일명
+             */
             String originalName = uploadFile.getOriginalFilename();
-            String uuid = UUID.randomUUID().toString();
 
+            /*
+             * 3. UUID 생성
+             */
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+
+            /*
+             * 4. 확장자 추출
+             */
             String ext = "";
             if (originalName != null && originalName.lastIndexOf(".") > -1) {
                 ext = originalName.substring(originalName.lastIndexOf(".") + 1);
             }
 
-            File dir = new File(uploadPath);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
+            /*
+             * 5. 저장 파일명 생성
+             */
+            String saveFileName = uuid + "_" + originalName;
 
-            String saveFileName = uuid + "." + ext;
-            File saveFile = new File(dir, saveFileName);
+            /*
+             * 6. DB에 저장할 논리 경로
+             */
+            String dbFilePath = "apt/notice/" + dto.getMgmtOfcNo() + "/" + saveFileName;
 
-            uploadFile.transferTo(saveFile);
+            /*
+             * 7. 구글드라이브 업로드
+             * googleId
+             * → 구글드라이브 파일 고유 ID.
+             * 왜 필요?
+             * → /file/display/{googleId}로 미리보기할 때 사용.
+             */
+            String googleId = googleDriveService.uploadFile(
+                    uploadFile,
+                    "apt/notice/" + dto.getMgmtOfcNo(),
+                    saveFileName
+            );
 
+            /*
+             * 8. ATTACH_FILE insert용 DTO 생성
+             */
             MngrRegidentNoticeDTO fileDTO = new MngrRegidentNoticeDTO();
             fileDTO.setAtchFileId(String.valueOf(fileGroupNo));
             fileDTO.setFileOgName(originalName);
             fileDTO.setFileSaveUuid(uuid);
-            fileDTO.setFilePath(uploadPath);
+            fileDTO.setFilePath(dbFilePath);
             fileDTO.setFileExt(ext);
             fileDTO.setFileSize(uploadFile.getSize());
             fileDTO.setMimeType(uploadFile.getContentType());
+            fileDTO.setGoogleId(googleId);
 
+            /*
+             * 9. 첨부파일 DB insert
+             */
             mapper.insertAttachFile(fileDTO);
 
+            /*
+             * 10. 공지사항 테이블과 첨부파일 그룹 연결
+             */
             dto.setAtchFileId(String.valueOf(fileGroupNo));
         }
 
+        /*
+         * 11. 공지사항 insert
+         */
         return mapper.insertNotice(dto);
     }
 
@@ -141,4 +188,17 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
         dto.setBoardNo(boardNo);
         dto.setWrtrId(writerName);
     }
+
+    @Override
+    public int insertNotice(MngrRegidentNoticeDTO dto) {
+        /*
+         * Service
+         * → Controller와 Mapper 사이에서 업무 로직을 처리하는 계층.
+         *
+         * 여기서는 Controller에서 받은 공지사항 DTO를 Mapper로 넘겨
+         * 실제 DB insert를 실행한다.
+         */
+        return mapper.insertNotice(dto);
+    }
+
 }

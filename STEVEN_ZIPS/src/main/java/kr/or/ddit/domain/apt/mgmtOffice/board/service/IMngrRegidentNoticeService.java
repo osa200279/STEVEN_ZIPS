@@ -28,4 +28,12 @@ public interface IMngrRegidentNoticeService {
             CustomUser customUser,
             String mgmtOfcNo
     );
+
+    /**
+     * 관리사무소 공지사항 등록
+     * @author 김보라
+     * @param dto 등록할 공지사항 정보
+     * @return 등록 처리 건수
+     */
+    int insertNotice(MngrRegidentNoticeDTO dto);
 }

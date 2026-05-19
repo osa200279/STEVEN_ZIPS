@@ -30,4 +30,5 @@ public interface ImngrRegidentNoticeMapper {
     String selectNoticeBoardNoByAptCmplexNo(String aptCmplexNo);
 
     String selectNoticeWriterName(Map<String, Object> paramMap);
+
 }
