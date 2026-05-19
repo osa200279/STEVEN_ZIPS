@@ -148,7 +148,7 @@ public class MngrResidentNoticeController {
      * @author 김보라
      * @param mgmtOfcNo 관리사무소 번호
      * @param dto 공지사항 등록 정보 DTO
-     * @param uploadFile 첨부파일 객체
+     * @param uploadFiles 첨부파일 객체들
      * @param customUser 로그인 사용자 정보
      * @param rttr redirect 후 모달 메시지 전달 객체
      * @return 공지사항 목록 화면으로 redirect
@@ -158,7 +158,7 @@ public class MngrResidentNoticeController {
     public String insertNotice(
             @PathVariable String mgmtOfcNo,
             @ModelAttribute MngrRegidentNoticeDTO dto,
-            @RequestParam(value = "uploadFile", required = false) MultipartFile uploadFile,
+            @RequestParam(value = "uploadFiles", required = false) MultipartFile[] uploadFiles,
             @AuthenticationPrincipal CustomUser customUser,
             RedirectAttributes rttr
     ) {
@@ -184,7 +184,7 @@ public class MngrResidentNoticeController {
              * 3. 공지사항 + 첨부파일 등록
              * → 파일 저장, ATTACH_FILE insert, 공지사항 insert를 Service에서 처리한다.
              */
-            mngrRegidentNoticeService.insertNotice(dto, uploadFile);
+            mngrRegidentNoticeService.insertNotice(dto, uploadFiles);
 
             rttr.addFlashAttribute("modalType", "success");
             rttr.addFlashAttribute("modalMsg", "공지사항이 등록되었습니다.");
@@ -243,35 +243,55 @@ public class MngrResidentNoticeController {
 
     /**
      * 관리사무소 공지사항 수정
+     *
      * @author 김보라
      * @param mgmtOfcNo 관리사무소번호
-     * @param dto 공지사항 수정 DTO
+     * @param dto 공지사항 수정 정보 DTO
+     * @param uploadFiles 새로 추가할 첨부파일 목록
+     * @param deleteAttachYn 기존 첨부파일 삭제 여부
      * @param customUser 로그인 사용자 정보
+     * @param ra redirect 후 모달 메시지 전달 객체
      * @return 공지사항 목록 화면 redirect
      */
     @PostMapping("/notice/update/{mgmtOfcNo}")
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     public String updateNotice(
             @PathVariable("mgmtOfcNo") String mgmtOfcNo,
-            MngrRegidentNoticeDTO dto,
+            @ModelAttribute MngrRegidentNoticeDTO dto,
+            @RequestParam(value = "uploadFiles", required = false) MultipartFile[] uploadFiles,
+            @RequestParam(value = "deleteAttachYn", required = false) String deleteAttachYn,
             @AuthenticationPrincipal CustomUser customUser,
             RedirectAttributes ra
     ) {
         try {
+            /*
+             * boardNo, aptCmplexNo, wrtrId 세팅
+             */
             mngrRegidentNoticeService.setManagerNoticeBaseInfo(dto, customUser, mgmtOfcNo);
-            int result = mngrRegidentNoticeService.updateNotice(dto);
+
+            /*
+             * 파일 저장 경로 만들 때 관리사무소번호 사용
+             */
+            dto.setMgmtOfcNo(mgmtOfcNo);
+
+            /*
+             * 공지사항 내용 수정 + 첨부파일 추가/삭제 처리
+             */
+            int result = mngrRegidentNoticeService.updateNotice(dto, uploadFiles, deleteAttachYn);
 
             if (result > 0) {
-                ra.addFlashAttribute("modalMsg", "공지사항이 수정되었습니다.");
                 ra.addFlashAttribute("modalType", "success");
+                ra.addFlashAttribute("modalMsg", "공지사항이 수정되었습니다.");
             } else {
-                ra.addFlashAttribute("modalMsg", "수정할 공지사항을 찾을 수 없습니다.");
                 ra.addFlashAttribute("modalType", "fail");
+                ra.addFlashAttribute("modalMsg", "수정할 공지사항을 찾을 수 없습니다.");
             }
 
         } catch (Exception e) {
-            ra.addFlashAttribute("modalMsg", "공지사항 수정 중 오류가 발생했습니다.");
+            e.printStackTrace();
+
             ra.addFlashAttribute("modalType", "fail");
+            ra.addFlashAttribute("modalMsg", "공지사항 수정 중 오류가 발생했습니다.");
         }
 
         return "redirect:/mgmtOffice/mngrResidentNotice/" + mgmtOfcNo;

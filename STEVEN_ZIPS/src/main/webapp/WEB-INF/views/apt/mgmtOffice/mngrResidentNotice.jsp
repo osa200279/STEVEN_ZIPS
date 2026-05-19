@@ -1000,24 +1000,27 @@
                                     <div class="form-field">
                                         <label class="field-label">첨부파일</label>
 
-                                        <input type="file" name="uploadFile" id="modalUploadFile" class="form-input">
+                                        <input type="file"
+                                               name="uploadFiles"
+                                               id="modalUploadFile"
+                                               class="form-input"
+                                               multiple>
+
+                                            <!-- 새로 선택한 첨부파일 미리보기 -->
+                                            <div id="newFilePreviewBox" style="display:none; margin-top:10px;">
+                                                <div style="font-size:12px; font-weight:700; color:#374151; margin-bottom:6px;">
+                                                    새로 추가할 첨부파일
+                                                </div>
+
+                                                <div id="newFilePreviewList"></div>
+                                            </div>
 
                                         <div id="currentFileBox" style="display:none; margin-top:8px;">
                                             <div style="font-size:12px; font-weight:700; color:#374151; margin-bottom:6px;">
                                                 현재 첨부파일
                                             </div>
 
-                                            <div style="display:flex; align-items:center; gap:8px;">
-                                                <span class="material-symbols-rounded" style="font-size:18px;">attach_file</span>
-                                                <span id="currentFileName" style="font-size:13px; color:#111827;"></span>
-                                            </div>
-
-                                            <div id="imagePreviewBox" style="display:none; margin-top:10px;">
-                                                <img id="imagePreview"
-                                                     src=""
-                                                     alt="첨부파일 미리보기"
-                                                     style="max-width:100%; max-height:180px; border:1px solid #d5dbe5; border-radius:6px;">
-                                            </div>
+                                            <div id="currentFileList"></div>
                                         </div>
                                     </div>
 
@@ -1063,10 +1066,102 @@
 <script>
 
     const currentFileBox = document.getElementById('currentFileBox');
-    const currentFileName = document.getElementById('currentFileName');
-    const imagePreviewBox = document.getElementById('imagePreviewBox');
-    const imagePreview = document.getElementById('imagePreview');
     const modalUploadFile = document.getElementById('modalUploadFile');
+
+    const newFilePreviewBox = document.getElementById('newFilePreviewBox');
+    const newFilePreviewList = document.getElementById('newFilePreviewList');
+
+    /*
+     * DataTransfer
+     * → 사용자가 파일을 여러 번 선택해도 기존 선택 파일을 유지하기 위한 객체
+     * 왜 필요?
+     * → input type="file"은 다시 선택하면 이전 파일 목록이 사라짐
+     */
+    let selectedFileStore = new DataTransfer();
+
+    /*
+     * 새로 선택한 파일 미리보기 출력
+     */
+    function renderNewFilePreview() {
+
+        newFilePreviewList.innerHTML = '';
+
+        if (selectedFileStore.files.length === 0) {
+            newFilePreviewBox.style.display = 'none';
+            return;
+        }
+
+        newFilePreviewBox.style.display = 'block';
+
+        Array.from(selectedFileStore.files).forEach(function (file, index) {
+
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.gap = '8px';
+            row.style.marginBottom = '8px';
+
+            let previewHtml = '';
+
+            /*
+             * 이미지 파일이면 브라우저 임시 URL로 미리보기
+             */
+            if (file.type && file.type.startsWith('image/')) {
+                const imageUrl = URL.createObjectURL(file);
+
+                previewHtml =
+                    '<img src="' + imageUrl + '" ' +
+                    'style="width:80px; height:80px; object-fit:contain; border:1px solid #d5dbe5; border-radius:6px;">';
+            } else {
+                previewHtml =
+                    '<span class="material-symbols-rounded" style="font-size:20px;">attach_file</span>';
+            }
+
+            row.innerHTML =
+                previewHtml +
+                '<span style="font-size:13px; color:#111827; flex:1;">' + file.name + '</span>' +
+                '<button type="button" class="btn btn-reset" style="height:28px; min-width:50px;" data-index="' + index + '">삭제</button>';
+
+            newFilePreviewList.appendChild(row);
+        });
+
+        /*
+         * 새 파일 개별 삭제
+         */
+        newFilePreviewList.querySelectorAll('button[data-index]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+
+                const removeIndex = Number(this.dataset.index);
+                const newStore = new DataTransfer();
+
+                Array.from(selectedFileStore.files).forEach(function (file, index) {
+                    if (index !== removeIndex) {
+                        newStore.items.add(file);
+                    }
+                });
+
+                selectedFileStore = newStore;
+                modalUploadFile.files = selectedFileStore.files;
+
+                renderNewFilePreview();
+            });
+        });
+    }
+
+    /*
+     * 파일 선택 시
+     * 기존 선택 파일에 새 파일을 누적 추가
+     */
+    modalUploadFile.addEventListener('change', function () {
+
+        Array.from(this.files).forEach(function (file) {
+            selectedFileStore.items.add(file);
+        });
+
+        modalUploadFile.files = selectedFileStore.files;
+
+        renderNewFilePreview();
+    });
 
     <c:if test="${not empty modalMsg}">
     const resultModal = document.getElementById('resultModal');
@@ -1184,39 +1279,64 @@
     const modalCn = document.getElementById('modalCn');
     const modalTopFixYn = document.getElementById('modalTopFixYn');
 
+    const currentFileList = document.getElementById('currentFileList');
+
+    /*
+     * 글쓰기 버튼 클릭
+     * -> 등록 모드로 모달 초기화
+     */
     document.getElementById('openNoticeModalBtn').addEventListener('click', function () {
+
         /*
-         * 글쓰기 모드
-         * → 신규 등록 URL로 변경
+         * 새 파일 선택 목록 초기화
+         */
+        selectedFileStore = new DataTransfer();
+        modalUploadFile.files = selectedFileStore.files;
+        renderNewFilePreview();
+
+        /*
+         * form.action
+         * -> form 전송 URL 설정
+         *
+         * insert URL로 지정해서 등록 처리
          */
         form.action = contextPath + '/mgmtOffice/notice/insert/' + mgmtOfcNo;
 
-        /*
-         * 입력값 초기화
-         */
+        /* hidden 공지번호 초기화 */
         modalAnnNo.value = '';
+
+        /* 제목 초기화 */
         modalTtl.value = '';
+
+        /* 내용 초기화 */
         modalCn.value = '';
+
+        /* 긴급공지 체크 해제 */
         modalTopFixYn.checked = false;
 
         /*
          * 파일 input 초기화
-         * input type="file"은 보안상 JS로 기존 파일명을 넣을 수 없음.
+         * -> 기존 선택 파일 제거
          */
         modalUploadFile.value = '';
 
         /*
-         * 기존 첨부파일 표시 영역 숨김
-         * 글쓰기에는 기존 파일이 없기 때문.
+         * 첨부파일 삭제 체크 해제
          */
-        currentFileBox.style.display = 'none';
-        currentFileName.textContent = '';
-        imagePreviewBox.style.display = 'none';
-        imagePreview.src = '';
+        // deleteAttachYn.checked = false;
 
         /*
-         * 모달 열기
+         * 기존 첨부파일 영역 숨김
+         * -> 등록 모드에서는 기존 파일 없음
          */
+        currentFileBox.style.display = 'none';
+
+        /*
+         * 기존 첨부파일 목록 제거
+         */
+        currentFileList.innerHTML = '';
+
+        /* 모달 열기 */
         modal.classList.add('open');
     });
 
@@ -1251,34 +1371,139 @@
                     modalUploadFile.value = '';
 
                     /*
-                     * 기존 첨부파일 표시
+                     * 수정 모드에서 새로 추가할 파일 목록 초기화
                      */
-                    if (data.fileOgName) {
-                        currentFileBox.style.display = 'block';
-                        currentFileName.textContent = data.fileOgName;
+                    selectedFileStore = new DataTransfer();
+                    modalUploadFile.files = selectedFileStore.files;
+                    renderNewFilePreview();
+
+                    /*
+                     * 기존 첨부파일 표시
+                     * attachFileList 반복 출력
+                     */
+                    if (data.attachFileList && data.attachFileList.length > 0) {
 
                         /*
-                         * 이미지 파일이면 미리보기 표시
+                         * 첨부파일 영역 표시
                          */
-                        if (data.mimeType && data.mimeType.startsWith('image/')) {
-                            imagePreviewBox.style.display = 'block';
+                        currentFileBox.style.display = 'block';
+
+                        /*
+                         * 기존 목록 초기화
+                         */
+                        currentFileList.innerHTML = '';
+
+                        /*
+                         * 첨부파일 반복
+                         */
+                        data.attachFileList.forEach(function (file) {
+
+                            const fileRow = document.createElement('div');
+
+                            fileRow.style.display = 'flex';
+                            fileRow.style.alignItems = 'center';
+                            fileRow.style.gap = '8px';
+                            fileRow.style.marginBottom = '6px';
+
+                            fileRow.innerHTML =
+
+                                /*
+                                 * 파일 아이콘
+                                 */
+                                '<span class="material-symbols-rounded" style="font-size:18px;">attach_file</span>' +
+
+                                /*
+                                 * 파일명
+                                 */
+                                '<span style="font-size:13px; color:#111827; flex:1;">'
+                                + file.fileOgName +
+                                '</span>' +
+
+                                /*
+                                 * 삭제할 파일번호 hidden
+                                 * disabled 상태면 form 전송 안 됨
+                                 */
+                                '<input type="hidden" ' +
+                                'name="deleteFileNos" ' +
+                                'value="' + file.fileNo + '" ' +
+                                'disabled>' +
+
+                                /*
+                                 * 파일 개별 삭제 버튼
+                                 */
+                                '<button type="button" ' +
+                                'class="btn btn-reset btn-old-file-delete" ' +
+                                'style="height:28px; min-width:50px;">삭제</button>';
 
                             /*
-                             * 구글드라이브 파일 미리보기
-                             * /file/display/{googleId}
-                             * → FileDisplayController의 displayFile() 사용
+                             * 목록에 추가
                              */
-                            imagePreview.src = contextPath + '/file/display/' + data.googleId;
-                        } else {
-                            imagePreviewBox.style.display = 'none';
-                            imagePreview.src = '';
-                        }
+                            currentFileList.appendChild(fileRow);
+
+                            fileRow.querySelector('.btn-old-file-delete').addEventListener('click', function () {
+
+                                /*
+                                 * 삭제 버튼 누른 파일만 서버로 전송되게 disabled 해제
+                                 */
+                                const hiddenInput = fileRow.querySelector('input[name="deleteFileNos"]');
+                                hiddenInput.disabled = false;
+
+                                /*
+                                 * 화면에서는 삭제된 것처럼 숨김
+                                 */
+                                fileRow.style.display = 'none';
+                            });
+
+                            /*
+                             * 이미지 파일 미리보기
+                             * image/png, image/jpeg 등
+                             */
+                            if (file.mimeType && file.mimeType.startsWith('image/')) {
+
+                                const previewBox = document.createElement('div');
+
+                                previewBox.style.marginTop = '6px';
+
+                                previewBox.innerHTML =
+                                    '<img src="' + contextPath + '/file/display/' + file.googleId + '" ' +
+                                    'style="max-width:120px; max-height:120px; border:1px solid #d5dbe5; border-radius:6px; object-fit:contain; cursor:pointer;">';
+
+                                /*
+                                 * 이미지 클릭 시 새창
+                                 */
+                                previewBox.querySelector('img').addEventListener('click', function () {
+                                    window.open(
+                                        contextPath + '/file/display/' + file.googleId,
+                                        '_blank'
+                                    );
+                                });
+
+                                currentFileList.appendChild(previewBox);
+                            }
+                        });
+
                     } else {
+
+                        /*
+                         * 첨부파일 없으면 숨김
+                         */
                         currentFileBox.style.display = 'none';
-                        currentFileName.textContent = '';
-                        imagePreviewBox.style.display = 'none';
-                        imagePreview.src = '';
+
+                        /*
+                         * 목록 비우기
+                         */
+                        currentFileList.innerHTML = '';
                     }
+
+                    /*
+                     * 삭제 체크 초기화
+                     */
+                    //deleteAttachYn.checked = false;
+
+                    /*
+                     * 새 파일 선택 초기화
+                     */
+                    modalUploadFile.value = '';
 
                     modal.classList.add('open');
                 });

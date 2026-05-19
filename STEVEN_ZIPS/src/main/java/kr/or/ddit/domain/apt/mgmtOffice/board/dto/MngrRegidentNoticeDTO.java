@@ -3,6 +3,7 @@ package kr.or.ddit.domain.apt.mgmtOffice.board.dto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class MngrRegidentNoticeDTO {
@@ -92,6 +93,10 @@ public class MngrRegidentNoticeDTO {
 
     private String mgmtOfcNo;
 
+    /*
+     * 수정 모달에서 기존 첨부파일 여러 개를 보여주기 위한 목록
+     */
+    private List<MngrRegidentNoticeDTO> attachFileList;
 
 
 }

@@ -180,6 +180,10 @@
     <select id="selectNoticeDetail"
             parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO"
             resultType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
+        /*
+         * 공지사항 기본 정보 조회
+         * 첨부파일은 별도 selectNoticeAttachFileList 에서 조회함
+         */
 
         SELECT
             P.ANN_NO
@@ -194,21 +198,40 @@
              , P.DEL_YN
              , P.ATCH_FILE_ID
              , P.TOP_FIX_YN
-             , F.FILE_OG_NAME AS FILE_OG_NAME
-             , F.FILE_PATH AS FILE_PATH
-             , F.MIME_TYPE AS MIME_TYPE
-             , F.GOOGLE_ID AS GOOGLE_ID
+
         FROM APT_ANN_BOARD_POST P
                  INNER JOIN APT_BOARD_INSTANCE B
                             ON P.BOARD_NO = B.BOARD_NO
-                 LEFT JOIN ATTACH_FILE F
-                           ON TO_CHAR(F.FILE_GROUP_NO) = P.ATCH_FILE_ID
+
         WHERE P.ANN_NO = #{annNo}
           AND P.BOARD_NO = #{boardNo}
           AND B.APT_CMPLEX_NO = #{aptCmplexNo}
           AND B.BOARD_TY_CD = 'NOTICE'
           AND B.USE_YN = 'Y'
           AND P.DEL_YN = 'N'
+
+    </select>
+
+    <!-- 첨부파일 여러개 조회 -->
+    <select id="selectNoticeAttachFileList"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
+
+        /*
+         * 기존 첨부파일 목록 조회
+         * 왜 따로 조회?
+         * → 공지 1건에 첨부파일이 여러 개일 수 있어서
+         *   공지 상세와 파일 목록을 분리해서 조회한다.
+         */
+        SELECT
+            TO_CHAR(F.FILE_GROUP_NO) AS ATCH_FILE_ID
+             , F.FILE_OG_NAME AS FILE_OG_NAME
+             , F.FILE_PATH AS FILE_PATH
+             , F.MIME_TYPE AS MIME_TYPE
+             , F.GOOGLE_ID AS GOOGLE_ID
+        FROM ATTACH_FILE F
+        WHERE TO_CHAR(F.FILE_GROUP_NO) = #{atchFileId}
+        ORDER BY F.FILE_SORT_ORDER ASC
 
     </select>
 
@@ -348,5 +371,11 @@
             )
 
     </insert>
+
+    <update id="updateNoticeAttachFileId">
+        UPDATE APT_ANN_BOARD_POST
+        SET ATCH_FILE_ID = #{atchFileId}
+        WHERE ANN_NO = #{annNo}
+    </update>
 
 </mapper>

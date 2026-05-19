@@ -15,9 +15,13 @@ public interface IMngrRegidentNoticeService {
 
     MngrRegidentNoticeDTO selectNoticeDetail(MngrRegidentNoticeDTO dto);
 
-    int insertNotice(MngrRegidentNoticeDTO dto, MultipartFile uploadFile) throws Exception;
+    int insertNotice(MngrRegidentNoticeDTO dto, MultipartFile[] uploadFiles) throws Exception;
 
-    int updateNotice(MngrRegidentNoticeDTO dto);
+    int updateNotice(
+            MngrRegidentNoticeDTO dto,
+            MultipartFile[] uploadFiles,
+            String deleteAttachYn
+    ) throws Exception;
 
     int deleteNotice(MngrRegidentNoticeDTO dto);
 
@@ -29,11 +33,6 @@ public interface IMngrRegidentNoticeService {
             String mgmtOfcNo
     );
 
-    /**
-     * 관리사무소 공지사항 등록
-     * @author 김보라
-     * @param dto 등록할 공지사항 정보
-     * @return 등록 처리 건수
-     */
-    int insertNotice(MngrRegidentNoticeDTO dto);
+
+
 }

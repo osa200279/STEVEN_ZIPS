@@ -31,4 +31,11 @@ public interface ImngrRegidentNoticeMapper {
 
     String selectNoticeWriterName(Map<String, Object> paramMap);
 
+    int updateNoticeAttachFileId(MngrRegidentNoticeDTO dto);
+
+    /*
+     * 공지사항 첨부파일 목록 조회
+     */
+    List<MngrRegidentNoticeDTO> selectNoticeAttachFileList(MngrRegidentNoticeDTO dto);
+
 }
