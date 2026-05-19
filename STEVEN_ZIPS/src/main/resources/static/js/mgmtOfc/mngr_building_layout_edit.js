@@ -394,7 +394,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         .querySelector("#dongSelect")
         .addEventListener("change", e => {
 
-            changeDongLayout(e.target.value);
+            const dongNo = e.target.value;
+
+            changeDongLayout(dongNo);
+
+            const selectedOption =
+                e.target.options[e.target.selectedIndex];
+
+            document.querySelector("#dongNameInput").value =
+                selectedOption.text.replace("동", "");
 
         });
 
@@ -511,6 +519,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const dongNo =
             document.querySelector("#dongSelect").value;
 
+        const dongNm =
+            document.querySelector("#dongNameInput").value.trim();
+
         const totalFloor =
             Number(
                 document.querySelector("#totalFloorInput").value
@@ -524,6 +535,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!dongNo) {
 
             alert("동을 선택해주세요.");
+
+            return;
+        }
+
+        if (!dongNm) {
+
+            alert("동 이름을 입력해주세요.");
 
             return;
         }
@@ -550,6 +568,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     body: JSON.stringify({
                         mgmtOfcNo,
                         dongNo,
+                        dongNm,
                         totalFloor,
                         hoPerFloor
                     })

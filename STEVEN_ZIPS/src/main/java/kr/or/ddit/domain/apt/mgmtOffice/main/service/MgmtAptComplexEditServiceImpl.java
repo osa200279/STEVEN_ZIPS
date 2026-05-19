@@ -98,6 +98,8 @@ public class MgmtAptComplexEditServiceImpl implements IMgmtAptComplexEditService
 
         aptComplexEditMapper.recalculateTotalHousehold(dto.getAptCmplexNo());
 
+        aptComplexEditMapper.updateDongName(dto);
+
     }
 
     @Transactional

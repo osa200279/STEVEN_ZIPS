@@ -126,6 +126,10 @@
             AND SIGUNGU_NM = #{searchVO.sigunguNm}
         </if>
 
+        <if test="searchVO != null and searchVO.emdNm != null and searchVO.emdNm != ''">
+            AND EMD_NM = #{searchVO.emdNm}
+        </if>
+
         <if test="searchVO != null and searchVO.unitCnt != 0">
             <choose>
                 <when test="searchVO.unitCnt == 1">
@@ -303,7 +307,7 @@
         SELECT DISTINCT EMD_NM
         FROM APT_COMPLEX
         WHERE SIDO_NM = #{sidoNm}
-          AND SIGUNGU_NM = #{SigunguNm}
+          AND SIGUNGU_NM = #{sigunguNm}
           AND EMD_NM IS NOT NULL
         ORDER BY EMD_NM
 

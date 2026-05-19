@@ -83,6 +83,19 @@
                             <div class="form-field">
 
                                 <label class="field-label">
+                                    동 이름 변경
+                                </label>
+
+                                <input type="text"
+                                       class="form-input"
+                                       id="dongNameInput"
+                                       placeholder="동 이름 입력">
+
+                            </div>
+
+                            <div class="form-field">
+
+                                <label class="field-label">
                                     총 층수
                                 </label>
 
@@ -118,13 +131,6 @@
                             </div>
 
                             <div class="unit-top-actions">
-
-                                <button type="button"
-                                        class="btn btn-secondary">
-
-                                    새로고침
-
-                                </button>
 
                                 <button type="button"
                                         class="btn btn-primary"

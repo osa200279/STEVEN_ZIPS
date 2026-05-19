@@ -99,5 +99,11 @@
         </foreach>
 
     </update>
+    <update id="updateDongName">
+        UPDATE  APT_UNIT
+        SET     DONG_NM = #{dongNm}
+        WHERE   DONG_NO = #{dongNo}
+
+    </update>
 
 </mapper>

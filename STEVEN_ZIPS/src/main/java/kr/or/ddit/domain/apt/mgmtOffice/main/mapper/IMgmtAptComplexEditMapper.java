@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.mgmtOffice.main.mapper;
 
 import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
+import kr.or.ddit.domain.apt.mgmtOffice.main.vo.UpdateBuildingStructureDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.UpdateHoStatusDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,4 +22,6 @@ public interface IMgmtAptComplexEditMapper {
     void updateHoStatus(UpdateHoStatusDTO dto);
 
     void updateHoType(Map<String, Object> hoNoList);
+
+    void updateDongName(UpdateBuildingStructureDTO dto);
 }

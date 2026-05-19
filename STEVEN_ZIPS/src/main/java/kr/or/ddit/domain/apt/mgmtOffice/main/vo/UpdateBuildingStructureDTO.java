@@ -11,6 +11,8 @@ public class UpdateBuildingStructureDTO {
 
     private String aptCmplexNo;
 
+    private String dongNm;
+
     private String dongNo;
 
     private int totalFloor;

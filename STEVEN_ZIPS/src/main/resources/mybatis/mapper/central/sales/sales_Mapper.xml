@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.sales.mapper.IReactSalesMapper">
+
+
+    <select id="selectBuildingList" resultType="java.lang.String">
+        SELECT dong_nm
+        FROM APT_UNIT
+        WHERE apt_cmplex_no = #{aptCmplexNo}
+
+        ORDER BY
+            TO_NUMBER(
+                    REGEXP_REPLACE(dong_nm, '[^0-9]')
+            )
+    </select>
+
+</mapper>
