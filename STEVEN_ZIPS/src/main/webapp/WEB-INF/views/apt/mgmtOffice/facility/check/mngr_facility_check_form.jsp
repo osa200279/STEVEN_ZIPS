@@ -185,7 +185,7 @@
                         <p>
                             <c:choose>
                                 <c:when test="${isUpdate}">오정보 정정 목적의 수정입니다. 시설과 협력업체는 변경할 수 없습니다.</c:when>
-                                <c:otherwise>시설을 선택하고 기존 이력을 확인한 뒤, 새 이력 또는 후속 이력을 등록합니다.</c:otherwise>
+                                <c:otherwise>시설을 선택하고 기존 이력을 확인하면서 새 점검 이력을 등록합니다.</c:otherwise>
                             </c:choose>
                         </p>
                     </div>
@@ -400,7 +400,7 @@
                                     </div><%-- /split-panel --%>
                                 </div><%-- /list-area --%>
 
-                                <%-- 오른쪽: 공용 폼 --%>
+                                <%-- 오른쪽: 등록/수정 폼 + 기존 이력 상세 표시 --%>
                                 <div class="form-panel">
                                     <div class="split-head">
                                         <div class="split-title">
@@ -504,6 +504,10 @@
         var OFC_NO    = '${mgmtOfcNo}';
         var IS_ADMIN  = ${isAdmin};
         var IS_UPDATE = ${isUpdate};  /* 수정 모드(URL 진입) 여부 */
+        var REGISTER_ACTION = CTX + '/manager/checkHistory/register/' + OFC_NO;
+        var UPDATE_ACTION_PREFIX = CTX + '/manager/checkHistory/update/' + OFC_NO + '/';
+        var currentMode = IS_UPDATE ? 'update' : 'register';
+        var selectedHistory = null;
 
         /* ── 화면 상태값 ── */
         var allList = [];   /* 전체 이력 원본 — AJAX 응답 기준 */
@@ -633,32 +637,56 @@
                     latest  = allList.length > 0 ? allList[0] : null;
                     renderList(allList);
 
-                    if (allList.length === 0) {
-                        /* 이력 없음 — 첫 점검 등록 모드 */
-                        setMode('first');
-                    } else {
-                        /* 수정 모드 진입 시 해당 이력번호 카드 선택, 등록 모드는 최신 이력 선택 */
-                        var initNo = IS_UPDATE ? '${check.facChkHstryNo}' : allList[0].facChkHstryNo;
-                        var initH  = allList.filter(function (h) { return h.facChkHstryNo === initNo; })[0] || allList[0];
-                        /* 수정/등록 모드 모두 detail 모드로 시작 — 버튼 선택 후 모드 전환 */
-                        setMode('detail', initH);
-                        markActive(initH.facChkHstryNo);
+                    if (IS_UPDATE) {
+                        /* 수정 진입 — 기본은 오정보 수정 폼이 아니라 기존 이력 상세 확인 상태 */
+                        var initNo = '${check.facChkHstryNo}';
+                        var initH  = allList.filter(function (h) { return h.facChkHstryNo === initNo; })[0] || latest || null;
+                        if (initH) {
+                            setMode('detail', initH);
+                            markActive(initH.facChkHstryNo);
+                        } else {
+                            setMode('detail');
+                        }
+                        return;
                     }
+
+                    /* 등록 진입 — 기존 이력이 있든 없든 오른쪽은 항상 신규 등록 폼 유지 */
+                    setMode('register');
                 })
                 .catch(function () {
                     el('facilityHistoryList').innerHTML = '<div class="history-empty">이력 조회 중 오류가 발생했습니다.</div>';
+                    if (!IS_UPDATE) setMode('register');
                 });
         }
 
         /* ════════════════════════════
            오른쪽 폼 모드 전환
-           empty  — 시설 미선택 초기 상태
-           detail — 이력 카드 클릭 후 읽기 전용 표시
-           first  — 이력 없는 시설의 첫 등록 폼
-           follow — 후속이력 등록 폼
-           update — 오정보 정정 수정 폼
+           empty    — 시설 미선택 초기 상태
+           register — 신규 점검 이력 등록 폼, 저장 시 INSERT
+           detail   — 기존 이력 카드 클릭 후 읽기 전용 상세 표시
+           follow   — 수정 화면에서 기존 이력을 기준으로 새 이력 INSERT
+           update   — 오정보 정정 수정 폼, 저장 시 UPDATE
         ════════════════════════════ */
+        function setFormAction(actionUrl, historyNo) {
+            var form = el('checkForm');
+            if (form) form.setAttribute('action', actionUrl);
+
+            var hiddenNo = document.querySelector('input[name="facChkHstryNo"]');
+            if (hiddenNo) {
+                hiddenNo.disabled = actionUrl === REGISTER_ACTION;
+                if (historyNo) hiddenNo.value = historyNo;
+            }
+        }
+
+        function setCancelButtonText(text) {
+            var btn = el('cancelFollowBtn');
+            if (btn) btn.textContent = text;
+        }
+
         function setMode(mode, history) {
+            currentMode = mode;
+            selectedHistory = history || selectedHistory || null;
+
             /* 버튼/안내 전체 숨김 후 모드별 필요한 것만 표시 */
             hide('openFollowBtn');
             hide('cancelFollowBtn');
@@ -672,50 +700,76 @@
 
             if (mode === 'empty') {
                 /* 시설 미선택 — 안내 문구만 표시 */
-                setText('historyFormTitle', '현재 점검 결과');
+                selectedHistory = null;
+                setFormAction(IS_UPDATE ? UPDATE_ACTION_PREFIX + encodeURIComponent('${check.facChkHstryNo}') : REGISTER_ACTION);
+                setText('historyFormTitle', '시설 선택 대기');
                 setText('formFacilityNoText', '-');
+                setText('currentHistoryNoText', '-');
                 clearForm();
             }
+            else if (mode === 'register') {
+                /* 등록 화면 기본 상태 — 기존 이력 유무와 관계없이 새 이력 INSERT */
+                selectedHistory = null;
+                setFormAction(REGISTER_ACTION);
+                setText('historyFormTitle', '시설 점검 이력 등록');
+                setText('formFacilityNoText', fNo);
+                setText('currentHistoryNoText', '신규');
+                clearForm();
+                setReadonly(false);
+                document.querySelectorAll('#facilityHistoryList .history-item').forEach(function (btn) { btn.classList.remove('is-active'); });
+                if (!IS_ADMIN) { show('saveHistoryBtn'); el('saveHistoryBtn').textContent = '등록'; }
+            }
             else if (mode === 'detail') {
-                /* 이력 카드 클릭 — 읽기 전용 상세 표시 */
+                /* 이력 카드 클릭 — 읽기 전용 상세 표시, register 모드에서도 기존 내용 확인 가능 */
                 var h = history || {};
-                setText('historyFormTitle', '현재 점검 결과');
+                selectedHistory = h;
+                setFormAction(IS_UPDATE && h.facChkHstryNo ? UPDATE_ACTION_PREFIX + encodeURIComponent(h.facChkHstryNo) : REGISTER_ACTION, h.facChkHstryNo);
+                setText('historyFormTitle', '기존 점검 이력 상세');
                 setText('formFacilityNoText', fNo);
                 setText('currentHistoryNoText', h.facChkHstryNo || '-');
                 fillForm(h);
-                /* 등록/수정 폼 모두 후속등록/오정보수정 버튼 표시 */
-                if (!IS_ADMIN) { show('openFollowBtn'); show('openCorrectBtn'); }
-            }
-            else if (mode === 'first') {
-                /* 첫 점검 이력 등록 — 이력 없는 시설 선택 시 자동 진입 */
-                setText('historyFormTitle', '첫 점검 이력 등록');
-                setText('formFacilityNoText', fNo);
-                clearForm();
-                setReadonly(false);
-                if (!IS_ADMIN) { show('saveHistoryBtn'); el('saveHistoryBtn').textContent = '등록'; }
+
+                if (!IS_ADMIN && !IS_UPDATE) {
+                    /* 등록 화면에서는 상세 확인 후 다시 신규 등록 폼으로 돌아갈 수 있게 함 */
+                    setCancelButtonText('신규 등록으로 돌아가기');
+                    show('cancelFollowBtn');
+                }
+
+                if (!IS_ADMIN && IS_UPDATE) {
+                    /* 수정 화면에서는 선택 이력을 기준으로 수정/후속등록 가능 */
+                    show('openFollowBtn');
+                    show('openCorrectBtn');
+                }
             }
             else if (mode === 'follow') {
-                /* 후속이력 등록 — 최신 이력번호 기준이력으로 자동 세팅 */
-                var baseNo = latest ? latest.facChkHstryNo : '';
+                /* 후속이력 등록 — 수정 화면에서 선택/수정 중인 이력을 기준으로 새 이력 INSERT */
+                var base = selectedHistory || history || latest || {};
+                var baseNo = base.facChkHstryNo || '';
+                setFormAction(REGISTER_ACTION);
                 setText('historyFormTitle', '후속이력 등록');
                 setText('formFacilityNoText', fNo);
+                setText('currentHistoryNoText', '신규');
                 setText('baseHistoryNoText', baseNo);
                 show('baseHistoryRow');
                 clearForm();
                 setVal('rmk', baseNo ? '기준이력 ' + baseNo + ' 후속 조치' : '');
                 setReadonly(false);
                 if (!IS_ADMIN) { show('saveHistoryBtn'); el('saveHistoryBtn').textContent = '후속 등록'; }
+                setCancelButtonText(IS_UPDATE ? '수정으로 돌아가기' : '취소');
                 show('cancelFollowBtn');
             }
             else if (mode === 'update') {
                 /* 오정보 수정 — 선택한 이력 값으로 폼 채우고 편집 가능 상태 */
-                var h = history || {};
+                var uh = history || selectedHistory || {};
+                selectedHistory = uh;
+                setFormAction(UPDATE_ACTION_PREFIX + encodeURIComponent(uh.facChkHstryNo || '${check.facChkHstryNo}'), uh.facChkHstryNo || '${check.facChkHstryNo}');
                 setText('historyFormTitle', '점검 이력 수정');
                 setText('formFacilityNoText', fNo);
-                setText('currentHistoryNoText', h.facChkHstryNo || '-');
-                fillForm(h);
+                setText('currentHistoryNoText', uh.facChkHstryNo || '${check.facChkHstryNo}' || '-');
+                fillForm(uh);
                 setReadonly(false);
                 show('correctNotice');
+                setCancelButtonText('취소');
                 show('cancelFollowBtn');
                 if (!IS_ADMIN) { show('saveHistoryBtn'); el('saveHistoryBtn').textContent = '수정 저장'; }
             }
@@ -737,10 +791,15 @@
 
             if (filtered.length === 0) {
                 el('facilityHistoryList').innerHTML = '<div class="history-empty">검색 결과가 없습니다.</div>';
+                if (!IS_UPDATE) setMode('register');
             } else {
                 renderList(filtered);
-                setMode('detail', filtered[0]);
-                markActive(filtered[0].facChkHstryNo);
+                if (IS_UPDATE) {
+                    setMode('detail', filtered[0]);
+                    markActive(filtered[0].facChkHstryNo);
+                } else {
+                    setMode('register');
+                }
             }
         }
 
@@ -750,7 +809,14 @@
             setVal('historyFilterChkSttsCd', '');
             setVal('historyFilterKeyword',   '');
             renderList(allList);
-            if (allList.length > 0) { setMode('detail', allList[0]); markActive(allList[0].facChkHstryNo); }
+            if (IS_UPDATE && allList.length > 0) {
+                var backNo = selectedHistory && selectedHistory.facChkHstryNo ? selectedHistory.facChkHstryNo : allList[0].facChkHstryNo;
+                var backH = allList.filter(function (h) { return h.facChkHstryNo === backNo; })[0] || allList[0];
+                setMode('detail', backH);
+                markActive(backH.facChkHstryNo);
+            } else {
+                setMode('register');
+            }
         }
 
         /* ════════════════════════════
@@ -913,12 +979,12 @@
             var spBtn = t.closest('.select-partner-btn');
             if (spBtn) { selectPartner(spBtn); return; }
 
-            /* 이력 카드 클릭 — detail 또는 update 모드 */
+            /* 이력 카드 클릭 — 등록 모드에서도 기존 이력 상세 확인 가능 */
             var hItem = t.closest('.history-item');
             if (hItem) {
                 var no    = hItem.dataset.no;
                 var found = allList.filter(function (h) { return h.facChkHstryNo === no; })[0];
-                if (found) { setMode(IS_UPDATE ? 'update' : 'detail', found); markActive(no); }
+                if (found) { setMode('detail', found); markActive(no); }
                 return;
             }
 
@@ -927,32 +993,35 @@
             /* 이력 필터 초기화 */
             if (t.closest('#historyResetBtn'))  { resetFilter(); return; }
 
-            /* 후속 등록 버튼 — follow 모드 진입 */
-            if (t.closest('#openFollowBtn')) { setMode('follow'); return; }
+            /* 후속 등록 버튼 — 수정 화면에서 새 이력 INSERT 모드 진입 */
+            if (t.closest('#openFollowBtn')) { setMode('follow', selectedHistory || latest); return; }
 
-            /* 오정보 수정 버튼 — 현재 활성 이력 기준 update 모드 진입 */
+            /* 오정보 수정 버튼 — 현재 선택 이력 기준 update 모드 진입 */
             if (t.closest('#openCorrectBtn')) {
                 var activeCard = document.querySelector('#facilityHistoryList .history-item.is-active');
                 var curH = activeCard
                     ? allList.filter(function (h) { return h.facChkHstryNo === activeCard.dataset.no; })[0]
-                    : (latest || null);
-                setMode('update', curH);
+                    : (selectedHistory || latest || null);
+                if (curH) { setMode('update', curH); markActive(curH.facChkHstryNo); }
                 return;
             }
 
             /* 취소 버튼 */
             if (t.closest('#cancelFollowBtn')) {
-                /* URL 진입 수정 모드 — 이전 페이지(상세)로 복귀 */
-                if (IS_UPDATE) { history.back(); return; }
-                /* 등록 폼 내 취소 — 현재 활성 이력 detail 모드 복귀 */
-                if (latest) {
-                    var activeCard2 = document.querySelector('#facilityHistoryList .history-item.is-active');
-                    var backH = activeCard2
-                        ? allList.filter(function (h) { return h.facChkHstryNo === activeCard2.dataset.no; })[0]
-                        : latest;
-                    setMode('detail', backH || latest);
-                    markActive((backH || latest).facChkHstryNo);
+                if (!IS_UPDATE) {
+                    /* 등록 화면 상세 확인 후 신규 등록 폼 복귀 */
+                    setMode('register');
+                    return;
                 }
+
+                if (currentMode === 'follow' || currentMode === 'update') {
+                    /* 수정 화면 후속/오정보 수정 취소 — 기준 이력 상세 확인 상태로 복귀 */
+                    var backTarget = selectedHistory || latest;
+                    if (backTarget) { setMode('detail', backTarget); markActive(backTarget.facChkHstryNo); }
+                    return;
+                }
+
+                history.back();
                 return;
             }
         });
@@ -975,9 +1044,13 @@
            폼 submit 전 검증
         ════════════════════════════ */
         el('checkForm').addEventListener('submit', function (e) {
-            if (IS_ADMIN)                { alert('ADMIN 계정은 저장할 수 없습니다.');    e.preventDefault(); return; }
-            if (!el('facilityNo').value) { alert('점검 대상 시설을 선택해 주세요.');     e.preventDefault(); return; }
-            if (!el('partnerNo').value)  { alert('협력업체를 선택해 주세요.');           e.preventDefault(); return; }
+            if (IS_ADMIN)                    { alert('ADMIN 계정은 저장할 수 없습니다.');    e.preventDefault(); return; }
+            if (!el('facilityNo').value)     { alert('점검 대상 시설을 선택해 주세요.');     e.preventDefault(); return; }
+            if (!el('partnerNo').value)      { alert('협력업체를 선택해 주세요.');           e.preventDefault(); return; }
+            if (!el('chkTyCd').value)        { alert('점검유형을 선택해 주세요.');           e.preventDefault(); return; }
+            if (!el('chkSttsCd').value)      { alert('점검상태를 선택해 주세요.');           e.preventDefault(); return; }
+            if (!el('chkDt').value)          { alert('점검일자를 입력해 주세요.');           e.preventDefault(); return; }
+            if (!el('chkCn').value.trim())   { alert('점검내용을 입력해 주세요.');           e.preventDefault(); return; }
         });
 
         /* ════════════════════════════

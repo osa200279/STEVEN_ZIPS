@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.partner.mapper.IPartnerMapper">
+
+    <!-- 협력업체 목록 결과 매핑 -->
+    <resultMap id="partnerResultMap" type="kr.or.ddit.domain.apt.mgmtOffice.partner.vo.PartnerVO">
+        <id property="partnerNo" column="partner_no"/>
+        <result property="aptCmplexNo" column="apt_cmplex_no"/>
+        <result property="aptCmplexNm" column="apt_cmplex_nm"/>
+        <result property="bizTyNm" column="biz_ty_nm"/>
+        <result property="partnerNm" column="partner_nm"/>
+        <result property="bizrno" column="bizrno"/>
+        <result property="useYn" column="use_yn"/>
+        <result property="picNm" column="pic_nm"/>
+        <result property="picTelno" column="pic_telno"/>
+        <result property="picEmail" column="pic_email"/>
+        <result property="regDt" column="reg_dt"/>
+        <result property="mdfDt" column="mdf_dt"/>
+        <result property="contractCnt" column="contract_cnt"/>
+        <result property="activeContractCnt" column="active_contract_cnt"/>
+        <result property="checkCnt" column="check_cnt"/>
+        <result property="recentCheckDt" column="recent_check_dt"/>
+        <result property="utilityProviderNo" column="utility_provider_no"/>
+        <result property="meterLinkedYn" column="meter_linked_yn"/>
+        <result property="meterCnt" column="meter_cnt"/>
+        <result property="recentMeterDt" column="recent_meter_dt"/>
+    </resultMap>
+
+    <!-- 협력업체 현황 결과 매핑 -->
+    <resultMap id="partnerStatResultMap" type="kr.or.ddit.domain.apt.mgmtOffice.partner.vo.PartnerStatVO">
+        <result property="totalCnt" column="total_cnt"/>
+        <result property="activeCnt" column="active_cnt"/>
+        <result property="contractLinkedCnt" column="contract_linked_cnt"/>
+        <result property="meterLinkedCnt" column="meter_linked_cnt"/>
+    </resultMap>
+
+    <!-- 관리사무소 기준 아파트단지번호 조회 -->
+    <select id="selectAptCmplexNoByMgmtOfcNo" parameterType="string" resultType="string">
+        select mo.apt_cmplex_no
+        from mgmt_office mo
+        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+    </select>
+
+    <!-- 관리사무소 기준 아파트단지명 조회 -->
+    <select id="selectAptCmplexNmByMgmtOfcNo" parameterType="string" resultType="string">
+        select ac.apt_cmplex_nm
+        from mgmt_office mo
+        join apt_complex ac
+        on ac.apt_cmplex_no = mo.apt_cmplex_no
+        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+    </select>
+
+    <!-- 협력업체 검색 조건 조각 -->
+    <sql id="partnerSearchWhere">
+        where p.apt_cmplex_no = #{aptCmplexNo}
+        <if test="bizTyNm != null and bizTyNm != ''">
+            and p.biz_ty_nm = #{bizTyNm}
+        </if>
+        <if test="useYn != null and useYn != ''">
+            and p.use_yn = #{useYn}
+        </if>
+        <if test="contractYn != null and contractYn == 'Y'">
+            and exists (
+            select 1
+            from facility_contract fc
+            where fc.partner_no = p.partner_no
+            )
+        </if>
+        <if test="contractYn != null and contractYn == 'N'">
+            and not exists (
+            select 1
+            from facility_contract fc
+            where fc.partner_no = p.partner_no
+            )
+        </if>
+        <if test="checkStartDt != null and checkStartDt != ''">
+            and exists (
+            select 1
+            from facility_check_hstry fch
+            where fch.partner_no = p.partner_no
+            and fch.chk_dt <![CDATA[ >= ]]> to_date(#{checkStartDt}, 'yyyy-mm-dd')
+            )
+        </if>
+        <if test="checkEndDt != null and checkEndDt != ''">
+            and exists (
+            select 1
+            from facility_check_hstry fch
+            where fch.partner_no = p.partner_no
+            and fch.chk_dt <![CDATA[ < ]]> to_date(#{checkEndDt}, 'yyyy-mm-dd') + 1
+            )
+        </if>
+        <if test="meterStartDt != null and meterStartDt != ''">
+            and exists (
+            select 1
+            from utility_provider up
+            join meter_hstry mh
+            on mh.utility_provider_no = up.utility_provider_no
+            where up.partner_no = p.partner_no
+            and mh.meter_dt <![CDATA[ >= ]]> to_date(#{meterStartDt}, 'yyyy-mm-dd')
+            )
+        </if>
+        <if test="meterEndDt != null and meterEndDt != ''">
+            and exists (
+            select 1
+            from utility_provider up
+            join meter_hstry mh
+            on mh.utility_provider_no = up.utility_provider_no
+            where up.partner_no = p.partner_no
+            and mh.meter_dt <![CDATA[ < ]]> to_date(#{meterEndDt}, 'yyyy-mm-dd') + 1
+            )
+        </if>
+        <if test="searchWord != null and searchWord != ''">
+            and (
+            lower(p.partner_no) like '%' || lower(#{searchWord}) || '%'
+            or lower(p.partner_nm) like '%' || lower(#{searchWord}) || '%'
+            or lower(p.pic_nm) like '%' || lower(#{searchWord}) || '%'
+            or lower(p.pic_telno) like '%' || lower(#{searchWord}) || '%'
+            or lower(p.bizrno) like '%' || lower(#{searchWord}) || '%'
+            )
+        </if>
+    </sql>
+
+    <!-- 협력업체 목록 건수 조회 -->
+    <select id="selectPartnerCount" parameterType="kr.or.ddit.domain.apt.mgmtOffice.partner.vo.PartnerSearchVO" resultType="int">
+        select count(*)
+        from partner p
+        <include refid="partnerSearchWhere"/>
+    </select>
+
+    <!-- 협력업체 목록 조회 -->
+    <select id="selectPartnerList" parameterType="kr.or.ddit.domain.apt.mgmtOffice.partner.vo.PartnerSearchVO" resultMap="partnerResultMap">
+        select *
+        from (
+        select row_number() over(order by p.reg_dt desc nulls last, p.partner_no desc) as rn
+        , p.partner_no
+        , p.apt_cmplex_no
+        , ac.apt_cmplex_nm
+        , p.biz_ty_nm
+        , p.partner_nm
+        , p.bizrno
+        , p.use_yn
+        , p.pic_nm
+        , p.pic_telno
+        , p.pic_email
+        , to_char(p.reg_dt, 'yyyy/mm/dd') as reg_dt
+        , to_char(p.mdf_dt, 'yyyy/mm/dd') as mdf_dt
+        , (
+        select count(*)
+        from facility_contract fc
+        where fc.partner_no = p.partner_no
+        ) as contract_cnt
+        , (
+        select count(*)
+        from facility_contract fc
+        where fc.partner_no = p.partner_no
+        and fc.cont_stts_cd = 'ACTIVE'
+        ) as active_contract_cnt
+        , (
+        select count(*)
+        from facility_check_hstry fch
+        where fch.partner_no = p.partner_no
+        ) as check_cnt
+        , (
+        select to_char(max(fch.chk_dt), 'yyyy/mm/dd')
+        from facility_check_hstry fch
+        where fch.partner_no = p.partner_no
+        ) as recent_check_dt
+        , (
+        select min(up.utility_provider_no)
+        from utility_provider up
+        where up.partner_no = p.partner_no
+        ) as utility_provider_no
+        , case
+        when exists (
+        select 1
+        from utility_provider up
+        where up.partner_no = p.partner_no
+        ) then 'Y'
+        else 'N'
+        end as meter_linked_yn
+        , (
+        select count(*)
+        from utility_provider up
+        join meter_hstry mh
+        on mh.utility_provider_no = up.utility_provider_no
+        where up.partner_no = p.partner_no
+        ) as meter_cnt
+        , (
+        select to_char(max(mh.meter_dt), 'yyyy/mm/dd')
+        from utility_provider up
+        join meter_hstry mh
+        on mh.utility_provider_no = up.utility_provider_no
+        where up.partner_no = p.partner_no
+        ) as recent_meter_dt
+        from partner p
+        left join apt_complex ac
+        on ac.apt_cmplex_no = p.apt_cmplex_no
+        <include refid="partnerSearchWhere"/>
+        ) partner_list
+        where rn between #{startRow} and #{endRow}
+    </select>
+
+    <!-- 협력업체 현황 조회 -->
+    <select id="selectPartnerStat" parameterType="kr.or.ddit.domain.apt.mgmtOffice.partner.vo.PartnerSearchVO" resultMap="partnerStatResultMap">
+        select count(*) as total_cnt
+        , nvl(sum(case when p.use_yn = 'Y' then 1 else 0 end), 0) as active_cnt
+        , nvl(sum(case
+        when exists (
+        select 1
+        from facility_contract fc
+        where fc.partner_no = p.partner_no
+        ) then 1
+        else 0
+        end), 0) as contract_linked_cnt
+        , nvl(sum(case
+        when exists (
+        select 1
+        from utility_provider up
+        where up.partner_no = p.partner_no
+        ) then 1
+        else 0
+        end), 0) as meter_linked_cnt
+        from partner p
+        where p.apt_cmplex_no = #{aptCmplexNo}
+    </select>
+
+    <!-- 업종명 목록 조회 -->
+    <select id="selectBizTypeList" parameterType="string" resultType="string">
+        select distinct p.biz_ty_nm
+        from partner p
+        where p.apt_cmplex_no = #{aptCmplexNo}
+        and p.biz_ty_nm is not null
+        order by p.biz_ty_nm
+    </select>
+
+    <!-- 협력업체 등록 -->
+    <insert id="insertPartner" parameterType="kr.or.ddit.domain.apt.mgmtOffice.partner.vo.PartnerVO">
+        insert into partner (
+        partner_no
+        , apt_cmplex_no
+        , biz_ty_nm
+        , partner_nm
+        , bizrno
+        , use_yn
+        , pic_nm
+        , pic_telno
+        , pic_email
+        , reg_dt
+        ) values (
+        'PTR' || lpad(seq_partner.nextval, 4, '0')
+        , #{aptCmplexNo}
+        , #{bizTyNm}
+        , #{partnerNm}
+        , #{bizrno}
+        , nvl(#{useYn}, 'Y')
+        , #{picNm}
+        , #{picTelno}
+        , #{picEmail}
+        , sysdate
+        )
+    </insert>
+
+    <!-- 협력업체 수정 -->
+    <update id="updatePartner" parameterType="kr.or.ddit.domain.apt.mgmtOffice.partner.vo.PartnerVO">
+        update partner
+        set biz_ty_nm = #{bizTyNm}
+        , partner_nm = #{partnerNm}
+        , use_yn = nvl(#{useYn}, 'Y')
+        , pic_nm = #{picNm}
+        , pic_telno = #{picTelno}
+        , pic_email = #{picEmail}
+        , mdf_dt = sysdate
+        where partner_no = #{partnerNo}
+        and apt_cmplex_no = #{aptCmplexNo}
+    </update>
+
+    <!-- 협력업체 비활성화 -->
+    <update id="deactivatePartner">
+        update partner
+        set use_yn = 'N'
+        , mdf_dt = sysdate
+        where partner_no = #{partnerNo}
+        and apt_cmplex_no = #{aptCmplexNo}
+    </update>
+
+    <!-- 협력업체 활성화 -->
+    <update id="activatePartner">
+        update partner
+        set use_yn = 'Y'
+        , mdf_dt = sysdate
+        where partner_no = #{partnerNo}
+        and apt_cmplex_no = #{aptCmplexNo}
+    </update>
+
+</mapper>

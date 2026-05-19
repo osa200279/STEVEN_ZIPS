@@ -135,14 +135,19 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">유지보수·점검 이력</span>
                     </a>
+                    <a href="${ctx}/manager/${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">검침 이력</span>
+                    </a>
                     <a href="${ctx}/manager/facility/workCalendar${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">공사·점검 일정</span>
+                        <span class="nav-text">시설 일정</span>
                     </a>
 
                     <%-- 협력업체 --%>
                     <span class="sub-group-label">협력업체</span>
-                    <a href="${ctx}/manager/facility/partnerList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facility/partnerList') ? 'active' : ''}">
+                    <a href="${ctx}/manager/facility/partner/list${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/facility/partner/list') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">협력업체 관리</span>
                     </a>
@@ -276,8 +281,6 @@
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">예약 접수·확인</span></a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">시설 이용 내역</span></a>
 
-                    <span class="sub-group-label">차량</span>
-                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">등록 차량 목록</span></a>
                 </div>
             </div>
         </details>

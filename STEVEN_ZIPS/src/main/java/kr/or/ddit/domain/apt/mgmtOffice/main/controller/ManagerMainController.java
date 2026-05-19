@@ -347,15 +347,46 @@ public class ManagerMainController {
 
     // 협력업체
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/facility/partnerList/{mgmtOfcNo}")
+    @GetMapping("/partner/partnerList/{mgmtOfcNo}")
     public String partnerList(
             @PathVariable String mgmtOfcNo,
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_partner_list";
+        return "apt/mgmtOffice/partner/mngr_partner_list";
     }
+
+//    /**
+//     * 협력업체 상세 화면
+//     * - 화면 확인용
+//     * - partnerNo가 있으면 특정 업체 상세
+//     * - partnerNo가 없으면 더미/기본 상세 화면
+//     */
+//    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+//    @GetMapping({
+//            "/facility/partner/detail/{mgmtOfcNo}",
+//            "/facility/partner/detail/{mgmtOfcNo}/{partnerNo}"
+//    })
+//    public String partnerDetail(
+//            @PathVariable String mgmtOfcNo,
+//            @PathVariable(required = false) String partnerNo,
+//            @AuthenticationPrincipal CustomUser customUser,
+//            Model model
+//    ) {
+//        // 관리사무소 공통 모델 세팅
+//        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+//
+//        // 화면 확인용 기본 업체번호
+//        if (partnerNo == null || partnerNo.isBlank()) {
+//            partnerNo = "PTR1001";
+//        }
+//
+//        // 상세 JSP에서 사용할 값 전달
+//        model.addAttribute("partnerNo", partnerNo);
+//
+//        return "apt/mgmtOffice/partner/mngr_partner_detail";
+//    }
 
 
     // 단지 구조 정보 수정페이지

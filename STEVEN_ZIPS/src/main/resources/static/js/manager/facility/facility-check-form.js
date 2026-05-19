@@ -951,15 +951,57 @@
                     return;
                 }
 
-                if (!$("facilityNo") || !$("facilityNo").value) {
-                    alert("점검 대상 시설을 선택해 주세요.");
-                    event.preventDefault();
-                    return;
-                }
+                /** 저장 전 필수 선택 검증 */
+                if (form) {
+                    form.addEventListener("submit", function (event) {
+                        if (isAdmin) {
+                            alert("ADMIN 계정은 등록 저장을 할 수 없습니다.");
+                            event.preventDefault();
+                            return;
+                        }
 
-                if (!$("partnerNo") || !$("partnerNo").value) {
-                    alert("협력업체를 선택해 주세요.");
-                    event.preventDefault();
+                        // 시설번호 필수 검증
+                        if (!$("facilityNo") || !$("facilityNo").value) {
+                            alert("점검 대상 시설을 선택해 주세요.");
+                            event.preventDefault();
+                            return;
+                        }
+
+                        // 협력업체번호 필수 검증
+                        if (!$("partnerNo") || !$("partnerNo").value) {
+                            alert("협력업체를 선택해 주세요.");
+                            event.preventDefault();
+                            return;
+                        }
+
+                        // 점검유형 필수 검증
+                        if (!$("chkTyCd") || !$("chkTyCd").value) {
+                            alert("점검유형을 선택해 주세요.");
+                            event.preventDefault();
+                            return;
+                        }
+
+                        // 점검상태 필수 검증
+                        if (!$("chkSttsCd") || !$("chkSttsCd").value) {
+                            alert("점검상태를 선택해 주세요.");
+                            event.preventDefault();
+                            return;
+                        }
+
+                        // 점검일자 필수 검증
+                        if (!$("chkDt") || !$("chkDt").value) {
+                            alert("점검일자를 입력해 주세요.");
+                            event.preventDefault();
+                            return;
+                        }
+
+                        // 점검내용 필수 검증
+                        if (!$("chkCn") || !$("chkCn").value.trim()) {
+                            alert("점검내용을 입력해 주세요.");
+                            event.preventDefault();
+                            return;
+                        }
+                    });
                 }
             });
         }
