@@ -162,7 +162,6 @@
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/intro') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/apt/main/mgmtInfo/${apt.aptCmplexNo}">관리사무소 소개</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/operation') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/facility') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/manage/facility/${apt.aptCmplexNo}">시설관리이력</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/favorite') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/manage/favorite">즐겨찾기</a>
       </div>
     </details>
 
@@ -198,7 +197,7 @@
       </div>
     </details>
 
-    <details class="side-nav-item group" ${fn:contains(pageContext.request.requestURI, '/resident/complaint') ? 'open="open"' : ''}>
+    <details class="side-nav-item group" ${fn:contains(pageContext.request.requestURI, '/apt/complaint') ? 'open="open"' : ''}>
       <summary class="flex items-center justify-between px-4 py-3 rounded-full cursor-pointer hover:bg-primary/5 transition-colors text-on-surface">
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">support_agent</span>
@@ -207,7 +206,7 @@
         <span class="material-symbols-outlined text-sm expand-icon transition-transform">expand_more</span>
       </summary>
       <div class="block w-full flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/apply') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/complaint/apply">민원신청 및 내역</a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/apply') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="/apt/complaint/apply.do/${apt.aptCmplexNo}">민원신청 및 내역</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/live') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/complaint/live">실시간문의</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/chatbot') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/complaint/chatbot">챗봇민원접수</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/status') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="/apt/complaint/list/${apt.aptCmplexNo}">민원 내역</a>
@@ -240,7 +239,7 @@
       <div class="block w-full flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/apt/ann') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}">공지사항</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/apt/apt') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/board/free/${aptCmplexNo}">자유게시판</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/apt/chat') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/board/chat/${aptCmplexNo}">단체채팅방</a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/apt/chat') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/board/chat/${aptCmplexNo}">그룹채팅방</a>
       </div>
     </details>
 

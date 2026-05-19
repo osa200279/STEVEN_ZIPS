@@ -201,7 +201,7 @@
                 <div class="all-menu-section-title">입주민게시판</div>
                 <ul>
                     <li><a href="${pageContext.request.contextPath}/resident/board/notice/${aptCmplexNo}">공지사항</a></li>
-                    <li><a href="${pageContext.request.contextPath}/resident/board/free">자유게시판</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/board/free/list/${aptCmplexNo}">자유게시판</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/board/chat">그룹채팅방</a></li>
                 </ul>
             </div>

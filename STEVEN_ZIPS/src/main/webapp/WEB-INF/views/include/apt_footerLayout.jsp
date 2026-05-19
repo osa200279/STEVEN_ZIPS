@@ -20,12 +20,12 @@
                 </div>
             </div>
             <nav class="footer-nav" style="align-self:flex-start; margin-top:8px;">
-                <a href="${pageContext.request.contextPath}/manage/intro">관리사무소</a>
-                <a href="${pageContext.request.contextPath}/fee/inquiry">아파트관리비</a>
+                <a href="${pageContext.request.contextPath}/apt/main/mgmtInfo/${apt.aptCmplexNo}">관리사무소</a>
+                <a href="${pageContext.request.contextPath}/resident/bill/inquiry/${apt.aptCmplexNo}">아파트관리비</a>
                 <a href="${pageContext.request.contextPath}/service/moving">생활지원서비스</a>
-                <a href="${pageContext.request.contextPath}/complaint/apply">민원접수</a>
+                <a href="/apt/complaint/apply.do/${apt.aptCmplexNo}">민원접수</a>
                 <a href="${pageContext.request.contextPath}/vote/resident">전자투표및설문</a>
-                <a href="${pageContext.request.contextPath}/board/notice">입주민게시판</a>
+                <a href="${pageContext.request.contextPath}/resident/board/free/list/${aptCmplexNo}">입주민게시판</a>
             </nav>
             <div class="footer-contact">
                 <div class="label">Contact Us</div>
@@ -79,7 +79,7 @@
         </div>
         <div class="footer-bottom">
             <div class="footer-info">
-                고객센터: 042-000-0000 | 이메일: Steven_zips@ddit.or.kr
+                고객센터 : 042-000-0000 | 이메일 : steven_zips@ddit.or.kr
             </div>
             <div class="footer-copy">© 2026 Steven.Zips All rights reserved.</div>
         </div>
