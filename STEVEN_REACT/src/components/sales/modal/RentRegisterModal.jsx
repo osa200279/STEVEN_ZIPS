@@ -97,8 +97,8 @@ function RentRegisterModal({
                     rentLstgCn:
                         form.rentLstgCn,
 
-                    rentSttsCd:
-                        'NORMAL'
+                    rcrtLstgSttsCd:
+                        'GENERAL'
                 };
 
                 await registerRentListing(
