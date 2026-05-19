@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.domain.central.mapper.IRentMapper">
+    <resultMap id="rentListingMapResultMap" type="kr.or.ddit.domain.central.dto.RentListingMapDTO">
+
+        <!-- RENT_LISTING -->
+        <id property="rentLstgNo" column="RENT_LSTG_NO"/>
+        <result property="rentTypeCd" column="RENT_TYPE_CD"/>
+        <result property="rentTypeNm" column="RENT_TYPE_NM"/>
+        <result property="dpstAmt" column="DPST_AMT"/>
+        <result property="mthlyRentAmt" column="MTHLY_RENT_AMT"/>
+        <result property="rentLstgCn" column="RENT_LSTG_CN"/>
+        <result property="hoNo" column="HO_NO"/>
+        <result property="rentTtl" column="RENT_TTL"/>
+
+        <!-- APT_DETAIL -->
+        <result property="dongNo" column="DONG_NO"/>
+        <result property="floor" column="FLOOR"/>
+        <result property="ho" column="HO"/>
+        <result property="empty" column="HO_STTS_NM"/>
+        <result property="imageNo" column="IMAGE_NO"/>
+        <result property="panoImageNo" column="PANO_IMAGE_NO"/>
+
+        <!-- APT_UNIT -->
+        <result property="dongNm" column="DONG_NM"/>
+        <result property="dongMaxFloor" column="DONG_MAX_FLOOR"/>
+        <result property="dongUnitCnt" column="DONG_UNIT_CNT"/>
+
+        <!-- APT_COMPLEX -->
+        <result property="aptCmplexNo" column="APT_CMPLEX_NO"/>
+        <result property="aptCmplexNm" column="APT_CMPLEX_NM"/>
+        <result property="sidoNm" column="SIDO_NM"/>
+        <result property="sigunguNm" column="SIGUNGU_NM"/>
+        <result property="emdNm" column="EMD_NM"/>
+        <result property="dorojuso" column="DOROJUSO"/>
+        <result property="unitCnt" column="UNIT_CNT"/>
+        <result property="dongCnt" column="DONG_CNT"/>
+        <result property="bldYr" column="BLD_YR"/>
+
+    </resultMap>
+
+    <select id="selectRentListingMapList"
+            resultMap="rentListingMapResultMap">
+
+        SELECT
+        R.RENT_LSTG_NO,
+        R.RENT_TYPE_CD,
+        NVL(RC.CODE_NAME, R.RENT_TYPE_CD) AS RENT_TYPE_NM,
+        R.DPST_AMT,
+        R.MTHLY_RENT_AMT,
+        R.RENT_LSTG_CN,
+        R.HO_NO,
+        R.RENT_TTL,
+
+        D.DONG_NO,
+        D.FLOOR,
+        D.HO,
+        D.HO_STTS_CD,
+        NVL(HC.CODE_NAME, D.HO_STTS_CD) AS HO_STTS_NM,
+        D.IMAGE_NO,
+        D.PANO_IMAGE_NO,
+
+        U.DONG_NM,
+        U.FLOOR AS DONG_MAX_FLOOR,
+        U.UNIT_CNT AS DONG_UNIT_CNT,
+
+        A.APT_CMPLEX_NO,
+        A.APT_CMPLEX_NM,
+        A.SIDO_NM,
+        A.SIGUNGU_NM,
+        A.EMD_NM,
+        A.DOROJUSO,
+        A.UNIT_CNT,
+        A.DONG_CNT,
+        A.BLD_YR
+
+        FROM RENT_LISTING R
+
+        INNER JOIN APT_DETAIL D
+        ON R.HO_NO = D.HO_NO
+
+        INNER JOIN APT_UNIT U
+        ON D.DONG_NO = U.DONG_NO
+
+        INNER JOIN APT_COMPLEX A
+        ON U.APT_CMPLEX_NO = A.APT_CMPLEX_NO
+
+        LEFT JOIN COMMON_CODE RC
+        ON RC.GROUP_CODE_NO = 'RENT_TY'
+        AND RC.CODE_NO_CD = R.RENT_TYPE_CD
+        AND RC.USE_YN = 'Y'
+
+        LEFT JOIN COMMON_CODE HC
+        ON HC.GROUP_CODE_NO = 'HO_STTS'
+        AND HC.CODE_NO_CD = D.HO_STTS_CD
+        AND HC.USE_YN = 'Y'
+
+        ORDER BY
+        R.RENT_LSTG_NO DESC
+
+    </select>
+
+    <select id="selectRentListingDetail"
+            parameterType="string"
+            resultMap="rentListingMapResultMap">
+
+        SELECT
+        R.RENT_LSTG_NO,
+        R.RENT_TYPE_CD,
+        NVL(RC.CODE_NAME, R.RENT_TYPE_CD) AS RENT_TYPE_NM,
+        R.DPST_AMT,
+        R.MTHLY_RENT_AMT,
+        R.RENT_LSTG_CN,
+        R.HO_NO,
+        R.RENT_TTL,
+
+        D.DONG_NO,
+        D.FLOOR,
+        D.HO,
+        D.HO_STTS_CD,
+        NVL(HC.CODE_NAME, D.HO_STTS_CD) AS HO_STTS_NM,
+        D.IMAGE_NO,
+        D.PANO_IMAGE_NO,
+
+        U.DONG_NM,
+        U.FLOOR AS DONG_MAX_FLOOR,
+        U.UNIT_CNT AS DONG_UNIT_CNT,
+
+        A.APT_CMPLEX_NO,
+        A.APT_CMPLEX_NM,
+        A.SIDO_NM,
+        A.SIGUNGU_NM,
+        A.EMD_NM,
+        A.DOROJUSO,
+        A.UNIT_CNT,
+        A.DONG_CNT,
+        A.BLD_YR
+
+        FROM RENT_LISTING R
+
+        INNER JOIN APT_DETAIL D
+        ON R.HO_NO = D.HO_NO
+
+        INNER JOIN APT_UNIT U
+        ON D.DONG_NO = U.DONG_NO
+
+        INNER JOIN APT_COMPLEX A
+        ON U.APT_CMPLEX_NO = A.APT_CMPLEX_NO
+
+        LEFT JOIN COMMON_CODE RC
+        ON RC.GROUP_CODE_NO = 'RENT_TY'
+        AND RC.CODE_NO_CD = R.RENT_TYPE_CD
+        AND RC.USE_YN = 'Y'
+
+        LEFT JOIN COMMON_CODE HC
+        ON HC.GROUP_CODE_NO = 'HO_STTS'
+        AND HC.CODE_NO_CD = D.HO_STTS_CD
+        AND HC.USE_YN = 'Y'
+
+        WHERE R.RENT_LSTG_NO = #{rentLstgNo}
+
+    </select>
+
+</mapper>

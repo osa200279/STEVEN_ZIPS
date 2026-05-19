@@ -86,7 +86,7 @@
     /* ── 6칸 공통 그리드 ── */
     .nav-grid {
         display: grid;
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         width: 100%;
     }
 
@@ -102,13 +102,10 @@
         cursor: pointer;
         white-space: nowrap;
         user-select: none;
-        transition: color 0.14s;
+        transition: color 0.14s, box-shadow 0.14s, font-weight 0.14s;
     }
 
-    .nav-top-cell:hover {
-        color: var(--primary);
-    }
-
+    .nav-top-cell:hover,
     .nav-top-cell.active {
         color: var(--primary);
         font-weight: 700;
@@ -268,7 +265,7 @@
 
             <div id="nav-wrap">
                 <div class="nav-grid">
-                    <div class="nav-top-cell active">서비스 소개</div>
+                    <div class="nav-top-cell">서비스 소개</div>
                     <div class="nav-top-cell">계약공고</div>
                     <div class="nav-top-cell">매물정보</div>
                     <div class="nav-top-cell">공공주택 정보</div>
