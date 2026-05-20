@@ -868,8 +868,17 @@ public class ResidentMainController {
         return "member/resident/survey/survey_detail";
     }
 
-    @GetMapping("/survey/result")
-    public String surveyResult() {
+    @GetMapping("/survey/result/{surveyNo}")
+    public String surveyResult(
+            @PathVariable String surveyNo,
+            Model model
+    ) {
+
+        model.addAttribute(
+                "survey",
+                surveyService.selectSurveyDetail(surveyNo)
+        );
+
         return "member/resident/survey/survey_result";
     }
 

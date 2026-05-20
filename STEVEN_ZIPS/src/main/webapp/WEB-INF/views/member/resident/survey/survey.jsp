@@ -74,7 +74,7 @@
             <h4>설문조사 상세</h4>
             <p>질문과 선택지를 확인하고 설문을 제출합니다.</p>
             <div class="menu-links">
-              <a href="${pageContext.request.contextPath}/resident/survey/detail">상세 화면</a>
+              <a href="${pageContext.request.contextPath}/resident/survey/detail/SV051912263645">상세 화면</a>
             </div>
           </div>
           <div class="menu-card">

@@ -102,7 +102,10 @@
 
 
         <div id="questionArea"></div>
-        <div class="btn-row"><button class="btn-main">설문 제출</button>
+        <div class="btn-row"><a class="btn-main"
+                                href="${pageContext.request.contextPath}/resident/survey/result/${survey.surveyNo}">
+          설문 제출
+        </a>
         <a class="btn-ghost" href="${pageContext.request.contextPath}/resident/survey/list">목록으로</a>
         </div>
       </section>
@@ -114,74 +117,69 @@
 
   <script>
 
-    const questionList =
-            JSON.parse('${survey.surveyQitemCn}');
+    const rawJson = `<%= ((kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO)request.getAttribute("survey")).getSurveyQitemCn().replace("`","\\`") %>`;
+    console.log(rawJson);
+
+    const questionList = JSON.parse(rawJson);
+
+    console.log(questionList);
+    console.log(questionList[0]);
 
     const questionArea =
             document.getElementById("questionArea");
 
-    questionList.forEach((q, idx) => {
 
-      let html = `
-        <div class="card">
 
-            <strong>
-                Q${idx + 1}. ${q.question}
-            </strong>
+      questionList.forEach((q, idx) => {
 
-            <div class="inline-fields"
-                 style="
-                    flex-direction:column;
-                    align-items:flex-start;
-                    margin-top:12px;
-                 ">
-    `;
+        const card = document.createElement("div");
+        card.className = "card";
 
-      if (q.type === "MULTI" || q.type === "YN") {
+        let html = "";
 
-        q.items.forEach(item => {
+        html += "<strong>";
+        html += "Q" + (idx + 1) + ". " + q.question;
+        html += "</strong>";
+
+        html += "<div style='margin-top:20px;'>";
+
+        if (q.type === "MULTI" || q.type === "YN") {
+
+          q.items.forEach(item => {
+
+            html += '<label style="display:block; margin-bottom:12px;">';
+            html += '<input type="radio" name="q' + idx + '"> ';
+            html += item;
+            html += '</label>';
+          });
+        }
+
+        if (q.type === "SHORT") {
 
           html += `
-                <label>
-
-                    <input type="radio"
-                           name="q${idx}">
-
-                    ${item}
-
-                </label>
-            `;
-        });
-      }
-
-      if (q.type === "SHORT") {
-
-        html += `
             <input type="text"
                    class="fake-input"
                    placeholder="답변 입력">
         `;
-      }
+        }
 
-      if (q.type === "LONG") {
+        if (q.type === "LONG") {
 
-        html += `
+          html += `
             <textarea class="fake-textarea"
                       rows="5"></textarea>
         `;
-      }
+        }
 
-      html += `
-            </div>
-        </div>
-    `;
+        html += "</div>";
 
-      questionArea.insertAdjacentHTML(
-              "beforeend",
-              html
-      );
+        card.innerHTML = html;
 
-    });
+        questionArea.appendChild(card);
+
+      });
+
+
 
   </script>
 
