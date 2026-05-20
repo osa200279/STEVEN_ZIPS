@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import AptSearchSelect
-    from '../../components/ctrt/AptSearchSelect';
+import AptSearchSelect from '../common/AptSearchSelect';
 
 function OfflineCtrtModal({
 
