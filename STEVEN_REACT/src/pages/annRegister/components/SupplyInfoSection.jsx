@@ -19,6 +19,7 @@ export default function SupplyInfoSection({
   aptOptions = [],
   setHoTyList,
   hoTyList = [],
+  setSubmitDocOptions,
   handleAptChange,
   resetBelow,
 }) {
@@ -83,6 +84,7 @@ export default function SupplyInfoSection({
                 setAptCmplexNo('');
                 setAddr('');
                 setHoTyList([]);
+                setSubmitDocOptions?.([]);
               }}
             >
               <option value="">{sigungu ? L.emdSelect : L.needSigungu}</option>

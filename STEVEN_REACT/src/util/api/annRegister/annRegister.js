@@ -81,8 +81,7 @@ export const getSubmitDocTypes = async (aptCmplexNo) => {
 /**
  * 공고 등록
  */
-export const insertAnn = async (aptCmplexNo) => {
-    const res = await requestApi.post('/api/annRegister/insertAnn', formData);
-    return res.data;
-
-}
+export const insertAnn = async (formData) => {
+  const res = await requestApi.post('/api/annRegister/insertAnn', formData);
+  return res.data;
+};

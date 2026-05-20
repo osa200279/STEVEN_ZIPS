@@ -1,6 +1,6 @@
 import { DATE_FIELDS, LR } from './formBits';
 
-export default function AnnInfoSection() {
+export default function AnnInfoSection({ annForm, onFieldChange }) {
   return (
     <section className="form-card">
       <h2 className="form-card-title">공고 정보</h2>
@@ -12,7 +12,13 @@ export default function AnnInfoSection() {
                 <LR htmlFor={name} req>
                   {label}
                 </LR>
-                <input id={name} name={name} type="date" />
+                <input
+                  id={name}
+                  name={name}
+                  type="date"
+                  value={annForm[name]}
+                  onChange={(e) => onFieldChange(name, e.target.value)}
+                />
               </div>
             ))}
           </div>

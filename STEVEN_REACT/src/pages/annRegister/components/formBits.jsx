@@ -48,11 +48,12 @@ export function LR({ htmlFor, children, req }) {
   );
 }
 
+/** name = insertAnn API 키와 동일 */
 export const DATE_FIELDS = [
-  ['pubStartDt', '게시 시작일'],
-  ['pubEndDt', '게시 종료일'],
-  ['rcritStartDt', '모집 시작일'],
-  ['rcritEndDt', '모집 종료일'],
+  ['pblancBgngDt', '게시 시작일'],
+  ['pblancEndDt', '게시 종료일'],
+  ['rcrtBgngDt', '모집 시작일'],
+  ['rcrtEndDt', '모집 종료일'],
 ];
 
 export const SUPPLY_COLS = [

@@ -4,7 +4,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 import MainLayout from "./components/layout/MainLayout";
 import Ann from './pages/Ann';
-import AnnRegister from './pages/AnnRegister';
+import AnnRegister from './pages/annRegister/components/AnnRegister';
 import Applicant from "./pages/Applicant";
 import AptRegister from "./pages/AptRegister";
 import Ctrt from "./pages/ctrt/Ctrt";
