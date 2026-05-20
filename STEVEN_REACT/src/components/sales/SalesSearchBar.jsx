@@ -45,6 +45,10 @@ function SalesSearchBar({ onSearch }) {
         const data =
           await getSidoList();
 
+        console.log(data);
+        console.log(Array.isArray(data));
+
+
         setSidoList(data);
 
       } catch (err) {
