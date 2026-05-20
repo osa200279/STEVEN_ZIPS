@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.survey.mapper.IMngSurveyMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -63,5 +64,34 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
                 .selectSurveyResult(surveyNo);
     }
 
+    @Override
+    public String selectMySurveyResponse(
+            String surveyNo,
+            String userNo
+    ) {
+
+        return iMngSurveyMapper
+                .selectMySurveyResponse(
+                        surveyNo,
+                        userNo
+                );
+    }
+
+    @Override
+    public void insertSurveyResponse(
+            String surveyNo,
+            String response,
+            String userNo
+
+    ) {
+
+        iMngSurveyMapper.insertSurveyResponse(
+                surveyNo,
+                response,
+                userNo
+
+
+        );
+    }
 
 }

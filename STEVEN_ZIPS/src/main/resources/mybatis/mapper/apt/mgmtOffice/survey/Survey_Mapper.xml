@@ -147,7 +147,44 @@
     </select>
 
 
+    <select id="selectMySurveyResponse"
+            resultType="string">
 
+        SELECT RSPNS_CN
+
+        FROM SURVEY_RSPNS
+
+        WHERE SURVEY_NO = #{surveyNo}
+          AND USER_NO = #{userNo}
+
+    </select>
+
+
+    <insert id="insertSurveyResponse">
+
+        INSERT INTO SURVEY_RSPNS (
+
+            RSPNS_NO,
+            SURVEY_NO,
+            RSPNS_CN,
+            REG_DT,
+            USER_NO,
+            HO_NO
+
+        )
+        VALUES (
+
+                   'RSP' || TO_CHAR(SYSDATE, 'MMDDHH24MISS'),
+
+                   #{surveyNo},
+                   #{response},
+                   SYSDATE,
+                   #{userNo},
+                   'TEMP_HO'
+
+               )
+
+    </insert>
 
 </mapper>
 

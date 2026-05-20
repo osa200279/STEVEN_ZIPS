@@ -1,8 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-
+<%@ taglib prefix="sec"
+           uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <sec:csrfMetaTags/>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>설문조사 - 상세 – 대덕아파트</title>
@@ -102,10 +105,15 @@
 
 
         <div id="questionArea"></div>
-        <div class="btn-row"><a class="btn-main"
-                                href="${pageContext.request.contextPath}/resident/survey/result/${survey.surveyNo}">
-          설문 제출
-        </a>
+        <div class="btn-row">
+
+          <button type="button"
+                  class="btn-main"
+                  id="submitBtn">
+
+            설문 제출
+
+          </button>
         <a class="btn-ghost" href="${pageContext.request.contextPath}/resident/survey/list">목록으로</a>
         </div>
       </section>
@@ -148,7 +156,12 @@
           q.items.forEach(item => {
 
             html += '<label style="display:block; margin-bottom:12px;">';
-            html += '<input type="radio" name="q' + idx + '"> ';
+            html +=
+                    '<input type="radio" '
+
+                    + 'name="q' + idx + '" '
+
+                    + 'value="' + item + '"> ';
             html += item;
             html += '</label>';
           });
@@ -178,7 +191,69 @@
         questionArea.appendChild(card);
 
       });
+    document
+            .getElementById("submitBtn")
+            .addEventListener("click", async function () {
 
+              let selectedValue = "";
+
+              const checked =
+                      document.querySelector(
+                              'input[type="radio"]:checked'
+                      );
+
+              if(checked){
+
+                selectedValue =
+                        checked.value;
+              }
+
+              if(!selectedValue){
+
+                alert("응답을 선택해주세요.");
+                return;
+              }
+
+              try{
+
+                await fetch(
+
+                        "${pageContext.request.contextPath}"
+                        + "/resident/survey/submit/"
+                        + "${survey.surveyNo}",
+
+                        {
+                          method: "POST",
+
+                          headers: {
+
+                            "Content-Type":             
+                                    "application/json",
+
+                            [document.querySelector('meta[name="_csrf_header"]').content]:
+                            document.querySelector('meta[name="_csrf"]').content
+                          },
+
+                          body: JSON.stringify({
+
+                            response:
+                            selectedValue
+                          })
+                        }
+                );
+
+                location.href =
+                        "${pageContext.request.contextPath}"
+                        + "/resident/survey/result/"
+                        + "${survey.surveyNo}";
+
+              }catch (e){
+
+                console.error(e);
+
+                alert("설문 제출 실패");
+              }
+            });
 
 
   </script>

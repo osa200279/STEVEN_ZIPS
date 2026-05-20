@@ -15,16 +15,13 @@ import kr.or.ddit.domain.member.vo.CustomUser;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import kr.or.ddit.common.model.PaginationInfoVO;
-import org.springframework.web.bind.annotation.ResponseBody;
 import kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO;
 
 import java.util.HashMap;
@@ -871,12 +868,24 @@ public class ResidentMainController {
     @GetMapping("/survey/result/{surveyNo}")
     public String surveyResult(
             @PathVariable String surveyNo,
+            @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
 
         model.addAttribute(
                 "survey",
                 surveyService.selectSurveyDetail(surveyNo)
+        );
+
+        String userNo =
+                customUser.getMember().getUserNo();
+
+        model.addAttribute(
+                "myResponse",
+                surveyService.selectMySurveyResponse(
+                        surveyNo,
+                        userNo
+                )
         );
 
         return "member/resident/survey/survey_result";
@@ -892,6 +901,43 @@ public class ResidentMainController {
 
         return "member/resident/survey/survey_list";
     }
+
+
+
+
+    @PostMapping("/survey/submit/{surveyNo}")
+    @ResponseBody
+    public ResponseEntity<?> submitSurvey(
+
+            @PathVariable String surveyNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            @RequestBody Map<String, String> body
+
+    ) {
+
+        ResidentVO resident =
+                (ResidentVO) customUser.getMember();
+
+        String hoNo =
+                resident.getMyAptList()
+                        .get(0)
+                        .getHoNo();
+
+
+
+        surveyService.insertSurveyResponse(
+
+                surveyNo,
+                body.get("response"),
+                customUser.getMember().getUserNo()
+
+        );
+
+        return ResponseEntity.ok().build();
+    }
+
+
+
 
     /**
      * 입주민 공지게시판 조회

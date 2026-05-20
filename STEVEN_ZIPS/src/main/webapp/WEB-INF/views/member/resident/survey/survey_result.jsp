@@ -62,56 +62,23 @@
         <h1 class="page-title">설문조사 - 결과</h1>
         <p class="page-desc">설문 결과 조회와 목록 복귀 버튼을 구성한 설문조사 결과 화면입니다.</p>
 
-          <section class="grid-2 equal">
-            <div class="card">
-              <div class="section-hd">
-                <h3>응답 결과</h3>
-                <span>통계</span>
-              </div>
-              <table class="data-table mini-table">
-                <thead>
-                <tr>
-                  <th>응답</th>
-                  <th>인원</th>
-                  <th>비율</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <td>매우 만족</td>
-                  <td>31명</td>
-                  <td>34%</td>
-                </tr>
-                <tr>
-                  <td>만족</td>
-                  <td>42명</td>
-                  <td>46%</td>
-                </tr>
-                <tr>
-                  <td>보통</td>
-                  <td>14명</td>
-                  <td>15%</td>
-                </tr>
-                <tr>
-                  <td>불만족</td>
-                  <td>5명</td>
-                  <td>5%</td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="card">
-              <div class="section-hd">
-                <h3>요약</h3>
-                <span>해석</span>
-              </div>
-              <ul class="bullet-list">
-                <li>대부분의 응답자가 전반적 이용 경험에 만족했습니다.</li>
-                <li>개선 요청은 예약 편의성 항목에 가장 많이 집중되었습니다.</li>
-                <li>운영 시간 확대 의견이 일부 확인되었습니다.</li>
-              </ul>
-            </div>
-          </section>
+
+        <div class="hero-card">
+
+          <h2>
+            설문 참여가 완료되었습니다.
+          </h2>
+
+          <p>
+            제출한 응답 내용을 확인할 수 있습니다.
+          </p>
+
+        </div>
+
+        <div id="resultArea"></div>
+
+
+
         <div class="btn-row">
           <a class="btn-ghost" href="${pageContext.request.contextPath}/resident/survey/list">목록으로 돌아가기</a>
         </div>
@@ -120,5 +87,101 @@
     </main>
   </div>
   <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
+
+
+  <script>
+
+    const rawJson =
+            `<%= ((kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO)
+      request.getAttribute("survey"))
+      .getSurveyQitemCn()
+      .replace("`","\\`") %>`;
+
+    const questionList =
+            JSON.parse(rawJson);
+
+    const resultArea =
+            document.getElementById("resultArea");
+    const myResponse =
+            '<%= request.getAttribute("myResponse") %>';
+    console.log(myResponse);
+
+
+
+    questionList.forEach(function (q, idx){
+
+      const card =
+              document.createElement("div");
+
+      card.className = "card";
+
+      let html = "";
+
+      html +=
+              "<div class='section-hd'>";
+
+      html +=
+              "<h3>";
+
+      html +=
+              "Q"
+              + (idx + 1)
+              + ". "
+              + q.question;
+
+      html +=
+              "</h3>";
+
+      html +=
+              "</div>";
+
+      html +=
+              "<div style='padding:8px 0;'>";
+
+      if(q.type === "MULTI" || q.type === "YN"){
+
+        q.items.forEach(function(item){
+
+          html +=
+                  "<div style='margin-bottom:10px;'>";
+          html +=
+                  (
+                          item === myResponse
+                                  ? "☑ "
+                                  : "☐ "
+                  )
+                  + item;
+
+          html +=
+                  "</div>";
+        });
+      }
+
+      if(q.type === "SHORT"){
+
+        html +=
+                "<div class='fake-input'>"
+                + "주관식 응답"
+                + "</div>";
+      }
+
+      if(q.type === "LONG"){
+
+        html +=
+                "<div class='fake-textarea'>"
+                + "장문 응답"
+                + "</div>";
+      }
+
+      html +=
+              "</div>";
+
+      card.innerHTML = html;
+
+      resultArea.appendChild(card);
+    });
+
+  </script>
+
 </body>
 </html>

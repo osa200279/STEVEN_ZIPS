@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.mgmtOffice.survey.service;
 
 import kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -19,4 +20,18 @@ public interface IMngSurveyService {
 
 
     Map<String, Object> selectSurveyResult(String surveyNo);
+
+    String selectMySurveyResponse(
+            String surveyNo,
+            String userNo
+    );
+
+    void insertSurveyResponse(
+            String surveyNo,
+            String response,
+            String userNo
+
+    );
+
+
 }
