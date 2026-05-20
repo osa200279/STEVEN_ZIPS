@@ -102,15 +102,15 @@
 
     const resultArea =
             document.getElementById("resultArea");
-    const myResponse =
-            '<%= request.getAttribute("myResponse") %>';
 
 
     const statistics =
             JSON.parse(
-                    `<%= request.getAttribute("statisticsJson") %>`
+                    '<%= request.getAttribute("statisticsJson") %>'
             );
-    console.log(myResponse);
+
+
+
 
 
 
@@ -144,10 +144,16 @@
       html +=
               "<div style='padding:8px 0;'>";
 
+      const questionStats =
+              statistics.filter(
+                      s =>
+                              s.QITEM_NM === ("Q" + (idx + 1))
+              );
+
       const totalCount =
-              statistics.reduce(
+              questionStats.reduce(
                       (sum, s) =>
-                              sum + parseInt(s.CNT || 0),
+                              sum + parseInt(s.ANSR_CNT || 0),
                       0
               );
 
@@ -180,16 +186,16 @@
 
 
         const stat =
-                statistics.find(
+                questionStats.find(
                         s =>
-                                s.ANSWER.trim()
+                                s.ANSR_CN.trim()
                                 ===
                                 item.trim()
                 );
 
         const count =
                 stat
-                        ? parseInt(stat.CNT || 0)
+                        ? parseInt(stat.ANSR_CNT || 0)
                         : 0;
 
         const percent =
@@ -265,24 +271,6 @@
 
 
 
-      if(q.type === "MULTI" || q.type === "YN"){
-
-        q.items.forEach(function(item){
-
-          html +=
-                  "<div style='margin-bottom:10px;'>";
-          html +=
-                  (
-                          item === myResponse
-                                  ? "☑ "
-                                  : "☐ "
-                  )
-                  + item;
-
-          html +=
-                  "</div>";
-        });
-      }
 
       if(q.type === "SHORT"){
 
