@@ -25,4 +25,9 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
     public int selectCtrtCount(String userNo) {
         return rentCtrtMapper.selectCtrtCount(userNo);
     }
+
+    @Override
+    public Map<String, Object> selectCtrtDashboard() {
+        return rentCtrtMapper.selectCtrtDashboard();
+    }
 }

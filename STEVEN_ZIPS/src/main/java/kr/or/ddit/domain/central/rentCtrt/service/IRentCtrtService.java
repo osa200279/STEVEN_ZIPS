@@ -8,4 +8,6 @@ public interface IRentCtrtService {
     List<Map<String, Object>> selectCtrt(String userNo,  int startRow, int endRow);
 
     int selectCtrtCount(String userNo);
+
+    Map<String, Object> selectCtrtDashboard();
 }

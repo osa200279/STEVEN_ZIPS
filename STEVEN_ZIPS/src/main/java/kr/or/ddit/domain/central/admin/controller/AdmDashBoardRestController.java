@@ -89,30 +89,43 @@ public class AdmDashBoardRestController {
     @GetMapping("/ctrt")
     public ResponseEntity<Map<String, Object>> getCtrtList(
             @AuthenticationPrincipal CustomUser customUser,
-            @RequestParam(value="page", required = false, defaultValue = "1") int curPage
-            ) {
+            @RequestParam(value = "page", required = false, defaultValue = "1") int curPage
+    ) {
         log.info("getCtrtList() 실행");
         String userNo = customUser.getMember().getUserNo();
 
         // 리액트용 페이징
         int screenSize = 12;
-        int startRow = (curPage - 1 ) * screenSize + 1;
+        int startRow = (curPage - 1) * screenSize + 1;
         int endRow = curPage * screenSize;
 
         // 서비스에 startRow, endRow를 넘겨서 한페이지만큼만 리스트 가져오기
         List<Map<String, Object>> ctrtList = rentCtrtService.selectCtrt(userNo, startRow, endRow);
 
         int totalRecord = rentCtrtService.selectCtrtCount(userNo);
-        int totalPage = (int)Math.ceil((double)totalRecord / (double)screenSize);
+        int totalPage = (int) Math.ceil((double) totalRecord / (double) screenSize);
 
         Map<String, Object> response = new HashMap<>();
         response.put("ctrtList", ctrtList);
         response.put("curPage", curPage);
         response.put("totalPage", totalPage);
         response.put("totalRecord", totalRecord);
-        // log.info("### ctrtList : {}", response.get("ctrtList"));
+        log.info("### ctrtList : {}", response.get("ctrtList"));
 
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/ctrt/dashboard")
+    public ResponseEntity<Map<String, Object>> getCtrtDashboard(){
+        log.info("계약 대시보드 컨트롤러 진입");
+
+        Map<String, Object> dashboard = rentCtrtService.selectCtrtDashboard();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("dashboard", dashboard);
+        log.info("## dashboard : {}", response.get("dashboard"));
+
+        return ResponseEntity.ok(response);
+    }
 }
