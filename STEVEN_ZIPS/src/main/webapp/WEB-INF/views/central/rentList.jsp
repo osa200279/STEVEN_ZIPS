@@ -222,7 +222,7 @@
             border-bottom: 1px solid #e5e7eb;
             color: #344054;
             font-size: 13px;
-            font-weight: 900;
+            font-weight: 800;
             text-align: center;
         }
 
@@ -231,6 +231,7 @@
             border-bottom: 1px solid #eef0eb;
             color: #344054;
             font-size: 14px;
+            font-weight: 400;
             text-align: center;
             padding: 10px 12px;
             vertical-align: middle;
@@ -278,12 +279,12 @@
 
         .rent-no {
             color: #8a96b3;
-            font-weight: 700;
+            font-weight: 500;
         }
 
         .rent-apt {
           color: #344054;
-          font-weight: 800;
+          font-weight: 500;
           text-align: center;
           white-space: nowrap;
           overflow: hidden;
@@ -292,7 +293,7 @@
 
         .rent-price {
             color: #005f46;
-            font-weight: 900;
+            font-weight: 600;
         }
 
         .status-badge {
@@ -327,7 +328,7 @@
             background: #edf5ef;
             color: #005f46;
             font-size: 12px;
-            font-weight: 900;
+            font-weight: 600;
         }
 
         .detail-btn {

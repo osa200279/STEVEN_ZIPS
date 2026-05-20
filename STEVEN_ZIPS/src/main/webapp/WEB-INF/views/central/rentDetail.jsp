@@ -4,6 +4,190 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/centralSidebarStyle.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/central/rentDetail.css">
 
+<style>
+  /* ==============================
+     매물 상세 페이지 레이아웃 보정
+  ============================== */
+
+  .rent-detail-layout {
+    margin-left: 336px !important;
+    width: calc(100% - 336px) !important;
+    min-height: 100vh !important;
+    padding: 24px 40px 56px !important;
+    background: #f8faf6 !important;
+    box-sizing: border-box !important;
+  }
+
+  .rent-detail-content {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .rent-detail-page {
+    width: 100% !important;
+    max-width: 1180px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .rent-detail-head {
+    margin-bottom: 20px !important;
+  }
+
+  .rent-detail-head h1 {
+    margin: 8px 0 10px !important;
+    font-size: 38px !important;
+    font-weight: 700 !important;
+    color: #0b1f17 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .rent-detail-head p {
+    margin: 0 !important;
+    font-size: 16px !important;
+    color: #667085 !important;
+    line-height: 1.6 !important;
+  }
+
+  .rent-detail-breadcrumb {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    color: #98a2b3 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+  }
+
+  .rent-detail-breadcrumb a {
+    color: #98a2b3 !important;
+    text-decoration: none !important;
+  }
+
+  .rent-detail-breadcrumb strong {
+    color: #005f46 !important;
+    font-weight: 700 !important;
+  }
+
+  /*
+    기존 rentDetail.css의 detail-hero가 큰 카드 역할을 해서
+    안쪽 detail-summary와 이중 카드가 생김.
+    여기서 바깥 카드 스타일 제거.
+  */
+  .detail-hero {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 24px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+  }
+
+  .detail-summary {
+    width: 100% !important;
+    padding: 28px 32px !important;
+    background: #fff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 18px !important;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.04) !important;
+    box-sizing: border-box !important;
+  }
+
+  .trade-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px 14px !important;
+    border-radius: 999px !important;
+    background: #16a34a !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    margin-bottom: 18px !important;
+  }
+
+  .detail-title {
+    margin: 0 0 18px !important;
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    color: #0b1f17 !important;
+    letter-spacing: -0.6px !important;
+  }
+
+  .detail-price {
+    margin-bottom: 18px !important;
+    color: #007a3d !important;
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.7px !important;
+  }
+
+  .detail-address {
+    margin: 0 0 24px !important;
+    color: #667085 !important;
+    font-size: 15px !important;
+  }
+
+  .summary-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    margin-top: 20px !important;
+  }
+
+  .summary-grid > div {
+    padding: 16px 18px !important;
+    border-radius: 12px !important;
+    background: #f8fafc !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  .summary-grid span {
+    display: block !important;
+    margin-bottom: 7px !important;
+    color: #667085 !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+  }
+
+  .summary-grid strong {
+    color: #111827 !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+  }
+
+  .detail-card {
+    width: 100% !important;
+    padding: 28px 32px !important;
+    margin-bottom: 24px !important;
+    box-sizing: border-box !important;
+  }
+
+  @media (max-width: 1200px) {
+    .rent-detail-layout {
+      margin-left: 280px !important;
+      width: calc(100% - 280px) !important;
+      padding-left: 28px !important;
+      padding-right: 28px !important;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .rent-detail-layout {
+      margin-left: 0 !important;
+      width: 100% !important;
+      padding: 88px 20px 48px !important;
+    }
+
+    .summary-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
 <%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
 <%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
 
