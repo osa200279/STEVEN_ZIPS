@@ -1,4 +1,4 @@
-import { Download } from 'lucide-react';
+import { Download, FilePlusCorner, SquareStack } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import '../../styles/common.css';
@@ -42,8 +42,13 @@ const Ctrt = () => {
       }
     };
     fetchContracts();
-
   }, [pagination.curPage, filterStatus]);
+
+  const paging = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPage) {
+      setPagination(prev => ({ ...prev, curPage: newPage }));
+    }
+  };
 
   return (
     <div className="content-wrapper" style={{ paddingTop: '0px' }}>
@@ -56,6 +61,9 @@ const Ctrt = () => {
         <div className="header-actions">
           <button className="btn-outline">
             <span className="material-symbols-outlined">.xls 다운로드</span><Download size={17} />
+          </button>
+          <button className="btn-primary">
+            <span className="material-symbols-outlined">오프라인 계약 등록</span><FilePlusCorner size={17} />
           </button>
         </div>
       </div>
@@ -80,7 +88,7 @@ const Ctrt = () => {
         </div>
 
         <div className="filter-right-group">
-          <p className="table-info-text">Showing 10 of 1,284</p>
+          <p className="table-info-text mr-4">Total {pagination.totalRecord}건</p>
           <div className="view-toggle-box">
             <button className="toggle-btn active"><span className="material-symbols-outlined">list</span></button>
             <button className="toggle-btn"><span className="material-symbols-outlined">grid_view</span></button>
@@ -96,6 +104,7 @@ const Ctrt = () => {
               <tr>
                 <th style={{ textAlign: 'left', marginRight: '0px', paddingRight: '0px' }}>계약 번호</th>
                 <th>ID</th>
+                <th>이름</th>
                 <th>아파트</th>
                 <th>승인일</th>
                 <th>계약 기간</th>
@@ -125,7 +134,11 @@ const Ctrt = () => {
                       <td> {/* ID */}
                         <div>
                           <p className="cell-title">{item.USER_ID}</p>
-                          <p className="cell-sub">이름 : {item.USER_NM}</p>
+                        </div>
+                      </td>
+                      <td> {/* 이름 */}
+                        <div>
+                          <p className="cell-title">이름 : {item.USER_NM}</p>
                         </div>
                       </td>
                       <td> {/* 아파트 */}
@@ -136,7 +149,10 @@ const Ctrt = () => {
                         <span className="cell-title">{item.CTRT_APRV_DT ? new Date(item.CTRT_APRV_DT).toLocaleDateString() : "미승인"}</span>
                       </td>
                       <td> {/* 기간 */}
-                        {item.MVIN_DT && item.MVOUT_DT ? <span className="cell-title">{new Date(item.MVIN_DT).toLocaleDateString()} ~ {new Date(item.MVOUT_DT).toLocaleDateString()}</span>
+                        {item.MVIN_DT && item.MVOUT_DT ?
+                          <span className="cell-title">
+                            {new Date(item.MVIN_DT).toLocaleDateString().replace(/\.$/, '')} ~ {new Date(item.MVOUT_DT).toLocaleDateString().replace(/\.$/, '')}
+                          </span>
                           : <span className='cell-title'>미정</span>}
                       </td>
                       <td> {/* 임대 타입 */}
@@ -174,20 +190,34 @@ const Ctrt = () => {
         {/* 하단 페이징 영역 */}
         <div className="table-pagination">
           <div className="pagination-right">
-            <p className="table-info-text mr-4">1-10 of 128</p>
-            <button className="btn-page-nav" disabled>
+            <p className="table-info-text mr-4">Total {pagination.totalRecord}건</p>
+            {/* 이전 버튼 */}
+            <button className="btn-page-nav"
+              disabled={pagination.curPage === 1}
+              onClick={() => paging(pagination.curPage - 1)}
+            >
               <span className="material-symbols-outlined">&lt;</span>
             </button>
+
+            {/* 페이지 번호 동적 생성 */}
             <div className="page-numbers">
-              <button className="btn-page-number active">1</button>
-              <button className="btn-page-number">2</button>
-              <button className="btn-page-number">3</button>
-              <span className="page-ellipsis">...</span>
-              <button className="btn-page-number">13</button>
+              {Array.from({ length: pagination.totalPage || 1 }, (_, i) => i + 1).map((pageNum) => (
+                <button key={pageNum}
+                  className={`btn-page-number ${pagination.curPage === pageNum ? 'active' : ''}`}
+                  onClick={() => paging(pageNum)}>
+                  {pageNum}
+                </button>
+              ))}
+
+              {/* 다음 버튼 */}
+              <button
+                className='btn-page-nav'
+                disabled={pagination.curPage === pagination.totalPage || pagination.totalPage === 0}
+                onClick={() => paging(pagination.curPage + 1)}
+              >
+                <span className='material-symbols-outlined'>&gt;</span>
+              </button>
             </div>
-            <button className="btn-page-nav">
-              <span className="material-symbols-outlined">&gt;</span>
-            </button>
           </div>
         </div>
       </div>

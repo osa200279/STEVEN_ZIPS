@@ -70,6 +70,11 @@
     gap: 8px;
 }
 
+.board {
+  font-size: 20px;
+  margin-bottom : 10px;
+}
+
 /* 공통 버튼 스타일 */
 .btn {
     display: inline-flex;

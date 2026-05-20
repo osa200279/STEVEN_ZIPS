@@ -36,7 +36,7 @@ const MainLayout = ({ children }) => {
           parent={pageInfo.parent}
           current={pageInfo.current}
           admInfo={admInfo} />
-        <main className="main-content" style={{ flex: 1, padding: '28px' }}>
+        <main className="main-content" style={{ flex: 1, padding: '10px 28px' }}>
           <Outlet context={{ admInfo, setPageInfo }} />
         </main>
       </div>
