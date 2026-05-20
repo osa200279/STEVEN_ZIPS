@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.contract.mapper.IFacilityContractMapper">
+
+    <!-- 관리사무소 단지번호 조회 -->
+    <select id="selectAptCmplexNoByMgmtOfcNo" parameterType="string" resultType="string">
+        select apt_cmplex_no
+        from mgmt_office
+        where mgmt_ofc_no = #{mgmtOfcNo}
+    </select>
+
+    <!-- 계약 현황 조회 -->
+    <select id="selectContractStats" parameterType="map" resultType="map">
+        select count(*) as totalCnt
+        , sum(case
+        when trunc(sysdate) between trunc(fc.cont_bgng_dt) and trunc(fc.cont_end_dt)
+        then 1
+        else 0
+        end) as activeCnt
+        , sum(case
+        when trunc(fc.cont_end_dt) - trunc(sysdate) between 0 and 7
+        then 1
+        else 0
+        end) as expiringCnt
+        , sum(case
+        when up.utility_provider_no is not null
+        then 1
+        else 0
+        end) as meterCnt
+        from facility_contract fc
+        inner join facility f
+        on fc.facility_no = f.facility_no
+        left outer join utility_provider up
+        on fc.cont_no = up.cont_no
+        where f.apt_cmplex_no = #{aptCmplexNo}
+    </select>
+
+    <!-- 계약 목록 조회 -->
+    <select id="selectContractList" parameterType="map" resultType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractVO">
+        select fc.cont_no
+        , fc.facility_no
+        , fc.partner_no
+        , fc.cont_nm
+        , fc.bid_ty_cd
+        , fc.cont_dt
+        , fc.cont_stts_cd
+        , fc.cont_amt
+        , fc.pymt_dt
+        , fc.cont_bgng_dt
+        , fc.cont_end_dt
+        , f.facility_nm
+        , fac_ty.code_name as facility_ty_nm
+        , p.partner_nm
+        , bid_ty.code_name as bid_ty_nm
+        , cont_stts.code_name as cont_stts_nm
+        , trunc(fc.cont_end_dt) - trunc(sysdate) as expire_days
+        , case
+        when up.utility_provider_no is null
+        then 'N'
+        else 'Y'
+        end as meter_setting_yn
+        , up.utility_provider_no
+        , up.csv_idntf_key
+        , up.ext_cust_no
+        , up.rmrk_cn as utility_rmrk_cn
+        from facility_contract fc
+        inner join facility f
+        on fc.facility_no = f.facility_no
+        inner join partner p
+        on fc.partner_no = p.partner_no
+        left outer join common_code fac_ty
+        on f.facility_ty_cd = fac_ty.code_no_cd
+        and fac_ty.group_code_no = 'FACILITY_TY'
+        left outer join common_code bid_ty
+        on fc.bid_ty_cd = bid_ty.code_no_cd
+        and bid_ty.group_code_no = 'BID_TY'
+        left outer join common_code cont_stts
+        on fc.cont_stts_cd = cont_stts.code_no_cd
+        and cont_stts.group_code_no = 'CONT_STTS'
+        left outer join utility_provider up
+        on fc.cont_no = up.cont_no
+        where f.apt_cmplex_no = #{aptCmplexNo}
+        <if test="contSttsCd != null and contSttsCd != ''">
+            and fc.cont_stts_cd = #{contSttsCd}
+        </if>
+        <if test="bidTyCd != null and bidTyCd != ''">
+            and fc.bid_ty_cd = #{bidTyCd}
+        </if>
+        <if test="expireYn != null and expireYn == 'Y'">
+            and trunc(fc.cont_end_dt) - trunc(sysdate) between 0 and 7
+        </if>
+        <if test="meterSettingYn != null and meterSettingYn == 'Y'">
+            and up.utility_provider_no is not null
+        </if>
+        <if test="meterSettingYn != null and meterSettingYn == 'N'">
+            and up.utility_provider_no is null
+        </if>
+        <if test="keyword != null and keyword != ''">
+            and (
+            upper(fc.cont_no) like '%' || upper(#{keyword}) || '%'
+            or upper(fc.cont_nm) like '%' || upper(#{keyword}) || '%'
+            or upper(f.facility_nm) like '%' || upper(#{keyword}) || '%'
+            or upper(p.partner_nm) like '%' || upper(#{keyword}) || '%'
+            )
+        </if>
+        order by fc.cont_end_dt asc nulls last
+        , fc.cont_no desc
+    </select>
+
+    <!-- 만료임박 계약 목록 조회 -->
+    <select id="selectExpiringContractList" parameterType="map" resultType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractVO">
+        select fc.cont_no
+        , fc.cont_nm
+        , fc.cont_end_dt
+        , f.facility_nm
+        , p.partner_nm
+        , trunc(fc.cont_end_dt) - trunc(sysdate) as expire_days
+        from facility_contract fc
+        inner join facility f
+        on fc.facility_no = f.facility_no
+        inner join partner p
+        on fc.partner_no = p.partner_no
+        where f.apt_cmplex_no = #{aptCmplexNo}
+        and trunc(fc.cont_end_dt) - trunc(sysdate) between 0 and 7
+        order by fc.cont_end_dt asc
+        , fc.cont_no desc
+    </select>
+
+    <!-- 시설 선택 목록 조회 -->
+    <select id="selectFacilitySelectList" parameterType="string" resultType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractVO">
+        select f.facility_no
+        , f.facility_nm
+        , fac_ty.code_name as facility_ty_nm
+        from facility f
+        left outer join common_code fac_ty
+        on f.facility_ty_cd = fac_ty.code_no_cd
+        and fac_ty.group_code_no = 'FACILITY_TY'
+        where f.apt_cmplex_no = #{aptCmplexNo}
+        order by f.facility_nm
+    </select>
+
+    <!-- 협력업체 선택 목록 조회 -->
+    <select id="selectPartnerSelectList" parameterType="string" resultType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractVO">
+        select p.partner_no
+        , p.partner_nm
+        from partner p
+        where p.apt_cmplex_no = #{aptCmplexNo}
+        and nvl(p.use_yn, 'Y') = 'Y'
+        order by p.partner_nm
+    </select>
+
+    <!-- 입찰유형 공통코드 목록 조회 -->
+    <select id="selectBidTypeCodeList" resultType="map">
+        select code_no_cd as code
+        , code_name as name
+        from common_code
+        where group_code_no = 'BID_TY'
+        and use_yn = 'Y'
+        order by sort_order
+    </select>
+
+    <!-- 계약상태 공통코드 목록 조회 -->
+    <select id="selectContractStatusCodeList" resultType="map">
+        select code_no_cd as code
+        , code_name as name
+        from common_code
+        where group_code_no = 'CONT_STTS'
+        and use_yn = 'Y'
+        order by sort_order
+    </select>
+
+    <!-- 계약 등록 -->
+    <insert id="insertContract" parameterType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractVO">
+        <selectKey keyProperty="contNo" resultType="string" order="BEFORE">
+            select 'CONT' || lpad(nvl(max(to_number(regexp_substr(cont_no, '[0-9]+'))), 0) + 1, 4, '0')
+            from facility_contract
+        </selectKey>
+        insert into facility_contract (
+        cont_no
+        , facility_no
+        , partner_no
+        , cont_nm
+        , bid_ty_cd
+        , cont_dt
+        , cont_stts_cd
+        , cont_amt
+        , pymt_dt
+        , cont_bgng_dt
+        , cont_end_dt
+        ) values (
+        #{contNo}
+        , #{facilityNo}
+        , #{partnerNo}
+        , #{contNm}
+        , #{bidTyCd}
+        , #{contDt}
+        , #{contSttsCd}
+        , #{contAmt}
+        , #{pymtDt}
+        , #{contBgngDt}
+        , #{contEndDt}
+        )
+    </insert>
+
+    <!-- 계약 수정 -->
+    <update id="updateContract" parameterType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractVO">
+        update facility_contract
+        set facility_no    = #{facilityNo}
+        , partner_no     = #{partnerNo}
+        , cont_nm        = #{contNm}
+        , bid_ty_cd      = #{bidTyCd}
+        , cont_dt        = #{contDt}
+        , cont_stts_cd   = #{contSttsCd}
+        , cont_amt       = #{contAmt}
+        , pymt_dt        = #{pymtDt}
+        , cont_bgng_dt   = #{contBgngDt}
+        , cont_end_dt    = #{contEndDt}
+        where cont_no = #{contNo}
+    </update>
+
+    <!-- 검침 설정 등록 -->
+    <insert id="insertUtilityProvider" parameterType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractVO">
+        <selectKey keyProperty="utilityProviderNo" resultType="string" order="BEFORE">
+            select 'UP' || lpad(nvl(max(to_number(regexp_substr(utility_provider_no, '[0-9]+'))), 0) + 1, 6, '0')
+            from utility_provider
+        </selectKey>
+        insert into utility_provider (
+        utility_provider_no
+        , apt_cmplex_no
+        , partner_no
+        , cont_no
+        , csv_idntf_key
+        , ext_cust_no
+        , rmrk_cn
+        ) values (
+        #{utilityProviderNo}
+        , #{aptCmplexNo}
+        , #{partnerNo}
+        , #{contNo}
+        , #{csvIdntfKey}
+        , #{extCustNo}
+        , #{utilityRmrkCn}
+        )
+    </insert>
+
+    <!-- 검침 설정 수정 -->
+    <update id="updateUtilityProvider" parameterType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractVO">
+        update utility_provider
+        set csv_idntf_key = #{csvIdntfKey}
+        , ext_cust_no   = #{extCustNo}
+        , rmrk_cn       = #{utilityRmrkCn}
+        where utility_provider_no = #{utilityProviderNo}
+        and cont_no = #{contNo}
+    </update>
+
+</mapper>

@@ -7,7 +7,9 @@
 <c:set var="isAdmin" value="false" />
 <sec:authorize access="hasRole('ADMIN')"><c:set var="isAdmin" value="true" /></sec:authorize>
 <c:set var="isUpdate" value="${formMode eq 'update'}" />
-<c:set var="isLocked" value="${isAdmin or isUpdate}" />
+<c:set var="isFollow" value="${formMode eq 'follow'}" />
+<c:set var="isLocked" value="${isAdmin or isUpdate or isFollow}" />
+<c:set var="isOwnerLocked" value="${isAdmin or isUpdate}" />
 <%-- update 모드 form action --%>
 <c:set var="formAction" value="${ctx}/manager/checkHistory/register/${mgmtOfcNo}" />
 <c:if test="${isUpdate}">
@@ -19,7 +21,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${isUpdate ? '시설 점검 이력 수정' : '시설 점검 이력 등록'}</title>
+    <title>${isUpdate ? '시설 점검 이력 수정' : '시설 점검 새 이력 등록'}</title>
     <sec:csrfMetaTags/>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -65,6 +67,13 @@
         #fchPage .empty-state p { margin:0 0 10px; color:#6f7d72; font-size:12px; font-weight:700; }
         #fchPage .selected-state { min-height:110px; }
         #fchPage .selected-actions { display:flex; justify-content:flex-end; margin-top:10px; }
+        #fchPage .owner-choice { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding:8px 10px; border:1px solid var(--line); border-radius:5px; background:#fbfcfb; }
+        #fchPage .owner-choice-label { color:#4a5c4e; font-size:11px; font-weight:800; white-space:nowrap; }
+        #fchPage .owner-radio { display:inline-flex; align-items:center; gap:4px; color:#243027; font-size:12px; font-weight:700; cursor:pointer; }
+        #fchPage .owner-radio input { margin:0; }
+        #fchPage .self-check-box { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:110px; padding:14px; border:1px dashed #cfd8d1; border-radius:5px; background:#fbfcfb; text-align:center; }
+        #fchPage .self-check-box .material-symbols-rounded { font-size:26px; color:#6f7d72; margin-bottom:6px; }
+        #fchPage .self-check-box p { margin:0; color:#4a5c4e; font-size:12px; font-weight:800; }
         #fchPage .info-tbl { width:100%; border-collapse:collapse; table-layout:fixed; }
         #fchPage .info-tbl th { width:68px; height:34px; padding:0 8px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--th); color:#27382b; font-size:11px; font-weight:800; text-align:left; white-space:nowrap; }
         #fchPage .info-tbl td { height:34px; padding:0 10px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); color:#111827; font-size:12px; font-weight:600; word-break:break-word; }
@@ -73,7 +82,7 @@
         #fchPage .info-tbl tr:last-child th, #fchPage .info-tbl tr:last-child td { border-bottom:none; }
 
         /* 하단 2분할 */
-        #fchPage .history-layout { display:grid; grid-template-columns:40% minmax(0,1fr); gap:16px; }
+        #fchPage .history-layout { display:grid; grid-template-columns:46% minmax(0,1fr); gap:16px; }
         #fchPage .list-area { border-right:1px solid var(--line); padding-right:16px; }
         #fchPage .area-title { display:flex; align-items:center; gap:5px; margin-bottom:8px; color:#4a5c4e; font-size:11px; font-weight:800; }
         #fchPage .area-title .material-symbols-rounded { font-size:15px; color:var(--acc); }
@@ -99,6 +108,7 @@
         #fchPage .h-meta    { display:flex; align-items:center; gap:5px; margin-bottom:4px; }
         #fchPage .h-type    { color:#39443d; font-size:11px; font-weight:800; }
         #fchPage .h-partner { display:block; color:#6b7280; font-size:11px; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #fchPage .h-flow    { display:block; color:#8a9a8e; font-size:10px; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         #fchPage .h-cn      { display:block; color:#374151; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         #fchPage .badge { display:inline-flex; align-items:center; justify-content:center; min-height:18px; padding:0 6px; border-radius:3px; font-size:10px; font-weight:700; border:1px solid transparent; white-space:nowrap; }
         #fchPage .badge-wait  { background:#f3f4f6; color:#4b5563; border-color:#d1d5db; }
@@ -156,6 +166,7 @@
         #fchPage .modal-table td { height:36px; padding:4px 8px; border-bottom:1px solid #eef1f3; font-size:12px; text-align:center; }
         #fchPage .modal-table .td-left { text-align:left; }
 
+
         @media(max-width:1100px) {
             #fchPage .target-grid, #fchPage .history-layout { grid-template-columns:1fr; }
             #fchPage .list-area { border-right:none; padding-right:0; }
@@ -181,10 +192,11 @@
 
                 <div class="page-header">
                     <div class="page-title-block">
-                        <h2>${isUpdate ? '시설 점검 이력 수정' : '시설 점검 이력 등록'}</h2>
+                        <h2>${isUpdate ? '시설 점검 이력 수정' : isFollow ? '시설 점검 후속 이력 등록' : '시설 점검 이력 등록'}</h2>
                         <p>
                             <c:choose>
                                 <c:when test="${isUpdate}">오정보 정정 목적의 수정입니다. 시설과 협력업체는 변경할 수 없습니다.</c:when>
+                                <c:when test="${isFollow}">기준 이력과 같은 처리과정으로 후속 점검 이력을 등록합니다.</c:when>
                                 <c:otherwise>시설을 선택하고 기존 이력을 확인하면서 새 점검 이력을 등록합니다.</c:otherwise>
                             </c:choose>
                         </p>
@@ -202,6 +214,8 @@
                     <sec:csrfInput/>
                     <input type="hidden" id="facilityNo" name="facilityNo" value="${check.facilityNo}">
                     <input type="hidden" id="partnerNo"  name="partnerNo"  value="${check.partnerNo}">
+                    <input type="hidden" id="chkFlowNo" name="chkFlowNo" value="${check.chkFlowNo}">
+                    <input type="hidden" id="chkOwnerType" name="chkOwnerType" value="${empty check.chkOwnerType ? 'SELF' : check.chkOwnerType}">
                     <c:if test="${isUpdate}">
                         <input type="hidden" name="facChkHstryNo" value="${check.facChkHstryNo}">
                     </c:if>
@@ -213,8 +227,9 @@
                                 <span class="material-symbols-rounded">apartment</span>대상 정보
                                 <span class="title-sub">
                                     <c:choose>
-                                        <c:when test="${isUpdate}">수정 모드에서는 시설과 협력업체를 변경할 수 없습니다.</c:when>
-                                        <c:otherwise>시설과 협력업체를 선택합니다.</c:otherwise>
+                                        <c:when test="${isUpdate}">수정 모드에서는 시설과 점검 주체를 변경할 수 없습니다.</c:when>
+                                        <c:when test="${isFollow}">후속 등록은 기준 이력의 시설과 처리과정을 유지합니다.</c:when>
+                                        <c:otherwise>시설을 선택하고 점검 주체를 정합니다.</c:otherwise>
                                     </c:choose>
                                 </span>
                             </div>
@@ -279,59 +294,78 @@
                                     </div>
                                 </div>
 
-                                <%-- 협력업체 카드 --%>
+                                <%-- 점검 주체 / 협력업체 카드 --%>
                                 <div class="target-card">
                                     <div class="target-head">
                                         <div class="target-title">
-                                            <span class="material-symbols-rounded">handshake</span>협력업체 정보
+                                            <span class="material-symbols-rounded">handshake</span>점검 주체
                                         </div>
                                         <c:choose>
-                                            <c:when test="${isLocked}">
+                                            <c:when test="${isOwnerLocked}">
                                                 <span class="target-locked">
                                                     <span class="material-symbols-rounded">lock</span>변경 불가
                                                 </span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="target-fixed">필수 선택</span>
+                                                <span class="target-fixed">자체점검 또는 협력업체 점검</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </div>
                                     <div class="target-body">
-                                        <c:if test="${not isLocked}">
-                                            <div id="partnerEmptyState" class="empty-state ${empty check.partnerNo ? '' : 'is-hidden'}">
-                                                <span class="material-symbols-rounded">business_center</span>
-                                                <p>점검을 진행한 협력업체를 선택하세요.</p>
-                                                <button type="button" class="btn btn-primary" id="openPartnerModalBtn">
-                                                    <span class="material-symbols-rounded">search</span>협력업체 선택
-                                                </button>
-                                            </div>
-                                        </c:if>
-                                        <div id="partnerSelectedState" class="${(not isLocked and empty check.partnerNo) ? 'selected-state is-hidden' : 'selected-state'}">
-                                            <table class="info-tbl">
-                                                <tr>
-                                                    <th>업체명</th>
-                                                    <td><span id="partnerNmText">${empty check.partnerNm ? '-' : check.partnerNm}</span></td>
-                                                    <th>업체번호</th>
-                                                    <td><span id="partnerNoText" class="mono">${empty check.partnerNo ? '-' : check.partnerNo}</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>업종</th>
-                                                    <td><span id="bizTyText" class="ellipsis">${empty check.bizTyNm ? '-' : check.bizTyNm}</span></td>
-                                                    <th>담당자</th>
-                                                    <td><span id="partnerPicNmText">${empty check.picNm ? '-' : check.picNm}</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>연락처</th>
-                                                    <td><span id="partnerPicTelText">${empty check.picTelno ? '-' : check.picTelno}</span></td>
-                                                    <th>이메일</th>
-                                                    <td><span id="partnerEmailText" class="ellipsis">${empty check.picEmail ? '-' : check.picEmail}</span></td>
-                                                </tr>
-                                            </table>
-                                            <c:if test="${not isLocked}">
-                                                <div class="selected-actions">
-                                                    <button type="button" class="btn" id="reopenPartnerModalBtn">다시 선택</button>
+                                        <div class="owner-choice">
+                                            <span class="owner-choice-label">점검 주체</span>
+                                            <label class="owner-radio">
+                                                <input type="radio" name="ownerTypeRadio" id="checkOwnerSelf" value="SELF" ${check.chkOwnerType ne 'PARTNER' ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+                                                자체점검
+                                            </label>
+                                            <label class="owner-radio">
+                                                <input type="radio" name="ownerTypeRadio" id="checkOwnerPartner" value="PARTNER" ${check.chkOwnerType eq 'PARTNER' ? 'checked' : ''} ${isLocked ? 'disabled' : ''}>
+                                                협력업체 점검
+                                            </label>
+                                        </div>
+
+                                        <div id="partnerSelfState" class="self-check-box ${check.chkOwnerType eq 'PARTNER' ? 'is-hidden' : ''}">
+                                            <span class="material-symbols-rounded">engineering</span>
+                                            <p>관리사무소 자체점검으로 등록됩니다.</p>
+                                        </div>
+
+                                        <div id="partnerChoiceState" class="${check.chkOwnerType eq 'PARTNER' ? '' : 'is-hidden'}">
+                                            <c:if test="${not isOwnerLocked}">
+                                                <div id="partnerEmptyState" class="empty-state ${empty check.partnerNo ? '' : 'is-hidden'}">
+                                                    <span class="material-symbols-rounded">business_center</span>
+                                                    <p>점검을 진행한 협력업체를 선택하세요.</p>
+                                                    <button type="button" class="btn btn-primary" id="openPartnerModalBtn">
+                                                        <span class="material-symbols-rounded">search</span>협력업체 선택
+                                                    </button>
                                                 </div>
                                             </c:if>
+                                            <div id="partnerSelectedState" class="${(not isLocked and empty check.partnerNo) ? 'selected-state is-hidden' : 'selected-state'}">
+                                                <table class="info-tbl">
+                                                    <tr>
+                                                        <th>업체명</th>
+                                                        <td><span id="partnerNmText">${empty check.partnerNm ? '-' : check.partnerNm}</span></td>
+                                                        <th>업체번호</th>
+                                                        <td><span id="partnerNoText" class="mono">${empty check.partnerNo ? '-' : check.partnerNo}</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>업종</th>
+                                                        <td><span id="bizTyText" class="ellipsis">${empty check.bizTyNm ? '-' : check.bizTyNm}</span></td>
+                                                        <th>담당자</th>
+                                                        <td><span id="partnerPicNmText">${empty check.picNm ? '-' : check.picNm}</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>연락처</th>
+                                                        <td><span id="partnerPicTelText">${empty check.picTelno ? '-' : check.picTelno}</span></td>
+                                                        <th>이메일</th>
+                                                        <td><span id="partnerEmailText" class="ellipsis">${empty check.picEmail ? '-' : check.picEmail}</span></td>
+                                                    </tr>
+                                                </table>
+                                                <c:if test="${not isOwnerLocked}">
+                                                    <div class="selected-actions">
+                                                        <button type="button" class="btn" id="reopenPartnerModalBtn">다시 선택</button>
+                                                    </div>
+                                                </c:if>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -385,8 +419,14 @@
                                                     </select>
                                                 </div>
                                                 <div class="f-field">
+                                                    <label class="field-label" for="historyFilterProcess">처리과정</label>
+                                                    <select class="form-select" id="historyFilterProcess">
+                                                        <option value="">전체</option>
+                                                    </select>
+                                                </div>
+                                                <div class="f-field">
                                                     <label class="field-label" for="historyFilterKeyword">검색어</label>
-                                                    <input type="text" class="form-input" id="historyFilterKeyword" placeholder="내용·업체명">
+                                                    <input type="text" class="form-input" id="historyFilterKeyword" placeholder="내용·업체명·처리과정번호">
                                                 </div>
                                                 <div class="f-btns">
                                                     <button type="button" class="btn btn-primary" id="historySearchBtn">검색</button>
@@ -409,7 +449,7 @@
                                         </div>
                                     </div>
                                     <div class="form-panel-body">
-                                        <%-- 이력번호 + 시설번호 --%>
+                                        <%-- 기준이력번호 / 시설번호 / 처리과정번호 / 이력번호 --%>
                                         <div class="form-grid" style="margin-bottom:10px;">
                                             <div id="baseHistoryRow" class="is-hidden">
                                                 <label class="form-label">기준이력번호</label>
@@ -418,6 +458,15 @@
                                             <div>
                                                 <label class="form-label">시설번호</label>
                                                 <div class="readonly-box mono" id="formFacilityNoText">${empty check.facilityNo ? '-' : check.facilityNo}</div>
+                                            </div>
+                                            <div>
+                                                <label class="form-label">처리과정번호</label>
+                                                <div class="readonly-box mono" id="formChkFlowNoText">
+                                                    <c:choose>
+                                                        <c:when test="${empty check.chkFlowNo}">저장 시 자동 생성</c:when>
+                                                        <c:otherwise>${check.chkFlowNo}</c:otherwise>
+                                                    </c:choose>
+                                                </div>
                                             </div>
                                             <div id="currentHistoryRow">
                                                 <label class="form-label">이력번호</label>
@@ -463,6 +512,11 @@
                                             점검 이력은 수정하지 않는 것을 원칙으로 합니다.<br>
                                             잘못 입력된 정보를 정정하는 경우에만 사용하세요.
                                         </div>
+                                        <div id="followNotice" class="is-hidden" style="margin-top:10px;padding:9px 12px;border:1px solid #bdd7c5;border-radius:5px;background:#f8fcf9;color:#2e5c38;font-size:11px;line-height:1.6;">
+                                            <strong>후속 이력 등록 안내</strong><br>
+                                            점검상태의 완료는 해당 이력 한 건의 완료를 의미합니다.<br>
+                                            같은 처리과정에 대한 재점검, 보완 조치, 사후 확인은 후속 이력으로 계속 등록할 수 있습니다.
+                                        </div>
                                         <%-- 버튼 바 --%>
                                         <div class="form-action-bar">
                                             <a class="btn" href="${ctx}/manager/checkHistory/${mgmtOfcNo}">목록</a>
@@ -485,7 +539,7 @@
                 </form>
 
                 <%-- 선택 모달 (등록 모드일 때만) --%>
-                <c:if test="${not isLocked}">
+                <c:if test="${not isOwnerLocked}">
                     <%@ include file="/WEB-INF/views/apt/mgmtOffice/facility/check/facility_check_select_modal.jspf" %>
                 </c:if>
 
@@ -504,10 +558,14 @@
         var OFC_NO    = '${mgmtOfcNo}';
         var IS_ADMIN  = ${isAdmin};
         var IS_UPDATE = ${isUpdate};  /* 수정 모드(URL 진입) 여부 */
+        var IS_FOLLOW = ${isFollow};  /* 후속 등록 모드(URL 진입) 여부 */
+        var BASE_HISTORY_NO = '${empty baseCheck.facChkHstryNo ? '' : baseCheck.facChkHstryNo}';
+        var BASE_FLOW_NO = '${empty check.chkFlowNo ? '' : check.chkFlowNo}';
         var REGISTER_ACTION = CTX + '/manager/checkHistory/register/' + OFC_NO;
         var UPDATE_ACTION_PREFIX = CTX + '/manager/checkHistory/update/' + OFC_NO + '/';
-        var currentMode = IS_UPDATE ? 'update' : 'register';
+        var currentMode = IS_UPDATE ? 'update' : (IS_FOLLOW ? 'follow' : 'register');
         var selectedHistory = null;
+        var INITIAL_OWNER_TYPE = '${empty check.chkOwnerType ? 'SELF' : check.chkOwnerType}';
 
         /* ── 화면 상태값 ── */
         var allList = [];   /* 전체 이력 원본 — AJAX 응답 기준 */
@@ -554,6 +612,8 @@
             setVal('chkDt',     h.chkDt     || '');
             setVal('chkCn',     h.chkCn     || '');
             setVal('rmk',       h.rmk       || '');
+            setVal('chkFlowNo', h.chkFlowNo || h.facChkHstryNo || '');
+            applyOwnerFromHistory(h);
         }
 
         /* ════════════════════════════
@@ -585,6 +645,136 @@
             return 'badge-wait';
         }
 
+        /* 점검 주체 표시값 반환 */
+        function getOwnerText(h) {
+            if (!h || !h.partnerNo) return '자체점검';
+            return h.partnerNm || '협력업체 점검';
+        }
+
+        /* 같은 처리과정 안에 완료 이력이 있는지 확인 */
+        function hasDoneInSameFlow(flowNo) {
+
+            // 처리과정번호가 없으면 완료 흐름 안내 대상 아님
+            if (!flowNo) {
+                return false;
+            }
+
+            // 같은 처리과정번호 안에 DONE 이력이 하나라도 있으면 true
+            return allList.some(function (h) {
+                return h && h.chkFlowNo === flowNo && h.chkSttsCd === 'DONE';
+            });
+        }
+
+        /* 처리과정 옵션 렌더링
+           - 같은 시설 이력 목록에서 CHK_FLOW_NO를 중복 제거해 select option 생성 */
+        function renderProcessOptions(list) {
+            var select = el('historyFilterProcess');
+            if (!select) return;
+
+            var prevValue = select.value || '';
+            var flowMap = {};
+            var hasNoFlow = false;
+
+            (list || []).forEach(function (h) {
+                var flowNo = h && h.chkFlowNo ? String(h.chkFlowNo) : '';
+
+                if (!flowNo) {
+                    hasNoFlow = true;
+                    return;
+                }
+
+                if (!flowMap[flowNo]) {
+                    flowMap[flowNo] = h;
+                }
+            });
+
+            var html = '<option value="">전체</option>';
+
+            Object.keys(flowMap).forEach(function (flowNo) {
+                var h = flowMap[flowNo];
+                var label = flowNo;
+
+                if (h.chkDt || h.chkCn) {
+                    label += ' - ' + (h.chkDt || '');
+
+                    if (h.chkCn) {
+                        label += ' ' + String(h.chkCn).substring(0, 14);
+                    }
+                }
+
+                html += '<option value="' + esc(flowNo) + '">' + esc(label) + '</option>';
+            });
+
+            if (hasNoFlow) {
+                html += '<option value="__NO_FLOW__">처리과정 없음</option>';
+            }
+
+            select.innerHTML = html;
+
+            if (prevValue) {
+                select.value = prevValue;
+            }
+        }
+
+        /* 점검 주체 UI 적용 */
+        function applyOwnerType(ownerType) {
+            var type = ownerType === 'PARTNER' ? 'PARTNER' : 'SELF';
+            setVal('chkOwnerType', type);
+
+            var selfRadio = el('checkOwnerSelf');
+            var partnerRadio = el('checkOwnerPartner');
+            if (selfRadio) selfRadio.checked = type === 'SELF';
+            if (partnerRadio) partnerRadio.checked = type === 'PARTNER';
+
+            if (type === 'SELF') {
+                setVal('partnerNo', '');
+                hide('partnerChoiceState');
+                show('partnerSelfState');
+                setText('partnerNoText', '-');
+                setText('partnerNmText', '-');
+                setText('bizTyText', '-');
+                setText('partnerPicNmText', '-');
+                setText('partnerPicTelText', '-');
+                setText('partnerEmailText', '-');
+            } else {
+                hide('partnerSelfState');
+                show('partnerChoiceState');
+                if (!el('partnerNo').value) {
+                    show('partnerEmptyState');
+                    hide('partnerSelectedState');
+                } else {
+                    hide('partnerEmptyState');
+                    show('partnerSelectedState');
+                }
+            }
+        }
+
+        /* 이력 객체 기준 점검 주체 UI 표시 */
+        function applyOwnerFromHistory(h) {
+            if (!h || !h.partnerNo) {
+                applyOwnerType('SELF');
+                return;
+            }
+
+            setVal('chkOwnerType', 'PARTNER');
+            setVal('partnerNo', h.partnerNo || '');
+            setText('partnerNoText', h.partnerNo);
+            setText('partnerNmText', h.partnerNm);
+            setText('bizTyText', h.bizTyNm);
+            setText('partnerPicNmText', h.picNm);
+            setText('partnerPicTelText', h.picTelno);
+            setText('partnerEmailText', h.picEmail);
+            hide('partnerSelfState');
+            show('partnerChoiceState');
+            hide('partnerEmptyState');
+            show('partnerSelectedState');
+
+            var partnerRadio = el('checkOwnerPartner');
+            var selfRadio = el('checkOwnerSelf');
+            if (partnerRadio) partnerRadio.checked = true;
+            if (selfRadio) selfRadio.checked = false;
+        }
+
         /* URLSearchParams 쿼리 문자열 생성 — 빈값 제외 */
         function buildQuery(params) {
             var q = new URLSearchParams();
@@ -609,7 +799,8 @@
                     +     '<span class="h-type">' + esc(h.chkTyNm) + '</span>'
                     +     '<span class="badge ' + badgeCls(h.chkSttsCd) + '">' + esc(h.chkSttsNm) + '</span>'
                     +   '</div>'
-                    +   '<span class="h-partner">' + esc(h.partnerNm) + '</span>'
+                    +   '<span class="h-partner">' + esc(getOwnerText(h)) + '</span>'
+                    +   '<span class="h-flow">처리과정 ' + esc(h.chkFlowNo || '-') + '</span>'
                     +   '<span class="h-cn">'      + esc(h.chkCn)     + '</span>'
                     + '</div>'
                     + '</button>';
@@ -635,6 +826,7 @@
                 .then(function (data) {
                     allList = (data && data.success ? data.historyList : []) || [];
                     latest  = allList.length > 0 ? allList[0] : null;
+                    renderProcessOptions(allList);
                     renderList(allList);
 
                     if (IS_UPDATE) {
@@ -647,6 +839,12 @@
                         } else {
                             setMode('detail');
                         }
+                        return;
+                    }
+
+                    if (IS_FOLLOW) {
+                        /* 후속 등록 진입 — 기준 이력의 처리과정을 유지한 새 이력 등록 폼 */
+                        setMode('follow', { facChkHstryNo: BASE_HISTORY_NO, chkFlowNo: BASE_FLOW_NO });
                         return;
                     }
 
@@ -693,6 +891,7 @@
             hide('saveHistoryBtn');
             hide('openCorrectBtn');
             hide('correctNotice');
+            hide('followNotice');
             hide('baseHistoryRow');
             setReadonly(true);
 
@@ -704,6 +903,7 @@
                 setFormAction(IS_UPDATE ? UPDATE_ACTION_PREFIX + encodeURIComponent('${check.facChkHstryNo}') : REGISTER_ACTION);
                 setText('historyFormTitle', '시설 선택 대기');
                 setText('formFacilityNoText', '-');
+                setText('formChkFlowNoText', '-');
                 setText('currentHistoryNoText', '-');
                 clearForm();
             }
@@ -713,8 +913,11 @@
                 setFormAction(REGISTER_ACTION);
                 setText('historyFormTitle', '시설 점검 이력 등록');
                 setText('formFacilityNoText', fNo);
+                setText('formChkFlowNoText', '저장 시 자동 생성');
                 setText('currentHistoryNoText', '신규');
                 clearForm();
+                setVal('chkFlowNo', '');
+                applyOwnerType(INITIAL_OWNER_TYPE || 'SELF');
                 setReadonly(false);
                 document.querySelectorAll('#facilityHistoryList .history-item').forEach(function (btn) { btn.classList.remove('is-active'); });
                 if (!IS_ADMIN) { show('saveHistoryBtn'); el('saveHistoryBtn').textContent = '등록'; }
@@ -726,7 +929,9 @@
                 setFormAction(IS_UPDATE && h.facChkHstryNo ? UPDATE_ACTION_PREFIX + encodeURIComponent(h.facChkHstryNo) : REGISTER_ACTION, h.facChkHstryNo);
                 setText('historyFormTitle', '기존 점검 이력 상세');
                 setText('formFacilityNoText', fNo);
+                setText('formChkFlowNoText', h.chkFlowNo || '-');
                 setText('currentHistoryNoText', h.facChkHstryNo || '-');
+                setVal('chkFlowNo', h.chkFlowNo || '');
                 fillForm(h);
 
                 if (!IS_ADMIN && !IS_UPDATE) {
@@ -746,14 +951,24 @@
                 var base = selectedHistory || history || latest || {};
                 var baseNo = base.facChkHstryNo || '';
                 setFormAction(REGISTER_ACTION);
+                var followFlowNo = base.chkFlowNo || base.facChkHstryNo || '';
                 setText('historyFormTitle', '후속이력 등록');
                 setText('formFacilityNoText', fNo);
+                setText('formChkFlowNoText', followFlowNo || '-');
                 setText('currentHistoryNoText', '신규');
                 setText('baseHistoryNoText', baseNo);
                 show('baseHistoryRow');
+                setVal('chkFlowNo', followFlowNo);
                 clearForm();
+                applyOwnerType('SELF');
                 setVal('rmk', baseNo ? '기준이력 ' + baseNo + ' 후속 조치' : '');
                 setReadonly(false);
+
+                /* 완료 이력 또는 완료 이력이 포함된 처리과정일 때만 후속 안내문구 표시 */
+                if (base.chkSttsCd === 'DONE' || hasDoneInSameFlow(followFlowNo)) {
+                    show('followNotice');
+                }
+
                 if (!IS_ADMIN) { show('saveHistoryBtn'); el('saveHistoryBtn').textContent = '후속 등록'; }
                 setCancelButtonText(IS_UPDATE ? '수정으로 돌아가기' : '취소');
                 show('cancelFollowBtn');
@@ -765,7 +980,9 @@
                 setFormAction(UPDATE_ACTION_PREFIX + encodeURIComponent(uh.facChkHstryNo || '${check.facChkHstryNo}'), uh.facChkHstryNo || '${check.facChkHstryNo}');
                 setText('historyFormTitle', '점검 이력 수정');
                 setText('formFacilityNoText', fNo);
+                setText('formChkFlowNoText', uh.chkFlowNo || '-');
                 setText('currentHistoryNoText', uh.facChkHstryNo || '${check.facChkHstryNo}' || '-');
+                setVal('chkFlowNo', uh.chkFlowNo || '');
                 fillForm(uh);
                 setReadonly(false);
                 show('correctNotice');
@@ -782,11 +999,20 @@
         function applyFilter() {
             var ty = el('historyFilterChkTyCd').value;
             var st = el('historyFilterChkSttsCd').value;
+            var process = el('historyFilterProcess').value;
             var kw = el('historyFilterKeyword').value.trim().toLowerCase();
 
             var filtered = allList.filter(function (h) {
-                var kwOk = !kw || [h.chkCn, h.rmk, h.partnerNm].join(' ').toLowerCase().indexOf(kw) > -1;
-                return (!ty || h.chkTyCd === ty) && (!st || h.chkSttsCd === st) && kwOk;
+                var ownerText = getOwnerText(h);
+                var processNo = h.chkFlowNo || '';
+                var kwOk = !kw || [h.chkCn, h.rmk, h.partnerNm, ownerText, h.chkFlowNo, h.facChkHstryNo].join(' ').toLowerCase().indexOf(kw) > -1;
+                var processOk = !process || processNo === process;
+
+                if (process === '__NO_FLOW__') {
+                    processOk = !processNo;
+                }
+
+                return (!ty || h.chkTyCd === ty) && (!st || h.chkSttsCd === st) && processOk && kwOk;
             });
 
             if (filtered.length === 0) {
@@ -807,6 +1033,7 @@
         function resetFilter() {
             setVal('historyFilterChkTyCd',   '');
             setVal('historyFilterChkSttsCd', '');
+            setVal('historyFilterProcess',   '');
             setVal('historyFilterKeyword',   '');
             renderList(allList);
             if (IS_UPDATE && allList.length > 0) {
@@ -932,6 +1159,7 @@
             if (!row) return;
 
             /* 상단 협력업체 카드 갱신 */
+            applyOwnerType('PARTNER');
             setVal('partnerNo', row.dataset.partnerNo);
             setText('partnerNoText',     row.dataset.partnerNo);
             setText('partnerNmText',     row.dataset.partnerNm);
@@ -950,6 +1178,9 @@
         ════════════════════════════ */
         document.addEventListener('click', function (e) {
             var t = e.target;
+
+            /* 점검 주체 변경 */
+            if (t && t.name === 'ownerTypeRadio') { applyOwnerType(t.value); return; }
 
             /* 시설 모달 열기 */
             if (t.closest('#openFacilityModalBtn, #reopenFacilityModalBtn')) { openModal('facilityModal'); return; }
@@ -1046,7 +1277,7 @@
         el('checkForm').addEventListener('submit', function (e) {
             if (IS_ADMIN)                    { alert('ADMIN 계정은 저장할 수 없습니다.');    e.preventDefault(); return; }
             if (!el('facilityNo').value)     { alert('점검 대상 시설을 선택해 주세요.');     e.preventDefault(); return; }
-            if (!el('partnerNo').value)      { alert('협력업체를 선택해 주세요.');           e.preventDefault(); return; }
+            if (el('chkOwnerType').value === 'PARTNER' && !el('partnerNo').value) { alert('협력업체 점검은 협력업체를 선택해 주세요.'); e.preventDefault(); return; }
             if (!el('chkTyCd').value)        { alert('점검유형을 선택해 주세요.');           e.preventDefault(); return; }
             if (!el('chkSttsCd').value)      { alert('점검상태를 선택해 주세요.');           e.preventDefault(); return; }
             if (!el('chkDt').value)          { alert('점검일자를 입력해 주세요.');           e.preventDefault(); return; }
@@ -1071,9 +1302,11 @@
             dedupSelect('facilityFilterType');
             dedupSelect('facilityFilterDong');
 
+            applyOwnerType(el('chkOwnerType') ? el('chkOwnerType').value : 'SELF');
+
             var initNo = el('facilityNo').value;
             if (initNo) {
-                /* facilityNo가 있으면 (수정 진입 또는 상세에서 후속등록 진입) 이력 바로 로드 */
+                /* facilityNo가 있으면 (수정/후속 진입 또는 시설 선택 등록 진입) 이력 바로 로드 */
                 if (el('facilityEmptyState'))    el('facilityEmptyState').classList.add('is-hidden');
                 if (el('facilitySelectedState')) el('facilitySelectedState').classList.remove('is-hidden');
                 loadHistory(initNo);

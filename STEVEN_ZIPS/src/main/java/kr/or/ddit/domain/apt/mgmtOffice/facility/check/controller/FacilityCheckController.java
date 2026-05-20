@@ -23,9 +23,9 @@ import java.util.Map;
  *
  * 역할
  * - 시설 점검 이력 목록/상세/등록/수정 화면 이동
+ * - 후속 이력 등록 화면 이동
  * - 등록/수정 통합 폼 화면에 필요한 모델 구성
  * - 시설 선택/협력업체 선택/같은 시설 이력 조회 AJAX 처리
- * - office_sidebar.jsp 직접 수정 없이 office_active_sidebar.jspf 기준 active 처리
  */
 @Slf4j
 @Controller
@@ -94,11 +94,7 @@ public class FacilityCheckController {
         model.addAttribute("searchVO", searchVO);
         model.addAttribute("searchWord", searchWord);
 
-        /*
-         * 현황 카드 건수
-         * - 검색 조건과 무관하게 관리사무소 전체 기준으로 조회
-         * - Mapper에서 null이 나와도 JSP에서 터지지 않도록 빈 VO 보정
-         */
+        /* 현황 카드 건수 */
         FacilityCheckHstryVO summary = facilityCheckService.selectFacilityCheckSummary(mgmtOfcNo);
         model.addAttribute("summary", summary == null ? new FacilityCheckHstryVO() : summary);
 
@@ -115,7 +111,7 @@ public class FacilityCheckController {
      * 화면 역할
      * - 선택한 점검 이력 상세 조회
      * - 같은 시설의 다른 점검 이력 목록 조회
-     * - 상세 화면에서는 같은 시설 이력을 간략 목록으로 보여주고, 클릭 시 모달 상세로 확인하는 구조 예정
+     * - 같은 시설의 자체점검/협력업체점검 흐름 확인
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/detail/{mgmtOfcNo}/{facChkHstryNo}")
@@ -132,17 +128,16 @@ public class FacilityCheckController {
         /* 상세 대상 조회 */
         FacilityCheckHstryVO check = facilityCheckService.selectFacilityCheckDetail(mgmtOfcNo, facChkHstryNo);
 
-        /* 상세 대상이 없는 경우 목록으로 복귀 */
+        /* 상세 대상 없음 */
         if (check == null) {
             redirectAttributes.addFlashAttribute("message", "조회된 시설 점검 이력이 없습니다.");
             return "redirect:/manager/checkHistory/" + mgmtOfcNo;
         }
 
-        /*
-         * 같은 시설 이력 목록 조회
-         * - 상세 화면의 간략 이력 목록
-         * - 등록/수정 통합폼의 왼쪽 이력 목록과 같은 기준
-         */
+        /* 점검 주체 화면값 세팅 */
+        setCheckOwnerType(check);
+
+        /* 같은 시설 이력 목록 조회 */
         List<FacilityCheckHstryVO> sameFacilityCheckList =
                 facilityCheckService.selectSameFacilityCheckList(mgmtOfcNo, check.getFacilityNo());
 
@@ -158,13 +153,9 @@ public class FacilityCheckController {
      * 시설 점검 이력 등록 화면
      *
      * 화면 역할
-     * - 등록/수정 통합 폼의 등록 모드
-     * - facilityNo 파라미터가 없으면 시설 선택 전 등록 화면
-     * - facilityNo 파라미터가 있으면 특정 시설의 첫 이력 또는 새 이력 등록 화면
-     *
-     * 예시
-     * - /manager/checkHistory/register/74
-     * - /manager/checkHistory/register/74?facilityNo=FAC0051
+     * - 새 점검 흐름 등록
+     * - facilityNo 파라미터가 있으면 특정 시설 기준 등록
+     * - chkFlowNo는 비워두고 XML에서 새 이력번호를 흐름번호로 사용
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/register/{mgmtOfcNo}")
@@ -181,11 +172,10 @@ public class FacilityCheckController {
         FacilityCheckHstryVO check = new FacilityCheckHstryVO();
         check.setMgmtOfcNo(mgmtOfcNo);
 
-        /*
-         * 시설 상세에서 점검 이력 등록으로 진입한 경우
-         * - 시설번호를 미리 세팅함
-         * - JSP에서 해당 시설 선택 상태와 같은 시설 이력 목록을 표시할 수 있음
-         */
+        /* 점검 주체 기본값 세팅 */
+        check.setChkOwnerType("SELF");
+
+        /* 시설 상세에서 진입한 경우 시설번호 세팅 */
         if (facilityNo != null && !facilityNo.isBlank()) {
             check.setFacilityNo(facilityNo);
         }
@@ -197,11 +187,74 @@ public class FacilityCheckController {
     }
 
     /**
+     * 시설 점검 후속 이력 등록 화면
+     *
+     * 화면 역할
+     * - 기존 점검 이력의 같은 흐름으로 새 이력 등록
+     * - 기존 이력의 시설번호와 점검흐름번호 유지
+     * - 자체점검/협력업체점검은 후속 등록 시 다시 선택 가능
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/follow/{mgmtOfcNo}/{facChkHstryNo}")
+    public String followRegisterPage(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String facChkHstryNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        /* 관리사무소 공통 화면 모델 세팅 */
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        /* 기준 이력 조회 */
+        FacilityCheckHstryVO baseCheck =
+                facilityCheckService.selectFacilityCheckDetail(mgmtOfcNo, facChkHstryNo);
+
+        /* 기준 이력 없음 */
+        if (baseCheck == null) {
+            redirectAttributes.addFlashAttribute("message", "후속 이력을 등록할 기준 점검 이력이 없습니다.");
+            return "redirect:/manager/checkHistory/" + mgmtOfcNo;
+        }
+
+        /* 기준 이력 점검 주체 세팅 */
+        setCheckOwnerType(baseCheck);
+
+        /* 후속 등록 기본 객체 생성 */
+        FacilityCheckHstryVO check = new FacilityCheckHstryVO();
+        check.setMgmtOfcNo(mgmtOfcNo);
+
+        /* 같은 시설번호 유지 */
+        check.setFacilityNo(baseCheck.getFacilityNo());
+
+        /* 기준 이력 처리과정번호 검증 */
+        /* - 후속 이력은 기존 처리과정번호가 있어야만 등록 가능 */
+        /* - 처리과정번호가 없으면 FCH 이력번호로 대체하지 않음 */
+        if (baseCheck.getChkFlowNo() == null || baseCheck.getChkFlowNo().isBlank()) {
+            redirectAttributes.addFlashAttribute("message", "기준 이력에 처리과정번호가 없어 후속 이력을 등록할 수 없습니다.");
+            return "redirect:/manager/checkHistory/detail/" + mgmtOfcNo + "/" + facChkHstryNo;
+        }
+
+        /* 같은 처리과정번호 유지 */
+        check.setChkFlowNo(baseCheck.getChkFlowNo());
+
+        /* 점검 주체 기본값 세팅 */
+        check.setChkOwnerType("SELF");
+
+        /* 등록 화면 공통 모델 세팅 */
+        setFormModel(mgmtOfcNo, "follow", check, model);
+
+        /* 후속 등록 기준 이력 전달 */
+        model.addAttribute("baseCheck", baseCheck);
+
+        return "apt/mgmtOffice/facility/check/mngr_facility_check_form";
+    }
+
+    /**
      * 시설 점검 이력 등록 처리
      *
      * 처리 기준
-     * - facChkHstryNo 없음
-     * - FACILITY_CHECK_HSTRY insert
+     * - 일반 등록: 새 CHK_FLOW_NO 생성
+     * - 후속 등록: 기존 CHK_FLOW_NO 유지
      */
     @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @PostMapping("/register/{mgmtOfcNo}")
@@ -227,8 +280,7 @@ public class FacilityCheckController {
      *
      * 화면 역할
      * - 등록/수정 통합 폼의 수정 모드
-     * - 왼쪽에는 같은 시설의 이력 목록
-     * - 오른쪽에는 선택한 이력 수정 폼
+     * - 기존 이력의 partnerNo 기준으로 점검 주체 표시
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/update/{mgmtOfcNo}/{facChkHstryNo}")
@@ -245,11 +297,14 @@ public class FacilityCheckController {
         /* 수정 대상 조회 */
         FacilityCheckHstryVO check = facilityCheckService.selectFacilityCheckDetail(mgmtOfcNo, facChkHstryNo);
 
-        /* 수정 대상이 없는 경우 목록으로 복귀 */
+        /* 수정 대상 없음 */
         if (check == null) {
             redirectAttributes.addFlashAttribute("message", "수정할 시설 점검 이력이 없습니다.");
             return "redirect:/manager/checkHistory/" + mgmtOfcNo;
         }
+
+        /* 점검 주체 화면값 세팅 */
+        setCheckOwnerType(check);
 
         /* 수정 화면 공통 모델 세팅 */
         setFormModel(mgmtOfcNo, "update", check, model);
@@ -261,8 +316,8 @@ public class FacilityCheckController {
      * 시설 점검 이력 수정 처리
      *
      * 처리 기준
-     * - facChkHstryNo 있음
-     * - FACILITY_CHECK_HSTRY update
+     * - 기존 FACILITY_CHECK_HSTRY update
+     * - CHK_FLOW_NO는 hidden 값으로 유지
      */
     @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @PostMapping("/update/{mgmtOfcNo}/{facChkHstryNo}")
@@ -286,17 +341,17 @@ public class FacilityCheckController {
     }
 
     /**
-     * 등록/수정 폼 공통 모델 세팅
+     * 등록/수정/후속 폼 공통 모델 세팅
      *
      * 모델 구성
-     * - formMode                : register / update
+     * - formMode                : register / update / follow
      * - check                   : 등록 기본값 또는 수정 대상
      * - facilityList            : 시설 선택 모달 기본 목록
      * - partnerList             : 협력업체 선택 모달 기본 목록
      * - checkTypeList           : 점검유형 공통코드
      * - checkStatusList         : 점검상태 공통코드
-     * - assetFacilityTypeList   : 일반 시설자산 유형 목록 (모달 optgroup)
-     * - publicFacilityTypeList  : 편의시설 유형 목록 (모달 optgroup)
+     * - assetFacilityTypeList   : 일반 시설자산 유형 목록
+     * - publicFacilityTypeList  : 편의시설 유형 목록
      * - sameFacilityCheckList   : 선택 시설의 기존 점검 이력 목록
      */
     private void setFormModel(String mgmtOfcNo, String formMode, FacilityCheckHstryVO check, Model model) {
@@ -307,6 +362,9 @@ public class FacilityCheckController {
 
         /* 관리사무소 번호 보정 */
         check.setMgmtOfcNo(mgmtOfcNo);
+
+        /* 점검 주체 기본값 보정 */
+        setCheckOwnerType(check);
 
         /* 화면 기본값 */
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
@@ -325,21 +383,45 @@ public class FacilityCheckController {
         model.addAttribute("checkTypeList", facilityCheckService.selectCheckTypeList());
         model.addAttribute("checkStatusList", facilityCheckService.selectCheckStatusList());
 
-        /* 시설유형 목록 — 모달 optgroup(일반시설 / 편의시설) 렌더링용 */
+        /* 시설유형 목록 */
         model.addAttribute("assetFacilityTypeList", facilityCheckService.selectAssetFacilityTypeList());
         model.addAttribute("publicFacilityTypeList", facilityCheckService.selectPublicFacilityTypeList());
 
         /*
          * 같은 시설의 기존 점검 이력 목록
-         * - 수정 모드: 수정 대상의 facilityNo 기준 조회
-         * - 등록 모드: facilityNo 파라미터가 있으면 해당 시설 기준 조회
-         * - facilityNo가 없으면 JSP에서 시설 선택 안내 표시
+         * - 자체점검과 협력업체점검 모두 포함
+         * - CHK_FLOW_NO 기준 후속 흐름 확인 가능
          */
         if (check.getFacilityNo() != null && !check.getFacilityNo().isBlank()) {
             List<FacilityCheckHstryVO> sameFacilityCheckList =
                     facilityCheckService.selectSameFacilityCheckList(mgmtOfcNo, check.getFacilityNo());
 
             model.addAttribute("sameFacilityCheckList", sameFacilityCheckList);
+        }
+    }
+
+    /**
+     * 점검 주체 화면값 세팅
+     * - partnerNo가 없으면 자체점검
+     * - partnerNo가 있으면 협력업체점검
+     * - 이미 chkOwnerType이 있으면 기존 값 유지
+     */
+    private void setCheckOwnerType(FacilityCheckHstryVO check) {
+        /* 요청 객체 없음 */
+        if (check == null) {
+            return;
+        }
+
+        /* 기존 화면값 유지 */
+        if (check.getChkOwnerType() != null && !check.getChkOwnerType().isBlank()) {
+            return;
+        }
+
+        /* partnerNo 기준 점검 주체 판단 */
+        if (check.getPartnerNo() == null || check.getPartnerNo().isBlank()) {
+            check.setChkOwnerType("SELF");
+        } else {
+            check.setChkOwnerType("PARTNER");
         }
     }
 
@@ -397,6 +479,9 @@ public class FacilityCheckController {
             /* 점검 이력 단건 상세 조회 */
             FacilityCheckHstryVO check =
                     facilityCheckService.selectFacilityCheckDetail(mgmtOfcNo, facChkHstryNo);
+
+            /* 점검 주체 화면값 세팅 */
+            setCheckOwnerType(check);
 
             /* 조회 결과 응답 */
             result.put("success", check != null);
@@ -473,9 +558,6 @@ public class FacilityCheckController {
      * - 사용여부
      * - 담당자명
      * - 업체명/업체번호/사업자번호 통합검색
-     *
-     * 주의
-     * - 이 메서드는 다음 단계에서 Service, ServiceImpl, Mapper, XML에도 동일하게 추가해야 함
      */
     @ResponseBody
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")

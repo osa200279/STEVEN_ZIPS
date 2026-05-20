@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.meter.mapper.IMeterHstryMapper">
+
+    <!-- 관리사무소 번호로 아파트단지번호 조회 -->
+    <select id="selectAptCmplexNoByMgmtOfcNo" parameterType="string" resultType="string">
+        select apt_cmplex_no
+        from mgmt_office
+        where mgmt_ofc_no = #{mgmtOfcNo}
+    </select>
+
+    <!-- 검침 이력 목록 조회 -->
+    <select id="selectMeterHstryList" parameterType="map" resultType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterHstryVO">
+        select mh.meter_hstry_no
+        , mh.facility_no
+        , f.facility_nm
+        , f.facility_ty_cd
+        , fac_ty.code_name as facility_ty_nm
+        , mh.ho_no
+        , mh.meter_dt
+        , mh.pre_val
+        , mh.curr_val
+        , mh.meter_cn
+        , mh.meter_rslt_cd
+        , rslt.code_name as meter_rslt_nm
+        , mh.reg_dt
+        , mh.mdf_dt
+        , up.utility_provider_no
+        , up.csv_idntf_key
+        , up.ext_cust_no
+        , p.partner_no
+        , p.partner_nm
+        from meter_hstry mh
+        left join facility f
+        on mh.facility_no = f.facility_no
+        left join common_code fac_ty
+        on f.facility_ty_cd = fac_ty.code_no_cd
+        and fac_ty.group_code_no = 'FACILITY_TY'
+        left join utility_provider up
+        on mh.utility_provider_no = up.utility_provider_no
+        left join partner p
+        on up.partner_no = p.partner_no
+        left join common_code rslt
+        on mh.meter_rslt_cd = rslt.code_no_cd
+        and rslt.group_code_no = 'METER_RSLT'
+        where up.apt_cmplex_no = #{aptCmplexNo}
+        <if test="utilityProviderNo != null and utilityProviderNo != ''">
+            and up.utility_provider_no = #{utilityProviderNo}
+        </if>
+        <if test="meterRsltCd != null and meterRsltCd != ''">
+            and mh.meter_rslt_cd = #{meterRsltCd}
+        </if>
+        <if test="startDt != null and startDt != ''">
+            and mh.meter_dt &gt;= to_date(#{startDt}, 'yyyy-mm-dd')
+        </if>
+        <if test="endDt != null and endDt != ''">
+            and mh.meter_dt &lt; to_date(#{endDt}, 'yyyy-mm-dd') + 1
+        </if>
+        <if test="keyword != null and keyword != ''">
+            and (
+            lower(f.facility_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(mh.facility_no) like '%' || lower(#{keyword}) || '%'
+            or lower(mh.ho_no) like '%' || lower(#{keyword}) || '%'
+            or lower(mh.meter_cn) like '%' || lower(#{keyword}) || '%'
+            or lower(p.partner_nm) like '%' || lower(#{keyword}) || '%'
+            )
+        </if>
+        order by mh.meter_dt desc
+        , mh.meter_hstry_no desc
+    </select>
+
+    <!-- 공급/검침 설정 목록 조회 -->
+    <select id="selectUtilityProviderList" parameterType="string" resultType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.UtilityProviderVO">
+        select up.utility_provider_no
+        , up.apt_cmplex_no
+        , up.partner_no
+        , up.csv_idntf_key
+        , up.ext_cust_no
+        , up.rmrk_cn
+        , p.partner_nm
+        from utility_provider up
+        left join partner p
+        on up.partner_no = p.partner_no
+        where up.apt_cmplex_no = #{aptCmplexNo}
+        order by up.utility_provider_no
+    </select>
+
+    <!-- 공급/검침 설정 상세 조회 -->
+    <select id="selectUtilityProviderDetail" parameterType="map" resultType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.UtilityProviderVO">
+        select up.utility_provider_no
+        , up.apt_cmplex_no
+        , up.partner_no
+        , up.csv_idntf_key
+        , up.ext_cust_no
+        , up.rmrk_cn
+        , p.partner_nm
+        from utility_provider up
+        left join partner p
+        on up.partner_no = p.partner_no
+        where up.apt_cmplex_no = #{aptCmplexNo}
+        and up.utility_provider_no = #{utilityProviderNo}
+    </select>
+
+    <!-- 검침결과 공통코드 목록 조회 -->
+    <select id="selectMeterRsltCodeList" resultType="map">
+        select code_no_cd as "codeNoCd"
+        , code_name as "codeName"
+        , code_content as "codeContent"
+        , sort_order as "sortOrder"
+        from common_code
+        where group_code_no = 'METER_RSLT'
+        and use_yn = 'Y'
+        order by sort_order
+    </select>
+
+    <!-- 검침결과 공통코드 존재 건수 조회 -->
+    <select id="selectMeterRsltCodeCnt" parameterType="string" resultType="int">
+        select count(*)
+        from common_code
+        where group_code_no = 'METER_RSLT'
+        and code_no_cd = #{meterRsltCd}
+        and use_yn = 'Y'
+    </select>
+
+    <!-- 시설 존재 건수 조회 -->
+    <select id="selectFacilityCnt" parameterType="map" resultType="int">
+        select count(*)
+        from facility
+        where apt_cmplex_no = #{aptCmplexNo}
+        and facility_no = #{facilityNo}
+    </select>
+
+    <!-- 검침 업로드 이력 등록 -->
+    <insert id="insertMeterUploadHstry" parameterType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterUploadHstryVO">
+        insert into meter_upload_hstry (
+        meter_upload_hstry_no
+        , utility_provider_no
+        , apt_cmplex_no
+        , file_group_no
+        , upload_dt
+        , upload_user_no
+        , total_cnt
+        , upload_stts_cd
+        , err_cn
+        , rmrk_cn
+        ) values (
+        #{meterUploadHstryNo}
+        , #{utilityProviderNo}
+        , #{aptCmplexNo}
+        , #{fileGroupNo}
+        , sysdate
+        , #{uploadUserNo}
+        , #{totalCnt}
+        , #{uploadSttsCd}
+        , #{errCn}
+        , #{rmrkCn}
+        )
+    </insert>
+
+    <!-- 검침 이력 등록 -->
+    <insert id="insertMeterHstry" parameterType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterHstryVO">
+        insert into meter_hstry (
+        meter_hstry_no
+        , facility_no
+        , ho_no
+        , meter_dt
+        , pre_val
+        , curr_val
+        , meter_cn
+        , meter_rslt_cd
+        , reg_dt
+        , utility_provider_no
+        ) values (
+        'MTR' || lpad(seq_meter_hstry.nextval, 6, '0')
+        , #{facilityNo}
+        , #{hoNo}
+        , #{meterDt}
+        , #{preVal}
+        , #{currVal}
+        , #{meterCn}
+        , #{meterRsltCd}
+        , sysdate
+        , #{utilityProviderNo}
+        )
+    </insert>
+
+</mapper>

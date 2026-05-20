@@ -309,29 +309,6 @@ public class ManagerMainController {
         return "apt/mgmtOffice/facility/publicFacility/publicFacilityList";
     }
 
-    // 검침 기록
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/meterReading/{mgmtOfcNo}")
-    public String meterReading(
-            @PathVariable String mgmtOfcNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
-    ) {
-        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_meterReading";
-    }
-
-//    // 시설 점검 이력
-//    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-//    @GetMapping("/checkHistory/{mgmtOfcNo}")
-//    public String checkHistory(
-//            @PathVariable String mgmtOfcNo,
-//            @AuthenticationPrincipal CustomUser customUser,
-//            Model model
-//    ) {
-//        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-//        return "apt/mgmtOffice/mngr_facility_history";
-//    }
 
     // 작업 일정
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
@@ -357,36 +334,23 @@ public class ManagerMainController {
         return "apt/mgmtOffice/partner/mngr_partner_list";
     }
 
-//    /**
-//     * 협력업체 상세 화면
-//     * - 화면 확인용
-//     * - partnerNo가 있으면 특정 업체 상세
-//     * - partnerNo가 없으면 더미/기본 상세 화면
-//     */
-//    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-//    @GetMapping({
-//            "/facility/partner/detail/{mgmtOfcNo}",
-//            "/facility/partner/detail/{mgmtOfcNo}/{partnerNo}"
-//    })
-//    public String partnerDetail(
-//            @PathVariable String mgmtOfcNo,
-//            @PathVariable(required = false) String partnerNo,
-//            @AuthenticationPrincipal CustomUser customUser,
-//            Model model
-//    ) {
-//        // 관리사무소 공통 모델 세팅
-//        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-//
-//        // 화면 확인용 기본 업체번호
-//        if (partnerNo == null || partnerNo.isBlank()) {
-//            partnerNo = "PTR1001";
-//        }
-//
-//        // 상세 JSP에서 사용할 값 전달
-//        model.addAttribute("partnerNo", partnerNo);
-//
-//        return "apt/mgmtOffice/partner/mngr_partner_detail";
-//    }
+    // 계약 관리
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/contract/{mgmtOfcNo}")
+    public String contractList(
+            @PathVariable String mgmtOfcNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        // 관리사무소 공통 화면 모델 구성
+        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        // 계약 화면에서 사용할 관리사무소 번호 전달
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+
+        return "apt/mgmtOffice/contract/mngr_contract_list";
+    }
+
 
 
     // 단지 구조 정보 수정페이지

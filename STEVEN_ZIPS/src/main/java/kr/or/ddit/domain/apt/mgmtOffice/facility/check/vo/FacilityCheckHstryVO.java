@@ -5,14 +5,15 @@ import lombok.Data;
 /**
  * 시설 점검 이력 VO
  * - FACILITY_CHECK_HSTRY 테이블 기준 CRUD
- * - 목록/상세 화면에서 필요한 FACILITY, PARTNER, COMMON_CODE 조인 표시값 포함
+ * - FACILITY, PARTNER, COMMON_CODE 조인 표시값 포함
  * - 시설 선택 모달, 협력업체 선택 모달 검색 조건 포함
  */
 @Data
 public class FacilityCheckHstryVO {
 
-    /** 관리사무소 번호 검색 조건 */
-    private String mgmtOfcNo;
+    /* =========================================================
+     * 1. FACILITY_CHECK_HSTRY 테이블 컬럼
+     * ========================================================= */
 
     /** 시설점검이력번호 */
     private String facChkHstryNo;
@@ -20,8 +21,16 @@ public class FacilityCheckHstryVO {
     /** 시설번호 */
     private String facilityNo;
 
-    /** 업체번호 */
+    /** 업체번호
+     * - null이면 자체점검
+     * - 값이 있으면 협력업체 점검
+     */
     private String partnerNo;
+
+    /** 점검 흐름번호
+     * - 같은 문제/후속 이력 흐름 묶음 번호
+     */
+    private String chkFlowNo;
 
     /** 점검일자 */
     private String chkDt;
@@ -44,11 +53,10 @@ public class FacilityCheckHstryVO {
     /** 점검유형코드 */
     private String chkTyCd;
 
-    /** 점검유형명 */
-    private String chkTyNm;
 
-    /** 점검상태명 */
-    private String chkSttsNm;
+    /* =========================================================
+     * 2. FACILITY 조인 표시값
+     * ========================================================= */
 
     /** 시설명 */
     private String facilityNm;
@@ -68,6 +76,17 @@ public class FacilityCheckHstryVO {
     /** 시설 사용여부 */
     private String useYn;
 
+    /** 동 번호 */
+    private String dongNo;
+
+    /** 동 이름 */
+    private String dongNm;
+
+
+    /* =========================================================
+     * 3. PARTNER 조인 표시값
+     * ========================================================= */
+
     /** 업체명 */
     private String partnerNm;
 
@@ -86,11 +105,60 @@ public class FacilityCheckHstryVO {
     /** 업체 담당자 이메일 */
     private String picEmail;
 
+
+    /* =========================================================
+     * 4. COMMON_CODE 조인 표시값
+     * ========================================================= */
+
+    /** 점검유형명 */
+    private String chkTyNm;
+
+    /** 점검상태명 */
+    private String chkSttsNm;
+
+
+    /* =========================================================
+     * 5. 목록 검색 조건
+     * ========================================================= */
+
+    /** 관리사무소 번호 검색 조건 */
+    private String mgmtOfcNo;
+
     /** 검색 시작 점검일자 */
     private String chkStartDt;
 
     /** 검색 종료 점검일자 */
     private String chkEndDt;
+
+
+    /* =========================================================
+     * 6. 시설 선택 모달 검색 조건
+     * ========================================================= */
+
+    /** 시설 선택 모달 검색어 */
+    private String facilitySearchWord;
+
+    /** 시설 선택 모달 사용여부 검색 조건 */
+    private String facilityUseYn;
+
+    /** 시설 선택 모달 위치 검색 조건 */
+    private String facilityLocCn;
+
+
+    /* =========================================================
+     * 7. 협력업체 선택 모달 검색 조건
+     * ========================================================= */
+
+    /** 협력업체 선택 모달 사용여부 검색 조건 */
+    private String partnerUseYn;
+
+    /** 협력업체 선택 모달 검색어 */
+    private String partnerSearchWord;
+
+
+    /* =========================================================
+     * 8. 현황 카드 값
+     * ========================================================= */
 
     /** 현황 카드 전체 이력 건수 */
     private Integer totalCnt;
@@ -104,24 +172,16 @@ public class FacilityCheckHstryVO {
     /** 현황 카드 이상발견 건수 */
     private Integer faultCnt;
 
-    /** 동 번호 */
-    private String dongNo;
 
-    /** 동 이름 */
-    private String dongNm;
+    /* =========================================================
+     * 9. 화면 제어용 값
+     * ========================================================= */
 
-    /** 시설 선택 모달 검색어 */
-    private String facilitySearchWord;
-
-    /** 시설 선택 모달 사용여부 검색 조건 */
-    private String facilityUseYn;
-
-    /** 시설 선택 모달 위치 검색 조건 */
-    private String facilityLocCn;
-
-    /** 협력업체 선택 모달 사용여부 검색 조건 */
-    private String partnerUseYn;
-
-    /** 협력업체 선택 모달 검색어 */
-    private String partnerSearchWord;
+    /** 점검 주체 구분
+     * - SELF    : 자체점검
+     * - PARTNER : 협력업체 점검
+     * - DB 저장 컬럼 아님
+     * - 화면 제어와 서버 검증용
+     */
+    private String chkOwnerType;
 }

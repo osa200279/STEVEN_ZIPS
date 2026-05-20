@@ -120,8 +120,11 @@
         ${activeMenu eq 'facilityAsset'
                 or activeMenu eq 'publicFacility'
                 or activeMenu eq 'checkHistory'
+                or activeMenu eq 'meterHstry'
                 or activeMenu eq 'facilityPartner'
                 or activeMenu eq 'facilityContract'
+                or fn:contains(uri, '/manager/meter/hstry')
+                or fn:contains(uri, '/manager/contract')
                 ? 'open="open"' : ''}>
             <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">apartment</span>
@@ -145,14 +148,13 @@
                     <span class="sub-group-label">공사·점검</span>
                     <%--
                         checkHistory : 탭1 시설점검이력(FACILITY_CHECK_HSTRY)
-                                       탭2 검침기록(METER_HSTRY) 포함
-                        기존 meterReading 메뉴는 이 페이지 탭2로 흡수
                     --%>
                     <a href="${ctx}/manager/checkHistory${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">유지보수·점검 이력</span>
                     </a>
-                    <a href="${ctx}/manager/${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">
+                    <%-- 검침 이력 --%>
+                    <a href="${ctx}/manager/meter/hstry${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/meter/hstry') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">검침 이력</span>
                     </a>
@@ -168,8 +170,9 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">협력업체 관리</span>
                     </a>
-                    <a href="${ctx}/manager/facility/contractList${mgmtPath}"
-                       class="nav-item ${fn:contains(uri, '/manager/facility/contractList') ? 'active' : ''}">
+                    <%-- 계약 관리 --%>
+                    <a href="${ctx}/manager/contract${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/contract') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">계약 관리</span>
                     </a>

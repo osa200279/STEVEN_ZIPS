@@ -15,8 +15,9 @@
         from facility_check_hstry fch
         inner join facility f
         on fch.facility_no = f.facility_no
-        inner join partner p
+        left outer join partner p
         on fch.partner_no = p.partner_no
+        and p.apt_cmplex_no = f.apt_cmplex_no
         inner join mgmt_office mo
         on mo.apt_cmplex_no = f.apt_cmplex_no
         left join common_code fac_ty
@@ -32,16 +33,16 @@
         and chk_stts.code_no_cd = fch.chk_stts_cd
         and chk_stts.use_yn = 'Y'
         where mo.mgmt_ofc_no = #{searchVO.mgmtOfcNo}
-        and p.apt_cmplex_no = f.apt_cmplex_no
 
-        <!-- 통합 검색: 이력번호, 시설번호, 시설명, 업체명, 점검내용 -->
+        <!-- 통합 검색: 이력번호, 처리과정번호, 시설번호, 시설명, 업체명, 자체점검, 점검내용 -->
         <if test="searchWord != null and searchWord != ''">
             and (
             upper(fch.fac_chk_hstry_no) like '%' || upper(#{searchWord}) || '%'
+            or upper(fch.chk_flow_no) like '%' || upper(#{searchWord}) || '%'
             or upper(fch.facility_no) like '%' || upper(#{searchWord}) || '%'
             or upper(f.facility_nm) like '%' || upper(#{searchWord}) || '%'
             or upper(p.partner_nm) like '%' || upper(#{searchWord}) || '%'
-            or upper(fch.chk_cn) like '%' || upper(#{searchWord}) || '%'
+            or ('자체점검' like '%' || #{searchWord} || '%' and fch.partner_no is null)
             )
         </if>
 
@@ -85,6 +86,7 @@
         , x.facility_ty_cd
         , x.facility_ty_nm
         , x.partner_no
+        , x.chk_flow_no
         , x.partner_nm
         , x.biz_ty_nm
         , x.chk_ty_cd
@@ -102,6 +104,7 @@
         , f.facility_ty_cd
         , fac_ty.code_name as facility_ty_nm
         , fch.partner_no
+        , fch.chk_flow_no
         , p.partner_nm
         , p.biz_ty_nm
         , fch.chk_ty_cd
@@ -127,12 +130,12 @@
         from facility_check_hstry fch
                  inner join facility f
                             on fch.facility_no = f.facility_no
-                 inner join partner p
-                            on fch.partner_no = p.partner_no
+                 left outer join partner p
+                                 on fch.partner_no = p.partner_no
+                                     and p.apt_cmplex_no = f.apt_cmplex_no
                  inner join mgmt_office mo
                             on mo.apt_cmplex_no = f.apt_cmplex_no
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
-          and p.apt_cmplex_no = f.apt_cmplex_no
     </select>
 
     <!-- 시설 점검 이력 상세 조회 -->
@@ -148,6 +151,7 @@
              , to_char(f.instl_dt, 'yyyy-mm-dd') as instl_dt
              , f.use_yn
              , fch.partner_no
+             , fch.chk_flow_no
              , p.partner_nm
              , p.biz_ty_nm
              , p.bizrno
@@ -166,8 +170,9 @@
         from facility_check_hstry fch
                  inner join facility f
                             on fch.facility_no = f.facility_no
-                 inner join partner p
-                            on fch.partner_no = p.partner_no
+                 left outer join partner p
+                                 on fch.partner_no = p.partner_no
+                                     and p.apt_cmplex_no = f.apt_cmplex_no
                  inner join mgmt_office mo
                             on mo.apt_cmplex_no = f.apt_cmplex_no
                  left join common_code fac_ty
@@ -183,7 +188,6 @@
                                and chk_stts.code_no_cd = fch.chk_stts_cd
                                and chk_stts.use_yn = 'Y'
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
-          and p.apt_cmplex_no = f.apt_cmplex_no
           and fch.fac_chk_hstry_no = #{facChkHstryNo}
     </select>
 
@@ -295,6 +299,12 @@
         order by sort_order, code_no_cd
     </select>
 
+    <!-- 처리과정번호 신규 채번 -->
+    <select id="selectNextCheckFlowNo" resultType="string">
+        select 'FCF' || lpad(seq_facility_check_flow.nextval, 4, '0')
+        from dual
+    </select>
+
     <!-- 시설 점검 이력 등록 -->
     <insert id="insertFacilityCheckHistory"
             parameterType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
@@ -307,6 +317,7 @@
         fac_chk_hstry_no
         , facility_no
         , partner_no
+        , chk_flow_no
         , chk_dt
         , chk_stts_cd
         , chk_cn
@@ -317,6 +328,7 @@
         #{facChkHstryNo}
         , #{facilityNo}
         , #{partnerNo}
+        , #{chkFlowNo}
         , to_date(#{chkDt}, 'yyyy-mm-dd')
         , #{chkSttsCd}
         , #{chkCn}
@@ -332,6 +344,7 @@
         update facility_check_hstry
         set facility_no = #{facilityNo}
           , partner_no = #{partnerNo}
+          , chk_flow_no = #{chkFlowNo}
           , chk_dt = to_date(#{chkDt}, 'yyyy-mm-dd')
           , chk_stts_cd = #{chkSttsCd}
           , chk_cn = #{chkCn}
@@ -349,6 +362,10 @@
              , fch.facility_no
              , f.facility_nm
              , fch.partner_no
+             , fch.chk_flow_no
+             , p.pic_nm
+             , p.pic_telno
+             , p.pic_email
              , p.partner_nm
              , p.biz_ty_nm
              , fch.chk_ty_cd
@@ -363,8 +380,9 @@
         from facility_check_hstry fch
                  inner join facility f
                             on fch.facility_no = f.facility_no
-                 inner join partner p
-                            on fch.partner_no = p.partner_no
+                 left outer join partner p
+                                 on fch.partner_no = p.partner_no
+                                     and p.apt_cmplex_no = f.apt_cmplex_no
                  inner join mgmt_office mo
                             on mo.apt_cmplex_no = f.apt_cmplex_no
                  left join common_code chk_ty
@@ -376,7 +394,6 @@
                                and chk_stts.code_no_cd = fch.chk_stts_cd
                                and chk_stts.use_yn = 'Y'
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
-          and p.apt_cmplex_no = f.apt_cmplex_no
           and fch.facility_no = #{facilityNo}
         order by fch.chk_dt desc, fch.fac_chk_hstry_no desc
     </select>

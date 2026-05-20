@@ -84,4 +84,7 @@ public interface IFacilityCheckHstryMapper {
      * - 업종, 사용여부, 담당자명, 통합검색 조건 기준 협력업체 목록 조회
      */
     List<FacilityCheckHstryVO> selectPartnerSearchList(FacilityCheckHstryVO searchVO);
+
+    /** 처리과정번호 신규 채번 */
+    String selectNextCheckFlowNo();
 }

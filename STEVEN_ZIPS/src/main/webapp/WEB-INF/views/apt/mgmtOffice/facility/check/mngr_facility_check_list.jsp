@@ -157,7 +157,7 @@
                                     <label class="field-label">통합검색</label>
                                     <div class="search-wrap">
                                         <span class="material-symbols-rounded">search</span>
-                                        <input type="text" class="form-input" name="searchWord" value="${fn:escapeXml(pagingVO.searchWord)}" placeholder="시설번호, 시설명, 협력업체명 검색">
+                                        <input type="text" class="form-input" name="searchWord" value="${fn:escapeXml(pagingVO.searchWord)}" placeholder="이력번호, 처리과정번호, 시설번호, 시설명, 협력업체명 검색">
                                     </div>
                                 </div>
                                 <div class="form-field">
@@ -192,19 +192,21 @@
                     <div class="table-wrap">
                         <table class="tbl">
                             <colgroup>
-                                <col style="width:7%;">
-                                <col style="width:13%;">
-                                <col style="width:17%;">
+                                <col style="width:6%;">
                                 <col style="width:12%;">
-                                <col style="width:16%;">
                                 <col style="width:11%;">
+                                <col style="width:15%;">
+                                <col style="width:10%;">
+                                <col style="width:14%;">
+                                <col style="width:9%;">
+                                <col style="width:9%;">
+                                <col style="width:9%;">
                                 <col style="width:11%;">
-                                <col style="width:11%;">
-                                <col style="width:12%;">
                             </colgroup>
                             <thead>
                             <tr>
                                 <th>번호</th>
+                                <th>처리과정번호</th>
                                 <th>점검이력번호</th>
                                 <th>시설명</th>
                                 <th>시설유형</th>
@@ -219,17 +221,23 @@
                             <c:choose>
                                 <c:when test="${empty pagingVO.dataList}">
                                     <tr>
-                                        <td colspan="9" class="empty-row">조회된 시설 점검 이력이 없습니다.</td>
+                                        <td colspan="10" class="empty-row">조회된 시설 점검 이력이 없습니다.</td>
                                     </tr>
                                 </c:when>
                                 <c:otherwise>
                                     <c:forEach var="check" items="${pagingVO.dataList}" varStatus="status">
                                         <tr>
                                             <td>${pagingVO.totalRecord - ((pagingVO.currentPage - 1) * pagingVO.screenSize) - status.index}</td>
+                                            <td class="mono">${empty check.chkFlowNo ? '-' : check.chkFlowNo}</td>
                                             <td class="mono">${check.facChkHstryNo}</td>
                                             <td class="td-left">${check.facilityNm}</td>
                                             <td>${check.facilityTyNm}</td>
-                                            <td class="td-left">${check.partnerNm}</td>
+                                            <td class="td-left">
+                                                <c:choose>
+                                                    <c:when test="${empty check.partnerNo}">자체점검</c:when>
+                                                    <c:otherwise>${check.partnerNm}</c:otherwise>
+                                                </c:choose>
+                                            </td>
                                             <td>${check.chkTyNm}</td>
                                             <td>
                                                 <span class="badge ${check.chkSttsCd eq 'WAIT' ? 'badge-wait' : check.chkSttsCd eq 'ING' ? 'badge-ing' : check.chkSttsCd eq 'DONE' ? 'badge-done' : check.chkSttsCd eq 'FAULT' ? 'badge-fault' : 'badge-wait'}">
