@@ -16,7 +16,24 @@
             <div class="logo-text">
                 <h1>
                     <c:choose>
-                        <c:when test="${not empty office.aptCmplexNm}">${office.aptCmplexNm}</c:when>
+                        <c:when test="${not empty office.aptCmplexNm}">
+                            <!-- 단지명을 클릭 입주민 메인페이지 이동
+                                예 :  /apt/main/A10023118 -->
+                            <a href="${pageContext.request.contextPath}/apt/main/${office.aptCmplexNo}"
+                                style="color:#ffffff !important;
+                                      text-decoration:none !important;
+                                      display:block;
+                                      width:125px;
+                                      white-space:nowrap;
+                                      overflow:hidden;
+                                      text-overflow:ellipsis;
+                                      font-size:11px;
+                                      line-height:1.15;
+                                      font-weight:800;">
+                                    ${office.aptCmplexNm}
+                            </a>
+                        </c:when>
+<%--                        <c:when test="${not empty office.aptCmplexNm}">${office.aptCmplexNm}</c:when>--%>
                         <c:otherwise>관리사무소</c:otherwise>
                     </c:choose>
                 </h1>
