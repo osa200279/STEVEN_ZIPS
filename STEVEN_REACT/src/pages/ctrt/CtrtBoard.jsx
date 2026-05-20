@@ -12,6 +12,7 @@ function CtrtBoard() {
     terminatedCnt: 0,
     rejectCnt: 0,
     cancelCnt: 0,
+    urgentCnt: 0,
   });
 
   // 대시보드 통계 API 호출
@@ -29,6 +30,7 @@ function CtrtBoard() {
             rejectCnt: stts.rejectCnt || 0,
             cancelCnt: stts.cancelCnt || 0,
             expiredCnt: stts.expiredCnt || 0,
+            urgentCnt: stts.urgentCnt || 0,
           });
         }
       } catch (error) {
@@ -38,17 +40,17 @@ function CtrtBoard() {
     fetchDashboardStats();
   }, []);
 
-
   const board = [
-    { label: '총 계약', value: stats.totalCnt, change: '+12%', icon: <FileChartLine />, color: 'bg-primary-fixed'},
+    { label: '총 계약', value: stats.totalCnt, change: '+12%', icon: <FileChartLine />, color: 'bg-primary-fixed' },
 
-    { label: '승인된 계약', value: stats.approvedCnt , icon: <FileBracesCorner />, color: 'bg-primary-green', hasTrend: true },
+    { label: '승인된 계약', value: stats.approvedCnt, icon: <FileBracesCorner />, color: 'bg-primary-green', hasTrend: true },
 
-    { label: '미승인 계약', value: stats.pendingCnt , icon: <SquarePen />, color: 'bg-pending-container', pending: true },
+    { label: '미승인 계약', value: stats.pendingCnt, icon: <SquarePen />, color: 'bg-pending-container', pending: true },
 
-    { label: '만료 임박 계약', value: stats.terminatedCnt , icon: <FileClock />, color: 'bg-error-container', urgent: true },
+    { label: '만료 임박 계약', value: stats.urgentCnt, icon: <FileClock />, color: 'bg-error-container', urgent: true },
 
-    { label: '만료된 계약', value: stats.expiredCnt , icon: <FileXCorner />, color: 'bg-expired-container', expired: true },
+    { label: '만료된 계약', value: stats.expiredCnt + stats.terminatedCnt , icon: <FileXCorner />, color: 'bg-expired-container', expired: true },
+
   ];
 
   return (
@@ -74,7 +76,7 @@ function CtrtBoard() {
             <p className="stat-label">{stat.label}</p>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <h3 className="stat-value">{stat.value}</h3>
-              {stat.expired && <p className='sub-info'>중도 해지 : stat.terminated 건 </p>}
+              {stat.expired && (<p className='sub-info'>중도 해지 : {stats.terminatedCnt} 건 </p>)}
             </div>
           </div>
         ))}
