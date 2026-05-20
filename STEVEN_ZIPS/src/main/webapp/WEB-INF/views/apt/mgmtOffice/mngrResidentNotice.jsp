@@ -1460,12 +1460,17 @@
                                 '</span>' +
 
                                 /*
-                                 * 삭제할 파일번호 hidden
-                                 * disabled 상태면 서버 전송 안됨
+                                 * 기존 첨부파일 삭제용 hidden
+                                 *
+                                 * googleId란?
+                                 * → 구글드라이브에 저장된 실제 파일 ID.
+                                 * 왜 사용?
+                                 * → ATTACH_FILE 테이블에 별도 FILE_NO가 없기 때문에,
+                                 *   파일 1개를 정확히 삭제하려면 GOOGLE_ID를 기준으로 삭제하는 것이 안전함.
                                  */
                                 '<input type="hidden" ' +
-                                'name="deleteFileNos" ' +
-                                'value="' + file.fileNo + '" ' +
+                                'name="deleteGoogleIds" ' +
+                                'value="' + file.googleId + '" ' +
                                 'disabled>' +
 
                                 /*
@@ -1522,8 +1527,11 @@
                                 const deleteInput = document.createElement('input');
 
                                 deleteInput.type = 'hidden';
-                                deleteInput.name = 'deleteFileNos';
-                                deleteInput.value = file.fileNo;
+                                /*
+                                 * 삭제할 기존 파일의 GOOGLE_ID를 서버로 전송
+                                 */
+                                deleteInput.name = 'deleteGoogleIds';
+                                deleteInput.value = file.googleId;
 
                                 /*
                                  * 서버 전송용 hidden input 추가

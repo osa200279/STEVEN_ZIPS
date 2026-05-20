@@ -38,7 +38,21 @@ public interface ImngrRegidentNoticeMapper {
      */
     List<MngrRegidentNoticeDTO> selectNoticeAttachFileList(MngrRegidentNoticeDTO dto);
 
+    /*
+     * GOOGLE_ID 기준 첨부파일 1건 삭제
+     */
     int deleteAttachFileByGoogleId(String googleId);
+
+    /*
+     * 첨부파일 그룹에 남아있는 파일 개수 조회
+     */
+    int selectAttachFileCount(String atchFileId);
+
+    /*
+     * 공지사항의 첨부파일 그룹 연결 해제
+     */
+    int clearNoticeAttachFileId(MngrRegidentNoticeDTO dto);
+
 
 
 

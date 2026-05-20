@@ -29,7 +29,7 @@ public interface IMngrRegidentNoticeService {
     int updateNotice(
             MngrRegidentNoticeDTO dto,
             MultipartFile[] uploadFiles,
-            List<Integer> deleteFileNos
+            List<String> deleteGoogleIds
     ) throws Exception;
 
     int deleteNotice(MngrRegidentNoticeDTO dto);

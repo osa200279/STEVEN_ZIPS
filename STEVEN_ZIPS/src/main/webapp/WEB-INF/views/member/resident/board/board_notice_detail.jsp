@@ -243,33 +243,40 @@
                     <div class="notice-file-title">첨부파일</div>
 
                     <c:choose>
-                        <c:when test="${empty notice.atchFileId}">
-                            <div class="notice-file-empty">첨부파일 없음</div>
+                        <c:when test="${not empty notice.attachFileList}">
+
+                            <c:forEach var="file" items="${notice.attachFileList}">
+
+                                <div class="notice-file-name">
+                                    📎 ${file.fileOgName}
+
+                                    <a href="${pageContext.request.contextPath}/file/download/${file.googleId}">
+                                        다운로드
+                                    </a>
+                                </div>
+
+                                <c:if test="${not empty file.googleId
+                      and not empty file.mimeType
+                      and file.mimeType.startsWith('image/')}">
+
+                                    <a href="${pageContext.request.contextPath}/file/display/${file.googleId}"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="notice-image-link">
+
+                                        <img src="${pageContext.request.contextPath}/file/display/${file.googleId}"
+                                             alt="${file.fileOgName}"
+                                             class="notice-file-image">
+
+                                    </a>
+                                </c:if>
+
+                            </c:forEach>
+
                         </c:when>
 
                         <c:otherwise>
-                            <div class="notice-file-name">
-                                📎 ${notice.fileOgName}
-
-                                <a href="${pageContext.request.contextPath}/file/download/${notice.googleId}">
-                                    다운로드
-                                </a>
-                            </div>
-
-                            <c:if test="${not empty notice.googleId
-                      and not empty notice.mimeType
-                      and notice.mimeType.startsWith('image/')}">
-                                <a href="${pageContext.request.contextPath}/file/display/${notice.googleId}"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="notice-image-link">
-
-                                    <img src="${pageContext.request.contextPath}/file/display/${notice.googleId}"
-                                         alt="첨부이미지"
-                                         class="notice-file-image">
-
-                                </a>
-                            </c:if>
+                            <div class="notice-file-empty">첨부파일 없음</div>
                         </c:otherwise>
                     </c:choose>
                 </div>

@@ -136,7 +136,7 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
     /*
      * 공지사항 수정
      *
-     * deleteFileNos
+     * deleteGoogleIds
      * → 수정 화면에서 삭제 선택한 기존 첨부파일 번호 목록
      */
     @Override
@@ -144,7 +144,7 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
     public int updateNotice(
             MngrRegidentNoticeDTO dto,
             MultipartFile[] uploadFiles,
-            List<Integer> deleteFileNos
+            List<String> deleteGoogleIds
     ) throws Exception {
 
         /*
@@ -166,45 +166,69 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
             return 0;
         }
 
-//        /*
-//         * 2. 기존 첨부파일 개별 삭제
-//         *
-//         * deleteFileNos란?
-//         * → 삭제 버튼을 누른 첨부파일 번호 목록.
-//         *
-//         * 왜 먼저 조회?
-//         * → Google Drive 파일 ID를 알아야 실제 파일도 삭제할 수 있음.
-//         */
-//        if (deleteFileNos != null && !deleteFileNos.isEmpty()) {
-//
-//            for (Integer fileNo : deleteFileNos) {
-//
-//                if (fileNo == null) {
-//                    continue;
-//                }
-//
-//                /*
-//                 * 삭제할 파일 정보 조회
-//                 */
-//                MngrRegidentNoticeDTO fileInfo =
-//                        mapper.selectAttachFileDetail(fileNo);
-//
-//                /*
-//                 * Google Drive 실제 파일 삭제
-//                 */
-//                if (fileInfo != null
-//                        && fileInfo.getGoogleId() != null
-//                        && !fileInfo.getGoogleId().isBlank()) {
-//
-//                    googleDriveService.deleteFile(fileInfo.getGoogleId());
-//                }
-//
-//                /*
-//                 * DB 첨부파일 삭제
-//                 */
-//                mapper.deleteAttachFile(fileNo);
-//            }
-//        }
+        /*
+         * 2. 기존 첨부파일 개별 삭제
+         *
+         * deleteGoogleIds란?
+         * → 화면에서 삭제 버튼을 누른 기존 첨부파일의 GOOGLE_ID 목록.
+         *
+         * 왜 GOOGLE_ID로 삭제?
+         * → ATTACH_FILE 테이블에는 파일 1건을 구분하는 FILE_NO 컬럼이 없고,
+         *   GOOGLE_ID가 실제 파일 1건을 식별할 수 있는 값이기 때문.
+         */
+        if (deleteGoogleIds != null && !deleteGoogleIds.isEmpty()) {
+
+            for (String googleId : deleteGoogleIds) {
+
+                if (googleId == null || googleId.isBlank()) {
+                    continue;
+                }
+
+                /*
+                 * Google Drive 실제 파일 삭제
+                 *
+                 * 현재 GoogleDriveService에 deleteFile 메서드가 없어서 주석 처리.
+                 * DB에서 첨부파일 정보가 삭제되면 수정 모달에는 더 이상 보이지 않음.
+                 *
+                 * 나중에 GoogleDriveService에 삭제 메서드를 만들면 다시 연결하면 됨.
+                 */
+                // googleDriveService.deleteFile(googleId);
+
+                /*
+                 * DB 첨부파일 삭제
+                 *
+                 * 왜 필요?
+                 * → 수정 모달은 DB의 ATTACH_FILE 목록을 다시 조회해서 보여주기 때문에,
+                 *   DB에서 삭제되어야 다시 수정 버튼을 눌렀을 때 이미지가 안 보임.
+                 */
+                mapper.deleteAttachFileByGoogleId(googleId);
+
+                /*
+                 * DB 첨부파일 삭제
+                 */
+                mapper.deleteAttachFileByGoogleId(googleId);
+            }
+
+            /*
+             * 삭제 후 현재 공지사항의 첨부파일 그룹에 파일이 하나도 없으면
+             * APT_ANN_BOARD_POST.ATCH_FILE_ID를 NULL로 변경.
+             *
+             * 왜 필요?
+             * → ATCH_FILE_ID가 남아 있으면 목록에서 첨부파일 아이콘이 계속 보일 수 있음.
+             */
+            MngrRegidentNoticeDTO origin = mapper.selectNoticeDetail(dto);
+
+            if (origin != null
+                    && origin.getAtchFileId() != null
+                    && !origin.getAtchFileId().isBlank()) {
+
+                int remainFileCount = mapper.selectAttachFileCount(origin.getAtchFileId());
+
+                if (remainFileCount == 0) {
+                    mapper.clearNoticeAttachFileId(dto);
+                }
+            }
+        }
 
         /*
          * 3. 새 첨부파일이 있으면 기존 파일 그룹에 추가

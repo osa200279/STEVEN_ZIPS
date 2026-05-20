@@ -161,15 +161,14 @@ public class MngrResidentNoticeController {
             @ModelAttribute MngrRegidentNoticeDTO dto,
             @RequestParam(value = "uploadFiles", required = false) MultipartFile[] uploadFiles,
             /*
-             * deleteFileNos
-             * → 수정 모달에서 삭제 버튼 누른 기존 첨부파일 번호들
+             * deleteGoogleIds
+             * → 수정 모달에서 삭제 버튼을 누른 기존 첨부파일의 Google Drive ID 목록
              *
-             * 예:
-             * deleteFileNos=12
-             * deleteFileNos=15
+             * 왜 Integer가 아니라 String?
+             * → ATTACH_FILE 테이블에는 FILE_NO가 없고 GOOGLE_ID가 문자열이기 때문.
              */
-            @RequestParam(value = "deleteFileNos", required = false)
-            List<Integer> deleteFileNos,
+            @RequestParam(value = "deleteGoogleIds", required = false)
+            List<String> deleteGoogleIds,
             @AuthenticationPrincipal CustomUser customUser,
             RedirectAttributes ra
     ) {
@@ -191,7 +190,7 @@ public class MngrResidentNoticeController {
                     mngrRegidentNoticeService.updateNotice(
                             dto,
                             uploadFiles,
-                            deleteFileNos
+                            deleteGoogleIds
                     );
             if (result > 0) {
                 ra.addFlashAttribute("modalType", "success");

@@ -17,10 +17,11 @@
             <result property="atchFileId" column="atch_file_id"/>
             <result property="boardTyCd" column="board_ty_cd"/>
             <result property="boardNm" column="board_nm"/>
+            <result property="topFixYn" column="top_fix_yn"/>
+            <result property="fileCnt" column="file_cnt"/>
             <result property="fileOgName" column="file_og_name"/>
             <result property="mimeType" column="mime_type"/>
             <result property="googleId" column="google_id"/>
-            <result property="topFixYn" column="top_fix_yn"/>
         </resultMap>
 
         <select id="selectResidentBoardNoticeCount"
@@ -49,7 +50,12 @@
     <select id="selectResidentBoardNoticeList"
             parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO"
             resultMap="residentBoardNoticeMap">
-        /* IResidentBoardNoticeMapper.selectResidentBoardNoticeList */
+        /*
+        * 입주민 공지사항 목록 조회
+        *
+        * ATTACH_FILE JOIN 금지
+        * → 첨부파일이 2개면 공지글도 2줄로 중복 조회됨.
+        */
 
         SELECT *
         FROM (
@@ -57,26 +63,33 @@
         notice_list.*
         FROM (
         SELECT
-        aabp.ann_no,
-        aabp.board_no,
-        abi.apt_cmplex_no,
-        aabp.ttl,
-        aabp.wrtr_id,
-        TO_CHAR(aabp.reg_dttm, 'YYYY-MM-DD') AS reg_dttm,
-        TO_CHAR(aabp.mdf_dttm, 'YYYY-MM-DD') AS mdf_dttm,
-        NVL(aabp.inq_cnt, 0) AS inq_cnt,
-        aabp.del_yn,
-        aabp.atch_file_id,
-        abi.board_ty_cd,
-        abi.board_nm,
-        af.file_og_name,
-        aabp.top_fix_yn
+        aabp.ann_no
+        , aabp.board_no
+        , abi.apt_cmplex_no
+        , aabp.ttl
+        , aabp.wrtr_id
+        , TO_CHAR(aabp.reg_dttm, 'YYYY-MM-DD') AS reg_dttm
+        , TO_CHAR(aabp.mdf_dttm, 'YYYY-MM-DD') AS mdf_dttm
+        , NVL(aabp.inq_cnt, 0) AS inq_cnt
+        , aabp.del_yn
+        , aabp.atch_file_id
+        , abi.board_ty_cd
+        , abi.board_nm
+        , aabp.top_fix_yn
+
+        /*
+        * 첨부파일 개수만 조회
+        */
+        , (
+        SELECT COUNT(*)
+        FROM attach_file af
+        WHERE TO_CHAR(af.file_group_no) = aabp.atch_file_id
+        ) AS file_cnt
+
         FROM apt_ann_board_post aabp
         INNER JOIN apt_board_instance abi
         ON aabp.board_no = abi.board_no
-        LEFT OUTER JOIN attach_file af
-        ON TO_CHAR(af.file_group_no) = aabp.atch_file_id
-        AND af.file_sort_order = 1
+
         WHERE aabp.del_yn = 'N'
         AND abi.use_yn = 'Y'
         AND abi.board_ty_cd = 'NOTICE'
@@ -130,35 +143,52 @@
     <select id="selectResidentBoardNoticeDetail"
             parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO"
             resultMap="residentBoardNoticeMap">
-        /* IResidentBoardNoticeMapper.selectResidentBoardNoticeDetail */
-        SELECT aabp.ann_no
+
+        /*
+         * 입주민 공지사항 상세 조회
+         *
+         * 중요:
+         * selectOne()으로 호출되므로 반드시 1건만 조회되어야 한다.
+         *
+         * 첨부파일 JOIN 금지
+         * → 첨부파일 개수만큼 게시글이 중복될 수 있음.
+         */
+
+        SELECT
+            aabp.ann_no
              , aabp.board_no
              , abi.apt_cmplex_no
              , aabp.ttl
              , aabp.cn
              , aabp.wrtr_id
-             , TO_CHAR(aabp.reg_dttm, 'YYYY-MM-DD') reg_dttm
-             , TO_CHAR(aabp.mdf_dttm, 'YYYY-MM-DD') mdf_dttm
-             , NVL(aabp.inq_cnt, 0) inq_cnt
+             , TO_CHAR(aabp.reg_dttm, 'YYYY-MM-DD') AS reg_dttm
+             , TO_CHAR(aabp.mdf_dttm, 'YYYY-MM-DD') AS mdf_dttm
+             , NVL(aabp.inq_cnt, 0) AS inq_cnt
              , aabp.del_yn
              , aabp.atch_file_id
              , abi.board_ty_cd
              , abi.board_nm
              , aabp.top_fix_yn
-             , af.file_og_name
-             , af.mime_type
-             , af.google_id
+
+            /*
+             * 첨부파일 개수만 조회
+             */
+             , (
+            SELECT COUNT(*)
+            FROM attach_file af
+            WHERE TO_CHAR(af.file_group_no) = aabp.atch_file_id
+        ) AS file_cnt
+
         FROM apt_ann_board_post aabp
                  INNER JOIN apt_board_instance abi
                             ON aabp.board_no = abi.board_no
-                 LEFT OUTER JOIN attach_file af
-                                 ON TO_CHAR(af.file_group_no) = aabp.atch_file_id
-                                     AND af.file_sort_order = 1
+
         WHERE aabp.del_yn = 'N'
           AND abi.use_yn = 'Y'
           AND abi.board_ty_cd = 'NOTICE'
           AND abi.apt_cmplex_no = #{aptCmplexNo}
           AND aabp.ann_no = #{annNo}
+
     </select>
 
 <!--        <select id="selectResidentBoardNoticeDetail"-->
@@ -316,6 +346,24 @@
         )
     </select>
 
+    <select id="selectResidentNoticeAttachFileList"
+            parameterType="kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO"
+            resultMap="residentBoardNoticeMap">
+        /*
+         * 입주민 공지사항 첨부파일 목록 조회
+         *
+         * 한 공지에 파일이 여러 개일 수 있으므로 List로 조회한다.
+         */
+
+        SELECT
+            TO_CHAR(af.file_group_no) AS atch_file_id
+             , af.file_og_name
+             , af.mime_type
+             , af.google_id
+        FROM attach_file af
+        WHERE TO_CHAR(af.file_group_no) = #{atchFileId}
+        ORDER BY af.file_sort_order ASC
+    </select>
 
 
     </mapper>
