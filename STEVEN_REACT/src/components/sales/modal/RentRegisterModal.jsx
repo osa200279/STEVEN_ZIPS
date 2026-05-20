@@ -6,6 +6,7 @@ function RentRegisterModal({
     open,
 
     onClose,
+    onSuccess,
 
     selectedRooms,
 
@@ -19,11 +20,15 @@ function RentRegisterModal({
 
     const [form, setForm] =
         useState({
-            rentTtl: '',
-            rentTypeCd: 'JS',
-            dpstAmt: '',
-            mthlyRentAmt: '',
-            rentLstgCn: ''
+            rentTtl: ''
+            , rentTypeCd: 'JS'
+            , dpstAmt: ''
+            , mthlyRentAmt: ''
+            , rentLstgCn: ''
+            , dealSttsCd: 'AVL'
+            , mvinPsblDt: ''
+            , docTyCdList: []
+
         });
 
     const handleChange = (e) => {
@@ -38,6 +43,34 @@ function RentRegisterModal({
 
         }));
     };
+
+    const docTypeList = [
+
+        {
+            code: 'ID',
+            label: '신분증'
+        },
+
+        {
+            code: 'RESIDENT',
+            label: '주민등록등본'
+        },
+
+        {
+            code: 'FAMILY',
+            label: '가족관계증명서'
+        },
+
+        {
+            code: 'INCOME',
+            label: '소득증빙서류'
+        },
+
+        {
+            code: 'EMPLOY',
+            label: '재직증명서'
+        }
+    ];
 
     const handleSubmit =
         async () => {
@@ -98,16 +131,19 @@ function RentRegisterModal({
                         form.rentLstgCn,
 
                     rcrtLstgSttsCd:
-                        'GENERAL'
+                        'GENERAL',
+
+                    docTyCdList:
+                        form.docTyCdList
                 };
 
-                await registerRentListing(
-                    payload
-                );
+                await registerRentListing(payload);
 
                 alert(
                     '매물이 등록되었습니다.'
                 );
+
+                onSuccess?.();
 
                 onClose();
 
@@ -121,6 +157,46 @@ function RentRegisterModal({
 
             }
         };
+
+    const handleDocToggle = (
+        code
+    ) => {
+
+        const exists =
+            form.docTyCdList.includes(
+                code
+            );
+
+        if (exists) {
+
+            setForm(prev => ({
+
+                ...prev,
+
+                docTyCdList:
+                    prev.docTyCdList.filter(
+                        item => item !== code
+                    )
+
+            }));
+
+        } else {
+
+            setForm(prev => ({
+
+                ...prev,
+
+                docTyCdList: [
+
+                    ...prev.docTyCdList,
+
+                    code
+
+                ]
+
+            }));
+        }
+    };
 
 
     return (
@@ -445,11 +521,44 @@ function RentRegisterModal({
                         <input
                             type="number"
 
+                            min={0}
+
+                            step={10000}
+
+                            onKeyDown={(e) => {
+
+                                if (
+                                    e.key === '-' ||
+                                    e.key === 'e'
+                                ) {
+
+                                    e.preventDefault();
+                                }
+                            }}
+
+                            onChange={(e) => {
+
+                                const value =
+                                    e.target.value;
+
+                                handleChange({
+                                    target: {
+                                        name: 'dpstAmt',
+
+                                        value:
+                                            value === ''
+                                                ? ''
+                                                : Math.max(
+                                                    0,
+                                                    Number(value)
+                                                )
+                                    }
+                                });
+                            }}
+
                             name="dpstAmt"
 
                             value={form.dpstAmt}
-
-                            onChange={handleChange}
 
                             placeholder="보증금 입력"
 
@@ -463,7 +572,9 @@ function RentRegisterModal({
 
                                 borderRadius: '8px',
 
-                                padding: '0 14px'
+                                padding: '0 14px',
+
+                                fontSize: '14px'
                             }}
                         />
 
@@ -486,11 +597,43 @@ function RentRegisterModal({
                         <input
                             type="number"
 
+                            min={0}
+
+                            step={10000}
+
                             name="mthlyRentAmt"
 
                             value={form.mthlyRentAmt}
 
-                            onChange={handleChange}
+                            onKeyDown={(e) => {
+
+                                if (
+                                    e.key === '-' ||
+                                    e.key === 'e'
+                                ) {
+
+                                    e.preventDefault();
+                                }
+                            }}
+                            onChange={(e) => {
+
+                                const value =
+                                    e.target.value;
+
+                                handleChange({
+                                    target: {
+                                        name: 'mthlyRentAmt',
+
+                                        value:
+                                            value === ''
+                                                ? ''
+                                                : Math.max(
+                                                    0,
+                                                    Number(value)
+                                                )
+                                    }
+                                });
+                            }}
 
                             disabled={
                                 form.rentTypeCd !==
@@ -525,56 +668,149 @@ function RentRegisterModal({
                             }}
                         />
 
-                </div>
-                
                     </div>
 
-                                        <div
+                </div>
+
+                <div
+                    style={{
+                        marginBottom: '20px'
+                    }}
+                >
+
+                    <div
                         style={{
-                            marginBottom: '20px'
+                            fontSize: '13px',
+
+                            fontWeight: '600',
+
+                            marginBottom: '8px'
+                        }}
+                    >
+                        임대 매물 내용
+                    </div>
+
+                    <textarea
+                        name="rentLstgCn"
+
+                        value={form.rentLstgCn}
+
+                        onChange={handleChange}
+
+                        placeholder="임대 매물 내용을 입력해주세요."
+
+                        rows={5}
+
+                        style={{
+                            width: '100%',
+
+                            border:
+                                '1px solid #d1d5db',
+
+                            borderRadius: '8px',
+
+                            padding: '12px 14px',
+
+                            fontSize: '14px',
+
+                            resize: 'none'
+                        }}
+                    />
+
+                </div>
+
+                <div
+                    style={{
+                        marginBottom: '24px'
+                    }}
+                >
+
+                    <div
+                        style={{
+                            fontSize: '13px',
+
+                            fontWeight: '600',
+
+                            marginBottom: '10px'
+                        }}
+                    >
+                        필수 제출 서류
+                    </div>
+
+                    <div
+                        style={{
+                            display: 'flex',
+
+                            flexWrap: 'wrap',
+
+                            gap: '10px'
                         }}
                     >
 
-                        <div
-                            style={{
-                                fontSize: '13px',
+                        {docTypeList.map(
+                            (doc) => {
 
-                                fontWeight: '600',
+                                const checked =
+                                    form.docTyCdList.includes(
+                                        doc.code
+                                    );
 
-                                marginBottom: '8px'
-                            }}
-                        >
-                            임대 매물 내용
-                        </div>
+                                return (
 
-                        <textarea
-                            name="rentLstgCn"
+                                    <label
+                                        key={doc.code}
 
-                            value={form.rentLstgCn}
+                                        style={{
+                                            display: 'flex',
 
-                            onChange={handleChange}
+                                            alignItems: 'center',
 
-                            placeholder="임대 매물 내용을 입력해주세요."
+                                            gap: '6px',
 
-                            rows={5}
+                                            padding:
+                                                '8px 12px',
 
-                            style={{
-                                width: '100%',
+                                            borderRadius:
+                                                '10px',
 
-                                border:
-                                    '1px solid #d1d5db',
+                                            border:
+                                                checked
+                                                    ? '1px solid #2563eb'
+                                                    : '1px solid #d1d5db',
 
-                                borderRadius: '8px',
+                                            background:
+                                                checked
+                                                    ? '#eff6ff'
+                                                    : '#fff',
 
-                                padding: '12px 14px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
 
-                                fontSize: '14px',
+                                        <input
+                                            type="checkbox"
 
-                                resize: 'none'
-                            }}
-                        />
+                                            checked={checked}
+
+                                            onChange={() =>
+                                                handleDocToggle(
+                                                    doc.code
+                                                )
+                                            }
+                                        />
+
+                                        {doc.label}
+
+                                    </label>
+
+                                );
+                            }
+                        )}
 
                     </div>
+
+                </div>
+
 
                 <div
                     style={{

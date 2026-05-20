@@ -122,3 +122,15 @@ export const registerRentListing =
 
     return res.data;
 };
+
+export const deleteRentListing = async (
+    hoNos
+) => {
+
+    const res = await requestApi.post(
+        '/api/sales/rent/delete',
+        hoNos
+    );
+
+    return res.data;
+};

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import {getDongList,getSidoList,getSigunguList} from '../../util/api/sales/salesApi';
+import { getDongList, getSidoList, getSigunguList } from '../../util/api/sales/salesApi';
 
 function SalesSearchBar({ onSearch }) {
 
@@ -272,10 +272,24 @@ function SalesSearchBar({ onSearch }) {
       {/* 검색어 */}
       <input
         type="text"
+
         name="keyword"
+
         value={searchForm.keyword}
+
         onChange={handleChange}
+
+        onKeyDown={(e) => {
+
+          if (e.key === 'Enter') {
+
+            handleSearch();
+
+          }
+        }}
+
         placeholder="아파트 이름 검색"
+
         style={{
           flex: 1,
           height: '42px',
