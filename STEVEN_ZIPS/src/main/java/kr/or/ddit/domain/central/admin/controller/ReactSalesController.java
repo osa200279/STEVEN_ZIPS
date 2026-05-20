@@ -88,9 +88,7 @@ public class ReactSalesController {
         return pagingVO;
     }
 
-    /**
-     * 동 리스트 조회
-     */
+    /*아파트 번호로 해당 아파트 동 정보 가져오기*/
     @GetMapping("/building/list")
     public List<String> getBuildingList(
             @RequestParam String aptCmplexNo
@@ -111,13 +109,15 @@ public class ReactSalesController {
         );
     }
 
+    /*매물등록*/
     @PostMapping("/rent/register")
     public void registerRentListing(
-            @RequestBody
-            Map<String, Object> param
+            @RequestBody Map<String, Object> param
     ) {
 
         ReactSalesService.registerRentListing(param);
     }
+
+
 
 }

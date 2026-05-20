@@ -13,4 +13,8 @@ public interface IReactSalesMapper {
     List<AptDetailVO> selectHoList(String aptCmplexNo, String dongNm);
 
     void insertRentListing(Map<String, Object> map);
+
+    String selectExistRentListing(String hoNo);
+
+    void updateRentListing(Map<String, Object> map);
 }

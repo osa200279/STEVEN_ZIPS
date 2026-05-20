@@ -5,24 +5,14 @@
 
     <insert id="insertRentListing">
 
-        <selectKey
-                resultType="string"
-                keyProperty="rentLstgNo"
-                order="BEFORE">
-
+        <selectKey resultType="string" keyProperty="rentLstgNo" order="BEFORE">
             SELECT
-            'RENT_'
-            || LPAD(
-            SEQ_RENT_LISTING.NEXTVAL,
-            6,
-            '0'
-            )
-            FROM DUAL
-
+                'RENT_' || LPAD(SEQ_RENT_LISTING.NEXTVAL,6,'0')
+            FROM
+                DUAL
         </selectKey>
 
         INSERT INTO RENT_LISTING (
-
         RENT_LSTG_NO,
         HO_NO,
         RENT_TTL,
@@ -31,9 +21,7 @@
         MTHLY_RENT_AMT,
         RENT_LSTG_CN,
         RCRT_LSTG_STTS_CD
-
         ) VALUES (
-
         #{rentLstgNo},
         #{hoNo},
         #{rentTtl},
@@ -42,10 +30,20 @@
         #{mthlyRentAmt},
         #{rentLstgCn},
         #{rcrtLstgSttsCd}
-
         )
-
     </insert>
+    <update id="updateRentListing">
+        UPDATE RENT_LISTING
+        SET
+            RENT_TTL = #{rentTtl},
+            RENT_TYPE_CD = #{rentTypeCd},
+            DPST_AMT = #{dpstAmt},
+            MTHLY_RENT_AMT = #{mthlyRentAmt},
+            RENT_LSTG_CN = #{rentLstgCn},
+            RCRT_LSTG_STTS_CD = #{rcrtLstgSttsCd}
+
+        WHERE RENT_LSTG_NO = #{rentLstgNo}
+    </update>
 
 
     <select id="selectBuildingList" resultType="java.lang.String">
@@ -72,5 +70,14 @@
         ORDER BY FLOOR DESC,
                  TO_NUMBER(AD.HO)
     </select>
+    <select id="selectExistRentListing" resultType="java.lang.String">
+        SELECT
+            RENT_LSTG_NO
+        FROM
+            RENT_LISTING RL
+        WHERE
+            HO_NO = #{hoNo}
+    </select>
+
 
 </mapper>
