@@ -427,86 +427,66 @@
         const container =
             document.getElementById("resultContainer");
 
-        if(!data.questions || !data.questions.length){
+
+
+
+
+        if(!data.resultList || !data.resultList.length){
 
             container.innerHTML =
                 `
-                <div style="
-                    padding:40px;
-                    text-align:center;
-                    color:#6b7280;
-                ">
-                    결과 데이터가 없습니다.
-                </div>
-                `;
+        <div style="
+            padding:40px;
+            text-align:center;
+            color:#6b7280;
+        ">
+            결과 데이터가 없습니다.
+        </div>
+        `;
 
             return;
         }
 
         let html = "";
 
-        data.questions.forEach(function (question, idx){
+        data.resultList.forEach(function(result){
 
             html +=
                 '<div class="question-card" style="margin-bottom:16px;">'
 
-                + '<div class="question-header">'
+                + '<div class="question-body">'
 
-                +   '<div class="question-title">'
-                +       'Q' + (idx + 1) + '. '
-                +       question.question
-                +   '</div>'
+                +   '<div class="result-row">'
 
-                +   '<div class="question-sub">'
-                +       '응답 수: '
-                +       (question.totalCount || 0)
-                +       '건'
+                +       '<div class="result-info">'
+
+                +           '<div class="result-label">'
+                +               result.qitemNm
+                +               ' - '
+                +               result.ansrCn
+                +           '</div>'
+
+                +           '<div class="result-count">'
+                +               result.ansrCnt
+                +               '명'
+                +           '</div>'
+
+                +       '</div>'
+
                 +   '</div>'
 
                 + '</div>'
 
-                + '<div class="question-body">';
-
-            question.answers.forEach(function (answer){
-
-                html +=
-                    '<div class="result-row">'
-
-                    + '<div class="result-info">'
-
-                    +   '<div class="result-label">'
-                    +       answer.label
-                    +   '</div>'
-
-                    +   '<div class="result-count">'
-                    +       answer.count
-                    +       '명('
-                    +       answer.percent
-                    +       '%)'
-                    +   '</div>'
-
-                    + '</div>'
-
-                    + '<div class="progress">'
-
-                    +   '<div class="progress-bar" '
-                    +       'style="width:'
-                    +       answer.percent
-                    +       '%">'
-
-                    +   '</div>'
-
-                    + '</div>'
-
-                    + '</div>';
-            });
-
-            html +=
-                '</div>'
                 + '</div>';
         });
 
         container.innerHTML = html;
+
+
+
+
+
+
     }
 
     loadResult();

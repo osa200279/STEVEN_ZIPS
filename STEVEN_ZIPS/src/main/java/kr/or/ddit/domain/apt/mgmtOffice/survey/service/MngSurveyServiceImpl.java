@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 
@@ -60,9 +61,21 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
             String surveyNo
     ) {
 
-        return iMngSurveyMapper
-                .selectSurveyResult(surveyNo);
+        Map<String, Object> survey =
+                iMngSurveyMapper.selectSurveyResult(surveyNo);
+
+        List<Map<String, Object>> resultList =
+                iMngSurveyMapper.selectSurveyResultList(surveyNo);
+
+        survey.put("resultList", resultList);
+
+        System.out.println("survey = " + survey);
+        System.out.println("resultList = " + resultList);
+
+        return survey;
     }
+
+
 
     @Override
     public String selectMySurveyResponse(
@@ -89,9 +102,61 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
                 surveyNo,
                 response,
                 userNo
-
-
         );
+
+        try {
+
+            ObjectMapper objectMapper =
+                    new ObjectMapper();
+
+            List<Map<String, Object>> answerList =
+                    objectMapper.readValue(
+                            response,
+                            new TypeReference<List<Map<String, Object>>>() {}
+                    );
+
+            System.out.println("answerList = " + answerList);
+
+            for(Map<String, Object> answer : answerList){
+
+                String qitemNm =
+                        "Q" + answer.get("questionNo");
+
+                String ansrCn =
+                        String.valueOf(answer.get("answer"));
+
+                System.out.println("qitemNm = " + qitemNm);
+                System.out.println("ansrCn = " + ansrCn);
+
+                int exists =
+                        iMngSurveyMapper.existsSurveyResult(
+                                surveyNo,
+                                qitemNm,
+                                ansrCn
+                        );
+
+                if(exists > 0){
+
+                    iMngSurveyMapper.updateSurveyResultCount(
+                            surveyNo,
+                            qitemNm,
+                            ansrCn
+                    );
+
+                } else {
+
+                    iMngSurveyMapper.insertSurveyResult(
+                            surveyNo,
+                            qitemNm,
+                            ansrCn
+                    );
+                }
+            }
+
+        } catch (Exception e){
+
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -170,17 +170,19 @@
         if (q.type === "SHORT") {
 
           html += `
-            <input type="text"
-                   class="fake-input"
-                   placeholder="답변 입력">
+         <input type="text"
+       class="fake-input"
+       data-question-no="${idx}"
+       placeholder="답변 입력">
         `;
         }
 
         if (q.type === "LONG") {
 
           html += `
-            <textarea class="fake-textarea"
-                      rows="5"></textarea>
+          <textarea class="fake-textarea"
+          data-question-no="${idx}"
+          rows="5"></textarea>
         `;
         }
 
@@ -195,24 +197,56 @@
             .getElementById("submitBtn")
             .addEventListener("click", async function () {
 
-              let selectedValue = "";
 
-              const checked =
-                      document.querySelector(
-                              'input[type="radio"]:checked'
-                      );
 
-              if(checked){
+              const responseList = [];
 
-                selectedValue =
-                        checked.value;
-              }
+              questionList.forEach((q, idx) => {
 
-              if(!selectedValue){
+                let answer = "";
 
-                alert("응답을 선택해주세요.");
-                return;
-              }
+                if(q.type === "MULTI" || q.type === "YN"){
+
+                  const checked =
+                          document.querySelector(
+                                  'input[name="q' + idx + '"]:checked'
+                          );
+
+                  if(checked){
+
+                    answer = checked.value;
+                  }
+                }
+
+                if(q.type === "SHORT"){
+
+                  const input =
+                          document.querySelector(
+                                  '.fake-input[data-question-no="' + idx + '"]'
+                          );
+
+                  answer = input.value;
+                }
+
+                if(q.type === "LONG"){
+
+                  const textarea =
+                          document.querySelector(
+                                  '.fake-textarea[data-question-no="' + idx + '"]'
+                          );
+
+                  answer = textarea.value;
+                }
+
+                responseList.push({
+
+                  questionNo: idx + 1,
+                  answer: answer
+                });
+              });
+
+              console.log(responseList);
+
 
               try{
 
@@ -237,7 +271,7 @@
                           body: JSON.stringify({
 
                             response:
-                            selectedValue
+                                    JSON.stringify(responseList)
                           })
                         }
                 );

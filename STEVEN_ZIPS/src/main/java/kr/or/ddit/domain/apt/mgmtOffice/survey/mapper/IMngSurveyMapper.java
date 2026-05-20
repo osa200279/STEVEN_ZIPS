@@ -44,4 +44,35 @@ public interface IMngSurveyMapper {
     List<MngSurveyDTO> selectSurveyTypeList(String type);
 
     List<Map<String, Object>> selectSurveyStatistics(String surveyNo);
+
+    List<String> selectAllSurveyResponses(String surveyNo);
+
+
+
+
+    int existsSurveyResult(
+            @Param("surveyNo") String surveyNo,
+            @Param("qitemNm") String qitemNm,
+            @Param("ansrCn") String ansrCn
+    );
+
+    void updateSurveyResultCount(
+            @Param("surveyNo") String surveyNo,
+            @Param("qitemNm") String qitemNm,
+            @Param("ansrCn") String ansrCn
+    );
+
+    void insertSurveyResult(
+            @Param("surveyNo") String surveyNo,
+            @Param("qitemNm") String qitemNm,
+            @Param("ansrCn") String ansrCn
+    );
+
+
+    List<Map<String, Object>> selectSurveyResultList(String surveyNo);
+
+
+
+
+
 }

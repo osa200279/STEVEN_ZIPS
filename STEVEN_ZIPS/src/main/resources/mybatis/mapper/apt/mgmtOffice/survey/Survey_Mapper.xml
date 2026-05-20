@@ -121,28 +121,37 @@
 
 
 
-
     <select id="selectSurveyResult"
             parameterType="string"
             resultType="map">
 
         SELECT
 
-            SURVEY_NO        AS surveyNo,
-            SURVEY_NM        AS surveyNm,
-            SURVEY_CN        AS surveyCn,
-            SURVEY_TY_CD     AS surveyTypeCd,
-            SURVEY_STTS_CD   AS surveySttsCd,
-            SURVEY_BGNG_DT   AS surveyBgngDt,
-            SURVEY_END_DT    AS surveyEndDt,
+            S.SURVEY_NO      AS surveyNo,
+            S.SURVEY_NM      AS surveyNm,
+            S.SURVEY_CN      AS surveyCn,
+            S.SURVEY_TY_CD   AS surveyTypeCd,
+            S.SURVEY_STTS_CD AS surveySttsCd,
+            S.SURVEY_BGNG_DT AS surveyBgngDt,
+            S.SURVEY_END_DT  AS surveyEndDt,
 
-            0 AS totalAnswerCount,
-            0 AS participantCount,
+            (
+                SELECT COUNT(*)
+                FROM SURVEY_RSPNS SR
+                WHERE SR.SURVEY_NO = S.SURVEY_NO
+            ) AS totalAnswerCount,
+
+            (
+                SELECT COUNT(DISTINCT USER_NO)
+                FROM SURVEY_RSPNS SR
+                WHERE SR.SURVEY_NO = S.SURVEY_NO
+            ) AS participantCount,
+
             0 AS answerRate
 
-        FROM SURVEY
+        FROM SURVEY S
 
-        WHERE SURVEY_NO = #{surveyNo}
+        WHERE S.SURVEY_NO = #{surveyNo}
 
     </select>
 
@@ -257,6 +266,89 @@
 
     </select>
 
+    <select id="selectAllSurveyResponses"
+            parameterType="string"
+            resultType="string">
+
+        SELECT RSPNS_CN
+
+        FROM SURVEY_RSPNS
+
+        WHERE SURVEY_NO = #{surveyNo}
+
+    </select>
+
+
+    <select id="existsSurveyResult"
+            resultType="int">
+
+        SELECT COUNT(*)
+
+        FROM SURVEY_RSLT
+
+        WHERE SURVEY_NO = #{surveyNo}
+          AND QITEM_NM = #{qitemNm}
+          AND ANSR_CN = #{ansrCn}
+
+    </select>
+
+
+    <update id="updateSurveyResultCount">
+
+        UPDATE SURVEY_RSLT
+
+        SET ANSR_CNT = ANSR_CNT + 1
+
+        WHERE SURVEY_NO = #{surveyNo}
+          AND QITEM_NM = #{qitemNm}
+          AND ANSR_CN = #{ansrCn}
+
+    </update>
+
+
+
+    <insert id="insertSurveyResult">
+
+        INSERT INTO SURVEY_RSLT (
+
+            SURVEY_RSLT_NO,
+            QITEM_NM,
+            ANSR_CN,
+            ANSR_CNT,
+            SURVEY_NO
+
+        )
+        VALUES (
+
+                   SYS_GUID(),
+                   #{qitemNm},
+                   #{ansrCn},
+                   1,
+                   #{surveyNo}
+
+               )
+
+    </insert>
+
+
+
+    <select id="selectSurveyResultList"
+            parameterType="string"
+            resultType="map">
+
+        SELECT
+
+            QITEM_NM AS qitemNm,
+            ANSR_CN  AS ansrCn,
+            ANSR_CNT AS ansrCnt
+
+        FROM SURVEY_RSLT
+
+        WHERE SURVEY_NO = #{surveyNo}
+
+        ORDER BY QITEM_NM, ANSR_CNT DESC
+
+    </select>
 
 
 </mapper>
