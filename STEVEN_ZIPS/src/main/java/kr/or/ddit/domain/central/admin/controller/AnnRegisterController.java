@@ -63,6 +63,28 @@ public class AnnRegisterController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/rentList")
+    public Map<String, Object> getRentList(@RequestParam String aptCmplexNo) {
+        log.info("rentList 요청 aptCmplexNo: {}", aptCmplexNo);
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<Map<String, Object>> rentList = annRegisterService.selectRentList(aptCmplexNo);
+            result.put("success", true);
+            result.put("list", rentList);
+        } catch (Exception e) {
+            log.info("매물조회 오류:{}", e.getMessage());
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+
+    
+
+
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/aptDetail")
     public Map<String, Object> getAptDetail(
             @RequestParam String aptCmplexNo) {

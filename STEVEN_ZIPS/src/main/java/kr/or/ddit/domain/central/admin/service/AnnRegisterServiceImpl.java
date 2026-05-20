@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,12 +14,25 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AnnRegisterServiceImpl implements IAnnRegisterService{
 
+
     private final AnnRegisterMapper annRegisterMapper;
 
+    @Transactional
     @Override
     public void insertAnn(Map<String, Object> params) {
         annRegisterMapper.insertAnn(params);
+
+        List<String> rentLstgNoList = (List<String>) params.get("rentLstgNoList");
+        if (rentLstgNoList != null && !rentLstgNoList.isEmpty()) {
+            for (String rentLstgNo : rentLstgNoList) {
+                Map<String, Object> updateParams = new HashMap<>();
+                updateParams.put("rentLstgNo", rentLstgNo);
+                updateParams.put("annNo", params.get("annNo"));
+                annRegisterMapper.updateRentListStts(updateParams);
+            }
+        }
     }
+
 
     @Override
     public List<AptComplexVO> selectAptList(String sidoNm, String sigunguNm, String emdNm) {
@@ -34,9 +48,15 @@ public class AnnRegisterServiceImpl implements IAnnRegisterService{
 
     }
 
+
     @Override
     public List<Map<String, Object>> selectSbmsnDocList(String aptCmplexNo) {
         return annRegisterMapper.selectSbmsnDocList(aptCmplexNo);
     }
 
+    @Transactional
+    @Override
+    public List<Map<String, Object>> selectRentList(String aptCmplexNo) {
+        return annRegisterMapper.selectRentList(aptCmplexNo);
+    }
 }

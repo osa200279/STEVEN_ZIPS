@@ -17,4 +17,8 @@ public interface AnnRegisterMapper {
     List<Map<String, Object>> selectSbmsnDocList(String aptCmplexNo);
 
     void insertAnn(Map<String, Object> params);
+
+    List<Map<String, Object>> selectRentList(String aptCmplexNo);
+
+    void updateRentListStts(Map<String, Object> params);
 }

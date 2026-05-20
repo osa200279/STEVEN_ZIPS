@@ -13,4 +13,8 @@ public interface IAnnRegisterService {
     List<Map<String, Object>> selectSbmsnDocList(String aptCmplexNo);
 
     void insertAnn(Map<String, Object> params);
+
+    List<Map<String, Object>> selectRentList(String aptCmplexNo);
+
+
 }

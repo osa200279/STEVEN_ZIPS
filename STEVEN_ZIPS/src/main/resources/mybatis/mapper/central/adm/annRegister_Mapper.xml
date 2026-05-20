@@ -42,6 +42,12 @@
         , 'Y'
         )
     </insert>
+    <update id="updateRentListStts" parameterType="map">
+        UPDATE rent_listing
+        SET rcrt_lstg_stts_cd = 'SUBSCRIBE'
+           ,ann_no = #{annNo}
+        WHERE rent_lstg_no = #{rentLstgNo}
+    </update>
 
     <!-- 아파트 목록 조회하기 -->
     <select id="selectAptList" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
@@ -86,8 +92,8 @@
                , aht.bathroom_cnt
     </select>
 
-    <!--  -->
-    <select id="selectSbmsnDocList" resultType="map" parameterType="string">
+    <!-- 제출서류 목록 조회 -->
+    <select id="selectSbmsnDocList" resultType="map" parameterType="string">    /*kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper.selectSbmsnDocList*/
         SELECT DISTINCT rcd.sbmsn_doc_ty_cd
                       , cc.code_name
         FROM rent_ctrt_doc rcd
@@ -97,6 +103,24 @@
         INNER JOIN common_code cc ON rcd.sbmsn_doc_ty_cd = cc.code_no_cd
                                  AND cc.group_code_no = 'SUBMIT_DOC_TY'
         WHERE aht.apt_cmplex_no = #{aptCmplexNo}
+    </select>
+
+    <!--매물조회-->
+    <select id="selectRentList" resultType="map" parameterType="string">    /*kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper.selectRentList*/
+        SELECT rl.rent_lstg_no
+              ,ad.ho
+              ,aht.ho_ty_no
+              ,aht.ty_nm
+              ,aht.exclusive_size
+              ,aht.room_cnt
+              ,aht.bathroom_cnt
+              ,rl.dpst_amt
+              ,rl.mthly_rent_amt
+        FROM rent_listing rl
+        INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
+        WHERE aht.apt_cmplex_no = #{aptCmplexNo}
+        AND rl.rcrt_lstg_stts_cd = 'GENERAL'
     </select>
 
 
