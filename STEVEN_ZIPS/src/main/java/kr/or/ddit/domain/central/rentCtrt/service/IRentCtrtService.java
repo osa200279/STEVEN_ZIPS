@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface IRentCtrtService {
 
-    List<Map<String, Object>> selectCtrt(String userNo,  int startRow, int endRow);
+    List<Map<String, Object>> selectCtrt(int startRow, int endRow);
 
     int selectCtrtCount(String userNo);
 

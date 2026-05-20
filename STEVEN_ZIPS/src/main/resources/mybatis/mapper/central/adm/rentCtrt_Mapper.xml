@@ -63,7 +63,7 @@
         ) T
     </insert>
 
-    <!-- 담당자 별 계약 조회 -->
+    <!-- 계약 조회 -->
     <select id="selectCtrt" resultType="java.util.Map">
         select  /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrt */
                  C.RENT_CTRT_NO
@@ -90,7 +90,6 @@
     inner join APT_COMPLEX A on(A.APT_CMPLEX_NO = D.APT_CMPLEX_NO)
     inner join MEMBER U on(C.USER_NO = U.USER_NO)
     inner join MEMBER U2 on(M.USER_NO = U2.USER_NO)
-         where M.USER_NO = #{userNo}
            and M.CHG_YN = 'N'
     </select>
 
@@ -103,14 +102,18 @@
 
     <select id="selectCtrtDashboard" resultType="java.util.Map">
         select /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrtCount */
-                COUNT(*) as "totalCnt"
-               ,COUNT(case when CTRT_STTS_CD = 'PENDING' then 1 end) as "pendingCnt"
-               ,COUNT(case when CTRT_STTS_CD = 'EXPIRED' then 1 end) as "expiredCnt"
-               ,COUNT(case when CTRT_STTS_CD = 'APPROVED' then 1 end) as "approvedCnt"
-               ,COUNT(case when CTRT_STTS_CD = 'TERMINATED' then 1 end) as "terminatedCnt"
-               ,COUNT(case when CTRT_STTS_CD = 'REJECT' then 1 end) as "rejectCnt"
-               ,COUNT(case when CTRT_STTS_CD = 'CANCEL' then 1 end) as "cancelCnt"
-          from RENT_CTRT
+        COUNT(*) as "totalCnt"
+        ,COUNT(case when CTRT_STTS_CD = 'PENDING' then 1 end) as "pendingCnt"
+        ,COUNT(case when CTRT_STTS_CD = 'EXPIRED' then 1 end) as "expiredCnt"
+        ,COUNT(case when CTRT_STTS_CD = 'APPROVED' then 1 end) as "approvedCnt"
+        ,COUNT(case when CTRT_STTS_CD = 'TERMINATED' then 1 end) as "terminatedCnt"
+        ,COUNT(case when CTRT_STTS_CD = 'REJECT' then 1 end) as "rejectCnt"
+        ,COUNT(case when CTRT_STTS_CD = 'CANCEL' then 1 end) as "cancelCnt"
+        ,COUNT(case when CTRT_STTS_CD = 'APPROVED'
+                    and <![CDATA[trunc(MVIN_DT)<= trunc(sysdate)]]>
+                    and <![CDATA[trunc(MVOUT_DT) >= trunc(sysdate+30)]]>
+                    and <![CDATA[trunc(MVOUT_DT) <= trunc(sysdate+30)]]> then 1 end) as "urgentCnt"
+        from RENT_CTRT
     </select>
 
 </mapper>

@@ -15,7 +15,7 @@ public interface IRentCtrtMapper {
 
     String getNextRentCtrtSeq();
 
-    List<Map<String, Object>> selectCtrt(String userNo);
+    List<Map<String, Object>> selectCtrt();
 
     int selectCtrtCount(@Param("userNo") String userNo);
 

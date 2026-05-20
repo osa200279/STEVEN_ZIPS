@@ -185,7 +185,6 @@ public class CvplController {
     public String cvplList(@AuthenticationPrincipal CustomUser customUser
             , @PathVariable String aptCmplexNo
             , Model model) {
-        ResidentVO resident = (ResidentVO) customUser.getMember();
         List<CvplVO> cvplList = cvplService.selectCvplListAllByAptCmplexNo(aptCmplexNo);
 
         model.addAttribute("cvplList", cvplList);

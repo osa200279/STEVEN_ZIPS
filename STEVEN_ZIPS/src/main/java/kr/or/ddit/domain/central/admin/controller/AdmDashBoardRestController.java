@@ -100,7 +100,7 @@ public class AdmDashBoardRestController {
         int endRow = curPage * screenSize;
 
         // 서비스에 startRow, endRow를 넘겨서 한페이지만큼만 리스트 가져오기
-        List<Map<String, Object>> ctrtList = rentCtrtService.selectCtrt(userNo, startRow, endRow);
+        List<Map<String, Object>> ctrtList = rentCtrtService.selectCtrt(startRow, endRow);
 
         int totalRecord = rentCtrtService.selectCtrtCount(userNo);
         int totalPage = (int) Math.ceil((double) totalRecord / (double) screenSize);

@@ -114,7 +114,7 @@
                             <c:choose>
                                 <c:when test="${cvpl.cvplSttsCd eq 'APLY'}">
                                     <td><span class="badge wait">민원 신청됨</span></td>
-                                </c:when>
+                                 </c:when>
                                 <c:when test="${cvpl.cvplSttsCd eq 'CNCL'}">
                                     <td><span class="badge cancel">민원 취소됨</span></td>
                                 </c:when>
