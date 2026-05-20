@@ -206,10 +206,9 @@
         <span class="material-symbols-outlined text-sm expand-icon transition-transform">expand_more</span>
       </summary>
       <div class="block w-full flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/apply') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="/apt/complaint/apply.do/${apt.aptCmplexNo}">민원신청 및 내역</a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/apply') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="/apt/complaint/apply.do/${apt.aptCmplexNo}">내 민원 및 신청</a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/status') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="/apt/complaint/list/${apt.aptCmplexNo}">단지 민원 내역</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/live') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/complaint/live">실시간문의</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/chatbot') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/complaint/chatbot">챗봇민원접수</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/complaint/status') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="/apt/complaint/list/${apt.aptCmplexNo}">민원 내역</a>
       </div>
     </details>
 
