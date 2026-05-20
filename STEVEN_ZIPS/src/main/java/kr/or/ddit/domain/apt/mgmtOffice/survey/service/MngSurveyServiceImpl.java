@@ -115,4 +115,12 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
                 .selectSurveyTypeList(type);
     }
 
+    @Override
+    public List<Map<String, Object>> selectSurveyStatistics(
+            String surveyNo
+    ) {
+
+        return iMngSurveyMapper
+                .selectSurveyStatistics(surveyNo);
+    }
 }

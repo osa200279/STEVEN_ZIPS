@@ -24,6 +24,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 
@@ -872,7 +873,7 @@ public class ResidentMainController {
             @PathVariable String surveyNo,
             @AuthenticationPrincipal CustomUser customUser,
             Model model
-    ) {
+    ) throws Exception {
 
         model.addAttribute(
                 "survey",
@@ -888,6 +889,19 @@ public class ResidentMainController {
                         surveyNo,
                         userNo
                 )
+        );
+
+        List<Map<String, Object>> statistics =
+                surveyService.selectSurveyStatistics(
+                        surveyNo
+                );
+
+        ObjectMapper mapper =
+                new ObjectMapper();
+
+        model.addAttribute(
+                "statisticsJson",
+                mapper.writeValueAsString(statistics)
         );
 
         return "member/resident/survey/survey_result";

@@ -42,4 +42,6 @@ public interface IMngSurveyMapper {
     );
 
     List<MngSurveyDTO> selectSurveyTypeList(String type);
+
+    List<Map<String, Object>> selectSurveyStatistics(String surveyNo);
 }

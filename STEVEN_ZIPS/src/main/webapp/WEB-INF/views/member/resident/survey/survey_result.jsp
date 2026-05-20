@@ -104,6 +104,12 @@
             document.getElementById("resultArea");
     const myResponse =
             '<%= request.getAttribute("myResponse") %>';
+
+
+    const statistics =
+            JSON.parse(
+                    `<%= request.getAttribute("statisticsJson") %>`
+            );
     console.log(myResponse);
 
 
@@ -137,6 +143,127 @@
 
       html +=
               "<div style='padding:8px 0;'>";
+
+      const totalCount =
+              statistics.reduce(
+                      (sum, s) =>
+                              sum + parseInt(s.CNT || 0),
+                      0
+              );
+
+
+      html +=
+              "<div style='display:flex;justify-content:flex-end;margin-bottom:18px;'>";
+
+      html +=
+              "<div style='background:#edf5ef;color:var(--green-dark);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:800;'>";
+
+      html +=
+              "총 응답 수 "
+              + totalCount
+              + "명";
+
+      html +=
+              "</div>";
+
+      html +=
+              "</div>";
+
+
+
+
+
+      html +=
+              "<div style='margin-bottom:24px;'>";
+
+      q.items.forEach(function(item, rank){
+
+
+        const stat =
+                statistics.find(
+                        s =>
+                                s.ANSWER.trim()
+                                ===
+                                item.trim()
+                );
+
+        const count =
+                stat
+                        ? parseInt(stat.CNT || 0)
+                        : 0;
+
+        const percent =
+                totalCount === 0
+                        ? 0
+                        : Math.round(
+                                (count * 100)
+                                / totalCount
+                        );
+
+
+
+        html +=
+                "<div style='margin-bottom:14px;'>";
+
+        html +=
+                "<div style=\"display:flex;justify-content:space-between;margin-bottom:6px;\">";
+
+        html +=
+                "<div style='font-weight:700;'>";
+
+        if(rank === 0){
+
+          html += "🥇 ";
+
+        }else if(rank === 1){
+
+          html += "🥈 ";
+
+        }else if(rank === 2){
+
+          html += "🥉 ";
+        }
+
+        html += item;
+
+        html += "</div>";
+
+        html +=
+                "<div style='font-weight:800;color:var(--green-dark);'>";
+
+
+
+        html +=
+                percent
+                + "% ("
+                + count
+                + "명)";
+
+        html += "</div>";
+
+        html += "</div>";
+
+        html +=
+                "<div style='height:10px;background:#edf1ec;border-radius:999px;overflow:hidden;'>";
+
+        html +=
+                "<div style='height:100%;width:"
+                + percent
+                + "%;background:var(--green-dark);'></div>";
+
+        html +=
+                "</div>";
+
+        html +=
+                "</div>";
+      });
+
+      html +=
+              "<hr style='margin:24px 0;border:none;border-top:1px solid #e5e5e5;'>";
+
+
+
+
 
       if(q.type === "MULTI" || q.type === "YN"){
 
