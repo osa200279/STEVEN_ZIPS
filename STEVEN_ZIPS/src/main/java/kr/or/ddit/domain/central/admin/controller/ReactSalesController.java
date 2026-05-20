@@ -21,7 +21,7 @@ public class ReactSalesController {
     private ICentralAptComplexService aptComplexService;
 
     @Autowired
-    private IReactSalesService ReactSalesService;
+    private IReactSalesService reactSalesService;
 
     /**
      * 시도 조회
@@ -94,7 +94,7 @@ public class ReactSalesController {
             @RequestParam String aptCmplexNo
     ) {
 
-        return ReactSalesService.selectBuildingList(aptCmplexNo);
+        return reactSalesService.selectBuildingList(aptCmplexNo);
     }
 
     @GetMapping("/ho.do")
@@ -103,7 +103,7 @@ public class ReactSalesController {
             @RequestParam String dongNm
     ) {
 
-        return ReactSalesService.selectHoList(
+        return reactSalesService.selectHoList(
                 aptCmplexNo,
                 dongNm
         );
@@ -115,9 +115,16 @@ public class ReactSalesController {
             @RequestBody Map<String, Object> param
     ) {
 
-        ReactSalesService.registerRentListing(param);
+        reactSalesService.registerRentListing(param);
     }
 
+    @PostMapping("/rent/delete")
+    public void deleteRentListing(
+            @RequestBody List<String> hoNos
+    ) {
+
+        reactSalesService.deleteRentListing(hoNos);
+    }
 
 
 }

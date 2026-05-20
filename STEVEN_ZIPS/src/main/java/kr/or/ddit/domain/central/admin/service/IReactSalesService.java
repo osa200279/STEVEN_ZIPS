@@ -11,4 +11,6 @@ public interface IReactSalesService {
     List<AptDetailVO> selectHoList(String aptCmplexNo, String dongNm);
 
     void registerRentListing(Map<String, Object> param);
+
+    void deleteRentListing(List<String> hoNos);
 }

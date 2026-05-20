@@ -17,4 +17,12 @@ public interface IReactSalesMapper {
     String selectExistRentListing(String hoNo);
 
     void updateRentListing(Map<String, Object> map);
+
+    Map<String, Object> selectCurrentContractInfo(String hoNo);
+
+    void insertRentContractDoc(Map<String, Object> docMap);
+
+    void deleteRentContractDoc(String rentLstgNo);
+
+    void deleteRentListing(String rentLstgNo);
 }

@@ -6,12 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class ReactSalesServiceImpl implements IReactSalesService{
+public class ReactSalesServiceImpl implements IReactSalesService {
 
     @Autowired
     private IReactSalesMapper reactSalesMapper;
@@ -23,7 +24,7 @@ public class ReactSalesServiceImpl implements IReactSalesService{
 
     @Override
     public List<AptDetailVO> selectHoList(String aptCmplexNo, String dongNm) {
-        return reactSalesMapper.selectHoList(aptCmplexNo,dongNm);
+        return reactSalesMapper.selectHoList(aptCmplexNo, dongNm);
     }
 
     @Override
@@ -48,21 +49,83 @@ public class ReactSalesServiceImpl implements IReactSalesService{
 
             map.put("dpstAmt", param.get("dpstAmt"));
 
-            map.put("mthlyRentAmt", param.get("mthlyRentAmt"));
+            Object monthlyRentAmt = param.get("mthlyRentAmt");
+
+            map.put("mthlyRentAmt", monthlyRentAmt == null || monthlyRentAmt.toString().isBlank()
+                    ? null
+                    : monthlyRentAmt
+            );
 
             map.put("rentLstgCn", param.get("rentLstgCn"));
 
             map.put("rcrtLstgSttsCd", param.get("rcrtLstgSttsCd"));
 
+            List<String> docTyCdList = (List<String>) param.get("docTyCdList");
+
             String existRentLstgNo = reactSalesMapper.selectExistRentListing(hoNo);
 
+            Map<String, Object> contractInfo = reactSalesMapper.selectCurrentContractInfo(hoNo);
+
+            map.put("dealSttsCd", "AVL");
+
+            if (contractInfo != null) {
+                map.put("mvinPsblDt", contractInfo.get("MVOUT_DT"));
+            } else {
+                map.put("mvinPsblDt", new Date());
+            }
+
+            String rentLstgNo;
+
             if (existRentLstgNo != null) {
-                map.put("rentLstgNo", existRentLstgNo);
+                rentLstgNo = existRentLstgNo;
+                map.put("rentLstgNo", rentLstgNo);
+
                 reactSalesMapper.updateRentListing(map);
+
+                reactSalesMapper.deleteRentContractDoc(rentLstgNo);
 
             } else {
                 reactSalesMapper.insertRentListing(map);
+                rentLstgNo = (String) map.get("rentLstgNo");
             }
+
+
+            if (docTyCdList != null && !docTyCdList.isEmpty()) {
+                for (String docTyCd : docTyCdList) {
+
+                    Map<String, Object> docMap = new HashMap<>();
+
+                    docMap.put("rentLstgNo", rentLstgNo);
+
+                    docMap.put("sbmsnDocTyCd", docTyCd);
+
+                    reactSalesMapper.insertRentContractDoc(docMap);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteRentListing(
+            List<String> hoNos
+    ) {
+
+        for (String hoNo : hoNos) {
+
+            String rentLstgNo =
+                    reactSalesMapper
+                            .selectExistRentListing(
+                                    hoNo
+                            );
+
+            if (rentLstgNo == null) {
+                continue;
+            }
+
+            reactSalesMapper.deleteRentContractDoc(rentLstgNo);
+
+            reactSalesMapper.deleteRentListing(rentLstgNo);
         }
     }
 }

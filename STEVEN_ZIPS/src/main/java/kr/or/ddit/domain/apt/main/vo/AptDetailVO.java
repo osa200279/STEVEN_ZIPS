@@ -2,9 +2,11 @@ package kr.or.ddit.domain.apt.main.vo;
 
 import lombok.Data;
 
-/*db 테이블과 1:1 매칭되는 vo 입니다*/
+import java.util.Date;
+
 @Data
 public class AptDetailVO {
+
     private String hoNo;
     private int floor;
     private String hoTyNo;
@@ -13,4 +15,16 @@ public class AptDetailVO {
     private String panoImageNo;
     private String dongNo;
     private String ho;
+    private RentInfo rentInfo = new RentInfo();
+
+    @Data
+    public static class RentInfo {
+
+        private String rentTypeCd;
+        private String rcrtLstgSttsCd;
+        private String dealSttsCd;
+        private Date mvinPsblDt;
+        private Long dpstAmt;
+        private Long mthlyRentAmt;
+    }
 }
