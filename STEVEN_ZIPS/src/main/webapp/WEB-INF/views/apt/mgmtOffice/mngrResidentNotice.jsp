@@ -329,8 +329,6 @@
         #noticePage .notice-modal {
             width: 560px;
             max-width: 95vw;
-
-            /* 화면 높이보다 커지지 않게 제한 */
             max-height: calc(100vh - 48px);
 
             background: #fff;
@@ -338,10 +336,31 @@
             overflow: hidden;
             box-shadow: 0 20px 50px rgba(17, 24, 39, 0.18);
 
-            /* header/body/footer를 세로 구조로 분리 */
+            /*
+             * header / body / footer를 세로로 나누기 위한 구조
+             * body만 스크롤되고 footer는 항상 아래에 보이게 함
+             */
             display: flex;
             flex-direction: column;
         }
+
+        /*!* 모달 박스 *!*/
+        /*#noticePage .notice-modal {*/
+        /*    width: 560px;*/
+        /*    max-width: 95vw;*/
+
+        /*    !* 화면 높이보다 커지지 않게 제한 *!*/
+        /*    max-height: calc(100vh - 48px);*/
+
+        /*    background: #fff;*/
+        /*    border-radius: 7px;*/
+        /*    overflow: hidden;*/
+        /*    box-shadow: 0 20px 50px rgba(17, 24, 39, 0.18);*/
+
+        /*    !* header/body/footer를 세로 구조로 분리 *!*/
+        /*    display: flex;*/
+        /*    flex-direction: column;*/
+        /*}*/
 
         /* 모달 제목 */
         #noticePage .notice-modal-header {
@@ -358,8 +377,14 @@
         #noticePage .notice-modal-body {
             padding: 18px;
 
-            /* 내용이 길면 모달 내부만 스크롤 */
+            /*
+             * 핵심:
+             * 첨부파일 이미지가 많아지면 body 영역만 스크롤되게 함.
+             * 취소/저장 버튼은 footer에 있으므로 밀려나지 않음.
+             */
+            flex: 1 1 auto;
             overflow-y: auto;
+            min-height: 0;
         }
 
         #noticePage .form-section-title {
@@ -437,6 +462,12 @@
             align-items: center;
             justify-content: flex-end;
             gap: 8px;
+            background: #fff;
+
+            /*
+             * footer가 첨부파일 영역에 밀려서 줄어들지 않게 고정
+             */
+            flex: 0 0 64px;
         }
 
         /* 페이징 전체 영역 */
@@ -679,6 +710,28 @@
         /* hover 효과 */
         #noticePage input[type="file"].form-input::file-selector-button:hover {
             background: #eef2f7;
+        }
+
+        /*
+         * 현재 첨부파일/새 첨부파일 목록이 많아질 때
+         * 모달 전체가 커지는 대신 내부에서만 스크롤되게 보조 처리
+         */
+        #noticePage #currentFileList,
+        #noticePage #newFilePreviewList {
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        /*
+         * 이미지 미리보기 크기 고정
+         * 이미지가 커져도 모달 높이를 과하게 밀지 않게 함
+         */
+        #noticePage #currentFileList img,
+        #noticePage #newFilePreviewList img {
+            width: 90px !important;
+            height: 90px !important;
+            object-fit: cover !important;
         }
 
     </style>
