@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '../../../components/common/Button';
-import { getSido, getSigungu, getEmd, getAptList, toSelectOptions, getAptDetail, getSubmitDocTypes, insertAnn } from '../../../util/api/annRegister/annRegister';
+import { getSido, getSigungu, getEmd, getAptList, toSelectOptions, getAptDetail, getSubmitDocTypes, insertAnn, getRentList } from '../../../util/api/annRegister/annRegister';
 import BasicInfoSection from './BasicInfoSection';
 import AnnInfoSection from './AnnInfoSection';
 import SupplyInfoSection from './SupplyInfoSection';
@@ -53,6 +53,8 @@ export default function AnnRegister() {
   const [emd, setemd] = useState('');
   const [aptCmplexNo, setAptCmplexNo] = useState('');
   const [addr, setAddr] = useState(''); // 단지 선택 시 aptDetail API로 채움 (읽기 전용)
+  const [rentList, setRentList] = useState([]);
+  const [selectedRentList, setSelectedRentList] = useState([]);
 
   // ── 공급 정보: select option 목록 (useEffect로 API 조회) ──
   const [sidoOptions, setSidoOptions] = useState([]);
@@ -87,6 +89,7 @@ export default function AnnRegister() {
   useEffect(() => {
     getSido()
       .then((data) => {
+        console.log('시도 조회', data);
         setSidoOptions(toSelectOptions(data));
       })
       .catch((e) => console.error('시도 조회 오류', e));
@@ -105,6 +108,7 @@ export default function AnnRegister() {
     }
     getSigungu(sido)
       .then((data) => {
+        console.log('시군구 조회', sido, data);
         setSigunguOptions(toSelectOptions(data));
       })
       .catch((e) => console.error('시군구 조회 오류', e));
@@ -123,17 +127,17 @@ export default function AnnRegister() {
     }
     getEmd(sido, sigungu)
       .then((data) => {
+        console.log('읍면동 조회', sido, sigungu, data);
         setemdOptions(toSelectOptions(data));
       })
       .catch((e) => console.error('읍면동 조회 오류', e));
   }, [sigungu, sido]);
 
   // ─────────────────────────────────────────
-  // 4. 단지 목록 조회
-  // sido, sigungu, emd 중 하나라도 바뀌면 실행
-  // sido 없으면 setAptOptions([]) 초기화 후 return
-  // getAptList(sido, sigungu || null, emd || null) 호출 → setAptOptions
-  // sigungu, emd는 없어도 되는 값이라 null로 처리
+  // 4. 아파트 단지 조회
+  // sido, sigungu, emd 바뀔 때마다 실행
+  // sido, sigungu, emd 없으면 setAptOptions([]) 초기화 후 return
+  // getAptList(sido, sigungu, emd) 호출 → setAptOptions
   // ─────────────────────────────────────────
 
   useEffect(() => {
@@ -143,6 +147,7 @@ export default function AnnRegister() {
     }
     getAptList(sido, sigungu, emd)
       .then((data) => {
+        console.log('단지 조회', sido, sigungu, emd, data);
         setAptOptions(toSelectOptions(data));
       })
       .catch((e) => console.error('단지 조회 오류', e));
@@ -160,37 +165,44 @@ export default function AnnRegister() {
     const aptCmplexNo = e.target.value;
     setAptCmplexNo(aptCmplexNo);
 
-    if(!aptCmplexNo){
-      setAddr('');
-      setAptCmplexNo('');
-      setHoTyList([]);
-      setSubmitDocOptions([]);
-      return;
-    }
-
-    try{
-      const data = await getAptDetail(aptCmplexNo);
-
-      const docData = await getSubmitDocTypes(aptCmplexNo);
-
-      if (data.success) {
-        setAddr(data.dorojuso);
-        setHoTyList(data.hoTyNo);
-      }
-      if (docData.success && Array.isArray(docData.list)) {
-        setSubmitDocOptions(
-          docData.list.map((item) => ({
-            value: String(item.SBMSN_DOC_TY_CD ?? item.sbmsn_doc_ty_cd ?? ''),
-            label: String(item.CODE_NAME ?? item.code_name ?? ''),
-          })).filter((o) => o.value && o.label)
-        );
-      } else {
+    if (!aptCmplexNo) {
+        setAddr('');
+        setRentList([]);
+        setSelectedRentList([]);
         setSubmitDocOptions([]);
-      }
-    }catch (e){
-      console.error('단지 상세·제출서류 조회 오류', e);
+        return;
     }
-  };
+
+    try {
+        const data = await getAptDetail(aptCmplexNo);
+        console.log('단지 상세 조회', aptCmplexNo, data);
+
+        const rentData = await getRentList(aptCmplexNo);
+        console.log('매물 조회', aptCmplexNo, rentData);
+
+        const docData = await getSubmitDocTypes(aptCmplexNo);
+        console.log('제출서류 조회', aptCmplexNo, docData);
+
+        if (data.success) {
+            setAddr(data.dorojuso);
+        }
+        if (rentData.success) {
+            setRentList(rentData.list ?? []);
+        }
+        if (docData.success && Array.isArray(docData.list)) {
+            setSubmitDocOptions(
+                docData.list.map((item) => ({
+                    value: String(item.SBMSN_DOC_TY_CD ?? item.sbmsn_doc_ty_cd ?? ''),
+                    label: String(item.CODE_NAME ?? item.code_name ?? ''),
+                })).filter((o) => o.value && o.label)
+            );
+        } else {
+            setSubmitDocOptions([]);
+        }
+    } catch (e) {
+        console.error('단지 상세·매물·제출서류 조회 오류', e);
+    }
+};
 
 
   /** 사용자 공고 상세 JSP: sbmsn_doc를 쉼표 구분 문자열로 저장 */
@@ -205,6 +217,7 @@ export default function AnnRegister() {
     aptCmplexNo,
     sbmsnDoc: buildSbmsnDoc(),
     mvinPrdDt: annForm.rcrtEndDt,
+    rentLstgNoList: selectedRentList,
   });
 
   // ── 등록: insertAnn(getInsertPayload()) ──
@@ -278,6 +291,9 @@ export default function AnnRegister() {
             setSubmitDocOptions={setSubmitDocOptions}
             handleAptChange={handleAptChange}
             resetBelow={resetBelow}
+            rentList={rentList}
+            selectedRentList={selectedRentList}
+            setSelectedRentList={setSelectedRentList}
           />
           <SubmitDocSection submitDocOptions={submitDocOptions} />
         </div>

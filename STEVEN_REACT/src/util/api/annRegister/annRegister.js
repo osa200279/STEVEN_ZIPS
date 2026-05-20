@@ -53,9 +53,19 @@ export const getEmd = async (sidoNm, sigunguNm) => {
  */
 export const getAptList = async (sidoNm, sigunguNm, emdNm) => {
   const res = await requestApi.get('/api/annRegister/aptList', {
-    params: {sidoNm, sigunguNm, emdNm}
+    params: {sidoNm, sigunguNm, emdNm},
   });
   return res.data;
+};
+
+/**
+ * 매물 조회
+ */
+export const getRentList = async (aptCmplexNo)=>{
+  const res = await requestApi.get('/api/annRegister/rentList', {
+  params: {aptCmplexNo},
+});
+return res.data;
 };
 
 /**

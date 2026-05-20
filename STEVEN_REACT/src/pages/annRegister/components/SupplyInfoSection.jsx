@@ -1,4 +1,4 @@
-import { LR, SUPPLY_COLS, SUPPLY_LABELS, annStyles } from './formBits';
+import { LR, SUPPLY_LABELS, annStyles } from './formBits';
 
 const L = SUPPLY_LABELS;
 
@@ -17,11 +17,12 @@ export default function SupplyInfoSection({
   sigunguOptions = [],
   emdOptions = [],
   aptOptions = [],
-  setHoTyList,
-  hoTyList = [],
   setSubmitDocOptions,
   handleAptChange,
   resetBelow,
+  rentList = [],
+  selectedRentList = [],
+  setSelectedRentList,
 }) {
   const clearFromSigungu = () => {
     setemd('');
@@ -83,7 +84,6 @@ export default function SupplyInfoSection({
                 setemd(e.target.value);
                 setAptCmplexNo('');
                 setAddr('');
-                setHoTyList([]);
                 setSubmitDocOptions?.([]);
               }}
             >
@@ -99,7 +99,7 @@ export default function SupplyInfoSection({
               id="aptCmplexNo"
               name="aptCmplexNo"
               value={aptCmplexNo}
-              disabled={!emd}
+              disabled={!sido}
               onChange={handleAptChange ?? ((e) => setAptCmplexNo(e.target.value))}
             >
               <option value="">{emd ? L.aptSelect : L.needEmd}</option>
@@ -126,29 +126,52 @@ export default function SupplyInfoSection({
             <table className="data-table ann-supply-table">
               <thead>
                 <tr>
-                  {SUPPLY_COLS.map((c) => (
-                    <th key={c.key}>{c.label}</th>
-                  ))}
+                  <th>선택</th>
+                  <th>호</th>
+                  <th>타입</th>
+                  <th>전용면적(㎡)</th>
+                  <th>방 수</th>
+                  <th>욕실 수</th>
+                  <th>보증금</th>
+                  <th>월임대료</th>
                 </tr>
               </thead>
               <tbody>
-    {hoTyList.length > 0
-        ? hoTyList.map((row, i) => (
-            <tr key={i}>
-                <td>{row.TY_NM}</td>
-                <td>{row.EXCLUSIVE_SIZE}</td>
-                <td>{row.ROOM_CNT}</td>
-                <td>{row.BATHROOM_CNT}</td>
-                <td>{row.UNIT_CNT}</td>
-            </tr>
-        ))
-        : <tr>
-            <td colSpan={5} style={{ textAlign: 'center', color: 'gray' }}>
-                단지를 선택하세요
-            </td>
-          </tr>
-            }
-        </tbody>
+                {rentList.length > 0
+                  ? rentList.map((row, i) => (
+                    <tr key={i}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedRentList.includes(row.RENT_LSTG_NO ?? row.rent_lstg_no)}
+                          onChange={(e) => {
+                            const rentNo = row.RENT_LSTG_NO ?? row.rent_lstg_no;
+                            if (e.target.checked) {
+                              setSelectedRentList([...selectedRentList, rentNo]);
+                            } else {
+                              setSelectedRentList(selectedRentList.filter(r => r !== rentNo));
+                            }
+                          }}
+                        />
+                      </td>
+                      <td>{row.HO ?? row.ho}</td>
+                      <td>{row.TY_NM ?? row.ty_nm}</td>
+                      <td>{row.EXCLUSIVE_SIZE ?? row.exclusive_size}</td>
+                      <td>{row.ROOM_CNT ?? row.room_cnt}</td>
+                      <td>{row.BATHROOM_CNT ?? row.bathroom_cnt}</td>
+                      <td>{row.DPST_AMT ?? row.dpst_amt}</td>
+                      <td>{row.MTHLY_RENT_AMT ?? row.mthly_rent_amt}</td>
+                    </tr>
+                  ))
+                  : (
+                    <tr>
+                      <td colSpan={8} style={{ textAlign: 'center', color: 'gray' }}>
+                        단지를 선택하세요
+                      </td>
+                    </tr>
+                  )
+                }
+              </tbody>
             </table>
           </div>
         </div>
