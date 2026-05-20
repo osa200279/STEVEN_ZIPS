@@ -25,4 +25,6 @@ public interface ICvplMapper {
     CvplVO selectOneCvplBrief(String cvplNo);
 
     CvplVO selectOneCvplDetailByCvplNo(String cvplNo);
+
+    int updateCvplSttsToCancel(String cvplNo);
 }

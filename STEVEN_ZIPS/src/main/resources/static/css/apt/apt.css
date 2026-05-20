@@ -407,6 +407,16 @@ input.fake-input, input.a-input, .select, .fake-textarea, a-textarea {
     color: #2d6688;
 }
 
+.badge.cancel {
+    background: #d5d5d5;
+    color: #5c5a5a;
+}
+
+.badge.warn {
+    background: #d06c6c;
+    color: #ffffff;
+}
+
 .menu-grid {
     display: grid;
     grid-template-columns:repeat(3, minmax(0, 1fr));

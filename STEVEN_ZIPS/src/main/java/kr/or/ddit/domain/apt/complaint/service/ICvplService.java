@@ -25,4 +25,7 @@ public interface ICvplService {
     List<CvplVO> selectCvplListAllByAptCmplexNo(String aptCmplexNo);
 
     CvplVO selectCvplDetailByCvplNo(String cvplNo);
+
+    // 민원 취하
+    int cancelCvpl(String cvplNo);
 }

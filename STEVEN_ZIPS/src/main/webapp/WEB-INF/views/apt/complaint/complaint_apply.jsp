@@ -184,6 +184,9 @@
                                     <c:when test="${cvpl.cvplSttsCd eq 'APLY'}">
                                         <td><span class="badge wait">민원 신청됨</span></td>
                                     </c:when>
+                                    <c:when test="${cvpl.cvplSttsCd eq 'CNCL'}">
+                                        <td><span class="badge cancel">민원 취소됨</span></td>
+                                    </c:when>
                                     <c:when test="${cvpl.cvplSttsCd eq 'RCPT'}">
                                         <td><span class="badge ok">민원 접수됨</span></td>
                                     </c:when>
@@ -191,10 +194,10 @@
                                         <td><span class="badge wait">보완 요청</span></td>
                                     </c:when>
                                     <c:when test="${cvpl.cvplSttsCd eq 'REJS'}">
-                                        <td><span class="badge wait">처리 불가</span></td>
+                                        <td><span class="badge warn">처리 불가</span></td>
                                     </c:when>
                                     <c:when test="${cvpl.cvplSttsCd eq 'RJCT'}">
-                                        <td><span class="badge wait">반려</span></td>
+                                        <td><span class="badge warn">반려</span></td>
                                     </c:when>
                                     <c:when test="${cvpl.cvplSttsCd eq 'COMP'}">
                                         <td><span class="badge info">처리 완료</span></td>
@@ -355,7 +358,7 @@
             const statusBox = document.querySelector('#modalStatus');
             statusBox.innerHTML = getBadgeHtml(cvpl.cvplSttsCd).text; // 기존에 만든 getBadgeHtml 재사용
 
-            // 파일 칩 처리
+            // 파일 처리
             const fileBox = document.querySelector('#modalFiles');
             if (files && files.length > 0) {
                 fileBox.innerHTML = files.map(f => `
@@ -366,6 +369,32 @@
             `).join('');
             } else {
                 fileBox.innerHTML = '<span class="chip" style="background: var(--text-light);">첨부된 파일이 없습니다.</span>';
+            }
+
+            // 민원 취하 버튼
+            document.querySelector('#modalCancelBtn').onclick = async () => {
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+                const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+                if (!confirm("정말 이 민원을 취하하시겠습니까?")) return;
+
+                try {
+                    const res = await fetch(`/apt/complaint/cancel/${aptCmplexNo}/\${cvplNo}`,{
+                        method: 'POST',
+                        headers: {
+                            [csrfHeader]: csrfToken
+                        }
+                    });
+                    if (!res.ok){
+                        const errorMsg = await res.text();
+                        throw new Error(errorMsg);
+                    }else{
+                        const msg = await res.text();
+                        alert(msg);
+                    }
+                    closeModal();
+                } catch (err) {
+                    alert(err.message);
+                }
             }
 
             // 모달 표시
@@ -380,10 +409,11 @@
     function getBadgeHtml(statusCd) {
         const statusMap = {
             'APLY': {text: '민원 신청됨', cls: 'wait'},
+            'CNCL': {text: '민원 취소됨', cls: 'cancel'},
             'RCPT': {text: '민원 접수됨', cls: 'ok'},
             'SUPL': {text: '보완 요청', cls: 'wait'},
-            'REJS': {text: '처리 불가', cls: 'wait'},
-            'RJCT': {text: '반려', cls: 'wait'},
+            'REJS': {text: '처리 불가', cls: 'warn'},
+            'RJCT': {text: '반려', cls: 'warn'},
             'COMP': {text: '처리 완료', cls: 'info'},
             'END': {text: '종결', cls: 'info'}
         };

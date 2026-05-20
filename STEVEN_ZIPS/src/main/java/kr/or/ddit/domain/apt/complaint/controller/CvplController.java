@@ -201,7 +201,7 @@ public class CvplController {
     @PreAuthorize("@authService.canAccessCvpl(principal, #cvplNo)")
     @ResponseBody
     @GetMapping("/detail/{aptCmplexNo}/{cvplNo}")
-    public ResponseEntity<?> cvplDetail(
+    public ResponseEntity<Map<String, Object>> cvplDetail(
             @AuthenticationPrincipal CustomUser customUser
             , @PathVariable String cvplNo
             , @PathVariable String aptCmplexNo) {
@@ -225,6 +225,15 @@ public class CvplController {
         if (detail != null) {
             return ResponseEntity.ok(resp);
         } else return ResponseEntity.badRequest().build();
+    }
+
+    @PreAuthorize("@authService.canAccessCvpl(principal, #cvplNo)")
+    @ResponseBody
+    @PostMapping("/cancel/{aptCmplexNo}/{cvplNo}")
+    public ResponseEntity<String> cancelCvpl(@PathVariable String cvplNo, @PathVariable String aptCmplexNo) {
+        int res = cvplService.cancelCvpl(cvplNo);
+        return (res < 1) ? ResponseEntity.badRequest().body("취소 처리에 실패하였습니다")
+                : ResponseEntity.ok("취소 처리에 성공하였습니다.");
     }
 
     // 민원 테스트용 뷰 컨트롤러

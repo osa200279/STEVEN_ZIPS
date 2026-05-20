@@ -181,4 +181,10 @@
           from CVPL
          where CVPL_NO = #{cvplNo}
     </select>
+
+    <update id="updateCvplSttsToCancel">
+        update CVPL
+           set CVPL_STTS_CD = 'CNCL'
+         where CVPL_NO = #{cvplNo}
+    </update>
 </mapper>

@@ -139,4 +139,9 @@ public class CvplServiceImpl implements ICvplService {
     public CvplVO selectCvplDetailByCvplNo(String cvplNo) {
         return cvplMapper.selectOneCvplDetailByCvplNo(cvplNo);
     }
+
+    @Override
+    public int cancelCvpl(String cvplNo) {
+        return cvplMapper.updateCvplSttsToCancel(cvplNo);
+    }
 }
