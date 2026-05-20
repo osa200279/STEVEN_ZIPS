@@ -60,21 +60,29 @@
           <span>›</span>
           <a href="javascript:void(0);">전자투표 및 설문</a>
           <span>›</span>
-          <span class="cur">설문조사 - 목록</span>
+
         </div>
-        <h1 class="page-title">설문조사 - 목록</h1>
-        <p class="page-desc">카테고리와 키워드 검색, 목록 조회, 진행상태를 포함한 설문조사 목록 화면입니다.</p>
+        <h1 class="page-title">투표 및 설문조사</h1>
+        <p class="page-desc">카테고리와 키워드 검색, 목록 조회, 진행상태를 포함한 투표,설문조사 목록 화면입니다.</p>
 
         <section class="panel">
           <div class="search-row">
-            <select class="fake-select">
-              <option>전체 설문</option>
-              <option>시설</option>
-              <option>커뮤니티</option>
-              <option>서비스</option>
+            <select class="fake-select"
+                    id="typeFilter">
+
+              <option value="ALL">전체</option>
+              <option value="SURVEY">설문</option>
+              <option value="VOTE">투표</option>
+
             </select>
-            <input class="fake-input" value="서비스" />
-            <button class="btn-sub">검색</button>
+
+            <button class="btn-sub"
+                    type="button"
+                    onclick="searchSurvey()">
+
+              검색
+
+            </button>
           </div>
           <table class="data-table">
             <thead>
@@ -93,9 +101,36 @@
               <tr>
 
                 <td>
-                  <a href="${pageContext.request.contextPath}/resident/survey/detail/${survey.surveyNo}">
+
+                  <a href="${pageContext.request.contextPath}/resident/survey/detail/${survey.surveyNo}"
+                     style="font-weight:700;
+            color:var(--text-dark);
+            text-decoration:none;">
+
                       ${survey.surveyNm}
+
                   </a>
+
+                  <div style="
+        margin-top:6px;
+        font-size:12px;
+        color:var(--text-light);
+  ">
+
+                    <c:choose>
+
+                      <c:when test="${survey.surveyTypeCd eq 'SURVEY'}">
+                        설문
+                      </c:when>
+
+                      <c:otherwise>
+                        투표
+                      </c:otherwise>
+
+                    </c:choose>
+
+                  </div>
+
                 </td>
 
                 <td>
@@ -141,5 +176,21 @@
     </main>
   </div>
   <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
+  <script>
+
+    function searchSurvey(){
+
+      const type =
+              document.getElementById(
+                      "typeFilter"
+              ).value;
+
+      location.href =
+              "${pageContext.request.contextPath}"
+              + "/resident/survey/list?type="
+              + type;
+    }
+
+  </script>
 </body>
 </html>

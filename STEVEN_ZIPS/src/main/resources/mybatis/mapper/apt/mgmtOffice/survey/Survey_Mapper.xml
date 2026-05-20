@@ -156,6 +156,7 @@
 
         WHERE SURVEY_NO = #{surveyNo}
           AND USER_NO = #{userNo}
+          AND ROWNUM = 1
 
     </select>
 
@@ -185,6 +186,52 @@
                )
 
     </insert>
+
+    <select id="existsSurveyResponse"
+            resultType="int">
+
+        SELECT COUNT(*)
+
+        FROM SURVEY_RSPNS
+
+        WHERE SURVEY_NO = #{surveyNo}
+          AND USER_NO = #{userNo}
+
+    </select>
+
+
+
+
+    <select id="selectSurveyTypeList"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO">
+
+        SELECT
+
+            SURVEY_NO         surveyNo,
+            SURVEY_NM         surveyNm,
+            SURVEY_CN         surveyCn,
+            SURVEY_TY_CD      surveyTypeCd,
+            SURVEY_QITEM_CN   surveyQitemCn,
+            SURVEY_BGNG_DT    surveyBgngDt,
+            SURVEY_END_DT     surveyEndDt,
+            SURVEY_STTS_CD    surveySttsCd,
+            RGTR_ID           rgtrId,
+            APT_CD            aptCd
+
+        FROM SURVEY
+
+        WHERE SURVEY_TY_CD = #{type}
+
+        ORDER BY SURVEY_BGNG_DT DESC
+
+    </select>
+
+
+
+
+
+
 
 </mapper>
 

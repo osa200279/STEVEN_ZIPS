@@ -33,4 +33,13 @@ public interface IMngSurveyMapper {
             @Param("userNo") String userNo
 
     );
+
+    int existsSurveyResponse(
+
+            @Param("surveyNo") String surveyNo,
+            @Param("userNo") String userNo
+
+    );
+
+    List<MngSurveyDTO> selectSurveyTypeList(String type);
 }

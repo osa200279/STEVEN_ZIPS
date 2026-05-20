@@ -94,4 +94,25 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
         );
     }
 
+    @Override
+    public boolean existsSurveyResponse(
+            String surveyNo,
+            String userNo
+    ) {
+
+        return iMngSurveyMapper.existsSurveyResponse(
+                surveyNo,
+                userNo
+        ) > 0;
+    }
+
+    @Override
+    public List<MngSurveyDTO> selectSurveyTypeList(
+            String type
+    ) {
+
+        return iMngSurveyMapper
+                .selectSurveyTypeList(type);
+    }
+
 }

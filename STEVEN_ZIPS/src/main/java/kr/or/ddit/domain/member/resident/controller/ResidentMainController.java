@@ -3,6 +3,7 @@ package kr.or.ddit.domain.member.resident.controller;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtOfficeService;
+import kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.survey.service.IMngSurveyService;
 import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.member.resident.dto.ResidentFacilityHistoryDTO;
@@ -848,7 +849,8 @@ public class ResidentMainController {
 
     @GetMapping("/survey")
     public String survey() {
-        return "member/resident/survey/survey";
+
+        return "redirect:/resident/survey/list";
     }
 
     @GetMapping("/survey/detail/{surveyNo}")
@@ -892,11 +894,50 @@ public class ResidentMainController {
     }
 
     @GetMapping("/survey/list")
-    public String surveyList(Model model) {
+    public String surveyList(
+
+            @RequestParam(
+                    defaultValue = "ALL"
+            )
+            String type,
+
+            Model model
+
+    ) {
+
+        List<MngSurveyDTO> surveyList;
+
+        if("SURVEY".equals(type)) {
+
+            surveyList =
+                    surveyService
+                            .selectSurveyTypeList(
+                                    "SURVEY"
+                            );
+
+        } else if("VOTE".equals(type)) {
+
+            surveyList =
+                    surveyService
+                            .selectSurveyTypeList(
+                                    "VOTE"
+                            );
+
+        } else {
+
+            surveyList =
+                    surveyService
+                            .selectSurveyList(null);
+        }
 
         model.addAttribute(
                 "surveyList",
-                surveyService.selectSurveyList(null)
+                surveyList
+        );
+
+        model.addAttribute(
+                "type",
+                type
         );
 
         return "member/resident/survey/survey_list";
@@ -915,15 +956,15 @@ public class ResidentMainController {
 
     ) {
 
-        ResidentVO resident =
-                (ResidentVO) customUser.getMember();
+        if(surveyService.existsSurveyResponse(
 
-        String hoNo =
-                resident.getMyAptList()
-                        .get(0)
-                        .getHoNo();
+                surveyNo,
+                customUser.getMember().getUserNo()
 
-
+        )){
+            return ResponseEntity.badRequest()
+                    .body("already");
+        }
 
         surveyService.insertSurveyResponse(
 

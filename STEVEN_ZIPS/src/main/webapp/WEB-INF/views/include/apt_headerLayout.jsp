@@ -100,8 +100,7 @@
             <span>전자투표및설문<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/resident/vote">입주민 투표</a>
-                <a href="${pageContext.request.contextPath}/resident/survey">설문조사</a>
+                <a href="${pageContext.request.contextPath}/resident/survey">투표 및 설문조사</a>
             </div>
         </div>
 

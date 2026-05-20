@@ -34,4 +34,7 @@ public interface IMngSurveyService {
     );
 
 
+    boolean existsSurveyResponse(String surveyNo, String userNo);
+
+    List<MngSurveyDTO> selectSurveyTypeList(String type);
 }
