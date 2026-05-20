@@ -2,6 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.common.api.react.mapper.IReactAptMapper">
 
-    <select id="searchApartment" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO"></select>
-    <select id="countApartment" resultType="java.lang.Integer"></select>
+    <select id="searchApartment" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
+       SELECT
+            APT_CMPLEX_NO
+             , APT_CMPLEX_NM
+             , DOROJUSO
+        FROM APT_COMPLEX
+        WHERE UPPER(APT_CMPLEX_NM)
+                  LIKE '%' || UPPER(#{keyword}) || '%'
+        ORDER BY APT_CMPLEX_NM
+        OFFSET #{startRow} ROWS
+        FETCH NEXT #{size} ROWS ONLY
+    </select>
+
+
+    <select id="countApartment" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM APT_COMPLEX
+        WHERE UPPER(APT_CMPLEX_NM)
+                  LIKE '%' || UPPER(#{keyword}) || '%'
+    </select>
 </mapper>
