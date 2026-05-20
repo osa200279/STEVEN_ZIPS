@@ -134,4 +134,9 @@ public class CvplServiceImpl implements ICvplService {
     public List<CvplVO> selectCvplListAllByAptCmplexNo(String aptCmplexNo) {
         return cvplMapper.selectCvplListAllByAptCmplexNo(aptCmplexNo);
     }
+
+    @Override
+    public CvplVO selectCvplDetailByCvplNo(String cvplNo) {
+        return cvplMapper.selectOneCvplDetailByCvplNo(cvplNo);
+    }
 }

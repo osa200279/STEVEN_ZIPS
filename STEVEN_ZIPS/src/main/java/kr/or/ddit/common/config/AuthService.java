@@ -19,7 +19,7 @@ public class AuthService {
     private ICvplMapper cvplMapper;
 
     /**
-     * 접근 권한 소속 확인
+     * 해당 단지 입주민 접근 권한 소속 확인
      *
      * @param principal
      * @param target
@@ -53,21 +53,33 @@ public class AuthService {
     }
 
     /**
-     * only 입주민만 허용해주는 서비스
+     * only 입주민만 허용해주는 서비스 (ex.민원 신청)
      *
      * @param principal
      * @param aptCmplexNo
-     * @return
+     * @return boolean
      * @author 이용로
      */
     public boolean isResidentOnly(Object principal, String aptCmplexNo) {
         if (!(principal instanceof CustomUser user)) return false;
 
         MemberVO member = user.getMember();
-
         return (member instanceof ResidentVO) ? hasAccess(user, aptCmplexNo) : false;
     }
 
+    /**
+     * only 사용자만 허용
+     * @author 이용로
+     * @param principal
+     * @return
+     */
+    public boolean isUserOnly(Object principal){
+        if (!(principal instanceof CustomUser user)) return false;
+
+        MemberVO member = user.getMember();
+        if(member instanceof AdmVO || member instanceof MngrVO) return false;
+        else return true;
+    }
 
     /**
      * 작성자 또는 관리자만 접근
@@ -105,11 +117,12 @@ public class AuthService {
      */
     public boolean canAccessCvpl(Object principal, String cvplNo) {
         // 1. DB에서 cvplNo로 해당 민원 정보(단지번호, 작성자유저번호)를 조회해옵니다.
-        CvplVO cvpl = cvplMapper.selectOneCvplDetail(cvplNo);
+        CvplVO cvpl = cvplMapper.selectOneCvplBrief(cvplNo);
 
         if(cvpl == null) return false;
+        String writerNo = cvpl.getUserNo();
         // 2. 조회된 결과로 기존에 만든 canAccessPost를 재활용합니다.
-        return isWriter(principal, cvpl.getAptCmplexNo(), cvpl.getUserNo());
+        return isWriter(principal, writerNo, cvpl.getAptCmplexNo());
     }
 
     /**

@@ -152,18 +152,9 @@
         order by CVPL_REG_DT desc
     </select>
 
-    <select id="selectOneCvplDetail" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
-        select /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectCvplListAllByAptCmplexNo */
-            CVPL_NO
-             , CVPL_TY_CD
-             , CVPL_STTS_CD
-             , CVPL_REG_DT
-             , CVPL_MDF_DT
-             , CVPL_RCPT_DT
-             , CVPL_END_DT
-             , CVPL_PRRT
-             , CVPL_FILE_NO
-             , CVPL_TTL
+    <select id="selectOneCvplBrief" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
+        select /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectOneCvplBreif */
+              CVPL_NO
              , C.USER_NO
              , M.USER_ID
              , M.USER_NM
@@ -172,5 +163,22 @@
          from CVPL C
    inner join MEMBER M on (M.USER_NO = C.USER_NO)
         where CVPL_NO = #{cvplNo}
+    </select>
+
+    <select id="selectOneCvplDetailByCvplNo" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
+        select
+                CVPL_NO
+               , CVPL_TY_CD
+               , CVPL_LOC
+               , CVPL_CN
+               , CVPL_STTS_CD
+               , CVPL_REG_DT
+               , CVPL_MDF_DT
+               , CVPL_RCPT_DT
+               , CVPL_END_DT
+               , CVPL_FILE_NO
+               , CVPL_TTL
+          from CVPL
+         where CVPL_NO = #{cvplNo}
     </select>
 </mapper>

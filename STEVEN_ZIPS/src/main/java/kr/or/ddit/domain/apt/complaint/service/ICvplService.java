@@ -23,4 +23,6 @@ public interface ICvplService {
     List<CvplVO> selectMyCvplList(PaginationInfoVO<CvplVO> page);
 
     List<CvplVO> selectCvplListAllByAptCmplexNo(String aptCmplexNo);
+
+    CvplVO selectCvplDetailByCvplNo(String cvplNo);
 }

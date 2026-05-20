@@ -177,7 +177,7 @@
                         </thead>
                         <tbody id="cvplBody">
                         <c:forEach var="cvpl" items="${page.dataList}">
-                            <tr onclick="openCvplDetail('${cvpl.cvplNo}')" style="cursor:pointer;">
+                            <tr onclick="openCvplDetail(${cvpl.cvplNo})" style="cursor:pointer;">
                                 <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
                                 <td>${cvpl.cvplTtl}</td>
                                 <c:choose>
@@ -231,7 +231,7 @@
                 <div id="modalTtl" class="td" style="grid-column: span 3;"></div>
 
                 <div class="th">카테고리</div>
-                <div id="modalTy" class="td"></div>
+                <div id="modalTy" class="td"> ?</div>
                 <div class="th">접수일시</div>
                 <div id="modalDate" class="td"></div>
 
@@ -245,22 +245,21 @@
             <div class="section-hd" style="margin-top: 24px; border-bottom: none;">
                 <h3>민원 설명</h3>
             </div>
-            <div id="modalCn" class="fake-textarea"
-                 style="background: var(--bg); border-color: var(--border); margin-bottom: 20px;">
+            <div id="modalCn" class="fake-textarea" style="background: var(--bg); border-color: var(--border); margin-bottom: 20px;">
             </div>
 
             <div class="section-hd" style="border-bottom: none;">
                 <h3>첨부 파일</h3>
             </div>
-            <div id="modalFiles" class="chip-row"
-                 style="background: var(--bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+            <div id="modalFiles" class="chip-row" style="background: var(--bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
                 <span class="chip" style="background: var(--text-light);">첨부된 파일이 없습니다.</span>
             </div>
         </div>
 
         <div class="btn-row">
+<%--            <button id="modalModifyBtn" class="btn-main">수정하기</button>--%>
+            <button id="modalCancelBtn" class="btn-main">민원 취소</button>
             <button class="btn-ghost" onclick="closeModal()">닫기</button>
-            <button id="modalModifyBtn" class="btn-main">수정하기</button>
         </div>
     </div>
 </div>
@@ -275,7 +274,7 @@
             if (link) {
                 e.preventDefault();
                 const page = link.dataset.page;
-                if(page) {
+                if (page) {
                     location.href = "?curPage=" + page;
                 }
             }
@@ -308,11 +307,10 @@
                     location.href = window.location.pathname + "?curPage=1"
                     // try{
                     //     const res = await fetch(`/apt/complaint/ajax/load-cvpl/{aptCmplexNo}`);
-                    //
                     // }catch(e){
                     //     console.error(e);
                     // }
-                }else{
+                } else {
                     alert(result.message);
                 }
 
@@ -332,29 +330,38 @@
     async function openCvplDetail(cvplNo) {
         try {
             // 상세 데이터를 가져오는 API 호출 (예시 주소)
-            const resp = await fetch(`/apt/complaint/detail/${cvplNo}`);
+            const resp = await fetch(`/apt/complaint/detail/${aptCmplexNo}/\${cvplNo}`);
             if (!resp.ok) throw new Error("상세 정보를 불러올 수 없습니다.");
 
-            const cvpl = await resp.json();
+            const data = await resp.json();
+
+            const cvpl = data.detail;
+            const files = data.files;
 
             // 모달 데이터 매핑
             document.querySelector('#modalTtl').innerText = cvpl.cvplTtl;
-            document.querySelector('#modalTy').innerText = cvpl.cvplTyNm; // 카테고리 한글명
-            document.querySelector('#modalDate').innerText = new Date(cvpl.cvplRegDt).toLocaleString();
+            document.querySelector('#modalTy').innerText = cvpl.cvplTyCd;
+            document.querySelector('#modalDate').innerText = new Date(cvpl.cvplRegDt).toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
             document.querySelector('#modalLoc').innerText = cvpl.cvplLoc || '장소 미지정';
             document.querySelector('#modalCn').innerText = cvpl.cvplCn;
 
             // 배지 처리 (상태 코드에 따른 HTML 생성)
             const statusBox = document.querySelector('#modalStatus');
-            statusBox.innerHTML = getBadgeHtml(cvpl.cvplSttsCd); // 기존에 만든 getBadgeHtml 재사용
+            statusBox.innerHTML = getBadgeHtml(cvpl.cvplSttsCd).text; // 기존에 만든 getBadgeHtml 재사용
 
             // 파일 칩 처리
             const fileBox = document.querySelector('#modalFiles');
-            if (cvpl.fileList && cvpl.fileList.length > 0) {
-                fileBox.innerHTML = cvpl.fileList.map(f => `
-                <a href="/download/${f.fileNo}" class="chip" style="background: var(--green-dark); cursor:pointer;">
+            if (files && files.length > 0) {
+                fileBox.innerHTML = files.map(f => `
+                <a href="/file/download/\${f.googleId}" class="chip" style="background: var(--green-dark); cursor:pointer;">
                     <span class="material-symbols-outlined" style="font-size:14px;">download</span>
-                    ${f.orgnlFileNm}
+                    \${f.fileOgName}
                 </a>
             `).join('');
             } else {
@@ -381,7 +388,7 @@
             'END': {text: '종결', cls: 'info'}
         };
         const res = statusMap[statusCd] || {text: '대기', cls: 'wait'};
-        return `<span class="badge ${res.cls}">${res.text}</span>`;
+        return res;
     }
 </script>
 </html>

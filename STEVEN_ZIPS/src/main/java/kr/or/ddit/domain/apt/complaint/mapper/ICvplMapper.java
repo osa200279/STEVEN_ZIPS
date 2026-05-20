@@ -22,5 +22,7 @@ public interface ICvplMapper {
 
     List<CvplVO> selectCvplListAllByAptCmplexNo(String aptCmplexNo);
 
-    CvplVO selectOneCvplDetail(String cvplNo);
+    CvplVO selectOneCvplBrief(String cvplNo);
+
+    CvplVO selectOneCvplDetailByCvplNo(String cvplNo);
 }

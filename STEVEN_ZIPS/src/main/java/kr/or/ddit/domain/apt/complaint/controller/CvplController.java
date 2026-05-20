@@ -1,6 +1,9 @@
 package kr.or.ddit.domain.apt.complaint.controller;
 
+import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.enums.ServiceResult;
+import kr.or.ddit.common.file.service.IAttachFileService;
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.complaint.service.ICvplService;
 import kr.or.ddit.domain.apt.complaint.vo.CvplVO;
@@ -39,6 +42,9 @@ public class CvplController {
 
     @Autowired
     private ICvplService cvplService;
+
+    @Autowired
+    private IAttachFileService attachFileService;
 
     /**
      * 민원신청 페이지
@@ -192,15 +198,33 @@ public class CvplController {
     }
 
     // 민원 상세 뷰 컨트롤러
-    @PreAuthorize("@authService.isWriter(principal, #writerNo, #aptCmplexNo)")
+    @PreAuthorize("@authService.canAccessCvpl(principal, #cvplNo)")
     @ResponseBody
-    @GetMapping("/detail/{writerNo}/{aptCmplexNo}")
-    public Map<String, Object> cvplDetail(
+    @GetMapping("/detail/{aptCmplexNo}/{cvplNo}")
+    public ResponseEntity<?> cvplDetail(
             @AuthenticationPrincipal CustomUser customUser
-            , @PathVariable String writerNo
+            , @PathVariable String cvplNo
             , @PathVariable String aptCmplexNo) {
+        log.info("cvplDetail() 실행");
+        Map<String, Object> resp = new HashMap<>();
 
-        return null;
+        CvplVO detail = cvplService.selectCvplDetailByCvplNo(cvplNo);
+
+        // detail이 없는 경우 (NPE 방지)
+        if (detail == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (detail.getCvplFileNo() != null && !detail.getCvplFileNo().equals("")) {
+            List<AttachFileVO> files = attachFileService.setFileMetaData(detail.getCvplFileNo());
+            log.info("#### files {}", files);
+            resp.put("files", files);
+        }
+        resp.put("detail", detail);
+
+        if (detail != null) {
+            return ResponseEntity.ok(resp);
+        } else return ResponseEntity.badRequest().build();
     }
 
     // 민원 테스트용 뷰 컨트롤러
