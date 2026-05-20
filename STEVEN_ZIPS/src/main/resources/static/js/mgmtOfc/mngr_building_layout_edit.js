@@ -282,12 +282,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 return `
                 <div class="unit-floor-row">
-
+            
                     <div class="unit-floor-label">
                         ${floor}F
                     </div>
-
-                    ${hoList.map(ho => {
+            
+                    <div class="unit-floor-hos">
+            
+                        ${hoList.map(ho => {
 
                     let statusClass = "";
 
@@ -320,6 +322,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 }).join("")}
 
+                    </div>
+            
                 </div>
             `;
 
@@ -684,11 +688,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    async function applyHoType(){
+    async function applyHoType() {
 
         const hoTyNo = document.querySelector("#hoTypeSelect").value;
 
-        if(!hoTyNo){
+        if (!hoTyNo) {
             alert("평형 타입을 선택해주세요.");
             return;
         }
@@ -696,7 +700,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const selectedRows =
             gridApi.getSelectedRows();
 
-        if(selectedRows.length === 0){
+        if (selectedRows.length === 0) {
 
             alert("호를 선택해주세요.");
 
@@ -706,7 +710,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const hoNoList =
             selectedRows.map(row => row.hoNo);
 
-        try{
+        try {
 
             const response = await fetch(
                 `/manager/complexEdit/updateHoType/${mgmtOfcNo}`,
@@ -727,7 +731,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const result = await response.json();
 
-            if(!result.success){
+            if (!result.success) {
                 alert(result.message || "평형 변경 실패");
                 return;
             }
@@ -738,7 +742,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 document.querySelector("#dongSelect").value;
 
             await reloadHoData(currentDongNo);
-        }catch(error){
+        } catch (error) {
             console.error(error);
             alert("평형 변경 실패");
         }

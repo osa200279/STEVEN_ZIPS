@@ -823,7 +823,17 @@
 .unit-layout-grid{
 
     padding: 18px;
+
+    display: flex;
+    flex-direction: column;
+
     gap: 8px;
+
+    height: 700px;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
 
     background:
             linear-gradient(
@@ -833,20 +843,20 @@
             );
 }
 
-.unit-floor-row{
 
-    grid-template-columns:
-        48px repeat(auto-fit, minmax(48px, 1fr));
+.unit-floor-hos{
+
+    display: flex;
+
+    flex-wrap: wrap;
 
     gap: 6px;
 }
+.unit-cell{
 
-.unit-floor-label{
+    width: 48px;
 
-    font-size: 12px;
-    font-weight: 700;
-
-    color: #64748b;
+    flex-shrink: 0;
 }
 
 /* 세대 */
