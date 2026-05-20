@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+import AptSearchSelect
+    from '../../components/ctrt/AptSearchSelect';
+
 function OfflineCtrtModal({
 
     open,
@@ -8,51 +11,10 @@ function OfflineCtrtModal({
 
 }) {
 
+    const [selectedApt, setSelectedApt]
+        = useState(null);
+
     if (!open) return null;
-
-    const [form, setForm] = useState({
-
-        userId: '',
-
-        userNm: '',
-
-        aptNm: '',
-
-        dong: '',
-
-        ho: '',
-
-        rentTypeCd: 'JS',
-
-        dpstAmt: '',
-
-        mthlyRentAmt: '',
-
-        mvinDt: '',
-
-        mvoutDt: ''
-
-    });
-
-    const handleChange = (e) => {
-
-        const { name, value } = e.target;
-
-        setForm(prev => ({
-
-            ...prev,
-
-            [name]: value
-
-        }));
-    };
-
-    const handleSubmit = () => {
-
-        console.log(form);
-
-        onClose();
-    };
 
     return (
 
@@ -77,13 +39,13 @@ function OfflineCtrtModal({
 
             <div
                 style={{
-                    width: '620px',
+                    width: '700px',
 
                     background: '#fff',
 
-                    borderRadius: '18px',
+                    borderRadius: '20px',
 
-                    padding: '28px'
+                    padding: '32px'
                 }}
             >
 
@@ -92,11 +54,12 @@ function OfflineCtrtModal({
                     style={{
                         display: 'flex',
 
-                        justifyContent: 'space-between',
+                        justifyContent:
+                            'space-between',
 
                         alignItems: 'center',
 
-                        marginBottom: '24px'
+                        marginBottom: '28px'
                     }}
                 >
 
@@ -104,7 +67,7 @@ function OfflineCtrtModal({
 
                         <div
                             style={{
-                                fontSize: '22px',
+                                fontSize: '24px',
 
                                 fontWeight: '700'
                             }}
@@ -114,14 +77,14 @@ function OfflineCtrtModal({
 
                         <div
                             style={{
-                                marginTop: '4px',
+                                marginTop: '6px',
 
                                 color: '#64748b',
 
                                 fontSize: '14px'
                             }}
                         >
-                            수기 계약 정보를 등록합니다.
+                            계약할 아파트를 선택해주세요.
                         </div>
 
                     </div>
@@ -134,7 +97,7 @@ function OfflineCtrtModal({
 
                             background: 'none',
 
-                            fontSize: '20px',
+                            fontSize: '22px',
 
                             cursor: 'pointer'
                         }}
@@ -144,229 +107,16 @@ function OfflineCtrtModal({
 
                 </div>
 
-                {/* 입력 영역 */}
-                <div
-                    style={{
-                        display: 'grid',
-
-                        gridTemplateColumns:
-                            '1fr 1fr',
-
-                        gap: '16px'
-                    }}
-                >
-
-                    <input
-                        type="text"
-
-                        name="userId"
-
-                        value={form.userId}
-
-                        onChange={handleChange}
-
-                        placeholder="입주민 ID"
-
-                        className="modal-input"
-                    />
-
-                    <input
-                        type="text"
-
-                        name="userNm"
-
-                        value={form.userNm}
-
-                        onChange={handleChange}
-
-                        placeholder="입주민 이름"
-
-                        className="modal-input"
-                    />
-
-                    <input
-                        type="text"
-
-                        name="aptNm"
-
-                        value={form.aptNm}
-
-                        onChange={handleChange}
-
-                        placeholder="아파트명"
-
-                        className="modal-input"
-                    />
-
-                    <input
-                        type="text"
-
-                        name="dong"
-
-                        value={form.dong}
-
-                        onChange={handleChange}
-
-                        placeholder="동"
-
-                        className="modal-input"
-                    />
-
-                    <input
-                        type="text"
-
-                        name="ho"
-
-                        value={form.ho}
-
-                        onChange={handleChange}
-
-                        placeholder="호"
-
-                        className="modal-input"
-                    />
-
-                    <select
-                        name="rentTypeCd"
-
-                        value={form.rentTypeCd}
-
-                        onChange={handleChange}
-
-                        className="modal-input"
-                    >
-
-                        <option value="JS">
-                            전세
-                        </option>
-
-                        <option value="WS">
-                            월세
-                        </option>
-
-                    </select>
-
-                    <input
-                        type="number"
-
-                        name="dpstAmt"
-
-                        value={form.dpstAmt}
-
-                        onChange={handleChange}
-
-                        placeholder="보증금"
-
-                        className="modal-input"
-                    />
-
-                    <input
-                        type="number"
-
-                        name="mthlyRentAmt"
-
-                        value={form.mthlyRentAmt}
-
-                        onChange={handleChange}
-
-                        placeholder="월세"
-
-                        disabled={
-                            form.rentTypeCd !== 'WS'
-                        }
-
-                        className="modal-input"
-                    />
-
-                    <input
-                        type="date"
-
-                        name="mvinDt"
-
-                        value={form.mvinDt}
-
-                        onChange={handleChange}
-
-                        className="modal-input"
-                    />
-
-                    <input
-                        type="date"
-
-                        name="mvoutDt"
-
-                        value={form.mvoutDt}
-
-                        onChange={handleChange}
-
-                        className="modal-input"
-                    />
-
-                </div>
-
-                {/* 버튼 */}
-                <div
-                    style={{
-                        display: 'flex',
-
-                        justifyContent: 'flex-end',
-
-                        gap: '10px',
-
-                        marginTop: '28px'
-                    }}
-                >
-
-                    <button
-                        onClick={onClose}
-
-                        style={{
-                            height: '42px',
-
-                            padding: '0 18px',
-
-                            border:
-                                '1px solid #d1d5db',
-
-                            borderRadius: '10px',
-
-                            background: '#fff',
-
-                            cursor: 'pointer'
-                        }}
-                    >
-                        취소
-                    </button>
-
-                    <button
-                        onClick={handleSubmit}
-
-                        style={{
-                            height: '42px',
-
-                            padding: '0 20px',
-
-                            border: 'none',
-
-                            borderRadius: '10px',
-
-                            background: '#2563eb',
-
-                            color: '#fff',
-
-                            fontWeight: '600',
-
-                            cursor: 'pointer'
-                        }}
-                    >
-                        계약 등록
-                    </button>
-
-                </div>
+                {/* 아파트 검색 */}
+                <AptSearchSelect
+                    value={selectedApt}
+                    onChange={setSelectedApt}
+                />
 
             </div>
 
         </div>
+
     );
 }
 
