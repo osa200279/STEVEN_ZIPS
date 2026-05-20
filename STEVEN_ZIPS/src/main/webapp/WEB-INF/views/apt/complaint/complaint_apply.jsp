@@ -194,10 +194,10 @@
                                         <td><span class="badge wait">보완 요청</span></td>
                                     </c:when>
                                     <c:when test="${cvpl.cvplSttsCd eq 'REJS'}">
-                                        <td><span class="badge warn">처리 불가</span></td>
+                                        <td><span class="badge danger">처리 불가</span></td>
                                     </c:when>
                                     <c:when test="${cvpl.cvplSttsCd eq 'RJCT'}">
-                                        <td><span class="badge warn">반려</span></td>
+                                        <td><span class="badge danger">반려</span></td>
                                     </c:when>
                                     <c:when test="${cvpl.cvplSttsCd eq 'COMP'}">
                                         <td><span class="badge info">처리 완료</span></td>
