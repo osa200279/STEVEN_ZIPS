@@ -6,8 +6,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,12 +70,84 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
         List<Map<String, Object>> resultList =
                 iMngSurveyMapper.selectSurveyResultList(surveyNo);
 
+        if(resultList == null || resultList.isEmpty()){
+            resultList = buildResultListFromResponses(surveyNo);
+        }
+
         survey.put("resultList", resultList);
 
         System.out.println("survey = " + survey);
         System.out.println("resultList = " + resultList);
 
         return survey;
+    }
+
+    private List<Map<String, Object>> buildResultListFromResponses(
+            String surveyNo
+    ) {
+
+        List<String> responses =
+                iMngSurveyMapper.selectAllSurveyResponses(surveyNo);
+
+        Map<String, Map<String, Object>> resultMap =
+                new LinkedHashMap<>();
+
+        ObjectMapper objectMapper =
+                new ObjectMapper();
+
+        for(String response : responses){
+
+            try {
+
+                List<Map<String, Object>> answerList =
+                        objectMapper.readValue(
+                                response,
+                                new TypeReference<List<Map<String, Object>>>() {}
+                        );
+
+                for(Map<String, Object> answer : answerList){
+
+                    String qitemNm =
+                            "Q" + answer.get("questionNo");
+
+                    String ansrCn =
+                            String.valueOf(answer.get("answer"));
+
+                    String key =
+                            qitemNm + "\u0000" + ansrCn;
+
+                    Map<String, Object> result =
+                            resultMap.computeIfAbsent(
+                                    key,
+                                    ignored -> {
+                                        Map<String, Object> row =
+                                                new LinkedHashMap<>();
+
+                                        row.put("qitemNm", qitemNm);
+                                        row.put("ansrCn", ansrCn);
+                                        row.put("ansrCnt", 0);
+
+                                        return row;
+                                    }
+                            );
+
+                    result.put(
+                            "ansrCnt",
+                            ((Number) result.get("ansrCnt")).intValue() + 1
+                    );
+                }
+
+            } catch (Exception e){
+
+                log.warn(
+                        "Failed to parse survey response. surveyNo={}",
+                        surveyNo,
+                        e
+                );
+            }
+        }
+
+        return new ArrayList<>(resultMap.values());
     }
 
 
@@ -91,6 +166,7 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
     }
 
     @Override
+    @Transactional
     public void insertSurveyResponse(
             String surveyNo,
             String response,
@@ -155,7 +231,10 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
 
         } catch (Exception e){
 
-            e.printStackTrace();
+            throw new IllegalArgumentException(
+                    "설문 응답 저장 중 집계 처리에 실패했습니다.",
+                    e
+            );
         }
     }
 

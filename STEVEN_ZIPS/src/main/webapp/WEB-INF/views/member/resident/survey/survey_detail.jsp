@@ -250,7 +250,7 @@
 
               try{
 
-                await fetch(
+                const submitResponse = await fetch(
 
                         "${pageContext.request.contextPath}"
                         + "/resident/survey/submit/"
@@ -275,6 +275,20 @@
                           })
                         }
                 );
+
+                if(!submitResponse.ok){
+
+                  const message =
+                          await submitResponse.text();
+
+                  if(message === "already"){
+                    alert("이미 참여한 설문입니다.");
+                  } else {
+                    alert("설문 제출에 실패했습니다.");
+                  }
+
+                  return;
+                }
 
                 location.href =
                         "${pageContext.request.contextPath}"

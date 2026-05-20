@@ -127,27 +127,27 @@
 
         SELECT
 
-            S.SURVEY_NO      AS surveyNo,
-            S.SURVEY_NM      AS surveyNm,
-            S.SURVEY_CN      AS surveyCn,
-            S.SURVEY_TY_CD   AS surveyTypeCd,
-            S.SURVEY_STTS_CD AS surveySttsCd,
-            S.SURVEY_BGNG_DT AS surveyBgngDt,
-            S.SURVEY_END_DT  AS surveyEndDt,
+            S.SURVEY_NO      AS "surveyNo",
+            S.SURVEY_NM      AS "surveyNm",
+            S.SURVEY_CN      AS "surveyCn",
+            S.SURVEY_TY_CD   AS "surveyTypeCd",
+            S.SURVEY_STTS_CD AS "surveySttsCd",
+            S.SURVEY_BGNG_DT AS "surveyBgngDt",
+            S.SURVEY_END_DT  AS "surveyEndDt",
 
             (
                 SELECT COUNT(*)
                 FROM SURVEY_RSPNS SR
                 WHERE SR.SURVEY_NO = S.SURVEY_NO
-            ) AS totalAnswerCount,
+            ) AS "totalAnswerCount",
 
             (
                 SELECT COUNT(DISTINCT USER_NO)
                 FROM SURVEY_RSPNS SR
                 WHERE SR.SURVEY_NO = S.SURVEY_NO
-            ) AS participantCount,
+            ) AS "participantCount",
 
-            0 AS answerRate
+            0 AS "answerRate"
 
         FROM SURVEY S
 
@@ -184,7 +184,7 @@
         )
         VALUES (
 
-                   'RSP' || TO_CHAR(SYSDATE, 'MMDDHH24MISS'),
+                   'RS' || LPAD(SEQ_SURVEY_RSPNS.NEXTVAL, 13, '0'),
 
                    #{surveyNo},
                    #{response},
@@ -320,7 +320,7 @@
         )
         VALUES (
 
-                   SYS_GUID(),
+                   'RT' || LPAD(SEQ_SURVEY_RSLT.NEXTVAL, 13, '0'),
                    #{qitemNm},
                    #{ansrCn},
                    1,
@@ -338,9 +338,9 @@
 
         SELECT
 
-            QITEM_NM AS qitemNm,
-            ANSR_CN  AS ansrCn,
-            ANSR_CNT AS ansrCnt
+            QITEM_NM AS "qitemNm",
+            ANSR_CN  AS "ansrCn",
+            ANSR_CNT AS "ansrCnt"
 
         FROM SURVEY_RSLT
 
