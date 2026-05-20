@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: PC-27
-  Date: 2026-05-13
-  Time: 오전 10:31
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
@@ -13,6 +6,13 @@
 
 <%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
 <%@ include file="/WEB-INF/views/include/central_sidebar.jsp" %>
+
+<c:if test="${empty rentDetail}">
+  <script>
+    alert("매물 정보를 찾을 수 없습니다.");
+    location.href = "${pageContext.request.contextPath}/rent/list";
+  </script>
+</c:if>
 
 <div class="rent-detail-layout">
 
@@ -31,55 +31,59 @@
         <h1>매물 상세</h1>
 
         <p>
-          공공주택 임대 매물의 단지정보, 면적정보, 가격정보를 한눈에 확인할 수 있습니다.
+          공공주택 임대 매물의 단지정보, 가격정보, 위치정보를 한눈에 확인할 수 있습니다.
         </p>
       </div>
 
-      <!-- 상단 매물 요약 -->
       <section class="detail-hero">
 
-        <div class="detail-image-box">
-          <img src="${pageContext.request.contextPath}/images/sample_apt.jpg"
-               alt="매물 이미지"
-               class="detail-main-image">
-        </div>
-
         <div class="detail-summary">
-          <span class="trade-badge">매매</span>
+          <span class="trade-badge">
+            <c:out value="${rentDetail.rentTypeNm}" />
+          </span>
 
-          <h2 class="detail-title">공덕동 현대아파트 31B평</h2>
+          <h2 class="detail-title">
+            <c:out value="${rentDetail.rentTtl}" />
+          </h2>
 
-          <div class="detail-price">
-            21억 8,744만
+          <div class="detail-price"
+               id="detailPrice"
+               data-rent-type="${rentDetail.rentTypeCd}"
+               data-dpst-amt="${rentDetail.dpstAmt}"
+               data-monthly-amt="${rentDetail.mthlyRentAmt}">
           </div>
 
           <p class="detail-address">
-            서울시 마포구 공덕동 370-9
+            <c:out value="${rentDetail.dorojuso}" />
           </p>
 
           <div class="summary-grid">
             <div>
-              <span>공급/전용</span>
-              <strong>31.1평 / 25.61평</strong>
+              <span>임대유형</span>
+              <strong><c:out value="${rentDetail.rentTypeNm}" /></strong>
             </div>
             <div>
               <span>층수</span>
-              <strong>7층 / 15층</strong>
+              <strong>
+                <c:out value="${rentDetail.floor}" />층 /
+                최고 <c:out value="${rentDetail.dongMaxFloor}" />층
+              </strong>
             </div>
             <div>
-              <span>방/욕실</span>
-              <strong>3개 / 1개</strong>
+              <span>동/호수</span>
+              <strong>
+                <c:out value="${rentDetail.dongNm}" />
+                <c:out value="${rentDetail.ho}" />호
+              </strong>
             </div>
             <div>
-              <span>관리비</span>
-              <strong>23만 999원</strong>
+              <span>호 상태</span>
+              <strong><c:out value="${rentDetail['empty']}" /></strong>
             </div>
           </div>
         </div>
       </section>
 
-
-      <!-- 매물 기본 정보 -->
       <section class="detail-card">
         <div class="section-title-row">
           <h3>매물 정보</h3>
@@ -87,44 +91,60 @@
 
         <div class="info-table">
           <div class="info-row">
-            <div class="info-label">거래유형</div>
-            <div class="info-value">매매</div>
-            <div class="info-label">매매가</div>
-            <div class="info-value price-text">21억 8,744만</div>
+            <div class="info-label">매물번호</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.rentLstgNo}" />
+            </div>
+            <div class="info-label">임대유형</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.rentTypeNm}" />
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">보증금</div>
+            <div class="info-value price-text"
+                 id="dpstAmtText"
+                 data-value="${rentDetail.dpstAmt}">
+            </div>
+            <div class="info-label">월 임대료</div>
+            <div class="info-value price-text"
+                 id="monthlyAmtText"
+                 data-value="${rentDetail.mthlyRentAmt}">
+            </div>
           </div>
 
           <div class="info-row">
             <div class="info-label">아파트명</div>
-            <div class="info-value">공덕 현대아파트</div>
-            <div class="info-label">평형</div>
-            <div class="info-value">31B평</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.aptCmplexNm}" />
+            </div>
+            <div class="info-label">호 번호</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.hoNo}" />
+            </div>
           </div>
 
           <div class="info-row">
-            <div class="info-label">공급/전용</div>
-            <div class="info-value">31.1평 / 25.61평</div>
-            <div class="info-label">전용률</div>
-            <div class="info-value">82%</div>
+            <div class="info-label">동</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.dongNm}" />
+            </div>
+            <div class="info-label">호</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.ho}" />호
+            </div>
           </div>
 
-          <div class="info-row">
-            <div class="info-label">방/욕실수</div>
-            <div class="info-value">3개 / 1개</div>
-            <div class="info-label">층수</div>
-            <div class="info-value">7층 / 15층</div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">현관구조</div>
-            <div class="info-value">계단식</div>
-            <div class="info-label">입주가능일</div>
-            <div class="info-value">협의 가능</div>
+          <div class="info-row full">
+            <div class="info-label">매물 설명</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.rentLstgCn}" />
+            </div>
           </div>
         </div>
       </section>
 
-
-      <!-- 단지 정보 -->
       <section class="detail-card">
         <div class="section-title-row">
           <h3>단지 정보</h3>
@@ -132,126 +152,198 @@
 
         <div class="info-table">
           <div class="info-row">
+            <div class="info-label">단지명</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.aptCmplexNm}" />
+            </div>
+            <div class="info-label">준공년도</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.bldYr}" />
+            </div>
+          </div>
+
+          <div class="info-row">
             <div class="info-label">세대수</div>
-            <div class="info-value">183세대(총 2개동)</div>
-            <div class="info-label">저/최고층</div>
-            <div class="info-value">7층 / 15층</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.unitCnt}" />세대
+              <c:if test="${not empty rentDetail.dongCnt}">
+                / 총 <c:out value="${rentDetail.dongCnt}" />동
+              </c:if>
+            </div>
+            <div class="info-label">동 최고층</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.dongMaxFloor}" />층
+            </div>
           </div>
 
           <div class="info-row">
-            <div class="info-label">사용승인일</div>
-            <div class="info-value">1989년 08월 07일</div>
-            <div class="info-label">총주차대수</div>
-            <div class="info-value">128대(세대당 0.69대)</div>
-          </div>
-
-          <div class="info-row">
-            <div class="info-label">용적률</div>
-            <div class="info-value">201%</div>
-            <div class="info-label">건폐율</div>
-            <div class="info-value">18%</div>
+            <div class="info-label">시도</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.sidoNm}" />
+            </div>
+            <div class="info-label">시군구</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.sigunguNm}" />
+            </div>
           </div>
 
           <div class="info-row full">
-            <div class="info-label">건설사</div>
-            <div class="info-value">현대건설</div>
-          </div>
-
-          <div class="info-row full">
-            <div class="info-label">난방</div>
-            <div class="info-value">개별난방, 도시가스</div>
-          </div>
-
-          <div class="info-row full">
-            <div class="info-label">관리사무소</div>
-            <div class="info-value">02-717-8181</div>
+            <div class="info-label">법정동</div>
+            <div class="info-value">
+              <c:out value="${rentDetail.emdNm}" />
+            </div>
           </div>
 
           <div class="info-row full">
             <div class="info-label">주소</div>
             <div class="info-value">
-              서울시 마포구 공덕동 370-9<br>
               <span class="road-badge">도로명</span>
-              서울시 마포구 마포대로11길 73
-            </div>
-          </div>
-
-          <div class="info-row full">
-            <div class="info-label">면적</div>
-            <div class="info-value">
-              68㎡, 87A㎡, 87B㎡, 98㎡, 102A㎡, 102C㎡, 102B㎡
+              <c:out value="${rentDetail.dorojuso}" />
             </div>
           </div>
         </div>
       </section>
 
-
-      <!-- 단지 내 면적별 정보 -->
       <section class="detail-card">
         <div class="section-title-row">
-          <h3>단지 내 면적별 정보</h3>
+          <h3>위치 정보</h3>
         </div>
 
-        <div class="area-tabs">
-          <button type="button">20평</button>
-          <button type="button">26A평</button>
-          <button type="button">26B평</button>
-          <button type="button">29평</button>
-          <button type="button">30A평</button>
-          <button type="button">30C평</button>
-          <button type="button" class="active">31B평</button>
-        </div>
-
-        <div class="floor-plan-box">
-          <img src="${pageContext.request.contextPath}/images/sample_floor_plan.png"
-               alt="평면도"
-               class="floor-plan-image">
-        </div>
-
-        <div class="info-table">
-          <div class="info-row full">
-            <div class="info-label">공급/전용</div>
-            <div class="info-value">
-              31.1평 / 25.61평 <span class="muted">(전용률 82%)</span>
-            </div>
-          </div>
-
-          <div class="info-row full">
-            <div class="info-label">방수/욕실수</div>
-            <div class="info-value">3개 / 1개</div>
-          </div>
-
-          <div class="info-row full">
-            <div class="info-label">해당면적 세대수</div>
-            <div class="info-value">14세대</div>
-          </div>
-
-          <div class="info-row full">
-            <div class="info-label">현관구조</div>
-            <div class="info-value">계단식</div>
-          </div>
-
-          <div class="info-row full">
-            <div class="info-label">해당면적 매물</div>
-            <div class="info-value">등록된 매물이 없습니다.</div>
-          </div>
-
-          <div class="info-row full">
-            <div class="info-label">관리비</div>
-            <div class="info-value">
-              <strong>21만 8,744원</strong>
-              <span class="month-select">2026년 02월</span>
-
-              <ul class="fee-list">
-                <li>월평균 관리비 23만 999원</li>
-                <li>하절기평균(6~8월) 관리비 25만 2,771원</li>
-                <li>동절기평균(12~2월) 관리비 21만 6,559원</li>
-              </ul>
-            </div>
-          </div>
+        <div id="detailMap"
+             style="width:100%; height:380px; border-radius:18px; overflow:hidden; border:1px solid #e5e7eb;">
         </div>
       </section>
+
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:22px;">
+        <button type="button"
+                class="detail-back-btn"
+                onclick="location.href='${pageContext.request.contextPath}/rent/list'">
+          목록으로
+        </button>
+
+        <button type="button"
+                class="detail-back-btn"
+                onclick="location.href='${pageContext.request.contextPath}/rent/map?aptCmplexNo=${rentDetail.aptCmplexNo}'">
+          지도에서 보기
+        </button>
+      </div>
 
     </div>
   </main>
 </div>
+
+<script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46f7d3996e1205738757a1e4f1ed1f04&libraries=services"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    renderPriceTexts();
+    initDetailMap();
+  });
+
+  function renderPriceTexts() {
+    const detailPrice = document.getElementById("detailPrice");
+    const rentTypeCd = detailPrice.dataset.rentType;
+    const dpstAmt = Number(detailPrice.dataset.dpstAmt || 0);
+    const monthlyAmt = Number(detailPrice.dataset.monthlyAmt || 0);
+
+    if (rentTypeCd === "JS") {
+      detailPrice.textContent = "전세 " + formatMoney(dpstAmt);
+    } else if (rentTypeCd === "PE") {
+      detailPrice.textContent = "보증금 " + formatMoney(dpstAmt) + " / 월 " + formatMoney(monthlyAmt);
+    } else {
+      detailPrice.textContent = formatMoney(dpstAmt);
+    }
+
+    const dpstAmtText = document.getElementById("dpstAmtText");
+    const monthlyAmtText = document.getElementById("monthlyAmtText");
+
+    if (dpstAmtText) {
+      dpstAmtText.textContent = formatMoney(dpstAmtText.dataset.value);
+    }
+
+    if (monthlyAmtText) {
+      monthlyAmtText.textContent = formatMoney(monthlyAmtText.dataset.value);
+    }
+  }
+
+  function initDetailMap() {
+    const mapEl = document.getElementById("detailMap");
+
+    if (!mapEl || typeof kakao === "undefined") {
+      return;
+    }
+
+    const address = "${rentDetail.dorojuso}";
+    const aptName = "${rentDetail.aptCmplexNm}";
+
+    const map = new kakao.maps.Map(mapEl, {
+      center: new kakao.maps.LatLng(37.5665, 126.9780),
+      level: 4
+    });
+
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    geocoder.addressSearch(address, function (result, status) {
+      if (status !== kakao.maps.services.Status.OK || !result || result.length === 0) {
+        mapEl.innerHTML = '<div style="padding:40px;text-align:center;color:#667085;">주소로 위치를 찾을 수 없습니다.</div>';
+        return;
+      }
+
+      const lat = Number(result[0].y);
+      const lng = Number(result[0].x);
+      const coords = new kakao.maps.LatLng(lat, lng);
+
+      map.setCenter(coords);
+
+      const marker = new kakao.maps.Marker({
+        map: map,
+        position: coords
+      });
+
+      const infoWindow = new kakao.maps.InfoWindow({
+        content: '<div style="padding:8px 12px;font-size:13px;font-weight:700;color:#005f46;">' + escapeHtml(aptName) + '</div>'
+      });
+
+      infoWindow.open(map, marker);
+    });
+  }
+
+  function formatMoney(value) {
+    const num = Number(value || 0);
+
+    if (num === 0) {
+      return "0원";
+    }
+
+    const eok = Math.floor(num / 100000000);
+    const man = Math.floor((num % 100000000) / 10000);
+
+    if (eok > 0 && man > 0) {
+      return eok + "억 " + man.toLocaleString() + "만";
+    }
+
+    if (eok > 0) {
+      return eok + "억";
+    }
+
+    if (man > 0) {
+      return man.toLocaleString() + "만";
+    }
+
+    return num.toLocaleString() + "원";
+  }
+
+  function escapeHtml(value) {
+    if (value === null || value === undefined) {
+      return "";
+    }
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+</script>

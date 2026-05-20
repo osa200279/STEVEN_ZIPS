@@ -62,46 +62,111 @@
         }
 
         .map-info-window {
-            padding: 14px 16px;
-            min-width: 250px;
-            line-height: 1.5;
-            font-family: 'Manrope', sans-serif;
+            width: 330px;
+            padding: 18px 18px 16px;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
         }
 
         .map-info-title {
-            color: #004830;
-            font-weight: 800;
-            font-size: 15px;
-            margin-bottom: 5px;
             display: block;
+            font-size: 18px;
+            font-weight: 900;
+            color: #006b4f;
+            margin-bottom: 8px;
+            line-height: 1.35;
         }
 
         .map-info-address {
-            color: #64748b;
-            font-size: 12px;
-            margin-bottom: 8px;
             display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+            line-height: 1.5;
         }
 
         .map-info-meta {
-            color: #004830;
-            font-size: 12px;
-            font-weight: 800;
             display: block;
-            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #006b4f;
+            margin-bottom: 12px;
         }
 
-        .map-info-link {
+        /* 매물 정보 표시 */
+        .map-info-rent-box {
+            margin-top: 10px;
+            padding: 13px 14px;
+            border-radius: 12px;
+            background: #fff5f5;
+            border: 1px solid #fecaca;
+        }
+
+        .map-info-rent-title {
+            display: block;
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .map-info-rent-line {
+            display: block;
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.7;
+            word-break: keep-all;
+        }
+
+        .map-info-btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .map-info-link,
+        .map-info-rent-link {
+            flex: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 7px 12px;
-            border-radius: 9999px;
-            background: #004830;
-            color: #ffffff !important;
-            font-size: 12px;
+            height: 38px;
+            border-radius: 10px;
+            font-size: 13px;
             font-weight: 800;
             text-decoration: none;
+            box-sizing: border-box;
+        }
+
+        .map-info-link:hover {
+            background: #00513c;
+            color: #fff;
+        }
+
+        .map-info-link {
+            background: #006b4f;
+            color: #fff;
+            border: 0;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .map-info-rent-link {
+            background: #fff;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .map-info-rent-link:hover {
+            background: #fff5f5;
+            color: #b91c1c;
+        }
+
+        .map-info-rent-empty {
+            display: block;
+            margin-top: 8px;
+            color: #94a3b8;
+            font-size: 12px;
         }
 
         .map-floating-panel {
@@ -144,36 +209,185 @@
             box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
         }
 
-        /* 매물 정보 표시 */
-        .map-info-rent-box {
-            margin-top: 10px;
-            padding: 10px 12px;
-            border-radius: 12px;
-            background: #fff5f5;
-            border: 1px solid #fecaca;
+        /* ==============================
+   아파트 상세 모달
+============================== */
+        .apt-detail-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
         }
 
-        .map-info-rent-title {
+        .apt-detail-modal.show {
             display: block;
-            color: #dc2626;
-            font-size: 12px;
+        }
+
+        .apt-detail-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+        }
+
+        .apt-detail-modal-dialog {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: min(720px, calc(100% - 32px));
+            max-height: calc(100vh - 70px);
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+            overflow: hidden;
+        }
+
+        .apt-detail-modal-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 24px 28px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f7fbf8;
+        }
+
+        .apt-detail-modal-title {
+            margin: 0;
+            font-size: 24px;
             font-weight: 900;
-            margin-bottom: 6px;
+            color: #006b4f;
+            letter-spacing: -0.6px;
         }
 
-        .map-info-rent-line {
-            display: block;
-            color: #475569;
-            font-size: 12px;
+        .apt-detail-modal-address {
+            margin: 8px 0 0;
+            font-size: 14px;
+            color: #64748b;
             line-height: 1.6;
         }
 
-        .map-info-rent-empty {
-            display: block;
-            margin-top: 8px;
-            color: #94a3b8;
-            font-size: 12px;
+        .apt-detail-modal-close {
+            width: 38px;
+            height: 38px;
+            border: 0;
+            border-radius: 50%;
+            background: #fff;
+            color: #334155;
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
         }
+
+        .apt-detail-modal-close:hover {
+            background: #edf5ef;
+            color: #006b4f;
+        }
+
+        .apt-detail-modal-body {
+            padding: 24px 28px 28px;
+            overflow-y: auto;
+            max-height: calc(100vh - 210px);
+        }
+
+        .apt-detail-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .apt-detail-summary-item {
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            background: #fff;
+        }
+
+        .apt-detail-summary-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .apt-detail-summary-value {
+            display: block;
+            font-size: 20px;
+            color: #006b4f;
+            font-weight: 900;
+        }
+
+        .apt-detail-info-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .apt-detail-info-table th,
+        .apt-detail-info-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .apt-detail-info-table th {
+            width: 130px;
+            color: #475569;
+            background: #f8fafc;
+            font-weight: 800;
+        }
+
+        .apt-detail-info-table td {
+            color: #1f2937;
+        }
+
+        .apt-detail-btn-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .apt-detail-link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 130px;
+            height: 42px;
+            border-radius: 12px;
+            background: #006b4f;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .apt-detail-link-btn:hover {
+            background: #00513c;
+            color: #fff;
+        }
+
+        body.apt-detail-modal-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 640px) {
+            .apt-detail-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .apt-detail-modal-header,
+            .apt-detail-modal-body {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+        }
+
     </style>
 </head>
 
@@ -249,6 +463,29 @@
         <div id="map"></div>
     </section>
 
+    <div class="apt-detail-modal" id="aptDetailModal" aria-hidden="true">
+        <div class="apt-detail-modal-backdrop" id="aptDetailModalBackdrop"></div>
+
+        <div class="apt-detail-modal-dialog">
+            <div class="apt-detail-modal-header">
+                <div>
+                    <h3 class="apt-detail-modal-title" id="aptDetailModalTitle">아파트 상세정보</h3>
+                    <p class="apt-detail-modal-address" id="aptDetailModalAddress">-</p>
+                </div>
+
+                <button type="button"
+                        class="apt-detail-modal-close"
+                        id="aptDetailModalClose"
+                        aria-label="상세 모달 닫기">
+                    ×
+                </button>
+            </div>
+
+            <div class="apt-detail-modal-body" id="aptDetailModalBody">
+                상세 정보를 불러오는 중입니다.
+            </div>
+        </div>
+    </div>
 </main>
 
 <div class="ml-80">
@@ -446,7 +683,11 @@
 
             bounds.extend(position);
 
-            const detailUrl = CONTEXT_PATH + "/main/apt/detail.do?aptCmplexNo=" + encodeURIComponent(apt.aptCmplexNo);
+            const rentUrl = CONTEXT_PATH + "/rent/map?aptCmplexNo=" + encodeURIComponent(apt.aptCmplexNo);
+
+            const rentButtonHtml = hasRent
+                ? '    <a class="map-info-rent-link" href="' + rentUrl + '">매물보기</a>'
+                : '';
 
             const content =
                 '<div class="map-info-window">' +
@@ -454,7 +695,10 @@
                 '  <span class="map-info-address">' + escapeHtml(apt.dorojuso) + '</span>' +
                 '  <span class="map-info-meta">' + escapeHtml(apt.unitCnt) + '세대 / ' + escapeHtml(apt.dongCnt) + '동</span>' +
                 makeRentInfoHtml(rentSummary) +
-                '  <a class="map-info-link" href="' + detailUrl + '">상세보기</a>' +
+                '  <div class="map-info-btn-row">' +
+                '    <button type="button" class="map-info-link" onclick="openAptDetailModal(\'' + escapeJs(apt.aptCmplexNo) + '\')">상세보기</button>' +
+                rentButtonHtml +
+                '  </div>' +
                 '</div>';
 
             const infowindow = new kakao.maps.InfoWindow({
@@ -483,14 +727,14 @@
     function createMarkerImage(color) {
         const svg =
             '<svg width="36" height="48" viewBox="0 0 36 48" xmlns="http://www.w3.org/2000/svg">' +
-            '  <path d="M18 46C18 46 33 28.8 33 16.5C33 7.94 26.28 1 18 1C9.72 1 3 7.94 3 16.5C3 28.8 18 46 18 46Z" fill="' + color + '" stroke="white" stroke-width="2"/>' +
+            '  <path d="M18 46C18 46 33 28.8 33 16.5C33 7.94 26.28 1 18 1C9.72 1 3 7.94 3 16.5C3 28.8 18 46 18 46Z" fill="' + color + '" stroke="white" stroke-width="1"/>' +
             '  <circle cx="18" cy="16.5" r="6.5" fill="white"/>' +
             '</svg>';
 
         const imageSrc = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
-        const imageSize = new kakao.maps.Size(36, 48);
+        const imageSize = new kakao.maps.Size(28, 38);
         const imageOption = {
-            offset: new kakao.maps.Point(18, 48)
+            offset: new kakao.maps.Point(14, 38)
         };
 
         return new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
@@ -571,6 +815,176 @@
             .replaceAll('"', "&quot;")
             .replaceAll("'", "&#039;");
     }
+
+    function escapeJs(value) {
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replaceAll("\\", "\\\\")
+            .replaceAll("'", "\\'")
+            .replaceAll('"', '\\"');
+    }
+
+    function openAptDetailModal(aptCmplexNo) {
+        const apt = aptList.find(function (item) {
+            return String(item.aptCmplexNo) === String(aptCmplexNo);
+        });
+
+        if (!apt) {
+            alert("아파트 정보를 찾을 수 없습니다.");
+            return;
+        }
+
+        const modal = document.getElementById("aptDetailModal");
+        const titleEl = document.getElementById("aptDetailModalTitle");
+        const addressEl = document.getElementById("aptDetailModalAddress");
+        const bodyEl = document.getElementById("aptDetailModalBody");
+
+        const rentSummary = rentSummaryMap[apt.aptCmplexNo];
+
+        titleEl.textContent = apt.aptCmplexNm || "아파트 상세정보";
+        addressEl.textContent = apt.dorojuso || "-";
+
+        bodyEl.innerHTML = makeAptDetailModalHtml(apt, rentSummary);
+
+        modal.classList.add("show");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("apt-detail-modal-open");
+    }
+
+    function closeAptDetailModal() {
+        const modal = document.getElementById("aptDetailModal");
+
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("apt-detail-modal-open");
+    }
+
+    function makeAptDetailModalHtml(apt, rentSummary) {
+        const detailPageUrl = CONTEXT_PATH + "/main/apt/detail.do?aptCmplexNo=" + encodeURIComponent(apt.aptCmplexNo);
+        const rentUrl = CONTEXT_PATH + "/rent/map?aptCmplexNo=" + encodeURIComponent(apt.aptCmplexNo);
+
+        const rentCount = rentSummary ? rentSummary.count : 0;
+
+        let html = "";
+
+        html += '<div class="apt-detail-summary">';
+        html += '  <div class="apt-detail-summary-item">';
+        html += '    <span class="apt-detail-summary-label">세대수</span>';
+        html += '    <span class="apt-detail-summary-value">' + escapeHtml(apt.unitCnt || 0) + '</span>';
+        html += '  </div>';
+        html += '  <div class="apt-detail-summary-item">';
+        html += '    <span class="apt-detail-summary-label">동수</span>';
+        html += '    <span class="apt-detail-summary-value">' + escapeHtml(apt.dongCnt || 0) + '</span>';
+        html += '  </div>';
+        html += '  <div class="apt-detail-summary-item">';
+        html += '    <span class="apt-detail-summary-label">등록 매물</span>';
+        html += '    <span class="apt-detail-summary-value">' + escapeHtml(rentCount) + '건</span>';
+        html += '  </div>';
+        html += '</div>';
+
+        html += '<table class="apt-detail-info-table">';
+        html += '  <tbody>';
+        html += '    <tr>';
+        html += '      <th>단지명</th>';
+        html += '      <td>' + escapeHtml(apt.aptCmplexNm || "-") + '</td>';
+        html += '    </tr>';
+        html += '    <tr>';
+        html += '      <th>주소</th>';
+        html += '      <td>' + escapeHtml(apt.dorojuso || "-") + '</td>';
+        html += '    </tr>';
+        html += '    <tr>';
+        html += '      <th>지역</th>';
+        html += '      <td>' + escapeHtml((apt.sidoNm || "") + " " + (apt.sigunguNm || "")) + '</td>';
+        html += '    </tr>';
+        html += '    <tr>';
+        html += '      <th>단지 규모</th>';
+        html += '      <td>' + escapeHtml(apt.unitCnt || 0) + '세대 / ' + escapeHtml(apt.dongCnt || 0) + '동</td>';
+        html += '    </tr>';
+
+        if (rentSummary && rentSummary.count > 0) {
+            html += '    <tr>';
+            html += '      <th>매물 정보</th>';
+            html += '      <td>' + makeRentSummaryText(rentSummary) + '</td>';
+            html += '    </tr>';
+        }
+
+        html += '  </tbody>';
+        html += '</table>';
+
+        html += '<div class="apt-detail-btn-row">';
+        html += '  <a class="apt-detail-link-btn" href="' + detailPageUrl + '">상세 페이지 이동</a>';
+
+        if (rentSummary && rentSummary.count > 0) {
+            html += '  <a class="apt-detail-link-btn" href="' + rentUrl + '">매물보기</a>';
+        }
+
+        html += '</div>';
+
+        return html;
+    }
+
+    function makeRentSummaryText(summary) {
+        if (!summary || summary.count === 0) {
+            return "등록된 매물 없음";
+        }
+
+        let lines = [];
+
+        lines.push("등록 매물 " + summary.count + "건");
+
+        if (summary.jsCount > 0) {
+            let text = "전세임대 " + summary.jsCount + "건";
+
+            if (summary.jsMinDpstAmt !== null) {
+                text += " · 전세 " + formatMoney(summary.jsMinDpstAmt) + "부터";
+            }
+
+            lines.push(text);
+        }
+
+        if (summary.peCount > 0) {
+            let text = "영구임대(월세) " + summary.peCount + "건";
+
+            if (summary.peMinDpstAmt !== null || summary.peMinMonthlyRentAmt !== null) {
+                text += " · 보증금 " + formatMoney(summary.peMinDpstAmt);
+                text += " / 월 " + formatMoney(summary.peMinMonthlyRentAmt) + "부터";
+            }
+
+            lines.push(text);
+        }
+
+        return lines.map(function (line) {
+            return '<div>' + escapeHtml(line) + '</div>';
+        }).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const closeBtn = document.getElementById("aptDetailModalClose");
+        const backdrop = document.getElementById("aptDetailModalBackdrop");
+
+        if (closeBtn) {
+            closeBtn.addEventListener("click", closeAptDetailModal);
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener("click", closeAptDetailModal);
+        }
+
+        document.addEventListener("keydown", function (e) {
+            const modal = document.getElementById("aptDetailModal");
+
+            if (e.key === "Escape" && modal && modal.classList.contains("show")) {
+                closeAptDetailModal();
+            }
+        });
+    });
 </script>
 
 </body>

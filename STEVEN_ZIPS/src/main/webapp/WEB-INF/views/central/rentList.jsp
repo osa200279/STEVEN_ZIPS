@@ -1,13 +1,7 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: PC-27
-  Date: 2026-05-11
-  Time: 오후 8:03
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -39,7 +33,6 @@
       margin: 0 auto;
     }
 
-    /* 상단 */
     .rent-list-top {
       display: flex;
       align-items: flex-start;
@@ -105,7 +98,6 @@
       border-color: #d0d5dd;
     }
 
-    /* 검색/필터 */
     .rent-search-area {
       background: #ffffff;
       border-radius: 24px;
@@ -187,7 +179,6 @@
       color: #005f46;
     }
 
-    /* 카드 목록 */
     .rent-card-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -209,14 +200,8 @@
       box-shadow: 0 14px 32px rgba(0, 95, 70, 0.14);
     }
 
-    .rent-card-image {
-      height: 190px;
-      background-size: cover;
-      background-position: center;
-    }
-
     .rent-card-body {
-      padding: 22px;
+      padding: 26px 22px 22px;
     }
 
     .rent-card-top {
@@ -307,6 +292,18 @@
       background: #f9fafb;
     }
 
+    .rent-empty-box {
+      grid-column: 1 / -1;
+      padding: 70px 20px;
+      text-align: center;
+      background: #ffffff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 24px;
+      color: #667085;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
     @media (max-width: 1400px) {
       .rent-list-wrap {
         margin-left: 280px;
@@ -346,7 +343,6 @@
 <div class="rent-list-wrap">
   <div class="rent-list-container">
 
-    <!-- 상단 -->
     <section class="rent-list-top">
       <div>
         <div class="rent-breadcrumb">
@@ -370,138 +366,197 @@
       </button>
     </section>
 
-    <!-- 검색/필터 -->
     <section class="rent-search-area">
       <div class="rent-search-row">
         <div class="rent-filter-group">
-          <button type="button" class="filter-btn active">전체</button>
-          <button type="button" class="filter-btn">전세</button>
-          <button type="button" class="filter-btn">월세</button>
+          <button type="button" class="filter-btn active" data-type="ALL">전체</button>
+          <button type="button" class="filter-btn" data-type="JS">전세</button>
+          <button type="button" class="filter-btn" data-type="PE">월세</button>
         </div>
 
         <div class="rent-keyword-box">
           <span>⌕</span>
-          <input type="text" placeholder="단지명 또는 주소 검색">
+          <input type="text" id="rentKeyword" placeholder="단지명 또는 주소 검색">
         </div>
       </div>
     </section>
 
-    <!-- 목록 헤더 -->
     <div class="rent-summary-row">
       <h2 class="rent-summary-title">전체 매물</h2>
       <div class="rent-summary-count">
-        총 <strong>3</strong>건
+        총 <strong id="rentCount"><c:out value="${empty rentList ? 0 : rentList.size()}" /></strong>건
       </div>
     </div>
 
-    <!-- 하드코딩 매물 목록 -->
-    <section class="rent-card-grid">
+    <section class="rent-card-grid" id="rentCardGrid">
 
-      <!-- RENT001 -->
-      <article class="rent-card">
-        <div class="rent-card-image"
-             style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200');">
-        </div>
-
-        <div class="rent-card-body">
-          <div class="rent-card-top">
-            <span class="rent-type-badge">전세</span>
-            <span class="rent-end-date">2026-05-31 마감</span>
+      <c:choose>
+        <c:when test="${empty rentList}">
+          <div class="rent-empty-box">
+            등록된 매물이 없습니다.
           </div>
+        </c:when>
 
-          <h3 class="rent-card-title">송파삼성래미안 101동</h3>
-          <p class="rent-card-price">전세 10억 5,000</p>
+        <c:otherwise>
+          <c:forEach var="rent" items="${rentList}">
+            <article class="rent-card"
+                     data-type="${rent.rentTypeCd}"
+                     data-keyword="${rent.aptCmplexNm} ${rent.rentTtl} ${rent.dorojuso} ${rent.sidoNm} ${rent.sigunguNm} ${rent.emdNm}">
 
-          <p class="rent-card-info">84㎡ · 10층 · 1004호</p>
-          <p class="rent-card-address">서울특별시 송파구 오금로32길 14</p>
+              <div class="rent-card-body">
+                <div class="rent-card-top">
+                  <span class="rent-type-badge">
+                    <c:out value="${rent.rentTypeNm}" />
+                  </span>
 
-          <div class="rent-card-footer">
-            <button type="button"
-                    class="rent-detail-btn"
-                    onclick="location.href='${pageContext.request.contextPath}/rent/detail/RENT001'">
-              상세보기
-            </button>
+                  <span class="rent-end-date">
+                    <c:choose>
+                      <c:when test="${not empty rent.rcrtEndDt}">
+                        <c:out value="${rent.rcrtEndDt}" /> 마감
+                      </c:when>
+                      <c:otherwise>상시 모집</c:otherwise>
+                    </c:choose>
+                  </span>
+                </div>
 
-            <button type="button"
-                    class="rent-map-btn"
-                    onclick="location.href='${pageContext.request.contextPath}/rent/map'">
-              지도보기
-            </button>
-          </div>
-        </div>
-      </article>
+                <h3 class="rent-card-title">
+                  <c:out value="${rent.rentTtl}" />
+                </h3>
 
-      <!-- RENT002 -->
-      <article class="rent-card">
-        <div class="rent-card-image"
-             style="background-image:url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200');">
-        </div>
+                <p class="rent-card-price"
+                   data-rent-type="${rent.rentTypeCd}"
+                   data-dpst-amt="${rent.dpstAmt}"
+                   data-monthly-amt="${rent.mthlyRentAmt}">
+                </p>
 
-        <div class="rent-card-body">
-          <div class="rent-card-top">
-            <span class="rent-type-badge">월세</span>
-            <span class="rent-end-date">2026-05-20 마감</span>
-          </div>
+                <p class="rent-card-info">
+                  <c:out value="${rent.floor}" />층 ·
+                  <c:out value="${rent.ho}" />호
+                  <c:if test="${not empty rent['empty']}">
+                    · <c:out value="${rent['empty']}" />
+                  </c:if>
+                </p>
 
-          <h3 class="rent-card-title">잠실5단지아파트 503동</h3>
-          <p class="rent-card-price">보증금 5,000 / 월 120</p>
+                <p class="rent-card-address">
+                  <c:out value="${rent.dorojuso}" />
+                </p>
 
-          <p class="rent-card-info">76㎡ · 8층 · 804호</p>
-          <p class="rent-card-address">서울특별시 송파구 송파대로 567</p>
+                <div class="rent-card-footer">
+                  <button type="button"
+                          class="rent-detail-btn"
+                          onclick="location.href='${pageContext.request.contextPath}/rent/detail/${rent.rentLstgNo}'">
+                    상세보기
+                  </button>
 
-          <div class="rent-card-footer">
-            <button type="button"
-                    class="rent-detail-btn"
-                    onclick="location.href='${pageContext.request.contextPath}/rent/detail/RENT002'">
-              상세보기
-            </button>
-
-            <button type="button"
-                    class="rent-map-btn"
-                    onclick="location.href='${pageContext.request.contextPath}/rent/map'">
-              지도보기
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- RENT003 -->
-      <article class="rent-card">
-        <div class="rent-card-image"
-             style="background-image:url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=1200');">
-        </div>
-
-        <div class="rent-card-body">
-          <div class="rent-card-top">
-            <span class="rent-type-badge">월세</span>
-            <span class="rent-end-date">2026-05-28 마감</span>
-          </div>
-
-          <h3 class="rent-card-title">가락현대아파트 202동</h3>
-          <p class="rent-card-price">보증금 3,000 / 월 95</p>
-
-          <p class="rent-card-info">59㎡ · 6층 · 604호</p>
-          <p class="rent-card-address">서울특별시 송파구 가락동</p>
-
-          <div class="rent-card-footer">
-            <button type="button"
-                    class="rent-detail-btn"
-                    onclick="location.href='${pageContext.request.contextPath}/rent/detail/RENT003'">
-              상세보기
-            </button>
-
-            <button type="button"
-                    class="rent-map-btn"
-                    onclick="location.href='${pageContext.request.contextPath}/rent/map'">
-              지도보기
-            </button>
-          </div>
-        </div>
-      </article>
+                  <button type="button"
+                          class="rent-map-btn"
+                          onclick="location.href='${pageContext.request.contextPath}/rent/map?aptCmplexNo=${rent.aptCmplexNo}'">
+                    지도보기
+                  </button>
+                </div>
+              </div>
+            </article>
+          </c:forEach>
+        </c:otherwise>
+      </c:choose>
 
     </section>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    formatAllPrices();
+    bindRentFilters();
+  });
+
+  function formatAllPrices() {
+    document.querySelectorAll(".rent-card-price").forEach(function (el) {
+      const rentTypeCd = el.dataset.rentType;
+      const dpstAmt = Number(el.dataset.dpstAmt || 0);
+      const monthlyAmt = Number(el.dataset.monthlyAmt || 0);
+
+      if (rentTypeCd === "JS") {
+        el.textContent = "전세 " + formatMoney(dpstAmt);
+      } else if (rentTypeCd === "PE") {
+        el.textContent = "보증금 " + formatMoney(dpstAmt) + " / 월 " + formatMoney(monthlyAmt);
+      } else {
+        el.textContent = formatMoney(dpstAmt);
+      }
+    });
+  }
+
+  function bindRentFilters() {
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    const keywordInput = document.getElementById("rentKeyword");
+
+    filterBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        filterBtns.forEach(function (item) {
+          item.classList.remove("active");
+        });
+
+        btn.classList.add("active");
+        applyFilter();
+      });
+    });
+
+    if (keywordInput) {
+      keywordInput.addEventListener("input", applyFilter);
+    }
+  }
+
+  function applyFilter() {
+    const activeBtn = document.querySelector(".filter-btn.active");
+    const selectedType = activeBtn ? activeBtn.dataset.type : "ALL";
+    const keywordEl = document.getElementById("rentKeyword");
+    const keyword = keywordEl ? keywordEl.value.trim().toLowerCase() : "";
+
+    let visibleCount = 0;
+
+    document.querySelectorAll(".rent-card").forEach(function (card) {
+      const type = card.dataset.type;
+      const searchText = (card.dataset.keyword || "").toLowerCase();
+
+      const typeMatched = selectedType === "ALL" || type === selectedType;
+      const keywordMatched = keyword === "" || searchText.includes(keyword);
+
+      if (typeMatched && keywordMatched) {
+        card.style.display = "";
+        visibleCount++;
+      } else {
+        card.style.display = "none";
+      }
+    });
+
+    document.getElementById("rentCount").textContent = visibleCount;
+  }
+
+  function formatMoney(value) {
+    const num = Number(value || 0);
+
+    if (num === 0) {
+      return "0원";
+    }
+
+    const eok = Math.floor(num / 100000000);
+    const man = Math.floor((num % 100000000) / 10000);
+
+    if (eok > 0 && man > 0) {
+      return eok + "억 " + man.toLocaleString() + "만";
+    }
+
+    if (eok > 0) {
+      return eok + "억";
+    }
+
+    if (man > 0) {
+      return man.toLocaleString() + "만";
+    }
+
+    return num.toLocaleString() + "원";
+  }
+</script>
 
 </body>
 </html>

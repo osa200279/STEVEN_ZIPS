@@ -83,7 +83,7 @@
         position: relative;
     }
 
-    /* ── 6칸 공통 그리드 ── */
+    /* ── 5칸 공통 그리드 ── */
     .nav-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
@@ -332,7 +332,7 @@
 
                         <div class="mega-cell">
                             <span><a href="${pageContext.request.contextPath}/main/apt/list.do">단지 목록</a></span>
-                            <span><a href="${pageContext.request.contextPath}/main/apt/search.do">단지 검색</a></span>
+                            <%--<span><a href="${pageContext.request.contextPath}/main/apt/search.do">단지 검색</a></span>--%>
                             <span><a href="${pageContext.request.contextPath}/main/apt/map.do">지도 검색</a></span>
                             <span><a href="${pageContext.request.contextPath}/facility/history.do">단지 시설정보</a></span>
                             <span><a
