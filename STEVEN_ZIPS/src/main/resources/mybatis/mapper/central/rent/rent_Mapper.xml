@@ -40,6 +40,81 @@
 
     </resultMap>
 
+    <!-- 검색 조건 공통 WHERE -->
+    <sql id="rentSearchWhere">
+        <where>
+
+            <!-- 임대유형: ALL / JS / PE -->
+            <if test="searchVO != null
+                  and searchVO.searchRentTypeCd != null
+                  and searchVO.searchRentTypeCd != ''
+                  and searchVO.searchRentTypeCd != 'ALL'">
+                AND R.RENT_TYPE_CD = #{searchVO.searchRentTypeCd}
+            </if>
+
+            <!-- 지역: 예) 서울특별시 마포구 -->
+            <if test="searchVO != null
+                  and searchVO.searchRegion != null
+                  and searchVO.searchRegion != ''
+                  and searchVO.searchRegion != 'ALL'">
+                AND (A.SIDO_NM || ' ' || A.SIGUNGU_NM) = #{searchVO.searchRegion}
+            </if>
+
+            <!-- 금액: 보증금 기준 -->
+            <if test="searchVO != null
+                  and searchVO.searchAmountRange != null
+                  and searchVO.searchAmountRange != ''
+                  and searchVO.searchAmountRange != 'ALL'">
+                <choose>
+                    <when test="searchVO.searchAmountRange == 'UNDER_5000'">
+                        AND R.DPST_AMT <![CDATA[<=]]> 50000000
+                    </when>
+
+                    <when test="searchVO.searchAmountRange == '5000_10000'">
+                        AND R.DPST_AMT <![CDATA[>]]> 50000000
+                        AND R.DPST_AMT <![CDATA[<=]]> 100000000
+                    </when>
+
+                    <when test="searchVO.searchAmountRange == '10000_20000'">
+                        AND R.DPST_AMT <![CDATA[>]]> 100000000
+                        AND R.DPST_AMT <![CDATA[<=]]> 200000000
+                    </when>
+
+                    <when test="searchVO.searchAmountRange == 'OVER_20000'">
+                        AND R.DPST_AMT <![CDATA[>]]> 200000000
+                    </when>
+                </choose>
+            </if>
+
+            <!--
+                상태 검색
+                현재 RENT_LISTING에 모집마감일/상태 컬럼이 없으므로
+                CLOSE 선택 시 0건 처리
+            -->
+            <if test="searchVO != null
+                  and searchVO.searchStatus != null
+                  and searchVO.searchStatus == 'CLOSE'">
+                AND 1 = 0
+            </if>
+
+            <!-- 키워드: 매물명, 설명, 단지명, 주소, 지역명 -->
+            <if test="searchVO != null
+                  and searchVO.searchKeyword != null
+                  and searchVO.searchKeyword != ''">
+                AND (
+                R.RENT_TTL LIKE '%' || #{searchVO.searchKeyword} || '%'
+                OR R.RENT_LSTG_CN LIKE '%' || #{searchVO.searchKeyword} || '%'
+                OR A.APT_CMPLEX_NM LIKE '%' || #{searchVO.searchKeyword} || '%'
+                OR A.DOROJUSO LIKE '%' || #{searchVO.searchKeyword} || '%'
+                OR A.SIDO_NM LIKE '%' || #{searchVO.searchKeyword} || '%'
+                OR A.SIGUNGU_NM LIKE '%' || #{searchVO.searchKeyword} || '%'
+                OR A.EMD_NM LIKE '%' || #{searchVO.searchKeyword} || '%'
+                )
+            </if>
+
+        </where>
+    </sql>
+
     <select id="selectRentListingMapList"
             resultMap="rentListingMapResultMap">
 
@@ -101,6 +176,37 @@
 
     </select>
 
+    <!-- 페이징 목록 총 개수 조회 -->
+    <select id="selectRentListingCount"
+            resultType="int">
+
+        SELECT COUNT(*)
+
+        FROM RENT_LISTING R
+
+        INNER JOIN APT_DETAIL D
+        ON R.HO_NO = D.HO_NO
+
+        INNER JOIN APT_UNIT U
+        ON D.DONG_NO = U.DONG_NO
+
+        INNER JOIN APT_COMPLEX A
+        ON U.APT_CMPLEX_NO = A.APT_CMPLEX_NO
+
+        LEFT JOIN COMMON_CODE RC
+        ON RC.GROUP_CODE_NO = 'RENT_TY'
+        AND RC.CODE_NO_CD = R.RENT_TYPE_CD
+        AND RC.USE_YN = 'Y'
+
+        LEFT JOIN COMMON_CODE HC
+        ON HC.GROUP_CODE_NO = 'HO_STTS'
+        AND HC.CODE_NO_CD = D.HO_STTS_CD
+        AND HC.USE_YN = 'Y'
+
+        <include refid="rentSearchWhere"/>
+
+    </select>
+
     <select id="selectRentListingDetail"
             parameterType="string"
             resultMap="rentListingMapResultMap">
@@ -159,6 +265,73 @@
         AND HC.USE_YN = 'Y'
 
         WHERE R.RENT_LSTG_NO = #{rentLstgNo}
+
+    </select>
+
+    <!-- 페이징 목록 조회 -->
+    <select id="selectRentListingPagingList"
+            resultMap="rentListingMapResultMap">
+
+        SELECT *
+        FROM (
+        SELECT
+        ROW_NUMBER() OVER (ORDER BY R.RENT_LSTG_NO DESC) AS RN,
+
+        R.RENT_LSTG_NO,
+        R.RENT_TYPE_CD,
+        NVL(RC.CODE_NAME, R.RENT_TYPE_CD) AS RENT_TYPE_NM,
+        R.DPST_AMT,
+        R.MTHLY_RENT_AMT,
+        R.RENT_LSTG_CN,
+        R.HO_NO,
+        R.RENT_TTL,
+
+        D.DONG_NO,
+        D.FLOOR,
+        D.HO,
+        D.HO_STTS_CD,
+        NVL(HC.CODE_NAME, D.HO_STTS_CD) AS HO_STTS_NM,
+        D.IMAGE_NO,
+        D.PANO_IMAGE_NO,
+
+        U.DONG_NM,
+        U.FLOOR AS DONG_MAX_FLOOR,
+        U.UNIT_CNT AS DONG_UNIT_CNT,
+
+        A.APT_CMPLEX_NO,
+        A.APT_CMPLEX_NM,
+        A.SIDO_NM,
+        A.SIGUNGU_NM,
+        A.EMD_NM,
+        A.DOROJUSO,
+        A.UNIT_CNT,
+        A.DONG_CNT,
+        A.BLD_YR
+
+        FROM RENT_LISTING R
+
+        INNER JOIN APT_DETAIL D
+        ON R.HO_NO = D.HO_NO
+
+        INNER JOIN APT_UNIT U
+        ON D.DONG_NO = U.DONG_NO
+
+        INNER JOIN APT_COMPLEX A
+        ON U.APT_CMPLEX_NO = A.APT_CMPLEX_NO
+
+        LEFT JOIN COMMON_CODE RC
+        ON RC.GROUP_CODE_NO = 'RENT_TY'
+        AND RC.CODE_NO_CD = R.RENT_TYPE_CD
+        AND RC.USE_YN = 'Y'
+
+        LEFT JOIN COMMON_CODE HC
+        ON HC.GROUP_CODE_NO = 'HO_STTS'
+        AND HC.CODE_NO_CD = D.HO_STTS_CD
+        AND HC.USE_YN = 'Y'
+
+        <include refid="rentSearchWhere"/>
+        )
+        WHERE RN BETWEEN #{startRow} AND #{endRow}
 
     </select>
 

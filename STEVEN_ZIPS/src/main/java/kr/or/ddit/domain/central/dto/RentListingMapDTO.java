@@ -83,4 +83,11 @@ public class RentListingMapDTO {
     private String imgFileNo;       // 이미지 파일 번호
     private String rprsntImgFileNo; // 대표 이미지 파일 번호
     private String dorojuso;        // 도로명 주소
+
+    // 검색 조건용
+    private String searchRentTypeCd;      // ALL, JS, PE
+    private String searchRegion;          // 서울특별시 마포구
+    private String searchAmountRange;     // UNDER_5000, 5000_10000, 10000_20000, OVER_20000
+    private String searchStatus;          // ALL, OPEN, CLOSE
+    private String searchKeyword;         // 단지명/주소/매물명
 }

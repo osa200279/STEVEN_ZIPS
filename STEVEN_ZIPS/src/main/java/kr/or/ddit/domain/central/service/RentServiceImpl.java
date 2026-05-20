@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.service;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.dto.RentListingMapDTO;
 import kr.or.ddit.domain.central.mapper.IRentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +24,15 @@ public class RentServiceImpl implements IRentService{
     @Override
     public RentListingMapDTO selectRentListingDetail(String rentLstgNo) {
         return rentMapper.selectRentListingDetail(rentLstgNo);
+    }
+
+    @Override
+    public int selectRentListingCount(PaginationInfoVO<RentListingMapDTO> pagingVO) {
+        return rentMapper.selectRentListingCount(pagingVO);
+    }
+
+    @Override
+    public List<RentListingMapDTO> selectRentListingPagingList(PaginationInfoVO<RentListingMapDTO> pagingVO) {
+        return rentMapper.selectRentListingPagingList(pagingVO);
     }
 }

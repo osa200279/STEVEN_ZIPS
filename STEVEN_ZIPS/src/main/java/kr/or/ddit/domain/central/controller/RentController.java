@@ -1,15 +1,13 @@
 package kr.or.ddit.domain.central.controller;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.dto.RentListingMapDTO;
 import kr.or.ddit.domain.central.service.IRentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,11 +33,39 @@ public class RentController {
 
     // 임대 매물 목록 화면
     @GetMapping("/list")
-    public String rentList(Model model) {
-        log.info("임대 매물 목록 화면 진입");
+    public String rentList( @RequestParam(name = "page", required = false, defaultValue = "1") int currentPage,
+                            @RequestParam(name = "searchRentTypeCd", required = false, defaultValue = "ALL") String searchRentTypeCd,
+                            @RequestParam(name = "searchRegion", required = false, defaultValue = "ALL") String searchRegion,
+                            @RequestParam(name = "searchAmountRange", required = false, defaultValue = "ALL") String searchAmountRange,
+                            @RequestParam(name = "searchStatus", required = false, defaultValue = "ALL") String searchStatus,
+                            @RequestParam(name = "searchKeyword", required = false) String searchKeyword,
+                            Model model) {
+        PaginationInfoVO<RentListingMapDTO> pagingVO = new PaginationInfoVO<>();
 
-        List<RentListingMapDTO> rentList = rentService.selectRentListingMapList();
+        // 한 페이지 10개, 페이지 블록 5개를 쓰고 싶으면 기본값 그대로 사용 가능
+        pagingVO.setScreenSize(10);
+        pagingVO.setBlockSize(5);
+
+        RentListingMapDTO searchVO = new RentListingMapDTO();
+        searchVO.setSearchRentTypeCd(searchRentTypeCd);
+        searchVO.setSearchRegion(searchRegion);
+        searchVO.setSearchAmountRange(searchAmountRange);
+        searchVO.setSearchStatus(searchStatus);
+        searchVO.setSearchKeyword(searchKeyword);
+
+        pagingVO.setSearchVO(searchVO);
+
+        int totalRecord = rentService.selectRentListingCount(pagingVO);
+        pagingVO.setTotalRecord(totalRecord);
+
+        pagingVO.setCurrentPage(currentPage);
+
+        List<RentListingMapDTO> rentList = rentService.selectRentListingPagingList(pagingVO);
+        pagingVO.setDataList(rentList);
+
         model.addAttribute("rentList", rentList);
+        model.addAttribute("pagingVO", pagingVO);
+        model.addAttribute("searchVO", searchVO);
         return "central/rentList";
     }
 
