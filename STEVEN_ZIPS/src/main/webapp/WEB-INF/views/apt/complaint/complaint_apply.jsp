@@ -248,19 +248,21 @@
             <div class="section-hd" style="margin-top: 24px; border-bottom: none;">
                 <h3>민원 설명</h3>
             </div>
-            <div id="modalCn" class="fake-textarea" style="background: var(--bg); border-color: var(--border); margin-bottom: 20px;">
+            <div id="modalCn" class="fake-textarea"
+                 style="background: var(--bg); border-color: var(--border); margin-bottom: 20px;">
             </div>
 
             <div class="section-hd" style="border-bottom: none;">
                 <h3>첨부 파일</h3>
             </div>
-            <div id="modalFiles" class="chip-row" style="background: var(--bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+            <div id="modalFiles" class="chip-row"
+                 style="background: var(--bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
                 <span class="chip" style="background: var(--text-light);">첨부된 파일이 없습니다.</span>
             </div>
         </div>
 
         <div class="btn-row">
-<%--            <button id="modalModifyBtn" class="btn-main">수정하기</button>--%>
+            <%--            <button id="modalModifyBtn" class="btn-main">수정하기</button>--%>
             <button id="modalCancelBtn" class="btn-main">민원 취소</button>
             <button class="btn-ghost" onclick="closeModal()">닫기</button>
         </div>
@@ -371,23 +373,31 @@
                 fileBox.innerHTML = '<span class="chip" style="background: var(--text-light);">첨부된 파일이 없습니다.</span>';
             }
 
+            const  cancelBtn = document.querySelector('#modalCancelBtn');
+
+            if(cvpl.cvplSttsCd === 'APLY' ){
+                cancelBtn.style.display = 'inline-block';
+            }else{
+                cancelBtn.style.display = 'none';
+            }
+
             // 민원 취하 버튼
-            document.querySelector('#modalCancelBtn').onclick = async () => {
+            cancelBtn.onclick = async () => {
                 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
                 const csrfToken = document.querySelector('meta[name="_csrf"]').content;
                 if (!confirm("정말 이 민원을 취하하시겠습니까?")) return;
 
                 try {
-                    const res = await fetch(`/apt/complaint/cancel/${aptCmplexNo}/\${cvplNo}`,{
+                    const res = await fetch(`/apt/complaint/cancel/${aptCmplexNo}/\${cvplNo}`, {
                         method: 'POST',
                         headers: {
                             [csrfHeader]: csrfToken
                         }
                     });
-                    if (!res.ok){
+                    if (!res.ok) {
                         const errorMsg = await res.text();
                         throw new Error(errorMsg);
-                    }else{
+                    } else {
                         const msg = await res.text();
                         alert(msg);
                     }
