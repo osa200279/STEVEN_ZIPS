@@ -71,7 +71,9 @@ public interface IMngSurveyMapper {
 
     List<Map<String, Object>> selectSurveyResultList(String surveyNo);
 
+    void deleteSurveyResponses(String surveyNo);
 
+    void deleteSurveyResults(String surveyNo);
 
 
 

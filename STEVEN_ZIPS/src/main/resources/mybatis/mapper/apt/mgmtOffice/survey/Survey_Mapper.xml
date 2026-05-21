@@ -122,6 +122,23 @@
     </update>
 
 
+    <delete id="deleteSurveyResponses">
+
+        DELETE FROM SURVEY_RSPNS
+        WHERE SURVEY_NO = #{surveyNo}
+
+    </delete>
+
+    <delete id="deleteSurveyResults">
+
+        DELETE FROM SURVEY_RSLT
+        WHERE SURVEY_NO = #{surveyNo}
+
+    </delete>
+
+
+
+
     <delete id="deleteSurvey">
 
         DELETE FROM SURVEY
@@ -354,6 +371,10 @@
         ORDER BY QITEM_NM, ANSR_CNT DESC
 
     </select>
+
+
+
+
 
 
 </mapper>

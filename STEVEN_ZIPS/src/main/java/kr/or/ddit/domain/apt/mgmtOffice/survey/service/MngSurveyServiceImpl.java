@@ -52,12 +52,20 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
     }
 
     @Override
+    @Transactional
     public void deleteSurvey(
             String surveyNo
     ) {
 
+        iMngSurveyMapper.deleteSurveyResponses(surveyNo);
+
+        iMngSurveyMapper.deleteSurveyResults(surveyNo);
+
         iMngSurveyMapper.deleteSurvey(surveyNo);
     }
+
+
+
 
     @Override
     public Map<String, Object> selectSurveyResult(
