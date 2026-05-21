@@ -3,7 +3,6 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 import MainLayout from "./components/layout/MainLayout";
-import Ann from './pages/Ann';
 import AnnRegister from './pages/annRegister/components/AnnRegister';
 import Applicant from "./pages/Applicant";
 import AptRegister from "./pages/AptRegister";
@@ -48,11 +47,9 @@ function App() {
             {/* 계약 서식 관리 */}
             {/* 회원 관리 메뉴 */}
             {/* 입주민 관리 메뉴 */}
-            {/* 공고 관리 */}
-            <Route path="/adm/ann" element={<Ann />} >
-              {/* 공고 등록 */}
-              <Route path="register" element={<AnnRegister />} />
-            </Route>
+            {/* 공고 등록 */}
+            <Route path="/adm/ann" element={<AnnRegister />} />
+            <Route path="/adm/ann/register" element={<AnnRegister />} />
             {/* 문의 관리 */}
             {/* 단지관리자 계정 관리 */}
             {/* 통계 */}

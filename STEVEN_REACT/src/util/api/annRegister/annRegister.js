@@ -81,11 +81,16 @@ export const getAptDetail = async (aptCmplexNo) => {
 /**
  * 제출서류 목록 조회
  */
-export const getSubmitDocTypes = async (aptCmplexNo) => {
-    const res = await requestApi.get('/api/annRegister/sbmsnDocList',{
-        params: {aptCmplexNo},
-    });
-    return res.data;
+export const getSubmitDocTypes = async (rentLstgNoList) => {
+  const res = await requestApi.get('/api/annRegister/sbmsnDocList', {
+      params: { rentLstgNoList },
+      paramsSerializer: params => {
+          return params.rentLstgNoList
+              .map(no => `rentLstgNoList=${encodeURIComponent(no)}`)
+              .join('&');
+      }
+  });
+  return res.data;
 }
 
 /**

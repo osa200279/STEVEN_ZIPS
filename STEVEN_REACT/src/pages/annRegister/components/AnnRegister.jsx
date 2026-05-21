@@ -42,10 +42,17 @@ function assertDateOrder(pubS, pubE, rcS, rcE) {
 }
 
 export default function AnnRegister() {
-  // ── 폼 입력 (BasicInfoSection · AnnInfoSection — 필드명 = insertAnn body) ──
-  const [annForm, setAnnForm] = useState(INITIAL_ANN_FORM);
-  const setAnnField = (name, value) =>
-    setAnnForm((prev) => ({ ...prev, [name]: value }));
+  const [annForm, setAnnForm] = useState(() => {
+    const saved = localStorage.getItem('annForm');
+    return saved ? JSON.parse(saved) : INITIAL_ANN_FORM;
+});
+
+const setAnnField = (name, value) =>
+    setAnnForm((prev) => {
+        const next = { ...prev, [name]: value };
+        localStorage.setItem('annForm', JSON.stringify(next));
+        return next;
+    });
 
   // ── 공급 정보: 지역·단지 cascade (SupplyInfoSection) ──
   const [sido, setsido] = useState('');
@@ -72,6 +79,7 @@ export default function AnnRegister() {
 
   const resetEntireForm = () => {
     setAnnForm({ ...INITIAL_ANN_FORM });
+    localStorage.removeItem('annForm');
     setsido('');
     setsigungu('');
     setemd('');
@@ -175,34 +183,37 @@ export default function AnnRegister() {
 
     try {
         const data = await getAptDetail(aptCmplexNo);
-        console.log('단지 상세 조회', aptCmplexNo, data);
-
         const rentData = await getRentList(aptCmplexNo);
-        console.log('매물 조회', aptCmplexNo, rentData);
 
-        const docData = await getSubmitDocTypes(aptCmplexNo);
-        console.log('제출서류 조회', aptCmplexNo, docData);
-
-        if (data.success) {
-            setAddr(data.dorojuso);
-        }
-        if (rentData.success) {
-            setRentList(rentData.list ?? []);
-        }
-        if (docData.success && Array.isArray(docData.list)) {
-            setSubmitDocOptions(
-                docData.list.map((item) => ({
-                    value: String(item.SBMSN_DOC_TY_CD ?? item.sbmsn_doc_ty_cd ?? ''),
-                    label: String(item.CODE_NAME ?? item.code_name ?? ''),
-                })).filter((o) => o.value && o.label)
-            );
-        } else {
-            setSubmitDocOptions([]);
-        }
+        if (data.success) setAddr(data.dorojuso);
+        if (rentData.success) setRentList(rentData.list ?? []);
+        
+        setSubmitDocOptions([]); // 매물 선택 전까지 초기화
     } catch (e) {
-        console.error('단지 상세·매물·제출서류 조회 오류', e);
+        console.error('단지 상세·매물 조회 오류', e);
     }
 };
+
+useEffect(() => {
+  if (!selectedRentList || selectedRentList.length === 0) {
+      setSubmitDocOptions([]);
+      return;
+  }
+  getSubmitDocTypes(selectedRentList) // rentLstgNoList로 넘기기
+      .then((docData) => {
+          if (docData.success && Array.isArray(docData.list)) {
+              setSubmitDocOptions(
+                  docData.list.map((item) => ({
+                      value: String(item.SBMSN_DOC_TY_CD ?? item.sbmsn_doc_ty_cd ?? ''),
+                      label: String(item.CODE_NAME ?? item.code_name ?? ''),
+                  })).filter((o) => o.value && o.label)
+              );
+          } else {
+              setSubmitDocOptions([]);
+          }
+      })
+      .catch((e) => console.error('제출서류 조회 오류', e));
+}, [selectedRentList]);
 
 
   /** 사용자 공고 상세 JSP: sbmsn_doc를 쉼표 구분 문자열로 저장 */
