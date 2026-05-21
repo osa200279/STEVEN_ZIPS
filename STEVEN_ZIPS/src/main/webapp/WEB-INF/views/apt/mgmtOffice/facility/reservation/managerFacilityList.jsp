@@ -49,7 +49,7 @@
     <main class="main-content">
       <div class="office-page">
         <div class="pf-wrap">
-          <h2 class="pf-page-title">공용시설 목록</h2>
+          <h2 class="pf-page-title">편의시설 목록</h2>
           <p class="pf-page-desc">단지 내 편의시설 예약 정보를 조회합니다.</p>
 
           <form id="searchForm" method="get" action="${pageContext.request.contextPath}/manager/publicFacility/reservation/facilities/${mgmtOfcNo}">
@@ -80,7 +80,7 @@
           </form>
 
           <div class="pf-card">
-            <div class="pf-card-hd"><span>공용시설 목록 <b>${pagingVO.totalRecord}</b>건</span></div>
+            <div class="pf-card-hd"><span>편의시설 목록 <b>${pagingVO.totalRecord}</b>건</span></div>
             <div class="pf-card-bd">
               <table class="pf-table">
                 <thead>
