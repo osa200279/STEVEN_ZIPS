@@ -81,4 +81,19 @@
         </foreach>
         ; END;
     </update>
+
+    <select id="getRentLstgNoByAplctNo" resultType="java.lang.String">
+        select /* kr.or.ddit.domain.central.admin.mapper.IAplctMapper.getRentLstgNoByAplctNo */
+               r.RENT_LSTG_NO
+          from APLCT A
+    inner join CENTER_ANN_BOARD_POST ANN on(A.ANN_NO = ANN.ANN_NO)
+    inner join RENT_LISTING R on(R.ANN_NO = ANN.ANN_NO)
+         where A.APLCT_NO = #{aplctNo}
+           and R.DEAL_STTS_CD = 'AVL'
+    </select>
+
+    <update id="updateDealSttsCdByRentLstgNo">
+        update RENT_LISTING set DEAL_STTS_CD = 'ING'
+        where RENT_LSTG_NO = #{rentLstgNo}
+    </update>
 </mapper>

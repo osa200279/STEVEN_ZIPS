@@ -36,7 +36,7 @@
             inner join APT_HO_TY HT on(A.HO_TY_NO = HT.HO_TY_NO)
             inner join APT_DETAIL H on(HT.HO_TY_NO = H.HO_TY_NO)
             inner join RENT_LISTING R on(H.HO_NO = R.HO_NO)
-            inner join SBMSN_DOC DOC on(DOC.APLCT_NO = A.APLCT_NO)
+            left outer join SBMSN_DOC DOC on(DOC.APLCT_NO = A.APLCT_NO)
             inner join CENTER_ANN_BOARD_POST ANN on(A.ANN_NO = ANN.ANN_NO)
             where A.APLCT_NO = #{map.aplctNo}
             and ROWNUM = 1
@@ -102,17 +102,28 @@
 
     <select id="selectCtrtDashboard" resultType="java.util.Map">
         select /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrtCount */
-        COUNT(*) as "totalCnt"
-        ,COUNT(case when CTRT_STTS_CD = 'PENDING' then 1 end) as "pendingCnt"
-        ,COUNT(case when CTRT_STTS_CD = 'EXPIRED' then 1 end) as "expiredCnt"
-        ,COUNT(case when CTRT_STTS_CD = 'APPROVED' then 1 end) as "approvedCnt"
-        ,COUNT(case when CTRT_STTS_CD = 'TERMINATED' then 1 end) as "terminatedCnt"
-        ,COUNT(case when CTRT_STTS_CD = 'REJECT' then 1 end) as "rejectCnt"
-        ,COUNT(case when CTRT_STTS_CD = 'CANCEL' then 1 end) as "cancelCnt"
-        ,COUNT(case when CTRT_STTS_CD = 'APPROVED'
-                    and <![CDATA[trunc(MVIN_DT)<= trunc(sysdate)]]>
-                    and <![CDATA[trunc(MVOUT_DT) >= trunc(sysdate+30)]]>
-                    and <![CDATA[trunc(MVOUT_DT) <= trunc(sysdate+30)]]> then 1 end) as "urgentCnt"
+        count(*) as "totalCnt"
+        ,count(case when CTRT_STTS_CD = 'PENDING' then 1 end) as "pendingCnt"
+        ,count(case when CTRT_STTS_CD = 'EXPIRED' then 1 end) as "expiredCnt"
+        ,count(case when CTRT_STTS_CD = 'APPROVED' then 1 end) as "approvedCnt"
+        ,count(case when CTRT_STTS_CD = 'TERMINATED' then 1 end) as "terminatedCnt"
+        ,count(case when CTRT_STTS_CD = 'REJECT' then 1 end) as "rejectCnt"
+        ,count(case when CTRT_STTS_CD = 'CANCEL' then 1 end) as "cancelCnt"
+        ,count(case when CTRT_STTS_CD = 'APPROVED'
+                    and <![CDATA[trunc(MVIN_DT) <= trunc(sysdate)]]>
+                    and <![CDATA[trunc(MVOUT_DT) >= trunc(sysdate)]]>
+                    and <![CDATA[trunc(MVOUT_DT) <= trunc(sysdate + 30)]]> then 1 end) as "urgentCnt"
+        ,nvl(
+            round(
+                    case when sum(case when CTRT_STTS_CD = 'APPROVED' and trunc(CTRT_APRV_DT, 'MM') = trunc(add_months(sysdate, -1), 'MM')then 1 else 0 end) = 0
+                        then 100
+                    else (
+                      sum(case when CTRT_STTS_CD = 'APPROVED' and trunc(CTRT_APRV_DT, 'MM') = trunc(sysdate, 'MM') then 1 else 0 end)
+                      -
+                      sum(case when CTRT_STTS_CD = 'APPROVED' and trunc(CTRT_APRV_DT, 'MM') = trunc(add_months(sysdate, -1), 'MM') then 1 else 0 end)
+                      / nullif(sum(case when CTRT_STTS_CD = 'APPROVED' and trunc(CTRT_APRV_DT, 'MM') = trunc(add_months(sysdate, -1), 'MM') then 1 else 0 end), 0)
+                    * 100
+                    )end, 2), 0) as "increaseRate"
         from RENT_CTRT
     </select>
 

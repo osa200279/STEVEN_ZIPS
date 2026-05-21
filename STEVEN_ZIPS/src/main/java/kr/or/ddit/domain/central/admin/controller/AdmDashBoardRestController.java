@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.admin.controller;
 
+import kr.or.ddit.common.util.BusinessException;
 import kr.or.ddit.domain.central.admin.dto.AplctDTO;
 import kr.or.ddit.domain.central.admin.service.IAplctService;
 import kr.or.ddit.domain.central.rentCtrt.service.IRentCtrtService;
@@ -64,10 +65,10 @@ public class AdmDashBoardRestController {
     // 청약 신청 처리(업데이트)
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/aplct/upd")
-    public ResponseEntity<Integer> updAplct(@RequestBody Map<String, Object> params,
-                                            @AuthenticationPrincipal CustomUser customUser) {
+    public ResponseEntity<?> updAplct(@RequestBody Map<String, Object> params,
+                                        @AuthenticationPrincipal CustomUser customUser) {
         log.info("#### 상태 변경 진입 :" + params);
-        MemberVO member = (MemberVO) customUser.getMember();
+        MemberVO member = customUser.getMember();
         AdmVO adm = (AdmVO) member;
 
         List<Map<String, Object>> updateList = (List<Map<String, Object>>) params.get("aplctMapList");
@@ -77,12 +78,16 @@ public class AdmDashBoardRestController {
         }
 
         // 최종 승인시 가계약 인서트 및 담당자 인서트
-        int cnt = aplctService.approveAplct(updateList, adm.getUserNo());
-
-        // 서비스에 트랜잭셔널 어노테이션을 써서 어떠한 값이 오더라도 성공으로 간주
-        // (쿼리에 익명블록 사용으로 성공해도 -1의 값이 올 수 있음)
-        return cnt != 0 ? ResponseEntity.ok(cnt)
-                : ResponseEntity.badRequest().body(0);
+        try {
+            int cnt = aplctService.approveAplct(updateList, adm.getUserNo());
+            // 서비스에 트랜잭셔널 어노테이션을 써서 어떠한 값이 오더라도 성공으로 간주
+            // (쿼리에 익명블록 사용으로 성공해도 -1의 값이 올 수 있음)
+            return cnt != 0 ? ResponseEntity.ok(cnt)
+                    : ResponseEntity.badRequest().body(0);
+        }catch (BusinessException e) {
+            // 임대 매물이 없을시 서비스에서 받은 에러 메시지 프론트에 보냄
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PreAuthorize("hasRole('ADMIN')")

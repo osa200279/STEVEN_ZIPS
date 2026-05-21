@@ -13,4 +13,8 @@ public interface IAplctMapper {
     List<AplctDTO> selectAplctList();
 
     int updateAplctStatus(@Param("updateList") List<Map<String, Object>> updateList);
+
+    List<String> getRentLstgNoByAplctNo(@Param("aplctNo") String aplctNo);
+
+    int updateDealSttsCdByRentLstgNo(@Param("rentLstgNo") String selected);
 }
