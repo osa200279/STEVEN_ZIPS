@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { getDongList, searchApartment } from '../../util/ctrt/offlineCtrtApi';
+import { getDongList, getHoList, searchApartment } from '../../util/ctrt/offlineCtrtApi';
 
 function AptSearchSelect({
     value,
@@ -133,17 +133,13 @@ function AptSearchSelect({
             );
             setSelectedHo('');
 
-            /* TODO
-               GENERAL 매물 호 조회 API
-            */
+             const data =
+                 await getHoList(
+                     selectedApt.aptCmplexNo,
+                     dongNo
+                 );
 
-            // const data =
-            //     await getHoList(
-            //         selectedApt.aptCmplexNo,
-            //         dongNo
-            //     );
-
-            // setHoList(data);
+             setHoList(data);
         };
 
     /* 바깥 클릭 */
@@ -467,10 +463,10 @@ function AptSearchSelect({
                         {hoList.map((ho) => (
 
                             <option
-                                key={ho.unitNo}
-                                value={ho.unitNo}
+                                key={ho.HO_NO}
+                                value={ho.HO}
                             >
-                                {ho.hoNo}
+                                {ho.HO}
                             </option>
 
                         ))}

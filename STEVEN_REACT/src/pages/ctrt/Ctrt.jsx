@@ -1,16 +1,14 @@
 import { Download, FilePlusCorner } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import '../../styles/common.css';
 import requestApi from '../../util/api/requestApi';
 import { getNameByStatus, getNameOfJm } from '../../util/ctrt/ctrt';
 import CtrtBoard from './CtrtBoard';
-import OfflineCtrtModal from '../../components/ctrt/OfflineCtrtModal';
 
 const Ctrt = () => {
 
-  /* 오프라인 모달창 열어주기 위한 toggle 함수 */
-  const [openOfflineModal, setOpenOfflineModal] = useState(false);
+  const navigate = useNavigate();
 
   const { admInfo } = useOutletContext() || {};
   const [list, setList] = useState([]);
@@ -57,10 +55,6 @@ const Ctrt = () => {
 
   return (
     <div className="content-wrapper" style={{ paddingTop: '0px' }}>
-            <OfflineCtrtModal
-      open={openOfflineModal}
-      onClose={() => setOpenOfflineModal(false)}
-      />
       {/* 타이틀 세션 */}
       <div className="page-header">
         <div>
@@ -71,7 +65,10 @@ const Ctrt = () => {
           <button className="btn-outline">
             <span className="material-symbols-outlined">.xls 다운로드</span><Download size={17} />
           </button>
-          <button className="btn-primary"onClick={() => setOpenOfflineModal(true)}>
+          <button
+            className="btn-primary"
+            onClick={() => navigate('/apt/residentAssign')}
+          >
             <span className="material-symbols-outlined">
               오프라인 계약 등록
             </span><FilePlusCorner size={17} />
