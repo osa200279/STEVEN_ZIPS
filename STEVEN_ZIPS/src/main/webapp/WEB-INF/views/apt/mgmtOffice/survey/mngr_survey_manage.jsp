@@ -708,6 +708,8 @@
                         ? 0
                         : (participant / data.length) * 100;
 
+
+
                 totalRate += rate;
 
 

@@ -449,31 +449,69 @@
 
         let html = "";
 
+        const total =
+            data.participantCount || 1;
+
+
+
         data.resultList.forEach(function(result){
 
+
+
+            const questionMax =
+                Math.max(
+                    ...data.resultList
+                        .filter(r => r.qitemNm === result.qitemNm)
+                        .map(r => r.ansrCnt)
+                );
+
+
+
+            const percent =
+                Math.round((result.ansrCnt / total) * 100);
+
             html +=
+
                 '<div class="question-card" style="margin-bottom:16px;">'
 
                 + '<div class="question-body">'
 
-                +   '<div class="result-row">'
+                + '<div class="result-row">'
 
-                +       '<div class="result-info">'
+                + '<div class="result-info">'
 
-                +           '<div class="result-label">'
-                +               result.qitemNm
-                +               ' - '
-                +               result.ansrCn
-                +           '</div>'
+                + '<div class="result-label">'
 
-                +           '<div class="result-count">'
-                +               result.ansrCnt
-                +               '명'
-                +           '</div>'
+                + (result.ansrCnt === questionMax ? '🥇 ' : '')
 
-                +       '</div>'
+                + result.qitemNm
+                + ' - '
+                + result.ansrCn
 
-                +   '</div>'
+                + '</div>'
+
+                + '<div class="result-count">'
+
+                + percent
+                + '% ('
+                + result.ansrCnt
+                + '명)'
+
+                + '</div>'
+
+                + '</div>'
+
+                + '<div class="progress">'
+
+                + '<div class="progress-bar" '
+                + 'style="width:'
+                + percent
+                + '%">'
+                + '</div>'
+
+                + '</div>'
+
+                + '</div>'
 
                 + '</div>'
 
@@ -481,10 +519,6 @@
         });
 
         container.innerHTML = html;
-
-
-
-
 
 
     }
