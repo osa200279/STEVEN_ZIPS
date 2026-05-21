@@ -92,13 +92,18 @@
   <script>
 
     const rawJson =
-            `<%= ((kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO)
-      request.getAttribute("survey"))
-      .getSurveyQitemCn()
-      .replace("`","\\`") %>`;
+            '<%= org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript(
+((kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO)
+request.getAttribute("survey")).getSurveyQitemCn()
+) %>';
 
-    const questionList =
-            JSON.parse(rawJson);
+    const questionList = JSON.parse(rawJson);
+
+    console.log(rawJson);
+    console.log(questionList);
+
+
+
 
     const resultArea =
             document.getElementById("resultArea");
@@ -106,10 +111,12 @@
 
     const statistics =
             JSON.parse(
-                    '<%= request.getAttribute("statisticsJson") %>'
+                    '<%= org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript(
+                        String.valueOf(request.getAttribute("statisticsJson"))
+                ) %>'
             );
 
-
+    console.log(statistics);
 
 
 
@@ -146,9 +153,10 @@
 
       const questionStats =
               statistics.filter(
-                      s =>
-                              s.QITEM_NM === ("Q" + (idx + 1))
+                      s => s.QITEM_NM === ("Q" + (idx + 1))
               );
+
+
 
       const totalCount =
               questionStats.reduce(

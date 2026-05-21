@@ -857,9 +857,27 @@ public class ResidentMainController {
     @GetMapping("/survey/detail/{surveyNo}")
     public String surveyDetail(
             @PathVariable String surveyNo,
+            @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
 
+        String userNo =
+                customUser.getMember().getUserNo();
+
+        boolean alreadyParticipated =
+                surveyService.existsSurveyResponse(
+                        surveyNo,
+                        userNo
+                );
+
+        // 이미 참여했으면 결과페이지로 이동
+        if(alreadyParticipated){
+
+            return "redirect:/resident/survey/result/"
+                    + surveyNo;
+        }
+
+        // 미참여자만 설문 상세 진입
         model.addAttribute(
                 "survey",
                 surveyService.selectSurveyDetail(surveyNo)

@@ -244,27 +244,22 @@
 
         SELECT
 
-            DBMS_LOB.SUBSTR(
-                    RSPNS_CN,
-                    4000,
-                    1
-            ) AS answer,
+            QITEM_NM AS "QITEM_NM",
+            ANSR_CN  AS "ANSR_CN",
+            ANSR_CNT AS "ANSR_CNT"
 
-            COUNT(*) AS cnt
-
-        FROM SURVEY_RSPNS
+        FROM SURVEY_RSLT
 
         WHERE SURVEY_NO = #{surveyNo}
 
-        GROUP BY DBMS_LOB.SUBSTR(
-                         RSPNS_CN,
-                         4000,
-                         1
-                 )
-
-        ORDER BY cnt DESC
+        ORDER BY QITEM_NM, ANSR_CNT DESC
 
     </select>
+
+
+
+
+
 
     <select id="selectAllSurveyResponses"
             parameterType="string"
