@@ -308,11 +308,12 @@
            * - DB에는 GEN/WRK/DLV/MOV/EMG 코드가 들어가고 화면에서는 한글명으로 보여줌
            */
           var VHCL_TY_TEXT = {
-            GEN: "일반방문",
-            WRK: "업무/공사",
-            DLV: "배달/택배",
-            MOV: "이사차량",
-            EMG: "긴급/공용"
+            SEDAN: "세단",
+            SUV: "SUV",
+            VAN: "승합차",
+            LIGHT_TRUCK: "소형트럭",
+            TRUCK: "트럭",
+            BIKE: "오토바이"
           };
 
           /*
@@ -320,11 +321,12 @@
            * - 실제 색상은 manager-common.css의 badge 클래스에서 관리
            */
           var VHCL_TY_BADGE = {
-            GEN: "badge-gray",
-            WRK: "badge-blue",
-            DLV: "badge-yellow",
-            MOV: "badge-green",
-            EMG: "badge-red"
+            SEDAN: "badge-gray",
+            SUV: "badge-blue",
+            VAN: "badge-yellow",
+            LIGHT_TRUCK: "badge-green",
+            TRUCK: "badge-red",
+            BIKE: "badge-purple"
           };
 
           /*
