@@ -45,4 +45,6 @@ public interface IMngrRegidentNoticeService {
             CustomUser customUser,
             String mgmtOfcNo
     );
+    MngrRegidentNoticeDTO selectManagerOfficeInfo(String mgmtOfcNo);
+
 }

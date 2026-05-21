@@ -30,7 +30,7 @@
                                       font-size:11px;
                                       line-height:1.15;
                                       font-weight:800;">
-                                    ${office.aptCmplexNm}
+                                            ${office.aptCmplexNm}
                             </a>
                         </c:when>
 <%--                        <c:when test="${not empty office.aptCmplexNm}">${office.aptCmplexNm}</c:when>--%>

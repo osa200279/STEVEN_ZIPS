@@ -139,6 +139,15 @@ public class MngrResidentNoticeController {
                 mgmtOfcNo
         );
 
+        /*
+         * 공통 사이드바에서 사용하는 관리사무소 정보
+         */
+        MngrRegidentNoticeDTO office =
+                mngrRegidentNoticeService.selectManagerOfficeInfo(mgmtOfcNo);
+
+        model.addAttribute("office", office);
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+
         return "apt/mgmtOffice/mngrResidentNotice";
     }
 

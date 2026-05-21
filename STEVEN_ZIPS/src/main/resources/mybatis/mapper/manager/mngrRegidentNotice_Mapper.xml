@@ -418,5 +418,21 @@
           AND DEL_YN = 'N'
     </update>
 
+    <select id="selectManagerOfficeInfo"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.board.dto.MngrRegidentNoticeDTO">
+
+        SELECT
+            MO.MGMT_OFC_NO      AS mgmtOfcNo,
+            MO.MGMT_OFC_NM      AS mgmtOfcNm,
+            MO.APT_CMPLEX_NO    AS aptCmplexNo,
+            AC.APT_CMPLEX_NM    AS aptCmplexNm
+        FROM MGMT_OFFICE MO
+                 JOIN APT_COMPLEX AC
+                      ON MO.APT_CMPLEX_NO = AC.APT_CMPLEX_NO
+        WHERE MO.MGMT_OFC_NO = #{mgmtOfcNo}
+
+    </select>
+
 
 </mapper>

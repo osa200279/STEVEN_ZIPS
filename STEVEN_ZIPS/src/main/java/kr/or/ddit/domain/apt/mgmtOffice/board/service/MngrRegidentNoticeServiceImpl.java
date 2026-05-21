@@ -465,4 +465,10 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
         dto.setBoardNo(boardNo);
         dto.setWrtrId(writerName);
     }
+
+    @Override
+    public MngrRegidentNoticeDTO selectManagerOfficeInfo(String mgmtOfcNo) {
+
+        return mapper.selectManagerOfficeInfo(mgmtOfcNo);
+    }
 }

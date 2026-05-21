@@ -110,5 +110,8 @@ public class MngrRegidentNoticeDTO {
      */
     private Integer fileNo;
 
+    private String mgmtOfcNm;
+    private String aptCmplexNm;
+
 
 }

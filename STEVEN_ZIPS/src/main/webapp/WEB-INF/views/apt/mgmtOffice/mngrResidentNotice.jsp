@@ -344,24 +344,6 @@
             flex-direction: column;
         }
 
-        /*!* 모달 박스 *!*/
-        /*#noticePage .notice-modal {*/
-        /*    width: 560px;*/
-        /*    max-width: 95vw;*/
-
-        /*    !* 화면 높이보다 커지지 않게 제한 *!*/
-        /*    max-height: calc(100vh - 48px);*/
-
-        /*    background: #fff;*/
-        /*    border-radius: 7px;*/
-        /*    overflow: hidden;*/
-        /*    box-shadow: 0 20px 50px rgba(17, 24, 39, 0.18);*/
-
-        /*    !* header/body/footer를 세로 구조로 분리 *!*/
-        /*    display: flex;*/
-        /*    flex-direction: column;*/
-        /*}*/
-
         /* 모달 제목 */
         #noticePage .notice-modal-header {
             height: 54px;

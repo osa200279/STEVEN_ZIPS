@@ -54,6 +54,8 @@ public interface ImngrRegidentNoticeMapper {
     int clearNoticeAttachFileId(MngrRegidentNoticeDTO dto);
 
 
+    MngrRegidentNoticeDTO selectManagerOfficeInfo(String mgmtOfcNo);
+
 
 
 
