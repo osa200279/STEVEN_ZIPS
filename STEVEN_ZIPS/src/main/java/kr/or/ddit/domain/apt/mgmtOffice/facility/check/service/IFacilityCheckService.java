@@ -5,6 +5,7 @@ import kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckCodeVO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 시설 점검 이력 Service 인터페이스
@@ -61,4 +62,7 @@ public interface IFacilityCheckService {
 
     /** 협력업체 선택 모달 서버 검색 목록 조회 */
     List<FacilityCheckHstryVO> selectPartnerSearchList(FacilityCheckHstryVO searchVO);
+
+    /** 파트너 선택 후 해당 파트너의 계약 목록 조회 */
+    List<Map<String, Object>> selectPartnerContractList(String mgmtOfcNo, String partnerNo);
 }

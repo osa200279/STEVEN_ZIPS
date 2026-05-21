@@ -23,4 +23,10 @@ public interface IMeterHstryService {
 
     /** 검침 CSV 업로드 처리 */
     int uploadMeterCsv(String mgmtOfcNo, String utilityProviderNo, MultipartFile csvFile, String uploadUserNo) throws Exception;
+
+    /** 검침 이력 단건 상세 조회 */
+    MeterHstryVO selectMeterHstryDetail(String meterHstryNo);
+
+    /** 검침 이력 수정 */
+    int updateMeterHstry(MeterHstryVO meterHstryVO);
 }

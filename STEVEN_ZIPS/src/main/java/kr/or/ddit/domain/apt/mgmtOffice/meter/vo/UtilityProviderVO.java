@@ -29,4 +29,17 @@ public class UtilityProviderVO {
 
     /** 협력업체명 */
     private String partnerNm;
+
+        /*join용*/
+    /** 계약명 */
+    private String contNm;
+
+    /** 계약내용 */
+    private String contCn;
+
+    /** 계약시작일 */
+    private String contBgngDt;
+
+    /** 계약종료일 */
+    private String contEndDt;
 }

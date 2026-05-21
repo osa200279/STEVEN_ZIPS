@@ -1,134 +1,222 @@
 package kr.or.ddit.domain.apt.mgmtOffice.contract.controller;
 
+import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.service.IFacilityContractService;
-import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractVO;
-import lombok.RequiredArgsConstructor;
+import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractDTO;
+import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractSearchVO;
+import kr.or.ddit.domain.member.vo.CustomUser;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * 시설 계약 처리 Controller
- * - 계약 등록 처리
- * - 계약 수정 처리
- * - 재계약 등록 처리
- * - 검침 설정 저장 처리
+ * 시설 계약 관리 Controller
+ *
+ * 기준
+ * - EmployeeController 패턴을 따른다.
+ * - 클래스 권한: ROLE_MNGR
+ * - 조회 권한: authService.hasAccess
+ * - 등록/수정 권한: authService.canMgmtCrud
+ * - 화면 반환 메서드: IManagerModelService.addManagerViewModel(...) 호출
  */
+@Slf4j
 @Controller
-@RequiredArgsConstructor
-@RequestMapping("/manager/contract")
-@PreAuthorize("hasRole('MNGR')")  // 계층 구조상 ADMIN도 통과
+@PreAuthorize("hasRole('MNGR')")
+@RequestMapping("/manager/facility/contract")
 public class FacilityContractController {
 
-    /** 시설 계약 Service */
-    private final IFacilityContractService contractService;
+    @Autowired
+    private IFacilityContractService facilityContractService;
+
+    @Autowired
+    private IManagerModelService managerModelService;
 
     /**
-     * 계약 등록
-     * - FACILITY_CONTRACT 신규 등록
+     * 계약 목록 화면
+     *
+     * JSP
+     * - /WEB-INF/views/apt/mgmtOffice/contract/mngr_contract_list.jsp
+     *
+     * 필요한 model
+     * - mgmtOfcNo
+     * - search
+     * - contractList
+     * - contractSummary
+     * - manager 공통 model 값
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/list/{mgmtOfcNo}")
+    public String contractList(
+            @PathVariable String mgmtOfcNo,
+            @ModelAttribute("search") FacilityContractSearchVO search,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        // 관리사무소 화면 공통 model 값 세팅
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        // 검색 조건에 관리사무소 번호 세팅
+        search.setMgmtOfcNo(mgmtOfcNo);
+
+        // 계약 목록, 현황 카드 조회
+        model.addAttribute("contractList", facilityContractService.selectContractList(search));
+        model.addAttribute("contractSummary", facilityContractService.selectContractSummary(search));
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+
+        return "apt/mgmtOffice/contract/mngr_contract_list";
+    }
+
+    /**
+     * 계약 등록 폼 화면
+     *
+     * JSP
+     * - /WEB-INF/views/apt/mgmtOffice/contract/mngr_contract_form.jsp
+     *
+     * 필요한 model
+     * - mode = insert
+     * - contract
+     * - partnerList
+     * - facilityList
+     */
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @GetMapping("/form/{mgmtOfcNo}")
+    public String contractInsertForm(
+            @PathVariable String mgmtOfcNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        // 관리사무소 화면 공통 model 값 세팅
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        // 등록 화면 기본값
+        FacilityContractDTO contract = new FacilityContractDTO();
+        contract.setContTargetCd("FACILITY");
+
+        // DB 아카이브에 확정되지 않은 코드값은 화면에서 선택하게 두고 기본값만 최소화
+        contract.setContSttsCd("ING");
+
+        // 폼 공통 model
+        model.addAttribute("mode", "insert");
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+        model.addAttribute("contract", contract);
+        model.addAttribute("partnerList", facilityContractService.selectContractPartnerList(mgmtOfcNo));
+        model.addAttribute("facilityList", facilityContractService.selectContractFacilityList(mgmtOfcNo));
+
+        return "apt/mgmtOffice/contract/mngr_contract_form";
+    }
+
+    /**
+     * 계약 수정 폼 화면
+     *
+     * JSP
+     * - /WEB-INF/views/apt/mgmtOffice/contract/mngr_contract_form.jsp
+     */
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
+    @GetMapping("/form/{mgmtOfcNo}/{contNo}")
+    public String contractUpdateForm(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String contNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        // 관리사무소 화면 공통 model 값 세팅
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        // 계약 상세 조회
+        FacilityContractDTO contract = facilityContractService.selectContractDetail(mgmtOfcNo, contNo);
+
+        // 폼 공통 model
+        model.addAttribute("mode", "update");
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+        model.addAttribute("contract", contract);
+        model.addAttribute("partnerList", facilityContractService.selectContractPartnerList(mgmtOfcNo));
+        model.addAttribute("facilityList", facilityContractService.selectContractFacilityList(mgmtOfcNo));
+
+        return "apt/mgmtOffice/contract/mngr_contract_form";
+    }
+
+    /**
+     * 계약 상세 조회
+     *
+     * 사용처
+     * - 목록 JSP 상세 모달
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/detail/{mgmtOfcNo}/{contNo}")
+    @ResponseBody
+    public Map<String, Object> contractDetail(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String contNo
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // 계약 상세 조회
+            FacilityContractDTO contract = facilityContractService.selectContractDetail(mgmtOfcNo, contNo);
+
+            result.put("success", true);
+            result.put("contract", contract);
+        } catch (Exception e) {
+            log.error("계약 상세 조회 오류", e);
+            result.put("success", false);
+            result.put("message", "계약 상세 조회 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
+
+    /**
+     * 계약 등록 처리
+     *
+     * form enctype
+     * - multipart/form-data
+     */
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @PostMapping("/insert/{mgmtOfcNo}")
-    public String insert(
+    public String contractInsert(
             @PathVariable String mgmtOfcNo,
-            @ModelAttribute FacilityContractVO contractVO,
-            RedirectAttributes redirectAttributes
+            @ModelAttribute FacilityContractDTO contract,
+            @RequestParam(value = "contractFiles", required = false) List<MultipartFile> contractFiles
     ) {
-        try {
-            // 계약 등록 처리
-            contractService.insertContract(mgmtOfcNo, contractVO);
+        // 관리사무소 번호 세팅
+        contract.setMgmtOfcNo(mgmtOfcNo);
 
-            // 성공 메시지
-            redirectAttributes.addFlashAttribute("successMessage", "계약이 등록되었습니다.");
-        } catch (Exception e) {
-            // 오류 메시지
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
+        // 계약 등록
+        facilityContractService.insertContract(contract, contractFiles);
 
-        // 계약 화면 재이동
-        return "redirect:/manager/contract/" + mgmtOfcNo;
+        return "redirect:/manager/facility/contract/list/" + mgmtOfcNo;
     }
 
     /**
-     * 계약 수정
-     * - FACILITY_CONTRACT 기존 계약 수정
+     * 계약 수정 처리
+     *
+     * 주의
+     * - ATTACH_FILE에는 FILE_NO가 없고 FILE_SAVE_UUID가 식별값이다.
+     * - JSP 삭제 체크박스 name도 deleteFileSaveUuidList로 맞추는 것을 권장한다.
      */
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @PostMapping("/update/{mgmtOfcNo}")
-    public String update(
+    public String contractUpdate(
             @PathVariable String mgmtOfcNo,
-            @ModelAttribute FacilityContractVO contractVO,
-            RedirectAttributes redirectAttributes
+            @ModelAttribute FacilityContractDTO contract,
+            @RequestParam(value = "contractFiles", required = false) List<MultipartFile> contractFiles,
+            @RequestParam(value = "deleteFileSaveUuidList", required = false) List<String> deleteFileSaveUuidList
     ) {
-        try {
-            // 계약 수정 처리
-            contractService.updateContract(mgmtOfcNo, contractVO);
+        // 관리사무소 번호 세팅
+        contract.setMgmtOfcNo(mgmtOfcNo);
 
-            // 성공 메시지
-            redirectAttributes.addFlashAttribute("successMessage", "계약이 수정되었습니다.");
-        } catch (Exception e) {
-            // 오류 메시지
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
+        // 계약 수정
+        facilityContractService.updateContract(contract, contractFiles, deleteFileSaveUuidList);
 
-        // 계약 화면 재이동
-        return "redirect:/manager/contract/" + mgmtOfcNo;
-    }
-
-    /**
-     * 재계약 등록
-     * - 기존 계약 수정이 아닌 신규 계약 등록
-     */
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @PostMapping("/renew/{mgmtOfcNo}")
-    public String renew(
-            @PathVariable String mgmtOfcNo,
-            @ModelAttribute FacilityContractVO contractVO,
-            RedirectAttributes redirectAttributes
-    ) {
-        try {
-            // 재계약 등록 처리
-            contractService.insertRenewContract(mgmtOfcNo, contractVO);
-
-            // 성공 메시지
-            redirectAttributes.addFlashAttribute("successMessage", "재계약이 등록되었습니다.");
-        } catch (Exception e) {
-            // 오류 메시지
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
-
-        // 계약 화면 재이동
-        return "redirect:/manager/contract/" + mgmtOfcNo;
-    }
-
-    /**
-     * 검침 설정 저장
-     * - UTILITY_PROVIDER 등록/수정
-     * - CONT_NO 기준 계약 연결
-     */
-    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @PostMapping("/utility/save/{mgmtOfcNo}")
-    public String saveUtilityProvider(
-            @PathVariable String mgmtOfcNo,
-            @ModelAttribute FacilityContractVO contractVO,
-            RedirectAttributes redirectAttributes
-    ) {
-        try {
-            // 검침 설정 저장 처리
-            contractService.saveUtilityProvider(mgmtOfcNo, contractVO);
-
-            // 성공 메시지
-            redirectAttributes.addFlashAttribute("successMessage", "검침 설정이 저장되었습니다.");
-        } catch (Exception e) {
-            // 오류 메시지
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
-
-        // 계약 화면 재이동
-        return "redirect:/manager/contract/" + mgmtOfcNo;
+        return "redirect:/manager/facility/contract/list/" + mgmtOfcNo;
     }
 }

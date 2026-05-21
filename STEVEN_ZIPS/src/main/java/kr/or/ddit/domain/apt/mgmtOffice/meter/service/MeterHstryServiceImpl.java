@@ -366,7 +366,7 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
 
             // 필수값 검증
             validateRequired(lineNo, "facility_no", facilityNo);
-            validateRequired(lineNo, "ho_no", hoNo);
+           // validateRequired(lineNo, "ho_no", hoNo);
             validateRequired(lineNo, "meter_dt", meterDt);
             validateRequired(lineNo, "pre_val", preVal);
             validateRequired(lineNo, "curr_val", currVal);
@@ -390,7 +390,7 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
             // 검침 이력 VO 구성
             MeterHstryVO vo = new MeterHstryVO();
             vo.setFacilityNo(facilityNo);
-            vo.setHoNo(hoNo);
+            vo.setHoNo(StringUtils.hasText(hoNo) ? hoNo : null);
             vo.setMeterDt(java.sql.Date.valueOf(LocalDate.parse(meterDt)));
             vo.setPreVal(new BigDecimal(preVal));
             vo.setCurrVal(new BigDecimal(currVal));
@@ -448,5 +448,21 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
      */
     private String createUploadNo() {
         return "MUH" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
+    }
+
+    /**
+     * 검침 이력 단건 상세 조회
+     */
+    @Override
+    public MeterHstryVO selectMeterHstryDetail(String meterHstryNo) {
+        return meterHstryMapper.selectMeterHstryDetail(meterHstryNo);
+    }
+
+/**
+ * 검침 이력 수정
+ */
+    @Override
+    public int updateMeterHstry(MeterHstryVO meterHstryVO) {
+        return meterHstryMapper.updateMeterHstry(meterHstryVO);
     }
 }

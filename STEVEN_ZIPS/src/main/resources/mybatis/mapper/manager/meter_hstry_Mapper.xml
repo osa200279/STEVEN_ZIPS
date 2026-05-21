@@ -16,6 +16,8 @@
         , mh.facility_no
         , f.facility_nm
         , f.facility_ty_cd
+        , f.loc_cn
+        , f.dong_no
         , fac_ty.code_name as facility_ty_nm
         , mh.ho_no
         , mh.meter_dt
@@ -45,6 +47,12 @@
         on mh.meter_rslt_cd = rslt.code_no_cd
         and rslt.group_code_no = 'METER_RSLT'
         where up.apt_cmplex_no = #{aptCmplexNo}
+        <if test="meterScope != null and meterScope == 'COMPLEX'">
+            and mh.ho_no is not null
+        </if>
+        <if test="meterScope != null and meterScope == 'FACILITY'">
+            and mh.ho_no is null
+        </if>
         <if test="utilityProviderNo != null and utilityProviderNo != ''">
             and up.utility_provider_no = #{utilityProviderNo}
         </if>
@@ -79,9 +87,15 @@
         , up.ext_cust_no
         , up.rmrk_cn
         , p.partner_nm
+        , fc.cont_nm
+        , fc.cont_cn
+        , to_char(fc.cont_bgng_dt, 'yyyy.mm.dd') as cont_bgng_dt
+        , to_char(fc.cont_end_dt,  'yyyy.mm.dd') as cont_end_dt
         from utility_provider up
         left join partner p
         on up.partner_no = p.partner_no
+        left join facility_contract fc
+        on up.cont_no = fc.cont_no
         where up.apt_cmplex_no = #{aptCmplexNo}
         order by up.utility_provider_no
     </select>
@@ -184,5 +198,64 @@
         , #{utilityProviderNo}
         )
     </insert>
+
+    <!-- 검침 이력 단건 상세 조회 -->
+    <select id="selectMeterHstryDetail"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterHstryVO">
+        select mh.meter_hstry_no
+        , mh.facility_no
+        , f.facility_nm
+        , f.facility_ty_cd
+        , fac_ty.code_name as facility_ty_nm
+        , f.dong_no
+        , f.loc_cn
+        , mh.ho_no
+        , mh.meter_dt
+        , mh.pre_val
+        , mh.curr_val
+        , mh.meter_cn
+        , mh.meter_rslt_cd
+        , rslt.code_name  as meter_rslt_nm
+        , mh.reg_dt
+        , mh.mdf_dt
+        , up.utility_provider_no
+        , p.partner_no
+        , p.partner_nm
+        , fc.cont_no
+        , fc.cont_nm
+        , p.pic_nm
+        , p.pic_telno
+        , p.pic_email
+        from meter_hstry mh
+        left join facility f
+        on mh.facility_no = f.facility_no
+        left join common_code fac_ty
+        on f.facility_ty_cd = fac_ty.code_no_cd
+        and fac_ty.group_code_no = 'FACILITY_TY'
+        left join utility_provider up
+        on mh.utility_provider_no = up.utility_provider_no
+        left join partner p
+        on up.partner_no = p.partner_no
+        left join facility_contract fc
+        on up.cont_no = fc.cont_no
+        left join common_code rslt
+        on mh.meter_rslt_cd = rslt.code_no_cd
+        and rslt.group_code_no = 'METER_RSLT'
+        where mh.meter_hstry_no = #{meterHstryNo}
+    </select>
+
+    <!-- 검침 이력 수정 -->
+    <update id="updateMeterHstry"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterHstryVO">
+        update meter_hstry
+        set meter_dt      = #{meterDt}
+        , pre_val       = #{preVal}
+        , curr_val      = #{currVal}
+        , meter_rslt_cd = #{meterRsltCd}
+        , meter_cn      = #{meterCn}
+        , mdf_dt        = sysdate
+        where meter_hstry_no = #{meterHstryNo}
+    </update>
 
 </mapper>

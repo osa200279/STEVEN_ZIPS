@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 시설 점검 이력 Service 구현체
@@ -305,4 +306,12 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
     }
+
+    /** 파트너 선택 후 해당 파트너의 계약 목록 조회 */
+    @Override
+    public List<Map<String, Object>> selectPartnerContractList(String mgmtOfcNo, String partnerNo) {
+        return facilityCheckHstryMapper.selectPartnerContractList(mgmtOfcNo, partnerNo);
+    }
+
+
 }

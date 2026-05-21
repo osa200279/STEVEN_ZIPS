@@ -21,7 +21,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${isUpdate ? '시설 점검 이력 수정' : '시설 점검 새 이력 등록'}</title>
+    <title>${isUpdate ? '시설 이력 수정' : '시설 이력 새 등록'}</title>
     <sec:csrfMetaTags/>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -81,6 +81,14 @@
         #fchPage .info-tbl td:last-child { border-right:none; }
         #fchPage .info-tbl tr:last-child th, #fchPage .info-tbl tr:last-child td { border-bottom:none; }
 
+        /* 계약 선택 영역 */
+        #fchPage .contract-select-wrap { margin-top:10px; padding:10px 12px; border:1px solid var(--line); border-radius:5px; background:#f8faf8; }
+        #fchPage .contract-select-label { display:block; margin-bottom:5px; color:#4a5c4e; font-size:11px; font-weight:800; }
+        #fchPage .contract-select-desc { color:#9ca3af; font-size:11px; font-weight:400; }
+        #fchPage .contract-select { width:100%; height:34px; padding:0 9px; border:1px solid var(--line); border-radius:4px; background:#fff; color:#1f2d23; font-size:12px; box-sizing:border-box; }
+        #fchPage .contract-select:focus { border-color:var(--acc); outline:none; box-shadow:0 0 0 2px rgba(46,92,56,.08); }
+        #fchPage .contract-select:disabled { background:var(--soft); color:#6b7280; cursor:default; }
+
         /* 하단 2분할 */
         #fchPage .history-layout { display:grid; grid-template-columns:46% minmax(0,1fr); gap:16px; }
         #fchPage .list-area { border-right:1px solid var(--line); padding-right:16px; }
@@ -108,6 +116,7 @@
         #fchPage .h-meta    { display:flex; align-items:center; gap:5px; margin-bottom:4px; }
         #fchPage .h-type    { color:#39443d; font-size:11px; font-weight:800; }
         #fchPage .h-partner { display:block; color:#6b7280; font-size:11px; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #fchPage .h-contract { display:block; color:#4b5563; font-size:11px; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         #fchPage .h-flow    { display:block; color:#8a9a8e; font-size:10px; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         #fchPage .h-cn      { display:block; color:#374151; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         #fchPage .badge { display:inline-flex; align-items:center; justify-content:center; min-height:18px; padding:0 6px; border-radius:3px; font-size:10px; font-weight:700; border:1px solid transparent; white-space:nowrap; }
@@ -129,6 +138,14 @@
         #fchPage .form-field-input, #fchPage .form-field-select { width:100%; height:34px; padding:0 9px; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:#1f2d23; font-size:12px; box-sizing:border-box; }
         #fchPage .form-field-input:focus, #fchPage .form-field-select:focus { border-color:var(--acc); outline:none; box-shadow:0 0 0 2px rgba(46,92,56,.08); }
         #fchPage .form-field-input[readonly], #fchPage .form-field-select[disabled], #fchPage .form-field-input[disabled] { background:var(--soft); color:#6b7280; cursor:default; }
+        /* 작업유형 자동완성 */
+        #fchPage .type-autocomplete { position:relative; }
+        #fchPage .type-dropdown { position:absolute; left:0; right:0; top:calc(100% + 3px); z-index:20; max-height:170px; overflow-y:auto; border:1px solid var(--line); border-radius:4px; background:#fff; box-shadow:0 10px 24px rgba(15,23,42,.14); }
+        #fchPage .type-option { width:100%; min-height:31px; padding:0 10px; border:0; border-bottom:1px solid #eef1f3; background:#fff; color:#1f2d23; font-size:12px; font-weight:700; text-align:left; cursor:pointer; font-family:'Noto Sans KR',sans-serif; }
+        #fchPage .type-option:last-child { border-bottom:none; }
+        #fchPage .type-option:hover { background:#f8fcf9; color:var(--acc); }
+        #fchPage .type-empty { padding:9px 10px; color:#8a9a8e; font-size:11px; text-align:center; }
+        #fchPage .selected-history-summary { margin-bottom:10px; padding:10px 12px; border:1px solid var(--line); border-radius:5px; background:#fbfcfb; }
         #fchPage .form-textarea { width:100%; padding:9px; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:#1f2d23; font-size:12px; line-height:1.55; resize:vertical; box-sizing:border-box; min-height:120px; }
         #fchPage .form-textarea.short { min-height:70px; }
         #fchPage .form-textarea:focus { border-color:var(--acc); outline:none; box-shadow:0 0 0 2px rgba(46,92,56,.08); }
@@ -137,7 +154,7 @@
         #fchPage .mono { font-family:'Consolas','SF Mono',monospace; font-size:11px; }
         #fchPage .form-action-bar { display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-top:14px; }
 
-        /* split 카드 (detail과 동일한 구조) */
+        /* split 카드 */
         #fchPage .split-panel { border:1px solid var(--line); border-radius:6px; overflow:hidden; background:var(--bg); }
         #fchPage .split-head  { display:flex; align-items:center; justify-content:space-between; min-height:42px; padding:0 14px; border-bottom:1px solid var(--line); background:var(--soft); }
         #fchPage .split-title { display:flex; align-items:center; gap:6px; color:var(--head); font-size:13px; font-weight:800; }
@@ -166,7 +183,6 @@
         #fchPage .modal-table td { height:36px; padding:4px 8px; border-bottom:1px solid #eef1f3; font-size:12px; text-align:center; }
         #fchPage .modal-table .td-left { text-align:left; }
 
-
         @media(max-width:1100px) {
             #fchPage .target-grid, #fchPage .history-layout { grid-template-columns:1fr; }
             #fchPage .list-area { border-right:none; padding-right:0; }
@@ -184,7 +200,7 @@
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
         <c:set var="activeSidebarHref"    value="${ctx}/manager/checkHistory/${mgmtOfcNo}" />
         <c:set var="activeSidebarParent"  value="시설·공사 관리" />
-        <c:set var="activeSidebarCurrent" value="시설 점검 이력" />
+        <c:set var="activeSidebarCurrent" value="시설 이력" />
         <%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
 
         <main class="main-content">
@@ -192,12 +208,12 @@
 
                 <div class="page-header">
                     <div class="page-title-block">
-                        <h2>${isUpdate ? '시설 점검 이력 수정' : isFollow ? '시설 점검 후속 이력 등록' : '시설 점검 이력 등록'}</h2>
+                        <h2>${isUpdate ? '시설 이력 수정' : isFollow ? '시설 이력 후속 등록' : '시설 이력 등록'}</h2>
                         <p>
                             <c:choose>
                                 <c:when test="${isUpdate}">오정보 정정 목적의 수정입니다. 시설과 협력업체는 변경할 수 없습니다.</c:when>
-                                <c:when test="${isFollow}">기준 이력과 같은 처리과정으로 후속 점검 이력을 등록합니다.</c:when>
-                                <c:otherwise>시설을 선택하고 기존 이력을 확인하면서 새 점검 이력을 등록합니다.</c:otherwise>
+                                <c:when test="${isFollow}">기준 이력과 같은 처리과정으로 후속 시설 이력을 등록합니다.</c:when>
+                                <c:otherwise>시설을 선택하고 기존 이력을 확인하면서 새 시설 이력을 등록합니다.</c:otherwise>
                             </c:choose>
                         </p>
                     </div>
@@ -212,10 +228,14 @@
 
                 <form id="checkForm" method="post" action="${formAction}">
                     <sec:csrfInput/>
-                    <input type="hidden" id="facilityNo" name="facilityNo" value="${check.facilityNo}">
-                    <input type="hidden" id="partnerNo"  name="partnerNo"  value="${check.partnerNo}">
-                    <input type="hidden" id="chkFlowNo" name="chkFlowNo" value="${check.chkFlowNo}">
+
+                    <%-- 폼 전송 시 필요한 hidden 값들 --%>
+                    <input type="hidden" id="facilityNo"   name="facilityNo"   value="${check.facilityNo}">
+                    <input type="hidden" id="partnerNo"    name="partnerNo"    value="${check.partnerNo}">
+                    <input type="hidden" id="chkFlowNo"    name="chkFlowNo"    value="${check.chkFlowNo}">
                     <input type="hidden" id="chkOwnerType" name="chkOwnerType" value="${empty check.chkOwnerType ? 'SELF' : check.chkOwnerType}">
+                    <%-- 계약번호 hidden - 협력업체 선택 후 계약 select에서 선택한 값이 여기 저장됨 --%>
+                    <input type="hidden" id="contNo"       name="contNo"       value="${check.contNo}">
                     <c:if test="${isUpdate}">
                         <input type="hidden" name="facChkHstryNo" value="${check.facChkHstryNo}">
                     </c:if>
@@ -253,17 +273,17 @@
                                         </c:choose>
                                     </div>
                                     <div class="target-body">
-                                        <%-- 선택 전 (등록 모드 + 시설 없을 때만) --%>
+                                        <%-- 시설 미선택 상태 (등록 모드이고 시설 없을 때만 표시) --%>
                                         <c:if test="${not isLocked}">
                                             <div id="facilityEmptyState" class="empty-state ${empty check.facilityNo ? '' : 'is-hidden'}">
                                                 <span class="material-symbols-rounded">apartment</span>
-                                                <p>점검 이력을 등록할 시설을 선택하세요.</p>
+                                                <p>시설 이력을 등록할 시설을 선택하세요.</p>
                                                 <button type="button" class="btn btn-primary" id="openFacilityModalBtn">
                                                     <span class="material-symbols-rounded">link</span>시설 선택
                                                 </button>
                                             </div>
                                         </c:if>
-                                        <%-- 선택 후 --%>
+                                        <%-- 시설 선택 완료 상태 --%>
                                         <div id="facilitySelectedState" class="${(not isLocked and empty check.facilityNo) ? 'selected-state is-hidden' : 'selected-state'}">
                                             <table class="info-tbl">
                                                 <tr>
@@ -312,6 +332,7 @@
                                         </c:choose>
                                     </div>
                                     <div class="target-body">
+                                        <%-- 자체점검 / 협력업체점검 라디오 버튼 --%>
                                         <div class="owner-choice">
                                             <span class="owner-choice-label">점검 주체</span>
                                             <label class="owner-radio">
@@ -324,12 +345,15 @@
                                             </label>
                                         </div>
 
+                                        <%-- 자체점검 선택 시 표시 --%>
                                         <div id="partnerSelfState" class="self-check-box ${check.chkOwnerType eq 'PARTNER' ? 'is-hidden' : ''}">
                                             <span class="material-symbols-rounded">engineering</span>
                                             <p>관리사무소 자체점검으로 등록됩니다.</p>
                                         </div>
 
+                                        <%-- 협력업체 점검 선택 시 표시 --%>
                                         <div id="partnerChoiceState" class="${check.chkOwnerType eq 'PARTNER' ? '' : 'is-hidden'}">
+                                            <%-- 협력업체 미선택 상태 --%>
                                             <c:if test="${not isOwnerLocked}">
                                                 <div id="partnerEmptyState" class="empty-state ${empty check.partnerNo ? '' : 'is-hidden'}">
                                                     <span class="material-symbols-rounded">business_center</span>
@@ -339,6 +363,8 @@
                                                     </button>
                                                 </div>
                                             </c:if>
+
+                                            <%-- 협력업체 선택 완료 상태 --%>
                                             <div id="partnerSelectedState" class="${(not isLocked and empty check.partnerNo) ? 'selected-state is-hidden' : 'selected-state'}">
                                                 <table class="info-tbl">
                                                     <tr>
@@ -360,6 +386,36 @@
                                                         <td><span id="partnerEmailText" class="ellipsis">${empty check.picEmail ? '-' : check.picEmail}</span></td>
                                                     </tr>
                                                 </table>
+
+                                                <%--
+                                                    계약 선택 영역
+                                                    - 협력업체 선택 후 해당 파트너의 진행중 계약 목록이 AJAX로 로드됨
+                                                    - 선택한 계약번호는 hidden input(contNo)에 저장되어 폼과 함께 전송됨
+                                                    - 계약 없이 점검하는 경우 "계약 없음" 선택 가능
+                                                --%>
+                                                <div class="contract-select-wrap" id="contractSelectWrap">
+                                                    <label class="contract-select-label">
+                                                        연결 계약
+                                                        <span class="contract-select-desc">(해당 파트너의 진행중 계약 목록)</span>
+                                                    </label>
+                                                    <select class="contract-select" id="contNoSelect"
+                                                            <c:if test="${isOwnerLocked}">disabled</c:if>>
+                                                        <option value="">계약 없음 (계약 미연결 점검)</option>
+                                                        <%--
+                                                            수정 모드 진입 시 기존에 저장된 계약 표시
+                                                            - check.contNo 가 있으면 해당 계약을 selected 상태로 표시
+                                                        --%>
+                                                        <c:if test="${not empty check.contNo}">
+                                                            <option value="${check.contNo}" data-cont-ty-cd="" selected>
+                                                                    ${empty check.contNm ? check.contNo : check.contNm}
+                                                                <c:if test="${not empty check.contBgngDt}">
+                                                                    (${check.contBgngDt} ~ ${empty check.contEndDt ? '진행중' : check.contEndDt})
+                                                                </c:if>
+                                                            </option>
+                                                        </c:if>
+                                                    </select>
+                                                </div>
+
                                                 <c:if test="${not isOwnerLocked}">
                                                     <div class="selected-actions">
                                                         <button type="button" class="btn" id="reopenPartnerModalBtn">다시 선택</button>
@@ -378,7 +434,7 @@
                     <div class="panel">
                         <div class="panel-body">
                             <div class="section-title">
-                                <span class="material-symbols-rounded">fact_check</span>점검 이력
+                                <span class="material-symbols-rounded">fact_check</span>시설 이력
                                 <span class="title-sub">
                                     <c:choose>
                                         <c:when test="${isUpdate}">수정할 이력을 선택하세요.</c:when>
@@ -394,20 +450,19 @@
                                     <div class="split-panel">
                                         <div class="split-head">
                                             <div class="split-title">
-                                                <span class="material-symbols-rounded">history</span>같은 시설의 점검 이력
+                                                <span class="material-symbols-rounded">history</span>같은 시설의 시설 이력
                                             </div>
                                             <span class="split-desc">간략 이력</span>
                                         </div>
                                         <div class="split-body">
                                             <div class="history-filter">
                                                 <div class="f-field">
-                                                    <label class="field-label" for="historyFilterChkTyCd">점검유형</label>
-                                                    <select class="form-select" id="historyFilterChkTyCd">
-                                                        <option value="">전체</option>
-                                                        <c:forEach var="code" items="${checkTypeList}">
-                                                            <option value="${code.codeNoCd}">${code.codeName}</option>
-                                                        </c:forEach>
-                                                    </select>
+                                                    <label class="field-label" for="historyFilterChkTyNmInput">작업유형</label>
+                                                    <div class="type-autocomplete">
+                                                        <input type="text" class="form-input" id="historyFilterChkTyNmInput" placeholder="전체 또는 작업유형 검색" autocomplete="off">
+                                                        <input type="hidden" id="historyFilterChkTyCd" value="">
+                                                        <div id="historyFilterChkTyDropdown" class="type-dropdown is-hidden"></div>
+                                                    </div>
                                                 </div>
                                                 <div class="f-field">
                                                     <label class="field-label" for="historyFilterChkSttsCd">점검상태</label>
@@ -434,13 +489,13 @@
                                                 </div>
                                             </div>
                                             <div class="history-list" id="facilityHistoryList">
-                                                <div class="history-empty">시설을 선택하면 기존 점검 이력이 표시됩니다.</div>
+                                                <div class="history-empty">시설을 선택하면 기존 시설 이력이 표시됩니다.</div>
                                             </div>
-                                        </div><%-- /split-body --%>
-                                    </div><%-- /split-panel --%>
-                                </div><%-- /list-area --%>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                <%-- 오른쪽: 등록/수정 폼 + 기존 이력 상세 표시 --%>
+                                <%-- 오른쪽: 등록/수정 폼 + 기존 이력 상세 --%>
                                 <div class="form-panel">
                                     <div class="split-head">
                                         <div class="split-title">
@@ -449,7 +504,7 @@
                                         </div>
                                     </div>
                                     <div class="form-panel-body">
-                                        <%-- 기준이력번호 / 시설번호 / 처리과정번호 / 이력번호 --%>
+                                        <%-- 기준이력번호 / 시설번호 / 처리과정번호 / 이력번호 표시 --%>
                                         <div class="form-grid" style="margin-bottom:10px;">
                                             <div id="baseHistoryRow" class="is-hidden">
                                                 <label class="form-label">기준이력번호</label>
@@ -473,16 +528,28 @@
                                                 <div class="readonly-box mono" id="currentHistoryNoText">-</div>
                                             </div>
                                         </div>
-                                        <%-- 입력 필드 --%>
+                                        <%-- 선택한 기존 이력 요약 : 상세 확인 후 후속 등록할 기준 이력 표시 --%>
+                                        <div id="selectedHistorySummary" class="selected-history-summary is-hidden">
+                                            <div class="form-grid">
+                                                <div>
+                                                    <label class="form-label">선택 이력 주체</label>
+                                                    <div class="readonly-box" id="historyOwnerText">-</div>
+                                                </div>
+                                                <div>
+                                                    <label class="form-label">연결 계약</label>
+                                                    <div class="readonly-box" id="historyContractText">-</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <%-- 점검 입력 필드 --%>
                                         <div class="form-grid">
                                             <div>
-                                                <label class="form-label" for="chkTyCd">점검유형 <span class="required">*</span></label>
-                                                <select class="form-field-select" id="chkTyCd" name="chkTyCd" disabled>
-                                                    <option value="">선택</option>
-                                                    <c:forEach var="code" items="${checkTypeList}">
-                                                        <option value="${code.codeNoCd}" ${check.chkTyCd eq code.codeNoCd ? 'selected' : ''}>${code.codeName}</option>
-                                                    </c:forEach>
-                                                </select>
+                                                <label class="form-label" for="chkTyNmInput">작업유형 <span class="required">*</span></label>
+                                                <div class="type-autocomplete">
+                                                    <input type="text" class="form-field-input" id="chkTyNmInput" value="" placeholder="작업유형 검색" autocomplete="off" readonly>
+                                                    <input type="hidden" id="chkTyCd" name="chkTyCd" value="${check.chkTyCd}">
+                                                    <div id="chkTyDropdown" class="type-dropdown is-hidden"></div>
+                                                </div>
                                             </div>
                                             <div>
                                                 <label class="form-label" for="chkSttsCd">점검상태 <span class="required">*</span></label>
@@ -494,11 +561,11 @@
                                                 </select>
                                             </div>
                                             <div class="full">
-                                                <label class="form-label" for="chkDt">점검일자 <span class="required">*</span></label>
+                                                <label class="form-label" for="chkDt">작업일자 <span class="required">*</span></label>
                                                 <input type="date" class="form-field-input" id="chkDt" name="chkDt" value="${check.chkDt}" readonly>
                                             </div>
                                             <div class="full">
-                                                <label class="form-label" for="chkCn">점검내용 <span class="required">*</span></label>
+                                                <label class="form-label" for="chkCn">작업내용 <span class="required">*</span></label>
                                                 <textarea class="form-textarea" id="chkCn" name="chkCn" readonly>${check.chkCn}</textarea>
                                             </div>
                                             <div class="full">
@@ -506,10 +573,10 @@
                                                 <textarea class="form-textarea short" id="rmk" name="rmk" readonly>${check.rmk}</textarea>
                                             </div>
                                         </div>
-                                        <%-- 안내 메시지 (오정보 수정 모드 진입 시 표시) --%>
+                                        <%-- 안내 메시지 --%>
                                         <div id="correctNotice" class="is-hidden" style="margin-top:10px;padding:9px 12px;border:1px solid #fca5a5;border-radius:5px;background:#fff5f5;color:#7f1d1d;font-size:11px;line-height:1.6;">
                                             <strong>오정보 정정 목적의 수정입니다.</strong><br>
-                                            점검 이력은 수정하지 않는 것을 원칙으로 합니다.<br>
+                                            시설 이력은 수정하지 않는 것을 원칙으로 합니다.<br>
                                             잘못 입력된 정보를 정정하는 경우에만 사용하세요.
                                         </div>
                                         <div id="followNotice" class="is-hidden" style="margin-top:10px;padding:9px 12px;border:1px solid #bdd7c5;border-radius:5px;background:#f8fcf9;color:#2e5c38;font-size:11px;line-height:1.6;">
@@ -530,7 +597,7 @@
                                             </c:if>
                                         </div>
                                     </div>
-                                </div><%-- /form-panel --%>
+                                </div>
 
                             </div><%-- /history-layout --%>
                         </div>
@@ -538,7 +605,7 @@
 
                 </form>
 
-                <%-- 선택 모달 (등록 모드일 때만) --%>
+                <%-- 선택 모달 (등록 모드일 때만 포함) --%>
                 <c:if test="${not isOwnerLocked}">
                     <%@ include file="/WEB-INF/views/apt/mgmtOffice/facility/check/facility_check_select_modal.jspf" %>
                 </c:if>
@@ -553,48 +620,75 @@
     (function () {
         'use strict';
 
-        /* ── 화면 설정값 ── */
+        /* ── 화면 기본 설정값 ── */
         var CTX       = '${ctx}';
         var OFC_NO    = '${mgmtOfcNo}';
         var IS_ADMIN  = ${isAdmin};
-        var IS_UPDATE = ${isUpdate};  /* 수정 모드(URL 진입) 여부 */
-        var IS_FOLLOW = ${isFollow};  /* 후속 등록 모드(URL 진입) 여부 */
+        var IS_UPDATE = ${isUpdate};
+        var IS_FOLLOW = ${isFollow};
         var BASE_HISTORY_NO = '${empty baseCheck.facChkHstryNo ? '' : baseCheck.facChkHstryNo}';
-        var BASE_FLOW_NO = '${empty check.chkFlowNo ? '' : check.chkFlowNo}';
-        var REGISTER_ACTION = CTX + '/manager/checkHistory/register/' + OFC_NO;
-        var UPDATE_ACTION_PREFIX = CTX + '/manager/checkHistory/update/' + OFC_NO + '/';
-        var currentMode = IS_UPDATE ? 'update' : (IS_FOLLOW ? 'follow' : 'register');
+        var BASE_FLOW_NO    = '${empty check.chkFlowNo ? '' : check.chkFlowNo}';
+        var REGISTER_ACTION      = CTX + '/manager/checkHistory/register/' + OFC_NO;
+        var UPDATE_ACTION_PREFIX = CTX + '/manager/checkHistory/update/'   + OFC_NO + '/';
+
+        /* 현재 폼 모드 (register / detail / follow / update / empty) */
+        var currentMode    = IS_UPDATE ? 'update' : (IS_FOLLOW ? 'follow' : 'register');
         var selectedHistory = null;
         var INITIAL_OWNER_TYPE = '${empty check.chkOwnerType ? 'SELF' : check.chkOwnerType}';
 
-        /* ── 화면 상태값 ── */
-        var allList = [];   /* 전체 이력 원본 — AJAX 응답 기준 */
-        var latest  = null; /* 최신 이력 — 후속 등록 기준, 항상 allList[0] */
+        /* 왼쪽 이력 목록 전체 원본 데이터 */
+        var allList = [];
+        /* 최신 이력 (allList[0]) */
+        var latest  = null;
 
-        /* ════════════════════════════
-           DOM 헬퍼
-        ════════════════════════════ */
-        /* ID 기준 단일 요소 반환 */
-        function el(id)         { return document.getElementById(id); }
-        /* textContent 설정 — 빈값이면 '-' 표시 */
-        function setText(id, v) { var e = el(id); if (e) e.textContent = (v === null || v === undefined || String(v).trim() === '') ? '-' : String(v); }
-        /* value 설정 */
-        function setVal(id, v)  { var e = el(id); if (e) e.value = v || ''; }
-        /* is-hidden 클래스 제거 */
-        function show(id)       { var e = el(id); if (e) e.classList.remove('is-hidden'); }
-        /* is-hidden 클래스 추가 */
-        function hide(id)       { var e = el(id); if (e) e.classList.add('is-hidden'); }
+        /* CHECK_TY 공통코드 목록 - 작업유형 자동완성 후보 */
+        var checkTypeList = [
+            <c:forEach var="code" items="${checkTypeList}" varStatus="st">
+            {
+                codeNoCd: '${code.codeNoCd}',
+                codeName: '${fn:escapeXml(code.codeName)}',
+                codeContent: '${fn:escapeXml(code.codeContent)}'
+            }<c:if test="${not st.last}">,</c:if>
+            </c:forEach>
+        ];
 
-        /* 입력 필드 readonly/disabled 일괄 전환 */
+        /* 현재 선택된 계약유형 - 작업유형 후보 필터링에 사용 */
+        var currentContTyCd = '';
+        var followTypeLocked = false;
+
+        /* ── DOM 조작 헬퍼 ── */
+
+        /* ID로 요소 반환 */
+        function el(id) { return document.getElementById(id); }
+
+        /* 요소 텍스트 설정 (빈값이면 '-' 표시) */
+        function setText(id, v) {
+            var e = el(id);
+            if (e) e.textContent = (v === null || v === undefined || String(v).trim() === '') ? '-' : String(v);
+        }
+
+        /* 입력 요소 값 설정 */
+        function setVal(id, v) {
+            var e = el(id);
+            if (e) e.value = v || '';
+        }
+
+        /* 요소 표시 (is-hidden 제거) */
+        function show(id) { var e = el(id); if (e) e.classList.remove('is-hidden'); }
+
+        /* 요소 숨김 (is-hidden 추가) */
+        function hide(id) { var e = el(id); if (e) e.classList.add('is-hidden'); }
+
+        /* 입력 필드 전체 읽기 전용 / 편집 가능 전환 */
         function setReadonly(flag) {
-            /* textarea, date input — readonly 속성 */
-            ['chkDt', 'chkCn', 'rmk'].forEach(function (id) {
+            /* textarea, date, 작업유형 검색 input은 readonly 속성으로 제어 */
+            ['chkDt', 'chkCn', 'rmk', 'chkTyNmInput'].forEach(function (id) {
                 var e = el(id);
                 if (!e) return;
                 flag ? e.setAttribute('readonly', '') : e.removeAttribute('readonly');
             });
-            /* select — disabled 속성 */
-            ['chkTyCd', 'chkSttsCd'].forEach(function (id) {
+            /* select 는 disabled 속성으로 제어 */
+            ['chkSttsCd'].forEach(function (id) {
                 var e = el(id);
                 if (e) e.disabled = flag;
             });
@@ -602,29 +696,63 @@
 
         /* 폼 입력값 전체 초기화 */
         function clearForm() {
-            ['chkTyCd', 'chkSttsCd', 'chkDt', 'chkCn', 'rmk'].forEach(function (id) { setVal(id, ''); });
+            ['chkTyCd', 'chkTyNmInput', 'chkSttsCd', 'chkDt', 'chkCn', 'rmk'].forEach(function (id) { setVal(id, ''); });
+            hide('chkTyDropdown');
         }
 
         /* 이력 객체 값으로 폼 채우기 */
-        function fillForm(h) {
-            setVal('chkTyCd',   h.chkTyCd   || '');
+        function fillForm(h, syncOwner) {
+            setCheckType(h.chkTyCd || '', h.chkTyNm || getCheckTypeName(h.chkTyCd), true);
             setVal('chkSttsCd', h.chkSttsCd || '');
             setVal('chkDt',     h.chkDt     || '');
             setVal('chkCn',     h.chkCn     || '');
             setVal('rmk',       h.rmk       || '');
             setVal('chkFlowNo', h.chkFlowNo || h.facChkHstryNo || '');
-            applyOwnerFromHistory(h);
+            if (syncOwner !== false) applyOwnerFromHistory(h);
         }
 
-        /* ════════════════════════════
-           모달 열기/닫기 — manager-common.js 우선 사용
-        ════════════════════════════ */
-        function openModal(id)  { if (window.openModal)  window.openModal(id);  else { var m = el(id); if (m) m.classList.add('open'); } }
-        function closeModal(id) { if (window.closeModal) window.closeModal(id); else { var m = el(id); if (m) m.classList.remove('open'); } }
+        /* 코드값 기준 작업유형명 찾기 */
+        function getCheckTypeName(code) {
+            if (!code) return '';
+            var found = checkTypeList.filter(function (item) { return item.codeNoCd === code; })[0];
+            return found ? found.codeName : code;
+        }
 
-        /* ════════════════════════════
-           AJAX JSON GET
-        ════════════════════════════ */
+        /* 작업유형 값 세팅 - 표시명 input과 hidden code를 함께 맞춤 */
+        function setCheckType(code, name, keepDropdownHidden) {
+            setVal('chkTyCd', code || '');
+            setVal('chkTyNmInput', name || (code ? getCheckTypeName(code) : ''));
+            if (keepDropdownHidden !== false) hide('chkTyDropdown');
+        }
+
+        /* 선택한 기존 이력 요약 표시 */
+        function fillSelectedHistorySummary(h) {
+            if (!h) { hide('selectedHistorySummary'); return; }
+            setText('historyOwnerText', getOwnerText(h));
+            var contText = h.contNm || h.contNo || '-';
+            if (h.contNo && h.contNm) contText = h.contNm + ' (' + h.contNo + ')';
+            setText('historyContractText', contText);
+            show('selectedHistorySummary');
+        }
+
+        /* 선택한 기존 이력 요약 숨김 */
+        function clearSelectedHistorySummary() {
+            hide('selectedHistorySummary');
+            setText('historyOwnerText', '-');
+            setText('historyContractText', '-');
+        }
+
+        /* ── 모달 열기 / 닫기 ── */
+        function openModal(id)  {
+            if (window.openModal)  window.openModal(id);
+            else { var m = el(id); if (m) m.classList.add('open'); }
+        }
+        function closeModal(id) {
+            if (window.closeModal) window.closeModal(id);
+            else { var m = el(id); if (m) m.classList.remove('open'); }
+        }
+
+        /* ── AJAX JSON GET 공통 함수 ── */
         function fetchJson(url) {
             return fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
@@ -645,89 +773,101 @@
             return 'badge-wait';
         }
 
-        /* 점검 주체 표시값 반환 */
+        /* 점검 주체 표시 텍스트 반환 */
         function getOwnerText(h) {
             if (!h || !h.partnerNo) return '자체점검';
             return h.partnerNm || '협력업체 점검';
         }
 
-        /* 같은 처리과정 안에 완료 이력이 있는지 확인 */
+        /* 같은 처리과정 안에 완료 이력 존재 여부 확인 */
         function hasDoneInSameFlow(flowNo) {
-
-            // 처리과정번호가 없으면 완료 흐름 안내 대상 아님
-            if (!flowNo) {
-                return false;
-            }
-
-            // 같은 처리과정번호 안에 DONE 이력이 하나라도 있으면 true
+            if (!flowNo) return false;
             return allList.some(function (h) {
                 return h && h.chkFlowNo === flowNo && h.chkSttsCd === 'DONE';
             });
         }
 
-        /* 처리과정 옵션 렌더링
-           - 같은 시설 이력 목록에서 CHK_FLOW_NO를 중복 제거해 select option 생성 */
+        /* 처리과정 필터 옵션 렌더링 */
         function renderProcessOptions(list) {
             var select = el('historyFilterProcess');
             if (!select) return;
-
             var prevValue = select.value || '';
             var flowMap = {};
             var hasNoFlow = false;
-
             (list || []).forEach(function (h) {
                 var flowNo = h && h.chkFlowNo ? String(h.chkFlowNo) : '';
-
-                if (!flowNo) {
-                    hasNoFlow = true;
-                    return;
-                }
-
-                if (!flowMap[flowNo]) {
-                    flowMap[flowNo] = h;
-                }
+                if (!flowNo) { hasNoFlow = true; return; }
+                if (!flowMap[flowNo]) flowMap[flowNo] = h;
             });
-
             var html = '<option value="">전체</option>';
-
             Object.keys(flowMap).forEach(function (flowNo) {
-                var h = flowMap[flowNo];
-                var label = flowNo;
-
-                if (h.chkDt || h.chkCn) {
-                    label += ' - ' + (h.chkDt || '');
-
-                    if (h.chkCn) {
-                        label += ' ' + String(h.chkCn).substring(0, 14);
-                    }
-                }
-
-                html += '<option value="' + esc(flowNo) + '">' + esc(label) + '</option>';
+                /* 처리과정 필터는 목록에서 다시 클릭해서 확인할 수 있으므로 번호만 표시한다. */
+                html += '<option value="' + esc(flowNo) + '">' + esc(flowNo) + '</option>';
             });
-
-            if (hasNoFlow) {
-                html += '<option value="__NO_FLOW__">처리과정 없음</option>';
-            }
-
+            if (hasNoFlow) html += '<option value="__NO_FLOW__">처리과정 없음</option>';
             select.innerHTML = html;
-
-            if (prevValue) {
-                select.value = prevValue;
-            }
+            if (prevValue) select.value = prevValue;
         }
 
-        /* 점검 주체 UI 적용 */
+        /* 작업유형 후보 필터링 - 등록폼은 계약유형 기준, 이력 필터는 전체 기준 */
+        function getTypeCandidates(keyword, useContractFilter) {
+            var kw = String(keyword || '').trim().toLowerCase();
+            return checkTypeList.filter(function (item) {
+                var nameOk = !kw || String(item.codeName || '').toLowerCase().indexOf(kw) > -1 || String(item.codeNoCd || '').toLowerCase().indexOf(kw) > -1;
+                if (!nameOk) return false;
+                if (!useContractFilter || !currentContTyCd) return true;
+                var content = String(item.codeContent || 'ALL');
+                if (content === 'ALL') return true;
+                return content.split(',').map(function (v) { return v.trim(); }).indexOf(currentContTyCd) > -1;
+            });
+        }
+
+        /* 자동완성 드롭다운 렌더링 */
+        function renderTypeDropdown(inputId, hiddenId, dropdownId, useContractFilter) {
+            var input = el(inputId);
+            var hidden = el(hiddenId);
+            var box = el(dropdownId);
+            if (!input || !hidden || !box) return;
+            if (input.hasAttribute('readonly') || input.disabled) { hide(dropdownId); return; }
+
+            var list = getTypeCandidates(input.value, useContractFilter);
+            if (list.length === 0) {
+                box.innerHTML = '<div class="type-empty">선택 가능한 작업유형이 없습니다.</div>';
+                show(dropdownId);
+                return;
+            }
+            box.innerHTML = list.map(function (item) {
+                return '<button type="button" class="type-option" data-input-id="' + esc(inputId) + '" data-hidden-id="' + esc(hiddenId) + '" data-dropdown-id="' + esc(dropdownId) + '" data-code="' + esc(item.codeNoCd) + '" data-name="' + esc(item.codeName) + '">' + esc(item.codeName) + '</button>';
+            }).join('');
+            show(dropdownId);
+        }
+
+        /* 작업유형 필드 초기화 */
+        function clearCheckType() {
+            setCheckType('', '', true);
+        }
+
+        /* 계약 select 기준 현재 계약유형 갱신 */
+        function updateCurrentContractType() {
+            var contSel = el('contNoSelect');
+            if (!contSel) { currentContTyCd = ''; return; }
+            var opt = contSel.options[contSel.selectedIndex];
+            currentContTyCd = opt ? (opt.getAttribute('data-cont-ty-cd') || '') : '';
+        }
+
+        /* ── 점검 주체 UI 적용 ── */
         function applyOwnerType(ownerType) {
             var type = ownerType === 'PARTNER' ? 'PARTNER' : 'SELF';
             setVal('chkOwnerType', type);
-
-            var selfRadio = el('checkOwnerSelf');
+            var selfRadio    = el('checkOwnerSelf');
             var partnerRadio = el('checkOwnerPartner');
-            if (selfRadio) selfRadio.checked = type === 'SELF';
+            if (selfRadio)    selfRadio.checked    = type === 'SELF';
             if (partnerRadio) partnerRadio.checked = type === 'PARTNER';
 
             if (type === 'SELF') {
+                /* 자체점검 선택 - 협력업체 정보 초기화, 계약 select 초기화 */
                 setVal('partnerNo', '');
+                setVal('contNo', '');
                 hide('partnerChoiceState');
                 show('partnerSelfState');
                 setText('partnerNoText', '-');
@@ -736,7 +876,12 @@
                 setText('partnerPicNmText', '-');
                 setText('partnerPicTelText', '-');
                 setText('partnerEmailText', '-');
+                /* 계약 select 초기화 */
+                var contSel = el('contNoSelect');
+                if (contSel) contSel.innerHTML = '<option value="">계약 없음 (계약 미연결 점검)</option>';
+                currentContTyCd = '';
             } else {
+                /* 협력업체 점검 선택 */
                 hide('partnerSelfState');
                 show('partnerChoiceState');
                 if (!el('partnerNo').value) {
@@ -751,47 +896,45 @@
 
         /* 이력 객체 기준 점검 주체 UI 표시 */
         function applyOwnerFromHistory(h) {
-            if (!h || !h.partnerNo) {
-                applyOwnerType('SELF');
-                return;
-            }
-
+            if (!h || !h.partnerNo) { applyOwnerType('SELF'); return; }
             setVal('chkOwnerType', 'PARTNER');
             setVal('partnerNo', h.partnerNo || '');
-            setText('partnerNoText', h.partnerNo);
-            setText('partnerNmText', h.partnerNm);
-            setText('bizTyText', h.bizTyNm);
-            setText('partnerPicNmText', h.picNm);
+            setText('partnerNoText',     h.partnerNo);
+            setText('partnerNmText',     h.partnerNm);
+            setText('bizTyText',         h.bizTyNm);
+            setText('partnerPicNmText',  h.picNm);
             setText('partnerPicTelText', h.picTelno);
-            setText('partnerEmailText', h.picEmail);
+            setText('partnerEmailText',  h.picEmail);
             hide('partnerSelfState');
             show('partnerChoiceState');
             hide('partnerEmptyState');
             show('partnerSelectedState');
-
             var partnerRadio = el('checkOwnerPartner');
-            var selfRadio = el('checkOwnerSelf');
+            var selfRadio    = el('checkOwnerSelf');
             if (partnerRadio) partnerRadio.checked = true;
-            if (selfRadio) selfRadio.checked = false;
+            if (selfRadio)    selfRadio.checked    = false;
         }
 
-        /* URLSearchParams 쿼리 문자열 생성 — 빈값 제외 */
+        /* URL 쿼리 문자열 생성 (빈값 제외) */
         function buildQuery(params) {
             var q = new URLSearchParams();
             Object.keys(params).forEach(function (k) { if (params[k]) q.append(k, params[k]); });
             return q.toString();
         }
 
-        /* ════════════════════════════
-           왼쪽 이력 목록 렌더링
-        ════════════════════════════ */
+        /* ── 왼쪽 이력 목록 렌더링 ──
+           - 등록 화면에서는 참고용 간략 이력만 표시한다.
+           - 상세 내용은 별도 상세 화면에서 확인하므로 카드에는 업체/계약/처리과정만 보여준다. */
         function renderList(list) {
             var box = el('facilityHistoryList');
             if (!list || list.length === 0) {
-                box.innerHTML = '<div class="history-empty">이 시설의 점검 이력이 없습니다.</div>';
+                box.innerHTML = '<div class="history-empty">이 시설의 시설 이력이 없습니다.</div>';
                 return;
             }
             box.innerHTML = list.map(function (h) {
+                var contText = h.contNm || h.contNo || '-';
+                if (h.contNm && h.contNo) contText = h.contNm + ' (' + h.contNo + ')';
+
                 return '<button type="button" class="history-item" data-no="' + esc(h.facChkHstryNo) + '">'
                     + '<div class="h-date">' + esc(h.chkDt) + '</div>'
                     + '<div class="h-main">'
@@ -799,9 +942,10 @@
                     +     '<span class="h-type">' + esc(h.chkTyNm) + '</span>'
                     +     '<span class="badge ' + badgeCls(h.chkSttsCd) + '">' + esc(h.chkSttsNm) + '</span>'
                     +   '</div>'
-                    +   '<span class="h-partner">' + esc(getOwnerText(h)) + '</span>'
+                    +   '<span class="h-partner">업체: ' + esc(getOwnerText(h)) + '</span>'
+                    +   '<span class="h-contract">계약: ' + esc(contText) + '</span>'
                     +   '<span class="h-flow">처리과정 ' + esc(h.chkFlowNo || '-') + '</span>'
-                    +   '<span class="h-cn">'      + esc(h.chkCn)     + '</span>'
+                    +   '<span class="h-cn">내용: ' + esc(h.chkCn || '-') + '</span>'
                     + '</div>'
                     + '</button>';
             }).join('');
@@ -814,9 +958,66 @@
             });
         }
 
-        /* ════════════════════════════
-           시설 선택 후 이력 AJAX 로드
-        ════════════════════════════ */
+        /* ── 파트너 계약 목록 AJAX 로드 ──
+           협력업체를 선택하면 해당 파트너의 진행중 계약 목록을 서버에서 가져와
+           계약 select 옵션으로 채움 */
+        function loadPartnerContracts(partnerNo) {
+            var contSel = el('contNoSelect');
+            if (!contSel) return;
+
+            /* 파트너가 없으면 계약 select 초기화 */
+            if (!partnerNo) {
+                contSel.innerHTML = '<option value="">계약 없음 (계약 미연결 점검)</option>';
+                setVal('contNo', '');
+                return;
+            }
+
+            /* 로딩 중 표시 */
+            contSel.innerHTML = '<option value="">계약 목록 불러오는 중...</option>';
+
+            fetchJson(CTX + '/manager/checkHistory/partner/contracts/'
+                + encodeURIComponent(OFC_NO) + '/' + encodeURIComponent(partnerNo))
+                .then(function (d) {
+                    var list = (d && d.success ? d.contractList : []) || [];
+
+                    /* 기본 옵션 (계약 없음) */
+                    var html = '<option value="">계약 없음 (계약 미연결 점검)</option>';
+
+                    list.forEach(function (c) {
+                        /* 계약명 + 계약기간 표시 */
+                        var label = (c.contNm || c.contNo)
+                            + (c.contBgngDt ? ' (' + c.contBgngDt + ' ~ ' + (c.contEndDt || '진행중') + ')' : '');
+                        html += '<option value="' + esc(c.contNo) + '"'
+                            + ' data-cont-ty-cd="' + esc(c.contTyCd || '') + '">'
+                            + esc(label) + '</option>';
+                    });
+
+                    contSel.innerHTML = html;
+
+                    /* 기존에 저장된 contNo가 있으면 해당 계약 선택 복원 */
+                    var savedContNo = el('contNo').value;
+                    if (savedContNo) contSel.value = savedContNo;
+
+                    /* select 변경 시 hidden input / 계약유형 연동 */
+                    syncContNo();
+                    updateCurrentContractType();
+                })
+                .catch(function () {
+                    contSel.innerHTML = '<option value="">계약 목록 조회 실패</option>';
+                });
+        }
+
+        /* 계약 select 선택값을 hidden input(contNo)에 동기화 */
+        function syncContNo() {
+            var contSel = el('contNoSelect');
+            var contHidden = el('contNo');
+            if (contSel && contHidden) {
+                contHidden.value = contSel.value;
+            }
+            updateCurrentContractType();
+        }
+
+        /* ── 시설 선택 후 이력 AJAX 로드 ── */
         function loadHistory(facilityNo) {
             el('facilityHistoryList').innerHTML = '<div class="history-empty">불러오는 중...</div>';
             setMode('empty');
@@ -830,25 +1031,21 @@
                     renderList(allList);
 
                     if (IS_UPDATE) {
-                        /* 수정 진입 — 기본은 오정보 수정 폼이 아니라 기존 이력 상세 확인 상태 */
                         var initNo = '${check.facChkHstryNo}';
                         var initH  = allList.filter(function (h) { return h.facChkHstryNo === initNo; })[0] || latest || null;
-                        if (initH) {
-                            setMode('detail', initH);
-                            markActive(initH.facChkHstryNo);
-                        } else {
-                            setMode('detail');
-                        }
+                        if (initH) { setMode('detail', initH); markActive(initH.facChkHstryNo); }
+                        else        { setMode('detail'); }
                         return;
                     }
-
                     if (IS_FOLLOW) {
-                        /* 후속 등록 진입 — 기준 이력의 처리과정을 유지한 새 이력 등록 폼 */
-                        setMode('follow', { facChkHstryNo: BASE_HISTORY_NO, chkFlowNo: BASE_FLOW_NO });
+                        /* 후속 등록 진입 : URL 기준 이력을 목록에서 찾아 자동 반영하고 카드에 표시한다. */
+                        var baseH = allList.filter(function (h) { return h.facChkHstryNo === BASE_HISTORY_NO; })[0]
+                            || latest
+                            || { facChkHstryNo: BASE_HISTORY_NO, chkFlowNo: BASE_FLOW_NO };
+                        setMode('follow', baseH);
+                        if (baseH && baseH.facChkHstryNo) markActive(baseH.facChkHstryNo);
                         return;
                     }
-
-                    /* 등록 진입 — 기존 이력이 있든 없든 오른쪽은 항상 신규 등록 폼 유지 */
                     setMode('register');
                 })
                 .catch(function () {
@@ -857,18 +1054,15 @@
                 });
         }
 
-        /* ════════════════════════════
-           오른쪽 폼 모드 전환
-           empty    — 시설 미선택 초기 상태
-           register — 신규 점검 이력 등록 폼, 저장 시 INSERT
-           detail   — 기존 이력 카드 클릭 후 읽기 전용 상세 표시
-           follow   — 수정 화면에서 기존 이력을 기준으로 새 이력 INSERT
-           update   — 오정보 정정 수정 폼, 저장 시 UPDATE
-        ════════════════════════════ */
+        /* ── 오른쪽 폼 모드 전환 ──
+           empty    : 시설 미선택 초기 상태
+           register : 신규 시설 이력 등록 (INSERT)
+           detail   : 기존 이력 클릭 후 읽기 전용 상세 표시
+           follow   : 기존 이력 기준 후속 이력 등록 (INSERT)
+           update   : 오정보 정정 수정 (UPDATE) */
         function setFormAction(actionUrl, historyNo) {
             var form = el('checkForm');
             if (form) form.setAttribute('action', actionUrl);
-
             var hiddenNo = document.querySelector('input[name="facChkHstryNo"]');
             if (hiddenNo) {
                 hiddenNo.disabled = actionUrl === REGISTER_ACTION;
@@ -882,10 +1076,10 @@
         }
 
         function setMode(mode, history) {
-            currentMode = mode;
+            currentMode     = mode;
             selectedHistory = history || selectedHistory || null;
 
-            /* 버튼/안내 전체 숨김 후 모드별 필요한 것만 표시 */
+            /* 버튼 / 안내 전체 숨김 후 모드별로 필요한 것만 표시 */
             hide('openFollowBtn');
             hide('cancelFollowBtn');
             hide('saveHistoryBtn');
@@ -893,12 +1087,14 @@
             hide('correctNotice');
             hide('followNotice');
             hide('baseHistoryRow');
+            clearSelectedHistorySummary();
+            followTypeLocked = false;
             setReadonly(true);
 
             var fNo = el('facilityNo').value;
 
             if (mode === 'empty') {
-                /* 시설 미선택 — 안내 문구만 표시 */
+                /* 시설 미선택 상태 */
                 selectedHistory = null;
                 setFormAction(IS_UPDATE ? UPDATE_ACTION_PREFIX + encodeURIComponent('${check.facChkHstryNo}') : REGISTER_ACTION);
                 setText('historyFormTitle', '시설 선택 대기');
@@ -908,10 +1104,10 @@
                 clearForm();
             }
             else if (mode === 'register') {
-                /* 등록 화면 기본 상태 — 기존 이력 유무와 관계없이 새 이력 INSERT */
+                /* 신규 등록 상태 */
                 selectedHistory = null;
                 setFormAction(REGISTER_ACTION);
-                setText('historyFormTitle', '시설 점검 이력 등록');
+                setText('historyFormTitle', '시설 이력 등록');
                 setText('formFacilityNoText', fNo);
                 setText('formChkFlowNoText', '저장 시 자동 생성');
                 setText('currentHistoryNoText', '신규');
@@ -923,35 +1119,38 @@
                 if (!IS_ADMIN) { show('saveHistoryBtn'); el('saveHistoryBtn').textContent = '등록'; }
             }
             else if (mode === 'detail') {
-                /* 이력 카드 클릭 — 읽기 전용 상세 표시, register 모드에서도 기존 내용 확인 가능 */
+                /* 기존 이력 상세 확인 상태 */
                 var h = history || {};
                 selectedHistory = h;
                 setFormAction(IS_UPDATE && h.facChkHstryNo ? UPDATE_ACTION_PREFIX + encodeURIComponent(h.facChkHstryNo) : REGISTER_ACTION, h.facChkHstryNo);
-                setText('historyFormTitle', '기존 점검 이력 상세');
+                setText('historyFormTitle', '기존 시설 이력 상세');
                 setText('formFacilityNoText', fNo);
                 setText('formChkFlowNoText', h.chkFlowNo || '-');
                 setText('currentHistoryNoText', h.facChkHstryNo || '-');
                 setVal('chkFlowNo', h.chkFlowNo || '');
-                fillForm(h);
-
+                fillForm(h, false);
+                /* 상세 요약은 오른쪽 폼에 별도 표시하지 않는다. 간략 정보는 왼쪽 카드에서 확인한다. */
                 if (!IS_ADMIN && !IS_UPDATE) {
-                    /* 등록 화면에서는 상세 확인 후 다시 신규 등록 폼으로 돌아갈 수 있게 함 */
+                    /* 신규 등록 진입에서는 이력을 클릭해도 후속 등록은 열지 않음 */
                     setCancelButtonText('신규 등록으로 돌아가기');
                     show('cancelFollowBtn');
+                    if (IS_FOLLOW) {
+                        /* 후속 등록 진입 화면에서만 기준 이력 재선택 후 후속 등록 가능 */
+                        show('openFollowBtn');
+                    }
                 }
-
                 if (!IS_ADMIN && IS_UPDATE) {
-                    /* 수정 화면에서는 선택 이력을 기준으로 수정/후속등록 가능 */
+                    /* 수정 진입 화면에서는 기존처럼 후속 등록/오정보 수정 진입 허용 */
                     show('openFollowBtn');
                     show('openCorrectBtn');
                 }
             }
             else if (mode === 'follow') {
-                /* 후속이력 등록 — 수정 화면에서 선택/수정 중인 이력을 기준으로 새 이력 INSERT */
-                var base = selectedHistory || history || latest || {};
-                var baseNo = base.facChkHstryNo || '';
-                setFormAction(REGISTER_ACTION);
+                /* 후속 이력 등록 상태 */
+                var base       = selectedHistory || history || latest || {};
+                var baseNo     = base.facChkHstryNo || '';
                 var followFlowNo = base.chkFlowNo || base.facChkHstryNo || '';
+                setFormAction(REGISTER_ACTION);
                 setText('historyFormTitle', '후속이력 등록');
                 setText('formFacilityNoText', fNo);
                 setText('formChkFlowNoText', followFlowNo || '-');
@@ -960,30 +1159,39 @@
                 show('baseHistoryRow');
                 setVal('chkFlowNo', followFlowNo);
                 clearForm();
-                applyOwnerType('SELF');
+                /* 기준 이력 정보는 왼쪽 active 카드와 상단 대상 정보로 확인한다. */
+                /* 후속 등록은 기준 이력의 업체/계약/작업유형/처리과정을 이어받음 */
+                if (base.partnerNo) {
+                    setVal('contNo', base.contNo || '');
+                    applyOwnerFromHistory(base);
+                    loadPartnerContracts(base.partnerNo);
+                } else {
+                    applyOwnerType('SELF');
+                    setVal('contNo', base.contNo || '');
+                }
+                setCheckType(base.chkTyCd || '', base.chkTyNm || getCheckTypeName(base.chkTyCd), true);
                 setVal('rmk', baseNo ? '기준이력 ' + baseNo + ' 후속 조치' : '');
                 setReadonly(false);
-
-                /* 완료 이력 또는 완료 이력이 포함된 처리과정일 때만 후속 안내문구 표시 */
-                if (base.chkSttsCd === 'DONE' || hasDoneInSameFlow(followFlowNo)) {
-                    show('followNotice');
-                }
-
+                /* 같은 흐름의 후속 등록에서는 작업유형을 변경하지 않도록 잠금 */
+                followTypeLocked = true;
+                if (el('chkTyNmInput')) el('chkTyNmInput').setAttribute('readonly', '');
+                if (base.chkSttsCd === 'DONE' || hasDoneInSameFlow(followFlowNo)) show('followNotice');
                 if (!IS_ADMIN) { show('saveHistoryBtn'); el('saveHistoryBtn').textContent = '후속 등록'; }
                 setCancelButtonText(IS_UPDATE ? '수정으로 돌아가기' : '취소');
                 show('cancelFollowBtn');
             }
             else if (mode === 'update') {
-                /* 오정보 수정 — 선택한 이력 값으로 폼 채우고 편집 가능 상태 */
+                /* 오정보 수정 상태 */
                 var uh = history || selectedHistory || {};
                 selectedHistory = uh;
                 setFormAction(UPDATE_ACTION_PREFIX + encodeURIComponent(uh.facChkHstryNo || '${check.facChkHstryNo}'), uh.facChkHstryNo || '${check.facChkHstryNo}');
-                setText('historyFormTitle', '점검 이력 수정');
+                setText('historyFormTitle', '시설 이력 수정');
                 setText('formFacilityNoText', fNo);
                 setText('formChkFlowNoText', uh.chkFlowNo || '-');
                 setText('currentHistoryNoText', uh.facChkHstryNo || '${check.facChkHstryNo}' || '-');
                 setVal('chkFlowNo', uh.chkFlowNo || '');
                 fillForm(uh);
+                /* 수정 대상 정보는 폼 값으로만 표시한다. */
                 setReadonly(false);
                 show('correctNotice');
                 setCancelButtonText('취소');
@@ -992,26 +1200,19 @@
             }
         }
 
-        /* ════════════════════════════
-           이력 필터 — 클라이언트 사이드
-        ════════════════════════════ */
-        /* 필터 조건 적용 후 목록 재렌더링 */
+        /* ── 이력 필터 (클라이언트 사이드) ── */
         function applyFilter() {
-            var ty = el('historyFilterChkTyCd').value;
-            var st = el('historyFilterChkSttsCd').value;
+            var ty      = el('historyFilterChkTyCd').value;
+            var st      = el('historyFilterChkSttsCd').value;
             var process = el('historyFilterProcess').value;
-            var kw = el('historyFilterKeyword').value.trim().toLowerCase();
+            var kw      = el('historyFilterKeyword').value.trim().toLowerCase();
 
             var filtered = allList.filter(function (h) {
                 var ownerText = getOwnerText(h);
                 var processNo = h.chkFlowNo || '';
-                var kwOk = !kw || [h.chkCn, h.rmk, h.partnerNm, ownerText, h.chkFlowNo, h.facChkHstryNo].join(' ').toLowerCase().indexOf(kw) > -1;
+                var kwOk      = !kw || [h.chkCn, h.rmk, h.partnerNm, ownerText, h.chkFlowNo, h.facChkHstryNo].join(' ').toLowerCase().indexOf(kw) > -1;
                 var processOk = !process || processNo === process;
-
-                if (process === '__NO_FLOW__') {
-                    processOk = !processNo;
-                }
-
+                if (process === '__NO_FLOW__') processOk = !processNo;
                 return (!ty || h.chkTyCd === ty) && (!st || h.chkSttsCd === st) && processOk && kwOk;
             });
 
@@ -1023,33 +1224,39 @@
                 if (IS_UPDATE) {
                     setMode('detail', filtered[0]);
                     markActive(filtered[0].facChkHstryNo);
+                } else if (IS_FOLLOW) {
+                    var baseFiltered = filtered.filter(function (h) { return h.facChkHstryNo === (selectedHistory && selectedHistory.facChkHstryNo); })[0] || filtered[0];
+                    setMode('follow', baseFiltered);
+                    markActive(baseFiltered.facChkHstryNo);
                 } else {
                     setMode('register');
                 }
             }
         }
 
-        /* 필터 초기화 후 전체 목록 복원 */
+        /* 이력 필터 초기화 */
         function resetFilter() {
             setVal('historyFilterChkTyCd',   '');
+            setVal('historyFilterChkTyNmInput', '');
             setVal('historyFilterChkSttsCd', '');
             setVal('historyFilterProcess',   '');
             setVal('historyFilterKeyword',   '');
             renderList(allList);
             if (IS_UPDATE && allList.length > 0) {
                 var backNo = selectedHistory && selectedHistory.facChkHstryNo ? selectedHistory.facChkHstryNo : allList[0].facChkHstryNo;
-                var backH = allList.filter(function (h) { return h.facChkHstryNo === backNo; })[0] || allList[0];
+                var backH  = allList.filter(function (h) { return h.facChkHstryNo === backNo; })[0] || allList[0];
                 setMode('detail', backH);
                 markActive(backH.facChkHstryNo);
+            } else if (IS_FOLLOW && allList.length > 0) {
+                var baseReset = selectedHistory || allList.filter(function (h) { return h.facChkHstryNo === BASE_HISTORY_NO; })[0] || allList[0];
+                setMode('follow', baseReset);
+                markActive(baseReset.facChkHstryNo);
             } else {
                 setMode('register');
             }
         }
 
-        /* ════════════════════════════
-           시설 선택 모달 — AJAX 재검색 후 tbody 갱신
-           (초기 목록은 facility_check_select_modal.jspf 서버 렌더링)
-        ════════════════════════════ */
+        /* ── 시설 모달 AJAX 검색 ── */
         function searchFacility() {
             var q = buildQuery({
                 facilityTyCd:       el('facilityFilterType')  ? el('facilityFilterType').value  : '',
@@ -1063,20 +1270,20 @@
                 .catch(function ()  { renderFacilityTbody([]); });
         }
 
-        /* 협력업체 선택 모달 — AJAX 재검색 후 tbody 갱신 */
+        /* ── 협력업체 모달 AJAX 검색 ── */
         function searchPartner() {
             var q = buildQuery({
-                bizTyNm:           el('partnerFilterBizTy')  ? el('partnerFilterBizTy').value  : '',
-                partnerUseYn:      el('partnerFilterUseYn')  ? el('partnerFilterUseYn').value  : '',
-                picNm:             el('partnerFilterPicNm')  ? el('partnerFilterPicNm').value  : '',
-                partnerSearchWord: el('partnerModalSearch')  ? el('partnerModalSearch').value  : ''
+                bizTyNm:           el('partnerFilterBizTy') ? el('partnerFilterBizTy').value : '',
+                partnerUseYn:      el('partnerFilterUseYn') ? el('partnerFilterUseYn').value : '',
+                picNm:             el('partnerFilterPicNm') ? el('partnerFilterPicNm').value : '',
+                partnerSearchWord: el('partnerModalSearch') ? el('partnerModalSearch').value : ''
             });
             fetchJson(CTX + '/manager/checkHistory/partner/search/' + encodeURIComponent(OFC_NO) + (q ? '?' + q : ''))
                 .then(function (d) { renderPartnerTbody(d && d.success ? d.partnerList : []); })
                 .catch(function ()  { renderPartnerTbody([]); });
         }
 
-        /* 시설 모달 tbody 행 생성 및 교체 */
+        /* 시설 모달 목록 행 렌더링 */
         function renderFacilityTbody(list) {
             var tb = el('facilityModalTbody');
             if (!tb) return;
@@ -1099,7 +1306,7 @@
             }).join('');
         }
 
-        /* 협력업체 모달 tbody 행 생성 및 교체 */
+        /* 협력업체 모달 목록 행 렌더링 */
         function renderPartnerTbody(list) {
             var tb = el('partnerModalTbody');
             if (!tb) return;
@@ -1122,12 +1329,9 @@
             }).join('');
         }
 
-        /* ════════════════════════════
-           시설 선택 처리
-           — 모달 행 클릭 시 상단 카드 갱신 + 이력 로드
-        ════════════════════════════ */
+        /* ── 시설 선택 처리 ── */
         function selectFacility(btn) {
-            var row   = btn.closest('.facility-modal-row');
+            var row = btn.closest('.facility-modal-row');
             if (!row) return;
             var useYn = row.dataset.useYn;
 
@@ -1141,7 +1345,6 @@
             setText('facilityUseYnText',   useYn === 'Y' ? '사용' : useYn === 'N' ? '미사용' : '-');
             setText('formFacilityNoText',  row.dataset.facilityNo);
 
-            /* 선택 상태 전환 및 모달 닫기 */
             el('facilityEmptyState').classList.add('is-hidden');
             el('facilitySelectedState').classList.remove('is-hidden');
             closeModal('facilityModal');
@@ -1150,10 +1353,7 @@
             loadHistory(row.dataset.facilityNo);
         }
 
-        /* ════════════════════════════
-           협력업체 선택 처리
-           — 모달 행 클릭 시 상단 카드 갱신
-        ════════════════════════════ */
+        /* ── 협력업체 선택 처리 ── */
         function selectPartner(btn) {
             var row = btn.closest('.partner-modal-row');
             if (!row) return;
@@ -1171,63 +1371,90 @@
             el('partnerEmptyState').classList.add('is-hidden');
             el('partnerSelectedState').classList.remove('is-hidden');
             closeModal('partnerModal');
+
+            /* 선택한 파트너의 계약 목록 AJAX 로드 */
+            loadPartnerContracts(row.dataset.partnerNo);
         }
 
-        /* ════════════════════════════
-           클릭 이벤트 위임
-        ════════════════════════════ */
+        /* ── 클릭 이벤트 위임 ── */
         document.addEventListener('click', function (e) {
             var t = e.target;
 
-            /* 점검 주체 변경 */
+            /* 작업유형 자동완성 항목 선택 */
+            var typeOption = t.closest('.type-option');
+            if (typeOption) {
+                var inputId = typeOption.getAttribute('data-input-id');
+                var hiddenId = typeOption.getAttribute('data-hidden-id');
+                var dropdownId = typeOption.getAttribute('data-dropdown-id');
+                setVal(inputId, typeOption.getAttribute('data-name') || '');
+                setVal(hiddenId, typeOption.getAttribute('data-code') || '');
+                hide(dropdownId);
+                return;
+            }
+
+            /* 점검 주체 라디오 변경 */
             if (t && t.name === 'ownerTypeRadio') { applyOwnerType(t.value); return; }
 
-            /* 시설 모달 열기 */
+            /* 시설 모달 관련 버튼 */
             if (t.closest('#openFacilityModalBtn, #reopenFacilityModalBtn')) { openModal('facilityModal'); return; }
-            /* 시설 모달 검색 */
             if (t.closest('#facilitySearchBtn')) { searchFacility(); return; }
-            /* 시설 모달 초기화 */
             if (t.closest('#facilitySearchResetBtn')) {
                 ['facilityFilterType','facilityFilterDong','facilityFilterUseYn','facilityFilterLoc','facilityModalSearch']
                     .forEach(function (id) { setVal(id, ''); });
                 searchFacility(); return;
             }
-            /* 시설 선택 */
             var sfBtn = t.closest('.select-facility-btn');
             if (sfBtn) { selectFacility(sfBtn); return; }
 
-            /* 협력업체 모달 열기 */
+            /* 협력업체 모달 관련 버튼 */
             if (t.closest('#openPartnerModalBtn, #reopenPartnerModalBtn')) { openModal('partnerModal'); return; }
-            /* 협력업체 모달 검색 */
             if (t.closest('#partnerSearchBtn')) { searchPartner(); return; }
-            /* 협력업체 모달 초기화 */
             if (t.closest('#partnerSearchResetBtn')) {
                 ['partnerFilterBizTy','partnerFilterUseYn','partnerFilterPicNm','partnerModalSearch']
                     .forEach(function (id) { setVal(id, ''); });
                 searchPartner(); return;
             }
-            /* 협력업체 선택 */
             var spBtn = t.closest('.select-partner-btn');
             if (spBtn) { selectPartner(spBtn); return; }
 
-            /* 이력 카드 클릭 — 등록 모드에서도 기존 이력 상세 확인 가능 */
+            /* 이력 카드 클릭
+               - 신규 등록 진입에서는 참고용 목록이므로 클릭해도 아무 동작을 하지 않는다.
+               - 후속 등록 진입에서는 클릭한 이력을 기준으로 후속 등록 기준을 바꾼다.
+               - 수정 진입에서는 기존처럼 선택 이력을 오른쪽에서 확인/수정 대상으로 사용할 수 있다. */
             var hItem = t.closest('.history-item');
             if (hItem) {
                 var no    = hItem.dataset.no;
                 var found = allList.filter(function (h) { return h.facChkHstryNo === no; })[0];
-                if (found) { setMode('detail', found); markActive(no); }
+                if (!found) return;
+
+                if (!IS_UPDATE && !IS_FOLLOW) {
+                    return;
+                }
+
+                if (IS_FOLLOW) {
+                    setMode('follow', found);
+                    markActive(no);
+                    return;
+                }
+
+                setMode('detail', found);
+                markActive(no);
                 return;
             }
 
-            /* 이력 필터 검색 */
+            /* 이력 필터 버튼 */
             if (t.closest('#historySearchBtn')) { applyFilter(); return; }
-            /* 이력 필터 초기화 */
             if (t.closest('#historyResetBtn'))  { resetFilter(); return; }
 
-            /* 후속 등록 버튼 — 수정 화면에서 새 이력 INSERT 모드 진입 */
-            if (t.closest('#openFollowBtn')) { setMode('follow', selectedHistory || latest); return; }
+            /* 후속 등록 버튼 */
+            if (t.closest('#openFollowBtn')) {
+                /* 신규 등록 진입에서는 버튼이 노출되지 않지만, 이벤트 차원에서도 차단 */
+                if (!IS_UPDATE && !IS_FOLLOW) return;
+                setMode('follow', selectedHistory || latest);
+                return;
+            }
 
-            /* 오정보 수정 버튼 — 현재 선택 이력 기준 update 모드 진입 */
+            /* 오정보 수정 버튼 */
             if (t.closest('#openCorrectBtn')) {
                 var activeCard = document.querySelector('#facilityHistoryList .history-item.is-active');
                 var curH = activeCard
@@ -1239,56 +1466,87 @@
 
             /* 취소 버튼 */
             if (t.closest('#cancelFollowBtn')) {
-                if (!IS_UPDATE) {
-                    /* 등록 화면 상세 확인 후 신규 등록 폼 복귀 */
-                    setMode('register');
-                    return;
-                }
-
+                if (!IS_UPDATE) { setMode('register'); return; }
                 if (currentMode === 'follow' || currentMode === 'update') {
-                    /* 수정 화면 후속/오정보 수정 취소 — 기준 이력 상세 확인 상태로 복귀 */
                     var backTarget = selectedHistory || latest;
                     if (backTarget) { setMode('detail', backTarget); markActive(backTarget.facChkHstryNo); }
                     return;
                 }
-
                 history.back();
                 return;
             }
         });
 
-        /* ════════════════════════════
-           키보드 Enter 처리
-        ════════════════════════════ */
+        /* ── 계약 select 변경 시 hidden input 동기화 ──
+           contNoSelect 에서 계약을 선택하면 contNo hidden input 에 값을 복사함
+           이 값이 폼 전송 시 서버로 전달됨 */
+        var contNoSelect = el('contNoSelect');
+        if (contNoSelect) {
+            contNoSelect.addEventListener('change', function () {
+                setVal('contNo', this.value);
+                updateCurrentContractType();
+                if (!followTypeLocked && currentMode !== 'detail') clearCheckType();
+            });
+        }
+
+        /* 작업유형 검색 input 이벤트 */
+        var chkTyNmInput = el('chkTyNmInput');
+        if (chkTyNmInput) {
+            chkTyNmInput.addEventListener('input', function () {
+                setVal('chkTyCd', '');
+                renderTypeDropdown('chkTyNmInput', 'chkTyCd', 'chkTyDropdown', true);
+            });
+            chkTyNmInput.addEventListener('focus', function () {
+                renderTypeDropdown('chkTyNmInput', 'chkTyCd', 'chkTyDropdown', true);
+            });
+        }
+
+        var historyFilterTypeInput = el('historyFilterChkTyNmInput');
+        if (historyFilterTypeInput) {
+            historyFilterTypeInput.addEventListener('input', function () {
+                setVal('historyFilterChkTyCd', '');
+                renderTypeDropdown('historyFilterChkTyNmInput', 'historyFilterChkTyCd', 'historyFilterChkTyDropdown', false);
+            });
+            historyFilterTypeInput.addEventListener('focus', function () {
+                renderTypeDropdown('historyFilterChkTyNmInput', 'historyFilterChkTyCd', 'historyFilterChkTyDropdown', false);
+            });
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.type-autocomplete')) {
+                hide('chkTyDropdown');
+                hide('historyFilterChkTyDropdown');
+            }
+        });
+
+        /* ── 키보드 Enter 처리 ── */
         document.addEventListener('keydown', function (e) {
             if (e.key !== 'Enter') return;
             var id = e.target && e.target.id;
-            /* 이력 필터 검색어 */
             if (id === 'historyFilterKeyword') { e.preventDefault(); applyFilter();    return; }
-            /* 시설 모달 검색어 */
+            if (id === 'historyFilterChkTyNmInput') { e.preventDefault(); applyFilter(); return; }
+            if (id === 'chkTyNmInput') { e.preventDefault(); return; }
             if (id === 'facilityModalSearch')  { e.preventDefault(); searchFacility(); return; }
-            /* 협력업체 모달 검색어 */
             if (id === 'partnerModalSearch')   { e.preventDefault(); searchPartner();  return; }
         });
 
-        /* ════════════════════════════
-           폼 submit 전 검증
-        ════════════════════════════ */
+        /* ── 폼 submit 전 검증 ── */
         el('checkForm').addEventListener('submit', function (e) {
             if (IS_ADMIN)                    { alert('ADMIN 계정은 저장할 수 없습니다.');    e.preventDefault(); return; }
-            if (!el('facilityNo').value)     { alert('점검 대상 시설을 선택해 주세요.');     e.preventDefault(); return; }
-            if (el('chkOwnerType').value === 'PARTNER' && !el('partnerNo').value) { alert('협력업체 점검은 협력업체를 선택해 주세요.'); e.preventDefault(); return; }
-            if (!el('chkTyCd').value)        { alert('점검유형을 선택해 주세요.');           e.preventDefault(); return; }
-            if (!el('chkSttsCd').value)      { alert('점검상태를 선택해 주세요.');           e.preventDefault(); return; }
-            if (!el('chkDt').value)          { alert('점검일자를 입력해 주세요.');           e.preventDefault(); return; }
-            if (!el('chkCn').value.trim())   { alert('점검내용을 입력해 주세요.');           e.preventDefault(); return; }
+            if (!el('facilityNo').value)     { alert('시설 이력 대상 시설을 선택해 주세요.');     e.preventDefault(); return; }
+            if (el('chkOwnerType').value === 'PARTNER' && !el('partnerNo').value) {
+                alert('협력업체 처리 이력은 협력업체를 선택해 주세요.');
+                e.preventDefault(); return;
+            }
+            if (!el('chkTyCd').value)        { alert('작업유형을 선택해 주세요.');           e.preventDefault(); return; }
+            if (!el('chkSttsCd').value)      { alert('상태를 선택해 주세요.');           e.preventDefault(); return; }
+            if (!el('chkDt').value)          { alert('작업일자를 입력해 주세요.');           e.preventDefault(); return; }
+            if (!el('chkCn').value.trim())   { alert('작업내용을 입력해 주세요.');           e.preventDefault(); return; }
         });
 
-        /* ════════════════════════════
-           초기 화면 상태 설정
-        ════════════════════════════ */
+        /* ── 초기 화면 상태 설정 ── */
         (function init() {
-            /* select 중복 옵션 제거 — 시설유형/동 select는 facilityList 루프로 중복 생성됨 */
+            /* 시설유형 / 동 select 중복 옵션 제거 */
             function dedupSelect(selectId) {
                 var select = el(selectId);
                 if (!select) return;
@@ -1303,12 +1561,21 @@
             dedupSelect('facilityFilterDong');
 
             applyOwnerType(el('chkOwnerType') ? el('chkOwnerType').value : 'SELF');
+            /* 수정/후속 진입 시 hidden chkTyCd 값이 있으면 코드명 표시 */
+            if (el('chkTyCd') && el('chkTyCd').value) {
+                setCheckType(el('chkTyCd').value, getCheckTypeName(el('chkTyCd').value), true);
+            }
 
             var initNo = el('facilityNo').value;
             if (initNo) {
-                /* facilityNo가 있으면 (수정/후속 진입 또는 시설 선택 등록 진입) 이력 바로 로드 */
+                /* 시설번호가 있으면 (수정/후속 진입) 이력 바로 로드 */
                 if (el('facilityEmptyState'))    el('facilityEmptyState').classList.add('is-hidden');
                 if (el('facilitySelectedState')) el('facilitySelectedState').classList.remove('is-hidden');
+
+                /* 수정 모드이고 파트너가 있으면 해당 파트너 계약 목록도 로드 */
+                var initPartnerNo = el('partnerNo') ? el('partnerNo').value : '';
+                if (initPartnerNo) loadPartnerContracts(initPartnerNo);
+
                 loadHistory(initNo);
             } else {
                 /* 신규 등록 진입 — 시설 선택 안내 상태 */

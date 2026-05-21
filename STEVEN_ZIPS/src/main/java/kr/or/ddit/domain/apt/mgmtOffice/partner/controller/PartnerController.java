@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -139,6 +140,7 @@ public class PartnerController {
     public String insert(
             @PathVariable String mgmtOfcNo,
             @ModelAttribute PartnerVO partnerVO,
+            @RequestParam(required = false, defaultValue = "") String returnType,
             RedirectAttributes redirectAttributes
     ) {
         /* 관리사무소 기준 단지번호 조회 */
@@ -152,6 +154,16 @@ public class PartnerController {
 
         /* 완료 메시지 */
         redirectAttributes.addFlashAttribute("message", "협력업체가 등록되었습니다.");
+
+        /*
+         * 계약 등록/수정 폼에서 신규 협력업체 등록 모달을 통해 들어온 경우
+         * - returnUrl을 직접 받지 않고 returnType 값만 허용.
+         * - 허용된 내부 경로로만 redirect하여 임의 경로 이동 제한.
+         */
+        if ("contractForm".equals(returnType)) {
+            redirectAttributes.addFlashAttribute("partnerMessage", "협력업체가 등록되었습니다. 목록에서 새 업체를 선택하세요.");
+            return "redirect:/manager/facility/contract/form/" + mgmtOfcNo;
+        }
 
         return "redirect:/manager/facility/partner/list/" + mgmtOfcNo;
     }

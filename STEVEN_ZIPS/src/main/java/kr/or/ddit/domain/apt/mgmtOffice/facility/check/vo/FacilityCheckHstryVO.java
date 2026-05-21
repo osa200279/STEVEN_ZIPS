@@ -105,6 +105,22 @@ public class FacilityCheckHstryVO {
     /** 업체 담당자 이메일 */
     private String picEmail;
 
+    /* =========================================================
+     * 3-1. FACILITY_CONTRACT 조인 표시값
+     * ========================================================= */
+
+    /** 계약번호 */
+    private String contNo;
+
+    /** 계약명 */
+    private String contNm;
+
+    /** 계약시작일 */
+    private String contBgngDt;
+
+    /** 계약종료일 */
+    private String contEndDt;
+
 
     /* =========================================================
      * 4. COMMON_CODE 조인 표시값
@@ -184,4 +200,6 @@ public class FacilityCheckHstryVO {
      * - 화면 제어와 서버 검증용
      */
     private String chkOwnerType;
+
+
 }

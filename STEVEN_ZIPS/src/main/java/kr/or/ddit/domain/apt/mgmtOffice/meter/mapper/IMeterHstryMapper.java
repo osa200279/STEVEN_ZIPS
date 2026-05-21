@@ -43,4 +43,11 @@ public interface IMeterHstryMapper {
 
     /** 검침 이력 등록 */
     int insertMeterHstry(MeterHstryVO meterHstryVO);
+
+
+    /** 검침 이력 단건 상세 조회 */
+    MeterHstryVO selectMeterHstryDetail(String meterHstryNo);
+
+    /** 검침 이력 수정 */
+    int updateMeterHstry(MeterHstryVO meterHstryVO);
 }

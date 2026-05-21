@@ -596,4 +596,29 @@ public class FacilityCheckController {
 
         return result;
     }
+
+    /**
+     * 파트너 선택 후 해당 파트너의 계약 목록 AJAX 조회
+     * - 등록/수정 폼에서 파트너 선택 시 계약 select 동적 표시용
+     */
+    @ResponseBody
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/partner/contracts/{mgmtOfcNo}/{partnerNo}")
+    public Map<String, Object> selectPartnerContractList(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String partnerNo
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<Map<String, Object>> contractList =
+                    facilityCheckService.selectPartnerContractList(mgmtOfcNo, partnerNo);
+            result.put("success", true);
+            result.put("contractList", contractList);
+        } catch (Exception e) {
+            log.error("파트너 계약 목록 AJAX 조회 실패. mgmtOfcNo={}, partnerNo={}", mgmtOfcNo, partnerNo, e);
+            result.put("success", false);
+            result.put("message", "계약 목록 조회 중 오류가 발생했습니다.");
+        }
+        return result;
+    }
 }

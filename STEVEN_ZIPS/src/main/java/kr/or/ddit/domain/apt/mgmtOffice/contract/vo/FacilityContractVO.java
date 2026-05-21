@@ -1,84 +1,67 @@
 package kr.or.ddit.domain.apt.mgmtOffice.contract.vo;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 시설 계약 VO
- * - FACILITY_CONTRACT 계약 기본정보
- * - FACILITY, PARTNER, UTILITY_PROVIDER 화면 표시정보
+ * FACILITY_CONTRACT 테이블 기준 VO
+ *
+ * DB 기준 컬럼
+ * - CONT_NO
+ * - FACILITY_NO
+ * - PARTNER_NO
+ * - CONT_NM
+ * - BID_TY_CD
+ * - CONT_DT
+ * - CONT_STTS_CD
+ * - CONT_AMT
+ * - PYMT_DT
+ * - CONT_BGNG_DT
+ * - CONT_END_DT
+ * - CONT_TY_CD
+ * - CONT_TARGET_CD
+ * - CONT_CN
+ * - RMRK_CN
+ * - REG_DT
+ * - MDF_DT
+ * - FILE_GROUP_NO : 사용자가 FACILITY_CONTRACT에 추가한 계약서 파일그룹번호
  */
 @Data
 public class FacilityContractVO {
 
-    /** 계약번호 */
     private String contNo;
-
-    /** 시설번호 */
     private String facilityNo;
-
-    /** 협력업체번호 */
     private String partnerNo;
-
-    /** 계약명 */
     private String contNm;
-
-    /** 입찰유형코드 */
     private String bidTyCd;
 
-    /** 계약일자 */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date contDt;
 
-    /** 계약상태코드 */
     private String contSttsCd;
+    private Long contAmt;
 
-    /** 계약금액 */
-    private BigDecimal contAmt;
-
-    /** 지급예정일 */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date pymtDt;
 
-    /** 계약시작일자 */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date contBgngDt;
 
-    /** 계약종료일자 */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date contEndDt;
 
-    /** 시설명 */
-    private String facilityNm;
+    private String contTyCd;
+    private String contTargetCd;
+    private String contCn;
+    private String rmrkCn;
 
-    /** 시설유형명 */
-    private String facilityTyNm;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date regDt;
 
-    /** 협력업체명 */
-    private String partnerNm;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date mdfDt;
 
-    /** 입찰유형명 */
-    private String bidTyNm;
-
-    /** 계약상태명 */
-    private String contSttsNm;
-
-    /** 만료까지 남은 일수 */
-    private Integer expireDays;
-
-    /** 검침설정 여부 */
-    private String meterSettingYn;
-
-    /** 검침설정번호 */
-    private String utilityProviderNo;
-
-    /** CSV 식별키 */
-    private String csvIdntfKey;
-
-    /** 외부 고객번호 */
-    private String extCustNo;
-
-    /** 검침설정 비고 */
-    private String utilityRmrkCn;
-
-    /** 아파트단지번호 */
-    private String aptCmplexNo;
+    private Long fileGroupNo;
 }

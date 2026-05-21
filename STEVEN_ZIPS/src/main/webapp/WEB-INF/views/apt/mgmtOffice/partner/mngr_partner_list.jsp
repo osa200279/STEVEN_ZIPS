@@ -321,14 +321,6 @@
                         <h2>협력업체 관리</h2>
                         <p>협력업체 기본정보와 업무 연결 현황을 확인합니다.</p>
                     </div>
-                    <div class="page-actions">
-                        <%-- ADMIN은 조회만 가능하므로 등록 버튼 숨김 --%>
-                        <c:if test="${not isAdmin}">
-                            <button type="button" class="btn btn-primary" data-action="openRegister">
-                                <span class="material-symbols-rounded">add</span>업체 등록
-                            </button>
-                        </c:if>
-                    </div>
                 </div>
 
                 <%-- 현황 카드 --%>
@@ -429,6 +421,13 @@
                             <h3 class="panel-title"><span class="material-symbols-rounded">handshake</span>협력업체 목록</h3>
                             <span class="list-count" id="partnerCount">0건</span>
                         </div>
+
+                        <%-- ADMIN은 조회만 가능하므로 등록 버튼 숨김 --%>
+                        <c:if test="${not isAdmin}">
+                            <button type="button" class="btn btn-primary" data-action="openRegister">
+                                <span class="material-symbols-rounded">add</span>업체 등록
+                            </button>
+                        </c:if>
                     </div>
                     <div class="table-wrap">
                         <table class="tbl">
@@ -873,6 +872,7 @@
             el('deactivatePartnerNo').value = data.partnerNo || '';
             openModal('deactivateModal');
         }
+
         /* 협력업체 활성화 확인 */
         function openActivate(row) {
             selectedRow = row;

@@ -1,17 +1,14 @@
 package kr.or.ddit.domain.apt.mgmtOffice.meter.controller;
 
 import kr.or.ddit.domain.apt.mgmtOffice.meter.service.IMeterHstryService;
+import kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterHstryVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -32,33 +29,52 @@ public class MeterHstryController {
 
     /**
      * 검침 이력 목록 화면
-     * - 관리사무소 번호 기준으로 단지번호를 찾고 검침 이력을 조회함
-     * - 필터 조건은 JSP의 검색 폼에서 전달함
+     * - 단지별 검침(ho_no IS NOT NULL)과 시설 검침(ho_no IS NULL)을 각각 조회하여 model에 담음
+     * - 탭별 검색 파라미터를 분리하여 처리함
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/{mgmtOfcNo}")
     public String list(
             @PathVariable String mgmtOfcNo,
-            @RequestParam(required = false) String keyword,
+            // 단지별 검침 검색 파라미터
+            @RequestParam(required = false) String complexUtilityProviderNo,
+            @RequestParam(required = false) String complexMeterRsltCd,
+            @RequestParam(required = false) String complexStartDt,
+            @RequestParam(required = false) String complexEndDt,
+            @RequestParam(required = false) String complexKeyword,
+            // 시설 검침 검색 파라미터
             @RequestParam(required = false) String utilityProviderNo,
             @RequestParam(required = false) String meterRsltCd,
             @RequestParam(required = false) String startDt,
             @RequestParam(required = false) String endDt,
+            @RequestParam(required = false) String keyword,
             Model model
     ) {
-        // 검색 조건 구성
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("mgmtOfcNo", mgmtOfcNo);
-        paramMap.put("keyword", keyword);
-        paramMap.put("utilityProviderNo", utilityProviderNo);
-        paramMap.put("meterRsltCd", meterRsltCd);
-        paramMap.put("startDt", startDt);
-        paramMap.put("endDt", endDt);
+        // 단지별 검침 조회 조건
+        Map<String, Object> complexParamMap = new HashMap<>();
+        complexParamMap.put("mgmtOfcNo", mgmtOfcNo);
+        complexParamMap.put("meterScope", "COMPLEX");
+        complexParamMap.put("utilityProviderNo", complexUtilityProviderNo);
+        complexParamMap.put("meterRsltCd", complexMeterRsltCd);
+        complexParamMap.put("startDt", complexStartDt);
+        complexParamMap.put("endDt", complexEndDt);
+        complexParamMap.put("keyword", complexKeyword);
 
-        // 화면 공통 데이터 조회
+        // 시설 검침 조회 조건
+        Map<String, Object> facilityParamMap = new HashMap<>();
+        facilityParamMap.put("mgmtOfcNo", mgmtOfcNo);
+        facilityParamMap.put("meterScope", "FACILITY");
+        facilityParamMap.put("utilityProviderNo", utilityProviderNo);
+        facilityParamMap.put("meterRsltCd", meterRsltCd);
+        facilityParamMap.put("startDt", startDt);
+        facilityParamMap.put("endDt", endDt);
+        facilityParamMap.put("keyword", keyword);
+
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
-        model.addAttribute("search", paramMap);
-        model.addAttribute("meterList", meterHstryService.selectMeterHstryList(paramMap));
+        model.addAttribute("complexSearch", complexParamMap);
+        model.addAttribute("search", facilityParamMap);
+        model.addAttribute("complexMeterList", meterHstryService.selectMeterHstryList(complexParamMap));
+        model.addAttribute("facilityMeterList", meterHstryService.selectMeterHstryList(facilityParamMap));
         model.addAttribute("providerList", meterHstryService.selectUtilityProviderList(mgmtOfcNo));
         model.addAttribute("rsltCodeList", meterHstryService.selectMeterRsltCodeList());
 
@@ -67,9 +83,6 @@ public class MeterHstryController {
 
     /**
      * 검침 CSV 업로드
-     * - CSV 원본 파일은 ATTACH_FILE에 저장함
-     * - 업로드 결과는 METER_UPLOAD_HSTRY에 저장함
-     * - 정상 행은 METER_HSTRY에 등록함
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @PostMapping("/upload/{mgmtOfcNo}")
@@ -81,24 +94,53 @@ public class MeterHstryController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            // 로그인 사용자 번호 추출
             String uploadUserNo = customUser.getMember().getUserNo();
-
-            // CSV 업로드 및 검침 이력 등록 처리
-            int insertCnt = meterHstryService.uploadMeterCsv(
-                    mgmtOfcNo,
-                    utilityProviderNo,
-                    csvFile,
-                    uploadUserNo
-            );
-
+            int insertCnt = meterHstryService.uploadMeterCsv(mgmtOfcNo, utilityProviderNo, csvFile, uploadUserNo);
             redirectAttributes.addFlashAttribute("successMessage", insertCnt + "건의 검침 이력이 등록되었습니다.");
-
         } catch (Exception e) {
-            // 업로드 실패 메시지 전달
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+        return "redirect:/manager/meter/hstry/" + mgmtOfcNo;
+    }
 
+    /**
+     * 검침 이력 상세 조회 (JSON)
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/detail/{mgmtOfcNo}/{meterHstryNo}")
+    @ResponseBody
+    public Map<String, Object> detail(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String meterHstryNo
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            MeterHstryVO vo = meterHstryService.selectMeterHstryDetail(meterHstryNo);
+            result.put("success", true);
+            result.put("meterHstry", vo);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 검침 이력 수정
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @PostMapping("/update/{mgmtOfcNo}")
+    public String update(
+            @PathVariable String mgmtOfcNo,
+            MeterHstryVO meterHstryVO,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            meterHstryService.updateMeterHstry(meterHstryVO);
+            redirectAttributes.addFlashAttribute("successMessage", "검침 이력이 수정되었습니다.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/manager/meter/hstry/" + mgmtOfcNo;
     }
 }

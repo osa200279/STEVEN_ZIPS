@@ -69,4 +69,32 @@ public class MeterHstryVO {
 
     /** 협력업체명 */
     private String partnerNm;
+
+    /** 시설 위치 */
+    private String locCn;
+
+    /** 동 번호 */
+    private String dongNo;
+
+    /** 계약번호 */
+    private String contNo;
+
+    /** 계약명 */
+    private String contNm;
+
+    /** 계약시작일 */
+    private String contBgngDt;
+
+    /** 계약종료일 */
+    private String contEndDt;
+
+    /** 담당자명 */
+    private String picNm;
+
+    /** 담당자 연락처 */
+    private String picTelno;
+
+    /** 담당자 이메일 */
+    private String picEmail;
+
 }

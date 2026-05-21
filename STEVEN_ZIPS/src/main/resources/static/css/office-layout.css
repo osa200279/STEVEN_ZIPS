@@ -638,3 +638,5 @@ body {
     font-size: 10px;
     color: var(--text-tertiary);
 }
+
+.panel-list .table-wrap { margin: 0; padding: 0; }

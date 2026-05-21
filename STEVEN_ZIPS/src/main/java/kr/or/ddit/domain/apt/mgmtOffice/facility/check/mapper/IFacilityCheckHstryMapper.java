@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 시설 점검 이력 Mapper
@@ -87,4 +88,13 @@ public interface IFacilityCheckHstryMapper {
 
     /** 처리과정번호 신규 채번 */
     String selectNextCheckFlowNo();
+
+    /**
+     * 파트너 선택 후 해당 파트너의 계약 목록 조회
+     * - 등록/수정 폼에서 파트너 선택 시 AJAX로 계약 목록 표시용
+     */
+    List<Map<String, Object>> selectPartnerContractList(
+            @Param("mgmtOfcNo") String mgmtOfcNo,
+            @Param("partnerNo") String partnerNo
+    );
 }
