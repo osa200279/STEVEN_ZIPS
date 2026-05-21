@@ -208,6 +208,9 @@
             S.SURVEY_TY_CD   AS "surveyTypeCd",
             S.SURVEY_STTS_CD AS "surveySttsCd",
 
+            DBMS_LOB.SUBSTR(S.SURVEY_QITEM_CN, 4000, 1)
+                AS "surveyQitemCn",
+
             TO_CHAR(S.SURVEY_BGNG_DT, 'YYYY-MM-DD')
                              AS "surveyBgngDt",
 

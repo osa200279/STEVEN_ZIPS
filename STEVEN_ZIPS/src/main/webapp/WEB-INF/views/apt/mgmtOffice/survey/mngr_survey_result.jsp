@@ -240,11 +240,11 @@
                         <div class="summary-card">
 
                             <div class="summary-label">
-                                총 입주민 수
+                                총 응답 수
                             </div>
 
                             <div class="summary-value"
-                                 id="totalResident">
+                                 id="totalAnswerCount">
 
                                 0
 
@@ -410,9 +410,9 @@
             statusText(data.surveySttsCd);
 
         document
-            .getElementById("totalResident")
+            .getElementById("totalAnswerCount")
             .textContent =
-            data.totalResident || 0;
+            data.totalAnswerCount || 0;
 
         document
             .getElementById("participantCount")
@@ -449,69 +449,112 @@
 
         let html = "";
 
-        data.resultList.forEach(function(result){
+        const total =
+            data.participantCount || 1;
 
-            const questionMax =
-                Math.max(
-                    ...data.resultList
-                        .filter(r => r.qitemNm === result.qitemNm)
-                        .map(r => r.ansrCnt)
-                );
+        const questionList =
+            data.surveyQitemCn
+                ? JSON.parse(data.surveyQitemCn)
+                : [];
+
+
+        if(questionList.length){
+
+            questionList.forEach(function(q, qIdx){
 
             html +=
 
                 '<div class="question-card" style="margin-bottom:16px;">'
 
-                + '<div class="question-body">'
+                + '<div class="question-header">'
 
-                + '<div class="result-row">'
+                + '<div class="question-title">'
 
-                + '<div class="result-info">'
-
-                + '<div class="result-label">'
-
-                + (result.ansrCnt === questionMax ? '🥇 ' : '')
-
-                + result.qitemNm
-                + ' - '
-                + result.ansrCn
-
-                + '</div>'
-
-                + '<div class="result-count">'
-
-                + result.ansrCnt
-                + '명 참여'
+                + 'Q' + (qIdx + 1) + '. '
+                + (q.question || '-')
 
                 + '</div>'
 
                 + '</div>'
 
-                + '<div class="progress">'
+                + '<div class="question-body">';
 
-                + '<div class="progress-bar" '
-                + 'style="width:'
-                + (
-                    data.participantCount === 0
-                        ? 0
-                        : Math.round(
-                            (result.ansrCnt / data.participantCount) * 100
-                        )
-                )
-                + '%">'
-                + '</div>'
+                const items =
+                    Array.isArray(q.items)
+                        ? q.items
+                        : Array.isArray(q.options)
+                            ? q.options
+                            : [];
+            const questionMax =
+                Math.max(
+                    0,
+                    ...items.map(function(item){
 
-                + '</div>'
+                        const found =
+                            data.resultList.find(r => r.ansrCn === item);
 
-                + '</div>'
+                        return found ? found.ansrCnt : 0;
+                    })
+                );
 
-                + '</div>'
+            items.forEach(function(item){
 
+                const found =
+                    data.resultList.find(r => r.ansrCn === item);
+
+                const count =
+                    found ? found.ansrCnt : 0;
+
+                const percent =
+                    Math.round((count / total) * 100);
+
+                html +=
+
+                    '<div class="result-row">'
+
+                    + '<div class="result-info">'
+
+                    + '<div class="result-label">'
+
+                    + (count === questionMax && count > 0 ? '🥇 ' : '')
+
+                    + item
+
+                    + '</div>'
+
+                    + '<div class="result-count">'
+
+                    + percent
+                    + '% ('
+                    + count
+                    + '명)'
+
+                    + '</div>'
+
+                    + '</div>'
+
+                    + '<div class="progress">'
+
+                    + '<div class="progress-bar" '
+                    + 'style="width:'
+                    + percent
+                    + '%">'
+                    + '</div>'
+
+                    + '</div>'
+
+                    + '</div>';
+            });
+
+            html +=
+                '</div>'
                 + '</div>';
         });
 
-        container.innerHTML = html;
 
+
+    }
+        container.innerHTML = html;
 
     }
 
