@@ -240,11 +240,11 @@
                         <div class="summary-card">
 
                             <div class="summary-label">
-                                총 응답 수
+                                총 입주민 수
                             </div>
 
                             <div class="summary-value"
-                                 id="totalAnswerCount">
+                                 id="totalResident">
 
                                 0
 
@@ -410,9 +410,9 @@
             statusText(data.surveySttsCd);
 
         document
-            .getElementById("totalAnswerCount")
+            .getElementById("totalResident")
             .textContent =
-            data.totalAnswerCount || 0;
+            data.totalResident || 0;
 
         document
             .getElementById("participantCount")
@@ -449,14 +449,7 @@
 
         let html = "";
 
-        const total =
-            data.participantCount || 1;
-
-
-
         data.resultList.forEach(function(result){
-
-
 
             const questionMax =
                 Math.max(
@@ -464,11 +457,6 @@
                         .filter(r => r.qitemNm === result.qitemNm)
                         .map(r => r.ansrCnt)
                 );
-
-
-
-            const percent =
-                Math.round((result.ansrCnt / total) * 100);
 
             html +=
 
@@ -492,10 +480,8 @@
 
                 + '<div class="result-count">'
 
-                + percent
-                + '% ('
                 + result.ansrCnt
-                + '명)'
+                + '명 참여'
 
                 + '</div>'
 
@@ -505,7 +491,13 @@
 
                 + '<div class="progress-bar" '
                 + 'style="width:'
-                + percent
+                + (
+                    data.participantCount === 0
+                        ? 0
+                        : Math.round(
+                            (result.ansrCnt / data.participantCount) * 100
+                        )
+                )
                 + '%">'
                 + '</div>'
 

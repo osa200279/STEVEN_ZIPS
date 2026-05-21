@@ -46,29 +46,68 @@
             parameterType="string"
             resultType="kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO">
 
-        SELECT
+        SELECT S.SURVEY_NO                        AS surveyNo,
+               S.SURVEY_NM                        AS surveyNm,
+               S.SURVEY_CN                        AS surveyCn,
+               S.SURVEY_TY_CD                     AS surveyTypeCd,
+               S.SURVEY_QITEM_CN                  AS surveyQitemCn,
 
-            S.SURVEY_NO       AS surveyNo,
-            S.SURVEY_NM       AS surveyNm,
-            S.SURVEY_CN       AS surveyCn,
-            S.SURVEY_TY_CD    AS surveyTypeCd,
-            S.SURVEY_QITEM_CN AS surveyQitemCn,
+               TO_CHAR(S.SURVEY_BGNG_DT, 'YYYY-MM-DD')
+                                                  AS surveyBgngDt,
 
-            TO_CHAR(S.SURVEY_BGNG_DT, 'YYYY-MM-DD')
-                              AS surveyBgngDt,
+               TO_CHAR(S.SURVEY_END_DT, 'YYYY-MM-DD')
+                                                  AS surveyEndDt,
 
-            TO_CHAR(S.SURVEY_END_DT, 'YYYY-MM-DD')
-                              AS surveyEndDt,
+               S.SURVEY_STTS_CD                   AS surveySttsCd,
+               S.RGTR_ID                          AS rgtrId,
+               S.APT_CD                           AS aptCd,
 
-            S.SURVEY_STTS_CD  AS surveySttsCd,
-            S.RGTR_ID         AS rgtrId,
-            S.APT_CD          AS aptCd,
-
-            (
-                SELECT COUNT(*)
+               (SELECT COUNT(*)
                 FROM SURVEY_RSPNS SR
-                WHERE SR.SURVEY_NO = S.SURVEY_NO
-            ) AS participantCount
+                WHERE SR.SURVEY_NO = S.SURVEY_NO) AS participantCount,
+               (SELECT COUNT(*)
+
+                FROM HSHLD_HEAD HM
+
+                         INNER JOIN APT_DETAIL AD
+                                    ON AD.HO_NO = HM.HO_NO
+
+                         INNER JOIN APT_UNIT AU
+                                    ON AU.DONG_NO = AD.DONG_NO
+
+                         INNER JOIN MGMT_OFFICE MO
+                                    ON AU.APT_CMPLEX_NO = MO.APT_CMPLEX_NO
+
+                WHERE MO.MGMT_OFC_NO = S.APT_CD)  AS totalResident,
+               ROUND(
+                       NVL(
+                               (
+                                   (SELECT COUNT(DISTINCT SR.USER_NO)
+                                    FROM SURVEY_RSPNS SR
+                                    WHERE SR.SURVEY_NO = S.SURVEY_NO) * 100
+                                   ) /
+                               NULLIF(
+                                       (SELECT COUNT(*)
+
+                                        FROM HSHLD_HEAD HM
+
+                                                 INNER JOIN APT_DETAIL AD
+                                                            ON AD.HO_NO = HM.HO_NO
+
+                                                 INNER JOIN APT_UNIT AU
+                                                            ON AU.DONG_NO = AD.DONG_NO
+
+                                                 INNER JOIN MGMT_OFFICE MO
+                                                            ON AU.APT_CMPLEX_NO = MO.APT_CMPLEX_NO
+
+                                        WHERE MO.MGMT_OFC_NO = S.APT_CD),
+                                       0
+                               ),
+                               0
+                       ),
+                       1
+               )                                  AS answerRate
+
 
         FROM SURVEY S
 
@@ -166,9 +205,6 @@
             TO_CHAR(S.SURVEY_END_DT, 'YYYY-MM-DD')
                              AS "surveyEndDt",
 
-            NVL(R.TOTAL_ANSWER_COUNT, 0)
-                             AS "totalAnswerCount",
-
             NVL(R.PARTICIPANT_COUNT, 0)
                              AS "participantCount",
 
@@ -180,31 +216,52 @@
                             NULLIF(
                                     (
                                         SELECT COUNT(*)
-                                        FROM MEMBER
-                                        WHERE USER_YN = 'Y'
+
+                                        FROM HSHLD_HEAD HM
+
+                                                 INNER JOIN APT_DETAIL AD
+                                                            ON AD.HO_NO = HM.HO_NO
+
+                                                 INNER JOIN APT_UNIT AU
+                                                            ON AU.DONG_NO = AD.DONG_NO
+
+                                                 INNER JOIN MGMT_OFFICE MO
+                                                            ON AU.APT_CMPLEX_NO = MO.APT_CMPLEX_NO
+
+                                        WHERE MO.MGMT_OFC_NO = S.APT_CD
                                     ),
                                     0
                             ),
-                            0)
-                , 1)              AS "answerRate"
+                            0
+                    ),
+                    1) AS "answerRate",
+
+            (
+                SELECT COUNT(*)
+
+                FROM HSHLD_HEAD HM
+
+                         INNER JOIN APT_DETAIL AD
+                                    ON AD.HO_NO = HM.HO_NO
+
+                         INNER JOIN APT_UNIT AU
+                                    ON AU.DONG_NO = AD.DONG_NO
+
+                         INNER JOIN MGMT_OFFICE MO
+                                    ON AU.APT_CMPLEX_NO = MO.APT_CMPLEX_NO
+
+                WHERE MO.MGMT_OFC_NO = S.APT_CD
+
+            ) AS "totalResident"
 
         FROM SURVEY S
-
                  LEFT JOIN (
-
             SELECT
-
                 SURVEY_NO,
-
-                COUNT(*) AS TOTAL_ANSWER_COUNT,
-
                 COUNT(DISTINCT USER_NO)
                          AS PARTICIPANT_COUNT
-
             FROM SURVEY_RSPNS
-
             GROUP BY SURVEY_NO
-
         ) R
                            ON R.SURVEY_NO = S.SURVEY_NO
 

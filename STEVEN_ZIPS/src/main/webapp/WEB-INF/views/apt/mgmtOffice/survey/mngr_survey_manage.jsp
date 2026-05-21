@@ -1,4 +1,4 @@
-﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
@@ -8,10 +8,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>투표/설문 관리</title>
     <sec:csrfMetaTags/>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0"
+          rel="stylesheet"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
     <style>
@@ -149,9 +151,20 @@
             font-weight: 700;
         }
 
-        #surveyManagePage .status-running { background: #dcfce7; color: #166534; }
-        #surveyManagePage .status-waiting { background: #fff7d6; color: #8a5a00; }
-        #surveyManagePage .status-closed  { background: #e5e7eb; color: #4b5563; }
+        #surveyManagePage .status-running {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        #surveyManagePage .status-waiting {
+            background: #fff7d6;
+            color: #8a5a00;
+        }
+
+        #surveyManagePage .status-closed {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
 
         #surveyManagePage .survey-side-stat {
             display: flex;
@@ -200,6 +213,7 @@
             #surveyManagePage .survey-layout {
                 grid-template-columns: 1fr;
             }
+
             #surveyManagePage .survey-kpi-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
@@ -210,64 +224,65 @@
                 grid-template-columns: 1fr;
             }
         }
-        .question-box{
-            border:1px solid #dfe5ec;
-            border-radius:12px;
-            padding:18px;
-            background:#fafbfc;
+
+        .question-box {
+            border: 1px solid #dfe5ec;
+            border-radius: 12px;
+            padding: 18px;
+            background: #fafbfc;
         }
 
-        .question-box + .question-box{
-            margin-top:14px;
+        .question-box + .question-box {
+            margin-top: 14px;
         }
 
-        .question-header{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:14px;
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
         }
 
-        .question-badge{
-            background:#2f6b3d;
-            color:#fff;
-            padding:6px 12px;
-            border-radius:8px;
-            font-size:13px;
-            font-weight:700;
+        .question-badge {
+            background: #2f6b3d;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
         }
 
-        .option-row{
-            display:grid;
+        .option-row {
+            display: grid;
             grid-template-columns:32px 1fr 72px;
-            gap:10px;
-            align-items:center;
-            margin-bottom:10px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
-        .option-number{
-            width:24px;
-            height:24px;
-            border-radius:50%;
-            background:#e7efe9;
-            color:#2f6b3d;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:12px;
-            font-weight:700;
+        .option-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e7efe9;
+            color: #2f6b3d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
         }
 
         .remove-question-btn,
-        .remove-option-btn{
-            width:72px !important;
-            height:36px !important;
-            padding:0 !important;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:12px;
-            flex-shrink:0;
+        .remove-option-btn {
+            width: 72px !important;
+            height: 36px !important;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
         }
 
     </style>
@@ -312,9 +327,9 @@
                         <div class="survey-kpi-sub">마감된 투표/설문</div>
                     </div>
                     <div class="survey-kpi">
-                        <div class="survey-kpi-label">응답</div>
-                        <div class="survey-kpi-value" id="kpiAnswers">0</div>
-                        <div class="survey-kpi-sub">전체 응답 수</div>
+                        <div class="survey-kpi-label">평균 응답률</div>
+                        <div class="survey-kpi-value" id="kpiAnswers">0%</div>
+                        <div class="survey-kpi-sub">전체 설문 평균 참여율</div>
                     </div>
                 </div>
                 <div class="panel" style="margin-bottom:16px;">
@@ -450,7 +465,8 @@
                                 <div class="form-row cols-1">
                                     <div class="form-field">
                                         <label class="field-label">설명</label>
-                                        <textarea class="form-textarea" id="surveyDesc" rows="5" placeholder="설명과 안내 문구를 입력하세요"></textarea>
+                                        <textarea class="form-textarea" id="surveyDesc" rows="5"
+                                                  placeholder="설명과 안내 문구를 입력하세요"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -475,7 +491,7 @@
                                             <div class="question-header">
 
 
-                                                <div class="question-badge">                                        질문 1
+                                                <div class="question-badge"> 질문 1
                                                 </div>
 
                                                 <button type="button"
@@ -574,15 +590,13 @@
                             </div>
 
 
-                                <div class="modal-footer" style="border-top:none;">
+                            <div class="modal-footer" style="border-top:none;">
                                 <button type="button" class="btn btn-secondary" data-action="closeModal">취소</button>
                                 <button type="submit" class="btn btn-primary">저장</button>
                             </div>
                         </form>
                     </div>
                 </div>
-
-
 
 
             </div>
@@ -611,13 +625,10 @@
         }
 
 
-
-
-
-
         function typeText(type) {
             return type === "VOTE" ? "투표" : "설문";
         }
+
         function statusText(status) {
             if (status === "OPEN") return "진행중";
             if (status === "READY") return "대기중";
@@ -704,15 +715,9 @@
 
 
                 const rate =
-                    data.length === 0
-                        ? 0
-                        : (participant / data.length) * 100;
-
-
+                    Number(item.answerRate || 0);
 
                 totalRate += rate;
-
-
 
             });
 
@@ -735,9 +740,6 @@
                 Math.round(avgRate) + "%";
 
 
-
-
-
             document.getElementById("sideMonthly").textContent =
                 monthlyCount + "건";
 
@@ -745,23 +747,13 @@
                 closed + "건";
 
 
-
             document.getElementById("sideRate").textContent =
                 Math.round(avgRate) + "%";
-
-
-
-
-
 
 
             document.getElementById("surveyCount").textContent =
                 data.length + "건";
         }
-
-
-
-
 
 
         function resolveSurveyNo(item) {
@@ -790,7 +782,7 @@
                     + '    <div class="survey-list-title">' + item.surveyNm + '</div>'
                     + '    <div class="survey-list-sub">'
 
-                    +         typeText(item.surveyTypeCd)
+                    + typeText(item.surveyTypeCd)
                     + '    </div>'
                     + '    <div class="survey-list-sub">' + item.surveyBgngDt + ' ~ ' + item.surveyEndDt + '</div>'
                     + '  </div>'
@@ -812,7 +804,7 @@
             var keyword = document.getElementById("filterKeyword").value.trim();
 
             return surveys.filter(function (item) {
-                return (!type || item.surveyTypeCd=== type)
+                return (!type || item.surveyTypeCd === type)
                     && (!status || item.surveySttsCd === status)
                     && (!keyword || item.surveyNm.indexOf(keyword) > -1);
             });
@@ -832,10 +824,6 @@
         function closeModal() {
             modal.classList.remove("open");
         }
-
-
-
-
 
 
         page.addEventListener("click", function (e) {
@@ -880,12 +868,6 @@
                 location.href =
                     `${ctx}/manager/survey/${mgmtOfcNo}/detail/${resolvedSurveyNo}`;
             }
-
-
-
-
-
-
 
 
             if (action === "result") {
@@ -1029,15 +1011,9 @@
         });
 
 
-
-
         document.addEventListener("keydown", function (e) {
             if (e.key === "Escape") closeModal();
         });
-
-
-
-
 
 
         /* 보기 추가/삭제 */
@@ -1192,6 +1168,7 @@
 `
                     );
             });
+
         async function loadSurveyList() {
             try {
                 const response = await fetch(
