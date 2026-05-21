@@ -17,4 +17,5 @@ public interface IAnnRegisterService {
     List<Map<String, Object>> selectRentList(String aptCmplexNo);
 
 
+
 }

@@ -97,13 +97,23 @@
     </select>
 
     <select id="selectExcluseAreaDetail" parameterType="string" resultType="map">
-        SELECT ht.exclusive_size        /*kr.or.ddit.domain.central.mapper.IContractUserMapper.selectExcluseAreaDetail*/
+        SELECT ht.exclusive_size
              , ht.ty_nm
              , ht.room_cnt
              , ht.bathroom_cnt
              , ht.image_file_no
+             , MIN(rl.dpst_amt)       AS dpst_amt
+             , MIN(rl.mthly_rent_amt) AS mthly_rent_amt
         FROM apt_ho_ty ht
+                 LEFT JOIN apt_detail ad ON ad.ho_ty_no = ht.ho_ty_no
+                 LEFT JOIN rent_listing rl ON rl.ho_no = ad.ho_no
+            AND rl.rcrt_lstg_stts_cd = 'SUBSCRIBE'
         WHERE ht.apt_cmplex_no = #{aptCmplexNo}
+        GROUP BY ht.exclusive_size
+               , ht.ty_nm
+               , ht.room_cnt
+               , ht.bathroom_cnt
+               , ht.image_file_no
     </select>
 
     <!--apt_ho_ty 단독 조회

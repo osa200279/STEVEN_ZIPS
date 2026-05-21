@@ -27,6 +27,7 @@
         #{annNo}
         , (SELECT board_no FROM center_board_instance
         WHERE apt_cmplex_no = #{aptCmplexNo}
+        AND board_ty_cd = 'ANN'
         AND ROWNUM = 1)
         , #{ttl}
         , #{cn}
@@ -42,6 +43,7 @@
         , 'Y'
         )
     </insert>
+
     <update id="updateRentListStts" parameterType="map">
         UPDATE rent_listing
         SET rcrt_lstg_stts_cd = 'SUBSCRIBE'
@@ -122,6 +124,20 @@
         WHERE aht.apt_cmplex_no = #{aptCmplexNo}
         AND rl.rcrt_lstg_stts_cd = 'GENERAL'
     </select>
+
+    <select id="selectBoardNo" resultType="String" parameterType="string">
+        SELECT board_no
+        FROM center_board_instance
+        WHERE apt_cmplex_no = #{aptCmplexNo}
+          AND ROWNUM = 1
+    </select>
+
+    <insert id="insertBoardInstance" parameterType="string">
+        INSERT INTO center_board_instance (board_no, board_nm, board_ty_cd, use_yn, apt_cmplex_no)
+        VALUES (#{aptCmplexNo} || '_ANN', '공고게시판', 'ANN', 'Y', #{aptCmplexNo})
+    </insert>
+
+
 
 
 </mapper>

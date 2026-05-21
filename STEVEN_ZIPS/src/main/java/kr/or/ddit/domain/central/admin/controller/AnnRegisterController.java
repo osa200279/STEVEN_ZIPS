@@ -124,6 +124,8 @@ public class AnnRegisterController {
                                          @AuthenticationPrincipal CustomUser principal){
         Map<String, Object> result = new HashMap<>();
         try {
+            log.info("받은 params: {}", params);
+            log.info("aptCmplexNo: {}", params.get("aptCmplexNo"));
             params.put("wrtrId", principal.getMember().getUserNo());
             annRegisterService.insertAnn(params);
             result.put("success", true);

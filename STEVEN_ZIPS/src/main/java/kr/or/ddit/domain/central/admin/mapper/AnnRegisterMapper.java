@@ -2,6 +2,7 @@ package kr.or.ddit.domain.central.admin.mapper;
 
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -21,4 +22,8 @@ public interface AnnRegisterMapper {
     List<Map<String, Object>> selectRentList(String aptCmplexNo);
 
     void updateRentListStts(Map<String, Object> params);
+
+    String selectBoardNo(@Param("aptCmplexNo") String aptCmplexNo);
+
+    void insertBoardInstance(@Param("aptCmplexNo") String aptCmplexNo);
 }

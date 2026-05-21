@@ -17,10 +17,20 @@ public class AnnRegisterServiceImpl implements IAnnRegisterService{
 
     private final AnnRegisterMapper annRegisterMapper;
 
+
     @Transactional
     @Override
     public void insertAnn(Map<String, Object> params) {
-        annRegisterMapper.insertAnn(params);
+
+        String aptCmplexNo = (String) params.get("aptCmplexNo");
+
+        // board_no 없으면 자동 생성 (insertAnn 전에 먼저 체크!)
+        String boardNo = annRegisterMapper.selectBoardNo(aptCmplexNo);
+        if (boardNo == null) {
+            annRegisterMapper.insertBoardInstance(aptCmplexNo);
+        }
+
+        annRegisterMapper.insertAnn(params); // 그 다음에 실행
 
         List<String> rentLstgNoList = (List<String>) params.get("rentLstgNoList");
         if (rentLstgNoList != null && !rentLstgNoList.isEmpty()) {

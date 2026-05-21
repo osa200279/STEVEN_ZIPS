@@ -61,6 +61,7 @@ public class ResidentBoardController {
      *
      * URL 예시: /resident/boardFreeList/apt001?searchType=ttl&searchWord=안녕&page=1
      */
+
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/boardFreeList/{aptCmplexNo}")
     public String boardFreeList(
@@ -143,6 +144,7 @@ public class ResidentBoardController {
      *
      * 반환값: {"success": true} 또는 {"success": false}
      */
+
     @PutMapping("/boardFreeUpdate")
     @ResponseBody
     public Map<String, Object> boardFreeUpdate(@RequestBody RsidBoardVO rsidBoardVO){
