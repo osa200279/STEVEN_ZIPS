@@ -292,15 +292,25 @@
                         <span class="nav-text">단지 구조 관리</span>
                     </a>
 
-
                     <span class="sub-group-label">일정</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">단지 일정 캘린더</span></a>
 
                     <span class="sub-group-label">공용시설</span>
-                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">공용시설 목록</span></a>
-                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">예약 접수·확인</span></a>
-                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">시설 이용 내역</span></a>
-
+                    <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">공용시설 목록</span>
+                    </a>
+                    <a href="${ctx}/manager/publicFacility/reservation/approval${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/approval') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">예약승인관리</span>
+                    </a>
+                    <a href="${ctx}/manager/publicFacility/reservation/history${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/history') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">예약시설 이용이력</span>
+                    </a>
                 </div>
             </div>
         </details>

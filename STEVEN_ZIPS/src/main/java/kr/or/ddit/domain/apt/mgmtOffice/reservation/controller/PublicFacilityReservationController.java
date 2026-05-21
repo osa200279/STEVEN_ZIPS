@@ -38,7 +38,7 @@ public class PublicFacilityReservationController {
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
-        return "apt/mgmtOffice/publicFacility/managerFacilityList";
+        return "apt/mgmtOffice/facility/reservation/managerFacilityList";
     }
 
     /** 단지관리자 - 예약승인관리 */
@@ -55,7 +55,7 @@ public class PublicFacilityReservationController {
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
-        return "apt/mgmtOffice/publicFacility/managerReservationApproval";
+        return "apt/mgmtOffice/facility/reservation/managerReservationApproval";
     }
 
     /** 단지관리자 - 승인 */
@@ -94,7 +94,7 @@ public class PublicFacilityReservationController {
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
-        return "apt/mgmtOffice/publicFacility/managerUseHistory";
+        return "apt/mgmtOffice/facility/reservation/managerUseHistory";
     }
 
     /** 입주민 - 시설예약 */
@@ -108,7 +108,7 @@ public class PublicFacilityReservationController {
         PaginationInfoVO<PublicFacilityReservationVO> pagingVO = service.getResidentFacilityPaging(searchVO, currentPage);
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
-        return "apt/mgmtOffice/publicFacility/residentReservation";
+        return "apt/member/resident/facility/residentReservation";
     }
 
     /** 입주민 - 예약 등록 */
@@ -133,7 +133,7 @@ public class PublicFacilityReservationController {
         PaginationInfoVO<PublicFacilityReservationVO> pagingVO = service.getMyReservationPaging(searchVO, currentPage);
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
-        return "apt/mgmtOffice/publicFacility/residentMyReservation";
+        return "apt/member/resident/facility/residentMyReservation";
     }
 
     /** 입주민 - 예약 상세 JSON */
