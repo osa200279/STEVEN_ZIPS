@@ -29,4 +29,7 @@ public class MngResidentAuthVO extends MngResidentMoveVO {
 
     // AUTH
     private String userRoleCd;
+    private String userNo;
+    private String hoNo;
+
 }

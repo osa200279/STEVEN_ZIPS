@@ -65,10 +65,31 @@
 
 
 
+    <select id="selectResidentAuthByRqstNo"
+            parameterType="int"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.resident.vo.MngResidentAuthVO">
+
+        SELECT
+            rr.RQST_NO,
+            rr.USER_NO,
+            rr.HO_NO,
+            rr.RQST_TY_CD,
+            rr.MVIN_PRD_DT,
+            rr.MVOUT_PRD_DT
+        FROM RESIDENT_RQST rr
+        WHERE rr.RQST_NO = #{rqstNo}
+
+    </select>
 
 
+    <update id="updateResidentLive"
+            parameterType="map">
 
+        UPDATE HSHLD_HEAD
+        SET
+            INOUT_CD = 'LIVE'
+        WHERE HO_NO = #{hoNo} and USER_NO = #{userNo}
 
-
+    </update>
 
 </mapper>
