@@ -88,17 +88,7 @@
 
           <div class="panel-body">
             <div class="form-row cols-3">
-              <div class="form-field">
-                <label class="field-label">차량 유형</label>
-                <select class="form-select" id="filterVhclTy">
-                  <option value="">전체</option>
-                  <option value="GEN">일반방문</option>
-                  <option value="WRK">업무/공사</option>
-                  <option value="DLV">배달/택배</option>
-                  <option value="MOV">이사차량</option>
-                  <option value="EMG">긴급/공용</option>
-                </select>
-              </div>
+
 
               <div class="form-field">
                 <label class="field-label">동</label>
@@ -150,7 +140,7 @@
               <tr>
                 <th>동</th>
                 <th>호수</th>
-                <th>입주민명</th>
+                <th>방문자명</th>
                 <th>차량유형</th>
                 <th>차량명</th>
                 <th>차량번호</th>
@@ -195,7 +185,7 @@
 
                   <div class="form-row cols-1">
                     <div class="form-field">
-                      <label class="field-label">입주민명 <span class="req">*</span></label>
+                      <label class="field-label">방문자명 <span class="req">*</span></label>
                       <input type="text" class="form-input" name="userNm">
                     </div>
                   </div>
@@ -208,27 +198,18 @@
                   </div>
 
                   <div class="form-row cols-2">
-                    <div class="form-field">
-                      <label class="field-label">차량 유형 <span class="req">*</span></label>
-                      <select class="form-select" name="vstVhclTyCd">
-                        <option value="GEN">일반방문</option>
-                        <option value="WRK">업무/공사</option>
-                        <option value="DLV">배달/택배</option>
-                        <option value="MOV">이사차량</option>
-                        <option value="EMG">긴급/공용</option>
-                      </select>
-                    </div>
+
 
                     <div class="form-field">
                       <label class="field-label">차량번호 <span class="req">*</span></label>
-                      <input type="text" class="form-input" name="vhclNo" placeholder="예: 12가 3456">
+                      <input type="text" class="form-input" name="vstVhclNo" placeholder="예: 12가 3456">
                     </div>
                   </div>
 
                   <div class="form-row cols-1">
                     <div class="form-field">
                       <label class="field-label">차량명</label>
-                      <input type="text" class="form-input" name="vhclNm" placeholder="예: 현대 아반떼">
+                      <input type="text" class="form-input" name="vstrNm" placeholder="예: 현대 아반떼">
                     </div>
                   </div>
                 </div>
@@ -297,34 +278,22 @@
           var listCount = document.getElementById("carListCount");
           var deleteConfirmBtn = document.getElementById("carDeleteConfirmBtn");
 
-          /*
-           * DB 연결 전 화면 확인용 샘플 데이터
-           * - 나중에 Controller에서 list를 내려주면 이 부분을 JSTL/JSON 데이터로 교체
-           */
+
+
           var rowData = [
+            <c:forEach items="${vehicleList}" var="vehicle" varStatus="st">
             {
-              rsidVhclNo: "V001",
-              dong: "101동",
-              ho: "1203호",
-              userNm: "김민준",
-              vstVhclTyCd: "GEN",
-              vhclNm: "현대 아반떼",
-              vhclNo: "12가 3456"
-            },
-            {
-              rsidVhclNo: "V002",
-              dong: "102동",
-              ho: "803호",
-              userNm: "이서연",
-              vstVhclTyCd: "GEN",
-              vhclNm: "기아 K5",
-              vhclNo: "34나 7890"
-            }
+              vstVhclRsvtNo : "${vehicle.vstVhclRsvtNo}",
+              dong          : "${vehicle.dong}",
+              ho            : "${vehicle.ho}",
+              userNm        : "${vehicle.userNm}",
+              vstVhclTyCd   : "${vehicle.vstVhclTyCd}",
+              vstVhclNo     : "${vehicle.vstVhclNo}",
+              vstrNm        : "${vehicle.vstrNm}"
+            }<c:if test="${!st.last}">,</c:if>
+            </c:forEach>
           ];
 
-          /*
-           * 삭제할 행의 index 저장용
-           */
           var deleteTargetIdx = null;
 
           /*
@@ -382,8 +351,9 @@
                       + '<td>' + row.ho + '</td>'
                       + '<td class="td-name">' + row.userNm + '</td>'
                       + '<td>' + vhclBadge(row.vstVhclTyCd) + '</td>'
-                      + '<td class="td-car-name">' + (row.vhclNm || "-") + '</td>'
-                      + '<td class="td-car-no">' + row.vhclNo + '</td>'
+                      + '<td class="td-car-name">' + (row.vstrNm || "-") + '</td>'
+                      + '<td class="td-car-no">' + row.vstVhclNo + '</td>'
+
                       + '<td>'
                       + '<div class="grid-actions">'
                       + '<button type="button" class="btn btn-xs btn-detail" data-action="detail" data-idx="' + idx + '">상세</button>'
@@ -401,19 +371,19 @@
            * - DB 연결 후에는 서버 검색으로 바꿀 수 있음
            */
           function getFiltered() {
-            var vhclTy = document.getElementById("filterVhclTy").value;
             var dong = document.getElementById("filterDong").value.trim();
             var ho = document.getElementById("filterHo").value.trim();
             var keyword = document.getElementById("filterKeyword").value.trim();
 
             return rowData.filter(function (row) {
-              return (!vhclTy || row.vstVhclTyCd === vhclTy)
-                      && (!dong || row.dong.indexOf(dong) > -1)
+
+              return (!dong || row.dong.indexOf(dong) > -1)
                       && (!ho || row.ho.indexOf(ho) > -1)
+
                       && (!keyword
                               || row.userNm.indexOf(keyword) > -1
-                              || row.vhclNo.indexOf(keyword) > -1
-                              || (row.vhclNm || "").indexOf(keyword) > -1);
+                              || row.vstVhclNo.indexOf(keyword) > -1
+                              || (row.vstrNm || "").indexOf(keyword) > -1);
             });
           }
 
@@ -423,7 +393,7 @@
            */
           function resetFilter() {
             [
-              "filterVhclTy",
+
               "filterDong",
               "filterHo",
               "filterKeyword"
@@ -479,8 +449,8 @@
             form.ho.value = row.ho || "";
             form.userNm.value = row.userNm || "";
             form.vstVhclTyCd.value = row.vstVhclTyCd || "GEN";
-            form.vhclNo.value = row.vhclNo || "";
-            form.vhclNm.value = row.vhclNm || "";
+            form.vstVhclNo.value = row.vstVhclNo || "";
+            form.vstrNm.value = row.vstrNm || "";
           }
 
           /*
@@ -510,8 +480,8 @@
             document.getElementById("deleteTargetInfo").innerHTML =
                     '<div class="mngr-detail-item"><div class="mngr-detail-label">입주민</div><div class="mngr-detail-value">' + row.userNm + '</div></div>'
                     + '<div class="mngr-detail-item"><div class="mngr-detail-label">세대</div><div class="mngr-detail-value">' + row.dong + ' ' + row.ho + '</div></div>'
-                    + '<div class="mngr-detail-item"><div class="mngr-detail-label">차량번호</div><div class="mngr-detail-value">' + row.vhclNo + '</div></div>'
-                    + '<div class="mngr-detail-item"><div class="mngr-detail-label">차량명</div><div class="mngr-detail-value">' + (row.vhclNm || "-") + '</div></div>';
+                    + '<div class="mngr-detail-item"><div class="mngr-detail-label">차량번호</div><div class="mngr-detail-value">' + row.vstVhclNo + '</div></div>'
+                    + '<div class="mngr-detail-item"><div class="mngr-detail-label">차량명</div><div class="mngr-detail-value">' + (row.vstrNm || "-") + '</div></div>';
 
             deleteModal.classList.add("open");
           }

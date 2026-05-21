@@ -20,7 +20,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import kr.or.ddit.domain.apt.mgmtOffice.employee.service.IVisitVhclService;
+import kr.or.ddit.domain.apt.mgmtOffice.employee.vo.VstVhclRsvtVO;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,7 @@ public class ManagerMainController {
 
     // 관리사무소 목록 조회용 Mapper
     private final IMgmtOfficeMapper mgmtOfficeMapper;
-
+    private final IVisitVhclService visitVhclService;
 
     private final IMngResidentAuthService residentAuthService;
 
@@ -280,9 +281,25 @@ public class ManagerMainController {
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
+
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        String aptCmplexNo =
+                aptComplexService
+                        .selectOneAptCmplexByMgmtOfcNo(mgmtOfcNo);
+
+        List<VstVhclRsvtVO> vehicleList =
+                visitVhclService
+                        .getVisitVehicleList(aptCmplexNo);
+
+        model.addAttribute("vehicleList", vehicleList);
+
         return "apt/mgmtOffice/mngr_visit_auto";
     }
+
+
+
+
 
     // 시설 목록
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
