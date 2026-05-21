@@ -128,47 +128,6 @@
             box-sizing: border-box;
         }
 
-        /* ── 더보기 버튼 & 드롭다운 ── */
-        .post-more-wrap {
-            position: relative;
-            flex-shrink: 0;
-        }
-        .post-more-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-light);
-            font-size: 22px;
-            padding: 0 4px;
-            line-height: 1;
-        }
-        .more-dropdown {
-            display: none;
-            position: absolute;
-            top: 30px;
-            right: 0;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,.1);
-            min-width: 110px;
-            z-index: 100;
-            overflow: hidden;
-        }
-        .more-dropdown.open { display: block; }
-        .more-dropdown button {
-            display: block;
-            width: 100%;
-            padding: 11px 16px;
-            text-align: left;
-            background: none;
-            border: none;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--text-dark);
-            font-family: inherit;
-        }
         .more-dropdown button:hover { background: var(--green-pale); }
         .more-dropdown button.danger { color: #b64444; }
 
@@ -406,15 +365,6 @@
                     <div class="post-title-left">
                         <h2 class="post-title" id="ttl">${freeBoard.ttl}</h2>
                     </div>
-                    <c:if test="${freeBoard.wrtrId == pageContext.request.userPrincipal.name}">
-                        <div class="post-more-wrap">
-                            <button class="post-more-btn" id="moreBtn" aria-label="더보기">&#8942;</button>
-                            <div class="more-dropdown" id="moreDropdown">
-                                <button type="button" id="updateBtn">수정</button>
-                                <button type="button" id="deleteBtn" class="danger">삭제</button>
-                            </div>
-                        </div>
-                    </c:if>
                 </div>
 
                 <!-- 2) 작성자 아바타 + 이름 + 날짜 + 조회수 -->
@@ -437,17 +387,31 @@
                 <!-- 4) 첨부파일 칩 -->
                 <c:if test="${not empty attachFile}">
                     <div class="attach-row">
-                        <a href="/file/download/${attachFile.googleId}"
-                           class="attach-chip">
-                                ${attachFile.fileOgName}
-                        </a>
+                        <c:choose>
+                            <c:when test="${fn:startsWith(attachFile.mimeType, 'image/')}">
+                                <img src="${pageContext.request.contextPath}/file/display/${attachFile.googleId}"
+                                     alt="${attachFile.fileOgName}"
+                                     style="max-width:100%; max-height:400px; border-radius:10px; margin-bottom:10px; display:block; object-fit:contain;"/>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="${pageContext.request.contextPath}/file/download/${attachFile.googleId}"
+                                   class="attach-chip">
+                                    <span class="material-symbols-outlined" style="font-size:16px">attach_file</span>
+                                        ${attachFile.fileOgName}
+                                </a>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </c:if>
 
-                <!-- 5) 하단: 목록 버튼만 (수정/삭제는 더보기로) -->
+                <!-- 5) 하단 버튼(목록, 수정, 삭제) -->
                 <div class="btn-row">
                     <button type="button" class="btn-ghost"
                             onclick="location.href='/resident/boardFreeList/${aptCmplexNo}'">목록</button>
+                    <c:if test="${freeBoard.wrtrId == pageContext.request.userPrincipal.name}">
+                        <button type="button" class="btn-sub" id="updateBtn">수정</button>
+                        <button type="button" class="btn-danger" id="deleteBtn">삭제</button>
+                    </c:if>
                 </div>
 
             </section>
@@ -487,19 +451,6 @@
         var name = '${freeBoard.wrtrId}';
         if (el && name) el.textContent = name.charAt(0).toUpperCase();
     })();
-
-    /* ── 더보기 드롭다운 토글 ── */
-    var moreBtn = document.querySelector('#moreBtn');
-    if (moreBtn) {
-        moreBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            document.querySelector('#moreDropdown').classList.toggle('open');
-        });
-        document.addEventListener('click', function() {
-            var dd = document.querySelector('#moreDropdown');
-            if (dd) dd.classList.remove('open');
-        });
-    }
 
     /* ── 날짜 포맷 헬퍼: YY.MM.DD HH:mm ── */
     function fmtDate(raw) {
