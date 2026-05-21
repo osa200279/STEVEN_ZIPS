@@ -79,21 +79,18 @@
     <!--rent_listing + apt_detail + apt_ho_ty + apt_unit + apt_complex JOIN
     단지번호로 매물 정보(면적, 보증금, 월임대료, 세대수 등) 조회 -->
     <select id="selectRentListingByAptCmplexNo" parameterType="string" resultType="map">
-        SELECT ht.EXCLUSIVE_SIZE        /*kr.or.ddit.domain.central.mapper.IContractUserMapper.selectRentListingByAptCmplexNo*/
+        SELECT ht.EXCLUSIVE_SIZE
              , ht.room_cnt
              , ht.bathroom_cnt
              , rl.dpst_amt
              , rl.mthly_rent_amt
-             , au.unit_cnt
              , ac.apt_cmplex_nm
              , ac.dorojuso
-             , au.dong_nm
         FROM rent_listing rl
                  INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
                  INNER JOIN apt_ho_ty ht ON ad.ho_ty_no = ht.ho_ty_no
-                 INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
-                 INNER JOIN apt_complex ac ON au.apt_cmplex_no = ac.apt_cmplex_no
-        WHERE au.apt_cmplex_no = #{aptCmplexNo}
+                 INNER JOIN apt_complex ac ON ht.apt_cmplex_no = ac.apt_cmplex_no
+        WHERE ht.apt_cmplex_no = #{aptCmplexNo}
     </select>
 
     <select id="selectExcluseAreaDetail" parameterType="string" resultType="map">
