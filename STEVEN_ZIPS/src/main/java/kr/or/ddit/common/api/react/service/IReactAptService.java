@@ -7,4 +7,6 @@ public interface IReactAptService {
     Map<String, Object> searchApartment(String keyword, int page, int size);
 
     List<String> getDongList(String aptCmplexNo);
+
+    List<Map<String, Object>> getHoList(String aptCmplexNo, String dongNo);
 }

@@ -68,4 +68,9 @@ public class ReactAptServiceImpl implements IReactAptService {
     public List<String> getDongList(String aptCmplexNo) {
         return reactAptMapper.getDongList(aptCmplexNo);
     }
+
+    @Override
+    public List<Map<String, Object>> getHoList(String aptCmplexNo, String dongNo) {
+        return reactAptMapper.getHoList(aptCmplexNo, dongNo);
+    }
 }

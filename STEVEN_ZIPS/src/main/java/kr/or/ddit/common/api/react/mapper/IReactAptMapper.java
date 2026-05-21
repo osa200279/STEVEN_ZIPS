@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface IReactAptMapper {
@@ -12,4 +13,6 @@ public interface IReactAptMapper {
     int countApartment(String keyword);
 
     List<String> getDongList(String aptCmplexNo);
+
+    List<Map<String, Object>> getHoList(String aptCmplexNo, String dongNo);
 }

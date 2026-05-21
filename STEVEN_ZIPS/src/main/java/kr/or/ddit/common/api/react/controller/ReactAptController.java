@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/react/apt")
+@RequestMapping("/api/offlineCtrt/apt")
 public class ReactAptController {
 
     @Autowired
@@ -21,8 +21,8 @@ public class ReactAptController {
     @GetMapping("/search")
     public ResponseEntity<Map<String, Object>> searchApartment(
             @RequestParam String keyword
-            ,@RequestParam(defaultValue = "1") int page
-            ,@RequestParam(defaultValue = "10") int size
+            , @RequestParam(defaultValue = "1") int page
+            , @RequestParam(defaultValue = "10") int size
     ) {
 
         Map<String, Object> result = reactAptService.searchApartment(keyword, page, size);
@@ -36,6 +36,21 @@ public class ReactAptController {
     ) {
 
         List<String> result = reactAptService.getDongList(aptCmplexNo);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/ho-list")
+    public ResponseEntity<List<Map<String, Object>>> getHoList(
+            @RequestParam String aptCmplexNo,
+            @RequestParam String dongNo
+    ) {
+
+        List<Map<String, Object>> result =
+                reactAptService.getHoList(
+                        aptCmplexNo,
+                        dongNo
+                );
 
         return ResponseEntity.ok(result);
     }
