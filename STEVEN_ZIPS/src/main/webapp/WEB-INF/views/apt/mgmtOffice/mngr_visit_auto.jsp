@@ -164,6 +164,11 @@
             </div>
 
             <form id="residentCarForm">
+
+              <input type="hidden"
+                     name="vstVhclRsvtNo"
+                     id="vstVhclRsvtNo">
+
               <div class="modal-body">
                 <div class="form-section">
                   <div class="form-section-title">
@@ -296,6 +301,8 @@
 
           var deleteTargetIdx = null;
 
+          var currentMode = "create";
+
           /*
            * 차량 유형 코드 표시용
            * - DB에는 GEN/WRK/DLV/MOV/EMG 코드가 들어가고 화면에서는 한글명으로 보여줌
@@ -412,6 +419,10 @@
            * edit     : 값 채움 + 입력 가능 + 저장 버튼
            */
           function openModal(mode, idx) {
+
+
+            currentMode = mode;
+
             form.reset();
             setFormDisabled(false);
 
@@ -445,6 +456,9 @@
            * 선택한 행 데이터를 모달 폼에 넣는 함수
            */
           function fillForm(row) {
+            form.vstVhclRsvtNo.value =
+                    row.vstVhclRsvtNo || "";
+
             form.dong.value = row.dong || "";
             form.ho.value = row.ho || "";
             form.userNm.value = row.userNm || "";
@@ -523,14 +537,18 @@
            * - DB 연결 후에는 삭제 Controller 호출로 변경
            */
           deleteConfirmBtn.addEventListener("click", function () {
+
             if (deleteTargetIdx === null) return;
 
-            rowData.splice(deleteTargetIdx, 1);
-            renderTable(rowData);
-            closeDeleteModal();
-            alert("삭제되었습니다.");
-          });
+            var row = rowData[deleteTargetIdx];
 
+            location.href =
+                    "${pageContext.request.contextPath}"
+                    + "/manager/visit-vehicle/delete"
+                    + "?vstVhclRsvtNo="
+                    + row.vstVhclRsvtNo
+                    + "&mgmtOfcNo=${mgmtOfcNo}";
+          });
           /*
            * 등록/상세/수정 모달 바깥 영역 클릭 시 닫기
            */
@@ -554,12 +572,21 @@
            * - 현재는 화면 확인용 alert
            * - DB 연결 시 fetch 또는 일반 form submit으로 변경
            */
-          form.addEventListener("submit", function (e) {
-            e.preventDefault();
-            alert("저장 처리 연결 예정입니다.");
-            closeModal();
-          });
+          form.addEventListener("submit", function () {
 
+            if (currentMode === "create") {
+
+              form.action =
+                      "${pageContext.request.contextPath}/manager/visit-vehicle/register";
+
+            } else {
+
+              form.action =
+                      "${pageContext.request.contextPath}/manager/visit-vehicle/update";
+            }
+
+            form.method = "post";
+          });
           /*
            * 화면 처음 열릴 때 목록 출력
            */

@@ -101,7 +101,7 @@ public class VisitVhclController {
             visitVhclService
                     .registerVisitVehicle(vo);
 
-            return "redirect:/manager/visit-vehicle/list/"
+            return "redirect:/manager/visit/auto/"
                     + mgmtOfcNo;
 
         } catch (Exception e){
@@ -207,7 +207,7 @@ public class VisitVhclController {
      * 삭제
      */
     @PreAuthorize("hasRole('MNGR')")
-    @PostMapping("/delete")
+    @GetMapping("/delete")
     public String deleteVehicle(
 
             @RequestParam("vstVhclRsvtNo")
@@ -228,7 +228,7 @@ public class VisitVhclController {
             log.error("방문차량 삭제 실패", e);
         }
 
-        return "redirect:/manager/visit-vehicle/list/"
+        return "redirect:/manager/visit/auto/"
                 + mgmtOfcNo;
     }
 
