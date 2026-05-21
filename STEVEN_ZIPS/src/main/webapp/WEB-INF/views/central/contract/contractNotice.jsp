@@ -75,19 +75,10 @@
         <section class="bg-white p-6 rounded-lg border border-[#eef2eb] shadow-sm space-y-4">
             <div class="grid grid-cols-4 gap-4">
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-500 ml-1">지역</label>
-                    <select id="searchRegion" class="w-full bg-[#f1f3ef] border-none rounded-lg py-3 px-4 text-sm">
-                        <option value="">전체</option>
-                        <option value="서울">서울</option>
-                        <option value="경기">경기</option>
-                        <option value="인천">인천</option>
-                    </select>
-                </div>
-                <div class="space-y-2">
                     <label class="text-xs font-bold text-slate-500 ml-1">상태</label>
                     <select id="searchStatus" class="w-full bg-[#f1f3ef] border-none rounded-lg py-3 px-4 text-sm">
                         <option value="">전체</option>
-                        <option value="진행중">진행중</option>
+                        <option value="공고중">공고중</option>
                         <option value="마감">마감</option>
                     </select>
                 </div>

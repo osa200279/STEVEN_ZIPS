@@ -294,7 +294,7 @@
                 </c:choose>
             </div>
 
-                <%-- 보완 사유: SUPPLEMENT이고 사유 있을 때만 --%>
+            <%-- 보완 사유: SUPPLEMENT이고 사유 있을 때만 --%>
             <c:if test="${status == 'SUPPLEMENT' && not empty detail.RJCT_RSN_CN}">
                 <div class="px-7 py-4 bg-orange-50 border-b border-orange-100 flex items-start gap-2">
                     <span class="material-symbols-outlined text-[16px] text-orange-400 mt-0.5">error</span>
@@ -305,19 +305,19 @@
                 </div>
             </c:if>
 
-                <%-- 테이블 헤더 --%>
-            <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;padding:10px 24px;background:#f4f7f4;border-bottom:1px solid #dde8dd;font-size:12px;font-weight:700;color:#6b7280">
+            <%-- 테이블 헤더 --%>
+            <div style="display:grid;grid-template-columns:0.5fr 1fr 1fr 1fr;padding:10px 24px;background:#f4f7f4;border-bottom:1px solid #dde8dd;font-size:12px;font-weight:700;color:#6b7280">
                 <span>서류명</span>
-                <span style="text-align:center">제출일</span>
-                <span style="text-align:center">상태</span>
-                <span style="text-align:center">제출</span>
+                <span style="text-align: center">제출일</span>
+                <span style="text-align: center">상태</span>
+                <span style="text-align: center">제출</span>
             </div>
 
-                <%-- 서류 목록 --%>
+            <%-- 서류 목록 --%>
             <c:forEach var="doc" items="${docList}">
-                <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;align-items:center;padding:15px 24px;border-bottom:1px solid #f1f5f0;font-size:14px">
+                <div style="display:grid;grid-template-columns:0.5fr 1fr 1fr 1fr;align-items:center;padding:15px 24px;border-bottom:1px solid #f1f5f0;font-size:14px">
 
-                        <%-- 서류명 --%>
+                    <%-- 서류명 --%>
                     <div class="flex items-center gap-2.5">
                         <c:choose>
                             <c:when test="${doc.ATCH_FILE_ID != null}">
@@ -340,7 +340,7 @@
                         </span>
                     </div>
 
-                        <%-- 제출일 --%>
+                    <%-- 제출일 --%>
                     <span style="text-align:center"
                           class="text-sm ${doc.ATCH_FILE_ID == null ? 'text-slate-300' : 'text-slate-500'}">
                     <c:choose>
@@ -349,9 +349,12 @@
                     </c:choose>
                 </span>
 
-                        <%-- 상태 --%>
+                    <%-- 상태 --%>
                     <div style="text-align:center">
                         <c:choose>
+                            <c:when test="${status == 'SUPPLEMENT' && doc.ATCH_FILE_ID != null}">
+                                <span class="badge bg-orange-50 text-orange-500">보완필요</span>
+                            </c:when>
                             <c:when test="${doc.ATCH_FILE_ID != null}">
                                 <span class="badge bg-green-50 text-green-600">제출완료</span>
                             </c:when>
@@ -361,26 +364,23 @@
                         </c:choose>
                     </div>
 
-                        <%-- 제출 버튼 --%>
+                    <%-- 제출 버튼 --%>
                     <div style="text-align:center">
                         <c:choose>
                             <c:when test="${status == 'QUALIFIED' || status == 'INSPECTION'}">
                                 <span class="text-xs text-slate-300">-</span>
                             </c:when>
                             <c:otherwise>
-
-                                <div class="flex flex-col items-center gap-1">
-                                    <div class="flex items-center gap-2">
+                                <div class="flex items-center justify-center gap-2">
+                                    <input type="file" id="file_${doc.SBMSN_DOC_TY_CD}" style="display:none"
+                                           accept=".pdf,.jpg,.jpeg,.png"
+                                           onchange="document.querySelector('#fileName_${doc.SBMSN_DOC_TY_CD}').textContent = this.files[0]?.name ?? ''"/>
+                                    <label for="file_${doc.SBMSN_DOC_TY_CD}"
+                                           class="text-xs px-3 py-1.5 bg-white border border-slate-300 rounded-full cursor-pointer hover:bg-slate-50 text-slate-600 whitespace-nowrap">
+                                        파일선택
+                                    </label>
                                     <span id="fileName_${doc.SBMSN_DOC_TY_CD}"
-                                          class="text-xs text-slate-400 w-[100px] truncate"></span>
-                                        <input type="file" id="file_${doc.SBMSN_DOC_TY_CD}" style="display:none"
-                                               accept=".pdf,.jpg,.jpeg,.png"
-                                               onchange="document.querySelector('#fileName_${doc.SBMSN_DOC_TY_CD}').textContent = this.files[0]?.name ?? ''"/>
-                                        <label for="file_${doc.SBMSN_DOC_TY_CD}"
-                                               class="text-xs px-3 py-1.5 bg-white border border-slate-300 rounded-full cursor-pointer hover:bg-slate-50 text-slate-600">
-                                            파일선택
-                                        </label>
-                                    </div>
+                                          class="text-xs text-slate-400 max-w-[120px] truncate"></span>
                                 </div>
                             </c:otherwise>
                         </c:choose>
@@ -388,7 +388,7 @@
                 </div>
             </c:forEach>
 
-                <%-- 신청 취소 버튼 --%>
+            <%-- 신청 취소 버튼 --%>
             <c:if test="${status == 'WINNER' || status == 'SUPPLEMENT'}">
                 <div class="px-7 py-5 border-t border-[#eef2eb] bg-[#f4f7f4] flex justify-end gap-3">
                     <button onclick="submitAllDocs()"
@@ -482,9 +482,9 @@
         });
         formData.append('aplctNo', '${detail.APLCT_NO}');
 
-        const res    = await fetch('/contract/insertContractDoc.do', {
+        const res = await fetch('/contract/insertContractDoc.do', {
             method: 'POST',
-            headers: { [csrfHeader]: csrfToken },
+            headers: {[csrfHeader]: csrfToken},
             body: formData
         });
         const result = await res.json();
