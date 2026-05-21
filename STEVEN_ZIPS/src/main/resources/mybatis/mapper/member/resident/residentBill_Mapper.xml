@@ -43,7 +43,7 @@
             U.DONG_NO,
             U.DONG_NM,
             H.HO,
-            U.DONG_NM || ' ' || H.HO || '호' AS DISPLAY_DONG_HO
+            U.DONG_NM || '동 ' || H.HO || '호' AS DISPLAY_DONG_HO
         FROM HSHLD_HEAD HH
                  JOIN APT_DETAIL H
                       ON HH.HO_NO = H.HO_NO

@@ -44,7 +44,7 @@ public class ResidentBillController {
     }
 
     // 내 세대 정보 조회
-    @GetMapping("/my-house")
+    @GetMapping("/my-houses")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> selectMyHouseList(
             @AuthenticationPrincipal CustomUser customUser

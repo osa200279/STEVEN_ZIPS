@@ -52,7 +52,12 @@
     <!-- 부과 대상 세대 목록 조회 -->
     <select id="selectBillTargetHouseList" resultMap="billMap">
         SELECT
-            H.HO_NO
+            H.HO_NO,
+            H.DONG_NO,
+            U.DONG_NM,
+            H.HO,
+            H.HO_STTS_CD,
+            U.DONG_NM || ' ' || H.HO || '호' AS DISPLAY_DONG_HO
         FROM APT_DETAIL H
                  JOIN APT_UNIT U
                       ON H.DONG_NO = U.DONG_NO

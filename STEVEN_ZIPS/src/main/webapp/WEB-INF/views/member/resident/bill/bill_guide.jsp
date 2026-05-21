@@ -62,62 +62,117 @@
         <h1 class="page-title">납부안내</h1>
         <p class="page-desc">납부 현황 카드, 상세 납부 내역, 연체 내역, 기타 청구 내역과 즉시 납부하기 버튼을 포함한 납부안내 화면입니다.</p>
 
+        <div id="messageBox" class="notice-card" style="display:none;"></div>
+
+        <section class="panel">
+          <div class="section-hd">
+            <h3>납부안내 조회</h3>
+            <span>세대와 관리년월을 선택해 주세요.</span>
+          </div>
+
+          <div class="search-row">
+            <select id="myHouseSelect" class="fake-select" onchange="onHouseChange()">
+              <option value="">세대 정보 확인 중...</option>
+            </select>
+
+            <select id="billYear" class="fake-select"></select>
+
+            <select id="billMonth" class="fake-select">
+              <option value="1">1월</option>
+              <option value="2">2월</option>
+              <option value="3">3월</option>
+              <option value="4">4월</option>
+              <option value="5">5월</option>
+              <option value="6">6월</option>
+              <option value="7">7월</option>
+              <option value="8">8월</option>
+              <option value="9">9월</option>
+              <option value="10">10월</option>
+              <option value="11">11월</option>
+              <option value="12">12월</option>
+            </select>
+
+            <button type="button" class="btn-main" onclick="loadPaymentGuide()">조회</button>
+          </div>
+        </section>
+
         <section class="stats-grid">
           <div class="stat-card">
             <div class="stat-label">당월 납부대상</div>
-            <div class="stat-value">152,400원</div>
-            <div class="stat-sub">2026년 4월분</div>
+            <div class="stat-value" id="statBillAmt">0원</div>
+            <div class="stat-sub" id="statBillYm">-</div>
           </div>
+
           <div class="stat-card">
-          <div class="stat-label">납부 기한</div>
-          <div class="stat-value">04/30</div>
-          <div class="stat-sub">자동이체 신청 가능</div>
-        </div>
+            <div class="stat-label">납부 기한</div>
+            <div class="stat-value" id="statDueDt">-</div>
+            <div class="stat-sub" id="statDueText">납부기한 확인</div>
+          </div>
+
           <div class="stat-card">
             <div class="stat-label">연체금</div>
-            <div class="stat-value">0원</div>
-            <div class="stat-sub">미발생</div>
+            <div class="stat-value" id="statLateFee">0원</div>
+            <div class="stat-sub" id="statLateText">미발생</div>
           </div>
+
           <div class="stat-card">
-            <div class="stat-label">영수증 조회</div>
-            <div class="stat-value">가능</div>
-            <div class="stat-sub">납부이력 확인</div>
+            <div class="stat-label">납부 상태</div>
+            <div class="stat-value" id="statPayStatus">-</div>
+            <div class="stat-sub" id="statReceipt">영수증 조회</div>
           </div>
         </section>
+
         <section class="grid-2">
           <div class="panel">
             <div class="section-hd">
               <h3>상세 납부 내역</h3>
-              <span>기본 청구</span>
+              <span>관리비 상세 항목</span>
             </div>
+
             <table class="data-table mini-table">
               <thead>
               <tr>
                 <th>항목</th>
+                <th>구분</th>
                 <th>금액</th>
               </tr>
               </thead>
-              <tbody>
+              <tbody id="detailTbody">
               <tr>
-                <td>공동관리비</td>
-                <td>71,700원</td>
-              </tr>
-              <tr>
-                <td>세대사용료</td>
-                <td>45,700원</td>
-              </tr>
-              <tr>
-                <td>장기수선충당금</td>
-                <td>35,000원</td>
+                <td colspan="3">조회된 납부안내가 없습니다.</td>
               </tr>
               </tbody>
             </table>
           </div>
+
           <div class="panel">
             <div class="section-hd">
-              <h3>기타 청구 / 연체</h3>
-              <span>추가 항목</span>
+              <h3>납부 정보</h3>
+              <span>고지서 기준</span>
             </div>
+
+            <div class="label-grid">
+              <div class="th">고지서 번호</div>
+              <div id="infoBillNo">-</div>
+              <div class="th">세대</div>
+              <div id="infoHouse">-</div>
+
+              <div class="th">고지월</div>
+              <div id="infoBillYm">-</div>
+              <div class="th">고지일</div>
+              <div id="infoPblancDt">-</div>
+
+              <div class="th">납부기한</div>
+              <div id="infoDueDt">-</div>
+              <div class="th">납부상태</div>
+              <div id="infoPayStatus">-</div>
+
+              <div class="th">청구금액</div>
+              <div id="infoBillAmt">0원</div>
+              <div class="th">납부금액</div>
+              <div id="infoPayAmt">0원</div>
+            </div>
+
             <table class="data-table mini-table">
               <thead>
               <tr>
@@ -129,26 +184,22 @@
               <tbody>
               <tr>
                 <td>연체료</td>
-                <td>0원</td>
-                <td><span class="badge ok">없음</span></td>
+                <td id="lateFeeAmt">0원</td>
+                <td><span class="badge ok" id="lateFeeBadge">없음</span></td>
               </tr>
               <tr>
-                <td>주차 추가등록</td>
-                <td>10,000원</td>
-                <td><span class="badge info">청구예정</span></td>
-              </tr>
-              <tr>
-                <td>공용시설 이용료</td>
-                <td>8,000원</td>
-                <td><span class="badge ok">정산완료</span></td>
+                <td>납부상태</td>
+                <td id="payStatusAmt">0원</td>
+                <td><span class="badge info" id="payStatusBadge">-</span></td>
               </tr>
               </tbody>
             </table>
           </div>
         </section>
+
         <div class="btn-row">
-          <a href="javascript:void(0);" class="btn-main">즉시 납부하기</a>
-          <a href="javascript:void(0);" class="btn-sub">상세 명세서 PDF 다운로드</a>
+          <a href="javascript:void(0);" class="btn-main" onclick="goPayment()">즉시 납부하기</a>
+          <a href="javascript:void(0);" class="btn-sub" onclick="downloadStatement()">상세 명세서 PDF 다운로드</a>
           <a href="${pageContext.request.contextPath}/fee/receipt" class="btn-ghost">관리비 영수증 조회</a>
         </div>
 
@@ -156,5 +207,400 @@
     </main>
   </div>
   <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
+  <script>
+    const contextPath = '${pageContext.request.contextPath}';
+
+    let myHouseList = [];
+    let selectedHouse = null;
+    let currentBill = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      initSearchDate();
+      loadMyHouseList();
+      resetGuideView();
+    });
+
+    function initSearchDate() {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const yearSelect = document.getElementById('billYear');
+
+      yearSelect.innerHTML = '';
+
+      for (let y = currentYear - 2; y <= currentYear + 1; y++) {
+        const option = document.createElement('option');
+        option.value = y;
+        option.textContent = y + '년';
+
+        if (y === currentYear) {
+          option.selected = true;
+        }
+
+        yearSelect.appendChild(option);
+      }
+
+      document.getElementById('billMonth').value = now.getMonth() + 1;
+    }
+
+    function getBillYm() {
+      const year = document.getElementById('billYear').value;
+      const month = document.getElementById('billMonth').value;
+      return String(year) + String(month).padStart(2, '0');
+    }
+
+    async function loadMyHouseList() {
+      try {
+        const response = await fetch(contextPath + '/resident/bill/my-houses');
+
+        if (!response.ok) {
+          showMessage('세대 목록 조회 중 오류가 발생했습니다. 상태코드: ' + response.status);
+          renderHouseSelect([]);
+          return;
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+          showMessage(result.message || '세대 정보를 찾을 수 없습니다.');
+          renderHouseSelect([]);
+          return;
+        }
+
+        myHouseList = result.houseList || [];
+        renderHouseSelect(myHouseList);
+
+      } catch (e) {
+        console.error(e);
+        showMessage('세대 목록 조회 중 오류가 발생했습니다.');
+        renderHouseSelect([]);
+      }
+    }
+
+    function renderHouseSelect(list) {
+      const select = document.getElementById('myHouseSelect');
+      select.innerHTML = '';
+
+      if (!list || list.length === 0) {
+        select.innerHTML = '<option value="">세대 정보 없음</option>';
+        selectedHouse = null;
+        return;
+      }
+
+      select.appendChild(new Option('세대 선택', ''));
+
+      list.forEach(function (house) {
+        const option = document.createElement('option');
+        option.value = house.hoNo;
+        option.textContent = house.displayDongHo || house.hoNo;
+        select.appendChild(option);
+      });
+
+      if (list.length === 1) {
+        select.value = list[0].hoNo;
+        selectedHouse = list[0];
+        loadPaymentGuide();
+      }
+    }
+
+    function onHouseChange() {
+      const hoNo = document.getElementById('myHouseSelect').value;
+
+      selectedHouse = myHouseList.find(function (house) {
+        return house.hoNo === hoNo;
+      }) || null;
+
+      resetGuideView();
+    }
+
+    async function loadPaymentGuide() {
+      hideMessage();
+
+      if (!selectedHouse || !selectedHouse.hoNo) {
+        showMessage('조회할 세대를 선택해 주세요.');
+        return;
+      }
+
+      const billYm = getBillYm();
+
+      try {
+        const listUrl = contextPath
+                + '/resident/bill/list?hoNo=' + encodeURIComponent(selectedHouse.hoNo)
+                + '&billYm=' + encodeURIComponent(billYm);
+
+        const listResponse = await fetch(listUrl);
+
+        if (!listResponse.ok) {
+          showMessage('납부안내 조회 중 오류가 발생했습니다. 상태코드: ' + listResponse.status);
+          return;
+        }
+
+        const listResult = await listResponse.json();
+
+        if (!listResult.success) {
+          showMessage(listResult.message || '납부안내 조회에 실패했습니다.');
+          return;
+        }
+
+        const list = listResult.list || [];
+
+        if (list.length === 0) {
+          resetGuideView();
+          showMessage(formatBillYm(billYm) + ' 납부안내 내역이 없습니다.');
+          return;
+        }
+
+        const billNo = list[0].billNo;
+
+        const detailResponse = await fetch(contextPath + '/resident/bill/detail/' + encodeURIComponent(billNo));
+
+        if (!detailResponse.ok) {
+          showMessage('납부 상세 조회 중 오류가 발생했습니다. 상태코드: ' + detailResponse.status);
+          return;
+        }
+
+        const detailResult = await detailResponse.json();
+
+        if (!detailResult.success) {
+          showMessage(detailResult.message || '납부 상세 조회에 실패했습니다.');
+          return;
+        }
+
+        currentBill = detailResult.bill;
+        renderPaymentGuide(currentBill);
+
+      } catch (e) {
+        console.error(e);
+        showMessage('납부안내 조회 중 오류가 발생했습니다.');
+      }
+    }
+
+    function renderPaymentGuide(bill) {
+      const detailList = bill.detailList || [];
+
+      const billAmt = Number(bill.billTotAmt || 0);
+      const payAmt = Number(bill.pymtAmt || 0);
+      const lateFeeAmt = Number(bill.lateFeeAmt || 0);
+
+      document.getElementById('statBillAmt').textContent = formatNumber(billAmt) + '원';
+      document.getElementById('statBillYm').textContent = formatBillYm(bill.billYm);
+
+      document.getElementById('statDueDt').textContent = formatShortDate(bill.dueDt);
+      document.getElementById('statDueText').textContent = getDueText(bill);
+
+      document.getElementById('statLateFee').textContent = formatNumber(lateFeeAmt) + '원';
+      document.getElementById('statLateText').textContent = lateFeeAmt > 0 ? '연체금 발생' : '미발생';
+
+      document.getElementById('statPayStatus').textContent = bill.pymtSttsNm || bill.pymtSttsCd || '-';
+      document.getElementById('statReceipt').textContent = bill.pymtSttsCd === 'PAID' ? '영수증 조회 가능' : '납부 후 조회 가능';
+
+      document.getElementById('infoBillNo').textContent = bill.billNo || '-';
+      document.getElementById('infoHouse').textContent = bill.displayDongHo || selectedHouse.displayDongHo || '-';
+      document.getElementById('infoBillYm').textContent = formatBillYm(bill.billYm);
+      document.getElementById('infoPblancDt').textContent = formatDate(bill.billPblancDt);
+      document.getElementById('infoDueDt').textContent = formatDate(bill.dueDt);
+      document.getElementById('infoPayStatus').textContent = bill.pymtSttsNm || bill.pymtSttsCd || '-';
+      document.getElementById('infoBillAmt').textContent = formatNumber(billAmt) + '원';
+      document.getElementById('infoPayAmt').textContent = formatNumber(payAmt) + '원';
+
+      document.getElementById('lateFeeAmt').textContent = formatNumber(lateFeeAmt) + '원';
+      document.getElementById('lateFeeBadge').textContent = lateFeeAmt > 0 ? '발생' : '없음';
+      document.getElementById('lateFeeBadge').className = lateFeeAmt > 0 ? 'badge danger' : 'badge ok';
+
+      document.getElementById('payStatusAmt').textContent =
+              bill.pymtSttsCd === 'PAID' ? formatNumber(payAmt) + '원' : formatNumber(billAmt) + '원';
+
+      document.getElementById('payStatusBadge').textContent = bill.pymtSttsNm || bill.pymtSttsCd || '-';
+      document.getElementById('payStatusBadge').className = getStatusBadgeClass(bill.pymtSttsCd);
+
+      renderDetailList(detailList);
+    }
+
+    function renderDetailList(detailList) {
+      const tbody = document.getElementById('detailTbody');
+      tbody.innerHTML = '';
+
+      if (!detailList || detailList.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3">상세 납부 내역이 없습니다.</td></tr>';
+        return;
+      }
+
+      detailList.forEach(function (item) {
+        const tr = document.createElement('tr');
+
+        tr.innerHTML =
+                '<td>' + escapeHtml(item.billItemNm || '-') + '</td>' +
+                '<td>' + escapeHtml(item.billItemCd || '-') + '</td>' +
+                '<td>' + formatNumber(item.billItemAmt) + '원</td>';
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function resetGuideView() {
+      currentBill = null;
+
+      document.getElementById('statBillAmt').textContent = '0원';
+      document.getElementById('statBillYm').textContent = '-';
+      document.getElementById('statDueDt').textContent = '-';
+      document.getElementById('statDueText').textContent = '납부기한 확인';
+      document.getElementById('statLateFee').textContent = '0원';
+      document.getElementById('statLateText').textContent = '미발생';
+      document.getElementById('statPayStatus').textContent = '-';
+      document.getElementById('statReceipt').textContent = '영수증 조회';
+
+      document.getElementById('infoBillNo').textContent = '-';
+      document.getElementById('infoHouse').textContent = '-';
+      document.getElementById('infoBillYm').textContent = '-';
+      document.getElementById('infoPblancDt').textContent = '-';
+      document.getElementById('infoDueDt').textContent = '-';
+      document.getElementById('infoPayStatus').textContent = '-';
+      document.getElementById('infoBillAmt').textContent = '0원';
+      document.getElementById('infoPayAmt').textContent = '0원';
+
+      document.getElementById('lateFeeAmt').textContent = '0원';
+      document.getElementById('lateFeeBadge').textContent = '없음';
+      document.getElementById('lateFeeBadge').className = 'badge ok';
+
+      document.getElementById('payStatusAmt').textContent = '0원';
+      document.getElementById('payStatusBadge').textContent = '-';
+      document.getElementById('payStatusBadge').className = 'badge info';
+
+      document.getElementById('detailTbody').innerHTML =
+              '<tr><td colspan="3">조회된 납부안내가 없습니다.</td></tr>';
+    }
+
+    function getDueText(bill) {
+      if (!bill || !bill.dueDt) {
+        return '납부기한 확인';
+      }
+
+      if (bill.pymtSttsCd === 'PAID') {
+        return '납부완료';
+      }
+
+      const today = new Date();
+      const due = new Date(bill.dueDt);
+
+      today.setHours(0, 0, 0, 0);
+      due.setHours(0, 0, 0, 0);
+
+      const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        return '납부기한 경과';
+      }
+
+      if (diffDays === 0) {
+        return '오늘까지 납부';
+      }
+
+      return diffDays + '일 남음';
+    }
+
+    function getStatusBadgeClass(code) {
+      if (code === 'PAID') {
+        return 'badge ok';
+      }
+
+      if (code === 'OVERDUE') {
+        return 'badge danger';
+      }
+
+      if (code === 'READY' || code === 'UNPAID') {
+        return 'badge wait';
+      }
+
+      return 'badge info';
+    }
+
+    function goPayment() {
+      if (!currentBill) {
+        showMessage('납부할 고지서를 먼저 조회해 주세요.');
+        return;
+      }
+
+      alert('결제 기능은 결제 모듈 연결 후 처리하면 됩니다. 고지서 번호: ' + currentBill.billNo);
+    }
+
+    function downloadStatement() {
+      if (!currentBill) {
+        showMessage('명세서를 다운로드할 고지서를 먼저 조회해 주세요.');
+        return;
+      }
+
+      alert('PDF 다운로드 기능은 추후 연결하면 됩니다. 고지서 번호: ' + currentBill.billNo);
+    }
+
+    function showMessage(message) {
+      const box = document.getElementById('messageBox');
+      box.style.display = 'block';
+      box.textContent = message;
+    }
+
+    function hideMessage() {
+      const box = document.getElementById('messageBox');
+      box.style.display = 'none';
+      box.textContent = '';
+    }
+
+    function formatNumber(value) {
+      const num = Number(value || 0);
+
+      if (isNaN(num)) {
+        return '0';
+      }
+
+      return num.toLocaleString();
+    }
+
+    function formatBillYm(value) {
+      if (!value || String(value).length !== 6) {
+        return '-';
+      }
+
+      const str = String(value);
+      return str.substring(0, 4) + '년 ' + Number(str.substring(4, 6)) + '월';
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return '-';
+      }
+
+      const date = new Date(value);
+
+      if (isNaN(date.getTime())) {
+        return value;
+      }
+
+      return date.getFullYear() + '-'
+              + String(date.getMonth() + 1).padStart(2, '0') + '-'
+              + String(date.getDate()).padStart(2, '0');
+    }
+
+    function formatShortDate(value) {
+      if (!value) {
+        return '-';
+      }
+
+      const date = new Date(value);
+
+      if (isNaN(date.getTime())) {
+        return value;
+      }
+
+      return String(date.getMonth() + 1).padStart(2, '0') + '/'
+              + String(date.getDate()).padStart(2, '0');
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+              .replaceAll('&', '&amp;')
+              .replaceAll('<', '&lt;')
+              .replaceAll('>', '&gt;')
+              .replaceAll('"', '&quot;')
+              .replaceAll("'", '&#039;');
+    }
+  </script>
 </body>
 </html>

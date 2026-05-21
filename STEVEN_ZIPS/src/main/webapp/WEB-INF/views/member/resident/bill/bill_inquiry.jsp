@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
   <title>관리비 조회</title>
 
@@ -17,10 +17,6 @@
       background: var(--bg);
       color: var(--text-dark);
       margin: 0;
-    }
-
-    .material-symbols-outlined {
-      font-family: 'Material Symbols Outlined' !important;
     }
 
     .main-shell {
@@ -39,7 +35,7 @@
     }
 
     .page-content-wrap {
-      max-width: 1080px;
+      max-width: 1120px;
       width: 100%;
       margin: 0 auto;
     }
@@ -81,18 +77,15 @@
     }
 
     .panel,
-    .card,
     .stat-card,
-    .bill-card,
-    .detail-panel {
+    .bill-card {
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: 14px;
       box-shadow: 0 10px 24px rgba(30, 60, 40, .05);
     }
 
-    .panel,
-    .card {
+    .panel {
       padding: 20px;
       margin-bottom: 20px;
     }
@@ -119,99 +112,49 @@
       color: var(--text-light);
     }
 
-    .unit-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .unit-card {
-      position: relative;
-      width: 100%;
-      min-height: 128px;
-      padding: 18px 18px 16px;
+    .search-box {
+      padding: 16px;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      background: #fff;
-      text-align: left;
-      cursor: pointer;
-      transition: .16s ease;
-      font-family: inherit;
+      border-radius: 12px;
+      background: #f8fafc;
     }
 
-    .unit-card:hover {
-      border-color: var(--green-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 10px 22px rgba(30, 60, 40, .08);
-    }
-
-    .unit-card.active {
-      border: 2px solid var(--green-dark);
-      background: #f7fbf8;
-    }
-
-    .unit-card.active::after {
-      content: "선택됨";
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      padding: 5px 9px;
-      border-radius: 999px;
-      background: var(--green-dark);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .unit-apt {
-      padding-right: 70px;
-      margin-bottom: 10px;
-      font-size: 12px;
-      color: var(--text-light);
-      line-height: 1.5;
-    }
-
-    .unit-dongho {
-      font-size: 21px;
-      font-weight: 800;
-      color: var(--green-dark);
-      line-height: 1.45;
-      letter-spacing: -.5px;
-    }
-
-    .unit-meta {
+    .search-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 12px;
-    }
-
-    .chip {
-      display: inline-flex;
       align-items: center;
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      background: #edf5ef;
-      color: var(--green-dark);
+      gap: 10px;
     }
 
-    .action-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 18px;
+    .search-row label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    .form-control {
+      height: 38px;
+      min-width: 120px;
+      border: 1px solid #d8ddd4;
+      background: #fff;
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 13px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    .house-select {
+      min-width: 180px;
     }
 
     .btn-main,
-    .btn-sub,
-    .btn-ghost {
+    .btn-sub {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 110px;
-      padding: 12px 18px;
+      min-width: 100px;
+      padding: 11px 16px;
       border-radius: 10px;
       font-size: 13px;
       font-weight: 800;
@@ -227,106 +170,67 @@
       color: #fff;
     }
 
-    .btn-main:hover {
-      filter: brightness(.94);
-    }
-
-    .btn-main:disabled,
-    .btn-sub:disabled,
-    .btn-ghost:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
-
     .btn-sub {
       background: #edf5ef;
       color: var(--green-dark);
+      border: 1px solid #cfdcd2;
     }
 
-    .btn-ghost {
-      background: #fff;
-      color: var(--text-mid);
-      border: 1px solid var(--border);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-
-    .stat-card {
-      padding: 18px 18px 16px;
-    }
-
-    .stat-label {
-      color: var(--text-light);
-      font-size: 12px;
-      margin-bottom: 8px;
-    }
-
-    .stat-value {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--text-dark);
-      letter-spacing: -.6px;
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .stat-value.green {
-      color: var(--green-dark);
-    }
-
-    .stat-value.red {
-      color: #d71920;
-    }
-
-    .bill-toolbar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .month-input {
-      height: 40px;
-      min-width: 152px;
-      padding: 0 12px;
-      border: 1px solid var(--border);
+    .message-box {
+      display: none;
+      padding: 12px 14px;
       border-radius: 10px;
-      background: #fff;
-      color: var(--text-dark);
       font-size: 13px;
-      font-family: inherit;
-      box-sizing: border-box;
+      font-weight: 800;
+      margin-bottom: 16px;
     }
 
-    .bill-layout {
+    .message-box.show {
+      display: block;
+    }
+
+    .message-box.info {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    .message-box.warn {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .message-box.error {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .layout-grid {
       display: grid;
-      grid-template-columns: 380px minmax(0, 1fr);
-      gap: 16px;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+      align-items: start;
     }
 
     .bill-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      max-height: 560px;
-      overflow-y: auto;
-      padding-right: 2px;
+      gap: 12px;
     }
 
     .bill-card {
-      padding: 16px;
+      padding: 18px;
+      text-align: left;
       cursor: pointer;
       transition: .15s ease;
-      box-shadow: none;
+      border: 1px solid var(--border);
     }
 
     .bill-card:hover {
       border-color: var(--green-dark);
-      background: #fbfdfb;
+      transform: translateY(-1px);
     }
 
     .bill-card.active {
@@ -338,31 +242,119 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
     .bill-month {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
       color: var(--green-dark);
     }
 
     .bill-amount {
-      margin-bottom: 8px;
       font-size: 22px;
-      font-weight: 800;
-      color: var(--text-dark);
-      letter-spacing: -.5px;
+      font-weight: 900;
+      color: #111827;
+      margin-bottom: 10px;
     }
 
     .bill-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 12px;
       font-size: 12px;
       color: var(--text-light);
-      line-height: 1.6;
+      line-height: 1.7;
+    }
+
+    .detail-panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(30, 60, 40, .05);
+      overflow: hidden;
+    }
+
+    .detail-head {
+      padding: 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-head h3 {
+      margin: 0 0 8px;
+      color: var(--green-dark);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .detail-head p {
+      margin: 0;
+      color: var(--text-light);
+      font-size: 12px;
+    }
+
+    .detail-body {
+      padding: 20px;
+    }
+
+    .info-table,
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    .info-table {
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .info-table th {
+      width: 110px;
+      background: #f3f8f4;
+      color: var(--text-mid);
+      font-weight: 800;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dark);
+    }
+
+    .data-table thead th {
+      background: #f3f8f4;
+      color: var(--text-mid);
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 800;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table tbody td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #edf0eb;
+      color: var(--text-dark);
+      vertical-align: middle;
+    }
+
+    .text-right {
+      text-align: right !important;
+    }
+
+    .td-bold {
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--text-light);
+      padding: 32px 12px !important;
     }
 
     .badge {
@@ -372,227 +364,55 @@
       border-radius: 999px;
       font-size: 11px;
       font-weight: 800;
-      white-space: nowrap;
     }
 
-    .badge.READY {
-      background: #edf4fb;
-      color: #2d6688;
-    }
-
-    .badge.PAID {
+    .badge.ok {
       background: #ecf7ef;
       color: #2f7a4d;
     }
 
-    .badge.UNPAID {
+    .badge.wait {
       background: #fff5df;
       color: #9a6b00;
     }
 
-    .badge.OVERDUE {
+    .badge.danger {
       background: #fbe8e8;
       color: #a23a3a;
     }
 
-    .detail-panel {
-      overflow: hidden;
-      min-height: 420px;
-      box-shadow: none;
+    .badge.info {
+      background: #edf4fb;
+      color: #2d6688;
     }
 
-    .detail-head {
-      padding: 20px;
-      border-bottom: 1px solid var(--border);
-      background: #fbfdfb;
-    }
-
-    .detail-head h4 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--green-dark);
-      letter-spacing: -.4px;
-    }
-
-    .detail-head p {
-      margin: 7px 0 0;
-      font-size: 12px;
-      color: var(--text-light);
-      line-height: 1.6;
-    }
-
-    .detail-body {
-      padding: 20px;
-    }
-
-    .label-grid {
-      display: grid;
-      grid-template-columns: 130px 1fr 130px 1fr;
-      border-top: 1px solid var(--border);
-      border-left: 1px solid var(--border);
-      overflow: hidden;
-      border-radius: 12px;
-      margin-bottom: 18px;
-    }
-
-    .label-grid div {
-      padding: 12px 14px;
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--text-dark);
-      word-break: break-all;
-    }
-
-    .label-grid .th {
-      background: var(--green-pale);
-      color: var(--text-mid);
-      font-weight: 700;
-    }
-
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      background: #fff;
-      overflow: hidden;
-      border-radius: 12px;
-    }
-
-    .data-table thead th {
-      background: var(--green-pale);
-      color: var(--text-mid);
-      padding: 12px 14px;
-      text-align: left;
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .data-table tbody td {
-      padding: 13px 14px;
-      border-bottom: 1px solid #edf0eb;
-      color: var(--text-dark);
-      vertical-align: top;
-    }
-
-    .data-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .data-table .amount {
-      text-align: right;
-      font-weight: 800;
-    }
-
-    .total-box {
+    .detail-total-box {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 14px;
       margin-top: 18px;
-      padding: 16px 18px;
+      padding: 18px;
+      border: 1px solid #d8e7dc;
       border-radius: 12px;
-      background: #f7fbf8;
-      border: 1px solid var(--border);
+      background: #f8fcf9;
     }
 
-    .total-box .label {
+    .detail-total-box span {
       font-size: 13px;
-      color: var(--text-mid);
       font-weight: 800;
-    }
-
-    .total-box .amount {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--green-dark);
-      letter-spacing: -.5px;
-    }
-
-    .empty-box {
-      padding: 38px 20px;
-      text-align: center;
-      color: var(--text-light);
-      border: 1px dashed #cfd7cf;
-      border-radius: 14px;
-      background: #fafcfb;
-      line-height: 1.7;
-      font-size: 13px;
-    }
-
-    .empty-box strong {
-      display: block;
-      margin-bottom: 6px;
       color: var(--text-dark);
-      font-size: 15px;
-      font-weight: 800;
     }
 
-    .loading {
-      display: none;
-      padding: 16px 18px;
-      margin-bottom: 18px;
-      border-radius: 12px;
-      background: #edf5ef;
+    .detail-total-box strong {
+      font-size: 24px;
+      font-weight: 900;
       color: var(--green-dark);
-      font-size: 13px;
-      font-weight: 800;
-      text-align: center;
     }
 
-    .loading.show {
-      display: block;
-    }
-
-    @media (max-width: 1200px) {
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .bill-layout {
+    @media (max-width: 1100px) {
+      .layout-grid {
         grid-template-columns: 1fr;
-      }
-
-      .bill-list {
-        max-height: none;
-      }
-    }
-
-    @media (max-width: 900px) {
-      .main-shell {
-        flex-direction: column;
-      }
-
-      .content-area {
-        padding: 24px 18px 48px;
-      }
-
-      .page-content-wrap {
-        max-width: 100%;
-      }
-
-      .unit-grid,
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .section-hd {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .bill-toolbar {
-        width: 100%;
-      }
-
-      .month-input {
-        flex: 1;
-      }
-
-      .label-grid {
-        grid-template-columns: 120px 1fr;
       }
     }
   </style>
@@ -615,95 +435,107 @@
         <span class="cur">관리비조회</span>
       </div>
 
-      <h1 class="page-title">관리비조회</h1>
-      <p class="page-desc">
-        입주민 본인에게 연결된 세대를 선택한 뒤 월별 관리비 고지 내역과 상세 정보를 확인할 수 있습니다.
-      </p>
+      <h1 class="page-title">관리비 조회</h1>
+      <p class="page-desc">내 세대의 월별 관리비 고지 내역과 상세 항목을 확인합니다.</p>
+
+      <div id="messageBox" class="message-box"></div>
 
       <section class="panel">
         <div class="section-hd">
-          <div>
-            <h3>내 세대 선택</h3>
-            <span>관리비를 조회할 세대를 선택해 주세요.</span>
-          </div>
+          <h3>조회 조건</h3>
+          <span>세대 선택 후 관리년월을 조회하세요.</span>
         </div>
 
-        <div class="unit-grid" id="unitGrid">
-          <div class="empty-box">
-            <strong>세대 정보를 불러오는 중입니다.</strong>
-            잠시만 기다려 주세요.
-          </div>
-        </div>
+        <div class="search-box">
+          <div class="search-row">
+            <label for="myHouseSelect">내 세대</label>
+            <select id="myHouseSelect" class="form-control house-select" onchange="onHouseChange()">
+              <option value="">세대 정보 확인 중...</option>
+            </select>
 
-        <div class="action-row">
-          <button type="button" class="btn-sub" id="btnReset">선택 초기화</button>
-          <button type="button" class="btn-main" id="btnSearchBill">관리비 조회</button>
+            <label for="billYear">연도</label>
+            <select id="billYear" class="form-control"></select>
+
+            <label for="billMonth">월</label>
+            <select id="billMonth" class="form-control">
+              <option value="1">1월</option>
+              <option value="2">2월</option>
+              <option value="3">3월</option>
+              <option value="4">4월</option>
+              <option value="5">5월</option>
+              <option value="6">6월</option>
+              <option value="7">7월</option>
+              <option value="8">8월</option>
+              <option value="9">9월</option>
+              <option value="10">10월</option>
+              <option value="11">11월</option>
+              <option value="12">12월</option>
+            </select>
+
+            <button type="button" class="btn-main" onclick="loadMyBillList()">관리비 조회</button>
+            <button type="button" class="btn-sub" onclick="resetBillView()">초기화</button>
+          </div>
         </div>
       </section>
 
-      <div class="loading" id="loadingBox">
-        관리비 정보를 불러오는 중입니다.
-      </div>
+      <section class="layout-grid">
+        <div class="bill-list" id="billHistoryList">
+          <div class="empty panel">관리비 조회 버튼을 눌러 주세요.</div>
+        </div>
 
-      <section id="resultSection" style="display:none;">
-
-        <section class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">선택 세대</div>
-            <div class="stat-value green" id="summaryUnit">-</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">최근 고지월</div>
-            <div class="stat-value" id="summaryRecentMonth">-</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">최근 청구금액</div>
-            <div class="stat-value" id="summaryRecentAmount">-</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">미납/연체 건수</div>
-            <div class="stat-value red" id="summaryUnpaidCount">0건</div>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="section-hd">
-            <div>
-              <h3>월별 고지 내역</h3>
-              <span>고지서를 선택하면 오른쪽에서 상세 정보를 확인할 수 있습니다.</span>
-            </div>
-
-            <div class="bill-toolbar">
-              <input type="month" class="month-input" id="billYmInput" title="고지월 선택">
-              <button type="button" class="btn-sub" id="btnMonthSearch">월별 조회</button>
-            </div>
+        <div class="detail-panel">
+          <div class="detail-head">
+            <h3 id="detailTitle">관리비 상세</h3>
+            <p>청구금액과 납부 상태를 확인할 수 있습니다.</p>
           </div>
 
-          <div class="bill-layout">
-            <div class="bill-list" id="billList">
-              <div class="empty-box">
-                <strong>조회된 고지서가 없습니다.</strong>
-                세대를 선택한 후 관리비 조회 버튼을 눌러주세요.
-              </div>
-            </div>
+          <div class="detail-body">
+            <table class="info-table">
+              <tbody>
+              <tr>
+                <th>고지서 번호</th>
+                <td id="infoBillNo">-</td>
+                <th>고지월</th>
+                <td id="infoBillYm">-</td>
+              </tr>
+              <tr>
+                <th>고지일</th>
+                <td id="infoPblancDt">-</td>
+                <th>납부기한</th>
+                <td id="infoDueDt">-</td>
+              </tr>
+              <tr>
+                <th>납부상태</th>
+                <td id="infoStatus">-</td>
+                <th>청구금액</th>
+                <td id="infoBillTotAmt">0원</td>
+              </tr>
+              </tbody>
+            </table>
 
-            <div class="detail-panel">
-              <div class="detail-head">
-                <h4 id="detailTitle">상세 정보</h4>
-                <p id="detailSubText">고지서를 선택하면 상세 정보가 표시됩니다.</p>
-              </div>
+            <table class="data-table">
+              <thead>
+              <tr>
+                <th>항목</th>
+                <th>구분</th>
+                <th class="text-right">금액</th>
+              </tr>
+              </thead>
+              <tbody id="billDetailTbody">
+              <tr>
+                <td colspan="3" class="empty">왼쪽에서 고지서를 선택해 주세요.</td>
+              </tr>
+              </tbody>
+            </table>
 
-              <div class="detail-body" id="detailBody">
-                <div class="empty-box">
-                  <strong>선택된 고지서가 없습니다.</strong>
-                  왼쪽의 월별 고지 내역을 선택해 주세요.
-                </div>
-              </div>
+            <div class="detail-total-box">
+              <span>상세 합계</span>
+              <strong id="detailTotalAmt">0원</strong>
             </div>
           </div>
-        </section>
-
+        </div>
       </section>
+
     </div>
   </main>
 </div>
@@ -711,652 +543,387 @@
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 
 <script>
-  const API_MY_HOUSE = '${pageContext.request.contextPath}/resident/bill/my-house';
-  const API_BILL_LIST = '${pageContext.request.contextPath}/resident/bill/list';
-  const API_BILL_DETAIL = '${pageContext.request.contextPath}/resident/bill/detail';
+  const contextPath = '${pageContext.request.contextPath}';
 
-  let selectedUnit = null;
-  let currentBills = [];
-
-  const unitGrid = document.getElementById('unitGrid');
-  const btnSearchBill = document.getElementById('btnSearchBill');
-  const btnReset = document.getElementById('btnReset');
-  const btnMonthSearch = document.getElementById('btnMonthSearch');
-  const billYmInput = document.getElementById('billYmInput');
-
-  const loadingBox = document.getElementById('loadingBox');
-  const resultSection = document.getElementById('resultSection');
-
-  const billList = document.getElementById('billList');
-  const detailTitle = document.getElementById('detailTitle');
-  const detailSubText = document.getElementById('detailSubText');
-  const detailBody = document.getElementById('detailBody');
-
-  const summaryUnit = document.getElementById('summaryUnit');
-  const summaryRecentMonth = document.getElementById('summaryRecentMonth');
-  const summaryRecentAmount = document.getElementById('summaryRecentAmount');
-  const summaryUnpaidCount = document.getElementById('summaryUnpaidCount');
+  let myHouseList = [];
+  let selectedHouse = null;
+  let currentBillList = [];
 
   document.addEventListener('DOMContentLoaded', function () {
+    initBillSearchDate();
     loadMyHouseList();
+    renderEmptyState();
   });
 
-  unitGrid.addEventListener('click', function (e) {
-    const card = e.target.closest('.unit-card');
-    if (!card) return;
+  function initBillSearchDate() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const yearSelect = document.getElementById('billYear');
 
-    document.querySelectorAll('.unit-card').forEach(function (item) {
-      item.classList.remove('active');
-    });
+    yearSelect.innerHTML = '';
 
-    card.classList.add('active');
-    selectedUnit = readUnitDataset(card);
-    clearBillResult(true);
-  });
+    for (let y = currentYear - 2; y <= currentYear + 1; y++) {
+      const option = document.createElement('option');
+      option.value = y;
+      option.textContent = y + '년';
 
-  btnReset.addEventListener('click', function () {
-    const cards = document.querySelectorAll('.unit-card');
+      if (y === currentYear) {
+        option.selected = true;
+      }
 
-    cards.forEach(function (item) {
-      item.classList.remove('active');
-    });
-
-    if (cards.length > 0) {
-      cards[0].classList.add('active');
-      selectedUnit = readUnitDataset(cards[0]);
-    } else {
-      selectedUnit = null;
+      yearSelect.appendChild(option);
     }
 
-    if (billYmInput) {
-      billYmInput.value = '';
-    }
+    document.getElementById('billMonth').value = now.getMonth() + 1;
+  }
 
-    clearBillResult(true);
-  });
+  function getBillYm() {
+    const year = document.getElementById('billYear').value;
+    const month = document.getElementById('billMonth').value;
 
-  btnSearchBill.addEventListener('click', function () {
-    searchBillList();
-  });
-
-  btnMonthSearch.addEventListener('click', function () {
-    searchBillList();
-  });
-
-  function searchBillList() {
-    if (!selectedUnit || !selectedUnit.searchHoNo) {
-      alert('관리비를 조회할 세대를 선택해 주세요.');
-      return;
-    }
-
-    const billYm = normalizeBillYm(billYmInput.value);
-    loadBillList(selectedUnit, billYm);
+    return String(year) + String(month).padStart(2, '0');
   }
 
   async function loadMyHouseList() {
     try {
-      unitGrid.innerHTML = renderEmpty('세대 정보를 불러오는 중입니다.', '잠시만 기다려 주세요.');
-
-      const response = await fetch(API_MY_HOUSE, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
+      const response = await fetch(contextPath + '/resident/bill/my-houses');
 
       if (!response.ok) {
-        throw new Error('세대 목록 조회에 실패했습니다.');
+        showMessage('세대 목록 조회 중 오류가 발생했습니다. 상태코드: ' + response.status, 'error');
+        renderHouseSelect([]);
+        return;
       }
 
-      const data = await response.json();
+      const result = await response.json();
 
-      if (!data.success) {
-        throw new Error(data.message || '세대 목록 조회에 실패했습니다.');
+      if (!result.success) {
+        showMessage(result.message || '세대 정보를 찾을 수 없습니다.', 'warn');
+        renderHouseSelect([]);
+        return;
       }
 
-      renderHouseList(data.houseList || []);
+      myHouseList = result.houseList || [];
+      renderHouseSelect(myHouseList);
 
-    } catch (error) {
-      console.error(error);
-      unitGrid.innerHTML = renderEmpty(
-              '세대 정보 조회 실패',
-              '세대 정보를 불러오지 못했습니다. /resident/bill/my-house API 또는 로그인 정보를 확인해 주세요.'
-      );
+      clearMessage();
+
+    } catch (e) {
+      console.error(e);
+      showMessage('세대 목록 조회 중 오류가 발생했습니다.', 'error');
+      renderHouseSelect([]);
     }
   }
 
-  function renderHouseList(houseList) {
-    if (!houseList || houseList.length === 0) {
-      unitGrid.innerHTML = renderEmpty(
-              '등록된 세대 정보가 없습니다.',
-              '로그인한 계정에 연결된 세대 정보가 없거나 세대 매핑이 필요합니다.'
-      );
+  function renderHouseSelect(list) {
+    const select = document.getElementById('myHouseSelect');
+    select.innerHTML = '';
 
-      selectedUnit = null;
-      clearBillResult(true);
+    if (!list || list.length === 0) {
+      select.innerHTML = '<option value="">세대 정보 없음</option>';
+      selectedHouse = null;
       return;
     }
 
-    let html = '';
+    select.appendChild(new Option('세대 선택', ''));
 
-    houseList.forEach(function (house, index) {
-      const aptName = getAptName(house);
-
-      const rawDong = getRawDongNo(house);
-      const rawHo = getRawHoNo(house);
-
-      const displayDong = normalizeDongNo(rawDong, rawHo);
-      const displayHo = normalizeHoNo(rawHo);
-
-      /*
-        API 조회용 hoNo는 컨트롤러/쿼리에서 쓰는 원본 값을 유지해야 함.
-        화면 표시용은 2동 1107호처럼 보정.
-      */
-      const searchHoNo = rawHo || displayHo;
-
-      html += ''
-              + '<button type="button"'
-              + '        class="unit-card ' + (index === 0 ? 'active' : '') + '"'
-              + '        data-search-ho-no="' + escapeHtml(searchHoNo) + '"'
-              + '        data-dong="' + escapeHtml(displayDong) + '"'
-              + '        data-ho="' + escapeHtml(displayHo) + '"'
-              + '        data-apt-name="' + escapeHtml(aptName) + '">'
-              + '  <div class="unit-apt">' + escapeHtml(aptName) + '</div>'
-              + '  <div class="unit-dongho">' + escapeHtml(displayDong) + '동 ' + escapeHtml(displayHo) + '호</div>'
-              + '  <div class="unit-meta">'
-              + '    <span class="chip">거주 세대</span>'
-              + '  </div>'
-              + '</button>';
+    list.forEach(function (house) {
+      const option = document.createElement('option');
+      option.value = house.hoNo;
+      option.textContent = house.displayDongHo || house.hoNo;
+      select.appendChild(option);
     });
 
-    unitGrid.innerHTML = html;
+    if (list.length === 1) {
+      select.value = list[0].hoNo;
+      selectedHouse = list[0];
+    }
+  }
 
-    const firstUnit = document.querySelector('.unit-card.active');
-    if (firstUnit) {
-      selectedUnit = readUnitDataset(firstUnit);
+  function onHouseChange() {
+    const hoNo = document.getElementById('myHouseSelect').value;
+
+    selectedHouse = myHouseList.find(function (house) {
+      return house.hoNo === hoNo;
+    }) || null;
+
+    currentBillList = [];
+    renderEmptyState();
+  }
+
+  async function loadMyBillList() {
+    clearMessage();
+
+    if (!selectedHouse || !selectedHouse.hoNo) {
+      showMessage('조회할 세대를 선택해 주세요.', 'warn');
+      return;
     }
 
-    clearBillResult(true);
-  }
-
-  function readUnitDataset(card) {
-    return {
-      searchHoNo: card.dataset.searchHoNo,
-      dong: card.dataset.dong,
-      ho: card.dataset.ho,
-      aptName: card.dataset.aptName
-    };
-  }
-
-  async function loadBillList(unit, billYm) {
-    showLoading(true);
-    clearBillResult(false);
+    const billYm = getBillYm();
 
     try {
-      let url = API_BILL_LIST + '?hoNo=' + encodeURIComponent(unit.searchHoNo);
+      const url = contextPath
+              + '/resident/bill/list?hoNo=' + encodeURIComponent(selectedHouse.hoNo)
+              + '&billYm=' + encodeURIComponent(billYm);
 
-      if (billYm) {
-        url += '&billYm=' + encodeURIComponent(billYm);
-      }
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
+      const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error('관리비 목록 조회에 실패했습니다.');
+        showMessage('관리비 조회 중 오류가 발생했습니다. 상태코드: ' + response.status, 'error');
+        return;
       }
 
-      const data = await response.json();
+      const result = await response.json();
 
-      if (!data.success) {
-        throw new Error(data.message || '관리비 목록 조회에 실패했습니다.');
+      if (!result.success) {
+        renderEmptyState();
+        showMessage(result.message || '관리비 조회에 실패했습니다.', 'error');
+        return;
       }
 
-      currentBills = data.list || [];
+      currentBillList = result.list || [];
+      renderBillHistory(currentBillList);
 
-      resultSection.style.display = 'block';
-
-      renderSummary(unit, currentBills, data.latestBill, data.latestAmount);
-      renderBillList(currentBills);
-
-      if (currentBills.length > 0) {
-        const firstBill = currentBills[0];
-        await loadBillDetail(getBillNo(firstBill), firstBill);
+      if (result.latestBill && result.latestBill.billNo) {
+        await loadMyBillDetail(result.latestBill.billNo);
+        showMessage(formatBillYm(billYm) + ' 관리비를 조회했습니다.', 'info');
       } else {
-        resetDetail();
+        renderNoBillFound(billYm);
+        showMessage(formatBillYm(billYm) + '에 등록된 관리비 고지서가 없습니다.', 'warn');
       }
 
-    } catch (error) {
-      console.error(error);
-
-      resultSection.style.display = 'block';
-      billList.innerHTML = renderEmpty(
-              '관리비 목록 조회 실패',
-              '관리비 정보를 불러오지 못했습니다. /resident/bill/list API 또는 hoNo 값을 확인해 주세요.'
-      );
-
-      resetDetail();
-    } finally {
-      showLoading(false);
+    } catch (e) {
+      console.error(e);
+      showMessage('관리비 조회 중 오류가 발생했습니다.', 'error');
     }
   }
 
-  async function loadBillDetail(billNo, selectedBillFromList) {
-    if (!billNo) {
-      resetDetail();
-      return;
-    }
-
-    setActiveBillItem(billNo);
-
-    detailTitle.textContent = getBillMonth(selectedBillFromList) + ' 관리비 상세';
-    detailSubText.textContent = '청구금액과 납부 상태를 확인할 수 있습니다.';
-    detailBody.innerHTML = renderEmpty('상세 정보를 불러오는 중입니다.', '잠시만 기다려 주세요.');
-
+  async function loadMyBillDetail(billNo) {
     try {
-      const response = await fetch(API_BILL_DETAIL + '/' + encodeURIComponent(billNo), {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
+      const response = await fetch(contextPath + '/resident/bill/detail/' + encodeURIComponent(billNo));
 
       if (!response.ok) {
-        throw new Error('관리비 상세 조회에 실패했습니다.');
+        showMessage('관리비 상세 조회 중 오류가 발생했습니다. 상태코드: ' + response.status, 'error');
+        return;
       }
 
-      const data = await response.json();
+      const result = await response.json();
 
-      if (!data.success) {
-        throw new Error(data.message || '관리비 상세 조회에 실패했습니다.');
+      if (!result.success) {
+        showMessage(result.message || '관리비 상세 조회에 실패했습니다.', 'error');
+        return;
       }
 
-      const bill = data.bill || selectedBillFromList || {};
+      renderBillSummary(result.bill);
+      renderBillDetail(result.bill);
+      setActiveBillCard(billNo);
 
-      const detailList =
-              bill.detailList ||
-              bill.billDetailList ||
-              bill.billDetailVOList ||
-              bill.detailVOList ||
-              [];
-
-      renderBillDetail(bill, detailList);
-
-    } catch (error) {
-      console.error(error);
-
-      detailBody.innerHTML = renderEmpty(
-              '상세 조회 실패',
-              '상세 정보를 불러오지 못했습니다. /resident/bill/detail/{billNo} API 또는 billNo 값을 확인해 주세요.'
-      );
+    } catch (e) {
+      console.error(e);
+      showMessage('관리비 상세 조회 중 오류가 발생했습니다.', 'error');
     }
   }
 
-  function renderSummary(unit, bills, latestBill, latestAmount) {
-    summaryUnit.textContent = (unit.dong || '-') + '동 ' + (unit.ho || '-') + '호';
+  function renderBillHistory(list) {
+    const wrap = document.getElementById('billHistoryList');
+    wrap.innerHTML = '';
 
-    if (!bills || bills.length === 0) {
-      summaryRecentMonth.textContent = '-';
-      summaryRecentAmount.textContent = '-';
-      summaryUnpaidCount.textContent = '0건';
+    if (!list || list.length === 0) {
+      wrap.innerHTML = '<div class="empty panel">조회된 관리비 내역이 없습니다.</div>';
       return;
     }
 
-    const recent = latestBill || bills[0];
+    list.forEach(function (bill) {
+      const div = document.createElement('div');
+      div.className = 'bill-card';
+      div.dataset.billNo = bill.billNo;
 
-    const unpaidCount = bills.filter(function (bill) {
-      const status = getPayStatusCode(bill);
-      return status === 'UNPAID' || status === 'OVERDUE';
-    }).length;
+      div.onclick = function () {
+        loadMyBillDetail(bill.billNo);
+      };
 
-    summaryRecentMonth.textContent = formatBillYm(getBillMonth(recent));
-    summaryRecentAmount.textContent = formatMoney(
-            latestAmount !== undefined && latestAmount !== null ? latestAmount : getBillAmount(recent)
-    );
-    summaryUnpaidCount.textContent = unpaidCount + '건';
+      div.innerHTML =
+              '<div class="bill-card-top">' +
+              '  <div class="bill-month">' + formatBillYm(bill.billYm) + '</div>' +
+              '  ' + renderStatusBadge(bill.pymtSttsCd, bill.pymtSttsNm) +
+              '</div>' +
+              '<div class="bill-amount">' + formatNumber(bill.billTotAmt) + '원</div>' +
+              '<div class="bill-meta">' +
+              '  고지일: ' + formatDate(bill.billPblancDt) +
+              ' · 납부기한: ' + formatDate(bill.dueDt) +
+              '</div>';
+
+      wrap.appendChild(div);
+    });
   }
 
-  function renderBillList(bills) {
-    if (!bills || bills.length === 0) {
-      billList.innerHTML = renderEmpty(
-              '조회된 고지서가 없습니다.',
-              '선택한 세대의 관리비 고지 내역이 없습니다.'
-      );
-      resetDetail();
+  function setActiveBillCard(billNo) {
+    document.querySelectorAll('.bill-card').forEach(function (card) {
+      card.classList.toggle('active', card.dataset.billNo === billNo);
+    });
+  }
+
+  function renderBillSummary(bill) {
+    if (!bill) {
+      renderEmptyState();
       return;
     }
 
-    let html = '';
+    document.getElementById('detailTitle').textContent =
+            formatBillYm(bill.billYm) + ' 관리비 상세';
 
-    bills.forEach(function (bill, index) {
-      const billNo = getBillNo(bill);
-      const month = formatBillYm(getBillMonth(bill));
-      const amount = getBillAmount(bill);
-      const statusCode = getPayStatusCode(bill);
-      const statusName = getPayStatusName(statusCode);
-      const dueDate = getDueDate(bill);
-      const issueDate = getIssueDate(bill);
+    document.getElementById('infoBillNo').textContent = bill.billNo || '-';
+    document.getElementById('infoBillYm').textContent = formatBillYm(bill.billYm);
+    document.getElementById('infoPblancDt').textContent = formatDate(bill.billPblancDt);
+    document.getElementById('infoDueDt').textContent = formatDate(bill.dueDt);
+    document.getElementById('infoStatus').textContent = bill.pymtSttsNm || bill.pymtSttsCd || '-';
+    document.getElementById('infoBillTotAmt').textContent = formatNumber(bill.billTotAmt) + '원';
+  }
 
-      html += ''
-              + '<div class="bill-card ' + (index === 0 ? 'active' : '') + '" data-bill-no="' + escapeHtml(billNo) + '">'
-              + '  <div class="bill-card-top">'
-              + '    <div class="bill-month">' + escapeHtml(month) + '</div>'
-              + '    <span class="badge ' + escapeHtml(statusCode) + '">' + escapeHtml(statusName) + '</span>'
-              + '  </div>'
-              + '  <div class="bill-amount">' + escapeHtml(formatMoney(amount)) + '</div>'
-              + '  <div class="bill-meta">'
-              + '    <span>고지일: ' + escapeHtml(issueDate) + '</span>'
-              + '    <span>납부기한: ' + escapeHtml(dueDate) + '</span>'
-              + '  </div>'
-              + '</div>';
+  function renderBillDetail(bill) {
+    const tbody = document.getElementById('billDetailTbody');
+    tbody.innerHTML = '';
+
+    const detailList = bill.detailList || [];
+    let detailTotal = 0;
+
+    if (detailList.length === 0) {
+      tbody.innerHTML =
+              '<tr><td colspan="3" class="empty">조회된 상세 항목이 없습니다.</td></tr>';
+      document.getElementById('detailTotalAmt').textContent = '0원';
+      return;
+    }
+
+    detailList.forEach(function (item) {
+      const billItemAmt = Number(item.billItemAmt || 0);
+      detailTotal += billItemAmt;
+
+      const tr = document.createElement('tr');
+
+      tr.innerHTML =
+              '<td>' + escapeHtml(item.billItemNm || '-') + '</td>' +
+              '<td>' + escapeHtml(item.billItemCd || '-') + '</td>' +
+              '<td class="text-right td-bold">' + formatNumber(billItemAmt) + '원</td>';
+
+      tbody.appendChild(tr);
     });
 
-    billList.innerHTML = html;
-
-    document.querySelectorAll('.bill-card').forEach(function (item) {
-      item.addEventListener('click', function () {
-        const billNo = this.dataset.billNo;
-
-        const bill = currentBills.find(function (row) {
-          return String(getBillNo(row)) === String(billNo);
-        });
-
-        loadBillDetail(billNo, bill);
-      });
-    });
+    document.getElementById('detailTotalAmt').textContent =
+            formatNumber(detailTotal) + '원';
   }
 
-  function renderBillDetail(bill, detailList) {
-    const billNo = getBillNo(bill);
-    const billYm = formatBillYm(getBillMonth(bill));
-    const amount = getBillAmount(bill);
-    const statusCode = getPayStatusCode(bill);
-    const statusName = getPayStatusName(statusCode);
-    const dueDate = getDueDate(bill);
-    const issueDate = getIssueDate(bill);
+  function renderNoBillFound(billYm) {
+    document.getElementById('detailTitle').textContent =
+            formatBillYm(billYm) + ' 관리비 상세';
 
-    let html = '';
+    document.getElementById('infoBillNo').textContent = '-';
+    document.getElementById('infoBillYm').textContent = formatBillYm(billYm);
+    document.getElementById('infoPblancDt').textContent = '-';
+    document.getElementById('infoDueDt').textContent = '-';
+    document.getElementById('infoStatus').textContent = '-';
+    document.getElementById('infoBillTotAmt').textContent = '0원';
 
-    html += '<div class="label-grid">';
-    html += '  <div class="th">고지서 번호</div>';
-    html += '  <div>' + escapeHtml(billNo || '-') + '</div>';
-    html += '  <div class="th">고지월</div>';
-    html += '  <div>' + escapeHtml(billYm || '-') + '</div>';
-    html += '  <div class="th">고지일</div>';
-    html += '  <div>' + escapeHtml(issueDate) + '</div>';
-    html += '  <div class="th">납부기한</div>';
-    html += '  <div>' + escapeHtml(dueDate) + '</div>';
-    html += '  <div class="th">납부상태</div>';
-    html += '  <div>' + escapeHtml(statusName) + '</div>';
-    html += '  <div class="th">청구금액</div>';
-    html += '  <div>' + escapeHtml(formatMoney(amount)) + '</div>';
-    html += '</div>';
+    document.getElementById('billDetailTbody').innerHTML =
+            '<tr><td colspan="3" class="empty">해당 월 관리비 고지서가 없습니다.</td></tr>';
 
-    if (detailList && detailList.length > 0) {
-      let detailTotal = 0;
+    document.getElementById('detailTotalAmt').textContent = '0원';
+  }
 
-      html += '<table class="data-table">';
-      html += '  <thead>';
-      html += '    <tr>';
-      html += '      <th>항목</th>';
-      html += '      <th>구분</th>';
-      html += '      <th style="text-align:right;">금액</th>';
-      html += '    </tr>';
-      html += '  </thead>';
-      html += '  <tbody>';
+  function renderEmptyState() {
+    document.getElementById('detailTitle').textContent = '관리비 상세';
 
-      detailList.forEach(function (item) {
-        const itemName = getValue(item, [
-          'billItemNm', 'itemNm', 'expnNm', 'commonCodeNm', 'cdNm', 'billItemCd', 'expnCd'
-        ], '관리비 항목');
+    document.getElementById('infoBillNo').textContent = '-';
+    document.getElementById('infoBillYm').textContent = '-';
+    document.getElementById('infoPblancDt').textContent = '-';
+    document.getElementById('infoDueDt').textContent = '-';
+    document.getElementById('infoStatus').textContent = '-';
+    document.getElementById('infoBillTotAmt').textContent = '0원';
 
-        const itemCode = getValue(item, [
-          'billItemCd', 'expnCd', 'itemCd', 'commonCode', 'cd'
-        ], '-');
+    document.getElementById('billHistoryList').innerHTML =
+            '<div class="empty panel">관리비 조회 버튼을 눌러 주세요.</div>';
 
-        const itemAmount = Number(getValue(item, [
-          'amount', 'amt', 'billAmt', 'chargeAmt', 'itemAmt', 'dtlAmt', 'billDtlAmt'
-        ], 0));
+    document.getElementById('billDetailTbody').innerHTML =
+            '<tr><td colspan="3" class="empty">왼쪽에서 고지서를 선택해 주세요.</td></tr>';
 
-        detailTotal += itemAmount;
+    document.getElementById('detailTotalAmt').textContent = '0원';
+  }
 
-        html += '    <tr>';
-        html += '      <td>' + escapeHtml(itemName) + '</td>';
-        html += '      <td>' + escapeHtml(itemCode) + '</td>';
-        html += '      <td class="amount">' + escapeHtml(formatMoney(itemAmount)) + '</td>';
-        html += '    </tr>';
-      });
+  function resetBillView() {
+    initBillSearchDate();
+    clearMessage();
 
-      html += '  </tbody>';
-      html += '</table>';
+    currentBillList = [];
 
-      html += '<div class="total-box">';
-      html += '  <div class="label">상세 합계</div>';
-      html += '  <div class="amount">' + escapeHtml(formatMoney(detailTotal)) + '</div>';
-      html += '</div>';
-    } else {
-      html += renderEmpty(
-              '상세 항목 리스트가 없습니다.',
-              '현재 상세 API는 bill 객체만 반환하고 있습니다. 항목별 상세가 필요하면 BillVO에 detailList를 담아 내려줘야 합니다.'
-      );
-
-      html += '<div class="total-box">';
-      html += '  <div class="label">총 청구금액</div>';
-      html += '  <div class="amount">' + escapeHtml(formatMoney(amount)) + '</div>';
-      html += '</div>';
+    if (myHouseList.length !== 1) {
+      document.getElementById('myHouseSelect').value = '';
+      selectedHouse = null;
     }
 
-    detailBody.innerHTML = html;
+    renderEmptyState();
   }
 
-  function clearBillResult(hideResult) {
-    currentBills = [];
+  function renderStatusBadge(code, name) {
+    const statusName = name || code || '-';
+    let cls = 'badge info';
 
-    if (hideResult) {
-      resultSection.style.display = 'none';
+    if (code === 'PAID') {
+      cls = 'badge ok';
+    } else if (code === 'READY' || code === 'UNPAID') {
+      cls = 'badge wait';
+    } else if (code === 'OVERDUE') {
+      cls = 'badge danger';
     }
 
-    billList.innerHTML = renderEmpty(
-            '조회된 고지서가 없습니다.',
-            '세대를 선택한 후 관리비 조회 버튼을 눌러주세요.'
-    );
-
-    resetDetail();
-
-    summaryUnit.textContent = '-';
-    summaryRecentMonth.textContent = '-';
-    summaryRecentAmount.textContent = '-';
-    summaryUnpaidCount.textContent = '0건';
+    return '<span class="' + cls + '">' + escapeHtml(statusName) + '</span>';
   }
 
-  function resetDetail() {
-    detailTitle.textContent = '상세 정보';
-    detailSubText.textContent = '고지서를 선택하면 상세 정보가 표시됩니다.';
-    detailBody.innerHTML = renderEmpty(
-            '선택된 고지서가 없습니다.',
-            '왼쪽의 월별 고지 내역을 선택해 주세요.'
-    );
+  function showMessage(message, type) {
+    const box = document.getElementById('messageBox');
+    box.className = 'message-box show ' + (type || 'info');
+    box.textContent = message;
   }
 
-  function setActiveBillItem(billNo) {
-    document.querySelectorAll('.bill-card').forEach(function (item) {
-      item.classList.toggle('active', String(item.dataset.billNo) === String(billNo));
-    });
+  function clearMessage() {
+    const box = document.getElementById('messageBox');
+    box.className = 'message-box';
+    box.textContent = '';
   }
 
-  function showLoading(flag) {
-    loadingBox.classList.toggle('show', flag);
-    btnSearchBill.disabled = flag;
-    btnMonthSearch.disabled = flag;
-  }
+  function formatNumber(value) {
+    const num = Number(value);
 
-  function renderEmpty(title, text) {
-    return ''
-            + '<div class="empty-box">'
-            + '  <strong>' + escapeHtml(title) + '</strong>'
-            + '  ' + escapeHtml(text)
-            + '</div>';
-  }
-
-  function normalizeBillYm(value) {
-    if (!value) return '';
-    return String(value).replace('-', '');
-  }
-
-  function getAptName(obj) {
-    const aptName = getValue(obj, ['aptCmplexNm', 'aptComplexNm', 'APT_CMPLEX_NM'], '');
-    return aptName || '${aptInfo.aptComplexInfo.aptCmplexNm}' || '아파트 정보';
-  }
-
-  function getRawDongNo(obj) {
-    return getValue(obj, ['dongNo', 'aptDong', 'dong', 'DONG_NO'], '');
-  }
-
-  function getRawHoNo(obj) {
-    return getValue(obj, ['hoNo', 'aptHo', 'ho', 'HO_NO'], '');
-  }
-
-  function normalizeDongNo(rawDong, rawHo) {
-    let value = rawDong || '';
-
-    if (value && String(value).indexOf('_') > -1) {
-      const arr = String(value).split('_');
-      value = arr[arr.length - 1];
+    if (isNaN(num)) {
+      return '0';
     }
 
-    if ((!value || value === '-') && rawHo && String(rawHo).indexOf('_') > -1) {
-      const arr = String(rawHo).split('_');
-
-      if (arr.length >= 2) {
-        value = arr[arr.length - 2];
-      }
-    }
-
-    return value || '-';
-  }
-
-  function normalizeHoNo(rawHo) {
-    let value = rawHo || '';
-
-    if (value && String(value).indexOf('_') > -1) {
-      const arr = String(value).split('_');
-      value = arr[arr.length - 1];
-    }
-
-    return value || '-';
-  }
-
-  function getBillNo(bill) {
-    return getValue(bill, ['billNo', 'BILL_NO', 'billSeq', 'mgmtBillNo', 'invoiceNo'], '');
-  }
-
-  function getBillMonth(bill) {
-    return getValue(bill, ['billYm', 'BILL_YM', 'chrgYm', 'useYm', 'targetYm', 'issueYm', 'month'], '-');
-  }
-
-  function getBillAmount(bill) {
-    return Number(getValue(bill, [
-      'billTotAmt', 'BILL_TOT_AMT', 'totalAmt', 'billAmt', 'chargeAmt', 'totalAmount', 'mgmtFeeAmt', 'amount'
-    ], 0));
-  }
-
-  function getPayStatusCode(bill) {
-    return getValue(bill, [
-      'pymtSttsCd', 'PYMT_STTS_CD', 'paySttsCd', 'payStatusCd', 'statusCd'
-    ], 'READY');
-  }
-
-  function getDueDate(bill) {
-    return formatDateText(getValue(bill, [
-      'dueDate', 'payDueDate', 'pymntDueYmd', 'paymentDueDate', 'dueYmd'
-    ], '-'));
-  }
-
-  function getIssueDate(bill) {
-    return formatDateText(getValue(bill, [
-      'issueDate', 'billIssueDate', 'issueYmd', 'regDate', 'billRegDate'
-    ], '-'));
-  }
-
-  function getPayStatusName(code) {
-    switch (code) {
-      case 'READY':
-        return '고지됨';
-      case 'PAID':
-        return '납부완료';
-      case 'UNPAID':
-        return '미납';
-      case 'OVERDUE':
-        return '연체';
-      default:
-        return code || '고지됨';
-    }
+    return num.toLocaleString();
   }
 
   function formatBillYm(value) {
-    if (!value || value === '-') {
+    if (!value || String(value).length !== 6) {
       return '-';
     }
 
     const str = String(value);
-
-    if (/^\d{6}$/.test(str)) {
-      return str.substring(0, 4) + '년 ' + str.substring(4, 6) + '월';
-    }
-
-    if (/^\d{4}-\d{2}$/.test(str)) {
-      return str.substring(0, 4) + '년 ' + str.substring(5, 7) + '월';
-    }
-
-    return str;
+    return str.substring(0, 4) + '년 ' + Number(str.substring(4, 6)) + '월';
   }
 
-  function formatDateText(value) {
-    if (!value || value === '-') {
+  function formatDate(value) {
+    if (!value) {
       return '-';
     }
 
-    const str = String(value);
+    const date = new Date(value);
 
-    if (/^\d{8}$/.test(str)) {
-      return str.substring(0, 4) + '-' + str.substring(4, 6) + '-' + str.substring(6, 8);
+    if (isNaN(date.getTime())) {
+      return value;
     }
 
-    if (/^\d{6}$/.test(str)) {
-      return str.substring(0, 4) + '-' + str.substring(4, 6);
-    }
-
-    return str;
-  }
-
-  function getValue(obj, keys, defaultValue) {
-    if (!obj) return defaultValue;
-
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-
-      if (obj[key] !== undefined && obj[key] !== null && obj[key] !== '') {
-        return obj[key];
-      }
-    }
-
-    return defaultValue;
-  }
-
-  function formatMoney(value) {
-    const num = Number(value || 0);
-    return num.toLocaleString('ko-KR') + '원';
+    return date.getFullYear() + '-'
+            + String(date.getMonth() + 1).padStart(2, '0') + '-'
+            + String(date.getDate()).padStart(2, '0');
   }
 
   function escapeHtml(value) {
-    if (value === null || value === undefined) {
-      return '';
-    }
-
     return String(value)
             .replaceAll('&', '&amp;')
             .replaceAll('<', '&lt;')
@@ -1365,5 +932,6 @@
             .replaceAll("'", '&#039;');
   }
 </script>
+
 </body>
 </html>
