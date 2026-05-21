@@ -224,16 +224,15 @@
             html +=
 
                 '<div class="question-box" style="margin-bottom:16px;">'
-
                 + '<div class="question-title">'
-                + '질문 '
-                + (idx + 1)
+                + 'Q' + (idx + 1) + '. '
+                + q.question
                 + '</div>'
 
-                + '<input type="text" '
-                + 'class="form-input" '
-                + 'value="' + q.question + '" '
-                + 'style="margin-bottom:10px;">';
+                + '<input type="hidden" '
+                + 'class="question-input" '
+                + 'value="' + q.question + '">';
+
 
             if(q.items){
 
@@ -272,7 +271,7 @@
                 box.querySelectorAll("input");
 
             const question =
-                inputs[0].value;
+                box.querySelector(".question-input").value;
 
             const items = [];
 
