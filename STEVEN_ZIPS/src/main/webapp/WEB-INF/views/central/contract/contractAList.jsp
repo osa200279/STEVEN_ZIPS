@@ -61,7 +61,7 @@
 <main class="ml-80 p-8 pt-28">
 
     <div class="mb-6">
-        <h1 class="text-xl font-bold text-[#004830] mb-1">청약 신청 조회</h1>
+        <h1 class="text-xl font-bold text-[#004830] mb-1" >청약 신청 조회</h1>
         <p class="text-sm text-slate-400">내가 신청한 청약 내역을 확인할 수 있습니다.</p>
     </div>
 
@@ -92,6 +92,9 @@
                                     </c:when>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'QUALIFIED'}">
                                         <span class="inline-block px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-bold">검증 완료</span>
+                                    </c:when>
+                                    <c:when test="${aplct.APLCT_STTS_CD == 'INSPECTION'}">
+                                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-500 text-xs font-bold">서류 검토 중</span>
                                     </c:when>
                                     <c:when test="${aplct.APLCT_STTS_CD == 'LOSER'}">
                                         <span class="inline-block px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-xs font-bold">낙첨</span>
@@ -289,7 +292,12 @@
                     </div>
 
                     <!-- 하단 버튼 -->
+
                     <div class="flex justify-end gap-2 px-6 py-4 border-t border-[#eef2eb] bg-[#f8faf6]">
+                        <a href="/contract/historyDetail.do?aplctNo=${aplct.APLCT_NO}"
+                               class="px-5 py-2 bg-[#004830] text-white text-sm font-bold rounded-full hover:bg-[#226046] transition-colors">
+                                상세보기
+                        </a>
                         <a href="/contract/detail.do?annNo=${aplct.ANN_NO}"
                            class="px-5 py-2 bg-white border border-slate-200 text-sm text-slate-600 rounded-full hover:bg-slate-50 transition-colors">
                             공고 보기
