@@ -161,11 +161,27 @@ public class MngSurveyController {
             @RequestBody MngSurveyDTO dto
     ) {
 
-        dto.setSurveyNo(surveyNo);
+        try {
 
-        surveyService.updateSurvey(dto);
+            dto.setSurveyNo(surveyNo);
 
-        return ResponseEntity.ok().build();
+            dto.setAptCd(mgmtOfcNo);
+
+            System.out.println("설문 수정");
+            System.out.println(dto);
+
+            surveyService.updateSurvey(dto);
+
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
+        }
     }
 
 

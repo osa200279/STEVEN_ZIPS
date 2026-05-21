@@ -316,7 +316,12 @@
             alert("저장 완료");
             window.location.href = `${ctx}/manager/survey/${mgmtOfcNo}`;
         } else {
-            alert("저장 실패");
+
+            const errorText = await resp.text();
+
+            console.error(errorText);
+
+            alert("저장 실패 : " + errorText);
         }
     });
 

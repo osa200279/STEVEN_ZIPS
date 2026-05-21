@@ -831,7 +831,7 @@ public class ResidentMainController {
 
         model.addAttribute(
                 "surveyList",
-                surveyService.selectSurveyList(null)
+                surveyService.selectSurveyList("OPEN_ONLY")
         );
 
         return "member/resident/survey/vote_resident_list";

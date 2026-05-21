@@ -107,13 +107,37 @@
         <div id="questionArea"></div>
         <div class="btn-row">
 
-          <button type="button"
-                  class="btn-main"
-                  id="submitBtn">
+          <c:choose>
 
-            설문 제출
+            <c:when test="${survey.surveySttsCd eq 'OPEN'}">
 
-          </button>
+              <button type="button"
+                      class="btn-main"
+                      id="submitBtn">
+
+                설문 제출
+
+              </button>
+
+            </c:when>
+
+            <c:otherwise>
+
+              <button type="button"
+                      class="btn-sub"
+                      onclick="alert('현재 참여할 수 없는 설문입니다.');">
+
+                참여 불가
+
+              </button>
+
+            </c:otherwise>
+
+          </c:choose>
+
+
+
+
         <a class="btn-ghost" href="${pageContext.request.contextPath}/resident/survey/list">목록으로</a>
         </div>
       </section>
@@ -193,9 +217,14 @@
         questionArea.appendChild(card);
 
       });
-    document
-            .getElementById("submitBtn")
-            .addEventListener("click", async function () {
+
+
+    const submitBtn =
+            document.getElementById("submitBtn");
+
+    if(submitBtn){
+
+      submitBtn.addEventListener("click", async function () {
 
 
 
@@ -303,6 +332,7 @@
               }
             });
 
+    }
 
   </script>
 

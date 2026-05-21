@@ -102,14 +102,36 @@
 
                 <td>
 
-                  <a href="${pageContext.request.contextPath}/resident/survey/detail/${survey.surveyNo}"
-                     style="font-weight:700;
-            color:var(--text-dark);
-            text-decoration:none;">
+                  <c:choose>
 
-                      ${survey.surveyNm}
+                    <c:when test="${survey.surveySttsCd eq 'OPEN'}">
 
-                  </a>
+                      <a href="${pageContext.request.contextPath}/resident/survey/detail/${survey.surveyNo}"
+                         style="font-weight:700;
+           color:var(--text-dark);
+           text-decoration:none;">
+
+                          ${survey.surveyNm}
+
+                      </a>
+
+                    </c:when>
+
+                    <c:otherwise>
+
+                      <a href="javascript:void(0);"
+                         onclick="alert('현재 참여할 수 없는 설문입니다.');"
+                         style="font-weight:700;
+           color:var(--text-dark);
+           text-decoration:none;">
+
+                          ${survey.surveyNm}
+
+                      </a>
+
+                    </c:otherwise>
+
+                  </c:choose>
 
                   <div style="
         margin-top:6px;
