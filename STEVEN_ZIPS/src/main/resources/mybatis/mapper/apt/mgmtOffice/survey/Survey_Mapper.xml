@@ -48,23 +48,33 @@
 
         SELECT
 
-            SURVEY_NO         surveyNo,
-            SURVEY_NM         surveyNm,
-            SURVEY_CN         surveyCn,
-            SURVEY_TY_CD      surveyTypeCd,
-            SURVEY_QITEM_CN   surveyQitemCn,
-            SURVEY_BGNG_DT    surveyBgngDt,
-            SURVEY_END_DT     surveyEndDt,
-            SURVEY_STTS_CD    surveySttsCd,
-            RGTR_ID           rgtrId,
-            APT_CD            aptCd
+            S.SURVEY_NO       AS surveyNo,
+            S.SURVEY_NM       AS surveyNm,
+            S.SURVEY_CN       AS surveyCn,
+            S.SURVEY_TY_CD    AS surveyTypeCd,
+            S.SURVEY_QITEM_CN AS surveyQitemCn,
 
-        FROM SURVEY
+            TO_CHAR(S.SURVEY_BGNG_DT, 'YYYY-MM-DD')
+                              AS surveyBgngDt,
 
-        ORDER BY SURVEY_BGNG_DT DESC
+            TO_CHAR(S.SURVEY_END_DT, 'YYYY-MM-DD')
+                              AS surveyEndDt,
+
+            S.SURVEY_STTS_CD  AS surveySttsCd,
+            S.RGTR_ID         AS rgtrId,
+            S.APT_CD          AS aptCd,
+
+            (
+                SELECT COUNT(*)
+                FROM SURVEY_RSPNS SR
+                WHERE SR.SURVEY_NO = S.SURVEY_NO
+            ) AS participantCount
+
+        FROM SURVEY S
+
+        ORDER BY S.SURVEY_BGNG_DT DESC
 
     </select>
-
 
     <select id="selectSurveyDetail"
             parameterType="string"

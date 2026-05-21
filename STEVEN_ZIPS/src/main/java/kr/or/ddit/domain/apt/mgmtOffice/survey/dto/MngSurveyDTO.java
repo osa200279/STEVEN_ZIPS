@@ -20,4 +20,6 @@ public class MngSurveyDTO {
     private String surveyNo;
 
     private String aptCd;
+    private int participantCount;
+    private int residentCount;
 }

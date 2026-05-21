@@ -312,7 +312,7 @@
                         <div class="survey-kpi-sub">마감된 투표/설문</div>
                     </div>
                     <div class="survey-kpi">
-                        <div class="survey-kpi-label">총 응답</div>
+                        <div class="survey-kpi-label">응답</div>
                         <div class="survey-kpi-value" id="kpiAnswers">0</div>
                         <div class="survey-kpi-sub">전체 응답 수</div>
                     </div>
@@ -374,13 +374,15 @@
                             </div>
                             <div class="survey-card-body">
                                 <div class="survey-side-stat">
-                                    <span class="survey-side-label">이번 달 등록</span>
+                                    <span class="survey-side-label">전체 설문</span>
                                     <span class="survey-side-value" id="sideMonthly">0건</span>
                                 </div>
+
                                 <div class="survey-side-stat">
-                                    <span class="survey-side-label">이번 주 시작 예정</span>
+                                    <span class="survey-side-label">이미 마감된 설문</span>
                                     <span class="survey-side-value" id="sideWeekly">0건</span>
                                 </div>
+
                                 <div class="survey-side-stat">
                                     <span class="survey-side-label">평균 응답률</span>
                                     <span class="survey-side-value" id="sideRate">0%</span>
@@ -513,15 +515,7 @@
                                                         </option>
 
                                                         <option value="SHORT">
-                                                            단답형
-                                                        </option>
-
-                                                        <option value="LONG">
-                                                            장문형
-                                                        </option>
-
-                                                        <option value="YN">
-                                                            찬반형
+                                                            주관식
                                                         </option>
 
                                                     </select>
@@ -640,35 +634,133 @@
 
         function renderStats(data) {
 
-            var running = data.filter(function (item) {
-                return item.surveySttsCd === "OPEN";
+            const now = new Date();
+
+            const currentMonth =
+                now.getMonth() + 1;
+
+            const currentYear =
+                now.getFullYear();
+
+            /* 진행중 */
+            const running = data.filter(item =>
+                item.surveySttsCd === "OPEN"
+            ).length;
+
+            /* 종료 */
+            const closed = data.filter(item =>
+                item.surveySttsCd === "CLOSED"
+            ).length;
+
+            /* 대기중 */
+            const waiting = data.filter(item =>
+                item.surveySttsCd === "READY"
+            ).length;
+
+            /* 이번달 등록 */
+            const monthlyCount = data.filter(item => {
+
+                if (!item.surveyBgngDt) return false;
+
+                const date =
+                    new Date(item.surveyBgngDt);
+
+                return (
+                    date.getFullYear() === currentYear &&
+                    (date.getMonth() + 1) === currentMonth
+                );
+
             }).length;
 
-            var waiting = data.filter(function (item) {
-                return item.surveySttsCd === "READY";
+            /* 이번주 시작 예정 */
+            const weeklyCount = data.filter(item => {
+
+                if (item.surveySttsCd !== "READY") {
+                    return false;
+                }
+
+                if (!item.surveyBgngDt) {
+                    return false;
+                }
+
+                const startDate =
+                    new Date(item.surveyBgngDt);
+
+                const diff =
+                    (startDate - now)
+                    / (1000 * 60 * 60 * 24);
+
+                return diff >= 0 && diff <= 7;
+
             }).length;
 
-            var closed = data.filter(function (item) {
-                return item.surveySttsCd === "CLOSED";
-            }).length;
+            /* 평균 응답률 */
+            let totalRate = 0;
 
-            document.getElementById("kpiRunning").textContent = running;
-            document.getElementById("kpiWaiting").textContent = waiting;
-            document.getElementById("kpiClosed").textContent = closed;
-            document.getElementById("kpiAnswers").textContent = 0;
+            data.forEach(item => {
+
+                const participant =
+                    Number(item.participantCount || 0);
+
+
+                const rate =
+                    data.length === 0
+                        ? 0
+                        : (participant / data.length) * 100;
+
+                totalRate += rate;
+
+
+
+            });
+
+            const avgRate =
+                data.length === 0
+                    ? 0
+                    : Math.round(totalRate / data.length);
+
+            /* 화면 출력 */
+            document.getElementById("kpiRunning").textContent =
+                running;
+
+            document.getElementById("kpiWaiting").textContent =
+                waiting;
+
+            document.getElementById("kpiClosed").textContent =
+                closed;
+
+            document.getElementById("kpiAnswers").textContent =
+                Math.round(avgRate) + "%";
+
+
+
+
 
             document.getElementById("sideMonthly").textContent =
-                data.length + "건";
+                monthlyCount + "건";
 
             document.getElementById("sideWeekly").textContent =
-                data.length + "건";
+                closed + "건";
+
+
 
             document.getElementById("sideRate").textContent =
-                "0%";
+                Math.round(avgRate) + "%";
+
+
+
+
+
+
 
             document.getElementById("surveyCount").textContent =
                 data.length + "건";
         }
+
+
+
+
+
 
         function resolveSurveyNo(item) {
             return item?.surveyNo || item?.SURVEY_NO || item?.survey_no || item?.surveyno || "";
@@ -1046,15 +1138,7 @@
                 </option>
 
                 <option value="SHORT">
-                    단답형
-                </option>
-
-                <option value="LONG">
-                    장문형
-                </option>
-
-                <option value="YN">
-                    찬반형
+                    주관식
                 </option>
 
             </select>
@@ -1123,7 +1207,9 @@
                 renderList(surveys);
             } catch (error) {
                 console.error(error);
-                surveyList.innerHTML = '<div class="survey-empty">목록을 불러오지 못했습니다.</div>';
+
+                surveyList.innerHTML =
+                    '<div class="survey-empty">목록을 불러오지 못했습니다.</div>';
             }
         }
 
