@@ -114,13 +114,11 @@
                         <th style="width:120px">모집기간</th>
                         <td>${fn:replace(announcement.rcrtBgngDt, '-', '.')} ~ ${fn:replace(announcement.rcrtEndDt, '-', '.')}</td>
                         <th style="width:120px">공급세대수</th>
-                        <td>${announcement.supplyDisplay}</td>
+                        <td style="width:120px">${announcement.supplyDisplay}</td>
                     </tr>
                     <tr>
-                        <th>전체세대수</th>
-                        <td>${announcement.totalUnitCnt}세대</td>
                         <th>주소</th>
-                        <td>${announcement.dorojuso}</td>
+                        <td colspan="3">${announcement.dorojuso}</td>
                     </tr>
                 </table>
             </div>
