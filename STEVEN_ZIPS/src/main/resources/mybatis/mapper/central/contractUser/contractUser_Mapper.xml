@@ -193,18 +193,28 @@
 
     <!--청약 신청 상세조회-->
     <select id="selectAplctDocList" resultType="map" parameterType="string">
-        SELECT DISTINCT rcd.sbmsn_doc_ty_cd
-                      , sd.sbmsn_doc_no
-                      , sd.atch_file_id
-                      , sd.reg_dt
-        FROM rent_ctrt_doc rcd
-                 INNER JOIN rent_listing rl ON rcd.rent_lstg_no = rl.rent_lstg_no
-                 INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
-                 INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
-                 INNER JOIN aplct a ON a.ho_ty_no = aht.ho_ty_no
-                 LEFT JOIN sbmsn_doc sd ON sd.sbmsn_doc_ty_cd = rcd.sbmsn_doc_ty_cd
-            AND sd.aplct_no = a.aplct_no
-        WHERE a.aplct_no = #{aplctNo}
+        SELECT doc_ty.sbmsn_doc_ty_cd
+             , (SELECT sd.sbmsn_doc_no FROM sbmsn_doc sd
+                WHERE sd.sbmsn_doc_ty_cd = doc_ty.sbmsn_doc_ty_cd
+                  AND sd.aplct_no = #{aplctNo}
+                  AND ROWNUM = 1) AS sbmsn_doc_no
+             , (SELECT sd.atch_file_id FROM sbmsn_doc sd
+                WHERE sd.sbmsn_doc_ty_cd = doc_ty.sbmsn_doc_ty_cd
+                  AND sd.aplct_no = #{aplctNo}
+                  AND ROWNUM = 1) AS atch_file_id
+             , (SELECT sd.reg_dt FROM sbmsn_doc sd
+                WHERE sd.sbmsn_doc_ty_cd = doc_ty.sbmsn_doc_ty_cd
+                  AND sd.aplct_no = #{aplctNo}
+                  AND ROWNUM = 1) AS reg_dt
+        FROM (
+                 SELECT DISTINCT TRIM(REGEXP_SUBSTR(cap.sbmsn_doc, '[^,]+', 1, lv.lvl)) AS sbmsn_doc_ty_cd
+                 FROM aplct a
+                          INNER JOIN center_ann_board_post cap ON cap.ann_no = a.ann_no
+                          INNER JOIN (
+                     SELECT LEVEL AS lvl FROM dual CONNECT BY LEVEL &lt;= 20
+                 ) lv ON lv.lvl &lt;= REGEXP_COUNT(cap.sbmsn_doc, ',') + 1
+                 WHERE a.aplct_no = #{aplctNo}
+             ) doc_ty
     </select>
 
     <!-- 제출한 서류 수 조회 -->
@@ -217,7 +227,7 @@
 
     <!-- 남은 제출 서류 조회 -->
     <select id="selectRequiredDocCount" resultType="int">
-        SELECT COUNT(*)
+        SELECT COUNT(DISTINCT rcd.sbmsn_doc_ty_cd)
         FROM rent_ctrt_doc rcd
                  INNER JOIN rent_listing rl ON rcd.rent_lstg_no = rl.rent_lstg_no
                  INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no

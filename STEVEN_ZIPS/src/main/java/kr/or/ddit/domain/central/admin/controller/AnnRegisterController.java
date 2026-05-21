@@ -104,17 +104,16 @@ public class AnnRegisterController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sbmsnDocList")
-    public Map<String, Object> getSbmsnDocList(@RequestParam String aptCmplexNo) {
+    public Map<String, Object> getSbmsnDocList(@RequestParam List<String> rentLstgNoList) {
         Map<String, Object> result = new HashMap<>();
         try {
-            List<Map<String, Object>> list = annRegisterService.selectSbmsnDocList(aptCmplexNo);
+            List<Map<String, Object>> list = annRegisterService.selectSbmsnDocList(rentLstgNoList);
             result.put("success", true);
             result.put("list", list);
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", e.getMessage());
         }
-
         return result;
     }
 

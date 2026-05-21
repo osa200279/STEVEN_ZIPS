@@ -102,18 +102,17 @@
     const mvoutPrdDt = document.getElementById('mvoutPrdDt').value;
     const inoutCd = document.getElementById('inoutCd').value;
     const mvoutRsnCn = document.getElementById('mvoutRsnCn').value;
-    const spclCn = document.getElementById('spclCn').value;
 
     if (!hoNo) { alert('동/호수를 선택해주세요.'); return; }
     if (!mvoutPrdDt) { alert('전출 예정일을 선택해주세요.'); return; }
+    if (!inoutCd) { alert('전출 유형을 선택해주세요.'); return; }
 
     const data = {
       aptCmplexNo: document.getElementById('aptCmplexNo').value,
       hoNo: hoNo,
       mvoutPrdDt: mvoutPrdDt,
       inoutCd: inoutCd,
-      mvoutRsnCn: mvoutRsnCn,
-      spclCn: spclCn
+      mvoutRsnCn: mvoutRsnCn
     };
 
     fetch('/resident/service/moving/out', {

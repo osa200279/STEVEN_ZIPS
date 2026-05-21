@@ -10,7 +10,7 @@ public interface IAnnRegisterService {
 
     Map<String, Object> selectOneAptDetail(String aptCmplexNo);
 
-    List<Map<String, Object>> selectSbmsnDocList(String aptCmplexNo);
+    List<Map<String, Object>> selectSbmsnDocList(List<String> rentLstgNoList);
 
     void insertAnn(Map<String, Object> params);
 

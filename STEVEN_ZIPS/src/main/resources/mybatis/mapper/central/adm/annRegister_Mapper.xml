@@ -97,14 +97,14 @@
     <!-- 제출서류 목록 조회 -->
     <select id="selectSbmsnDocList" resultType="map" parameterType="string">    /*kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper.selectSbmsnDocList*/
         SELECT DISTINCT rcd.sbmsn_doc_ty_cd
-                      , cc.code_name
+                        , cc.code_name
         FROM rent_ctrt_doc rcd
-        INNER JOIN rent_listing rl ON rcd.rent_lstg_no = rl.rent_lstg_no
-        INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
-        INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
         INNER JOIN common_code cc ON rcd.sbmsn_doc_ty_cd = cc.code_no_cd
-                                 AND cc.group_code_no = 'SUBMIT_DOC_TY'
-        WHERE aht.apt_cmplex_no = #{aptCmplexNo}
+        AND cc.group_code_no = 'SUBMIT_DOC_TY'
+        WHERE rcd.rent_lstg_no IN
+        <foreach collection="list" item="rentLstgNo" open="(" separator="," close=")">
+            #{rentLstgNo}
+        </foreach>
     </select>
 
     <!--매물조회-->

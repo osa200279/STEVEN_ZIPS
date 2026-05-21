@@ -223,6 +223,7 @@ public class ContractUserController {
 
         // 신청 번호로 제출 서류 목록 조회
         List<Map<String, Object>> docList = contractUserService.selectAplctDocList(aplctNo);
+
         log.info("detail: {}", detail);
         log.info("docList: {}", docList);
 

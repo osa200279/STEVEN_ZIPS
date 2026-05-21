@@ -10,8 +10,12 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
+  <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.css"/>
   <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
   <style>
+    .ck-editor__editable h1 { font-size: 2em; font-weight: bold; }
+    .ck-editor__editable h2 { font-size: 1.5em; font-weight: bold; }
+    .ck-editor__editable h3 { font-size: 1.17em; font-weight: bold; }
     body {font-family: 'Noto Sans KR', sans-serif !important;background: var(--bg);color: var(--text-dark);margin: 0;}
     .material-symbols-outlined { font-family: 'Material Symbols Outlined' !important; }
     .main-shell {display:flex;align-items:stretch;width:100%;min-height:calc(100vh - 114px);margin-top:114px;background:var(--bg);}
@@ -102,7 +106,11 @@
 <script>
   let ckEditor;
 
-  ClassicEditor.create(document.querySelector('#editor'))
+  ClassicEditor.create(document.querySelector('#editor'), {
+    toolbar: {
+      removeItems: ['uploadImage', 'insertImage']
+    }
+  })
           .then(editor => { ckEditor = editor; })
           .catch(error => console.error('CKEditor 초기화 오류', error));
 

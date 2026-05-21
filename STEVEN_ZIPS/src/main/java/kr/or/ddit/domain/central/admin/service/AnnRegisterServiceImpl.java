@@ -60,8 +60,8 @@ public class AnnRegisterServiceImpl implements IAnnRegisterService{
 
 
     @Override
-    public List<Map<String, Object>> selectSbmsnDocList(String aptCmplexNo) {
-        return annRegisterMapper.selectSbmsnDocList(aptCmplexNo);
+    public List<Map<String, Object>> selectSbmsnDocList(List<String> rentLstgNoList) {
+        return annRegisterMapper.selectSbmsnDocList(rentLstgNoList);
     }
 
     @Transactional
