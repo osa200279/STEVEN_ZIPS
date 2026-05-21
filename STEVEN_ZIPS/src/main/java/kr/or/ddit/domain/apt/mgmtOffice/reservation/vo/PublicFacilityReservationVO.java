@@ -54,4 +54,17 @@ public class PublicFacilityReservationVO {
     private String searchDongNo;
     private String searchLocCn;
     private String searchWord;
+
+    /*
+     * 공용시설 설명
+     * 예: 독서실 이용 안내, 주민회의실 예약 안내
+     */
+    private String cmnFacilityCn;
+
+    /*
+     * 예약 가능 여부 표시용
+     * Y: 이미 예약됨
+     * N: 예약 가능
+     */
+    private String reservedYn;
 }

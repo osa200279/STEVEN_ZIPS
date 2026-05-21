@@ -36,4 +36,22 @@ public interface IPublicFacilityReservationMapper {
     int rejectReservation(PublicFacilityReservationVO vo);
     int cancelReservation(PublicFacilityReservationVO vo);
     int selectDuplicateReservationCount(PublicFacilityReservationVO vo);
+
+    /*
+     * 입주민 - 예약 가능한 공용시설 종류 목록
+     * 예: 단지독서실, 주민회의실, 피트니스센터
+     */
+    List<PublicFacilityReservationVO> selectResidentFacilityGroupList(PublicFacilityReservationVO searchVO);
+
+    /*
+     * 입주민 - 선택한 공용시설의 세부 항목 목록
+     * 예: 독서실 좌석 101번, 102번
+     */
+    List<PublicFacilityReservationVO> selectResidentFacilityItemList(PublicFacilityReservationVO searchVO);
+
+    /*
+     * 입주민 - 선택한 시간에 이미 예약된 세부 항목 번호 목록
+     * 예: 이미 예약된 독서실 좌석 번호
+     */
+    List<String> selectReservedItemNoList(PublicFacilityReservationVO searchVO);
 }

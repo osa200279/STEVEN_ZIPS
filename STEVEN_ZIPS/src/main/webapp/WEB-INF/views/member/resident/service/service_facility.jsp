@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>공용시설예약 – 대덕아파트</title>
+  <title>편의시설예약 – 대덕아파트</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
@@ -57,10 +57,10 @@
           <span>›</span>
           <a href="javascript:void(0);">생활지원서비스</a>
           <span>›</span>
-          <span class="cur">공용시설예약</span>
+          <span class="cur">편의시설예약</span>
         </div>
-        <h1 class="page-title">공용시설예약</h1>
-        <p class="page-desc">공용시설예약 메뉴 진입용 허브 화면입니다. 독서실, 테니스장, 회의실, 예약내역, 예약상세 화면으로 이동할 수 있도록 구성했습니다.</p>
+        <h1 class="page-title">편의시설예약</h1>
+        <p class="page-desc">편의시설예약 메뉴 진입용 허브 화면입니다. 독서실, 테니스장, 회의실, 예약내역, 예약상세 화면으로 이동할 수 있도록 구성했습니다.</p>
 
 <section class="menu-grid"><div class="menu-card"><h4>독서실 예약</h4><p>좌석배치도에서 원하는 좌석을 선택하고 날짜를 지정합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/facility/reading-room">독서실 예약</a></div></div><div class="menu-card"><h4>테니스장 예약</h4><p>코트 선택 후 시간과 인원을 입력해 예약합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/facility/tennis">테니스장 예약</a></div></div><div class="menu-card"><h4>회의실 예약</h4><p>회의실 확인 후 예약 목적과 시간을 작성합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/facility/meeting-room">회의실 예약</a></div></div><div class="menu-card"><h4>예약내역</h4><p>검색과 상태 확인, 상세보기, 취소 기능을 위한 목록 화면입니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/facility/reservations">예약내역</a></div></div><div class="menu-card"><h4>예약상세</h4><p>선택한 예약의 상세 내역과 취소 버튼을 제공합니다.</p><div class="menu-links"><a href="${pageContext.request.contextPath}/resident/service/facility/detail">예약상세</a></div></div></section>
 

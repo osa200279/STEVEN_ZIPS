@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>공용시설예약 : 테니스장 – 대덕아파트</title>
+  <title>편의시설예약 : 테니스장 – 대덕아파트</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
@@ -57,9 +57,9 @@
           <span>›</span>
           <a href="javascript:void(0);">생활지원서비스</a>
           <span>›</span>
-          <span class="cur">공용시설예약 : 테니스장</span>
+          <span class="cur">편의시설예약 : 테니스장</span>
         </div>
-        <h1 class="page-title">공용시설예약 : 테니스장</h1>
+        <h1 class="page-title">편의시설예약 : 테니스장</h1>
         <p class="page-desc">코트 선택, 시설 예약 입력, 입력 정보 확인, 예약하기 버튼을 포함한 테니스장 예약 화면입니다.</p>
 
 <section class="grid-2"><div class="panel"><div class="section-hd"><h3>코트 선택</h3><span>예약 가능 현황</span></div><div class="room-grid"><div class="room-box selected">A코트</div><div class="room-box available">B코트</div><div class="room-box busy">C코트</div></div></div><div class="panel"><div class="section-hd"><h3>예약 정보</h3><span>입력 및 확인</span></div><div class="form-grid"><div class="th">선택 코트</div><div class="td">A코트</div><div class="th">예약일</div><div class="td"><input class="fake-input" value="2026-04-29" /></div><div class="th">시간대</div><div class="td"><select class="fake-select"><option>18:00 ~ 19:00</option></select></div><div class="th">인원</div><div class="td"><input class="fake-input" value="2명" /></div><div class="th">비고</div><div class="td"><input class="fake-input" value="라켓 대여 필요" /></div></div><div class="btn-row"><button class="btn-main">예약하기</button></div></div></section>

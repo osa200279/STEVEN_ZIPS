@@ -116,61 +116,455 @@
         <div class="section-divider"></div>
 
         <%-- 시설/공사 관리 --%>
+<%--        <details class="nav-group"--%>
+<%--        ${activeMenu eq 'facilityAsset'--%>
+<%--                or activeMenu eq 'publicFacility'--%>
+<%--                or activeMenu eq 'checkHistory'--%>
+<%--                or activeMenu eq 'meterHstry'--%>
+<%--                or activeMenu eq 'facilityPartner'--%>
+<%--                or activeMenu eq 'facilityContract'--%>
+<%--                or fn:contains(uri, '/manager/publicFacility')--%>
+<%--                or fn:contains(uri, '/manager/checkHistory')--%>
+<%--                or fn:contains(uri, '/manager/meter/hstry')--%>
+<%--                or fn:contains(uri, '/manager/facility/workCalendar')--%>
+<%--                or fn:contains(uri, '/manager/facility/partner')--%>
+<%--                or fn:contains(uri, '/manager/contract')--%>
+<%--                ? 'open="open"' : ''}>--%>
+
+<%--            <summary class="cat-btn">--%>
+<%--                <span class="material-symbols-rounded nav-icon nav-icon-top">apartment</span>--%>
+<%--                <span class="cat-label">시설·공사 관리</span>--%>
+<%--                <span class="material-symbols-rounded cat-chevron">expand_more</span>--%>
+<%--            </summary>--%>
+
+<%--            <div class="submenu-wrap">--%>
+<%--                <div class="submenu-inner">--%>
+
+<%--                    &lt;%&ndash; 시설 관리 &ndash;%&gt;--%>
+<%--                    <span class="sub-group-label">시설 관리</span>--%>
+
+<%--                    <a href="${ctx}/manager/facility/page${mgmtPath}"--%>
+<%--                       class="nav-item ${activeMenu eq 'facilityAsset' ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">시설자산 관리</span>--%>
+<%--                    </a>--%>
+
+<%--                    &lt;%&ndash; 편의시설 관리 &ndash;%&gt;--%>
+<%--                    <details class="nav-group-sub"--%>
+<%--                    ${fn:contains(uri, '/manager/publicFacility') ? 'open="open"' : ''}>--%>
+
+<%--                        <summary class="nav-item nav-sub-summary ${fn:contains(uri, '/manager/publicFacility') ? 'active' : ''}">--%>
+<%--                            <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+
+<%--                            <a href="${ctx}/manager/publicFacility/page${mgmtPath}"--%>
+<%--                               class="nav-text nav-sub-main-link"--%>
+<%--                               onclick="event.stopPropagation();">--%>
+<%--                                편의시설 관리--%>
+<%--                            </a>--%>
+
+<%--                            <span class="material-symbols-rounded nav-sub-chevron">expand_more</span>--%>
+<%--                        </summary>--%>
+
+<%--                        <div class="nav-sub-depth">--%>
+
+<%--                            <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"--%>
+<%--                               class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">--%>
+<%--                                <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                                <span class="nav-text">편의시설 목록</span>--%>
+<%--                            </a>--%>
+
+<%--                            <a href="${ctx}/manager/publicFacility/reservation/approval${mgmtPath}"--%>
+<%--                               class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/approval') ? 'active' : ''}">--%>
+<%--                                <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                                <span class="nav-text">예약승인관리</span>--%>
+<%--                            </a>--%>
+
+<%--                            <a href="${ctx}/manager/publicFacility/reservation/history${mgmtPath}"--%>
+<%--                               class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/history') ? 'active' : ''}">--%>
+<%--                                <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                                <span class="nav-text">예약시설 이용이력</span>--%>
+<%--                            </a>--%>
+
+<%--                        </div>--%>
+<%--                    </details>--%>
+
+<%--                    &lt;%&ndash; 공사·점검 &ndash;%&gt;--%>
+<%--                    <span class="sub-group-label">공사·점검</span>--%>
+
+<%--                    <a href="${ctx}/manager/checkHistory${mgmtPath}"--%>
+<%--                       class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">유지보수·점검 이력</span>--%>
+<%--                    </a>--%>
+
+<%--                    <a href="${ctx}/manager/meter/hstry${mgmtPath}"--%>
+<%--                       class="nav-item ${fn:contains(uri, '/manager/meter/hstry') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">검침 이력</span>--%>
+<%--                    </a>--%>
+
+<%--                    <a href="${ctx}/manager/facility/workCalendar${mgmtPath}"--%>
+<%--                       class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">시설 일정</span>--%>
+<%--                    </a>--%>
+
+<%--                    &lt;%&ndash; 협력업체 &ndash;%&gt;--%>
+<%--                    <span class="sub-group-label">협력업체</span>--%>
+
+<%--                    <a href="${ctx}/manager/facility/partner/list${mgmtPath}"--%>
+<%--                       class="nav-item ${fn:contains(uri, '/manager/facility/partner/list') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">협력업체 관리</span>--%>
+<%--                    </a>--%>
+
+<%--                    <a href="${ctx}/manager/contract${mgmtPath}"--%>
+<%--                       class="nav-item ${fn:contains(uri, '/manager/contract') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">계약 관리</span>--%>
+<%--                    </a>--%>
+
+<%--                </div>--%>
+<%--            </div>--%>
+<%--        </details>--%>
+
+<%--&lt;%&ndash;        <details class="nav-group"&ndash;%&gt;--%>
+<%--&lt;%&ndash;        ${activeMenu eq 'facilityAsset'&ndash;%&gt;--%>
+<%--&lt;%&ndash;                or activeMenu eq 'publicFacility'&ndash;%&gt;--%>
+<%--&lt;%&ndash;                or activeMenu eq 'checkHistory'&ndash;%&gt;--%>
+<%--&lt;%&ndash;                or activeMenu eq 'meterHstry'&ndash;%&gt;--%>
+<%--&lt;%&ndash;                or activeMenu eq 'facilityPartner'&ndash;%&gt;--%>
+<%--&lt;%&ndash;                or activeMenu eq 'facilityContract'&ndash;%&gt;--%>
+<%--&lt;%&ndash;                or fn:contains(uri, '/manager/meter/hstry')&ndash;%&gt;--%>
+<%--&lt;%&ndash;                or fn:contains(uri, '/manager/contract')&ndash;%&gt;--%>
+<%--&lt;%&ndash;                ? 'open="open"' : ''}>&ndash;%&gt;--%>
+<%--&lt;%&ndash;            <summary class="cat-btn">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                <span class="material-symbols-rounded nav-icon nav-icon-top">apartment</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                <span class="cat-label">시설·공사 관리</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                <span class="material-symbols-rounded cat-chevron">expand_more</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;            </summary>&ndash;%&gt;--%>
+<%--&lt;%&ndash;            <div class="submenu-wrap">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                <div class="submenu-inner">&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    &lt;%&ndash; 시설 관리 &ndash;%&gt;&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    <span class="sub-group-label">시설 관리</span>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/facility/page${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                       class="nav-item ${activeMenu eq 'facilityAsset' ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">시설자산 관리</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    &lt;%&ndash; 편의시설 관리: 누르면 하위 메뉴 열림, 글자 클릭 시 편의시설 관리 페이지 이동 &ndash;%&gt;&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    <details class="public-facility-sub"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    ${fn:contains(uri, '/manager/publicFacility') ? 'open="open"' : ''}>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                        <summary class="nav-item ${fn:contains(uri, '/manager/publicFacility') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                            <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                            <a href="${ctx}/manager/publicFacility/page${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                               class="nav-text public-facility-main-link"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                               onclick="event.stopPropagation();">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                                편의시설 관리&ndash;%&gt;--%>
+<%--&lt;%&ndash;                            </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                            <span class="material-symbols-rounded cat-chevron" style="margin-left:auto;">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                expand_more&ndash;%&gt;--%>
+<%--&lt;%&ndash;            </span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        </summary>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                        <div class="public-facility-submenu">&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                            <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                               class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                                <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                                <span class="nav-text">편의시설 목록</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                            </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                            <a href="${ctx}/manager/publicFacility/reservation/approval${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                               class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/approval') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                                <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                                <span class="nav-text">예약승인관리</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                            </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                            <a href="${ctx}/manager/publicFacility/reservation/history${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                               class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/history') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                                <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                                <span class="nav-text">예약시설 이용이력</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                            </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                        </div>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </details>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    &lt;%&ndash; 공사·점검 &ndash;%&gt;&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    <span class="sub-group-label">공사·점검</span>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/checkHistory${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                       class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">유지보수·점검 이력</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/meter/hstry${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                       class="nav-item ${fn:contains(uri, '/manager/meter/hstry') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">검침 이력</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/facility/workCalendar${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                       class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">시설 일정</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    &lt;%&ndash; 협력업체 &ndash;%&gt;&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    <span class="sub-group-label">협력업체</span>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/facility/partner/list${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                       class="nav-item ${fn:contains(uri, '/manager/facility/partner/list') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">협력업체 관리</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/contract${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                       class="nav-item ${fn:contains(uri, '/manager/contract') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">계약 관리</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                </div>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <span class="sub-group-label">시설 관리</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/facility/page${mgmtPath}" class="nav-item ${activeMenu eq 'facilityAsset' ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">시설자산 관리</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/publicFacility/page${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacility') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">편의시설 관리</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                       class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">편의시설 목록</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/publicFacility/reservation/approval${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                       class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/approval') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">예약승인관리</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+
+<%--&lt;%&ndash;                    <a href="${ctx}/manager/publicFacility/reservation/history${mgmtPath}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                       class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/history') ? 'active' : ''}">&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="material-symbols-rounded nav-icon">chevron_right</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                        <span class="nav-text">예약시설 이용이력</span>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+<%--                        <span class="sub-group-label">시설 관리</span>--%>
+
+<%--                        <a href="${ctx}/manager/facility/page${mgmtPath}"--%>
+<%--                           class="nav-item ${activeMenu eq 'facilityAsset' ? 'active' : ''}">--%>
+<%--                            <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                            <span class="nav-text">시설자산 관리</span>--%>
+<%--                        </a>--%>
+
+<%--                        <details class="public-facility-sub"--%>
+<%--                        ${fn:contains(uri, '/manager/publicFacility') ? 'open="open"' : ''}>--%>
+
+<%--                            <summary class="nav-item ${fn:contains(uri, '/manager/publicFacility') ? 'active' : ''}">--%>
+<%--                                <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+
+<%--                                <a href="${ctx}/manager/publicFacility/page${mgmtPath}"--%>
+<%--                                   class="nav-text"--%>
+<%--                                   onclick="event.stopPropagation();">--%>
+<%--                                    편의시설 관리--%>
+<%--                                </a>--%>
+
+<%--                                <span class="material-symbols-rounded cat-chevron"--%>
+<%--                                      style="margin-left:auto;">--%>
+<%--                                expand_more--%>
+<%--                            </span>--%>
+<%--                            </summary>--%>
+
+<%--                            <div class="public-facility-submenu">--%>
+
+<%--                                <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"--%>
+<%--                                   class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">--%>
+<%--                                    <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                                    <span class="nav-text">편의시설 목록</span>--%>
+<%--                                </a>--%>
+
+<%--                                <a href="${ctx}/manager/publicFacility/reservation/approval${mgmtPath}"--%>
+<%--                                   class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/approval') ? 'active' : ''}">--%>
+<%--                                    <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                                    <span class="nav-text">예약승인관리</span>--%>
+<%--                                </a>--%>
+
+<%--                                <a href="${ctx}/manager/publicFacility/reservation/history${mgmtPath}"--%>
+<%--                                   class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/history') ? 'active' : ''}">--%>
+<%--                                    <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                                    <span class="nav-text">예약시설 이용이력</span>--%>
+<%--                                </a>--%>
+<%--                            </div>--%>
+
+<%--                    &lt;%&ndash; 공사·점검 &ndash;%&gt;--%>
+<%--                    <span class="sub-group-label">공사·점검</span>--%>
+<%--                    &lt;%&ndash;--%>
+<%--                        checkHistory : 탭1 시설점검이력(FACILITY_CHECK_HSTRY)--%>
+<%--                    &ndash;%&gt;--%>
+<%--                    <a href="${ctx}/manager/checkHistory${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">유지보수·점검 이력</span>--%>
+<%--                    </a>--%>
+<%--                    &lt;%&ndash; 검침 이력 &ndash;%&gt;--%>
+<%--                    <a href="${ctx}/manager/meter/hstry${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/meter/hstry') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">검침 이력</span>--%>
+<%--                    </a>--%>
+<%--                    <a href="${ctx}/manager/facility/workCalendar${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">시설 일정</span>--%>
+<%--                    </a>--%>
+
+<%--                    &lt;%&ndash; 협력업체 &ndash;%&gt;--%>
+<%--                    <span class="sub-group-label">협력업체</span>--%>
+<%--                    <a href="${ctx}/manager/facility/partner/list${mgmtPath}"--%>
+<%--                       class="nav-item ${fn:contains(uri, '/manager/facility/partner/list') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">협력업체 관리</span>--%>
+<%--                    </a>--%>
+<%--                    &lt;%&ndash; 계약 관리 &ndash;%&gt;--%>
+<%--                    <a href="${ctx}/manager/contract${mgmtPath}"--%>
+<%--                       class="nav-item ${fn:contains(uri, '/manager/contract') ? 'active' : ''}">--%>
+<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                        <span class="nav-text">계약 관리</span>--%>
+<%--                    </a>--%>
+
+
+<%--                </div>--%>
+<%--            </div>--%>
+<%--        </details>--%>
+
+        <%-- 시설/공사 관리 --%>
         <details class="nav-group"
-        ${activeMenu eq 'facilityAsset'
-                or activeMenu eq 'publicFacility'
-                or activeMenu eq 'checkHistory'
-                or activeMenu eq 'meterHstry'
-                or activeMenu eq 'facilityPartner'
-                or activeMenu eq 'facilityContract'
-                or fn:contains(uri, '/manager/meter/hstry')
-                or fn:contains(uri, '/manager/contract')
-                ? 'open="open"' : ''}>
+            ${activeMenu eq 'facilityAsset'
+                    or activeMenu eq 'publicFacility'
+                    or activeMenu eq 'checkHistory'
+                    or activeMenu eq 'meterHstry'
+                    or activeMenu eq 'facilityPartner'
+                    or activeMenu eq 'facilityContract'
+                    or fn:contains(uri, '/manager/publicFacility')
+                    or fn:contains(uri, '/manager/checkHistory')
+                    or fn:contains(uri, '/manager/meter/hstry')
+                    or fn:contains(uri, '/manager/facility/workCalendar')
+                    or fn:contains(uri, '/manager/facility/partner')
+                    or fn:contains(uri, '/manager/contract')
+                    ? 'open="open"' : ''}>
+
+<%--        ${fn:contains(uri, '/manager/facility')--%>
+<%--                or fn:contains(uri, '/manager/publicFacility')--%>
+<%--                or fn:contains(uri, '/manager/checkHistory')--%>
+<%--                or fn:contains(uri, '/manager/meter/hstry')--%>
+<%--                or fn:contains(uri, '/manager/contract')--%>
+<%--                ? 'open="open"' : ''}>--%>
+
+
+
+
+
             <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">apartment</span>
                 <span class="cat-label">시설·공사 관리</span>
                 <span class="material-symbols-rounded cat-chevron">expand_more</span>
             </summary>
+
             <div class="submenu-wrap">
                 <div class="submenu-inner">
 
                     <span class="sub-group-label">시설 관리</span>
-                    <a href="${ctx}/manager/facility/page${mgmtPath}" class="nav-item ${activeMenu eq 'facilityAsset' ? 'active' : ''}">
+
+                    <a href="${ctx}/manager/facility/page${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/facility/page') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">시설자산 관리</span>
                     </a>
-                    <a href="${ctx}/manager/publicFacility/page${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/publicFacility') ? 'active' : ''}">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">편의시설 관리</span>
-                    </a>
 
-                    <%-- 공사·점검 --%>
+<%--                    <div class="nav-item facility-parent ${fn:contains(uri, '/manager/publicFacility') ? 'active' : ''}"--%>
+<%--                         id="publicFacilityToggle">--%>
+                    <div class="nav-item facility-parent
+                         ${activeMenu eq 'publicFacility'
+                           or fn:contains(uri, '/manager/publicFacility/page')
+                           ? 'active is-open' : ''}
+                         ${fn:contains(uri, '/manager/publicFacility/reservation') ? 'is-open' : ''}"
+                         id="publicFacilityToggle">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+
+                        <a href="${ctx}/manager/publicFacility/page${mgmtPath}"
+                           class="nav-text facility-parent-link">
+                            편의시설 관리
+                        </a>
+
+                        <span class="material-symbols-rounded facility-parent-arrow">expand_more</span>
+                    </div>
+
+<%--                    <div class="facility-child-wrap ${fn:contains(uri, '/manager/publicFacility') ? 'is-open' : ''}"--%>
+<%--                         id="publicFacilityChild">--%>
+                    <div class="facility-child-wrap
+                         ${activeMenu eq 'publicFacility'
+                           or fn:contains(uri, '/manager/publicFacility/page')
+                           or fn:contains(uri, '/manager/publicFacility/reservation')
+                           ? 'is-open' : ''}"
+                           id="publicFacilityChild">
+
+                        <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"
+                           class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">
+                            <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                            <span class="nav-text">편의시설 목록</span>
+                        </a>
+
+                        <a href="${ctx}/manager/publicFacility/reservation/approval${mgmtPath}"
+                           class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/approval') ? 'active' : ''}">
+                            <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                            <span class="nav-text">예약승인관리</span>
+                        </a>
+
+                        <a href="${ctx}/manager/publicFacility/reservation/history${mgmtPath}"
+                           class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/history') ? 'active' : ''}">
+                            <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                            <span class="nav-text">예약시설 이용이력</span>
+                        </a>
+
+                    </div>
+
                     <span class="sub-group-label">공사·점검</span>
-                    <%--
-                        checkHistory : 탭1 시설점검이력(FACILITY_CHECK_HSTRY)
-                    --%>
-                    <a href="${ctx}/manager/checkHistory${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">
+
+                    <a href="${ctx}/manager/checkHistory${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/checkHistory') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">유지보수·점검 이력</span>
                     </a>
-                    <%-- 검침 이력 --%>
-                    <a href="${ctx}/manager/meter/hstry${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/meter/hstry') ? 'active' : ''}">
+
+                    <a href="${ctx}/manager/meter/hstry${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/meter/hstry') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">검침 이력</span>
                     </a>
-                    <a href="${ctx}/manager/facility/workCalendar${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">
+
+                    <a href="${ctx}/manager/facility/workCalendar${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">시설 일정</span>
                     </a>
 
-                    <%-- 협력업체 --%>
                     <span class="sub-group-label">협력업체</span>
+
                     <a href="${ctx}/manager/facility/partner/list${mgmtPath}"
                        class="nav-item ${fn:contains(uri, '/manager/facility/partner/list') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">협력업체 관리</span>
                     </a>
-                    <%-- 계약 관리 --%>
+
                     <a href="${ctx}/manager/contract${mgmtPath}"
                        class="nav-item ${fn:contains(uri, '/manager/contract') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
@@ -298,23 +692,6 @@
 
                     <span class="sub-group-label">일정</span>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">단지 일정 캘린더</span></a>
-
-                    <span class="sub-group-label">공용시설</span>
-                    <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"
-                       class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">공용시설 목록</span>
-                    </a>
-                    <a href="${ctx}/manager/publicFacility/reservation/approval${mgmtPath}"
-                       class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/approval') ? 'active' : ''}">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">예약승인관리</span>
-                    </a>
-                    <a href="${ctx}/manager/publicFacility/reservation/history${mgmtPath}"
-                       class="nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/history') ? 'active' : ''}">
-                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">예약시설 이용이력</span>
-                    </a>
                 </div>
             </div>
         </details>
@@ -339,6 +716,178 @@
         </a>
     </div>
 </aside>
+
+    <style>
+        .facility-parent {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .facility-parent-link {
+            flex: 1;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .facility-parent-arrow {
+            margin-left: auto;
+            font-size: 18px;
+            transition: transform .2s ease;
+        }
+
+        .facility-child-wrap {
+            display: none;
+            margin-left: 18px;
+            padding-left: 8px;
+            border-left: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .facility-child-wrap.is-open {
+            display: block;
+        }
+
+        .facility-parent.is-open .facility-parent-arrow {
+            transform: rotate(180deg);
+        }
+
+        .child-nav-item {
+            padding-left: 10px;
+        }
+
+        .facility-child-wrap.is-open {
+            display: block;
+        }
+    </style>
+
+
+<%--<script>--%>
+<%--    document.addEventListener("DOMContentLoaded", function () {--%>
+<%--        var sidebar = document.getElementById("sidebar");--%>
+<%--        var toggleBtn = document.getElementById("sidebarToggleBtn");--%>
+<%--        var logoArea = document.querySelector(".sidebar-logo");--%>
+<%--        var groups = Array.prototype.slice.call(document.querySelectorAll(".nav-group"));--%>
+<%--        var currentPath = window.location.pathname;--%>
+
+<%--        /* 현재 주소와 일치하는 메뉴만 active 처리 */--%>
+<%--        document.querySelectorAll(".nav-item").forEach(function (item) {--%>
+<%--            var href = item.getAttribute("href");--%>
+
+<%--            item.classList.remove("active");--%>
+
+<%--            /* 준비중 메뉴, # 메뉴는 주소 비교에서 제외 */--%>
+<%--            if (!href || href === "#" || href.indexOf("javascript:") === 0) {--%>
+<%--                return;--%>
+<%--            }--%>
+
+<%--            var linkPath;--%>
+
+<%--            try {--%>
+<%--                linkPath = new URL(item.href, window.location.origin).pathname;--%>
+<%--            } catch (e) {--%>
+<%--                return;--%>
+<%--            }--%>
+
+<%--            if (linkPath === currentPath) {--%>
+<%--                item.classList.add("active");--%>
+
+<%--                var activeGroup = item.closest(".nav-group");--%>
+
+<%--                groups.forEach(function (group) {--%>
+<%--                    group.removeAttribute("open");--%>
+<%--                });--%>
+
+<%--                if (activeGroup) {--%>
+<%--                    activeGroup.setAttribute("open", "open");--%>
+<%--                }--%>
+<%--            }--%>
+<%--        });--%>
+
+<%--        /* 사이드바 접기 버튼 */--%>
+<%--        if (toggleBtn && sidebar) {--%>
+<%--            toggleBtn.addEventListener("click", function (e) {--%>
+<%--                e.stopPropagation();--%>
+<%--                sidebar.classList.toggle("collapsed");--%>
+<%--            });--%>
+<%--        }--%>
+
+<%--        /* 로고 영역 클릭 시 사이드바 접기 */--%>
+<%--        if (logoArea && sidebar) {--%>
+<%--            logoArea.style.cursor = "pointer";--%>
+<%--            logoArea.addEventListener("click", function (e) {--%>
+<%--                if (!e.target.closest("#sidebarToggleBtn")) {--%>
+<%--                    sidebar.classList.toggle("collapsed");--%>
+<%--                }--%>
+<%--            });--%>
+<%--        }--%>
+
+<%--        /* 카테고리 클릭 시 클릭한 그룹만 열기 */--%>
+<%--        document.querySelectorAll(".nav-group > summary").forEach(function (summary) {--%>
+<%--            summary.addEventListener("click", function (e) {--%>
+<%--                e.preventDefault();--%>
+
+<%--                var group = summary.closest(".nav-group");--%>
+<%--                var isOpen = group.hasAttribute("open");--%>
+
+<%--                groups.forEach(function (otherGroup) {--%>
+<%--                    otherGroup.removeAttribute("open");--%>
+<%--                });--%>
+
+<%--                if (!isOpen) {--%>
+<%--                    group.setAttribute("open", "open");--%>
+<%--                }--%>
+<%--            });--%>
+<%--        });--%>
+
+<%--        /* 메뉴 클릭 시 active 하나만 유지 */--%>
+<%--        document.querySelectorAll(".nav-item").forEach(function (item) {--%>
+<%--            item.addEventListener("click", function () {--%>
+<%--                if (item.getAttribute("aria-disabled") === "true") {--%>
+<%--                    return;--%>
+<%--                }--%>
+
+<%--                document.querySelectorAll(".nav-item").forEach(function (otherItem) {--%>
+<%--                    otherItem.classList.remove("active");--%>
+<%--                });--%>
+
+<%--                item.classList.add("active");--%>
+
+<%--                var group = item.closest(".nav-group");--%>
+
+<%--                groups.forEach(function (otherGroup) {--%>
+<%--                    if (otherGroup !== group) {--%>
+<%--                        otherGroup.removeAttribute("open");--%>
+<%--                    }--%>
+<%--                });--%>
+
+<%--                if (group) {--%>
+<%--                    group.setAttribute("open", "open");--%>
+<%--                }--%>
+<%--            });--%>
+<%--        });--%>
+<%--    });--%>
+
+<%--    var publicFacilityToggle = document.getElementById("publicFacilityToggle");--%>
+<%--    var publicFacilityChild = document.getElementById("publicFacilityChild");--%>
+
+<%--    if (publicFacilityToggle && publicFacilityChild) {--%>
+<%--        publicFacilityToggle.addEventListener("click", function (e) {--%>
+<%--            if (e.target.closest(".facility-parent-link")) {--%>
+<%--                return;--%>
+<%--            }--%>
+
+<%--            e.preventDefault();--%>
+
+<%--            publicFacilityChild.classList.toggle("is-open");--%>
+<%--            publicFacilityToggle.classList.toggle("is-open");--%>
+<%--        });--%>
+
+<%--        if (publicFacilityChild.classList.contains("is-open")) {--%>
+<%--            publicFacilityToggle.classList.add("is-open");--%>
+<%--        }--%>
+<%--    }--%>
+
+<%--</script>--%>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var sidebar = document.getElementById("sidebar");
@@ -347,13 +896,49 @@
         var groups = Array.prototype.slice.call(document.querySelectorAll(".nav-group"));
         var currentPath = window.location.pathname;
 
-        /* 현재 주소와 일치하는 메뉴만 active 처리 */
+        var publicFacilityToggle = document.getElementById("publicFacilityToggle");
+        var publicFacilityChild = document.getElementById("publicFacilityChild");
+
+        /*
+         * 현재 페이지가 편의시설 관련 주소이면
+         * 시설·공사 관리 그룹과 편의시설 하위 메뉴를 강제로 열어둔다.
+         */
+        if (currentPath.indexOf("/manager/publicFacility") > -1) {
+            var facilityGroup = null;
+
+            groups.forEach(function (group) {
+                if (group.querySelector("#publicFacilityToggle")) {
+                    facilityGroup = group;
+                }
+            });
+
+            if (facilityGroup) {
+                facilityGroup.setAttribute("open", "open");
+            }
+
+            if (publicFacilityChild) {
+                publicFacilityChild.classList.add("is-open");
+            }
+
+            if (publicFacilityToggle) {
+                publicFacilityToggle.classList.add("is-open");
+            }
+        }
+
+        /*
+         * 현재 주소와 일치하는 메뉴만 active 처리
+         */
         document.querySelectorAll(".nav-item").forEach(function (item) {
             var href = item.getAttribute("href");
 
-            item.classList.remove("active");
+            /*
+             * 편의시설 관리는 div 메뉴라 href가 없습니다.
+             * 그래서 여기서 active를 지우면 표시가 사라집니다.
+             */
+            if (!item.classList.contains("facility-parent")) {
+                item.classList.remove("active");
+            }
 
-            /* 준비중 메뉴, # 메뉴는 주소 비교에서 제외 */
             if (!href || href === "#" || href.indexOf("javascript:") === 0) {
                 return;
             }
@@ -378,10 +963,31 @@
                 if (activeGroup) {
                     activeGroup.setAttribute("open", "open");
                 }
+
+                /*
+                 * 편의시설 하위 메뉴 클릭 후에도 하위 메뉴 유지
+                 */
+                if (currentPath.indexOf("/manager/publicFacility") > -1) {
+                    var facilityGroup = null;
+
+                    if (publicFacilityToggle) {
+                        publicFacilityToggle.classList.add("is-open");
+
+                        if (currentPath.indexOf("/manager/publicFacility/page") > -1) {
+                            publicFacilityToggle.classList.add("active");
+                        }
+                    }
+
+                    if (publicFacilityChild) {
+                        publicFacilityChild.classList.add("is-open");
+                    }
+                }
             }
         });
 
-        /* 사이드바 접기 버튼 */
+        /*
+         * 사이드바 접기 버튼
+         */
         if (toggleBtn && sidebar) {
             toggleBtn.addEventListener("click", function (e) {
                 e.stopPropagation();
@@ -389,7 +995,9 @@
             });
         }
 
-        /* 로고 영역 클릭 시 사이드바 접기 */
+        /*
+         * 로고 영역 클릭 시 사이드바 접기
+         */
         if (logoArea && sidebar) {
             logoArea.style.cursor = "pointer";
             logoArea.addEventListener("click", function (e) {
@@ -399,7 +1007,9 @@
             });
         }
 
-        /* 카테고리 클릭 시 클릭한 그룹만 열기 */
+        /*
+         * 큰 카테고리 클릭 시 해당 그룹만 열기
+         */
         document.querySelectorAll(".nav-group > summary").forEach(function (summary) {
             summary.addEventListener("click", function (e) {
                 e.preventDefault();
@@ -417,7 +1027,31 @@
             });
         });
 
-        /* 메뉴 클릭 시 active 하나만 유지 */
+        /*
+         * 편의시설 관리 우측 화살표 클릭 시 하위 메뉴 열고 닫기
+         */
+        if (publicFacilityToggle && publicFacilityChild) {
+            publicFacilityToggle.addEventListener("click", function (e) {
+                if (e.target.closest(".facility-parent-link")) {
+                    return;
+                }
+
+                e.preventDefault();
+
+                publicFacilityChild.classList.toggle("is-open");
+                publicFacilityToggle.classList.toggle("is-open");
+
+                var group = publicFacilityToggle.closest(".nav-group");
+                if (group) {
+                    group.setAttribute("open", "open");
+                }
+            });
+        }
+
+        /*
+         * 메뉴 클릭 시 active 처리
+         * 단, 편의시설 하위 메뉴는 접히지 않도록 유지한다.
+         */
         document.querySelectorAll(".nav-item").forEach(function (item) {
             item.addEventListener("click", function () {
                 if (item.getAttribute("aria-disabled") === "true") {
@@ -440,6 +1074,16 @@
 
                 if (group) {
                     group.setAttribute("open", "open");
+                }
+
+                if (item.closest("#publicFacilityChild")) {
+                    if (publicFacilityChild) {
+                        publicFacilityChild.classList.add("is-open");
+                    }
+
+                    if (publicFacilityToggle) {
+                        publicFacilityToggle.classList.add("is-open");
+                    }
                 }
             });
         });

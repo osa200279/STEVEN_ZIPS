@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Controller란? 브라우저 요청 URL을 받아 JSP 화면 또는 JSON 응답으로 연결하는 클래스입니다.
  * 권한: 단지관리자(MNGR), 입주민(RESIDENT)을 메서드별로 분리했습니다.
@@ -24,7 +26,7 @@ public class PublicFacilityReservationController {
     private final IPublicFacilityReservationService service;
     private final IManagerModelService managerModelService;
 
-    /** 단지관리자 - 공용시설 목록 */
+    /** 단지관리자 - 편의시설 목록 */
     @PreAuthorize("hasRole('MNGR') and @authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @GetMapping("/manager/publicFacility/reservation/facilities/{mgmtOfcNo}")
     public String managerFacilityList(@PathVariable String mgmtOfcNo,
@@ -98,17 +100,88 @@ public class PublicFacilityReservationController {
     }
 
     /** 입주민 - 시설예약 */
+    /**
+     * 입주민 - 공용시설 예약 메인
+     *
+     * 공용시설 예약 메인 화면입니다.
+     * 이 화면에서는 바로 예약하지 않고,
+     * 단지독서실 / 주민회의실 / 피트니스센터 중 하나를 선택합니다.
+     */
     @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/resident/publicFacility/reservation")
-    public String residentReservePage(@RequestParam(defaultValue = "1") int currentPage,
-                                      PublicFacilityReservationVO searchVO,
-                                      @AuthenticationPrincipal CustomUser customUser,
-                                      Model model) {
+    public String residentReservePage(
+            PublicFacilityReservationVO searchVO,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        /*
+         * 로그인한 입주민이 속한 단지번호 조회
+         */
         searchVO.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
-        PaginationInfoVO<PublicFacilityReservationVO> pagingVO = service.getResidentFacilityPaging(searchVO, currentPage);
-        model.addAttribute("pagingVO", pagingVO);
-        model.addAttribute("searchVO", searchVO);
-        return "apt/member/resident/facility/residentReservation";
+
+        /*
+         * 예약 가능한 공용시설 종류 목록 조회
+         */
+        model.addAttribute("facilityList", service.getResidentFacilityGroupList(searchVO));
+
+        return "member/resident/facility/residentReservation";
+    }
+
+    /**
+     * 입주민 - 공용시설 상세 예약 화면
+     *
+     * 예:
+     * /resident/publicFacility/reservation/PF000000000001
+     *
+     * cmnFacilityNo란?
+     * 공용시설 번호입니다.
+     * 예: 단지독서실, 주민회의실 같은 큰 시설 1개를 구분하는 번호입니다.
+     */
+    @PreAuthorize("hasRole('RESIDENT')")
+    @GetMapping("/resident/publicFacility/reservation/{cmnFacilityNo}")
+    public String residentReserveDetailPage(
+            @PathVariable String cmnFacilityNo,
+            PublicFacilityReservationVO searchVO,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        searchVO.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
+        searchVO.setSearchCmnFacilityNo(cmnFacilityNo);
+
+        List<PublicFacilityReservationVO> itemList = service.getResidentFacilityItemList(searchVO);
+
+        PublicFacilityReservationVO facility = null;
+
+        if (itemList != null && !itemList.isEmpty()) {
+            facility = itemList.get(0);
+        }
+
+        model.addAttribute("facility", facility);
+        model.addAttribute("itemList", itemList);
+
+        return "member/resident/facility/residentReservationDetail";
+    }
+
+    /**
+     * 입주민 - 선택 시간 기준 예약된 좌석 조회
+     *
+     * Ajax란?
+     * 화면 전체 새로고침 없이 서버와 데이터를 주고받는 방식입니다.
+     * 왜 사용?
+     * 날짜/시간을 바꿀 때마다 예약 불가능한 좌석만 다시 표시하기 위해 사용합니다.
+     */
+    @PreAuthorize("hasRole('RESIDENT')")
+    @GetMapping("/resident/publicFacility/reservation/{cmnFacilityNo}/reserved-items")
+    @ResponseBody
+    public List<String> reservedItemList(
+            @PathVariable String cmnFacilityNo,
+            PublicFacilityReservationVO searchVO,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
+        searchVO.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
+        searchVO.setSearchCmnFacilityNo(cmnFacilityNo);
+
+        return service.getReservedItemNoList(searchVO);
     }
 
     /** 입주민 - 예약 등록 */
@@ -133,7 +206,7 @@ public class PublicFacilityReservationController {
         PaginationInfoVO<PublicFacilityReservationVO> pagingVO = service.getMyReservationPaging(searchVO, currentPage);
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
-        return "apt/member/resident/facility/residentMyReservation";
+        return "member/resident/facility/residentMyReservation";
     }
 
     /** 입주민 - 예약 상세 JSON */

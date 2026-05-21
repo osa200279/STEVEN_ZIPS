@@ -35,6 +35,8 @@
         <result property="usePeopleCnt" column="USE_PEOPLE_CNT"/>
         <result property="regDt" column="REG_DT"/>
         <result property="mdfDt" column="MDF_DT"/>
+        <result property="cmnFacilityCn" column="CMN_FACILITY_CN"/>
+        <result property="reservedYn" column="RESERVED_YN"/>
     </resultMap>
 
     <sql id="baseJoin">
@@ -241,4 +243,109 @@
           AND USER_NO = #{userNo}
           AND RSVT_STTS_CD IN ('PENDING','APPROVED')
     </update>
+
+    <!--
+    입주민 - 예약 가능한 공용시설 종류 목록
+
+    PUBLIC_FACILITY:
+    단지독서실, 주민회의실, 피트니스센터 같은 큰 시설 정보
+
+    PUBLIC_ITEM:
+    독서실 좌석, 회의실 1호실 같은 세부 예약 대상
+-->
+    <select id="selectResidentFacilityGroupList" resultMap="reservationMap">
+        SELECT
+        PF.CMN_FACILITY_NO,
+        PF.APT_CMPLEX_NO,
+        PF.FACILITY_NO,
+        PF.CMN_FACILITY_NM,
+        PF.CMN_FACILITY_CN,
+        PF.CMN_FACILITY_AMT,
+        PF.CMN_FACILITY_RSV_YN,
+        PF.CMN_FACILITY_OPR_HR,
+        F.FACILITY_TY_CD,
+        F.LOC_CN,
+        COUNT(PI.CMN_FACILITY_ITEM_NO) AS USE_PEOPLE_CNT
+        FROM PUBLIC_FACILITY PF
+        JOIN FACILITY F
+        ON F.FACILITY_NO = PF.FACILITY_NO
+        LEFT JOIN PUBLIC_ITEM PI
+        ON PI.CMN_FACILITY_NO = PF.CMN_FACILITY_NO
+        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND PF.CMN_FACILITY_RSV_YN = 'Y'
+        AND PF.CMN_FACILITY_NM IN ('주민회의실', '단지독서실', '피트니스센터')
+        GROUP BY
+        PF.CMN_FACILITY_NO,
+        PF.APT_CMPLEX_NO,
+        PF.FACILITY_NO,
+        PF.CMN_FACILITY_NM,
+        PF.CMN_FACILITY_CN,
+        PF.CMN_FACILITY_AMT,
+        PF.CMN_FACILITY_RSV_YN,
+        PF.CMN_FACILITY_OPR_HR,
+        F.FACILITY_TY_CD,
+        F.LOC_CN
+        ORDER BY
+        DECODE(PF.CMN_FACILITY_NM,
+        '단지독서실', 1,
+        '주민회의실', 2,
+        '피트니스센터', 3,
+        99
+        )
+    </select>
+
+    <!--
+        입주민 - 선택한 공용시설의 세부 항목 목록
+
+        예:
+        단지독서실 선택 시 → 101번 좌석, 102번 좌석 ...
+    -->
+    <select id="selectResidentFacilityItemList" resultMap="reservationMap">
+        SELECT
+        PF.CMN_FACILITY_NO,
+        PF.APT_CMPLEX_NO,
+        PF.FACILITY_NO,
+        PF.CMN_FACILITY_NM,
+        PF.CMN_FACILITY_CN,
+        PF.CMN_FACILITY_AMT,
+        PF.CMN_FACILITY_RSV_YN,
+        PF.CMN_FACILITY_OPR_HR,
+        F.FACILITY_TY_CD,
+        F.LOC_CN,
+        PI.CMN_FACILITY_ITEM_NO,
+        PI.ITEM_NM,
+        PI.CMN_FACILITY_STTS_CD,
+        'N' AS RESERVED_YN
+        FROM PUBLIC_FACILITY PF
+        JOIN FACILITY F
+        ON F.FACILITY_NO = PF.FACILITY_NO
+        JOIN PUBLIC_ITEM PI
+        ON PI.CMN_FACILITY_NO = PF.CMN_FACILITY_NO
+        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND PF.CMN_FACILITY_NO = #{searchCmnFacilityNo}
+        AND PF.CMN_FACILITY_RSV_YN = 'Y'
+        ORDER BY PI.ITEM_NM
+    </select>
+
+    <!--
+        입주민 - 선택한 날짜/시간에 이미 예약된 세부 항목 번호 조회
+
+        시간 겹침 조건:
+        기존 예약 시작시간 < 새 예약 종료시간
+        기존 예약 종료시간 > 새 예약 시작시간
+    -->
+    <select id="selectReservedItemNoList" resultType="string">
+        SELECT FH.CMN_FACILITY_ITEM_NO
+        FROM FACILITY_HSTRY FH
+        JOIN PUBLIC_ITEM PI
+        ON PI.CMN_FACILITY_ITEM_NO = FH.CMN_FACILITY_ITEM_NO
+        JOIN PUBLIC_FACILITY PF
+        ON PF.CMN_FACILITY_NO = PI.CMN_FACILITY_NO
+        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND PF.CMN_FACILITY_NO = #{searchCmnFacilityNo}
+        AND FH.RSVT_STTS_CD IN ('PENDING', 'APPROVED')
+        AND FH.RSVT_BGNG_DTTM &lt; TO_DATE(#{rsvtEndDttm}, 'YYYY-MM-DD HH24:MI')
+        AND FH.RSVT_END_DTTM &gt; TO_DATE(#{rsvtBgngDttm}, 'YYYY-MM-DD HH24:MI')
+    </select>
+
 </mapper>

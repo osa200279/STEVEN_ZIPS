@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>공용시설예약 - 예약내역 – 대덕아파트</title>
+  <title>편의시설예약 - 예약내역 – 대덕아파트</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
@@ -57,9 +57,9 @@
           <span>›</span>
           <a href="javascript:void(0);">생활지원서비스</a>
           <span>›</span>
-          <span class="cur">공용시설예약 - 예약내역</span>
+          <span class="cur">편의시설예약 - 예약내역</span>
         </div>
-        <h1 class="page-title">공용시설예약 - 예약내역</h1>
+        <h1 class="page-title">편의시설예약 - 예약내역</h1>
         <p class="page-desc">검색 기능, 예약내역 목록, 진행상태 확인, 상세보기 및 취소 버튼을 포함한 예약내역 화면입니다.</p>
 
 <section class="panel"><div class="search-row"><select class="fake-select"><option>전체 시설</option><option>독서실</option><option>테니스장</option><option>회의실</option></select><input class="fake-input" placeholder="예약자명 또는 시설명 검색" value="홍길동" /><button class="btn-sub">조회</button></div><table class="data-table"><thead><tr><th>예약일</th><th>시설명</th><th>시간</th><th>상태</th><th>관리</th></tr></thead><tbody><tr><td>2026-04-28</td><td>독서실 A-05</td><td>09:00 ~ 12:00</td><td><span class="badge ok">예약완료</span></td><td><a class="btn-ghost" href="${pageContext.request.contextPath}/service/facility/detail">상세보기</a></td></tr><tr><td>2026-04-29</td><td>테니스장 A코트</td><td>18:00 ~ 19:00</td><td><span class="badge wait">승인대기</span></td><td><button class="btn-danger">취소</button></td></tr><tr><td>2026-05-02</td><td>회의실 B</td><td>14:00 ~ 16:00</td><td><span class="badge ok">예약완료</span></td><td><a class="btn-ghost" href="${pageContext.request.contextPath}/service/facility/detail">상세보기</a></td></tr></tbody></table></section>

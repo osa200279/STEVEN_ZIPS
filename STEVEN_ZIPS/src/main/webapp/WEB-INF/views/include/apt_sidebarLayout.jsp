@@ -181,7 +181,9 @@
       </div>
     </details>
 
-    <details class="side-nav-item group" ${fn:contains(pageContext.request.requestURI, '/resident/service') ? 'open="open"' : ''}>
+    <details class="side-nav-item group"
+    ${fn:contains(pageContext.request.requestURI, '/resident/service')
+            or fn:contains(pageContext.request.requestURI, '/resident/publicFacility') ? 'open="open"' : ''}>
       <summary class="flex items-center justify-between px-4 py-3 rounded-full cursor-pointer hover:bg-primary/5 transition-colors text-on-surface">
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">groups</span>
@@ -193,7 +195,12 @@
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/service/moving') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/service/moving/${aptCmplexNo}">전입/전출신고</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/service/car') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/service/car/${aptCmplexNo}">차량등록</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/service/visitor') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/service/visitor/${aptCmplexNo}">방문차량등록</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/service/facility') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/service/facility">공용시설예약</a>
+<%--        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/service/facility') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/service/facility">편의시설예약</a>--%>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5
+                 ${fn:contains(pageContext.request.requestURI, '/resident/publicFacility/reservation') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}"
+           href="${pageContext.request.contextPath}/resident/publicFacility/reservation">
+          편의시설예약
+        </a>
       </div>
     </details>
 

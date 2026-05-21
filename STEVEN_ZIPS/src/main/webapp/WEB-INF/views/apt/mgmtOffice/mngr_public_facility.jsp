@@ -229,7 +229,7 @@
         <div class="page-header">
           <div class="page-title-block">
             <h2>공용시설 관리</h2>
-            <p>단지 내 공용시설 정보·사진·자원·예약이력을 관리합니다.</p>
+            <p>단지 내 편의시설 정보·사진·자원·예약이력을 관리합니다.</p>
           </div>
           <div class="page-actions">
             <button type="button" class="btn btn-primary" data-action="openRegister">

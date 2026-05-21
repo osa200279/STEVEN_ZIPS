@@ -323,6 +323,7 @@ public class ManagerMainController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+        model.addAttribute("activeMenu", "publicFacility");
         return "apt/mgmtOffice/facility/publicFacility/publicFacilityList";
     }
 

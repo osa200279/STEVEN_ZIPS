@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>공용시설예약 : 독서실 – 대덕아파트</title>
+  <title>편의시설예약 : 독서실 – 대덕아파트</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
@@ -57,9 +57,9 @@
           <span>›</span>
           <a href="javascript:void(0);">생활지원서비스</a>
           <span>›</span>
-          <span class="cur">공용시설예약 : 독서실</span>
+          <span class="cur">편의시설예약 : 독서실</span>
         </div>
-        <h1 class="page-title">공용시설예약 : 독서실</h1>
+        <h1 class="page-title">편의시설예약 : 독서실</h1>
         <p class="page-desc">좌석배치도를 확인하고 좌석 선택, 예약 날짜 선택, 예약하기 버튼을 구성한 독서실 예약 화면입니다.</p>
 
 <section class="grid-2">

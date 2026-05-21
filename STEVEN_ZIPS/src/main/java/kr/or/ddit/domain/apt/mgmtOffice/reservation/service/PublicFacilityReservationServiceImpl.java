@@ -107,4 +107,19 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     }
 
     @Override @Transactional public void cancel(PublicFacilityReservationVO vo) { mapper.cancelReservation(vo); }
+
+    @Override
+    public List<PublicFacilityReservationVO> getResidentFacilityGroupList(PublicFacilityReservationVO searchVO) {
+        return mapper.selectResidentFacilityGroupList(searchVO);
+    }
+
+    @Override
+    public List<PublicFacilityReservationVO> getResidentFacilityItemList(PublicFacilityReservationVO searchVO) {
+        return mapper.selectResidentFacilityItemList(searchVO);
+    }
+
+    @Override
+    public List<String> getReservedItemNoList(PublicFacilityReservationVO searchVO) {
+        return mapper.selectReservedItemNoList(searchVO);
+    }
 }

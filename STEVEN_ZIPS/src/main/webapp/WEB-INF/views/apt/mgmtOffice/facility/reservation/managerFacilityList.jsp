@@ -6,7 +6,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>공용시설 목록</title>
+  <title>편의시설 목록</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
@@ -50,7 +50,7 @@
       <div class="office-page">
         <div class="pf-wrap">
           <h2 class="pf-page-title">공용시설 목록</h2>
-          <p class="pf-page-desc">단지 내 공용시설 예약 정보를 조회합니다.</p>
+          <p class="pf-page-desc">단지 내 편의시설 예약 정보를 조회합니다.</p>
 
           <form id="searchForm" method="get" action="${pageContext.request.contextPath}/manager/publicFacility/reservation/facilities/${mgmtOfcNo}">
             <div class="pf-card">

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>공용시설예약 : 회의실 – 대덕아파트</title>
+  <title>편의시설예약 : 회의실 – 대덕아파트</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
@@ -57,9 +57,9 @@
           <span>›</span>
           <a href="javascript:void(0);">생활지원서비스</a>
           <span>›</span>
-          <span class="cur">공용시설예약 : 회의실</span>
+          <span class="cur">편의시설예약 : 회의실</span>
         </div>
-        <h1 class="page-title">공용시설예약 : 회의실</h1>
+        <h1 class="page-title">편의시설예약 : 회의실</h1>
         <p class="page-desc">회의실 선택, 예약 정보 입력, 정보 확인, 예약하기 버튼을 포함한 회의실 예약 화면입니다.</p>
 
         <section class="grid-2">

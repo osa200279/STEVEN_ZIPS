@@ -48,7 +48,7 @@
       <div class="office-page">
         <div class="pf-wrap">
           <h2 class="pf-page-title">예약시설 이용이력</h2>
-          <p class="pf-page-desc">단지 내 공용시설 예약 정보를 조회합니다.</p>
+          <p class="pf-page-desc">단지 내 편의시설 예약 정보를 조회합니다.</p>
 
           <form id="searchForm" method="get" action="${pageContext.request.contextPath}/manager/publicFacility/reservation/history/${mgmtOfcNo}">
             <div class="pf-card">
