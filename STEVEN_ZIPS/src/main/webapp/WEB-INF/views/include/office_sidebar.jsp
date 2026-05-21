@@ -196,6 +196,10 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">지출 내역 관리</span>
                     </a>
+                    <a href="${ctx}/manager/bill/meter-charge${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/expense') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">검침요금 계산</span>
+                    </a>
                     <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">예산 편성·조회</span>

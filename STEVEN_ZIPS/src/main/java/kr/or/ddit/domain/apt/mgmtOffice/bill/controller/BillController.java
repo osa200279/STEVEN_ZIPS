@@ -5,6 +5,7 @@ import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.service.IBillChargeService;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.service.IBillIssueService;
+import kr.or.ddit.domain.apt.mgmtOffice.bill.service.IMeterChargeService;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +43,10 @@ public class BillController {
 
     @Autowired
     private IBillIssueService billIssueService;
+
+    @Autowired
+    private IMeterChargeService meterChargeService;
+
     /**
      * @Author 이윤진
      * @param mgmtOfcNo 관리사무소번호
@@ -48,6 +54,7 @@ public class BillController {
      * @param model
      * @return 관리비부과 화면
      */
+
     // 관리비 부과
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/bill/charge/{mgmtOfcNo}")
@@ -141,6 +148,63 @@ public class BillController {
 
         } catch (Exception e) {
             log.error("관리비 부과 실패", e);
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 검침요금 계산 화면
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/bill/meter-charge/{mgmtOfcNo}")
+    public String meterChargePage(
+            @PathVariable String mgmtOfcNo,
+            Model model,
+            Authentication authentication
+    ) {
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+
+        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
+        return "apt/mgmtOffice/bill/mngr_meterCharge";
+    }
+
+    /**
+     * 검침요금 계산 목록 조회
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/bill/meter-charge/list/{mgmtOfcNo}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> selectMeterChargeList(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam String billYm
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+            if (aptComplexVO == null) {
+                result.put("success", false);
+                result.put("message", "관리사무소에 연결된 아파트 단지 정보가 없습니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            Map<String, Object> data = meterChargeService.selectMeterChargeList(
+                    aptComplexVO.getAptCmplexNo(),
+                    billYm
+            );
+
+            result.put("success", true);
+            result.putAll(data);
+            result.put("aptCmplexNo", aptComplexVO.getAptCmplexNo());
+            result.put("billYm", billYm);
+
+        } catch (Exception e) {
+            log.error("검침요금 계산 조회 실패", e);
             result.put("success", false);
             result.put("message", e.getMessage());
         }

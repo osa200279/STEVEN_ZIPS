@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.bill.mapper.IMeterChargeMapper">
+
+    <resultMap id="meterChargeMap"
+               type="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.MeterChargeVO">
+
+        <result property="hoNo" column="HO_NO"/>
+        <result property="dongNo" column="DONG_NO"/>
+        <result property="dongNm" column="DONG_NM"/>
+        <result property="ho" column="HO"/>
+        <result property="displayDongHo" column="DISPLAY_DONG_HO"/>
+
+        <result property="meterHstryNo" column="METER_HSTRY_NO"/>
+        <result property="facilityNo" column="FACILITY_NO"/>
+        <result property="utilityProviderNo" column="UTILITY_PROVIDER_NO"/>
+        <result property="meterDt" column="METER_DT"/>
+        <result property="preVal" column="PRE_VAL"/>
+        <result property="currVal" column="CURR_VAL"/>
+        <result property="usageVal" column="USAGE_VAL"/>
+        <result property="meterCn" column="METER_CN"/>
+        <result property="meterRsltCd" column="METER_RSLT_CD"/>
+
+        <result property="billItemCd" column="BILL_ITEM_CD"/>
+        <result property="billItemNm" column="BILL_ITEM_NM"/>
+    </resultMap>
+
+    <select id="selectMeterChargeList"
+            resultMap="meterChargeMap">
+
+        SELECT
+            X.HO_NO,
+            X.DONG_NO,
+            X.DONG_NM,
+            X.HO,
+            X.DISPLAY_DONG_HO,
+
+            X.METER_HSTRY_NO,
+            X.FACILITY_NO,
+            X.UTILITY_PROVIDER_NO,
+            X.METER_DT,
+            X.PRE_VAL,
+            X.CURR_VAL,
+            X.USAGE_VAL,
+            X.METER_CN,
+            X.METER_RSLT_CD,
+
+            X.BILL_ITEM_CD,
+            X.BILL_ITEM_NM
+        FROM (
+                 SELECT
+                     H.HO_NO,
+                     U.DONG_NO,
+                     U.DONG_NM,
+                     H.HO,
+                     U.DONG_NM || ' ' || H.HO || '호' AS DISPLAY_DONG_HO,
+
+                     M.METER_HSTRY_NO,
+                     M.FACILITY_NO,
+                     M.UTILITY_PROVIDER_NO,
+                     M.METER_DT,
+                     M.PRE_VAL,
+                     M.CURR_VAL,
+                     NVL(M.CURR_VAL, 0) - NVL(M.PRE_VAL, 0) AS USAGE_VAL,
+                     M.METER_CN,
+                     M.METER_RSLT_CD,
+
+                     F.FACILITY_TY_CD AS BILL_ITEM_CD,
+                     C.CODE_NAME AS BILL_ITEM_NM,
+
+                     ROW_NUMBER() OVER (
+                    PARTITION BY H.HO_NO, F.FACILITY_TY_CD
+                    ORDER BY M.METER_DT DESC, M.METER_HSTRY_NO DESC
+                ) AS RN
+
+                 FROM METER_HSTRY M
+                          JOIN FACILITY F
+                               ON M.FACILITY_NO = F.FACILITY_NO
+                          JOIN APT_DETAIL H
+                               ON M.HO_NO = H.HO_NO
+                          JOIN APT_UNIT U
+                               ON H.DONG_NO = U.DONG_NO
+                          JOIN UTILITY_PROVIDER UP
+                               ON M.UTILITY_PROVIDER_NO = UP.UTILITY_PROVIDER_NO
+                                   AND UP.APT_CMPLEX_NO = U.APT_CMPLEX_NO
+                          LEFT JOIN COMMON_CODE C
+                                    ON C.GROUP_CODE_NO = 'EXPN_CD'
+                                        AND C.CODE_NO_CD = F.FACILITY_TY_CD
+                                        AND C.USE_YN = 'Y'
+
+                 WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+                   AND TO_CHAR(M.METER_DT, 'YYYYMM') = #{billYm}
+                   AND F.FACILITY_TY_CD IN ('ELC', 'WTR', 'GAS')
+                   AND M.METER_RSLT_CD IS NOT NULL
+             ) X
+        WHERE X.RN = 1
+        ORDER BY X.DONG_NM, X.HO, X.BILL_ITEM_CD
+
+    </select>
+
+</mapper>
