@@ -99,7 +99,13 @@
                             <div class="detail-header">
                                 <div>
                                     <input type="text" class="form-input" id="surveyTitle" placeholder="제목">
-                                    <textarea class="form-textarea" id="surveyContent" rows="3" placeholder="설문 내용"></textarea>
+
+
+
+
+
+
+
                                 </div>
                                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
                                     <button type="button" class="btn btn-secondary" id="resultBtn">결과 보기</button>
@@ -140,25 +146,11 @@
                             </div>
                         </div>
 
-                        <div class="detail-box">
-                            <div class="detail-label">문항</div>
-                            <div class="detail-value">
-                                <textarea class="form-textarea" id="surveyQitemCn" rows="3" placeholder="문항 내용"></textarea>
-                            </div>
-                        </div>
+
                     </div>
 
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title">문항 구성</h3>
-                        </div>
-                        <div class="panel-body">
-                            <div class="question-box">
-                                <div class="question-title">문항 내용</div>
-                                <textarea class="form-textarea" id="surveyQitemPreview" rows="5" readonly></textarea>
-                            </div>
-                        </div>
-                    </div>
+
+                    <div id="questionContainer"></div>
                 </div>
             </div>
         </main>
@@ -211,24 +203,105 @@
 
     function renderSurveyDetail() {
         document.getElementById("surveyTitle").value = survey?.surveyNm || "";
-        document.getElementById("surveyContent").value = survey?.surveyCn || "";
         document.getElementById("surveyStatus").value = normalizeStatus(survey?.surveySttsCd);
         document.getElementById("surveyTypeSelect").value = survey?.surveyTypeCd || "SURVEY";
         document.getElementById("surveyBgngDt").value = toDateInput(survey?.surveyBgngDt);
         document.getElementById("surveyEndDt").value = toDateInput(survey?.surveyEndDt);
-        document.getElementById("surveyQitemCn").value = survey?.surveyQitemCn || "";
-        document.getElementById("surveyQitemPreview").value = survey?.surveyQitemCn || "";
+
+
+
+
+        const questionList =
+            JSON.parse(survey?.surveyQitemCn || "[]");
+
+        const container =
+            document.getElementById("questionContainer");
+
+        let html = "";
+
+        questionList.forEach(function(q, idx){
+
+            html +=
+
+                '<div class="question-box" style="margin-bottom:16px;">'
+
+                + '<div class="question-title">'
+                + '질문 '
+                + (idx + 1)
+                + '</div>'
+
+                + '<input type="text" '
+                + 'class="form-input" '
+                + 'value="' + q.question + '" '
+                + 'style="margin-bottom:10px;">';
+
+            if(q.items){
+
+                q.items.forEach(function(item){
+
+                    html +=
+
+                        '<input type="text" '
+                        + 'class="form-input" '
+                        + 'value="' + item + '" '
+                        + 'style="margin-bottom:8px;">';
+                });
+            }
+
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+
+
+
+
+
     }
 
     document.getElementById("updateBtn").addEventListener("click", async function () {
+
+        const questionBoxes =
+            document.querySelectorAll("#questionContainer .question-box");
+
+        const questionList = [];
+
+        questionBoxes.forEach(function(box){
+
+            const inputs =
+                box.querySelectorAll("input");
+
+            const question =
+                inputs[0].value;
+
+            const items = [];
+
+            for(let i = 1; i < inputs.length; i++){
+
+                items.push(inputs[i].value);
+            }
+
+            questionList.push({
+                question: question,
+                type: "MULTI",
+                items: items
+            });
+        });
+
+
         const body = {
             surveyNm: document.getElementById("surveyTitle").value,
-            surveyCn: document.getElementById("surveyContent").value,
+
             surveySttsCd: document.getElementById("surveyStatus").value,
             surveyTypeCd: document.getElementById("surveyTypeSelect").value,
             surveyBgngDt: document.getElementById("surveyBgngDt").value,
             surveyEndDt: document.getElementById("surveyEndDt").value,
-            surveyQitemCn: document.getElementById("surveyQitemCn").value
+
+
+            surveyQitemCn:
+                JSON.stringify(questionList),
+
+
         };
 
         const resp = await fetch(`${ctx}/manager/survey/${mgmtOfcNo}/detail/${surveyNo}`, {
@@ -275,6 +348,9 @@
 
         window.location.href = `${ctx}/manager/survey/${resolvedMgmtOfcNo}/result/${resolvedSurveyNo}`;
     });
+
+
+
 </script>
 
 <script src="${pageContext.request.contextPath}/js/office-layout.js"></script>
