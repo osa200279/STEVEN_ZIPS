@@ -193,10 +193,10 @@
 
     <!--청약 신청 상세조회-->
     <select id="selectAplctDocList" resultType="map" parameterType="string">
-        SELECT rcd.sbmsn_doc_ty_cd      /*kr.or.ddit.domain.central.mapper.IContractUserMapper.selectAplctDocList*/
-             , sd.sbmsn_doc_no
-             , sd.atch_file_id
-             , sd.reg_dt
+        SELECT DISTINCT rcd.sbmsn_doc_ty_cd
+                      , sd.sbmsn_doc_no
+                      , sd.atch_file_id
+                      , sd.reg_dt
         FROM rent_ctrt_doc rcd
                  INNER JOIN rent_listing rl ON rcd.rent_lstg_no = rl.rent_lstg_no
                  INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
@@ -206,12 +206,16 @@
             AND sd.aplct_no = a.aplct_no
         WHERE a.aplct_no = #{aplctNo}
     </select>
+
+    <!-- 제출한 서류 수 조회 -->
     <select id="selectSubmittedDocCount" resultType="int">
         SELECT COUNT(*)
         FROM sbmsn_doc
         WHERE aplct_no = #{aplctNo}
         AND atch_file_id IS NOT NULL
     </select>
+
+    <!-- 남은 제출 서류 조회 -->
     <select id="selectRequiredDocCount" resultType="int">
         SELECT COUNT(*)
         FROM rent_ctrt_doc rcd
