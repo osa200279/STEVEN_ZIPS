@@ -145,6 +145,7 @@
                  INNER JOIN apt_complex ac on ac.apt_cmplex_no = aht.apt_cmplex_no
                  INNER JOIN member m ON m.user_no = a.user_no
         WHERE a.user_no = #{userNo}
+        ORDER BY a.reg_dt DESC
     </select>
 
     <!--aplct + apt_ho_ty + center_ann_board_post + apt_complex + member JOIN
