@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.common.api.react.mapper.IReactAptMapper">
-
+    <!-- 아파트 검색 -->
     <select id="searchApartment" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
-       SELECT
-            APT_CMPLEX_NO
-             , APT_CMPLEX_NM
-             , DOROJUSO
+        SELECT
+        APT_CMPLEX_NO
+        , APT_CMPLEX_NM
+        , DOROJUSO
         FROM APT_COMPLEX
-        WHERE UPPER(APT_CMPLEX_NM)
-                  LIKE '%' || UPPER(#{keyword}) || '%'
+        WHERE 1 = 1
+        <if test="keyword != null and keyword != ''">
+            AND UPPER(APT_CMPLEX_NM)
+            LIKE '%' || UPPER(#{keyword}) || '%'
+        </if>
         ORDER BY APT_CMPLEX_NM
         OFFSET #{startRow} ROWS
         FETCH NEXT #{size} ROWS ONLY
     </select>
 
-
+    <!-- 전체 개수 -->
     <select id="countApartment" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM APT_COMPLEX
-        WHERE UPPER(APT_CMPLEX_NM)
-                  LIKE '%' || UPPER(#{keyword}) || '%'
+        WHERE 1 = 1
+        <if test="keyword != null and keyword != ''">
+            AND UPPER(APT_CMPLEX_NM)
+            LIKE '%' || UPPER(#{keyword}) || '%'
+        </if>
     </select>
+
 </mapper>

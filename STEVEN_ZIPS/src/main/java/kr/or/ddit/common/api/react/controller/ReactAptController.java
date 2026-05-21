@@ -1,7 +1,6 @@
 package kr.or.ddit.common.api.react.controller;
 
 import kr.or.ddit.common.api.react.service.IReactAptService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

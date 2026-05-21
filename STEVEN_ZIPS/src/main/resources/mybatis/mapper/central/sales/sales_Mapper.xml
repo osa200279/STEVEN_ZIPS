@@ -115,8 +115,9 @@
     </select>
     <select id="selectExistRentListing" resultType="java.lang.String">
         SELECT RENT_LSTG_NO
-        FROM RENT_LISTING RL
+        FROM RENT_LISTING
         WHERE HO_NO = #{hoNo}
+          AND DEAL_STTS_CD = 'AVL'
     </select>
 
     <select id="selectCurrentContractInfo" resultType="map">
@@ -129,12 +130,10 @@
     </select>
 
     <delete id="deleteRentContractDoc">
-
         DELETE
         FROM RENT_CTRT_DOC
         WHERE RENT_LSTG_NO =
               #{rentLstgNo}
-
     </delete>
     <delete id="deleteRentListing">
         DELETE
