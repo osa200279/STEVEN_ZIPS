@@ -29,8 +29,8 @@ public interface IMngSurveyService {
     void insertSurveyResponse(
             String surveyNo,
             String response,
-            String userNo
-
+            String userNo,
+            String hoNo
     );
 
 

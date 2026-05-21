@@ -27,11 +27,13 @@ public interface IMngSurveyMapper {
             @Param("surveyNo") String surveyNo,
             @Param("userNo") String userNo
     );
+
+
     void insertSurveyResponse(
             @Param("surveyNo") String surveyNo,
             @Param("response") String response,
-            @Param("userNo") String userNo
-
+            @Param("userNo") String userNo,
+            @Param("hoNo") String hoNo
     );
 
     int existsSurveyResponse(

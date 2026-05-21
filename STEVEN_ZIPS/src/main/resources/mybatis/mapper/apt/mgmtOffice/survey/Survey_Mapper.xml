@@ -174,14 +174,27 @@
                 WHERE SR.SURVEY_NO = S.SURVEY_NO
             ) AS "participantCount",
 
-            0 AS "answerRate"
+            (
+                SELECT
+                    ROUND(
+                            COUNT(DISTINCT SR.USER_NO)
+                                * 100.0
+                                /
+                            (
+                                SELECT COUNT(*)
+                                FROM MEMBER
+                                WHERE USER_YN = 'Y'
+                            )
+                        , 1)
+                FROM SURVEY_RSPNS SR
+                WHERE SR.SURVEY_NO = S.SURVEY_NO
+            ) AS "answerRate"
 
         FROM SURVEY S
 
         WHERE S.SURVEY_NO = #{surveyNo}
 
     </select>
-
 
     <select id="selectMySurveyResponse"
             resultType="string">
@@ -217,7 +230,7 @@
                    #{response},
                    SYSDATE,
                    #{userNo},
-                   'TEMP_HO'
+                   #{hoNo}
 
                )
 

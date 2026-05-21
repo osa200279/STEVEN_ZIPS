@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO;
 import tools.jackson.databind.ObjectMapper;
-
 import java.util.HashMap;
 
 import java.util.List;
@@ -1002,9 +1001,14 @@ public class ResidentMainController {
 
                 surveyNo,
                 body.get("response"),
-                customUser.getMember().getUserNo()
+                customUser.getMember().getUserNo(),
+                ((ResidentVO) customUser.getMember())
+                        .getMyAptList()
+                        .get(0)
+                        .getHoNo()
 
         );
+
 
         return ResponseEntity.ok().build();
     }

@@ -173,21 +173,21 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
                 );
     }
 
+
     @Override
     @Transactional
     public void insertSurveyResponse(
             String surveyNo,
             String response,
-            String userNo
-
+            String userNo,
+            String hoNo
     ) {
-
         iMngSurveyMapper.insertSurveyResponse(
                 surveyNo,
                 response,
-                userNo
+                userNo,
+                hoNo
         );
-
         try {
 
             ObjectMapper objectMapper =
