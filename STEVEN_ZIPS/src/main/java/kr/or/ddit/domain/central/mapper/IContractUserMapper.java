@@ -37,6 +37,8 @@ public interface IContractUserMapper {
 
     int selectAplctcount(Map<String, Object> params);
 
+    // 경고임 무시해도됨
+    List<Map<String, Object>> selectRentListingByAptCmplexNo(String aptCmplexNo);
 
     // 경고임 무시해도됨
     List<Map<String, Object>> selectAplctDocList(String aplctNo);
