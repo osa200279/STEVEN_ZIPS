@@ -40,7 +40,7 @@ function App() {
             <Route path="/adm/apt/register" element={<AptRegister />} />
             {/* 아파트 통합 검색 메뉴 */}
             {/* 임대 매물 관리 */}
-            <Route path="/adm/sales" element={<SalesList />}></Route>
+            <Route path="/adm/sales" element={<SalesList />} />
             {/* 청약 신청 관리 */}
             <Route path="/adm/applicant" element={<Applicant />} />
             {/* 계약 관리 */}

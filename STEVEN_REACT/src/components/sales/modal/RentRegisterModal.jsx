@@ -52,7 +52,7 @@ function RentRegisterModal({
         },
 
         {
-            code: 'RESIDENT',
+            code: 'RESIDENCE',
             label: '주민등록등본'
         },
 
