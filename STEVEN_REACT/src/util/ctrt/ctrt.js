@@ -25,7 +25,7 @@ export const getNameByStatus = (ctrtSttsCd, mvinDt, mvoutDt) => {
                 start.setHours(0, 0, 0, 0);
                 end.setHours(0, 0, 0, 0);
 
-                if (today >= start && today <= end) return { text: '이행 중', className: 'badge-active' }
+                if (today >= start && today <= end) return { text: '이행 중', className: 'badge-approved' }
                 else if (today < start) return { text: '입주 대기', className: 'badge-waiting' };
             }
             return { text: '승인', className: 'badge-approved' };

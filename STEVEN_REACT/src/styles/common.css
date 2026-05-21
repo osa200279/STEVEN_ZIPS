@@ -278,6 +278,15 @@
   gap: 4px;
 }
 
+.badge-approved {
+  background-color: rgb(186, 255, 186);
+  color: white;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 700;
+}
+
 .badge-urgent {
   background-color: var(--error);
   color: white;
@@ -289,6 +298,15 @@
 
 .badge-expired {
   background-color: silver;
+  color: black;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 700;
+}
+
+.badge-pending {
+  background-color: rgb(255, 237, 158);
   color: black;
   font-size: 10px;
   padding: 2px 8px;

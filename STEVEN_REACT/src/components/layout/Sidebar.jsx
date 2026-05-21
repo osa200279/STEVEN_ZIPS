@@ -17,7 +17,7 @@ const MENU_DATA = [
     id: 'contract',
     label: '계약',
     items: [
-      { to: '/adm/applicant', label: '청약 신청 관리', icon: <FileOutput className='luci-icon' /> },
+      { to: '/adm/applicant', label: '계약 접수 관리', icon: <FileOutput className='luci-icon' /> },
       { to: '/adm/ctrt', label: '계약 관리', icon: <ScrollText className='luci-icon' /> },
       { to: '/adm/ctrt-forms', label: '계약 서식 관리', icon: <Files className='luci-icon' /> },
     ]

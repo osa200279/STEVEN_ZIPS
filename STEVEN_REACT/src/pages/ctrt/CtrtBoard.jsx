@@ -31,6 +31,7 @@ function CtrtBoard() {
             cancelCnt: stts.cancelCnt || 0,
             expiredCnt: stts.expiredCnt || 0,
             urgentCnt: stts.urgentCnt || 0,
+            increaseRate: stts.increaseRate || 0,
           });
         }
       } catch (error) {
@@ -67,7 +68,7 @@ function CtrtBoard() {
               </div>
               {stat.hasTrend && (
                 <span className="stat-change">
-                  <ChartSpline size={16} />지난달 대비 증감 : <span className='text-[15px]'>123%</span>    {/* 지난달 대비 */}
+                  <ChartSpline size={16} />전월 대비 : <span className='text-[12px]'>{stats.increaseRate}%</span>    {/* 지난달 대비 */}
                 </span>
               )}
               {stat.expired && <span className="badge-expired">Expired</span>}

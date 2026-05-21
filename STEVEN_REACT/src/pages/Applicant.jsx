@@ -327,7 +327,14 @@ const Applicant = () => {
             }
         } catch (error) {
             console.log(error);
-            alert("처리 중 오류가 발생했습니다.");
+
+            // 백엔드에서 보낸 에러메시지(매물이 없을 때 보낸 매세지)
+            if(error.response && error.response.data){
+                const errMsg = typeof error.response.data === 'string'
+                            ? error.response.data
+                            : error.response.data.message || "처리 중 오류가 발생했습니다";
+                alert(errMsg);
+            }else alert("처리 중 오류가 발생했습니다.");
         }
     };
 
