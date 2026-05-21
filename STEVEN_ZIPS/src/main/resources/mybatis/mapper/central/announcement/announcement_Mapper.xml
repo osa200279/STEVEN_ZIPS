@@ -50,6 +50,7 @@
         INNER JOIN apt_unit au
         ON ad.dong_no = au.dong_no
         WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        AND rl.ann_no = cap.ann_no
         ), 0) supply_cnt                                                /** 공급수 */
 
         , NVL((
@@ -60,6 +61,7 @@
         INNER JOIN apt_unit au
         ON ad.dong_no = au.dong_no
         WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        AND rl.ann_no = cap.ann_no
         ), 0)
         || '/'
         || NVL((
