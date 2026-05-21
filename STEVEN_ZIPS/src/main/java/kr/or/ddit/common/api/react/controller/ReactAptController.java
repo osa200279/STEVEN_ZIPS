@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,6 +26,16 @@ public class ReactAptController {
     ) {
 
         Map<String, Object> result = reactAptService.searchApartment(keyword, page, size);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/dong-list")
+    public ResponseEntity<List<String>> getDongList(
+            @RequestParam String aptCmplexNo
+    ) {
+
+        List<String> result = reactAptService.getDongList(aptCmplexNo);
 
         return ResponseEntity.ok(result);
     }

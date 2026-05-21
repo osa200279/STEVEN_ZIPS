@@ -2,31 +2,73 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.common.api.react.mapper.IReactAptMapper">
     <!-- 아파트 검색 -->
-    <select id="searchApartment" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
-        SELECT
-        APT_CMPLEX_NO
-        , APT_CMPLEX_NM
-        , DOROJUSO
-        FROM APT_COMPLEX
-        WHERE 1 = 1
+    <select id="searchApartment" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO"
+    >
+        SELECT DISTINCT
+
+        AC.APT_CMPLEX_NO
+        , AC.APT_CMPLEX_NM
+        , AC.DOROJUSO
+
+        FROM RENT_LISTING RL
+
+        INNER JOIN APT_DETAIL AD
+        ON AD.HO_NO = RL.HO_NO
+
+        INNER JOIN APT_UNIT AU
+        ON AU.DONG_NO = AD.DONG_NO
+
+        INNER JOIN APT_COMPLEX AC
+        ON AC.APT_CMPLEX_NO = AU.APT_CMPLEX_NO
+
+        WHERE RL.RCRT_LSTG_STTS_CD = 'GENERAL'
         <if test="keyword != null and keyword != ''">
-            AND UPPER(APT_CMPLEX_NM)
+            AND UPPER(AC.APT_CMPLEX_NM)
             LIKE '%' || UPPER(#{keyword}) || '%'
         </if>
-        ORDER BY APT_CMPLEX_NM
+        ORDER BY AC.APT_CMPLEX_NM
         OFFSET #{startRow} ROWS
         FETCH NEXT #{size} ROWS ONLY
+
     </select>
 
     <!-- 전체 개수 -->
-    <select id="countApartment" resultType="java.lang.Integer">
-        SELECT COUNT(*)
-        FROM APT_COMPLEX
-        WHERE 1 = 1
+    <select id="countApartment" resultType="int">
+
+        SELECT COUNT(DISTINCT AC.APT_CMPLEX_NO)
+
+        FROM RENT_LISTING RL
+
+        INNER JOIN APT_DETAIL AD
+        ON AD.HO_NO = RL.HO_NO
+
+        INNER JOIN APT_UNIT AU
+        ON AU.DONG_NO = AD.DONG_NO
+
+        INNER JOIN APT_COMPLEX AC
+        ON AC.APT_CMPLEX_NO = AU.APT_CMPLEX_NO
+
+        WHERE RL.RCRT_LSTG_STTS_CD = 'GENERAL'
+
         <if test="keyword != null and keyword != ''">
-            AND UPPER(APT_CMPLEX_NM)
+            AND UPPER(AC.APT_CMPLEX_NM)
             LIKE '%' || UPPER(#{keyword}) || '%'
         </if>
+
+    </select>
+
+    <select id="getDongList" resultType="string">
+
+        SELECT DISTINCT AU.DONG_NO
+        FROM RENT_LISTING RL
+                 INNER JOIN APT_DETAIL AD
+                            ON AD.HO_NO = RL.HO_NO
+                 INNER JOIN APT_UNIT AU
+                            ON AU.DONG_NO = AD.DONG_NO
+        WHERE RL.RCRT_LSTG_STTS_CD = 'GENERAL'
+          AND AU.APT_CMPLEX_NO = #{aptCmplexNo}
+        ORDER BY AU.DONG_NO
+
     </select>
 
 </mapper>

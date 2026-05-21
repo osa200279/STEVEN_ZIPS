@@ -10,4 +10,6 @@ public interface IReactAptMapper {
     List<AptComplexVO> searchApartment(String keyword, int startRow, int size);
 
     int countApartment(String keyword);
+
+    List<String> getDongList(String aptCmplexNo);
 }

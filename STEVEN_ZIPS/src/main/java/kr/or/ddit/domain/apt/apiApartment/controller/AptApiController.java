@@ -23,8 +23,6 @@ public class AptApiController {
     @Autowired
     private IAptMemberApiService aptMemberService;
 
-
-
     @PostMapping("/apt/collect")
     @ResponseBody
     public String collectApt(@RequestBody Map<String, String> param) {
