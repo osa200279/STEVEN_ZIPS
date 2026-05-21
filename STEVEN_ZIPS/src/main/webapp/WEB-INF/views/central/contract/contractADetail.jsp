@@ -333,7 +333,8 @@
                             <c:when test="${doc.SBMSN_DOC_TY_CD == 'FAMILY'}">가족관계서류</c:when>
                             <c:when test="${doc.SBMSN_DOC_TY_CD == 'RESIDENCE'}">주민등록서류</c:when>
                             <c:when test="${doc.SBMSN_DOC_TY_CD == 'CONTRACT'}">계약서류</c:when>
-                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'ETC'}">기타서류</c:when>
+                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'INCOME'}">소득증빙서류</c:when>
+                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'EMPLOY'}">재직증명서</c:when>
                             <c:otherwise>${doc.SBMSN_DOC_TY_CD}</c:otherwise>
                         </c:choose>
                         </span>
