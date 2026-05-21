@@ -121,6 +121,16 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
                     String ansrCn =
                             String.valueOf(answer.get("answer"));
 
+                    String type =
+                            String.valueOf(answer.get("type"));
+
+
+                    if(!"MULTI".equals(type)
+                            && !"YN".equals(type)){
+
+                        continue;
+                    }
+
                     String key =
                             qitemNm + "\u0000" + ansrCn;
 

@@ -254,7 +254,10 @@
                                   '.fake-input[data-question-no="' + idx + '"]'
                           );
 
-                  answer = input.value;
+                  answer =
+                          input
+                                  ? input.value
+                                  : "";
                 }
 
                 if(q.type === "LONG"){
@@ -264,14 +267,20 @@
                                   '.fake-textarea[data-question-no="' + idx + '"]'
                           );
 
-                  answer = textarea.value;
+                  answer =
+                          textarea
+                                  ? textarea.value
+                                  : "";
                 }
 
                 responseList.push({
 
                   questionNo: idx + 1,
+                  type: q.type,
                   answer: answer
                 });
+
+
               });
 
               console.log(responseList);
