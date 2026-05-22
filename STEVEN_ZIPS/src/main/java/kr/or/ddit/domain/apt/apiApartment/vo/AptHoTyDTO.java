@@ -27,4 +27,7 @@ public class AptHoTyDTO {
     // 사진 지우는지 체크해주는녀석
     private boolean imageChanged;
 
+    // 몇 세대를 제공하는지 체크
+    private int householdCnt;
+
 }

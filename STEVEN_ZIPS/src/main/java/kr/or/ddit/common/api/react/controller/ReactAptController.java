@@ -3,10 +3,8 @@ package kr.or.ddit.common.api.react.controller;
 import kr.or.ddit.common.api.react.service.IReactAptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -76,5 +74,26 @@ public class ReactAptController {
                 reactAptService.getRequiredDocs(rentLstgNo);
 
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/assign")
+    public ResponseEntity<?> assignResident(
+
+            @RequestParam Map<String, String> param,
+
+            @RequestParam(required = false)
+            List<MultipartFile> files,
+
+            @RequestParam(required = false)
+            List<String> fileTypes
+    ) {
+
+        reactAptService.assignResident(
+                param,
+                files,
+                fileTypes
+        );
+
+        return ResponseEntity.ok().build();
     }
 }

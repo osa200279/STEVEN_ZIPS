@@ -1,5 +1,7 @@
 package kr.or.ddit.common.api.react.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,4 +15,6 @@ public interface IReactAptService {
     Map<String, Object> getRentListingDetail(String hoNo);
 
     List<Map<String, Object>> getRequiredDocs(String rentLstgNo);
+
+    void assignResident(Map<String, String> param, List<MultipartFile> files, List<String> fileTypes);
 }

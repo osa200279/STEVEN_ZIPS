@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.main.controller;
 
+import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyDTO;
 import kr.or.ddit.domain.apt.main.service.IMgmtAptComplexService;
 import kr.or.ddit.domain.apt.main.vo.ComplexEditDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -74,4 +76,6 @@ public class AptComplexController {
                     .body(result);
         }
     }
+
+
 }

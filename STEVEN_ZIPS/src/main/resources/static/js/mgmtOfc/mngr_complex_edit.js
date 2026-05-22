@@ -1,7 +1,6 @@
 "use strict";
 
 
-
 /* =========================================================
    초기 실행
 ========================================================= */
@@ -16,6 +15,10 @@ const complexFileState = {
 };
 let layoutSortable = null;
 let complexSortable = null;
+
+const remainLayoutUuids = [];
+const remainComplexUuids = [];
+
 /* =========================================================
    메인 초기화
 ========================================================= */
@@ -77,6 +80,22 @@ async function saveComplex() {
     const formData =
         new FormData(form);
 
+    remainLayoutUuids.forEach(uuid => {
+
+        formData.append(
+            "remainLayoutUuids",
+            uuid
+        );
+    });
+
+    remainComplexUuids.forEach(uuid => {
+
+        formData.append(
+            "remainComplexUuids",
+            uuid
+        );
+    });
+
     appendFilesToFormData(formData);
     appendSortOrderToFormData(formData);
 
@@ -109,7 +128,7 @@ async function saveComplex() {
                 }
             );
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error(
                 "서버 응답 오류 : "
                 + response.status
@@ -119,7 +138,7 @@ async function saveComplex() {
         const result =
             await response.json();
 
-        if(result.success){
+        if (result.success) {
 
             alert(
                 result.message
@@ -133,7 +152,7 @@ async function saveComplex() {
 
             location.reload();
 
-        }else{
+        } else {
 
             alert(
                 result.message
@@ -141,7 +160,7 @@ async function saveComplex() {
             );
         }
 
-    } catch(error){
+    } catch (error) {
 
         console.error(error);
 
@@ -159,11 +178,11 @@ syncButton?.addEventListener(
     syncAddressInfo
 );
 
-async function syncAddressInfo(){
+async function syncAddressInfo() {
 
     syncButton.classList.add("syncing");
 
-    try{
+    try {
 
         await new Promise(resolve => {
             setTimeout(resolve, 700);
@@ -173,7 +192,7 @@ async function syncAddressInfo(){
             "주소 정보가 최신 기준으로 갱신되었습니다."
         );
 
-    }catch(error){
+    } catch (error) {
 
         console.error(error);
 
@@ -181,7 +200,7 @@ async function syncAddressInfo(){
             "주소 정보 동기화 중 오류가 발생했습니다."
         );
 
-    }finally{
+    } finally {
 
         syncButton.classList.remove("syncing");
     }
@@ -253,7 +272,7 @@ function bindFileInputs() {
  */
 function handleSelectedFiles(category, files) {
 
-    files.forEach(function(file){
+    files.forEach(function (file) {
 
         addNewFile(category, file);
 
@@ -294,7 +313,7 @@ function renderFileList(category) {
     listEl.innerHTML = "";
 
     complexFileState[category]
-        .forEach(function(fileItem, index){
+        .forEach(function (fileItem, index) {
 
             fileItem.fileSortOrder = index;
 
@@ -304,8 +323,6 @@ function renderFileList(category) {
             listEl.appendChild(itemEl);
         });
 }
-
-
 
 
 function createFileItemElement(category, fileItem) {
@@ -331,11 +348,11 @@ function createFileItemElement(category, fileItem) {
 
     let previewUrl = "";
 
-    if(fileItem.fileType === "new"){
+    if (fileItem.fileType === "new") {
         previewUrl =
             URL.createObjectURL(fileItem.file);
 
-    }else{
+    } else {
         previewUrl =
             CONTEXT_PATH
             + "/file/display/"
@@ -374,7 +391,7 @@ function createFileItemElement(category, fileItem) {
     `;
 
     item.querySelector(".complex-file-remove")
-        .addEventListener("click", function(){
+        .addEventListener("click", function () {
 
             removeFile(category, fileItem.fileKey);
 
@@ -391,11 +408,11 @@ function createFileItemElement(category, fileItem) {
  */
 function getListElement(category) {
 
-    if(category === "layout"){
+    if (category === "layout") {
         return document.getElementById("layoutFileList");
     }
 
-    if(category === "complex"){
+    if (category === "complex") {
         return document.getElementById("complexImageFileList");
     }
 
@@ -403,14 +420,43 @@ function getListElement(category) {
 }
 
 
-/**
- * 파일삭제용
- * @param category
- * @param fileKey
- */
-function removeFile(category, fileKey){
+function removeFile(category, fileKey) {
 
     document.getElementById("isImageChanged").value = "Y";
+
+    const removedItem =
+        complexFileState[category]
+            .find(item => item.fileKey === fileKey);
+
+    /* 기존 파일이면 remain 배열에서도 제거 */
+    if (
+        removedItem
+        && removedItem.fileType === "old"
+    ) {
+
+        if (category === "layout") {
+
+            const idx =
+                remainLayoutUuids.indexOf(
+                    removedItem.fileSaveUuid
+                );
+
+            if (idx !== -1) {
+                remainLayoutUuids.splice(idx, 1);
+            }
+
+        } else if (category === "complex") {
+
+            const idx =
+                remainComplexUuids.indexOf(
+                    removedItem.fileSaveUuid
+                );
+
+            if (idx !== -1) {
+                remainComplexUuids.splice(idx, 1);
+            }
+        }
+    }
 
     complexFileState[category] =
         complexFileState[category]
@@ -425,11 +471,11 @@ function removeFile(category, fileKey){
 
 function initSortable() {
 
-    if(layoutSortable){
+    if (layoutSortable) {
         layoutSortable.destroy();
     }
 
-    if(complexSortable){
+    if (complexSortable) {
         complexSortable.destroy();
     }
 
@@ -458,11 +504,11 @@ function initSortable() {
     );
 }
 
-function loadExistFileItems(category, files){
+function loadExistFileItems(category, files) {
 
     complexFileState[category] = [];
 
-    files.forEach(function(file){
+    files.forEach(function (file) {
 
         complexFileState[category].push({
 
@@ -492,10 +538,37 @@ function loadExistFileItems(category, files){
 
     });
 
+    /* =========================
+       기존 uuid 유지
+    ========================= */
+
+    if (category === "layout") {
+
+        remainLayoutUuids.length = 0;
+
+        files.forEach(file => {
+
+            remainLayoutUuids.push(
+                file.fileSaveUuid
+            );
+        });
+
+    } else if (category === "complex") {
+
+        remainComplexUuids.length = 0;
+
+        files.forEach(file => {
+
+            remainComplexUuids.push(
+                file.fileSaveUuid
+            );
+        });
+    }
+
     renderFileList(category);
 }
 
-function syncSortOrder(category){
+function syncSortOrder(category) {
 
     document.getElementById("isImageChanged").value = "Y";
 
@@ -515,12 +588,12 @@ function syncSortOrder(category){
         });
 }
 
-function appendFilesToFormData(formData){
+function appendFilesToFormData(formData) {
 
     complexFileState.layout
-        .forEach(function(fileItem){
+        .forEach(function (fileItem) {
 
-            if(fileItem.fileType === "new"){
+            if (fileItem.fileType === "new") {
 
                 formData.append(
                     "layoutFiles",
@@ -530,9 +603,9 @@ function appendFilesToFormData(formData){
         });
 
     complexFileState.complex
-        .forEach(function(fileItem){
+        .forEach(function (fileItem) {
 
-            if(fileItem.fileType === "new"){
+            if (fileItem.fileType === "new") {
 
                 formData.append(
                     "complexImgFiles",
@@ -542,7 +615,7 @@ function appendFilesToFormData(formData){
         });
 }
 
-function appendSortOrderToFormData(formData){
+function appendSortOrderToFormData(formData) {
 
     formData.set(
         "layoutSortOrder",
@@ -580,7 +653,7 @@ async function loadComplexDetail() {
                 + MGMT_OFC_NO
             );
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error("상세조회 실패");
         }
 
@@ -599,7 +672,7 @@ async function loadComplexDetail() {
             result.complexFiles || []
         );
 
-    } catch(error) {
+    } catch (error) {
 
         console.error(error);
 
@@ -723,7 +796,7 @@ function setValue(id, value) {
     const element =
         document.getElementById(id);
 
-    if(!element){
+    if (!element) {
         return;
     }
 

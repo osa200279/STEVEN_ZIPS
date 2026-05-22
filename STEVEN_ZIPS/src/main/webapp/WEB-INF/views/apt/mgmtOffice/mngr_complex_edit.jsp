@@ -47,6 +47,10 @@
 
                 <form id="complexEditForm" enctype="multipart/form-data">
 
+                    <div id="remainLayoutHiddenArea"></div>
+
+                    <div id="remainComplexHiddenArea"></div>
+
                     <!-- =====================================================
                          hidden metadata
                     ===================================================== -->

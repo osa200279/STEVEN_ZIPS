@@ -4,6 +4,7 @@ import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.service.IAttachFileService;
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyDTO;
 import kr.or.ddit.domain.apt.main.mapper.IAptComplexMapper;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.vo.ComplexEditDTO;
@@ -55,7 +56,7 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
             response.setLayoutFiles(
                     allFiles.stream()
                             .filter(f ->
-                                    "rprsntImage".equals(f.getCat())
+                                    "layoutImage".equals(f.getCat())
                             )
                             .toList()
             );
@@ -147,6 +148,35 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
                     attachFileService.setFileMetaData(
                             request.getImgFileNo()
                     );
+            if (existLayoutFiles == null) {
+                existLayoutFiles = new ArrayList<>();
+            }
+
+            if (existComplexFiles == null) {
+                existComplexFiles = new ArrayList<>();
+            }
+
+/* =========================
+   category 분리
+========================= */
+
+            existLayoutFiles =
+                    existLayoutFiles.stream()
+                            .filter(file ->
+                                    "layoutImage".equals(
+                                            file.getCat()
+                                    )
+                            )
+                            .toList();
+
+            existComplexFiles =
+                    existComplexFiles.stream()
+                            .filter(file ->
+                                    "complexImage".equals(
+                                            file.getCat()
+                                    )
+                            )
+                            .toList();
 
             Set<String> remainLayoutUuids =
                     layoutOrderList.stream()
@@ -176,14 +206,6 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
                             )
 
                             .collect(Collectors.toSet());
-
-            if (existLayoutFiles == null) {
-                existLayoutFiles = new ArrayList<>();
-            }
-
-            if (existComplexFiles == null) {
-                existComplexFiles = new ArrayList<>();
-            }
 
             List<AttachFileVO> deleteLayoutFiles =
                     existLayoutFiles.stream()
@@ -325,5 +347,6 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
         aptComplexMapper.updateComplex(request);
 
     }
+
 
 }

@@ -1,6 +1,8 @@
 package kr.or.ddit.domain.apt.main.service;
 
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.common.model.PaginationInfoVO;
+import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyDTO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailGridDTO;
@@ -33,4 +35,8 @@ public interface IAptComplexService {
    List<AptDetailGridDTO> selectComplexList(String mgmtOfcNo);
 
    String selectOneAptCmplexByMgmtOfcNo(String mgmtOfcNo);
+
+   List<AptHoTyDTO> getHoTypeList(String aptCmplexNo);
+
+   List<AttachFileVO> getLayoutFiles(String aptCmplexNo);
 }

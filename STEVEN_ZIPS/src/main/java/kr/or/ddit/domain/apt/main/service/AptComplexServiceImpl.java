@@ -1,8 +1,10 @@
 package kr.or.ddit.domain.apt.main.service;
 
+import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.service.IAttachFileService;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.common.model.PaginationInfoVO;
+import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyDTO;
 import kr.or.ddit.domain.apt.board.ann.mapper.IAptAnnBoardPostMapper;
 import kr.or.ddit.domain.apt.board.ann.vo.AptAnnBoardPostVO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,6 +38,9 @@ public class AptComplexServiceImpl implements IAptComplexService {
 
     @Autowired
     private IMgmtOfficeMapper imgmtOfficeMapper;
+
+    @Autowired
+    private IAttachFileService attachFileService;
 
     @Autowired
     private IAptAnnBoardPostMapper aptAnnBoardPostMapper;
@@ -142,6 +148,63 @@ public class AptComplexServiceImpl implements IAptComplexService {
                                                 String sidoNm,
                                                 String keyword) {
         return aptComplexMapper.selectMainAptList(pagingVO, sidoNm, keyword);
+    }
+
+    @Override
+    public List<AptHoTyDTO> getHoTypeList(String aptCmplexNo) {
+
+        List<AptHoTyDTO> list =
+                aptComplexMapper.getHoTypeList(aptCmplexNo);
+
+        for (AptHoTyDTO dto : list) {
+
+            String imageFileNo = String.valueOf(dto.getImageFileNo());
+
+            if(imageFileNo == null){
+                continue;
+            }
+
+            List<AttachFileVO> fileList = attachFileService.setFileMetaData(imageFileNo);
+
+            if(fileList == null || fileList.isEmpty()){
+                continue;
+            }
+
+            AttachFileVO file = fileList.get(0);
+
+            dto.setGoogleId(file.getGoogleId());
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<AttachFileVO> getLayoutFiles(String aptCmplexNo) {
+
+        AptComplexVO complex = aptComplexMapper.selectAptComplex(aptCmplexNo);
+
+        if (complex == null) {
+            return new ArrayList<>();
+        }
+
+        if (
+                complex.getImgFileNo() == null
+                        || complex.getImgFileNo().isBlank()
+        ) {
+            return new ArrayList<>();
+        }
+
+        List<AttachFileVO> fileList =
+                attachFileService.setFileMetaData(complex.getImgFileNo());
+
+        if (fileList == null) {
+            return new ArrayList<>();
+        }
+
+        return fileList.stream()
+                .filter(file -> "layoutImage".equals(file.getCat()))
+                .sorted(Comparator.comparingInt(AttachFileVO::getFileSortOrder))
+                .toList();
     }
 
 

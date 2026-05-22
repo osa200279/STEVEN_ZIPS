@@ -1,5 +1,7 @@
 package kr.or.ddit.domain.apt.main.controller;
 
+import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyDTO;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import lombok.extern.slf4j.Slf4j;
@@ -7,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -21,10 +23,11 @@ public class AptController {
 
     /**
      * 단지별 메인 페이지 컨트롤러
-     * @author 이용로
+     *
      * @param aptCmplexNo 단지코드
      * @param model
      * @return apt-main.jsp
+     * @author 이용로
      */
     @GetMapping("/main/{aptCmplexNo}")
     public String aptMain(@PathVariable String aptCmplexNo, Model model) {
@@ -38,26 +41,34 @@ public class AptController {
     }
 
     /**
-     * @author 이윤진
      * @param aptCmplexNo
      * @param model
      * @return 우리아파트 페이지
+     * @author 이윤진
      */
     @GetMapping("/main/aptInfo/{aptCmplexNo}")
-    public String aptInfo(@PathVariable String aptCmplexNo, Model model) {
+    public String aptInfo(
+            @PathVariable String aptCmplexNo,
+            Model model
+    ) {
 
-        // 아파트 메인페이지 DTO정보 가져오기
+        // 아파트 메인페이지 DTO정보
         AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
+        // 배치도 리스트
+        List<AttachFileVO> layoutFiles = aptComplexService.getLayoutFiles(aptCmplexNo);
 
-        model.addAttribute("aptInfo", aptMainPageDTO);
+        model.addAttribute("aptInfo",aptMainPageDTO);
+
+        model.addAttribute("layoutFiles",layoutFiles);
 
         return "apt/aptInfo";
     }
+
     /**
-     * @author 이윤진
      * @param authentication 로그인 한 사용자 정보를 가져오기 위한 객체
      * @param model
      * @return 관리사무소 소개 페이지
+     * @author 이윤진
      */
     @GetMapping("/main/mgmtInfo/{aptCmplexNo}")
     public String mgmtOfficeIntro(@PathVariable String aptCmplexNo, Authentication authentication, Model model) {
@@ -74,6 +85,14 @@ public class AptController {
 
         model.addAttribute("aptInfo", aptMainPageDTO);
         return "apt/mgmtOffice_intro";
+    }
+
+
+    @ResponseBody
+    @GetMapping("/hoTyList/{aptCmplexNo}")
+    public List<AptHoTyDTO> getHoTypeList(
+            @PathVariable String aptCmplexNo) {
+        return aptComplexService.getHoTypeList(aptCmplexNo);
     }
 
 }
