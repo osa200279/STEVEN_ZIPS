@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.complaint.mapper.ManagerComplaintMapper">
+
+    <select id="selectComplaintCount" resultType="java.lang.Integer">
+        SELECT cvpl_no
+              ,cvpl_ty_cd
+              ,cvpl_loc
+              ,cvpl_cn
+              ,cvpl_stts_cd
+              ,cvpl_reg_dt
+              ,cvpl_mdf_dt
+              ,cvpl_rcpt_dt
+              ,cvpl_end_dt
+              ,cvpl_prrt
+              ,cvpl_file_no
+              ,cvpl_ttl
+              ,user_no
+              ,ho_no
+              ,apt_cmplex_no
+        FROM cvpl
+    </select>
+
+    <select id="selectComplaintList" resultType="kr.or.ddit.domain.apt.mgmtOffice.complaint.dto.ManagerComplaintDTO">
+
+    </select>
+</mapper>
