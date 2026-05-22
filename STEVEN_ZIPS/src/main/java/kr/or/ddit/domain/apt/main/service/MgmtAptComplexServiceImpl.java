@@ -260,7 +260,6 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
                         );
 
             } else {
-
                 fileGroupNo =
                         attachFileMapper.getSeqFileGroupNo();
             }

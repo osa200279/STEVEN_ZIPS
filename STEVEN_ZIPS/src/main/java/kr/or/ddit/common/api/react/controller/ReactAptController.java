@@ -1,8 +1,10 @@
 package kr.or.ddit.common.api.react.controller;
 
 import kr.or.ddit.common.api.react.service.IReactAptService;
+import kr.or.ddit.domain.member.vo.CustomUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/offlineCtrt/apt")
+@RequestMapping("/api/react/adm/offlineCtrt/apt")
 public class ReactAptController {
 
     @Autowired
@@ -80,13 +82,16 @@ public class ReactAptController {
     public ResponseEntity<?> assignResident(
 
             @RequestParam Map<String, String> param,
-
             @RequestParam(required = false)
             List<MultipartFile> files,
-
             @RequestParam(required = false)
-            List<String> fileTypes
+            List<String> fileTypes,
+            Authentication authentication
+
     ) {
+        CustomUser user = (CustomUser)authentication.getPrincipal();
+        String userNo = user.getMember().getUserNo();
+        param.put("userNo",userNo);
 
         reactAptService.assignResident(
                 param,

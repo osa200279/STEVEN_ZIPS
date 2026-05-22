@@ -14,7 +14,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/sales")
+@RequestMapping("/api/react/adm/sales")
 public class ReactSalesController {
 
     @Autowired

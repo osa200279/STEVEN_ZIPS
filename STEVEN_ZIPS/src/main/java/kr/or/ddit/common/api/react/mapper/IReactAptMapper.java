@@ -19,4 +19,14 @@ public interface IReactAptMapper {
     Map<String, Object> getRentListingDetail(String hoNo);
 
     List<Map<String, Object>> getRequiredDocs(String rentLstgNo);
+
+    String getSeqSbmsnDoc();
+
+    void insertSbmsnDoc(Map<String, String> param);
+
+    void insertRentCtrt(Map<String, String> param);
+
+    void updateRentListingStatus(String rentListingNo);
+
+    void insertCtrtMgr(Map<String, String> param);
 }

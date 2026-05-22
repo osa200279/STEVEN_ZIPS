@@ -2,6 +2,7 @@ package kr.or.ddit.common.api.react.service;
 
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.api.react.mapper.IReactAptMapper;
+import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,9 @@ public class ReactAptServiceImpl implements IReactAptService {
 
     @Autowired
     private GoogleDriveService googleDriveService;
+
+    @Autowired
+    private IAttachFileMapper attachFileMapper;
 
     @Override
     public Map<String, Object> searchApartment(
@@ -102,144 +107,45 @@ public class ReactAptServiceImpl implements IReactAptService {
             List<String> fileTypes
     ) {
 
-        // 계약 생성
-/*        reactAptMapper.insertRentContract(
+        String seq = reactAptMapper.getSeqSbmsnDoc();
+        Long attachSeq = attachFileMapper.getSeqFileGroupNo();
+        String uploadPath = "contract/doc/general/" + seq;
 
-        );*/
+        if (files != null && !files.isEmpty()) {
+            int sortOrder = 0;
+            String cat;
 
-        // 계약 생성용 데이터
+            for (int i = 0; i < files.size(); i++) {
+                MultipartFile file = files.get(i);
+                cat = fileTypes.get(i);
+                String fileSaveUuid = UUID.randomUUID().toString().replaceAll("-", "") + "_" + file.getOriginalFilename();
+                String savePath = uploadPath + "/" + fileSaveUuid;
 
+                try {
+                    String googleId = googleDriveService.uploadFile(file, uploadPath, fileSaveUuid);
 
-        /*for (int i = 0; i < files.size(); i++) {
-            MultipartFile file = files.get(i);
-            String fileType = fileTypes.get(i);
-            String cat = resolveCategory(fileType);
-            String fileSaveUuid = UUID.randomUUID()
-                            .toString()
-                            .replaceAll("-", "")
-                            + "_"
-                            + file.getOriginalFilename();
+                    AttachFileVO attachFileVo = AttachFileVO.fileSettings(
+                            file, attachSeq, cat, fileSaveUuid, googleId, savePath, sortOrder++);
 
-            String savePath =
-                    uploadPath + "/" + fileSaveUuid;
+                    attachFileMapper.insertAttachFile(attachFileVo);
 
-            try {
+                    param.put("sbmsnDocNo", seq);
+                    param.put("sbmsnDocTyCd", "GENERAL");
+                    param.put("atchFileId", String.valueOf(attachSeq));
 
-                String googleId =
-                        googleDriveService.uploadFile(
-                                file,
-                                uploadPath,
-                                fileSaveUuid
-                        );
-
-                AttachFileVO attachFileVO =
-                        AttachFileVO.fileSettings(
-
-                                file,
-                                fileGroupNo,
-
-                                cat,
-
-                                fileSaveUuid,
-
-                                googleId,
-
-                                savePath,
-
-                                sortOrder++
-                        );
-
-                attachFileService.insertAttachFile(
-                        attachFileVO
-                );
-
-            } catch (IOException e) {
-
-                throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
+
+            reactAptMapper.insertSbmsnDoc(param);
+            reactAptMapper.insertRentCtrt(param);
+            reactAptMapper.insertCtrtMgr(param);
+
+            // 매물 상태 변경
+            reactAptMapper.updateRentListingStatus(param.get("rentListingNo"));
+
+            //
         }
-
-        // 제출서류 처리
-        if (
-                files != null
-                        && !files.isEmpty()
-        ) {
-
-            for (int i = 0;
-                 i < files.size();
-                 i++) {
-
-                MultipartFile file =
-                        files.get(i);
-
-                String fileType =
-                        fileTypes.get(i);
-
-                // attach file service 저장
-
-                Long fileGroupNo = 1L;
-
-                Map<String, Object> docParam =
-                        new HashMap<>();
-
-                docParam.put(
-                        "sbmsnDocTyCd",
-                        fileType
-                );
-
-                docParam.put(
-                        "fileGroupNo",
-                        fileGroupNo
-                );
-
-                docParam.put(
-                        "rentLstgNo",
-                        param.get("rentListingNo")
-                );
-
-                reactAptMapper.insertSubmissionDoc(
-                        docParam
-                );
-            }
-        }
-
-        // 매물 상태 변경
-        reactAptMapper.updateRentListingStatus(
-                param.get("rentListingNo")
-        );
-
-        // 호 상태 변경
-        reactAptMapper.updateHoStatus(
-                param.get("hoNo")
-        );
-    }
-
-    private String resolveCategory(
-            String fileType
-    ) {
-
-        switch (fileType) {
-
-            case "ID":
-                return "residentId";
-
-            case "FAMILY":
-                return "familyDoc";
-
-            case "RESIDENCE":
-                return "residenceDoc";
-
-            case "CONTRACT":
-                return "contractDoc";
-
-            case "INCOME":
-                return "incomeDoc";
-
-            case "EMPLOY":
-                return "employDoc";
-
-            default:
-                return "etc";
-        }*/
     }
 }
