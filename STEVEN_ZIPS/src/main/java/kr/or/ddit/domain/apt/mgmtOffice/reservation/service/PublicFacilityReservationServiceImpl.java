@@ -90,9 +90,17 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
         if (mapper.selectDuplicateReservationCount(vo) > 0) throw new IllegalStateException("이미 예약된 시간입니다.");
         String rsvtNo = mapper.selectNextRsvtNo();
         vo.setRsvtNo(rsvtNo);
-        // 주민회의실은 승인대기, 나머지 시설은 자동승인
-        if ("주민회의실".equals(vo.getCmnFacilityNm())) vo.setRsvtSttsCd("PENDING");
-        else vo.setRsvtSttsCd("APPROVED");
+        /*
+         * 예약 승인 정책
+         * - 단지독서실, 피트니스센터: 자동 승인
+         * - 주민회의실, 커뮤니티룸: 관리자 승인 필요
+         */
+        if ("주민회의실".equals(vo.getCmnFacilityNm())
+                || "커뮤니티룸".equals(vo.getCmnFacilityNm())) {
+            vo.setRsvtSttsCd("PENDING");
+        } else {
+            vo.setRsvtSttsCd("APPROVED");
+        }
         mapper.insertReservation(vo);
         return rsvtNo;
     }

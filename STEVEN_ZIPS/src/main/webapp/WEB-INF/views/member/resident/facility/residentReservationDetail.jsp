@@ -375,6 +375,14 @@
             background:#cbd5d1;
             cursor:not-allowed;
         }
+
+        .seat-btn.reserved,
+        .seat-btn:disabled {
+            border-color: #d1d5db;
+            background: #e5e7eb;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -577,7 +585,22 @@
 
 <script>
     const contextPath = '${pageContext.request.contextPath}';
-    const cmnFacilityNo = '${facility.cmnFacilityNo}';
+    /*
+     * cmnFacilityNo란?
+     * 공용시설 번호입니다.
+     * 예: 독서실, 헬스장, 주민회의실 같은 시설을 구분하는 값입니다.
+     *
+     * 왜 이렇게 처리?
+     * JSP model 값이 비어 있으면 Ajax URL에 //가 생기기 때문에,
+     * 현재 브라우저 URL에서 마지막 값을 직접 꺼내서 사용합니다.
+     */
+    let cmnFacilityNo = '${cmnFacilityNo}';
+
+    if (!cmnFacilityNo || cmnFacilityNo.trim() === '') {
+        const pathArr = location.pathname.split('/');
+        cmnFacilityNo = pathArr[pathArr.length - 1];
+    }
+    const cmnFacilityNm = '${facility.cmnFacilityNm}';
 
     const rsvtDtInput = document.getElementById('rsvtDt');
     const timeSlotList = document.getElementById('timeSlotList');
@@ -590,7 +613,9 @@
     let selectedItemNo = '';
 
     /*
-     * 날짜 선택 시 시간대 목록 조회
+     * Ajax란?
+     * 화면 전체 새로고침 없이 서버에서 필요한 데이터만 가져오는 방식.
+     * 여기서는 날짜 선택 시 시간대만 가져오기 위해 사용.
      */
     function loadTimeSlotsByDate() {
         const rsvtDt = rsvtDtInput.value;
@@ -598,16 +623,22 @@
         selectedStartDttm = '';
         selectedEndDttm = '';
         selectedItemNo = '';
-
-        selectedTimeInfo.innerText = '선택된 시간대가 없습니다.';
         reserveBtn.disabled = true;
 
+        selectedTimeInfo.innerText = '선택된 시간대가 없습니다.';
+
         document.querySelectorAll('.seat-btn').forEach(btn => {
-            btn.classList.remove('selected');
+            btn.classList.remove('selected', 'reserved');
+            btn.disabled = false;
         });
 
         if (!rsvtDt) {
             timeSlotList.innerHTML = '<p class="empty-text">예약일을 선택하면 시간대가 표시됩니다.</p>';
+            return;
+        }
+
+        if (!cmnFacilityNo || cmnFacilityNo.trim() === '') {
+            timeSlotList.innerHTML = '<p class="empty-text">시설번호가 없어 시간대를 조회할 수 없습니다.</p>';
             return;
         }
 
@@ -637,14 +668,11 @@
 
                         selectedStartDttm = row.rsvtBgngDttm;
                         selectedEndDttm = row.rsvtEndDttm;
+                        selectedItemNo = '';
 
                         selectedTimeInfo.innerText = '선택 시간: ' + row.timeLabel;
 
-                        document.querySelectorAll('.seat-btn').forEach(seat => {
-                            seat.classList.remove('selected');
-                        });
-
-                        selectedItemNo = '';
+                        loadReservedSeats();
                         checkReserveButton();
                     });
 
@@ -658,16 +686,50 @@
     }
 
     /*
+     * 선택한 시간대에 이미 예약된 좌석 조회
+     * 예약된 좌석은 회색 비활성화 처리.
+     */
+    function loadReservedSeats() {
+        fetch(contextPath + '/resident/publicFacility/reservation/' + cmnFacilityNo
+            + '/reserved-items?rsvtBgngDttm=' + encodeURIComponent(selectedStartDttm)
+            + '&rsvtEndDttm=' + encodeURIComponent(selectedEndDttm))
+            .then(response => response.json())
+            .then(list => {
+                const reservedList = list.map(itemNo => String(itemNo));
+
+                document.querySelectorAll('.seat-btn').forEach(btn => {
+                    btn.classList.remove('selected', 'reserved');
+
+                    /*
+                     * disabled 클래스가 있는 좌석은 시설 자체가 사용불가인 좌석입니다.
+                     * 예약 여부와 관계없이 계속 비활성화합니다.
+                     */
+                    if (btn.classList.contains('disabled')) {
+                        btn.disabled = true;
+                        return;
+                    }
+
+                    btn.disabled = false;
+
+                    if (reservedList.includes(String(btn.dataset.itemNo))) {
+                        btn.classList.add('reserved');
+                        btn.disabled = true;
+                    }
+                });
+            });
+    }
+
+    /*
      * 좌석 선택
      */
     document.querySelectorAll('.seat-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-            if (btn.classList.contains('disabled') || btn.disabled) {
+            if (!selectedStartDttm || !selectedEndDttm) {
+                alert('먼저 이용시간을 선택하세요.');
                 return;
             }
 
-            if (!selectedStartDttm || !selectedEndDttm) {
-                alert('먼저 이용시간을 선택하세요.');
+            if (btn.disabled || btn.classList.contains('reserved')) {
                 return;
             }
 
@@ -679,6 +741,7 @@
             selectedItemNo = btn.dataset.itemNo;
 
             const selectedTimeBtn = document.querySelector('.time-slot-btn.selected');
+
             selectedTimeInfo.innerText =
                 '선택 시간: ' + selectedTimeBtn.innerText
                 + ' / 선택 좌석: ' + btn.dataset.itemNm;
@@ -688,7 +751,7 @@
     });
 
     /*
-     * 이용 목적 입력 여부까지 확인해서 버튼 활성화
+     * 날짜 + 시간 + 좌석 + 이용목적이 모두 있어야 예약신청 버튼 활성화.
      */
     function checkReserveButton() {
         reserveBtn.disabled = !(
@@ -702,6 +765,7 @@
 
     /*
      * 예약 신청
+     * PENDING 상태로 저장되면 단지관리자 예약승인관리 화면에서 조회됨.
      */
     reserveBtn.addEventListener('click', function () {
         if (reserveBtn.disabled) {
@@ -709,8 +773,9 @@
         }
 
         const formData = new URLSearchParams();
+
         formData.append('cmnFacilityItemNo', selectedItemNo);
-        formData.append('cmnFacilityNm', '${facility.cmnFacilityNm}');
+        formData.append('cmnFacilityNm', cmnFacilityNm);
         formData.append('rsvtBgngDttm', selectedStartDttm);
         formData.append('rsvtEndDttm', selectedEndDttm);
         formData.append('purposeCn', purposeCn.value.trim());

@@ -158,6 +158,17 @@ public class PublicFacilityReservationController {
 
         model.addAttribute("facility", facility);
         model.addAttribute("itemList", itemList);
+        /*
+         * PathVariable로 받은 시설번호를 JSP에서 Ajax URL 만들 때 사용합니다.
+         * facility가 null이어도 cmnFacilityNo는 유지됩니다.
+         */
+        model.addAttribute("cmnFacilityNo", cmnFacilityNo);
+
+        /*
+         * PathVariable로 받은 시설번호를 JSP에서 Ajax URL 만들 때 사용합니다.
+         * facility가 null이어도 cmnFacilityNo는 유지됩니다.
+         */
+        model.addAttribute("cmnFacilityNo", cmnFacilityNo);
 
         return "member/resident/facility/residentReservationDetail";
     }
