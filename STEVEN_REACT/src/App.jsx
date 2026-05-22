@@ -9,6 +9,7 @@ import AptRegister from "./pages/AptRegister";
 import Ctrt from "./pages/ctrt/Ctrt";
 import Home from "./pages/Home";
 import SalesList from './pages/sales/SalesList';
+import Member from './pages/member/member';
 import ResidentAssignPage from './components/ctrt/ResidentAssignPage';
 import './styles/common.css';
 import './styles/header.css';
@@ -50,7 +51,8 @@ function App() {
               element={<ResidentAssignPage />}
             />
             {/* 계약 서식 관리 */}
-            {/* 회원 관리 메뉴 */}
+            {/* 회원 관리 */}
+            <Route path="/adm/member" element={<Member />} />
             {/* 입주민 관리 메뉴 */}
             {/* 공고 등록 */}
             <Route path="/adm/ann" element={<AnnRegister />} />
