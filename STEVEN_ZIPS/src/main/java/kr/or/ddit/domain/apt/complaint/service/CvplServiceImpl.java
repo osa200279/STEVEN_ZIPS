@@ -148,7 +148,7 @@ public class CvplServiceImpl implements ICvplService {
     }
 
     @Override
-    public int selectCvplCountByAptCmplexNo(CvplVO searchVO) {
+    public int selectCvplCountByAptCmplexNo(PaginationInfoVO<CvplVO> searchVO) {
         return cvplMapper.selectCvplCountByAptCmplexNo(searchVO);
     }
 

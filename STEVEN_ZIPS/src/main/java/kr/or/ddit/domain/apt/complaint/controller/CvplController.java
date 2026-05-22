@@ -167,7 +167,7 @@ public class CvplController {
     /**
      * 단지 민원 내역 리스트 페이지 (페이징)
      */
-    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    /*@PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/list/{aptCmplexNo}")
     public String cvplList(
             @AuthenticationPrincipal CustomUser customUser
@@ -195,7 +195,7 @@ public class CvplController {
         model.addAttribute("aptInfo", aptCommonDTO);
 
         return "apt/complaint/complaint_list";
-    }
+    }*/
 
     /**
      * 민원 상세 조회 (같은 단지 주민이면 접근 가능)
@@ -225,6 +225,46 @@ public class CvplController {
         resp.put("detail", detail);
 
         return ResponseEntity.ok(resp);
+    }
+
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/list/{aptCmplexNo}")
+    public String cvplList(
+            @AuthenticationPrincipal CustomUser customUser
+            , @PathVariable String aptCmplexNo
+            , @RequestParam(defaultValue = "1") int curPage
+            , @RequestParam(required = false) String cvplTyCd
+            , @RequestParam(required = false) String cvplSttsCd
+            , @RequestParam(required = false) String searchWord
+            , Model model) {
+
+        PaginationInfoVO<CvplVO> page = new PaginationInfoVO<>(10, 5);
+
+        CvplVO searchVO = new CvplVO();
+        searchVO.setAptCmplexNo(aptCmplexNo);
+        searchVO.setCvplTyCd(cvplTyCd);
+        searchVO.setCvplSttsCd(cvplSttsCd);
+        page.setSearchVO(searchVO);
+        page.setSearchWord(searchWord);
+
+        int totalRecord = cvplService.selectCvplCountByAptCmplexNo(page);
+        page.setTotalRecord(totalRecord);
+        page.setCurrentPage(curPage);
+
+
+        List<CvplVO> cvplList = cvplService.selectCvplListAllByAptCmplexNoPaged(page);
+        page.setDataList(cvplList);
+
+        model.addAttribute("page", page);
+        model.addAttribute("searchWord", searchWord);
+        model.addAttribute("cvplList", cvplList);
+        model.addAttribute("cvplTyCd", cvplTyCd);
+        model.addAttribute("cvplSttsCd", cvplSttsCd);
+
+        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
+        model.addAttribute("aptInfo", aptCommonDTO);
+
+        return "apt/complaint/complaint_list";
     }
 
     /**
