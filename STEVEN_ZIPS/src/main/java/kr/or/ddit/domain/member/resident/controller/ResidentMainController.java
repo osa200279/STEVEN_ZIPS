@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.member.resident.controller;
 
+import kr.or.ddit.common.config.AuthService;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtOfficeService;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO;
 import tools.jackson.databind.ObjectMapper;
+
 import java.util.HashMap;
 
 import java.util.List;
@@ -52,12 +54,16 @@ public class ResidentMainController {
 
     @Autowired
     private IMngSurveyService surveyService;
+    @Autowired
+    private AuthService authService;
+
     /**
      * 내 아파트 목록 조회 컨트롤러
-     * @author 이용로
+     *
      * @param customUser 인증 객체
      * @param model
      * @return myApt.jsp 내 아파트 목록 조회 페이지
+     * @author 이용로
      */
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/myApt")
@@ -66,7 +72,7 @@ public class ResidentMainController {
         MemberVO member = customUser.getMember();
 
         // 입주민이라면 customUser가 member=resident로 초기화 된 member를 반환받아 갖고 있음
-        if(member instanceof ResidentVO resident) {  // 따라서 순수 member객체인지 resident를 담고있는 member객체인지 확인
+        if (member instanceof ResidentVO resident) {  // 따라서 순수 member객체인지 resident를 담고있는 member객체인지 확인
             // 다운캐스팅
             log.info("RESIDENT INFO : {}", resident);
 
@@ -84,35 +90,29 @@ public class ResidentMainController {
 
     /**
      * 입주민 시설관리이력 조회
-     * @author 김보라
      *
-     * @param customUser 로그인 사용자 인증 객체
-     * @param aptCmplexNo 아파트 단지 번호
-     *
-     * @param currentPage 점검이력 현재 페이지 번호
-     * @param facilityTyCd 시설 유형 코드
-     * @param facilityPage 시설 목록 현재 페이지 번호
-     * @param facilityNm 시설명 검색어
-     * @param locCn 위치 검색어
-     * @param dongNo 동 번호 검색조건
-     * @param keyword 점검이력 통합 검색어
-     *
-     * @param historyChkDt 점검일 검색조건
+     * @param customUser        로그인 사용자 인증 객체
+     * @param aptCmplexNo       아파트 단지 번호
+     * @param currentPage       점검이력 현재 페이지 번호
+     * @param facilityTyCd      시설 유형 코드
+     * @param facilityPage      시설 목록 현재 페이지 번호
+     * @param facilityNm        시설명 검색어
+     * @param locCn             위치 검색어
+     * @param dongNo            동 번호 검색조건
+     * @param keyword           점검이력 통합 검색어
+     * @param historyChkDt      점검일 검색조건
      * @param historyFacilityNm 점검 시설명 검색조건
-     * @param historyChkCn 점검내용 검색조건
-     * @param historyChkStts 점검상태 검색조건
-     * @param historyPicNm 담당자 검색조건
-     *
-     * @param sortColumn 시설정보 정렬 컬럼
-     * @param sortOrder 시설정보 정렬 방향
-     *
+     * @param historyChkCn      점검내용 검색조건
+     * @param historyChkStts    점검상태 검색조건
+     * @param historyPicNm      담당자 검색조건
+     * @param sortColumn        시설정보 정렬 컬럼
+     * @param sortOrder         시설정보 정렬 방향
      * @param historySortColumn 점검이력 정렬 컬럼
-     * @param historySortOrder 점검이력 정렬 방향
-     *
-     * @param model JSP 화면 전달 객체
-     *
+     * @param historySortOrder  점검이력 정렬 방향
+     * @param model             JSP 화면 전달 객체
      * @return manage_facility.jsp
      * 입주민 시설정보 및 시설 점검이력 화면 반환
+     * @author 김보라
      */
     @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/manage/facility/{aptCmplexNo}")
@@ -354,17 +354,16 @@ public class ResidentMainController {
     /**
      * 입주민 시설정보 목록 AJAX 조회 컨트롤러
      *
-     * @author 김보라
-     * @param aptCmplexNo 아파트 단지 번호
+     * @param aptCmplexNo  아파트 단지 번호
      * @param facilityPage 시설 목록 현재 페이지 번호
      * @param facilityTyCd 시설 유형 코드
-     * @param facilityNm 시설명 검색어
-     * @param locCn 위치 검색어
-     * @param dongNo 동 번호 검색조건
-     * @param sortColumn 정렬 컬럼명
-     * @param sortOrder 정렬 방향(ASC / DESC)
-     *
+     * @param facilityNm   시설명 검색어
+     * @param locCn        위치 검색어
+     * @param dongNo       동 번호 검색조건
+     * @param sortColumn   정렬 컬럼명
+     * @param sortOrder    정렬 방향(ASC / DESC)
      * @return 시설 목록 및 페이징 정보 JSON 반환
+     * @author 김보라
      */
     @ResponseBody
     @PreAuthorize("hasRole('RESIDENT')")
@@ -469,21 +468,19 @@ public class ResidentMainController {
     /**
      * 시설 점검 상세 이력 AJAX 조회 컨트롤러
      * 비동기(AJAX) 방식으로 조회
-     * @author 김보라
-     * @param aptCmplexNo 아파트 단지 번호
-     * @param currentPage 현재 페이지 번호
      *
+     * @param aptCmplexNo       아파트 단지 번호
+     * @param currentPage       현재 페이지 번호
      * @param historyChkStartDt 점검 시작일 검색조건
-     * @param historyChkEndDt 점검 종료일 검색조건
+     * @param historyChkEndDt   점검 종료일 검색조건
      * @param historyFacilityNm 시설명 검색조건
-     * @param historyChkCn 점검내용 검색조건
-     * @param historyChkStts 점검상태 검색조건
-     * @param historyPicNm 담당자 검색조건
-     *
-     * @param sortColumn 정렬 컬럼명
-     * @param sortOrder 정렬 방향(ASC / DESC)
-     *
+     * @param historyChkCn      점검내용 검색조건
+     * @param historyChkStts    점검상태 검색조건
+     * @param historyPicNm      담당자 검색조건
+     * @param sortColumn        정렬 컬럼명
+     * @param sortOrder         정렬 방향(ASC / DESC)
      * @return 시설 점검이력 목록 및 페이징 정보 JSON 반환
+     * @author 김보라
      */
     @ResponseBody
     @PreAuthorize("hasRole('RESIDENT')")
@@ -705,7 +702,6 @@ public class ResidentMainController {
     }
 
 
-
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/service/car/{aptCmplexNo}")
     public String serviceCar(
@@ -870,7 +866,7 @@ public class ResidentMainController {
                 );
 
         // 이미 참여했으면 결과페이지로 이동
-        if(alreadyParticipated){
+        if (alreadyParticipated) {
 
             return "redirect:/resident/survey/result/"
                     + surveyNo;
@@ -924,59 +920,51 @@ public class ResidentMainController {
         return "member/resident/survey/survey_result";
     }
 
-    @GetMapping("/survey/list")
+    @GetMapping("/survey/list/{aptCmplexNo}")
     public String surveyList(
 
-            @RequestParam(defaultValue = "ALL")
-            String type,
-
+            @RequestParam(defaultValue = "ALL") String type,
             @AuthenticationPrincipal CustomUser customUser,
-
+            @PathVariable String aptCmplexNo,
             Model model
-
     ) {
 
         ResidentVO resident =
                 (ResidentVO) customUser.getMember();
 
-        String aptCd =
-                resident.getMyAptList()
-                        .get(0)
-                        .getAptCmplexNo();
+        String aptCd = aptCmplexNo;
+
 
         System.out.println("resident aptCd = " + aptCd);
 
         List<MngSurveyDTO> surveyList;
 
-        if("SURVEY".equals(type)) {
+        if ("SURVEY".equals(type)) {
 
             surveyList =
                     surveyService
                             .selectSurveyTypeList(
-                                    "SURVEY"
+                                    "SURVEY",
+                                    aptCd
                             );
 
-        } else if("VOTE".equals(type)) {
+        } else if ("VOTE".equals(type)) {
 
             surveyList =
                     surveyService
                             .selectSurveyTypeList(
-                                    "VOTE"
+                                    "VOTE",
+                                    aptCd
                             );
 
         } else {
 
             surveyList =
                     surveyService
-                            .selectSurveyList(aptCd);
+                            .selectSurveyList(
+                                    aptCd
+                            );
         }
-
-        surveyList =
-                surveyList.stream()
-                        .filter(s ->
-                                aptCd.equals(s.getAptCd())
-                        )
-                        .toList();
 
         model.addAttribute(
                 "surveyList",
@@ -1002,12 +990,12 @@ public class ResidentMainController {
 
     ) {
 
-        if(surveyService.existsSurveyResponse(
+        if (surveyService.existsSurveyResponse(
 
                 surveyNo,
                 customUser.getMember().getUserNo()
 
-        )){
+        )) {
             return ResponseEntity.badRequest()
                     .body("already");
         }
@@ -1029,11 +1017,9 @@ public class ResidentMainController {
     }
 
 
-
-
     /**
      * 입주민 공지게시판 조회
-     * @author 김보라
+     *
      * @param aptCmplexNo
      * @param currentPage
      * @param searchTtl
@@ -1041,6 +1027,7 @@ public class ResidentMainController {
      * @param searchEndDt
      * @param model
      * @return board_notice.jsp 입주민 공지게시판
+     * @author 김보라
      */
     @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/board/notice/{aptCmplexNo}")
@@ -1140,10 +1127,11 @@ public class ResidentMainController {
 
     /**
      * 입주민 - 공지게시판 비동기
-     * @author 김보라
+     *
      * @param aptCmplexNo
      * @param annNo
      * @return 입주민 공지글 상세내용 보기
+     * @author 김보라
      */
     @ResponseBody
     @PreAuthorize("hasRole('RESIDENT')")
@@ -1190,7 +1178,7 @@ public class ResidentMainController {
     public String boardFreeDetail(@PathVariable String aptCmplexNo,
                                   @PathVariable String postNo, Model model,
                                   @AuthenticationPrincipal CustomUser principal
-                                 ) {
+    ) {
         model.addAttribute("aptCmplexNo", aptCmplexNo);
         model.addAttribute("postNo", postNo);
         return "member/resident/board/board_free_detail";
@@ -1201,9 +1189,9 @@ public class ResidentMainController {
     public String boardChat(@AuthenticationPrincipal CustomUser principal,
                             @PathVariable String aptCmplexNo,
                             Model model
-            ) {
+    ) {
         model.addAttribute("userNo", principal.getMember().getUserNo());
-        model.addAttribute("aptCmplexNo",aptCmplexNo);
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
 
         return "member/resident/board/board_chat";
     }
@@ -1215,13 +1203,11 @@ public class ResidentMainController {
     public String statsCustom() {
         return "member/resident/stats_custom";
     }
+
     @GetMapping("/stats/apartment")
     public String statsApartment() {
         return "member/resident/stats_apartment";
     }
-
-
-
 
 
 }

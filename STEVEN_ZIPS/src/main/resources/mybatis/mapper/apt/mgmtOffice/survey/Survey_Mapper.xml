@@ -286,7 +286,7 @@
 
 
     <select id="selectSurveyTypeList"
-            parameterType="string"
+            parameterType="map"
             resultType="kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO">
 
         SELECT
@@ -306,11 +306,11 @@
 
         WHERE SURVEY_TY_CD = #{type}
           AND SURVEY_STTS_CD = 'OPEN'
+          AND APT_CD = #{aptCd}
 
         ORDER BY SURVEY_BGNG_DT DESC
 
     </select>
-
 
     <select id="selectSurveyStatistics"
             parameterType="string"

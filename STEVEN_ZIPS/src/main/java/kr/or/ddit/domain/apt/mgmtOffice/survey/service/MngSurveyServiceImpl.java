@@ -270,11 +270,18 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
 
     @Override
     public List<MngSurveyDTO> selectSurveyTypeList(
-            String type
+            String type,
+            String aptCd
     ) {
 
+        Map<String, Object> param =
+                new LinkedHashMap<>();
+
+        param.put("type", type);
+        param.put("aptCd", aptCd);
+
         return iMngSurveyMapper
-                .selectSurveyTypeList(type);
+                .selectSurveyTypeList(param);
     }
 
     @Override

@@ -36,7 +36,10 @@ public interface IMngSurveyService {
 
     boolean existsSurveyResponse(String surveyNo, String userNo);
 
-    List<MngSurveyDTO> selectSurveyTypeList(String type);
+    List<MngSurveyDTO> selectSurveyTypeList(
+            String type,
+            String aptCd
+    );
 
     List<Map<String, Object>> selectSurveyStatistics(String surveyNo);
 }
