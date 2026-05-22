@@ -24,20 +24,20 @@ public class UtilityProviderVO {
     /** 외부 고객번호 */
     private String extCustNo;
 
-    /** 검침유형코드 */
-    private String meterTyCd;
-
-    /** 검침유형명 */
-    private String meterTyNm;
-
-    /** 계약번호 */
-    private String contNo;
-
     /** 설정 비고 */
     private String rmrkCn;
 
     /** 협력업체명 */
     private String partnerNm;
+
+    /** 계약번호 */
+    private String contNo;
+
+    /** 검침유형코드(조회 표시용) */
+    private String meterTyCd;
+
+    /** 검침유형명(조회 표시용) */
+    private String meterTyNm;
 
     /*join용*/
     /** 계약명 */

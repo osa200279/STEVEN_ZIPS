@@ -24,20 +24,11 @@ public interface IMeterHstryService {
     /** 검침유형 공통코드 목록 조회 */
     List<Map<String, Object>> selectMeterTyCodeList();
 
+    /** CSV 업로드 전 미리보기/자동 매칭 */
+    Map<String, Object> previewMeterCsv(String mgmtOfcNo, String meterScope, MultipartFile csvFile) throws Exception;
+
     /** 검침 CSV 업로드 처리 */
-    int uploadMeterCsv(String mgmtOfcNo, String meterScope, String utilityProviderNo, MultipartFile csvFile, String uploadUserNo) throws Exception;
-
-    /** 검침 이력 수동 등록 */
-    int insertMeterHstry(String mgmtOfcNo, String meterScope, MeterHstryVO meterHstryVO);
-
-    /** 시설 검침 등록용 시설 단건 조회 */
-    MeterHstryVO selectFacilityInfo(String mgmtOfcNo, String facilityNo);
-
-    /** 단지 검침 등록용 동 목록 조회 */
-    List<Map<String, Object>> selectDongNoList(String mgmtOfcNo);
-
-    /** 단지 검침 등록용 호 자동완성 조회 */
-    List<Map<String, Object>> selectHoSuggestList(String mgmtOfcNo, String dongNo, String keyword);
+    int uploadMeterCsv(String mgmtOfcNo, String utilityProviderNo, String meterScope, MultipartFile csvFile, String uploadUserNo) throws Exception;
 
     /** 검침 이력 단건 상세 조회 */
     MeterHstryVO selectMeterHstryDetail(String meterHstryNo);

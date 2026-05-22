@@ -41,11 +41,6 @@
         #meterPage .btn-edit { background:var(--accent); border-color:var(--accent); color:#fff; }
         #meterPage .btn-edit:hover { background:var(--accent-hover); border-color:var(--accent-hover); color:#fff; }
 
-        /* 알림 */
-        #meterPage .alert { display:flex; align-items:center; gap:8px; padding:10px 14px; margin-bottom:12px; border-radius:4px; font-size:12px; font-weight:700; }
-        #meterPage .alert-success { background:#ecfdf3; border:1px solid #bbf7d0; color:#166534; }
-        #meterPage .alert-error { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
-
         /* 검침 탭 */
         #meterPage .meter-tab-wrap { margin-top:12px; }
         #meterPage .meter-tab-input { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
@@ -102,8 +97,8 @@
         #meterPage .list-head-left { display:flex; align-items:center; gap:8px; }
         #meterPage .list-head-right { display:flex; align-items:center; justify-content:flex-end; gap:7px; margin-left:auto; }
         #meterPage .list-count { font-size:12px; font-weight:800; color:var(--accent); background:var(--accent-light); border-radius:4px; padding:3px 9px; white-space:nowrap; }
-        #meterPage .table-wrap { overflow-x:auto; margin:0 -1px; }
-        #meterPage .tbl { width:100%; min-width:1420px; border-collapse:collapse; table-layout:fixed; }
+        #meterPage .table-wrap { overflow-x:visible; margin:0 -1px; }
+        #meterPage .tbl { width:100%; min-width:0; border-collapse:collapse; table-layout:fixed; }
         #meterPage .tbl th { height:38px; padding:0 8px; background:var(--th-bg); border-bottom:1px solid var(--line); color:var(--text-sec); font-size:12px; font-weight:800; text-align:center; box-sizing:border-box; }
         #meterPage .tbl td { height:43px; padding:6px 8px; border-bottom:1px solid #eef1f3; color:#243027; font-size:12px; text-align:center; vertical-align:middle; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-sizing:border-box; }
         #meterPage .tbl tr:last-child td { border-bottom:none; }
@@ -138,17 +133,17 @@
         #meterPage .col-meter-no { width:10%; }
         #meterPage .col-meter-date { width:8%; }
         #meterPage .col-meter-ty { width:8%; }
-        #meterPage .col-complex-unit { width:15%; }
-        #meterPage .col-facility { width:16%; }
+        #meterPage .col-complex-unit { width:12%; }
+        #meterPage .col-facility { width:18%; }
         #meterPage .col-ho { width:10%; }
-        #meterPage .col-complex-value { width:10%; }
-        #meterPage .col-facility-value { width:9%; }
-        #meterPage .col-complex-usage { width:9%; }
-        #meterPage .col-facility-usage { width:9%; }
+        #meterPage .col-complex-value { width:8%; }
+        #meterPage .col-facility-value { width:8%; }
+        #meterPage .col-complex-usage { width:8%; }
+        #meterPage .col-facility-usage { width:8%; }
         #meterPage .col-result { width:7%; }
         #meterPage .col-complex-partner { width:17%; }
         #meterPage .col-facility-partner { width:11%; }
-        #meterPage .col-action { width:7%; }
+        #meterPage .col-action { width:10%; }
 
         /* 상태 배지 */
         #meterPage .badge { display:inline-flex; align-items:center; justify-content:center; min-height:20px; padding:0 7px; border-radius:4px; font-size:11px; font-weight:700; border:1px solid transparent; white-space:nowrap; }
@@ -190,10 +185,21 @@
         #meterPage .column-box { border:1px solid #e5e7eb; border-radius:4px; background:#f8fafc; padding:10px; color:#4b5563; font-size:11px; line-height:1.6; }
         #meterPage .column-box code { font-family:'Consolas','SF Mono',monospace; color:#1f2d23; }
 
-        /* 계약 정보 박스 */
-        #meterPage .contract-info-box { margin-top:10px; padding:10px 12px; background:#f0f4f1; border:1px solid #c9d9cc; border-radius:4px; font-size:11px; color:#374151; line-height:1.7; display:none; }
-        #meterPage .contract-info-box.visible { display:block; }
-        #meterPage .contract-info-label { font-weight:800; color:var(--text-sec); margin-right:4px; }
+        /* CSV 확인 결과 */
+        #meterPage .csv-preview-box { display:none; margin-top:10px; border:1px solid #c9d9cc; border-radius:6px; background:#f8fbf8; overflow:hidden; }
+        #meterPage .csv-preview-box.visible { display:block; }
+        #meterPage .csv-preview-head { padding:10px 12px; border-bottom:1px solid #d9e5dc; background:#f0f4f1; font-size:12px; font-weight:800; color:var(--text-head); }
+        #meterPage .csv-preview-body { padding:10px 12px; }
+        #meterPage .csv-preview-grid { display:grid; grid-template-columns:90px minmax(0,1fr); gap:6px 10px; margin-bottom:10px; font-size:11px; line-height:1.45; }
+        #meterPage .csv-preview-label { color:#5f6f64; font-weight:800; }
+        #meterPage .csv-preview-value { color:#1f2d23; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #meterPage .preview-table-wrap { overflow-x:auto; border:1px solid #e5e7eb; border-radius:4px; background:#fff; }
+        #meterPage .preview-table { width:100%; border-collapse:collapse; min-width:640px; table-layout:fixed; }
+        #meterPage .preview-table th, #meterPage .preview-table td { height:30px; padding:5px 7px; border-bottom:1px solid #eef1f3; font-size:11px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #meterPage .preview-table th { background:#f3f5f4; color:#4b5b50; font-weight:800; }
+        #meterPage .preview-msg { margin-top:8px; font-size:11px; line-height:1.45; color:#166534; font-weight:700; }
+        #meterPage .preview-msg.error { color:#991b1b; }
+        #meterPage .preview-msg.warn { color:#92400e; }
 
         /* 반응형 */
         @media(max-width:1200px) { #meterPage .filter-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
@@ -221,19 +227,6 @@
                         <p>단지별 검침과 시설 검침 이력을 탭으로 구분하여 조회합니다.</p>
                     </div>
                 </div>
-
-                <c:if test="${not empty successMessage}">
-                    <div class="alert alert-success">
-                        <span class="material-symbols-rounded">check_circle</span>
-                            ${successMessage}
-                    </div>
-                </c:if>
-                <c:if test="${not empty errorMessage}">
-                    <div class="alert alert-error">
-                        <span class="material-symbols-rounded">error</span>
-                            ${errorMessage}
-                    </div>
-                </c:if>
 
                 <%-- 검침 탭 영역 --%>
                 <div class="meter-tab-wrap">
@@ -315,7 +308,7 @@
                                                 <label class="field-label" for="complexKeyword">동/호 검색</label>
                                                 <div class="search-wrap">
                                                     <span class="material-symbols-rounded">search</span>
-                                                    <input type="text" class="form-input" id="complexKeyword" name="complexKeyword" value="${complexSearch.keyword}" placeholder="동, 호번호, 검침번호">
+                                                    <input type="text" class="form-input" id="complexKeyword" name="complexKeyword" value="${complexSearch.keyword}" placeholder="동, 호번호 또는 MH로 시작하는 검침번호">
                                                 </div>
                                             </div>
                                             <div class="form-field">
@@ -337,9 +330,6 @@
                                         <span class="list-count">총 ${fn:length(complexMeterList)}건</span>
                                     </div>
                                     <div class="list-head-right">
-                                        <button type="button" class="btn btn-ghost" id="openComplexInsertModalBtn">
-                                            <span class="material-symbols-rounded">add</span>단지별 검침 등록
-                                        </button>
                                         <button type="button" class="btn btn-primary" id="openComplexUploadModalBtn">
                                             <span class="material-symbols-rounded">upload_file</span>단지별 검침 CSV 업로드
                                         </button>
@@ -371,9 +361,6 @@
                                                         <c:if test="${row.meterTyCd eq 'ELEC'}"><c:set var="meterUnit" value="kWh" /></c:if>
                                                         <c:if test="${row.meterTyCd eq 'GAS' or row.meterTyCd eq 'WATER'}"><c:set var="meterUnit" value="㎥" /></c:if>
                                                         <c:if test="${row.meterTyCd eq 'HEAT'}"><c:set var="meterUnit" value="Gcal" /></c:if>
-                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'ELC' or fn:contains(row.facilityTyNm, '전기'))}"><c:set var="meterUnit" value="kWh" /></c:if>
-                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'GAS' or fn:contains(row.facilityTyNm, '가스'))}"><c:set var="meterUnit" value="㎥" /></c:if>
-                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'WTR' or fn:contains(row.facilityTyNm, '급수') or fn:contains(row.facilityTyNm, '수도'))}"><c:set var="meterUnit" value="㎥" /></c:if>
                                                         <c:set var="hoParts" value="${fn:split(row.hoNo, '_')}" />
                                                         <td class="mono">${fn:length(complexMeterList) - status.index}</td>
                                                         <td class="meter-no">${row.meterHstryNo}</td>
@@ -507,9 +494,6 @@
                                         <span class="list-count">총 ${fn:length(facilityMeterList)}건</span>
                                     </div>
                                     <div class="list-head-right">
-                                        <button type="button" class="btn btn-ghost" id="openFacilityInsertModalBtn">
-                                            <span class="material-symbols-rounded">add</span>시설 검침 등록
-                                        </button>
                                         <button type="button" class="btn btn-primary" id="openFacilityUploadModalBtn">
                                             <span class="material-symbols-rounded">upload_file</span>시설 검침 CSV 업로드
                                         </button>
@@ -541,9 +525,6 @@
                                                         <c:if test="${row.meterTyCd eq 'ELEC'}"><c:set var="meterUnit" value="kWh" /></c:if>
                                                         <c:if test="${row.meterTyCd eq 'GAS' or row.meterTyCd eq 'WATER'}"><c:set var="meterUnit" value="㎥" /></c:if>
                                                         <c:if test="${row.meterTyCd eq 'HEAT'}"><c:set var="meterUnit" value="Gcal" /></c:if>
-                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'ELC' or fn:contains(row.facilityTyNm, '전기'))}"><c:set var="meterUnit" value="kWh" /></c:if>
-                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'GAS' or fn:contains(row.facilityTyNm, '가스'))}"><c:set var="meterUnit" value="㎥" /></c:if>
-                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'WTR' or fn:contains(row.facilityTyNm, '급수') or fn:contains(row.facilityTyNm, '수도'))}"><c:set var="meterUnit" value="㎥" /></c:if>
                                                         <td class="mono">${fn:length(facilityMeterList) - status.index}</td>
                                                         <td class="meter-no">${row.meterHstryNo}</td>
                                                         <td><span class="badge badge-gray">${empty row.meterTyNm ? '-' : row.meterTyNm}</span></td>
@@ -599,48 +580,55 @@
                         <form method="post" action="${ctx}/manager/meter/hstry/upload/${mgmtOfcNo}" enctype="multipart/form-data" id="complexMeterCsvUploadForm">
                             <sec:csrfInput/>
                             <input type="hidden" name="meterScope" value="COMPLEX">
+                            <input type="hidden" name="utilityProviderNo" id="complexMatchedUtilityProviderNo">
                             <div class="modal-body">
                                 <div class="form-section">
-                                    <div class="form-section-title"><span class="material-symbols-rounded">upload_file</span>업로드 파일 선택</div>
+                                    <div class="form-section-title"><span class="material-symbols-rounded">upload_file</span>CSV 파일 선택 및 자동 확인</div>
                                     <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label" for="complexUploadUtilityProviderNo">공급/검침 계약</label>
-                                            <select class="form-select" id="complexUploadUtilityProviderNo" name="utilityProviderNo" required>
-                                                <option value="">선택</option>
-                                                <c:forEach var="provider" items="${providerList}">
-                                                    <option value="${provider.utilityProviderNo}"
-                                                            <c:if test="${empty provider.utilityProviderNo}">disabled</c:if>
-                                                            data-meter-ty-cd="${provider.meterTyCd}"
-                                                            data-meter-ty-nm="${provider.meterTyNm}"
-                                                            data-cont-nm="${provider.contNm}"
-                                                            data-cont-cn="${provider.contCn}"
-                                                            data-cont-bgng-dt="${provider.contBgngDt}"
-                                                            data-cont-end-dt="${provider.contEndDt}">
-                                                        <c:choose><c:when test="${empty provider.utilityProviderNo}">[설정 필요] </c:when><c:otherwise><c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if></c:otherwise></c:choose>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
-                                                        <c:if test="${not empty provider.contBgngDt}"> (${provider.contBgngDt} ~ <c:choose><c:when test="${not empty provider.contEndDt}">${provider.contEndDt}</c:when><c:otherwise>진행중</c:otherwise></c:choose>)</c:if>
-                                                    </option>
-                                                </c:forEach>
-                                            </select>
-                                            <%-- 선택한 계약 정보 표시 영역 --%>
-                                            <div class="contract-info-box" id="complexContractInfoBox">
-                                                <span class="contract-info-label">계약내용</span><span id="complexContractCn">-</span>
-                                            </div>
-                                        </div>
                                         <div class="form-field">
                                             <label class="field-label" for="complexCsvFile">CSV 파일</label>
                                             <input type="file" class="form-input" id="complexCsvFile" name="csvFile" accept=".csv,text/csv" required>
+                                            <div class="field-help">파일을 선택한 뒤 CSV 확인을 누르면 식별키 기준으로 검침 설정과 계약 정보를 자동으로 찾습니다.</div>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="field-label">파일 확인</label>
+                                            <button type="button" class="btn btn-primary" id="complexPreviewBtn">
+                                                <span class="material-symbols-rounded">fact_check</span>CSV 확인
+                                            </button>
+                                            <div class="field-help">단지별 CSV는 동/호 식별값이 포함되어야 합니다.</div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-section">
-                                    <div class="form-section-title"><span class="material-symbols-rounded">description</span>CSV 컬럼 안내</div>
-                                    <div class="column-box"><code>csv_idntf_key, ext_cust_no, facility_no, ho_no, meter_dt, pre_val, curr_val, meter_cn, meter_rslt_cd</code></div>
-                                    <div class="field-help" style="margin-top:6px;">ho_no는 세대번호(예: APT_1_101), csv_idntf_key / ext_cust_no는 선택한 계약의 설정값과 일치해야 합니다.</div>
+                                    <div class="form-section-title"><span class="material-symbols-rounded">description</span>CSV 안내</div>
+                                    <div class="column-box">
+                                        <strong>필수 값</strong><br>
+                                        검침일자, 이전값, 현재값, 검침결과, 검침내용, 동/호 식별값<br><br>
+                                        <strong>시스템 확인 값</strong><br>
+                                        CSV 식별키와 외부 고객번호는 검침 업체가 제공한 파일이 어떤 검침 설정에 해당하는지 확인하는 값입니다.
+                                    </div>
+                                </div>
+                                <div class="csv-preview-box" id="complexPreviewBox">
+                                    <div class="csv-preview-head">CSV 확인 결과</div>
+                                    <div class="csv-preview-body">
+                                        <div class="csv-preview-grid" id="complexPreviewSummary"></div>
+                                        <div class="preview-table-wrap">
+                                            <table class="preview-table">
+                                                <thead>
+                                                <tr>
+                                                    <th>행</th><th>검침유형</th><th>동/호</th><th>검침일자</th><th>이전값</th><th>현재값</th><th>결과</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="complexPreviewRows"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="preview-msg" id="complexPreviewMessage">CSV를 확인해주세요.</div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn js-modal-close" data-modal-id="complexUploadModal">취소</button>
-                                <button type="submit" class="btn btn-primary">업로드</button>
+                                <button type="submit" class="btn btn-primary" id="complexUploadSubmitBtn" disabled>업로드</button>
                             </div>
                         </form>
                     </div>
@@ -658,215 +646,55 @@
                         <form method="post" action="${ctx}/manager/meter/hstry/upload/${mgmtOfcNo}" enctype="multipart/form-data" id="facilityMeterCsvUploadForm">
                             <sec:csrfInput/>
                             <input type="hidden" name="meterScope" value="FACILITY">
+                            <input type="hidden" name="utilityProviderNo" id="facilityMatchedUtilityProviderNo">
                             <div class="modal-body">
                                 <div class="form-section">
-                                    <div class="form-section-title"><span class="material-symbols-rounded">upload_file</span>업로드 파일 선택</div>
+                                    <div class="form-section-title"><span class="material-symbols-rounded">upload_file</span>CSV 파일 선택 및 자동 확인</div>
                                     <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label" for="facilityUploadUtilityProviderNo">공급/검침 계약</label>
-                                            <select class="form-select" id="facilityUploadUtilityProviderNo" name="utilityProviderNo" required>
-                                                <option value="">선택</option>
-                                                <c:forEach var="provider" items="${providerList}">
-                                                    <option value="${provider.utilityProviderNo}"
-                                                            <c:if test="${empty provider.utilityProviderNo}">disabled</c:if>
-                                                            data-meter-ty-cd="${provider.meterTyCd}"
-                                                            data-meter-ty-nm="${provider.meterTyNm}"
-                                                            data-cont-nm="${provider.contNm}"
-                                                            data-cont-cn="${provider.contCn}"
-                                                            data-cont-bgng-dt="${provider.contBgngDt}"
-                                                            data-cont-end-dt="${provider.contEndDt}">
-                                                        <c:choose><c:when test="${empty provider.utilityProviderNo}">[설정 필요] </c:when><c:otherwise><c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if></c:otherwise></c:choose>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
-                                                        <c:if test="${not empty provider.contBgngDt}"> (${provider.contBgngDt} ~ <c:choose><c:when test="${not empty provider.contEndDt}">${provider.contEndDt}</c:when><c:otherwise>진행중</c:otherwise></c:choose>)</c:if>
-                                                    </option>
-                                                </c:forEach>
-                                            </select>
-                                            <div class="contract-info-box" id="facilityContractInfoBox">
-                                                <span class="contract-info-label">계약내용</span><span id="facilityContractCn">-</span>
-                                            </div>
-                                        </div>
                                         <div class="form-field">
                                             <label class="field-label" for="facilityCsvFile">CSV 파일</label>
                                             <input type="file" class="form-input" id="facilityCsvFile" name="csvFile" accept=".csv,text/csv" required>
+                                            <div class="field-help">파일을 선택한 뒤 CSV 확인을 누르면 식별키 기준으로 검침 설정과 계약 정보를 자동으로 찾습니다.</div>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="field-label">파일 확인</label>
+                                            <button type="button" class="btn btn-primary" id="facilityPreviewBtn">
+                                                <span class="material-symbols-rounded">fact_check</span>CSV 확인
+                                            </button>
+                                            <div class="field-help">시설 CSV는 시설번호가 포함되어야 합니다.</div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-section">
-                                    <div class="form-section-title"><span class="material-symbols-rounded">description</span>CSV 컬럼 안내</div>
-                                    <div class="column-box"><code>csv_idntf_key, ext_cust_no, facility_no, meter_dt, pre_val, curr_val, meter_cn, meter_rslt_cd</code></div>
-                                    <div class="field-help" style="margin-top:6px;">시설 검침은 ho_no 없이 facility_no만 사용합니다. csv_idntf_key / ext_cust_no는 선택한 계약의 설정값과 일치해야 합니다.</div>
+                                    <div class="form-section-title"><span class="material-symbols-rounded">description</span>CSV 안내</div>
+                                    <div class="column-box">
+                                        <strong>필수 값</strong><br>
+                                        검침일자, 이전값, 현재값, 검침결과, 검침내용, 시설번호<br><br>
+                                        <strong>시스템 확인 값</strong><br>
+                                        CSV 식별키와 외부 고객번호는 검침 업체가 제공한 파일이 어떤 검침 설정에 해당하는지 확인하는 값입니다.
+                                    </div>
+                                </div>
+                                <div class="csv-preview-box" id="facilityPreviewBox">
+                                    <div class="csv-preview-head">CSV 확인 결과</div>
+                                    <div class="csv-preview-body">
+                                        <div class="csv-preview-grid" id="facilityPreviewSummary"></div>
+                                        <div class="preview-table-wrap">
+                                            <table class="preview-table">
+                                                <thead>
+                                                <tr>
+                                                    <th>행</th><th>검침유형</th><th>시설번호</th><th>검침일자</th><th>이전값</th><th>현재값</th><th>결과</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="facilityPreviewRows"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="preview-msg" id="facilityPreviewMessage">CSV를 확인해주세요.</div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn js-modal-close" data-modal-id="facilityUploadModal">취소</button>
-                                <button type="submit" class="btn btn-primary">업로드</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-
-
-                <%-- ===== 단지별 수동 등록 모달 ===== --%>
-                <div class="modal-overlay" id="complexInsertModal">
-                    <div class="modal">
-                        <div class="modal-header">
-                            <h3 class="modal-title">단지별 검침 등록</h3>
-                            <button type="button" class="modal-close js-modal-close" data-modal-id="complexInsertModal">
-                                <span class="material-symbols-rounded">close</span>
-                            </button>
-                        </div>
-                        <form method="post" action="${ctx}/manager/meter/hstry/insert/${mgmtOfcNo}" id="complexMeterInsertForm">
-                            <sec:csrfInput/>
-                            <input type="hidden" name="meterScope" value="COMPLEX">
-                            <div class="modal-body">
-                                <div class="form-section">
-                                    <div class="form-section-title"><span class="material-symbols-rounded">add</span>기본 정보</div>
-                                    <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label" for="complexInsertUtilityProviderNo">공급/검침 계약</label>
-                                            <select class="form-select" id="complexInsertUtilityProviderNo" name="utilityProviderNo" required>
-                                                <option value="">선택</option>
-                                                <c:forEach var="provider" items="${providerList}">
-                                                    <option value="${provider.utilityProviderNo}"
-                                                            <c:if test="${empty provider.utilityProviderNo}">disabled</c:if>
-                                                            data-meter-ty-cd="${provider.meterTyCd}"
-                                                            data-meter-ty-nm="${provider.meterTyNm}">
-                                                        <c:choose><c:when test="${empty provider.utilityProviderNo}">[설정 필요] </c:when><c:otherwise><c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if></c:otherwise></c:choose>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
-                                                    </option>
-                                                </c:forEach>
-                                            </select>
-                                            <div class="field-help" id="complexInsertMeterTypeGuide">검침 계약을 선택하면 유형과 단위가 표시됩니다.</div>
-                                        </div>
-                                        <input type="hidden" id="complexInsertFacilityNo" name="facilityNo">
-                                        <input type="hidden" id="complexInsertHoNo" name="hoNo">
-                                        <div class="form-field">
-                                            <label class="field-label" for="complexInsertDongNo">동</label>
-                                            <select class="form-select" id="complexInsertDongNo" required>
-                                                <option value="">동 선택</option>
-                                                <c:forEach var="dong" items="${dongList}">
-                                                    <option value="${dong.dongNo}">${dong.dongNo}동</option>
-                                                </c:forEach>
-                                            </select>
-                                        </div>
-                                        <div class="form-field">
-                                            <label class="field-label" for="complexInsertHoInput">호</label>
-                                            <input type="text" class="form-input" id="complexInsertHoInput" list="complexHoDatalist" placeholder="예: 1502" required>
-                                            <datalist id="complexHoDatalist"></datalist>
-                                        </div>
-                                        <div class="form-field"><label class="field-label" for="complexInsertMeterDt">검침일자</label><input type="date" class="form-input" id="complexInsertMeterDt" name="meterDt" required></div>
-                                    </div>
-                                </div>
-                                <div class="form-section">
-                                    <div class="form-section-title"><span class="material-symbols-rounded">edit</span>검침 값</div>
-                                    <div class="form-row cols-2">
-                                        <div class="form-field"><label class="field-label" for="complexInsertPreVal">이전값 <span class="unit-suffix js-complex-unit">-</span></label><input type="number" step="0.01" class="form-input" id="complexInsertPreVal" name="preVal" required></div>
-                                        <div class="form-field"><label class="field-label" for="complexInsertCurrVal">현재값 <span class="unit-suffix js-complex-unit">-</span></label><input type="number" step="0.01" class="form-input" id="complexInsertCurrVal" name="currVal" required></div>
-                                    </div>
-                                    <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label" for="complexInsertMeterRsltCd">결과</label>
-                                            <select class="form-select" id="complexInsertMeterRsltCd" name="meterRsltCd" required>
-                                                <option value="">선택</option>
-                                                <c:forEach var="code" items="${rsltCodeList}"><option value="${code.codeNoCd}">${code.codeName}</option></c:forEach>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-row"><div class="form-field"><label class="field-label" for="complexInsertMeterCn">검침내용</label><textarea class="form-textarea" id="complexInsertMeterCn" name="meterCn" placeholder="검침 내용 또는 특이사항"></textarea></div></div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn js-modal-close" data-modal-id="complexInsertModal">취소</button>
-                                <button type="submit" class="btn btn-primary">등록</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <%-- ===== 시설 수동 등록 모달 ===== --%>
-                <div class="modal-overlay" id="facilityInsertModal">
-                    <div class="modal">
-                        <div class="modal-header">
-                            <h3 class="modal-title">시설 검침 등록</h3>
-                            <button type="button" class="modal-close js-modal-close" data-modal-id="facilityInsertModal">
-                                <span class="material-symbols-rounded">close</span>
-                            </button>
-                        </div>
-                        <form method="post" action="${ctx}/manager/meter/hstry/insert/${mgmtOfcNo}" id="facilityMeterInsertForm">
-                            <sec:csrfInput/>
-                            <input type="hidden" name="meterScope" value="FACILITY">
-                            <div class="modal-body">
-                                <div class="form-section">
-                                    <div class="form-section-title"><span class="material-symbols-rounded">add</span>기본 정보</div>
-                                    <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label" for="facilityInsertUtilityProviderNo">공급/검침 계약</label>
-                                            <select class="form-select" id="facilityInsertUtilityProviderNo" name="utilityProviderNo" required>
-                                                <option value="">선택</option>
-                                                <c:forEach var="provider" items="${providerList}">
-                                                    <option value="${provider.utilityProviderNo}"
-                                                            <c:if test="${empty provider.utilityProviderNo}">disabled</c:if>
-                                                            data-meter-ty-cd="${provider.meterTyCd}"
-                                                            data-meter-ty-nm="${provider.meterTyNm}">
-                                                        <c:choose><c:when test="${empty provider.utilityProviderNo}">[설정 필요] </c:when><c:otherwise><c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if></c:otherwise></c:choose>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
-                                                    </option>
-                                                </c:forEach>
-                                            </select>
-                                            <div class="field-help" id="facilityInsertMeterTypeGuide">검침 계약을 선택하면 유형과 단위가 표시됩니다.</div>
-                                        </div>
-                                        <div class="form-field">
-                                            <label class="field-label" for="facilityInsertFacilityNo">시설번호</label>
-                                            <div class="lookup-row">
-                                                <input type="text" class="form-input" id="facilityInsertFacilityNo" name="facilityNo" placeholder="예: FAC1001" required>
-                                                <button type="button" class="btn btn-sm btn-ghost" id="facilityLookupBtn">확인</button>
-                                            </div>
-                                            <div class="field-help">시설번호 입력 후 확인하면 시설명/유형/위치가 표시됩니다.</div>
-                                        </div>
-                                        <div class="form-field">
-                                            <label class="field-label" for="facilityInsertMeterDt">검침일자</label>
-                                            <input type="date" class="form-input" id="facilityInsertMeterDt" name="meterDt" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-field">
-                                            <label class="field-label">선택 시설 정보</label>
-                                            <div class="readonly-box" id="facilityInsertFacilityInfo">시설번호를 입력하고 확인해주세요.</div>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" id="facilityInsertValidFacilityNo" value="">
-                                </div>
-
-                                <div class="form-section">
-                                    <div class="form-section-title"><span class="material-symbols-rounded">edit</span>검침 값</div>
-                                    <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label" for="facilityInsertPreVal">이전값 <span class="unit-suffix js-facility-unit">-</span></label>
-                                            <input type="number" step="0.01" class="form-input" id="facilityInsertPreVal" name="preVal" required>
-                                        </div>
-                                        <div class="form-field">
-                                            <label class="field-label" for="facilityInsertCurrVal">현재값 <span class="unit-suffix js-facility-unit">-</span></label>
-                                            <input type="number" step="0.01" class="form-input" id="facilityInsertCurrVal" name="currVal" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-row cols-2">
-                                        <div class="form-field">
-                                            <label class="field-label" for="facilityInsertMeterRsltCd">결과</label>
-                                            <select class="form-select" id="facilityInsertMeterRsltCd" name="meterRsltCd" required>
-                                                <option value="">선택</option>
-                                                <c:forEach var="code" items="${rsltCodeList}"><option value="${code.codeNoCd}">${code.codeName}</option></c:forEach>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-field">
-                                            <label class="field-label" for="facilityInsertMeterCn">검침내용</label>
-                                            <textarea class="form-textarea" id="facilityInsertMeterCn" name="meterCn" placeholder="검침 내용 또는 특이사항"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn js-modal-close" data-modal-id="facilityInsertModal">취소</button>
-                                <button type="submit" class="btn btn-primary">등록</button>
+                                <button type="submit" class="btn btn-primary" id="facilityUploadSubmitBtn" disabled>업로드</button>
                             </div>
                         </form>
                     </div>
@@ -1001,15 +829,20 @@
         var ctx = '${ctx}';
         var mgmtOfcNo = '${mgmtOfcNo}';
 
-        /* 단지 검침 등록용 동/호 후보 목록 */
-        var complexUnitList = [
-            <c:forEach var="row" items="${complexMeterList}" varStatus="st">
-            <c:set var="hoPartsForJs" value="${fn:split(row.hoNo, '_')}" />
-            <c:if test="${fn:length(hoPartsForJs) ge 3}">
-            { dong: '${hoPartsForJs[1]}', ho: '${hoPartsForJs[2]}' }<c:if test="${not st.last}">,</c:if>
-            </c:if>
-            </c:forEach>
-        ];
+        /* ============================================================
+           처리 결과 알림
+           - 화면 상단 alert 박스 대신 기본 window.alert로 한 번만 안내한다.
+        ============================================================ */
+        var successMessage = '<c:out value="${successMessage}" />';
+        var errorMessage = '<c:out value="${errorMessage}" />';
+
+        if (successMessage) {
+            alert(successMessage);
+        }
+
+        if (errorMessage) {
+            alert(errorMessage);
+        }
 
         /* ============================================================
            모달 열기/닫기
@@ -1028,9 +861,9 @@
             }
             var modalForm = document.querySelector('#' + modalId + ' form');
             if (modalForm) modalForm.reset();
-            /* 계약 정보 박스 초기화 */
-            var infoBox = document.querySelector('#' + modalId + ' .contract-info-box');
-            if (infoBox) infoBox.classList.remove('visible');
+            // 업로드 모달은 닫을 때 CSV 확인 결과와 hidden 설정값도 초기화함
+            if (modalId === 'complexUploadModal') resetPreview('complex');
+            if (modalId === 'facilityUploadModal') resetPreview('facility');
         }
 
         /* 공통 닫기 이벤트 */
@@ -1046,36 +879,178 @@
         ============================================================ */
         var complexUploadBtn = document.getElementById('openComplexUploadModalBtn');
         var facilityUploadBtn = document.getElementById('openFacilityUploadModalBtn');
-        var complexInsertBtn = document.getElementById('openComplexInsertModalBtn');
-        var facilityInsertBtn = document.getElementById('openFacilityInsertModalBtn');
         if (complexUploadBtn) complexUploadBtn.addEventListener('click', function () { openMeterModal('complexUploadModal'); });
         if (facilityUploadBtn) facilityUploadBtn.addEventListener('click', function () { openMeterModal('facilityUploadModal'); });
-        if (complexInsertBtn) complexInsertBtn.addEventListener('click', function () { openMeterModal('complexInsertModal'); });
-        if (facilityInsertBtn) facilityInsertBtn.addEventListener('click', function () { openMeterModal('facilityInsertModal'); });
 
         /* ============================================================
-           업로드 모달 - 계약 선택 시 계약 내용 표시
+           업로드 모달 - CSV 확인/자동 매칭
         ============================================================ */
-        function bindProviderSelect(selectId, infoBoxId, contCnId) {
-            var sel = document.getElementById(selectId);
-            var box = document.getElementById(infoBoxId);
-            var cnEl = document.getElementById(contCnId);
-            if (!sel || !box || !cnEl) return;
+        function getCsrfHeader() {
+            var header = document.querySelector('meta[name="_csrf_header"]');
+            return header ? header.getAttribute('content') : '';
+        }
 
-            sel.addEventListener('change', function () {
-                var opt = sel.options[sel.selectedIndex];
-                var contCn = opt ? opt.getAttribute('data-cont-cn') : '';
-                if (contCn) {
-                    cnEl.textContent = contCn;
-                    box.classList.add('visible');
+        function getCsrfToken() {
+            var token = document.querySelector('meta[name="_csrf"]');
+            return token ? token.getAttribute('content') : '';
+        }
+
+        function resetPreview(prefix) {
+            var box = document.getElementById(prefix + 'PreviewBox');
+            var summary = document.getElementById(prefix + 'PreviewSummary');
+            var rows = document.getElementById(prefix + 'PreviewRows');
+            var msg = document.getElementById(prefix + 'PreviewMessage');
+            var hidden = document.getElementById(prefix + 'MatchedUtilityProviderNo');
+            var submit = document.getElementById(prefix + 'UploadSubmitBtn');
+
+            if (box) box.classList.remove('visible');
+            if (summary) summary.innerHTML = '';
+            if (rows) rows.innerHTML = '';
+            if (msg) {
+                msg.className = 'preview-msg';
+                msg.textContent = 'CSV를 확인해주세요.';
+            }
+            if (hidden) hidden.value = '';
+            if (submit) submit.disabled = true;
+        }
+
+        function renderPreview(prefix, result) {
+            var box = document.getElementById(prefix + 'PreviewBox');
+            var summary = document.getElementById(prefix + 'PreviewSummary');
+            var rows = document.getElementById(prefix + 'PreviewRows');
+            var msg = document.getElementById(prefix + 'PreviewMessage');
+            var hidden = document.getElementById(prefix + 'MatchedUtilityProviderNo');
+            var submit = document.getElementById(prefix + 'UploadSubmitBtn');
+
+            if (hidden) hidden.value = result.utilityProviderNo || '';
+            if (box) box.classList.add('visible');
+
+            if (summary) {
+                var typeText = result.meterTyNm || '-';
+                var periodText = (result.contBgngDt || '-') + ' ~ ' + (result.contEndDt || '진행중');
+                summary.innerHTML = ''
+                    + '<div class="csv-preview-label">업체</div><div class="csv-preview-value">' + escapeHtml(result.partnerNm || '-') + '</div>'
+                    + '<div class="csv-preview-label">계약</div><div class="csv-preview-value">' + escapeHtml(result.contNm || '-') + '</div>'
+                    + '<div class="csv-preview-label">계약기간</div><div class="csv-preview-value">' + escapeHtml(periodText) + '</div>'
+                    + '<div class="csv-preview-label">CSV 식별키</div><div class="csv-preview-value">' + escapeHtml(result.csvIdntfKey || '-') + '</div>'
+                    + '<div class="csv-preview-label">외부 고객번호</div><div class="csv-preview-value">' + escapeHtml(result.extCustNo || '-') + '</div>'
+                    + '<div class="csv-preview-label">검침유형</div><div class="csv-preview-value">' + escapeHtml(typeText) + '</div>'
+                    + '<div class="csv-preview-label">총 행수</div><div class="csv-preview-value">' + escapeHtml(String(result.totalCnt || 0)) + '건</div>'
+                    + '<div class="csv-preview-label">계약내용</div><div class="csv-preview-value">' + escapeHtml(result.contCn || '-') + '</div>';
+            }
+
+            if (rows) {
+                rows.innerHTML = '';
+                (result.previewRows || []).forEach(function (r) {
+                    var target = prefix === 'complex' ? (r.hoNo || '-') : (r.facilityNo || '-');
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = ''
+                        + '<td>' + escapeHtml(r.lineNo || '-') + '</td>'
+                        + '<td>' + escapeHtml(r.meterTyNm || '-') + '</td>'
+                        + '<td>' + escapeHtml(target) + '</td>'
+                        + '<td>' + escapeHtml(r.meterDt || '-') + '</td>'
+                        + '<td>' + escapeHtml((r.preVal || '-') + (r.meterUnit && r.meterUnit !== '-' ? ' ' + r.meterUnit : '')) + '</td>'
+                        + '<td>' + escapeHtml((r.currVal || '-') + (r.meterUnit && r.meterUnit !== '-' ? ' ' + r.meterUnit : '')) + '</td>'
+                        + '<td>' + escapeHtml(r.meterRsltCd || '-') + '</td>';
+                    rows.appendChild(tr);
+                });
+            }
+
+            if (msg) {
+                var warnings = result.warnings || [];
+                if (warnings.length > 0) {
+                    msg.className = 'preview-msg warn';
+                    msg.textContent = warnings.slice(0, 3).join(' / ') + (warnings.length > 3 ? ' 외 ' + (warnings.length - 3) + '건' : '');
                 } else {
-                    box.classList.remove('visible');
+                    msg.className = 'preview-msg';
+                    msg.textContent = result.message || 'CSV 확인이 완료되었습니다. 업로드할 수 있습니다.';
+                }
+            }
+
+            if (submit) submit.disabled = !result.uploadable;
+        }
+
+        function showPreviewError(prefix, message) {
+            var box = document.getElementById(prefix + 'PreviewBox');
+            var msg = document.getElementById(prefix + 'PreviewMessage');
+            var submit = document.getElementById(prefix + 'UploadSubmitBtn');
+            var hidden = document.getElementById(prefix + 'MatchedUtilityProviderNo');
+
+            if (box) box.classList.add('visible');
+            if (msg) {
+                msg.className = 'preview-msg error';
+                msg.textContent = message || 'CSV 확인 중 오류가 발생했습니다.';
+            }
+            if (submit) submit.disabled = true;
+            if (hidden) hidden.value = '';
+        }
+
+        function escapeHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function bindCsvPreview(prefix, formId, fileId, scope) {
+            var form = document.getElementById(formId);
+            var fileInput = document.getElementById(fileId);
+            var previewBtn = document.getElementById(prefix + 'PreviewBtn');
+
+            if (!form || !fileInput || !previewBtn) return;
+
+            fileInput.addEventListener('change', function () { resetPreview(prefix); });
+
+            previewBtn.addEventListener('click', function () {
+                resetPreview(prefix);
+
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    showPreviewError(prefix, 'CSV 파일을 먼저 선택해주세요.');
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append('meterScope', scope);
+                formData.append('csvFile', fileInput.files[0]);
+
+                var headers = { 'Accept': 'application/json' };
+                var csrfHeader = getCsrfHeader();
+                var csrfToken = getCsrfToken();
+                if (csrfHeader && csrfToken) headers[csrfHeader] = csrfToken;
+
+                previewBtn.disabled = true;
+                previewBtn.textContent = '확인 중...';
+
+                fetch(ctx + '/manager/meter/hstry/preview/' + mgmtOfcNo, {
+                    method: 'POST',
+                    headers: headers,
+                    body: formData
+                })
+                    .then(function (res) { return res.json(); })
+                    .then(function (result) {
+                        if (!result.success) throw new Error(result.message || 'CSV 확인 실패');
+                        renderPreview(prefix, result);
+                    })
+                    .catch(function (err) { showPreviewError(prefix, err.message); })
+                    .finally(function () {
+                        previewBtn.disabled = false;
+                        previewBtn.innerHTML = '<span class="material-symbols-rounded">fact_check</span>CSV 확인';
+                    });
+            });
+
+            form.addEventListener('submit', function (e) {
+                var hidden = document.getElementById(prefix + 'MatchedUtilityProviderNo');
+                if (!hidden || !hidden.value) {
+                    e.preventDefault();
+                    showPreviewError(prefix, 'CSV 확인을 먼저 완료해주세요.');
                 }
             });
         }
 
-        bindProviderSelect('complexUploadUtilityProviderNo', 'complexContractInfoBox', 'complexContractCn');
-        bindProviderSelect('facilityUploadUtilityProviderNo', 'facilityContractInfoBox', 'facilityContractCn');
+        bindCsvPreview('complex', 'complexMeterCsvUploadForm', 'complexCsvFile', 'COMPLEX');
+        bindCsvPreview('facility', 'facilityMeterCsvUploadForm', 'facilityCsvFile', 'FACILITY');
 
         /* ============================================================
            날짜/값 표시 유틸
@@ -1114,23 +1089,15 @@
             return { dong: '', ho: raw, text: raw };
         }
 
-        /* 검침유형 표시 보정
-           - meter_ty_cd 업데이트 전 데이터도 상세에서 최대한 구분되도록 보정 */
+        /* 검침유형 표시
+           - METER_HSTRY.METER_TY_CD와 공통코드명을 기준으로만 표시한다. */
         function getMeterTypeText(row) {
             if (row.meterTyNm) return row.meterTyNm;
             if (row.meterTyCd) return row.meterTyCd;
-
-            var source = ((row.utilityProviderNo || '') + ' ' + (row.meterCn || '')).toUpperCase();
-            if (source.indexOf('ELC') > -1 || source.indexOf('ELEC') > -1 || source.indexOf('전기') > -1) return '전기계량';
-            if (source.indexOf('WTR') > -1 || source.indexOf('WATER') > -1 || source.indexOf('수도') > -1 || source.indexOf('급수') > -1) return '수도계량';
-            if (source.indexOf('GAS') > -1 || source.indexOf('가스') > -1) return '가스계량';
-            if (source.indexOf('HEAT') > -1 || source.indexOf('난방') > -1) return '난방계량';
-
             return '-';
         }
 
 
-        /* 검침유형별 단위 표시 */
         function getMeterUnitByCd(meterTyCd) {
             if (meterTyCd === 'ELEC') return 'kWh';
             if (meterTyCd === 'WATER' || meterTyCd === 'GAS') return '㎥';
@@ -1139,15 +1106,26 @@
         }
 
         function getMeterUnit(row) {
-            var unit = getMeterUnitByCd(row.meterTyCd);
-            if (unit) return unit;
+            return getMeterUnitByCd(row.meterTyCd);
+        }
 
-            var source = ((row.meterTyNm || '') + ' ' + (row.utilityProviderNo || '') + ' ' + (row.meterCn || '')).toUpperCase();
-            if (source.indexOf('ELC') > -1 || source.indexOf('ELEC') > -1 || source.indexOf('전기') > -1) return 'kWh';
-            if (source.indexOf('WTR') > -1 || source.indexOf('WATER') > -1 || source.indexOf('수도') > -1 || source.indexOf('급수') > -1) return '㎥';
-            if (source.indexOf('GAS') > -1 || source.indexOf('가스') > -1) return '㎥';
-            if (source.indexOf('HEAT') > -1 || source.indexOf('난방') > -1) return 'Gcal';
-            return '';
+        function getMeterScope(row) {
+            var meterCn = row && row.meterCn ? String(row.meterCn) : '';
+
+            // 신규 업로드는 Service에서 검침내용 앞에 붙이는 구분값을 우선 기준으로 사용함
+            if (meterCn.indexOf('[단지검침]') === 0) return 'COMPLEX';
+            if (meterCn.indexOf('[시설검침]') === 0) return 'FACILITY';
+
+            // 기존 더미 보정: 세대 검침 문구와 ho_no가 함께 있으면 단지별로 봄
+            if (row && row.hoNo && meterCn.indexOf('세대') > -1) return 'COMPLEX';
+
+            // 그 외에는 시설 검침으로 처리함. 시설도 호 정보를 가질 수 있으므로 ho_no만으로 단지 검침을 판단하지 않음
+            return 'FACILITY';
+        }
+
+        function cleanMeterCn(value) {
+            if (!value) return value;
+            return String(value).replace(/^\[단지검침\]\s*/, '').replace(/^\[시설검침\]\s*/, '');
         }
 
         function setDisplay(elId, value) {
@@ -1182,10 +1160,10 @@
             setDisplay('detailPreVal', (row.preVal == null ? '-' : row.preVal) + (unit ? ' ' + unit : ''));
             setDisplay('detailCurrVal', (row.currVal == null ? '-' : row.currVal) + (unit ? ' ' + unit : ''));
             setDisplay('detailMeterRsltNm', row.meterRsltNm || row.meterRsltCd);
-            setDisplay('detailMeterCn', row.meterCn);
+            setDisplay('detailMeterCn', cleanMeterCn(row.meterCn));
 
             /* 시설 검침 / 단지 검침 대상 정보 분리 */
-            if (row.hoNo) {
+            if (getMeterScope(row) === 'COMPLEX') {
                 var hoInfo = parseHoNo(row.hoNo);
                 showElement('detailComplexTargetSection', true);
                 showElement('detailFacilityTargetSection', false);
@@ -1214,8 +1192,9 @@
             setDisplay('editReadonlyFacilityNm', row.facilityNm);
             setDisplay('editReadonlyHoNo', row.hoNo ? parseHoNo(row.hoNo).text : '-');
             setDisplay('editReadonlyPartnerNm', row.partnerNm);
-            showElement('editComplexTargetRow', !!row.hoNo);
-            showElement('editFacilityTargetRow', !row.hoNo);
+            var scope = getMeterScope(row);
+            showElement('editComplexTargetRow', scope === 'COMPLEX');
+            showElement('editFacilityTargetRow', scope === 'FACILITY');
             setDisplay('editUnitLabel1', unit || '-');
             setDisplay('editUnitLabel2', unit || '-');
             /* 수정 가능 필드 */
@@ -1224,7 +1203,7 @@
             document.getElementById('editPreVal').value        = row.preVal == null ? '' : row.preVal;
             document.getElementById('editCurrVal').value       = row.currVal == null ? '' : row.currVal;
             document.getElementById('editMeterRsltCd').value   = row.meterRsltCd || '';
-            document.getElementById('editMeterCn').value       = row.meterCn || '';
+            document.getElementById('editMeterCn').value       = cleanMeterCn(row.meterCn) || '';
         }
 
         /* ============================================================
@@ -1266,218 +1245,6 @@
                 });
             });
         });
-
-        /* ============================================================
-           단지/시설 등록 모달 보조 처리
-        ============================================================ */
-        function refreshUnitBySelect(selectId, selector, guideId) {
-            var sel = document.getElementById(selectId);
-            if (!sel) return;
-            var opt = sel.options[sel.selectedIndex];
-            var tyNm = opt ? (opt.getAttribute('data-meter-ty-nm') || '') : '';
-            var tyCd = opt ? (opt.getAttribute('data-meter-ty-cd') || '') : '';
-            var unit = getMeterUnitByCd(tyCd);
-
-            // 검침유형별 단위 표시 갱신
-            document.querySelectorAll(selector).forEach(function (el) { el.textContent = unit || '-'; });
-
-            // 등록 모달에서 사용자가 어떤 검침인지 바로 알 수 있도록 안내 문구 갱신
-            if (guideId) {
-                var guide = document.getElementById(guideId);
-                if (guide) {
-                    guide.textContent = tyNm ? ('선택 유형: ' + tyNm + (unit ? ' / 단위: ' + unit : '')) : '검침 계약을 선택하면 유형과 단위가 표시됩니다.';
-                }
-            }
-        }
-
-        function populateDongSelect() {
-            var dongEl = document.getElementById('complexInsertDongNo');
-            if (!dongEl) return;
-
-            // 서버에서 내려준 동 목록이 있으면 그대로 사용하고, 없을 때만 현재 목록 데이터에서 보강함
-            if (dongEl.options.length > 1) return;
-
-            var unique = {};
-            complexUnitList.forEach(function (item) { if (item.dong) unique[item.dong] = true; });
-            Object.keys(unique).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (dong) {
-                var opt = document.createElement('option');
-                opt.value = dong;
-                opt.textContent = dong + '동';
-                dongEl.appendChild(opt);
-            });
-        }
-
-        function renderHoOptions(list) {
-            var dongEl = document.getElementById('complexInsertDongNo');
-            var listEl = document.getElementById('complexHoDatalist');
-            if (!listEl) return;
-
-            var dong = dongEl ? dongEl.value : '';
-            listEl.innerHTML = '';
-            (list || []).forEach(function (item) {
-                var ho = item.hoNo || item.ho || item.HONO || item.HO_NO;
-                if (!ho) return;
-                var opt = document.createElement('option');
-                opt.value = ho;
-                opt.label = dong ? (dong + '동 ' + ho + '호') : (ho + '호');
-                listEl.appendChild(opt);
-            });
-        }
-
-        function refreshHoDatalist() {
-            var dongEl = document.getElementById('complexInsertDongNo');
-            var hoInput = document.getElementById('complexInsertHoInput');
-            var dong = dongEl ? dongEl.value : '';
-            var keyword = hoInput ? hoInput.value.replace('호', '').trim() : '';
-
-            // 서버 API로 동/호 후보를 조회함. 실패 시 현재 화면 데이터 기반 후보로 대체함
-            if (dong) {
-                fetch(ctx + '/manager/meter/hstry/ho-suggest/' + mgmtOfcNo + '?dongNo=' + encodeURIComponent(dong) + '&keyword=' + encodeURIComponent(keyword), {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                })
-                    .then(function (res) { return res.ok ? res.json() : Promise.reject(); })
-                    .then(function (result) {
-                        if (result && result.success) {
-                            renderHoOptions(result.hoList || []);
-                        } else {
-                            renderHoOptionsByPageData(dong, keyword);
-                        }
-                    })
-                    .catch(function () { renderHoOptionsByPageData(dong, keyword); });
-                return;
-            }
-
-            renderHoOptionsByPageData(dong, keyword);
-        }
-
-        function renderHoOptionsByPageData(dong, keyword) {
-            var listEl = document.getElementById('complexHoDatalist');
-            if (!listEl) return;
-
-            var unique = {};
-            listEl.innerHTML = '';
-            complexUnitList.forEach(function (item) {
-                if (dong && item.dong !== dong) return;
-                if (keyword && String(item.ho).indexOf(keyword) !== 0) return;
-                if (item.ho) unique[item.ho] = true;
-            });
-            Object.keys(unique).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (ho) {
-                var opt = document.createElement('option');
-                opt.value = ho;
-                opt.label = dong ? (dong + '동 ' + ho + '호') : (ho + '호');
-                listEl.appendChild(opt);
-            });
-        }
-
-        function lookupFacilityInfo() {
-            var input = document.getElementById('facilityInsertFacilityNo');
-            var valid = document.getElementById('facilityInsertValidFacilityNo');
-            var info = document.getElementById('facilityInsertFacilityInfo');
-            if (!input || !info) return;
-
-            var facilityNo = input.value.trim();
-            if (valid) valid.value = '';
-            if (!facilityNo) {
-                info.textContent = '시설번호를 입력하고 확인해주세요.';
-                return;
-            }
-
-            info.textContent = '시설 정보를 확인하는 중입니다.';
-            fetch(ctx + '/manager/meter/hstry/facility/' + mgmtOfcNo + '?facilityNo=' + encodeURIComponent(facilityNo), {
-                method: 'GET',
-                headers: { 'Accept': 'application/json' }
-            })
-                .then(function (res) {
-                    if (!res.ok) throw new Error('시설 정보 조회 실패');
-                    return res.json();
-                })
-                .then(function (result) {
-                    if (!result.success) throw new Error(result.message || '시설 정보를 찾을 수 없습니다.');
-                    var f = result.facility || {};
-                    if (valid) valid.value = f.facilityNo || facilityNo;
-                    info.textContent = (f.facilityNo || facilityNo) + ' / ' + (f.facilityNm || '-') + ' / ' + (f.facilityTyNm || '-') + ' / ' + (f.locCn || '-');
-                })
-                .catch(function (err) {
-                    if (valid) valid.value = '';
-                    info.textContent = err.message;
-                });
-        }
-
-        function bindComplexInsertForm() {
-            var form = document.getElementById('complexMeterInsertForm');
-            var provider = document.getElementById('complexInsertUtilityProviderNo');
-            var dong = document.getElementById('complexInsertDongNo');
-            var hoInput = document.getElementById('complexInsertHoInput');
-            var hoHidden = document.getElementById('complexInsertHoNo');
-            var facilityHidden = document.getElementById('complexInsertFacilityNo');
-            if (!form) return;
-
-            if (provider) {
-                provider.addEventListener('change', function () {
-                    refreshUnitBySelect('complexInsertUtilityProviderNo', '.js-complex-unit', 'complexInsertMeterTypeGuide');
-                    if (facilityHidden) facilityHidden.value = provider.value || '';
-                });
-            }
-            populateDongSelect();
-            if (dong) dong.addEventListener('change', refreshHoDatalist);
-            if (hoInput) hoInput.addEventListener('input', refreshHoDatalist);
-            refreshHoDatalist();
-
-            form.addEventListener('submit', function (e) {
-                var dongVal = dong ? dong.value : '';
-                var hoVal = hoInput ? hoInput.value.replace('호', '').trim() : '';
-                if (!dongVal || !hoVal) {
-                    e.preventDefault();
-                    alert('동과 호를 입력해주세요.');
-                    return;
-                }
-                // 화면은 4동/1502호 기준, 서버에서 단지번호_동_호 형태로 정규화함
-                hoHidden.value = dongVal + '_' + hoVal;
-                if (facilityHidden && !facilityHidden.value && provider) facilityHidden.value = provider.value || '';
-            });
-        }
-
-        function bindFacilityInsertForm() {
-            var form = document.getElementById('facilityMeterInsertForm');
-            var provider = document.getElementById('facilityInsertUtilityProviderNo');
-            var facilityInput = document.getElementById('facilityInsertFacilityNo');
-            var lookupBtn = document.getElementById('facilityLookupBtn');
-            var valid = document.getElementById('facilityInsertValidFacilityNo');
-            if (!form) return;
-
-            if (provider) {
-                provider.addEventListener('change', function () {
-                    refreshUnitBySelect('facilityInsertUtilityProviderNo', '.js-facility-unit', 'facilityInsertMeterTypeGuide');
-                });
-            }
-            if (lookupBtn) lookupBtn.addEventListener('click', lookupFacilityInfo);
-            if (facilityInput) {
-                facilityInput.addEventListener('blur', lookupFacilityInfo);
-                facilityInput.addEventListener('input', function () {
-                    if (valid) valid.value = '';
-                    setDisplay('facilityInsertFacilityInfo', '시설번호를 입력하고 확인해주세요.');
-                });
-            }
-
-            form.addEventListener('submit', function (e) {
-                var inputVal = facilityInput ? facilityInput.value.trim() : '';
-                var validVal = valid ? valid.value : '';
-                if (!inputVal) {
-                    e.preventDefault();
-                    alert('시설번호를 입력해주세요.');
-                    return;
-                }
-                if (valid && validVal !== inputVal) {
-                    e.preventDefault();
-                    alert('시설번호 확인 버튼으로 시설 정보를 먼저 확인해주세요.');
-                }
-            });
-        }
-
-        bindComplexInsertForm();
-        bindFacilityInsertForm();
-
         /* ============================================================
            페이지네이션
         ============================================================ */

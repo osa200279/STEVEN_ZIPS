@@ -307,10 +307,11 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
         return value == null || value.trim().isEmpty();
     }
 
-    /** 파트너 선택 후 해당 파트너의 계약 목록 조회 */
+    /** 시설 + 파트너 기준 계약 목록 조회 */
     @Override
-    public List<Map<String, Object>> selectPartnerContractList(String mgmtOfcNo, String partnerNo) {
-        return facilityCheckHstryMapper.selectPartnerContractList(mgmtOfcNo, partnerNo);
+    public List<Map<String, Object>> selectPartnerContractList(String mgmtOfcNo, String facilityNo, String partnerNo) {
+        // 선택 시설과 협력업체가 함께 연결된 진행중 계약만 조회한다.
+        return facilityCheckHstryMapper.selectPartnerContractList(mgmtOfcNo, facilityNo, partnerNo);
     }
 
 

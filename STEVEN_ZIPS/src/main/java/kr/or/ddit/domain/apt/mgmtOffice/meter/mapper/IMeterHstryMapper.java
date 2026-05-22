@@ -29,6 +29,11 @@ public interface IMeterHstryMapper {
     /** 공급/검침 설정 상세 조회 */
     UtilityProviderVO selectUtilityProviderDetail(Map<String, Object> paramMap);
 
+    /** CSV 식별키/외부 고객번호로 공급/검침 설정 조회 */
+    UtilityProviderVO selectUtilityProviderByCsvKey(Map<String, Object> paramMap);
+
+
+
     /** 검침결과 공통코드 목록 조회 */
     List<Map<String, Object>> selectMeterRsltCodeList();
 
@@ -40,15 +45,6 @@ public interface IMeterHstryMapper {
 
     /** 시설 존재 건수 조회 */
     int selectFacilityCnt(Map<String, Object> paramMap);
-
-    /** 시설 검침 등록용 시설 단건 조회 */
-    MeterHstryVO selectFacilityInfo(Map<String, Object> paramMap);
-
-    /** 단지 검침 등록용 동 목록 조회 */
-    List<Map<String, Object>> selectDongNoList(Map<String, Object> paramMap);
-
-    /** 단지 검침 등록용 호 자동완성 조회 */
-    List<Map<String, Object>> selectHoSuggestList(Map<String, Object> paramMap);
 
     /** 검침 업로드 이력 등록 */
     int insertMeterUploadHstry(MeterUploadHstryVO meterUploadHstryVO);

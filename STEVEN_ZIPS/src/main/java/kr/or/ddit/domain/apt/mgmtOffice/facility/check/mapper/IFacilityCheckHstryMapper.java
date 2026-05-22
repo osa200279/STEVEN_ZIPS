@@ -90,11 +90,12 @@ public interface IFacilityCheckHstryMapper {
     String selectNextCheckFlowNo();
 
     /**
-     * 파트너 선택 후 해당 파트너의 계약 목록 조회
-     * - 등록/수정 폼에서 파트너 선택 시 AJAX로 계약 목록 표시용
+     * 시설 + 파트너 기준 계약 목록 조회
+     * - 등록/수정 폼에서 시설 선택 후 파트너 선택 시 AJAX로 계약 목록 표시용
      */
     List<Map<String, Object>> selectPartnerContractList(
             @Param("mgmtOfcNo") String mgmtOfcNo,
+            @Param("facilityNo") String facilityNo,
             @Param("partnerNo") String partnerNo
     );
 }

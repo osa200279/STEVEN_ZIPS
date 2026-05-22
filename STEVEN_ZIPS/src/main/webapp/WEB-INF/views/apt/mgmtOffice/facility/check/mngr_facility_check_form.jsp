@@ -959,11 +959,14 @@
         }
 
         /* ── 파트너 계약 목록 AJAX 로드 ──
-           협력업체를 선택하면 해당 파트너의 진행중 계약 목록을 서버에서 가져와
+           시설과 협력업체를 모두 선택하면 해당 시설에 연결된 진행중 계약 목록을 서버에서 가져와
            계약 select 옵션으로 채움 */
         function loadPartnerContracts(partnerNo) {
             var contSel = el('contNoSelect');
             if (!contSel) return;
+
+            /* 현재 선택된 시설번호 확인 */
+            var facilityNo = el('facilityNo') ? el('facilityNo').value : '';
 
             /* 파트너가 없으면 계약 select 초기화 */
             if (!partnerNo) {
@@ -972,11 +975,20 @@
                 return;
             }
 
+            /* 시설이 없으면 계약 조회를 막음 */
+            if (!facilityNo) {
+                contSel.innerHTML = '<option value="">시설 선택 후 계약 조회 가능</option>';
+                setVal('contNo', '');
+                return;
+            }
+
             /* 로딩 중 표시 */
             contSel.innerHTML = '<option value="">계약 목록 불러오는 중...</option>';
 
             fetchJson(CTX + '/manager/checkHistory/partner/contracts/'
-                + encodeURIComponent(OFC_NO) + '/' + encodeURIComponent(partnerNo))
+                + encodeURIComponent(OFC_NO) + '/'
+                + encodeURIComponent(facilityNo) + '/'
+                + encodeURIComponent(partnerNo))
                 .then(function (d) {
                     var list = (d && d.success ? d.contractList : []) || [];
 
@@ -1004,6 +1016,8 @@
                 })
                 .catch(function () {
                     contSel.innerHTML = '<option value="">계약 목록 조회 실패</option>';
+                    setVal('contNo', '');
+                    updateCurrentContractType();
                 });
         }
 
@@ -1349,8 +1363,20 @@
             el('facilitySelectedState').classList.remove('is-hidden');
             closeModal('facilityModal');
 
+            /* 시설 변경 시 기존 계약 선택값 초기화 */
+            setVal('contNo', '');
+            if (el('contNoSelect')) {
+                el('contNoSelect').innerHTML = '<option value="">계약 없음 (계약 미연결 점검)</option>';
+            }
+            updateCurrentContractType();
+
             /* 선택 시설 이력 AJAX 로드 */
             loadHistory(row.dataset.facilityNo);
+
+            /* 협력업체가 이미 선택되어 있으면 새 시설 기준 계약 목록을 다시 조회 */
+            if (el('partnerNo') && el('partnerNo').value) {
+                loadPartnerContracts(el('partnerNo').value);
+            }
         }
 
         /* ── 협력업체 선택 처리 ── */

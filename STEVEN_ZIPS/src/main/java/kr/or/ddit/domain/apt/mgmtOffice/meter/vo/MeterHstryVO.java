@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.mgmtOffice.meter.vo;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -23,6 +24,7 @@ public class MeterHstryVO {
     private String hoNo;
 
     /** 검침일자 */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date meterDt;
 
     /** 이전 검침값 */
@@ -46,12 +48,6 @@ public class MeterHstryVO {
     /** 공급/검침 설정번호 */
     private String utilityProviderNo;
 
-    /** 검침유형코드 */
-    private String meterTyCd;
-
-    /** 검침유형명 */
-    private String meterTyNm;
-
     /** 시설명 */
     private String facilityNm;
 
@@ -63,6 +59,12 @@ public class MeterHstryVO {
 
     /** 검침결과명 */
     private String meterRsltNm;
+
+    /** 검침유형코드 */
+    private String meterTyCd;
+
+    /** 검침유형명 */
+    private String meterTyNm;
 
     /** CSV 식별키 */
     private String csvIdntfKey;

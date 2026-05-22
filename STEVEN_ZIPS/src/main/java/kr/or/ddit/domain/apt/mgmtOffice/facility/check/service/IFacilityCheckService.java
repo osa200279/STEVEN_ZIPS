@@ -63,6 +63,6 @@ public interface IFacilityCheckService {
     /** 협력업체 선택 모달 서버 검색 목록 조회 */
     List<FacilityCheckHstryVO> selectPartnerSearchList(FacilityCheckHstryVO searchVO);
 
-    /** 파트너 선택 후 해당 파트너의 계약 목록 조회 */
-    List<Map<String, Object>> selectPartnerContractList(String mgmtOfcNo, String partnerNo);
+    /** 시설 + 파트너 기준 계약 목록 조회 */
+    List<Map<String, Object>> selectPartnerContractList(String mgmtOfcNo, String facilityNo, String partnerNo);
 }

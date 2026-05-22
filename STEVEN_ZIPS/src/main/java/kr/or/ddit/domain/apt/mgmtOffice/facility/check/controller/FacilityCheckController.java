@@ -598,27 +598,47 @@ public class FacilityCheckController {
     }
 
     /**
-     * 파트너 선택 후 해당 파트너의 계약 목록 AJAX 조회
-     * - 등록/수정 폼에서 파트너 선택 시 계약 select 동적 표시용
+     * 시설 + 파트너 기준 계약 목록 AJAX 조회
+     *
+     * 사용 위치
+     * - 등록/수정 폼에서 시설 선택 후 협력업체를 선택했을 때 계약 select 동적 표시
+     *
+     * 조회 기준
+     * - 관리사무소 번호
+     * - 선택한 시설번호
+     * - 선택한 협력업체번호
+     * - 진행중 계약 상태 ACTIVE
      */
     @ResponseBody
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/partner/contracts/{mgmtOfcNo}/{partnerNo}")
+    @GetMapping("/partner/contracts/{mgmtOfcNo}/{facilityNo}/{partnerNo}")
     public Map<String, Object> selectPartnerContractList(
             @PathVariable String mgmtOfcNo,
+            @PathVariable String facilityNo,
             @PathVariable String partnerNo
     ) {
         Map<String, Object> result = new HashMap<>();
+
         try {
+            /* 선택한 시설 + 선택한 협력업체 기준 ACTIVE 계약 조회 */
             List<Map<String, Object>> contractList =
-                    facilityCheckService.selectPartnerContractList(mgmtOfcNo, partnerNo);
+                    facilityCheckService.selectPartnerContractList(mgmtOfcNo, facilityNo, partnerNo);
+
             result.put("success", true);
             result.put("contractList", contractList);
         } catch (Exception e) {
-            log.error("파트너 계약 목록 AJAX 조회 실패. mgmtOfcNo={}, partnerNo={}", mgmtOfcNo, partnerNo, e);
+            log.error(
+                    "시설+파트너 계약 목록 AJAX 조회 실패. mgmtOfcNo={}, facilityNo={}, partnerNo={}",
+                    mgmtOfcNo,
+                    facilityNo,
+                    partnerNo,
+                    e
+            );
+
             result.put("success", false);
             result.put("message", "계약 목록 조회 중 오류가 발생했습니다.");
         }
+
         return result;
     }
 }
