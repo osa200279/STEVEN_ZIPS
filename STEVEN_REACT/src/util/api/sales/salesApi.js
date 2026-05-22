@@ -6,7 +6,7 @@ import requestApi from '../requestApi';
 export const getSidoList = async () => {
 
   const res = await requestApi.get(
-    '/api/sales/sido.do'
+    '/api/react/adm/sales/sido.do'
   );
 
   return res.data;
@@ -18,7 +18,7 @@ export const getSidoList = async () => {
 export const getSigunguList = async (sidoNm) => {
 
   const res = await requestApi.get(
-    '/api/sales/sigungu.do',
+    '/api/react/adm/sales/sigungu.do',
     {
       params: {
         sidoNm
@@ -38,7 +38,7 @@ export const getDongList = async (
 ) => {
 
   const res = await requestApi.get(
-    '/api/sales/dong.do',
+    '/api/react/adm/sales/dong.do',
     {
       params: {
         sidoNm,
@@ -59,7 +59,7 @@ export const searchApartmentList = async (
 ) => {
 
   const res = await requestApi.get(
-    '/api/sales/apt/list',
+    '/api/react/adm/sales/list',
     {
       params: {
         ...searchForm,
@@ -79,7 +79,7 @@ export const getBuildingList = async (
 ) => {
 
   const res = await requestApi.get(
-    '/api/sales/building/list',
+    '/api/react/adm/sales/building/list',
     {
       params: {
         aptCmplexNo
@@ -96,7 +96,7 @@ export const getHoList = async (
 ) => {
 
   const res = await requestApi.get(
-    '/api/sales/ho.do',
+    '/api/react/adm/sales/ho.do',
     {
       params: {
         aptCmplexNo,
@@ -116,7 +116,7 @@ export const registerRentListing =
 
     const res =
       await requestApi.post(
-        '/api/sales/rent/register',
+        '/api/react/adm/sales/rent/register',
         payload
       );
 
@@ -128,7 +128,7 @@ export const deleteRentListing = async (
 ) => {
 
     const res = await requestApi.post(
-        '/api/sales/rent/delete',
+        '/api/react/adm/sales/rent/delete',
         hoNos
     );
 

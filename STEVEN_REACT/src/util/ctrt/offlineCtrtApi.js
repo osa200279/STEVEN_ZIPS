@@ -5,7 +5,7 @@ import requestApi
 export const searchApartment =
     async (keyword, page = 1, size = 10) => {
         const response = await requestApi.get(
-            '/api/offlineCtrt/apt/search',
+            '/api/react/adm/offlineCtrt/apt/search',
             {
                 params: {
                     keyword,
@@ -22,7 +22,7 @@ export const searchApartment =
 export const getDongList =
     async (aptCmplexNo) => {
         const response = await requestApi.get(
-            '/api/offlineCtrt/apt/dong-list',
+            '/api/react/adm/offlineCtrt/apt/dong-list',
             {
                 params: {
                     aptCmplexNo
@@ -39,7 +39,7 @@ export const getHoList =
 
         const response =
             await requestApi.get(
-                '/api/offlineCtrt/apt/ho-list',
+                '/api/react/adm/offlineCtrt/apt/ho-list',
                 {
                     params: {
                         aptCmplexNo,
@@ -50,3 +50,55 @@ export const getHoList =
 
         return response.data;
     };
+
+/* 활성 임대매물 상세 조회 */
+export const getRentListingDetail =
+    async (hoNo) => {
+
+        const response =
+            await requestApi.get(
+                '/api/react/adm/offlineCtrt/apt/rent-detail',
+                {
+                    params: {
+                        hoNo
+                    }
+                }
+            );
+
+        return response.data;
+    };
+
+/* 제출서류 목록 조회 */
+export const getRequiredDocs =
+    async (rentLstgNo) => {
+
+        const response =
+            await requestApi.get(
+                '/api/react/adm/offlineCtrt/apt/required-docs',
+                {
+                    params: {
+                        rentLstgNo
+                    }
+                }
+            );
+
+        return response.data;
+    };
+
+
+
+export const assignResident = async (formData) => {
+
+    const response = await fetch('/api/react/adm/offlineCtrt/apt/assign', {
+
+        method: 'POST',
+
+        body: formData
+    });
+
+    if (!response.ok) {
+        throw new Error('입주 배정 실패');
+    }
+
+    return response.json();
+};

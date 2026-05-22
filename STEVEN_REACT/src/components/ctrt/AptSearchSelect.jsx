@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { getDongList, getHoList, searchApartment } from '../../util/ctrt/offlineCtrtApi';
+import { getDongList, getHoList, getRentListingDetail, getRequiredDocs, searchApartment } from '../../util/ctrt/offlineCtrtApi';
 
 function AptSearchSelect({
     value,
@@ -133,13 +133,13 @@ function AptSearchSelect({
             );
             setSelectedHo('');
 
-             const data =
-                 await getHoList(
-                     selectedApt.aptCmplexNo,
-                     dongNo
-                 );
+            const data =
+                await getHoList(
+                    selectedApt.aptCmplexNo,
+                    dongNo
+                );
 
-             setHoList(data);
+            setHoList(data);
         };
 
     /* 바깥 클릭 */
@@ -188,174 +188,186 @@ function AptSearchSelect({
                 아파트 선택
             </div>
 
-            {/* 검색 영역 */}
             <div
-                ref={dropdownRef}
-
                 style={{
-                    position: 'relative'
+                    display: 'grid',
+                    gridTemplateColumns:
+                        '1fr 1fr 1fr',
+                    gap: '12px',
+                    alignItems: 'center'
                 }}
             >
 
-                <input
-                    type="text"
-                    value={keyword}
-                    onChange={(e) => {
-                        setKeyword(
-                            e.target.value
-                        );
-                        setShowDropdown(
-                            true
-                        );
-                    }}
+                {/* 아파트 검색 */}
+                <div
+                    ref={dropdownRef}
 
-                    onFocus={() =>
-                        setShowDropdown(true)
-                    }
-
-                    placeholder="아파트명을 검색해주세요."
                     style={{
-                        width: '100%',
-                        height: '48px',
-                        border: '1px solid #d1d5db',
-                        borderRadius:
-                            '12px',
-
-                        padding:
-                            '0 16px',
-
-                        fontSize: '14px',
-
-                        outline: 'none'
+                        position: 'relative'
                     }}
-                />
+                >
 
-                {/* 드롭다운 */}
-                {showDropdown && (
+                    <input
+                        type="text"
 
-                    <div
-                        onScroll={
-                            handleScroll
+                        value={keyword}
+
+                        onChange={(e) => {
+
+                            setKeyword(
+                                e.target.value
+                            );
+
+                            setShowDropdown(true);
+                        }}
+
+                        onFocus={() =>
+                            setShowDropdown(true)
                         }
 
+                        placeholder="아파트명 검색"
+
                         style={{
-                            position:
-                                'absolute',
-                            top: '56px',
-                            left: 0,
-                            right: 0,
-                            background:
-                                '#fff',
+                            width: '100%',
+
+                            height: '42px',
+
                             border:
-                                '1px solid #e2e8f0',
+                                '1px solid #d1d5db',
+
                             borderRadius:
-                                '12px',
-                            overflowY:
-                                'auto',
-                            maxHeight:
-                                '320px',
-                            boxShadow:
-                                '0 10px 25px rgba(0,0,0,0.08)',
-                            zIndex: 100
+                                '10px',
+
+                            padding:
+                                '0 14px',
+
+                            fontSize:
+                                '14px',
+
+                            outline: 'none'
                         }}
-                    >
+                    />
 
-                        {keyword.length < 2 ? (
+                    {/* 드롭다운 */}
+                    {showDropdown && (
 
-                            <div
-                                style={{
-                                    padding:
-                                        '14px 16px',
+                        <div
+                            onScroll={handleScroll}
 
-                                    color:
-                                        '#94a3b8',
+                            style={{
+                                position:
+                                    'absolute',
 
-                                    fontSize:
-                                        '14px'
-                                }}
-                            >
-                                2글자 이상 입력해주세요.
-                            </div>
+                                top: '48px',
 
-                        ) : loading && aptList.length === 0 ? (
+                                left: 0,
 
-                            <div
-                                style={{
-                                    padding:
-                                        '14px 16px',
+                                right: 0,
 
-                                    color:
-                                        '#64748b',
+                                background:
+                                    '#fff',
 
-                                    fontSize:
-                                        '14px'
-                                }}
-                            >
-                                검색중...
-                            </div>
+                                border:
+                                    '1px solid #e2e8f0',
 
-                        ) : aptList.length === 0 ? (
+                                borderRadius:
+                                    '12px',
 
-                            <div
-                                style={{
-                                    padding: '14px 16px',
-                                    color: '#94a3b8',
-                                    fontSize: '14px'
-                                }}
-                            >
-                                검색 결과가 없습니다.
-                            </div>
+                                overflowY:
+                                    'auto',
 
-                        ) : (
+                                maxHeight:
+                                    '320px',
 
-                            aptList.map(
-                                (apt) => (
+                                boxShadow:
+                                    '0 10px 25px rgba(0,0,0,0.08)',
+
+                                zIndex: 100
+                            }}
+                        >
+
+                            {keyword.length < 2 ? (
+
+                                <div
+                                    style={{
+                                        padding: '14px 16px',
+                                        color: '#94a3b8',
+                                        fontSize: '14px'
+                                    }}
+                                >
+                                    2글자 이상 입력해주세요.
+                                </div>
+
+                            ) : loading && aptList.length === 0 ? (
+
+                                <div
+                                    style={{
+                                        padding: '14px 16px',
+                                        color: '#64748b',
+                                        fontSize: '14px'
+                                    }}
+                                >
+                                    검색중...
+                                </div>
+
+                            ) : aptList.length === 0 ? (
+
+                                <div
+                                    style={{
+                                        padding: '14px 16px',
+                                        color: '#94a3b8',
+                                        fontSize: '14px'
+                                    }}
+                                >
+                                    검색 결과가 없습니다.
+                                </div>
+
+                            ) : (
+
+                                aptList.map((apt) => (
+
                                     <div
-                                        key={
-                                            apt.aptCmplexNo
-                                        }
+                                        key={apt.aptCmplexNo}
+
                                         onClick={() =>
-                                            handleSelect(
-                                                apt
-                                            )
+                                            handleSelect(apt)
                                         }
+
                                         style={{
                                             padding: '14px 16px',
                                             cursor: 'pointer',
-                                            borderBottom: '1px solid #f1f5f9',
-                                            transition: 'background 0.15s ease'
+                                            borderBottom:
+                                                '1px solid #f1f5f9',
+                                            transition:
+                                                'background 0.15s ease'
                                         }}
+
                                         onMouseEnter={(e) => {
                                             e.currentTarget.style.background =
                                                 '#f8fafc';
                                         }}
+
                                         onMouseLeave={(e) => {
                                             e.currentTarget.style.background =
                                                 '#fff';
                                         }}
                                     >
+
                                         <div
                                             style={{
-                                                fontSize:
-                                                    '14px',
-                                                fontWeight:
-                                                    '600',
-                                                color:
-                                                    '#111827'
+                                                fontSize: '14px',
+                                                fontWeight: '600',
+                                                color: '#111827'
                                             }}
                                         >
                                             {apt.aptCmplexNm}
                                         </div>
+
                                         <div
                                             style={{
-                                                marginTop:
-                                                    '2px',
-
-                                                fontSize:
-                                                    '12px',
-
-                                                color:
-                                                    '#64748b'
+                                                marginTop: '2px',
+                                                fontSize: '12px',
+                                                color: '#64748b'
                                             }}
                                         >
                                             {apt.dorojuso}
@@ -363,121 +375,158 @@ function AptSearchSelect({
 
                                     </div>
 
-                                )
-                            )
-
-                        )}
-
-                        {/* 추가 로딩 */}
-                        {loading &&
-                            aptList.length > 0 && (
-
-                                <div
-                                    style={{
-                                        padding:
-                                            '12px',
-
-                                        textAlign:
-                                            'center',
-
-                                        fontSize:
-                                            '13px',
-
-                                        color:
-                                            '#64748b'
-                                    }}
-                                >
-                                    불러오는 중...
-                                </div>
+                                ))
 
                             )}
 
-                    </div>
+                            {/* 추가 로딩 */}
+                            {loading &&
+                                aptList.length > 0 && (
 
-                )}
-                <div
-                    style={{
-                        display: 'flex',
+                                    <div
+                                        style={{
+                                            padding: '12px',
+                                            textAlign: 'center',
+                                            fontSize: '13px',
+                                            color: '#64748b'
+                                        }}
+                                    >
+                                        불러오는 중...
+                                    </div>
 
-                        gap: '12px',
+                                )}
 
-                        marginTop: '12px'
-                    }}
-                >
+                        </div>
 
-                    {/* 동 선택 */}
-                    <select
-                        value={selectedDong}
-
-                        onChange={handleDongChange}
-
-                        disabled={!selectedApt}
-
-                        style={{
-                            flex: 1,
-
-                            height: '40px'
-                        }}
-                    >
-
-                        <option value="">
-                            동 선택
-                        </option>
-
-                        {dongList.map((dong) => (
-
-                            <option
-                                key={dong}
-                                value={dong}
-                            >
-                                {dong}
-                            </option>
-
-                        ))}
-
-                    </select>
-
-                    {/* 호 선택 */}
-                    <select
-                        value={selectedHo}
-
-                        onChange={(e) =>
-                            setSelectedHo(
-                                e.target.value
-                            )
-                        }
-
-                        disabled={!selectedDong}
-
-                        style={{
-                            flex: 1,
-
-                            height: '40px'
-                        }}
-                    >
-
-                        <option value="">
-                            호 선택
-                        </option>
-
-                        {hoList.map((ho) => (
-
-                            <option
-                                key={ho.HO_NO}
-                                value={ho.HO}
-                            >
-                                {ho.HO}
-                            </option>
-
-                        ))}
-
-                    </select>
+                    )}
 
                 </div>
 
-            </div>
+                {/* 동 선택 */}
+                <select
+                    value={selectedDong}
 
-        </div>
+                    onChange={handleDongChange}
+
+                    disabled={!selectedApt}
+
+                    style={{
+                        width: '100%',
+                        height: '42px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '10px',
+                        padding: '0 12px',
+                        fontSize: '14px',
+                        background: '#fff',
+                        outline: 'none',
+                        cursor: 'pointer'
+                    }}
+                >
+
+                    <option value="">
+                        동 선택
+                    </option>
+
+                    {dongList.map((dong) => (
+
+                        <option
+                            key={dong.DONG_NO}
+                            value={dong.DONG_NO}
+                        >
+                            {dong.DONG_NM}동
+                        </option>
+
+                    ))}
+
+                </select>
+
+                {/* 호 선택 */}
+                <select
+                    value={selectedHo}
+
+                    onChange={async (e) => {
+
+                        const hoNo =
+                            e.target.value;
+
+                        setSelectedHo(hoNo);
+
+                        const selectedHoInfo =
+                            hoList.find(
+                                item =>
+                                    item.HO_NO === hoNo
+                            );
+
+                        try {
+
+                            const rentInfo =
+                                await getRentListingDetail(
+                                    hoNo
+                                );
+
+                            const requiredDocs =
+                                await getRequiredDocs(
+                                    rentInfo.RENT_LSTG_NO
+                                );
+
+                            onChange?.({
+
+                                apt: selectedApt,
+
+                                dongNo:
+                                    selectedDong,
+
+                                hoNo:
+                                    selectedHoInfo?.HO_NO,
+
+                                ho:
+                                    selectedHoInfo?.HO,
+
+                                rentInfo,
+
+                                requiredDocs
+                            });
+
+                        } catch (e) {
+
+                            console.error(e);
+                        }
+                    }}
+
+                    disabled={!selectedDong}
+
+                    style={{
+                        width: '100%',
+                        height: '42px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '10px',
+                        padding: '0 12px',
+                        fontSize: '14px',
+                        background: '#fff',
+                        outline: 'none',
+                        cursor: 'pointer'
+                    }}
+                >
+
+                    <option value="">
+                        호 선택
+                    </option>
+
+                    {hoList.map((ho) => (
+
+                        <option
+                            key={ho.HO_NO}
+                            value={ho.HO_NO}
+                        >
+                            {ho.HO}호
+                        </option>
+
+                    ))}
+
+                </select>
+
+            </div>
+        </div >
 
     );
 }
