@@ -375,8 +375,8 @@
                                             <div class="form-field">
                                                 <label class="field-label">예약 가능 여부</label>
                                                 <select class="form-select" id="regRsvYn" name="cmnFacilityRsvYn">
-                                                    <option value="Y">예약 가능</option>
-                                                    <option value="N">예약 불가</option>
+                                                    <option value="Y">예약제</option>
+                                                    <option value="N">자유이용</option>
                                                 </select>
                                             </div>
                                         </div>

@@ -247,8 +247,8 @@
                                             <div class="form-field">
                                                 <label class="field-label">예약 가능 여부</label>
                                                 <select class="form-select" id="regRsvYn" name="cmnFacilityRsvYn">
-                                                    <option value="Y" ${detail.cmnFacilityRsvYn eq 'Y' ? 'selected' : ''}>예약 가능</option>
-                                                    <option value="N" ${detail.cmnFacilityRsvYn eq 'N' ? 'selected' : ''}>예약 불가</option>
+                                                    <option value="Y" ${detail.cmnFacilityRsvYn eq 'Y' ? 'selected' : ''}>예약제</option>
+                                                    <option value="N" ${detail.cmnFacilityRsvYn eq 'N' ? 'selected' : ''}>자유이용</option>
                                                 </select>
                                             </div>
                                         </div>
