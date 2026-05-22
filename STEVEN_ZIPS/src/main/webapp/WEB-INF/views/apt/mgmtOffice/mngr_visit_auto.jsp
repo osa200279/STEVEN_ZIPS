@@ -33,14 +33,27 @@
     #residentCarTable .td-car-name { text-align: center; }
     #residentCarTable .td-car-no { font-family: monospace; letter-spacing: -0.02em; }
     #residentCarTable .td-empty { padding: 34px 12px; color: var(--text-tertiary); text-align: center; }
-    #residentCarTable .col-dong { width: 9%; }
+    #residentCarTable .col-dong { width: 6%; }
     #residentCarTable .col-ho { width: 9%; }
-    #residentCarTable .col-name { width: 15%; }
-    #residentCarTable .col-type { width: 14%; }
-    #residentCarTable .col-car-name { width: 18%; }
-    #residentCarTable .col-car-no { width: 17%; }
-    #residentCarTable .col-action { width: 150px; }
-    #residentCarTable .grid-actions { display: flex; justify-content: center; align-items: center; gap: 6px; }
+    #residentCarTable .col-name { width: 11%; }
+    #residentCarTable .col-type { width: 10%; }
+    #residentCarTable .col-car-name { width: 14%; }
+    #residentCarTable .col-car-no { width: 10%; }
+    #residentCarTable .col-visit-date { width: 20%; }
+    #residentCarTable .col-stay { width: 7%; }
+    #residentCarTable .col-action { width: 16%; }
+    #residentCarTable .grid-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: nowrap;
+    }
+
+    .td-date {
+      white-space: nowrap;
+      font-size: 13px;
+    }
 
     .delete-alert-box { display: flex; gap: 10px; padding: 14px 16px; background: #fff0f0; border: 1px solid #e0a8a8; border-radius: 8px; margin-bottom: 16px; }
     .delete-alert-box .material-symbols-rounded { color: #991b1b; font-size: 20px; flex-shrink: 0; margin-top: 1px; }
@@ -133,6 +146,8 @@
                 <col class="col-type">
                 <col class="col-car-name">
                 <col class="col-car-no">
+                <col class="col-visit-date">
+                <col class="col-stay">
                 <col class="col-action">
               </colgroup>
 
@@ -144,6 +159,8 @@
                 <th>차량유형</th>
                 <th>차량명</th>
                 <th>차량번호</th>
+                <th>방문일시</th>
+                <th>체류시간</th>
                 <th>관리</th>
               </tr>
               </thead>
@@ -294,7 +311,9 @@
               userNm        : "${vehicle.userNm}",
               vstVhclTyCd   : "${vehicle.vstVhclTyCd}",
               vstVhclNo     : "${vehicle.vstVhclNo}",
-              vstrNm        : "${vehicle.vstrNm}"
+              vstrNm        : "${vehicle.vstrNm}",
+              vstYmd        : "${vehicle.vstYmd}",
+              stayHr        : "${vehicle.stayHr}"
             }<c:if test="${!st.last}">,</c:if>
             </c:forEach>
           ];
@@ -349,7 +368,7 @@
             if (data.length === 0) {
               tbody.innerHTML =
                       '<tr>' +
-                      '<td colspan="7" class="td-empty">등록된 차량이 없습니다.</td>' +
+                      '<td colspan="9" class="td-empty">등록된 차량이 없습니다.</td>' +
                       '</tr>';
               return;
             }
@@ -362,10 +381,17 @@
                       + '<td>' + vhclBadge(row.vstVhclTyCd) + '</td>'
                       + '<td class="td-car-name">' + (row.vstrNm || "-") + '</td>'
                       + '<td class="td-car-no">' + row.vstVhclNo + '</td>'
+                      + '<td class="td-date">'
+                      + (
+                              row.vstYmd
+                                      ? row.vstYmd.substring(0, 10)
+                                      : '-'
+                      )
+                      + '</td>'
+                      + '<td>' + (row.stayHr || "-") + '시간</td>'
 
                       + '<td>'
                       + '<div class="grid-actions">'
-                      + '<button type="button" class="btn btn-xs btn-detail" data-action="detail" data-idx="' + idx + '">상세</button>'
                       + '<button type="button" class="btn btn-xs btn-edit" data-action="edit" data-idx="' + idx + '">수정</button>'
                       + '<button type="button" class="btn btn-xs btn-delete" data-action="delete" data-idx="' + idx + '">삭제</button>'
                       + '</div>'
@@ -436,15 +462,7 @@
               modalTitle.textContent = "차량 등록";
             }
 
-            if (mode === "detail" && idx !== undefined) {
-              modalTitle.textContent = "차량 상세";
-              fillForm(rowData[idx]);
-              setFormDisabled(true);
 
-              saveBtn.style.display = "none";
-              editBtn.style.display = "inline-flex";
-              editBtn.dataset.idx = idx;
-            }
 
             if (mode === "edit" && idx !== undefined) {
               modalTitle.textContent = "차량 수정";
@@ -523,7 +541,6 @@
             var idx = btn.dataset.idx !== undefined ? Number(btn.dataset.idx) : undefined;
 
             if (action === "openRegister") openModal("register");
-            if (action === "detail") openModal("detail", idx);
             if (action === "edit") openModal("edit", idx);
             if (action === "changeToEdit") openModal("edit", Number(editBtn.dataset.idx));
             if (action === "closeModal") closeModal();
@@ -594,6 +611,8 @@
            */
           renderTable(rowData);
         })();
+
+
       </script>
     </main>
   </div>
