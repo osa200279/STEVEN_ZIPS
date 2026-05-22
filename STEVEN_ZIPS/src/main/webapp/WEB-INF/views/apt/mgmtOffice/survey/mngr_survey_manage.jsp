@@ -579,6 +579,25 @@
 
                                                 </button>
 
+
+
+                                                <div class="short-answer-box"
+                                                     style="display:none; margin-top:12px;">
+
+                                                    <label class="field-label">
+                                                        답변 입력칸
+                                                    </label>
+
+                                                    <textarea
+                                                            class="form-textarea"
+                                                            rows="3"
+                                                            placeholder="입주민이 여기에 답변 작성"
+                                                            disabled
+                                                    ></textarea>
+
+                                                </div>
+
+
                                             </div>
 
                                         </div>
@@ -1015,6 +1034,43 @@
             if (e.key === "Escape") closeModal();
         });
 
+        /* 응답 방식 변경 */
+        document.addEventListener("change", function (e) {
+
+            if (
+                e.target.classList.contains("question-type-select")
+            ) {
+
+                const questionBox =
+                    e.target.closest(".question-box");
+
+                const optionWrapper =
+                    questionBox.querySelector(".option-wrapper");
+
+                const shortAnswerBox =
+                    questionBox.querySelector(".short-answer-box");
+
+                const type = e.target.value;
+
+                /* 객관식 */
+                if (type === "MULTI") {
+
+                    optionWrapper.style.display = "block";
+
+                    shortAnswerBox.style.display = "none";
+                }
+
+                /* 주관식 */
+                else if (type === "SHORT") {
+
+                    optionWrapper.style.display = "none";
+
+                    shortAnswerBox.style.display = "block";
+                }
+            }
+        });
+
+
 
         /* 보기 추가/삭제 */
         document.addEventListener("click", function (e) {
@@ -1056,6 +1112,13 @@
 
                 e.target.closest(".option-row").remove();
             }
+            /* 질문 삭제 */
+            if (e.target.classList.contains("remove-question-btn")) {
+
+                e.target.closest(".question-box").remove();
+            }
+
+
         });
 
         /* 질문 추가 */
