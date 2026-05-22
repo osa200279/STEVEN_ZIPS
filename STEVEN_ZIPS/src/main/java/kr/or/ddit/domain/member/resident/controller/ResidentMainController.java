@@ -927,14 +927,24 @@ public class ResidentMainController {
     @GetMapping("/survey/list")
     public String surveyList(
 
-            @RequestParam(
-                    defaultValue = "ALL"
-            )
+            @RequestParam(defaultValue = "ALL")
             String type,
+
+            @AuthenticationPrincipal CustomUser customUser,
 
             Model model
 
     ) {
+
+        ResidentVO resident =
+                (ResidentVO) customUser.getMember();
+
+        String aptCd =
+                resident.getMyAptList()
+                        .get(0)
+                        .getAptCmplexNo();
+
+        System.out.println("resident aptCd = " + aptCd);
 
         List<MngSurveyDTO> surveyList;
 
@@ -958,8 +968,15 @@ public class ResidentMainController {
 
             surveyList =
                     surveyService
-                            .selectSurveyList(null);
+                            .selectSurveyList(aptCd);
         }
+
+        surveyList =
+                surveyList.stream()
+                        .filter(s ->
+                                aptCd.equals(s.getAptCd())
+                        )
+                        .toList();
 
         model.addAttribute(
                 "surveyList",
@@ -973,8 +990,6 @@ public class ResidentMainController {
 
         return "member/resident/survey/survey_list";
     }
-
-
 
 
     @PostMapping("/survey/submit/{surveyNo}")

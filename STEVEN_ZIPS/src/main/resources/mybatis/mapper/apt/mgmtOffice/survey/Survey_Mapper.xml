@@ -156,7 +156,7 @@
             S.SURVEY_STTS_CD AS "surveySttsCd",
 
             DBMS_LOB.SUBSTR(S.SURVEY_QITEM_CN, 4000, 1)
-                AS "surveyQitemCn",
+                             AS "surveyQitemCn",
 
             TO_CHAR(S.SURVEY_BGNG_DT, 'YYYY-MM-DD')
                              AS "surveyBgngDt",
@@ -187,7 +187,7 @@
                                                  INNER JOIN MGMT_OFFICE MO
                                                             ON AU.APT_CMPLEX_NO = MO.APT_CMPLEX_NO
 
-                                        WHERE MO.MGMT_OFC_NO = S.APT_CD
+                                        WHERE MO.APT_CMPLEX_NO = S.APT_CD
                                     ),
                                     0
                             ),
@@ -209,7 +209,7 @@
                          INNER JOIN MGMT_OFFICE MO
                                     ON AU.APT_CMPLEX_NO = MO.APT_CMPLEX_NO
 
-                WHERE MO.MGMT_OFC_NO = S.APT_CD
+                WHERE MO.APT_CMPLEX_NO = S.APT_CD
 
             ) AS "totalResident"
 
@@ -218,7 +218,7 @@
             SELECT
                 SURVEY_NO,
                 COUNT(DISTINCT USER_NO)
-                         AS PARTICIPANT_COUNT
+                    AS PARTICIPANT_COUNT
             FROM SURVEY_RSPNS
             GROUP BY SURVEY_NO
         ) R
@@ -227,6 +227,8 @@
         WHERE S.SURVEY_NO = #{surveyNo}
 
     </select>
+
+
 
     <select id="selectMySurveyResponse"
             resultType="string">
