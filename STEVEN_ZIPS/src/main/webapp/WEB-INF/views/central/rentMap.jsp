@@ -49,42 +49,34 @@
   <!-- 지도 + 단지 매물목록 + 상세정보 영역 -->
   <div class="rent-map-page panels-collapsed">
 
-    <!-- 좌측: 선택한 단지의 매물 목록 -->
-    <aside class="rent-complex-list-panel" id="rentComplexListPanel">
-
+    <!-- 좌측: 선택 단지 매물 목록 -->
+    <section class="rent-complex-list-panel">
       <div class="rent-complex-list-header">
         <div>
           <p class="rent-complex-list-label">선택 단지 매물</p>
-          <h2 id="selectedComplexName">단지를 선택해 주세요</h2>
-        </div>
-
-        <button type="button"
-                class="rent-panel-close-btn"
-                onclick="closeRentPanels()">
-          ×
-        </button>
-      </div>
-
-      <div id="complexRentList" class="complex-rent-list">
-        <div class="rent-empty-message">
-          지도 마커를 클릭하면 해당 단지의 매물 목록이 표시됩니다.
+          <h2 id="selectedComplexName"></h2>
         </div>
       </div>
-    </aside>
 
-    <!-- 가운데: 선택한 매물 상세정보 -->
-    <section class="rent-detail-panel" id="rentDetailPanel">
+      <div id="complexRentList" class="complex-rent-list"></div>
+    </section>
 
+    <!-- 가운데: 선택 매물 상세 -->
+    <section class="rent-detail-panel">
       <div id="rentDetailHero" class="rent-detail-hero-area"></div>
 
       <div class="rent-detail-scroll">
-        <div id="rentDetail" class="rent-detail-empty">
-          <h3>매물을 선택해 주세요</h3>
-          <p>왼쪽 매물 목록에서 항목을 클릭하면 상세정보가 표시됩니다.</p>
-        </div>
+        <div id="rentDetail"></div>
       </div>
-
     </section>
+
+    <!-- 패널 닫기 버튼: 스크롤 영역 바깥에 배치 -->
+    <button type="button"
+            class="rent-panel-close-btn"
+            onclick="closeRentPanels()"
+            aria-label="매물 패널 닫기">
+      <span class="material-symbols-outlined">close</span>
+    </button>
 
     <!-- 우측: 지도 -->
     <section class="rent-map-panel">

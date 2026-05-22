@@ -2,7 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.or.ddit.domain.central.mapper.IRentMapper">
-    <resultMap id="rentListingMapResultMap" type="kr.or.ddit.domain.central.dto.RentListingMapDTO">
+
+    <resultMap id="rentListingMapResultMap"
+               type="kr.or.ddit.domain.central.dto.RentListingMapDTO">
 
         <!-- RENT_LISTING -->
         <id property="rentLstgNo" column="RENT_LSTG_NO"/>
@@ -13,6 +15,8 @@
         <result property="rentLstgCn" column="RENT_LSTG_CN"/>
         <result property="hoNo" column="HO_NO"/>
         <result property="rentTtl" column="RENT_TTL"/>
+        <result property="rcrtBgngDt" column="RCRT_BGNG_DT"/>
+        <result property="rcrtEndDt" column="RCRT_END_DT"/>
 
         <!-- APT_DETAIL -->
         <result property="dongNo" column="DONG_NO"/>
@@ -27,6 +31,9 @@
         <result property="dongMaxFloor" column="DONG_MAX_FLOOR"/>
         <result property="dongUnitCnt" column="DONG_UNIT_CNT"/>
 
+        <!-- APT_HO_TY -->
+        <result property="exclusiveSize" column="EXCLUSIVE_SIZE"/>
+
         <!-- APT_COMPLEX -->
         <result property="aptCmplexNo" column="APT_CMPLEX_NO"/>
         <result property="aptCmplexNm" column="APT_CMPLEX_NM"/>
@@ -37,10 +44,11 @@
         <result property="unitCnt" column="UNIT_CNT"/>
         <result property="dongCnt" column="DONG_CNT"/>
         <result property="bldYr" column="BLD_YR"/>
+        <result property="rprsntImgFileNo" column="RPRSNT_IMG_FILE_NO"/>
+        <result property="rprsntImgGoogleIds" column="RPRSNT_IMG_GOOGLE_IDS"/>
 
     </resultMap>
 
-    <!-- 검색 조건 공통 WHERE -->
     <sql id="rentSearchWhere">
         <where>
 
@@ -88,8 +96,8 @@
 
             <!--
                 상태 검색
-                현재 RENT_LISTING에 모집마감일/상태 컬럼이 없으므로
-                CLOSE 선택 시 0건 처리
+                기존 처리 유지:
+                CLOSE 선택 시 조회 결과 없음 처리
             -->
             <if test="searchVO != null
                   and searchVO.searchStatus != null
@@ -119,38 +127,49 @@
             resultMap="rentListingMapResultMap">
 
         SELECT
-        R.RENT_LSTG_NO,
-        R.RENT_TYPE_CD,
-        NVL(RC.CODE_NAME, R.RENT_TYPE_CD) AS RENT_TYPE_NM,
-        R.DPST_AMT,
-        R.MTHLY_RENT_AMT,
-        R.RENT_LSTG_CN,
-        R.HO_NO,
-        R.RENT_TTL,
+        R.RENT_LSTG_NO
+        , R.RENT_TYPE_CD
+        , NVL(RC.CODE_NAME, R.RENT_TYPE_CD) AS RENT_TYPE_NM
+        , R.DPST_AMT
+        , R.MTHLY_RENT_AMT
+        , R.RENT_LSTG_CN
+        , R.HO_NO
+        , R.RENT_TTL
 
-        D.DONG_NO,
-        D.FLOOR,
-        D.HO,
-        D.HO_STTS_CD,
-        NVL(HC.CODE_NAME, D.HO_STTS_CD) AS HO_STTS_NM,
-        D.IMAGE_NO,
-        D.PANO_IMAGE_NO,
+        <!--모집기간: DATE 타입의 UTC 변환으로 하루 빠지는 문제 방지-->
+        , TO_CHAR(P.RCRT_BGNG_DT, 'YYYY-MM-DD') AS RCRT_BGNG_DT
+        , TO_CHAR(P.RCRT_END_DT, 'YYYY-MM-DD') AS RCRT_END_DT
 
-        U.DONG_NM,
-        U.FLOOR AS DONG_MAX_FLOOR,
-        U.UNIT_CNT AS DONG_UNIT_CNT,
+        , D.DONG_NO
+        , D.FLOOR
+        , D.HO
+        , D.HO_STTS_CD
+        , NVL(HC.CODE_NAME, D.HO_STTS_CD) AS HO_STTS_NM
+        , D.IMAGE_NO
+        , D.PANO_IMAGE_NO
 
-        A.APT_CMPLEX_NO,
-        A.APT_CMPLEX_NM,
-        A.SIDO_NM,
-        A.SIGUNGU_NM,
-        A.EMD_NM,
-        A.DOROJUSO,
-        A.UNIT_CNT,
-        A.DONG_CNT,
-        A.BLD_YR
+        , U.DONG_NM
+        , U.FLOOR AS DONG_MAX_FLOOR
+        , U.UNIT_CNT AS DONG_UNIT_CNT
+
+        , T.EXCLUSIVE_SIZE
+
+        , A.APT_CMPLEX_NO
+        , A.APT_CMPLEX_NM
+        , A.SIDO_NM
+        , A.SIGUNGU_NM
+        , A.EMD_NM
+        , A.DOROJUSO
+        , A.UNIT_CNT
+        , A.DONG_CNT
+        , A.BLD_YR
+        , A.RPRSNT_IMG_FILE_NO
+        , IMG.GOOGLE_IDS AS RPRSNT_IMG_GOOGLE_IDS
 
         FROM RENT_LISTING R
+
+        LEFT JOIN CENTER_ANN_BOARD_POST P
+        ON P.ANN_NO = R.ANN_NO
 
         INNER JOIN APT_DETAIL D
         ON R.HO_NO = D.HO_NO
@@ -158,8 +177,27 @@
         INNER JOIN APT_UNIT U
         ON D.DONG_NO = U.DONG_NO
 
+        LEFT JOIN APT_HO_TY T
+        ON D.HO_TY_NO = T.HO_TY_NO
+        AND U.APT_CMPLEX_NO = T.APT_CMPLEX_NO
+
         INNER JOIN APT_COMPLEX A
         ON U.APT_CMPLEX_NO = A.APT_CMPLEX_NO
+
+        LEFT JOIN (
+        SELECT
+        AF.FILE_GROUP_NO
+        , LISTAGG(AF.GOOGLE_ID, ',')
+        WITHIN GROUP (
+        ORDER BY NVL(AF.FILE_SORT_ORDER, 999999)
+        , AF.REG_DT
+        , AF.FILE_SAVE_UUID
+        ) AS GOOGLE_IDS
+        FROM ATTACH_FILE AF
+        WHERE AF.GOOGLE_ID IS NOT NULL
+        GROUP BY AF.FILE_GROUP_NO
+        ) IMG
+        ON IMG.FILE_GROUP_NO = A.RPRSNT_IMG_FILE_NO
 
         LEFT JOIN COMMON_CODE RC
         ON RC.GROUP_CODE_NO = 'RENT_TY'
@@ -171,12 +209,10 @@
         AND HC.CODE_NO_CD = D.HO_STTS_CD
         AND HC.USE_YN = 'Y'
 
-        ORDER BY
-        R.RENT_LSTG_NO DESC
+        ORDER BY R.RENT_LSTG_NO DESC
 
     </select>
 
-    <!-- 페이징 목록 총 개수 조회 -->
     <select id="selectRentListingCount"
             resultType="int">
 
@@ -212,38 +248,49 @@
             resultMap="rentListingMapResultMap">
 
         SELECT
-        R.RENT_LSTG_NO,
-        R.RENT_TYPE_CD,
-        NVL(RC.CODE_NAME, R.RENT_TYPE_CD) AS RENT_TYPE_NM,
-        R.DPST_AMT,
-        R.MTHLY_RENT_AMT,
-        R.RENT_LSTG_CN,
-        R.HO_NO,
-        R.RENT_TTL,
+        R.RENT_LSTG_NO
+        , R.RENT_TYPE_CD
+        , NVL(RC.CODE_NAME, R.RENT_TYPE_CD) AS RENT_TYPE_NM
+        , R.DPST_AMT
+        , R.MTHLY_RENT_AMT
+        , R.RENT_LSTG_CN
+        , R.HO_NO
+        , R.RENT_TTL
 
-        D.DONG_NO,
-        D.FLOOR,
-        D.HO,
-        D.HO_STTS_CD,
-        NVL(HC.CODE_NAME, D.HO_STTS_CD) AS HO_STTS_NM,
-        D.IMAGE_NO,
-        D.PANO_IMAGE_NO,
+        , TO_CHAR(P.RCRT_BGNG_DT, 'YYYY-MM-DD') AS RCRT_BGNG_DT
+        , TO_CHAR(P.RCRT_END_DT, 'YYYY-MM-DD') AS RCRT_END_DT
 
-        U.DONG_NM,
-        U.FLOOR AS DONG_MAX_FLOOR,
-        U.UNIT_CNT AS DONG_UNIT_CNT,
+        , D.DONG_NO
+        , D.FLOOR
+        , D.HO
+        , D.HO_STTS_CD
+        , NVL(HC.CODE_NAME, D.HO_STTS_CD) AS HO_STTS_NM
+        , D.IMAGE_NO
+        , D.PANO_IMAGE_NO
 
-        A.APT_CMPLEX_NO,
-        A.APT_CMPLEX_NM,
-        A.SIDO_NM,
-        A.SIGUNGU_NM,
-        A.EMD_NM,
-        A.DOROJUSO,
-        A.UNIT_CNT,
-        A.DONG_CNT,
-        A.BLD_YR
+        , U.DONG_NM
+        , U.FLOOR AS DONG_MAX_FLOOR
+        , U.UNIT_CNT AS DONG_UNIT_CNT
+
+        , T.EXCLUSIVE_SIZE
+
+        , A.APT_CMPLEX_NO
+        , A.APT_CMPLEX_NM
+        , A.SIDO_NM
+        , A.SIGUNGU_NM
+        , A.EMD_NM
+        , A.DOROJUSO
+        , A.UNIT_CNT
+        , A.DONG_CNT
+        , A.BLD_YR
+        , A.RPRSNT_IMG_FILE_NO
+
+        , IMG.GOOGLE_IDS AS RPRSNT_IMG_GOOGLE_IDS
 
         FROM RENT_LISTING R
+
+        LEFT JOIN CENTER_ANN_BOARD_POST P
+        ON P.ANN_NO = R.ANN_NO
 
         INNER JOIN APT_DETAIL D
         ON R.HO_NO = D.HO_NO
@@ -251,8 +298,27 @@
         INNER JOIN APT_UNIT U
         ON D.DONG_NO = U.DONG_NO
 
+        LEFT JOIN APT_HO_TY T
+        ON D.HO_TY_NO = T.HO_TY_NO
+        AND U.APT_CMPLEX_NO = T.APT_CMPLEX_NO
+
         INNER JOIN APT_COMPLEX A
         ON U.APT_CMPLEX_NO = A.APT_CMPLEX_NO
+
+        LEFT JOIN (
+        SELECT
+        AF.FILE_GROUP_NO
+        , LISTAGG(AF.GOOGLE_ID, ',')
+        WITHIN GROUP (
+        ORDER BY NVL(AF.FILE_SORT_ORDER, 999999)
+        , AF.REG_DT
+        , AF.FILE_SAVE_UUID
+        ) AS GOOGLE_IDS
+        FROM ATTACH_FILE AF
+        WHERE AF.GOOGLE_ID IS NOT NULL
+        GROUP BY AF.FILE_GROUP_NO
+        ) IMG
+        ON IMG.FILE_GROUP_NO = A.RPRSNT_IMG_FILE_NO
 
         LEFT JOIN COMMON_CODE RC
         ON RC.GROUP_CODE_NO = 'RENT_TY'
@@ -268,47 +334,57 @@
 
     </select>
 
-    <!-- 페이징 목록 조회 -->
     <select id="selectRentListingPagingList"
             resultMap="rentListingMapResultMap">
 
         SELECT *
         FROM (
         SELECT
-        ROW_NUMBER() OVER (ORDER BY R.RENT_LSTG_NO DESC) AS RN,
+        ROW_NUMBER() OVER (ORDER BY R.RENT_LSTG_NO DESC) AS RN
 
-        R.RENT_LSTG_NO,
-        R.RENT_TYPE_CD,
-        NVL(RC.CODE_NAME, R.RENT_TYPE_CD) AS RENT_TYPE_NM,
-        R.DPST_AMT,
-        R.MTHLY_RENT_AMT,
-        R.RENT_LSTG_CN,
-        R.HO_NO,
-        R.RENT_TTL,
+        , R.RENT_LSTG_NO
+        , R.RENT_TYPE_CD
+        , NVL(RC.CODE_NAME, R.RENT_TYPE_CD) AS RENT_TYPE_NM
+        , R.DPST_AMT
+        , R.MTHLY_RENT_AMT
+        , R.RENT_LSTG_CN
+        , R.HO_NO
+        , R.RENT_TTL
 
-        D.DONG_NO,
-        D.FLOOR,
-        D.HO,
-        D.HO_STTS_CD,
-        NVL(HC.CODE_NAME, D.HO_STTS_CD) AS HO_STTS_NM,
-        D.IMAGE_NO,
-        D.PANO_IMAGE_NO,
+        , TO_CHAR(P.RCRT_BGNG_DT, 'YYYY-MM-DD') AS RCRT_BGNG_DT
+        , TO_CHAR(P.RCRT_END_DT, 'YYYY-MM-DD') AS RCRT_END_DT
 
-        U.DONG_NM,
-        U.FLOOR AS DONG_MAX_FLOOR,
-        U.UNIT_CNT AS DONG_UNIT_CNT,
+        , D.DONG_NO
+        , D.FLOOR
+        , D.HO
+        , D.HO_STTS_CD
+        , NVL(HC.CODE_NAME, D.HO_STTS_CD) AS HO_STTS_NM
+        , D.IMAGE_NO
+        , D.PANO_IMAGE_NO
 
-        A.APT_CMPLEX_NO,
-        A.APT_CMPLEX_NM,
-        A.SIDO_NM,
-        A.SIGUNGU_NM,
-        A.EMD_NM,
-        A.DOROJUSO,
-        A.UNIT_CNT,
-        A.DONG_CNT,
-        A.BLD_YR
+        , U.DONG_NM
+        , U.FLOOR AS DONG_MAX_FLOOR
+        , U.UNIT_CNT AS DONG_UNIT_CNT
+
+        , T.EXCLUSIVE_SIZE
+
+        , A.APT_CMPLEX_NO
+        , A.APT_CMPLEX_NM
+        , A.SIDO_NM
+        , A.SIGUNGU_NM
+        , A.EMD_NM
+        , A.DOROJUSO
+        , A.UNIT_CNT
+        , A.DONG_CNT
+        , A.BLD_YR
+        , A.RPRSNT_IMG_FILE_NO
+
+        , IMG.GOOGLE_IDS AS RPRSNT_IMG_GOOGLE_IDS
 
         FROM RENT_LISTING R
+
+        LEFT JOIN CENTER_ANN_BOARD_POST P
+        ON P.ANN_NO = R.ANN_NO
 
         INNER JOIN APT_DETAIL D
         ON R.HO_NO = D.HO_NO
@@ -316,8 +392,27 @@
         INNER JOIN APT_UNIT U
         ON D.DONG_NO = U.DONG_NO
 
+        LEFT JOIN APT_HO_TY T
+        ON D.HO_TY_NO = T.HO_TY_NO
+        AND U.APT_CMPLEX_NO = T.APT_CMPLEX_NO
+
         INNER JOIN APT_COMPLEX A
         ON U.APT_CMPLEX_NO = A.APT_CMPLEX_NO
+
+        LEFT JOIN (
+        SELECT
+        AF.FILE_GROUP_NO
+        , LISTAGG(AF.GOOGLE_ID, ',')
+        WITHIN GROUP (
+        ORDER BY NVL(AF.FILE_SORT_ORDER, 999999)
+        , AF.REG_DT
+        , AF.FILE_SAVE_UUID
+        ) AS GOOGLE_IDS
+        FROM ATTACH_FILE AF
+        WHERE AF.GOOGLE_ID IS NOT NULL
+        GROUP BY AF.FILE_GROUP_NO
+        ) IMG
+        ON IMG.FILE_GROUP_NO = A.RPRSNT_IMG_FILE_NO
 
         LEFT JOIN COMMON_CODE RC
         ON RC.GROUP_CODE_NO = 'RENT_TY'

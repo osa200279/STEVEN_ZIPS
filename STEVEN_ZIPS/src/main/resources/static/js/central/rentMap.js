@@ -82,7 +82,7 @@ function loadRentListings() {
  * DB 데이터 화면용 보정
  */
 function normalizeRentList(list) {
-    return list.map(function (item, index) {
+    return list.map(function (item) {
         const normalized = Object.assign({}, item);
 
         normalized.rentLstgNo = nvl(item.rentLstgNo);
@@ -100,7 +100,7 @@ function normalizeRentList(list) {
         normalized.dpstAmt = Number(item.dpstAmt || 0);
         normalized.mthlyRentAmt = Number(item.mthlyRentAmt || 0);
         normalized.rentLstgCn = nvl(item.rentLstgCn, "등록된 매물 설명이 없습니다.");
-        normalized.rcrtBggnDt = nvl(item.rcrtBggnDt);
+        normalized.rcrtBgngDt = nvl(item.rcrtBgngDt);
         normalized.rcrtEndDt = nvl(item.rcrtEndDt);
         normalized.unitCnt = item.unitCnt || 0;
         normalized.dongCnt = item.dongCnt || 0;
@@ -110,24 +110,18 @@ function normalizeRentList(list) {
         normalized.ccCnt = item.ccCnt || "-";
         normalized.dongMaxFloor = item.dongMaxFloor || "-";
         normalized.exclusiveSize = item.exclusiveSize || "-";
+        normalized.rprsntImgGoogleIds = nvl(item.rprsntImgGoogleIds);
 
-        /*
-         * DB에 이미지가 아직 없으므로 임시 이미지 사용
-         */
-        normalized.imgUrl = item.imgUrl || getDefaultImage(index);
+        normalized.rprsntImgGoogleIdList = normalized.rprsntImgGoogleIds
+            ? normalized.rprsntImgGoogleIds.split(",").filter(function (googleId) {
+                return googleId.trim() !== "";
+            }).map(function (googleId) {
+                return googleId.trim();
+            })
+            : [];
 
         return normalized;
     });
-}
-
-function getDefaultImage(index) {
-    const images = [
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200",
-        "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200",
-        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=1200"
-    ];
-
-    return images[index % images.length];
 }
 
 /**
@@ -393,22 +387,45 @@ function selectComplex(aptCmplexNo) {
     const firstItem = complexRentList[0];
     const page = document.querySelector(".rent-map-page");
 
+    /*
+     * 패널이 닫혀 있는 최초 상태에서 마커를 클릭한 경우
+     * 패널 애니메이션이 끝난 뒤 지도 크기를 재계산하고,
+     * 클릭한 단지가 축소된 지도 영역 안에 보이도록 이동시킨다.
+     */
     if (page && page.classList.contains("panels-collapsed")) {
         page.classList.remove("panels-collapsed");
 
         setTimeout(function () {
             if (map) {
                 map.relayout();
+
+                if (firstItem.latVal != null && firstItem.lonVal != null) {
+                    map.panTo(
+                        new kakao.maps.LatLng(
+                            Number(firstItem.latVal),
+                            Number(firstItem.lonVal)
+                        )
+                    );
+                }
             }
         }, 260);
+    } else {
+        /*
+         * 이미 패널이 열린 상태에서 다른 지도 마커를 클릭한 경우
+         * 지도 크기는 그대로이므로 즉시 해당 단지로 이동한다.
+         */
+        if (map && firstItem.latVal != null && firstItem.lonVal != null) {
+            map.panTo(
+                new kakao.maps.LatLng(
+                    Number(firstItem.latVal),
+                    Number(firstItem.lonVal)
+                )
+            );
+        }
     }
 
     renderComplexRentList(firstItem, complexRentList);
     selectRent(firstItem.rentLstgNo);
-
-    if (map && firstItem.latVal != null && firstItem.lonVal != null) {
-        map.panTo(new kakao.maps.LatLng(firstItem.latVal, firstItem.lonVal));
-    }
 }
 
 /**
@@ -482,10 +499,6 @@ function selectRent(rentLstgNo) {
     if (complexRentList.length > 0) {
         renderComplexRentList(item, complexRentList);
     }
-
-    if (map && item.latVal != null && item.lonVal != null) {
-        map.panTo(new kakao.maps.LatLng(item.latVal, item.lonVal));
-    }
 }
 
 /**
@@ -501,10 +514,41 @@ function renderDetail(item) {
 
     if (heroEl) {
         heroEl.className = "rent-detail-hero-area";
-        heroEl.innerHTML =
-            '<img src="' + escapeHtml(item.imgUrl) + '"'
-            + ' alt="' + escapeHtml(item.aptCmplexNm) + '"'
-            + ' style="width:100%;height:100%;display:block;object-fit:cover;object-position:center center;">';
+
+        const imageList = item.rprsntImgGoogleIdList || [];
+
+        if (imageList.length > 0) {
+            const contextPath = typeof CONTEXT_PATH !== "undefined" ? CONTEXT_PATH : "";
+
+            let sliderHtml = '<div class="rent-detail-slider">';
+
+            imageList.forEach(function (googleId, index) {
+                const imageUrl =
+                    contextPath + "/file/display/" + encodeURIComponent(googleId);
+
+                sliderHtml += ''
+                    + '<img src="' + escapeHtml(imageUrl) + '"'
+                    + ' alt="' + escapeHtml(item.aptCmplexNm) + '"'
+                    + ' class="rent-detail-hero-image ' + (index === 0 ? 'active' : '') + '"'
+                    + ' onerror="this.style.display=\'none\';">';
+            });
+
+            if (imageList.length > 1) {
+                sliderHtml += ''
+                    + '<button type="button" class="rent-slider-btn prev" onclick="moveRentDetailSlide(-1)">'
+                    + '  <span class="material-symbols-outlined">chevron_left</span>'
+                    + '</button>'
+                    + '<button type="button" class="rent-slider-btn next" onclick="moveRentDetailSlide(1)">'
+                    + '  <span class="material-symbols-outlined">chevron_right</span>'
+                    + '</button>';
+            }
+
+            sliderHtml += '</div>';
+
+            heroEl.innerHTML = sliderHtml;
+        } else {
+            heroEl.innerHTML = createEmptyImageHtml();
+        }
     }
 
     detailEl.className = "";
@@ -512,14 +556,14 @@ function renderDetail(item) {
         + '<div class="rent-detail-content">'
         + '  <span class="rent-type-badge">' + escapeHtml(item.rentTypeNm) + '</span>'
         + '  <h2>' + escapeHtml(item.aptCmplexNm) + '</h2>'
-        + '  <p style="color:#667085; margin-top:0;">' + escapeHtml(item.dongNm) + ' ' + escapeHtml(item.ho) + '호</p>'
+        + '  <p style="color:#667085; margin-top:0;">' + escapeHtml(item.dongNm) + '동 ' + escapeHtml(item.ho) + '호</p>'
         + '  <div class="rent-detail-price">' + escapeHtml(formatPrice(item)) + '</div>'
 
         + '  <div class="rent-info-grid">'
         + '    <div class="rent-info-item"><span class="rent-info-label">전용면적</span><span class="rent-info-value">' + escapeHtml(item.exclusiveSize) + '㎡</span></div>'
         + '    <div class="rent-info-item"><span class="rent-info-label">층수</span><span class="rent-info-value">' + escapeHtml(item.floor) + '층 / 최고 ' + escapeHtml(item.dongMaxFloor) + '층</span></div>'
         + '    <div class="rent-info-item"><span class="rent-info-label">호 상태</span><span class="rent-info-value">' + escapeHtml(item.empty) + '</span></div>'
-        + '    <div class="rent-info-item"><span class="rent-info-label">모집 기간</span><span class="rent-info-value">' + escapeHtml(formatDate(item.rcrtBggnDt)) + ' ~ ' + escapeHtml(formatDate(item.rcrtEndDt)) + '</span></div>'
+        + '    <div class="rent-info-item"><span class="rent-info-label">모집 기간</span><span class="rent-info-value">' + escapeHtml(formatDate(item.rcrtBgngDt)) + ' ~ ' + escapeHtml(formatDate(item.rcrtEndDt)) + '</span></div>'
         + '    <div class="rent-info-item"><span class="rent-info-label">세대수</span><span class="rent-info-value">' + escapeHtml(formatNumber(item.unitCnt)) + '세대</span></div>'
         + '    <div class="rent-info-item"><span class="rent-info-label">동수</span><span class="rent-info-value">' + escapeHtml(item.dongCnt) + '동</span></div>'
         + '    <div class="rent-info-item"><span class="rent-info-label">준공년도</span><span class="rent-info-value">' + escapeHtml(item.bldYr) + '</span></div>'
@@ -539,6 +583,49 @@ function renderDetail(item) {
 }
 
 /**
+ * 단지 대표 이미지가 없는 경우 표시할 HTML
+ */
+function createEmptyImageHtml() {
+    return ''
+        + '<div class="rent-detail-empty-image">'
+        + '  <span class="material-symbols-outlined">image</span>'
+        + '  <p>해당 이미지가 없습니다.</p>'
+        + '</div>';
+}
+
+/**
+ * 가운데 상세 패널 이미지 슬라이드 이동
+ */
+function moveRentDetailSlide(direction) {
+    const images = document.querySelectorAll("#rentDetailHero .rent-detail-hero-image");
+
+    if (!images || images.length <= 1) {
+        return;
+    }
+
+    let currentIndex = 0;
+
+    images.forEach(function (image, index) {
+        if (image.classList.contains("active")) {
+            currentIndex = index;
+        }
+    });
+
+    images[currentIndex].classList.remove("active");
+
+    let nextIndex = currentIndex + direction;
+
+    if (nextIndex < 0) {
+        nextIndex = images.length - 1;
+    }
+
+    if (nextIndex >= images.length) {
+        nextIndex = 0;
+    }
+
+    images[nextIndex].classList.add("active");
+}
+/**
  * 단지 매물목록 + 상세 패널 닫기
  */
 function closeRentPanels() {
@@ -554,15 +641,6 @@ function closeRentPanels() {
         if (map) {
             map.relayout();
 
-            if (selectedAptCmplexNo) {
-                const selectedItem = rentListingList.find(function (item) {
-                    return item.aptCmplexNo === selectedAptCmplexNo;
-                });
-
-                if (selectedItem && selectedItem.latVal != null && selectedItem.lonVal != null) {
-                    map.setCenter(new kakao.maps.LatLng(selectedItem.latVal, selectedItem.lonVal));
-                }
-            }
         }
     }, 260);
 }

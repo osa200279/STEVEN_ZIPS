@@ -25,19 +25,14 @@ public class RentListingMapDTO {
      * ========================= */
     private String rentLstgNo;      // 임대 매물 번호
     private String rentTypeCd;      // 임대 유형 코드
-    /**
-     * 임대 유형명
-     * DB 직접 컬럼은 아니고 공통코드 조인 또는 화면 변환용
-     * 예: 전세, 월세, 공공임대
-     */
     private String rentTypeNm;
     private Long dpstAmt;           // 보증금
     private Long mthlyRentAmt;      // 월 임대 금액
     private String rentLstgCn;      // 임대 매물 내용
     private String hoNo;            // 호 번호
-    private Date rcrtEndDt;         // 모집 종료일
+    private String rcrtBgngDt;      // 모집 시작일
+    private String rcrtEndDt;       // 모집 종료일
     private String rentTtl;         // 매물 제목
-    private Date rcrtBggnDt;        // 모집 시작일
 
     /* ===========================
      * APT_DETAIL
@@ -83,6 +78,7 @@ public class RentListingMapDTO {
     private String imgFileNo;       // 이미지 파일 번호
     private String rprsntImgFileNo; // 대표 이미지 파일 번호
     private String dorojuso;        // 도로명 주소
+    private String rprsntImgGoogleIds;
 
     // 검색 조건용
     private String searchRentTypeCd;      // ALL, JS, PE
