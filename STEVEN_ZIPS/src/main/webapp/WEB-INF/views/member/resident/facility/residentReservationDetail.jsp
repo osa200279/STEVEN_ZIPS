@@ -254,6 +254,127 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .time-table-card {
+            margin-top: 16px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .pf-time-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .pf-time-table th {
+            padding: 14px;
+            border-bottom: 2px solid #0074d9;
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .pf-time-table td {
+            padding: 13px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .time-available {
+            color: #006b4f;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .time-reserved {
+            color: #444;
+        }
+
+        .reservation-body{
+            display:flex;
+            gap:24px;
+            margin-top:20px;
+        }
+
+        .time-panel{
+            width:320px;
+            background:#fff;
+            border:1px solid #ddd;
+            border-radius:14px;
+            padding:20px;
+        }
+
+        .seat-panel{
+            flex:1;
+            background:#fff;
+            border:1px solid #ddd;
+            border-radius:14px;
+            padding:20px;
+        }
+
+        .time-slot-list{
+            margin-top:20px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        }
+
+        .time-slot-btn{
+            border:none;
+            border-radius:10px;
+            padding:12px;
+            font-weight:700;
+            cursor:pointer;
+            background:#eef7f0;
+            color:#006b4f;
+        }
+
+        .time-slot-btn.selected{
+            background:#006b4f;
+            color:#fff;
+        }
+
+        .empty-text{
+            color:#777;
+            font-size:14px;
+        }
+
+        .seat-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:10px;
+            margin-top:18px;
+            margin-bottom:20px;
+        }
+
+        .purpose-textarea{
+            width:100%;
+            min-height:120px;
+            border:1px solid #d1d5db;
+            border-radius:10px;
+            padding:12px;
+            resize:none;
+            box-sizing:border-box;
+        }
+
+        .reserve-btn{
+            width:100%;
+            height:46px;
+            border:none;
+            border-radius:12px;
+            background:#006b4f;
+            color:#fff;
+            font-weight:800;
+            margin-top:18px;
+            cursor:pointer;
+        }
+
+        .reserve-btn:disabled{
+            background:#cbd5d1;
+            cursor:not-allowed;
+        }
     </style>
 </head>
 
@@ -287,84 +408,165 @@
                 </div>
             </div>
 
-            <div class="reserve-layout">
+<%--            <div class="reserve-layout">--%>
 
-                <div class="seat-map-card">
-                    <div class="card-head">
-                        <div class="card-title">${facility.cmnFacilityNm} 배치도</div>
-                        <div class="card-desc">예약할 좌석 또는 세부시설을 선택하세요.</div>
-                    </div>
+<%--                <div class="seat-map-card">--%>
+<%--                    <div class="card-head">--%>
+<%--                        <div class="card-title">${facility.cmnFacilityNm} 배치도</div>--%>
+<%--                        <div class="card-desc">예약할 좌석 또는 세부시설을 선택하세요.</div>--%>
+<%--                    </div>--%>
 
-                    <div class="seat-map-body">
-                        <div class="seat-grid">
-                            <c:forEach var="item" items="${itemList}">
-                                <button type="button"
-                                        class="seat-btn ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}"
-                                        data-item-no="${item.cmnFacilityItemNo}"
-                                        data-item-name="${item.itemNm}"
-                                    ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}>
-                                        ${item.itemNm}
-                                </button>
-                            </c:forEach>
-                        </div>
+<%--                    <div class="seat-map-body">--%>
+<%--                        <div class="seat-grid">--%>
+<%--                            <c:forEach var="item" items="${itemList}">--%>
+<%--                                <button type="button"--%>
+<%--                                        class="seat-btn ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}"--%>
+<%--                                        data-item-no="${item.cmnFacilityItemNo}"--%>
+<%--                                        data-item-name="${item.itemNm}"--%>
+<%--                                    ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}>--%>
+<%--                                        ${item.itemNm}--%>
+<%--                                </button>--%>
+<%--                            </c:forEach>--%>
+
+<%--                            <div class="time-table-card">--%>
+<%--                                <div class="card-head">--%>
+<%--                                    <div class="card-title">예약현황</div>--%>
+<%--                                    <div class="card-desc">날짜와 세부시설을 선택하면 시간대별 예약현황이 표시됩니다.</div>--%>
+<%--                                </div>--%>
+
+<%--                                <table class="pf-time-table">--%>
+<%--                                    <thead>--%>
+<%--                                    <tr>--%>
+<%--                                        <th>이용시간</th>--%>
+<%--                                        <th>예약자</th>--%>
+<%--                                        <th>상태</th>--%>
+<%--                                    </tr>--%>
+<%--                                    </thead>--%>
+<%--                                    <tbody id="timeSlotBody">--%>
+<%--                                    <tr>--%>
+<%--                                        <td colspan="3">예약일과 세부시설을 선택하세요.</td>--%>
+<%--                                    </tr>--%>
+<%--                                    </tbody>--%>
+<%--                                </table>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+
+<%--                <div class="reservation-card">--%>
+<%--                    <div class="card-head">--%>
+<%--                        <div class="card-title">예약 정보 입력</div>--%>
+<%--                        <div class="card-desc">날짜, 시간, 이용 목적을 입력한 뒤 예약을 신청하세요.</div>--%>
+<%--                    </div>--%>
+
+<%--                    <div class="reservation-card-body">--%>
+<%--                        <form id="reserveForm">--%>
+<%--                            <input type="hidden" name="cmnFacilityItemNo" id="cmnFacilityItemNo">--%>
+<%--                            <input type="hidden" name="cmnFacilityNm" value="${facility.cmnFacilityNm}">--%>
+
+<%--                            <div class="selected-box" id="selectedBox">--%>
+<%--                                선택된 항목이 없습니다.--%>
+<%--                            </div>--%>
+
+<%--                            <div class="form-row">--%>
+<%--                                <div class="form-field">--%>
+<%--                                    <label>예약일</label>--%>
+<%--                                    <input type="date" name="rsvtDt" id="rsvtDt" required>--%>
+<%--                                </div>--%>
+
+<%--                                <div class="form-field">--%>
+<%--                                    <label>시작시간</label>--%>
+<%--                                    <input type="time" id="startTime" required>--%>
+<%--                                </div>--%>
+
+<%--                                <div class="form-field">--%>
+<%--                                    <label>종료시간</label>--%>
+<%--                                    <input type="time" id="endTime" required>--%>
+<%--                                </div>--%>
+<%--                            </div>--%>
+
+<%--                            <input type="hidden" name="rsvtBgngDttm" id="rsvtBgngDttm">--%>
+<%--                            <input type="hidden" name="rsvtEndDttm" id="rsvtEndDttm">--%>
+
+<%--                            <div class="form-field">--%>
+<%--                                <label>이용 목적</label>--%>
+<%--                                <textarea name="purposeCn" placeholder="이용 목적을 입력하세요."></textarea>--%>
+<%--                            </div>--%>
+
+<%--                            <div class="btn-area">--%>
+<%--                                <button type="button"--%>
+<%--                                        class="btn btn-light"--%>
+<%--                                        onclick="location.href='${pageContext.request.contextPath}/resident/publicFacility/reservation'">--%>
+<%--                                    목록으로--%>
+<%--                                </button>--%>
+
+<%--                                <button type="submit" class="btn btn-primary">--%>
+<%--                                    예약 신청--%>
+<%--                                </button>--%>
+<%--                            </div>--%>
+<%--                        </form>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+
+<%--            </div>--%>
+
+            <div class="reservation-body">
+
+                <!-- 왼쪽: 시간대 목록 -->
+                <div class="time-panel">
+
+                    <h3>이용시간 선택</h3>
+
+                    <input type="date" id="rsvtDt" name="rsvtDt" />
+
+                    <div id="timeSlotList" class="time-slot-list">
+                        <p class="empty-text">
+                            예약일을 선택하면 시간대가 표시됩니다.
+                        </p>
                     </div>
                 </div>
 
-                <div class="reservation-card">
-                    <div class="card-head">
-                        <div class="card-title">예약 정보 입력</div>
-                        <div class="card-desc">날짜, 시간, 이용 목적을 입력한 뒤 예약을 신청하세요.</div>
+                <!-- 오른쪽: 좌석 선택 -->
+                <div class="seat-panel">
+
+                    <h3>좌석 선택</h3>
+
+                    <div id="selectedTimeInfo" class="selected-box">
+                        선택된 시간대가 없습니다.
                     </div>
 
-                    <div class="reservation-card-body">
-                        <form id="reserveForm">
-                            <input type="hidden" name="cmnFacilityItemNo" id="cmnFacilityItemNo">
-                            <input type="hidden" name="cmnFacilityNm" value="${facility.cmnFacilityNm}">
+                    <div id="seatGrid" class="seat-grid">
 
-                            <div class="selected-box" id="selectedBox">
-                                선택된 항목이 없습니다.
-                            </div>
+                        <c:forEach var="item" items="${itemList}">
+                            <button type="button"
+                                    class="seat-btn
+                        ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}"
+                                    data-item-no="${item.cmnFacilityItemNo}"
+                                    data-item-nm="${item.itemNm}"
+                                ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}>
 
-                            <div class="form-row">
-                                <div class="form-field">
-                                    <label>예약일</label>
-                                    <input type="date" name="rsvtDt" id="rsvtDt" required>
-                                </div>
+                                    ${item.itemNm}
 
-                                <div class="form-field">
-                                    <label>시작시간</label>
-                                    <input type="time" id="startTime" required>
-                                </div>
+                            </button>
+                        </c:forEach>
 
-                                <div class="form-field">
-                                    <label>종료시간</label>
-                                    <input type="time" id="endTime" required>
-                                </div>
-                            </div>
-
-                            <input type="hidden" name="rsvtBgngDttm" id="rsvtBgngDttm">
-                            <input type="hidden" name="rsvtEndDttm" id="rsvtEndDttm">
-
-                            <div class="form-field">
-                                <label>이용 목적</label>
-                                <textarea name="purposeCn" placeholder="이용 목적을 입력하세요."></textarea>
-                            </div>
-
-                            <div class="btn-area">
-                                <button type="button"
-                                        class="btn btn-light"
-                                        onclick="location.href='${pageContext.request.contextPath}/resident/publicFacility/reservation'">
-                                    목록으로
-                                </button>
-
-                                <button type="submit" class="btn btn-primary">
-                                    예약 신청
-                                </button>
-                            </div>
-                        </form>
                     </div>
+
+                    <label class="form-label">이용 목적</label>
+
+                    <textarea id="purposeCn"
+                              name="purposeCn"
+                              class="purpose-textarea"
+                              placeholder="이용 목적을 입력하세요."></textarea>
+
+                    <button type="button"
+                            id="reserveBtn"
+                            class="reserve-btn"
+                            disabled>
+                        예약 신청
+                    </button>
+
                 </div>
-
             </div>
 
         </div>
@@ -377,115 +579,163 @@
     const contextPath = '${pageContext.request.contextPath}';
     const cmnFacilityNo = '${facility.cmnFacilityNo}';
 
-    const selectedBox = document.getElementById('selectedBox');
-    const itemNoInput = document.getElementById('cmnFacilityItemNo');
     const rsvtDtInput = document.getElementById('rsvtDt');
-    const startTimeInput = document.getElementById('startTime');
-    const endTimeInput = document.getElementById('endTime');
-    const bgngInput = document.getElementById('rsvtBgngDttm');
-    const endInput = document.getElementById('rsvtEndDttm');
+    const timeSlotList = document.getElementById('timeSlotList');
+    const selectedTimeInfo = document.getElementById('selectedTimeInfo');
+    const purposeCn = document.getElementById('purposeCn');
+    const reserveBtn = document.getElementById('reserveBtn');
 
-    document.querySelectorAll('.seat-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            if (btn.classList.contains('disabled') || btn.classList.contains('reserved')) {
-                return;
-            }
+    let selectedStartDttm = '';
+    let selectedEndDttm = '';
+    let selectedItemNo = '';
 
-            document.querySelectorAll('.seat-btn').forEach(function(otherBtn) {
-                otherBtn.classList.remove('selected');
-            });
-
-            btn.classList.add('selected');
-            itemNoInput.value = btn.dataset.itemNo;
-            selectedBox.innerText = '선택 항목: ' + btn.dataset.itemName;
-        });
-    });
-
-    function loadReservedItems() {
+    /*
+     * 날짜 선택 시 시간대 목록 조회
+     */
+    function loadTimeSlotsByDate() {
         const rsvtDt = rsvtDtInput.value;
-        const startTime = startTimeInput.value;
-        const endTime = endTimeInput.value;
 
-        if (!rsvtDt || !startTime || !endTime) {
+        selectedStartDttm = '';
+        selectedEndDttm = '';
+        selectedItemNo = '';
+
+        selectedTimeInfo.innerText = '선택된 시간대가 없습니다.';
+        reserveBtn.disabled = true;
+
+        document.querySelectorAll('.seat-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        if (!rsvtDt) {
+            timeSlotList.innerHTML = '<p class="empty-text">예약일을 선택하면 시간대가 표시됩니다.</p>';
             return;
         }
 
-        const bgng = rsvtDt + ' ' + startTime;
-        const end = rsvtDt + ' ' + endTime;
-
-        bgngInput.value = bgng;
-        endInput.value = end;
-
         fetch(contextPath + '/resident/publicFacility/reservation/' + cmnFacilityNo
-            + '/reserved-items?rsvtBgngDttm=' + encodeURIComponent(bgng)
-            + '&rsvtEndDttm=' + encodeURIComponent(end))
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(reservedList) {
-                document.querySelectorAll('.seat-btn').forEach(function(btn) {
-                    btn.classList.remove('reserved');
+            + '/time-slots?searchStartDt=' + encodeURIComponent(rsvtDt))
+            .then(response => response.json())
+            .then(list => {
+                timeSlotList.innerHTML = '';
 
-                    if (!btn.classList.contains('disabled')) {
-                        btn.disabled = false;
-                    }
+                if (!list || list.length === 0) {
+                    timeSlotList.innerHTML = '<p class="empty-text">예약 가능한 시간대가 없습니다.</p>';
+                    return;
+                }
 
-                    if (reservedList.includes(btn.dataset.itemNo)) {
-                        btn.classList.remove('selected');
-                        btn.classList.add('reserved');
-                        btn.disabled = true;
+                list.forEach(row => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'time-slot-btn';
+                    btn.innerText = row.timeLabel;
 
-                        if (itemNoInput.value === btn.dataset.itemNo) {
-                            itemNoInput.value = '';
-                            selectedBox.innerText = '선택된 항목이 없습니다.';
-                        }
-                    }
+                    btn.addEventListener('click', function () {
+                        document.querySelectorAll('.time-slot-btn').forEach(other => {
+                            other.classList.remove('selected');
+                        });
+
+                        btn.classList.add('selected');
+
+                        selectedStartDttm = row.rsvtBgngDttm;
+                        selectedEndDttm = row.rsvtEndDttm;
+
+                        selectedTimeInfo.innerText = '선택 시간: ' + row.timeLabel;
+
+                        document.querySelectorAll('.seat-btn').forEach(seat => {
+                            seat.classList.remove('selected');
+                        });
+
+                        selectedItemNo = '';
+                        checkReserveButton();
+                    });
+
+                    timeSlotList.appendChild(btn);
                 });
+            })
+            .catch(error => {
+                console.error(error);
+                timeSlotList.innerHTML = '<p class="empty-text">시간대 조회 중 오류가 발생했습니다.</p>';
             });
     }
 
-    rsvtDtInput.addEventListener('change', loadReservedItems);
-    startTimeInput.addEventListener('change', loadReservedItems);
-    endTimeInput.addEventListener('change', loadReservedItems);
+    /*
+     * 좌석 선택
+     */
+    document.querySelectorAll('.seat-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (btn.classList.contains('disabled') || btn.disabled) {
+                return;
+            }
 
-    document.getElementById('reserveForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+            if (!selectedStartDttm || !selectedEndDttm) {
+                alert('먼저 이용시간을 선택하세요.');
+                return;
+            }
 
-        const rsvtDt = rsvtDtInput.value;
-        const startTime = startTimeInput.value;
-        const endTime = endTimeInput.value;
+            document.querySelectorAll('.seat-btn').forEach(other => {
+                other.classList.remove('selected');
+            });
 
-        if (!itemNoInput.value) {
-            alert('예약할 좌석 또는 세부시설을 선택하세요.');
+            btn.classList.add('selected');
+            selectedItemNo = btn.dataset.itemNo;
+
+            const selectedTimeBtn = document.querySelector('.time-slot-btn.selected');
+            selectedTimeInfo.innerText =
+                '선택 시간: ' + selectedTimeBtn.innerText
+                + ' / 선택 좌석: ' + btn.dataset.itemNm;
+
+            checkReserveButton();
+        });
+    });
+
+    /*
+     * 이용 목적 입력 여부까지 확인해서 버튼 활성화
+     */
+    function checkReserveButton() {
+        reserveBtn.disabled = !(
+            rsvtDtInput.value &&
+            selectedStartDttm &&
+            selectedEndDttm &&
+            selectedItemNo &&
+            purposeCn.value.trim()
+        );
+    }
+
+    /*
+     * 예약 신청
+     */
+    reserveBtn.addEventListener('click', function () {
+        if (reserveBtn.disabled) {
             return;
         }
 
-        if (!rsvtDt || !startTime || !endTime) {
-            alert('예약일과 시간을 입력하세요.');
-            return;
-        }
-
-        bgngInput.value = rsvtDt + ' ' + startTime;
-        endInput.value = rsvtDt + ' ' + endTime;
+        const formData = new URLSearchParams();
+        formData.append('cmnFacilityItemNo', selectedItemNo);
+        formData.append('cmnFacilityNm', '${facility.cmnFacilityNm}');
+        formData.append('rsvtBgngDttm', selectedStartDttm);
+        formData.append('rsvtEndDttm', selectedEndDttm);
+        formData.append('purposeCn', purposeCn.value.trim());
 
         fetch(contextPath + '/resident/publicFacility/reservation', {
             method: 'POST',
-            body: new URLSearchParams(new FormData(this))
+            body: formData
         })
-            .then(function(response) {
+            .then(response => {
                 if (!response.ok) {
                     throw new Error('예약 처리 중 오류가 발생했습니다.');
                 }
                 return response.text();
             })
-            .then(function(rsvtNo) {
+            .then(rsvtNo => {
                 alert('예약 신청이 완료되었습니다. 예약번호: ' + rsvtNo);
                 location.href = contextPath + '/resident/publicFacility/myReservation';
             })
-            .catch(function(error) {
+            .catch(error => {
                 alert(error.message);
             });
     });
+
+    rsvtDtInput.addEventListener('change', loadTimeSlotsByDate);
+    purposeCn.addEventListener('input', checkReserveButton);
 </script>
 
 </body>

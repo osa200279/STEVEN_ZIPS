@@ -67,4 +67,11 @@ public class PublicFacilityReservationVO {
      * N: 예약 가능
      */
     private String reservedYn;
+
+    /*
+     * 시간표 표시용
+     * 예: 08:00 ~ 09:00
+     */
+    private String timeLabel;
+
 }

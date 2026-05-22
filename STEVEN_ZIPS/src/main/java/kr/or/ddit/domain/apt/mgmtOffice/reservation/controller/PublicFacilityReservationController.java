@@ -234,4 +234,23 @@ public class PublicFacilityReservationController {
         service.cancel(vo);
         return "OK";
     }
+
+    /*
+     * 입주민 - 선택한 시설/좌석의 시간표 조회
+     */
+    @PreAuthorize("hasRole('RESIDENT')")
+    @GetMapping("/resident/publicFacility/reservation/{cmnFacilityNo}/time-slots")
+    @ResponseBody
+    public List<PublicFacilityReservationVO> reservationTimeSlots(
+            @PathVariable String cmnFacilityNo,
+            PublicFacilityReservationVO searchVO,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
+        searchVO.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
+        searchVO.setSearchCmnFacilityNo(cmnFacilityNo);
+
+        return service.getReservationTimeSlotList(searchVO);
+    }
+
+
 }

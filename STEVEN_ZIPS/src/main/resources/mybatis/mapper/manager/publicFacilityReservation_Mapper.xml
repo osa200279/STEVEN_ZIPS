@@ -262,6 +262,8 @@
         PF.CMN_FACILITY_RSV_YN,
         PF.CMN_FACILITY_OPR_HR,
         F.FACILITY_TY_CD,
+        F.DONG_NO,
+        AU.DONG_NM,
         F.LOC_CN,
         PI.CMN_FACILITY_ITEM_NO,
         PI.ITEM_NM,
@@ -270,11 +272,16 @@
         FROM PUBLIC_FACILITY PF
         JOIN FACILITY F
         ON F.FACILITY_NO = PF.FACILITY_NO
+        LEFT JOIN APT_UNIT AU
+        ON AU.DONG_NO = F.DONG_NO
+        AND AU.APT_CMPLEX_NO = F.APT_CMPLEX_NO
         JOIN PUBLIC_ITEM PI
         ON PI.CMN_FACILITY_NO = PF.CMN_FACILITY_NO
         WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
         AND PF.CMN_FACILITY_NO = #{searchCmnFacilityNo}
         AND PF.CMN_FACILITY_RSV_YN = 'Y'
+        AND F.USE_YN = 'Y'
+        AND NVL(PI.CMN_FACILITY_STTS_CD, 'NORMAL') = 'NORMAL'
         ORDER BY PI.ITEM_NM
     </select>
 
@@ -310,22 +317,22 @@
         PF.CMN_FACILITY_RSV_YN,
         PF.CMN_FACILITY_OPR_HR,
         F.FACILITY_TY_CD,
+        F.DONG_NO,
+        AU.DONG_NM,
         F.LOC_CN,
         COUNT(PI.CMN_FACILITY_ITEM_NO) AS USE_PEOPLE_CNT
         FROM PUBLIC_FACILITY PF
         JOIN FACILITY F
         ON F.FACILITY_NO = PF.FACILITY_NO
+        LEFT JOIN APT_UNIT AU
+        ON AU.DONG_NO = F.DONG_NO
+        AND AU.APT_CMPLEX_NO = F.APT_CMPLEX_NO
         LEFT JOIN PUBLIC_ITEM PI
         ON PI.CMN_FACILITY_NO = PF.CMN_FACILITY_NO
+        AND NVL(PI.CMN_FACILITY_STTS_CD, 'NORMAL') = 'NORMAL'
         WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
         AND PF.CMN_FACILITY_RSV_YN = 'Y'
-        /*
-        * CMN_FACILITY_RSV_YN = 'Y'
-        * 예약제 여부입니다.
-        * 왜 사용?
-        * 관리자 편의시설 목록에서 '예약제'로 등록된 시설만
-        * 입주민 예약 카드에 보여주기 위해 사용합니다.
-        */
+        AND F.USE_YN = 'Y'
         GROUP BY
         PF.CMN_FACILITY_NO,
         PF.APT_CMPLEX_NO,
@@ -336,8 +343,49 @@
         PF.CMN_FACILITY_RSV_YN,
         PF.CMN_FACILITY_OPR_HR,
         F.FACILITY_TY_CD,
+        F.DONG_NO,
+        AU.DONG_NM,
         F.LOC_CN
-        ORDER BY PF.CMN_FACILITY_NM
+        ORDER BY F.DONG_NO, PF.CMN_FACILITY_NM
+    </select>
+
+    <select id="selectReservationTimeSlotList" resultMap="reservationMap">
+        /*
+        * CONNECT BY LEVEL
+        * Oracle에서 반복 행을 만드는 문법입니다.
+        * 여기서는 08:00~21:00까지 1시간 단위 시간표를 만듭니다.
+        */
+        WITH TIME_SLOT AS (
+        SELECT
+        TO_DATE(#{searchStartDt} || ' 08:00', 'YYYY-MM-DD HH24:MI') + ((LEVEL - 1) / 24) AS BGNG_DTTM,
+        TO_DATE(#{searchStartDt} || ' 08:00', 'YYYY-MM-DD HH24:MI') + (LEVEL / 24) AS END_DTTM
+        FROM DUAL
+        CONNECT BY LEVEL &lt;= 13
+        )
+        SELECT
+        TO_CHAR(TS.BGNG_DTTM, 'HH24:MI') || ' ~ ' || TO_CHAR(TS.END_DTTM, 'HH24:MI') AS TIME_LABEL,
+        TO_CHAR(TS.BGNG_DTTM, 'YYYY-MM-DD HH24:MI') AS RSVT_BGNG_DTTM,
+        TO_CHAR(TS.END_DTTM, 'YYYY-MM-DD HH24:MI') AS RSVT_END_DTTM,
+        FH.RSVT_NO,
+        FH.CMN_FACILITY_ITEM_NO,
+        M.USER_NM,
+        CASE
+        WHEN FH.RSVT_NO IS NULL THEN 'N'
+        ELSE 'Y'
+        END AS RESERVED_YN,
+        CASE
+        WHEN FH.RSVT_NO IS NULL THEN '예약가능'
+        ELSE '예약완료'
+        END AS RSVT_STTS_NM
+        FROM TIME_SLOT TS
+        LEFT JOIN FACILITY_HSTRY FH
+        ON FH.CMN_FACILITY_ITEM_NO = #{searchItemNo}
+        AND FH.RSVT_STTS_CD IN ('PENDING', 'APPROVED')
+        AND FH.RSVT_BGNG_DTTM &lt; TS.END_DTTM
+        AND FH.RSVT_END_DTTM &gt; TS.BGNG_DTTM
+        LEFT JOIN MEMBER M
+        ON M.USER_NO = FH.USER_NO
+        ORDER BY TS.BGNG_DTTM
     </select>
 
 </mapper>

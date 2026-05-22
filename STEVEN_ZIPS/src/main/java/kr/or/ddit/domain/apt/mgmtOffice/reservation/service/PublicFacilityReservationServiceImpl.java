@@ -122,4 +122,13 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     public List<String> getReservedItemNoList(PublicFacilityReservationVO searchVO) {
         return mapper.selectReservedItemNoList(searchVO);
     }
+
+    @Override
+    public List<PublicFacilityReservationVO> getReservationTimeSlotList(PublicFacilityReservationVO searchVO) {
+        /*
+         * 시간표 조회
+         * 선택한 세부시설 + 선택한 날짜 기준으로 1시간 단위 예약현황을 조회합니다.
+         */
+        return mapper.selectReservationTimeSlotList(searchVO);
+    }
 }

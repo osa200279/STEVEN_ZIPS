@@ -35,4 +35,9 @@ public interface IPublicFacilityReservationService {
      * 입주민 - 선택한 시간에 이미 예약된 좌석/항목 번호 조회
      */
     List<String> getReservedItemNoList(PublicFacilityReservationVO searchVO);
+
+    /*
+     * 입주민 - 시간대별 예약현황 조회
+     */
+    List<PublicFacilityReservationVO> getReservationTimeSlotList(PublicFacilityReservationVO searchVO);
 }
