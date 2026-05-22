@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Controller
 @RequestMapping("/manager/survey")
 @RequiredArgsConstructor
@@ -250,8 +252,14 @@ public class MngSurveyController {
             @PathVariable String surveyNo
     ) {
 
-        return ResponseEntity.ok(
-                surveyService.selectSurveyResult(surveyNo)
+        Map<String, Object> result =
+                surveyService.selectSurveyResult(surveyNo);
+
+        result.put(
+                "shortAnswerList",
+                surveyService.selectShortAnswerList(surveyNo)
         );
+
+        return ResponseEntity.ok(result);
     }
 }

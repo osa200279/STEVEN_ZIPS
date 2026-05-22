@@ -420,7 +420,30 @@
     </select>
 
 
+    <select id="selectShortAnswerList"
+            parameterType="string"
+            resultType="map">
 
+        SELECT
+
+            M.USER_NM AS "userNm",
+
+            DBMS_LOB.SUBSTR(
+                    SR.RSPNS_CN,
+                    4000,
+                    1
+            ) AS "rspnsCn"
+
+        FROM SURVEY_RSPNS SR
+
+                 INNER JOIN MEMBER M
+                            ON SR.USER_NO = M.USER_NO
+
+        WHERE SR.SURVEY_NO = #{surveyNo}
+
+        ORDER BY SR.REG_DT DESC
+
+    </select>
 
 
 

@@ -80,5 +80,5 @@ public interface IMngSurveyMapper {
     void deleteSurveyResults(String surveyNo);
 
 
-
+    List<Map<String, Object>> selectShortAnswerList(String surveyNo);
 }

@@ -1022,15 +1022,26 @@ public class ResidentMainController {
                     .body("already");
         }
 
+        ResidentVO resident =
+                (ResidentVO) customUser.getMember();
+
+        String hoNo = null;
+
+        if (resident.getMyAptList() != null
+                && !resident.getMyAptList().isEmpty()) {
+
+            hoNo =
+                    resident.getMyAptList()
+                            .get(0)
+                            .getHoNo();
+        }
+
         surveyService.insertSurveyResponse(
 
                 surveyNo,
                 body.get("response"),
                 customUser.getMember().getUserNo(),
-                ((ResidentVO) customUser.getMember())
-                        .getMyAptList()
-                        .get(0)
-                        .getHoNo()
+                hoNo
 
         );
 

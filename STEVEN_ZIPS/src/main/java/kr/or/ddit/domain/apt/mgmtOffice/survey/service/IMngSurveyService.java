@@ -42,4 +42,6 @@ public interface IMngSurveyService {
     );
 
     List<Map<String, Object>> selectSurveyStatistics(String surveyNo);
+
+    Object selectShortAnswerList(String surveyNo);
 }

@@ -292,4 +292,12 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
         return iMngSurveyMapper
                 .selectSurveyStatistics(surveyNo);
     }
+
+    @Override
+    public List<Map<String, Object>>
+    selectShortAnswerList(String surveyNo) {
+
+        return iMngSurveyMapper
+                .selectShortAnswerList(surveyNo);
+    }
 }

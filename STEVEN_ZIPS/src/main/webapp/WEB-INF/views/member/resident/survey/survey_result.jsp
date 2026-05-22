@@ -80,7 +80,12 @@
 
 
         <div class="btn-row">
-          <a class="btn-ghost" href="${pageContext.request.contextPath}/resident/survey/list">목록으로 돌아가기</a>
+          <a class="btn-ghost"
+             href="${pageContext.request.contextPath}/resident/survey/list/${survey.aptCd}">
+
+            목록으로 돌아가기
+
+          </a>
         </div>
 
       </div>
@@ -280,13 +285,28 @@ request.getAttribute("survey")).getSurveyQitemCn()
 
 
 
+
       if(q.type === "SHORT"){
+
+        const myResponse =
+                JSON.parse(
+                        '<%= org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript(
+                      String.valueOf(request.getAttribute("myResponse"))
+                  ) %>'
+                );
+
+        const myAnswer =
+                myResponse[idx]
+                        ? myResponse[idx].answer
+                        : "";
 
         html +=
                 "<div class='fake-input'>"
-                + "주관식 응답"
+                + myAnswer
                 + "</div>";
       }
+
+
 
       if(q.type === "LONG"){
 

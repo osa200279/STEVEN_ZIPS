@@ -250,15 +250,14 @@
                 if(q.type === "SHORT"){
 
                   const input =
-                          document.querySelector(
-                                  '.fake-input[data-question-no="' + idx + '"]'
-                          );
+                          document.querySelectorAll('.fake-input')[idx];
 
                   answer =
                           input
-                                  ? input.value
+                                  ? input.value.trim()
                                   : "";
                 }
+                console.log("SHORT ANSWER =", answer);
 
                 if(q.type === "LONG"){
 

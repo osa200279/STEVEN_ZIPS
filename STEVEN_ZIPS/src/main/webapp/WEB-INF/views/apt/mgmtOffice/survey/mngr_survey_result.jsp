@@ -546,6 +546,33 @@
                     + '</div>';
             });
 
+
+
+
+                if(q.type === "SHORT"){
+
+                    const shortAnswers =
+                        data.shortAnswerList || [];
+                    shortAnswers.forEach(function(answer){
+
+                        html +=
+                            '<div class="essay-box">'
+
+                            + '<div style="font-weight:700;color:#2f6b3d;margin-bottom:8px;">'
+                            + answer.userNm
+                            + '</div>'
+
+                            + '<div>'
+                            + JSON.parse(answer.rspnsCn)[0].answer
+                            + '</div>'
+
+                            + '</div>';
+                    });
+                }
+
+
+
+
             html +=
                 '</div>'
                 + '</div>';
