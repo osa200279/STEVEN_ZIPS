@@ -46,6 +46,12 @@ public class MeterHstryVO {
     /** 공급/검침 설정번호 */
     private String utilityProviderNo;
 
+    /** 검침유형코드 */
+    private String meterTyCd;
+
+    /** 검침유형명 */
+    private String meterTyNm;
+
     /** 시설명 */
     private String facilityNm;
 

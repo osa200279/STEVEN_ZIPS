@@ -10,6 +10,12 @@
  * - 전체 데이터 기준 역순 번호 표시
  *   예: 총 18개면 18, 17, 16 ... 1
  * - 번호 컬럼 폭 조절 가능
+ * - 관리 컬럼에 상세 / 수정 / 활성상태 버튼 표시
+ *
+ * 활성상태 버튼 기준
+ * - 현재 활성 상태  : 빨간색 "활성"
+ * - 현재 비활성 상태: 회색 "비활성"
+ * - 클릭 시 현재 상태의 반대값으로 변경
  * ============================================================
  */
 
@@ -22,28 +28,23 @@ var FacilityGrid = (function () {
      * ADMIN 사용자 여부 확인
      */
     function isAdminUser() {
-        /* JSP에서 내려준 화면 설정 정보 존재 여부 */
+        /* JSP에서 내려준 화면 설정 정보 */
         var pageConfig = window.facilityPageConfig;
 
-        /* ADMIN 여부 값 */
-        var isAdmin = pageConfig
+        /* ADMIN 여부 반환 */
+        return pageConfig
             && (pageConfig.isAdmin === true || pageConfig.isAdmin === "true");
-
-        return isAdmin;
     }
 
     /**
      * HTML 특수문자 변환
      */
     function escapeHtml(value) {
-        /* 빈 값 방어 처리 */
+        /* 빈 값 방어 */
         if (value == null) return "";
 
-        /* 문자열 변환 값 */
-        var text = String(value);
-
-        /* HTML 특수문자 치환 결과 */
-        return text
+        /* HTML 특수문자 치환 */
+        return String(value)
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
@@ -55,28 +56,24 @@ var FacilityGrid = (function () {
      * 배지 HTML 생성
      */
     function badge(cls, text) {
-        /* 배지 클래스명 */
-        var badgeClass = cls;
-
-        /* 배지 표시 문구 */
-        var badgeText = escapeHtml(text);
-
-        return '<span class="badge ' + badgeClass + '">' + badgeText + '</span>';
+        /* 배지 표시 */
+        return '<span class="badge ' + cls + '">' + escapeHtml(text) + '</span>';
     }
 
     /**
      * 사용여부 표시 렌더러
      */
     function useYnRenderer(params) {
-        /* 사용 불가 여부 */
+        /* 비활성 여부 */
         var isDisabled = params.value === "N";
 
-        /* 상태 CSS 클래스명 */
+        /* 상태 CSS */
         var cls = isDisabled ? "status-text is-disabled" : "status-text is-available";
 
-        /* 상태 표시 문구 */
+        /* 상태 문구 */
         var text = isDisabled ? "비활성" : "활성";
 
+        /* 상태 표시 */
         return '<span class="' + cls + '">' + escapeHtml(text) + '</span>';
     }
 
@@ -105,38 +102,37 @@ var FacilityGrid = (function () {
             PARKING: "방문차량주차구역"
         };
 
-        /* DB에서 조회된 시설유형명 우선 사용 */
-        var typeName = row.facilityTyNm;
-
-        /* 코드 기준 기본 표시명 */
-        var fallbackName = fallbackMap[row.facilityTyCd];
-
-        /* 최종 시설유형 표시명 */
-        return typeName || fallbackName || row.facilityTyCd || "-";
+        /* DB 시설유형명 우선 */
+        return row.facilityTyNm || fallbackMap[row.facilityTyCd] || row.facilityTyCd || "-";
     }
 
     /**
      * 시설유형 배지 렌더러
      */
     function facilityTypeRenderer(params) {
-        /* 현재 행 데이터 */
-        var row = params.data || {};
-
-        /* 시설유형 표시명 */
-        var typeText = getFacilityTypeText(row);
-
-        return badge("badge-blue", typeText);
+        /* 시설유형 배지 표시 */
+        return badge("badge-blue", getFacilityTypeText(params.data || {}));
     }
 
+    /**
+     * 운영관리 표시 렌더러
+     */
     function publicOperationRenderer(params) {
+        /* 행 데이터 */
         var row = params.data || {};
+
+        /* 공용/편의시설 여부 */
         var isPublicType = row.facilityKind === "PUBLIC";
+
+        /* 운영정보 등록 여부 */
         var isRegistered = row.publicOperRegisteredYn === "Y" || !!row.cmnFacilityNo;
 
+        /* 일반시설은 운영관리 대상 아님 */
         if (!isPublicType) {
             return '<span class="td-empty">-</span>';
         }
 
+        /* 운영등록/운영미등록 표시 */
         return isRegistered
             ? badge("badge-teal", "운영등록")
             : badge("badge-gray", "운영미등록");
@@ -146,41 +142,35 @@ var FacilityGrid = (function () {
      * 시설명 강조 렌더러
      */
     function facilityNameRenderer(params) {
-        /* 시설명 표시값 */
-        var facilityName = params.value || "-";
-
-        return '<span class="td-bold">' + escapeHtml(facilityName) + '</span>';
+        /* 시설명 표시 */
+        return '<span class="td-bold">' + escapeHtml(params.value || "-") + '</span>';
     }
 
     /**
      * 고정폭 문자 렌더러
      */
     function monoRenderer(params) {
-        /* 빈 값 표시 처리 */
+        /* 빈 값 처리 */
         if (params.value == null || params.value === "") {
             return '<span class="td-empty">-</span>';
         }
 
-        /* 고정폭 표시값 */
-        var text = escapeHtml(params.value);
-
-        return '<span class="td-mono">' + text + '</span>';
+        /* 고정폭 문자 표시 */
+        return '<span class="td-mono">' + escapeHtml(params.value) + '</span>';
     }
 
     /**
      * 동 번호 표시값 변환
      */
     function formatDongNo(value) {
-        /* 공용 위치 표시 처리 */
+        /* 공용 위치 */
         if (value == null || value === "") return "공용";
 
         /* 동 번호 문자열 */
         var text = String(value);
 
-        /* 언더바 위치 */
+        /* 언더바 뒤쪽 실제 동 표시 */
         var idx = text.lastIndexOf("_");
-
-        /* 실제 동 번호 */
         var dong = idx > -1 ? text.slice(idx + 1) : text;
 
         return dong || "공용";
@@ -190,7 +180,7 @@ var FacilityGrid = (function () {
      * 상세위치 말줄임 렌더러
      */
     function locationRenderer(params) {
-        /* 빈 값 표시 처리 */
+        /* 빈 값 처리 */
         if (params.value == null || params.value === "") {
             return '<span class="td-empty">-</span>';
         }
@@ -204,20 +194,49 @@ var FacilityGrid = (function () {
     }
 
     /**
+     * 활성상태 버튼 스타일 생성
+     *
+     * 기준
+     * - 활성  : 빨간색
+     * - 비활성: 회색
+     *
+     * CSS 파일 수정 없이 바로 적용되도록 inline style 사용
+     */
+    function getUseButtonStyle(useYn) {
+        /* 비활성 버튼 */
+        if (useYn === "N") {
+            return "background:#6b7280;border-color:#6b7280;color:#fff;";
+        }
+
+        /* 활성 버튼 */
+        return "background:#245c32;border-color:#245c32;color:#fff;";
+    }
+    /**
      * 관리 버튼 렌더러
+     *
+     * 버튼 문구 기준
+     * - 현재 활성 시설  : "활성"
+     * - 현재 비활성 시설: "비활성"
+     *
+     * 클릭 동작 기준
+     * - data-use-yn에는 현재 상태를 담음
+     * - JSP의 toggleFacilityUseYn()에서 현재 상태를 보고 반대로 변경
      */
     function actionRenderer(params) {
-        /* 현재 행 데이터 */
+        /* 행 데이터 */
         var row = params.data || {};
 
         /* 시설번호 */
-        var facilityNo = escapeHtml(params.value || "");
+        var facilityNo = escapeHtml(params.value || row.facilityNo || "");
 
         /* 현재 활성여부 */
-        /* var useYn = row.useYn === "N" ? "N" : "Y"; */
+        var useYn = row.useYn === "N" ? "N" : "Y";
 
-        /* 활성여부 전환 버튼 문구 */
-        /* var toggleText = useYn === "N" ? "활성" : "비활성"; */
+        /* 현재 상태 문구 */
+        var toggleText = useYn === "N" ? "비활성" : "활성";
+
+        /* 현재 상태 버튼 색상 */
+        var toggleStyle = getUseButtonStyle(useYn);
 
         /* 관리 버튼 영역 시작 */
         var html = '<div class="grid-actions">'
@@ -225,16 +244,21 @@ var FacilityGrid = (function () {
             + ' data-action="detail" data-row-key="' + facilityNo + '">'
             + '상세</button>';
 
-        /* ADMIN이 아니면 수정 버튼 표시 */
+        /* ADMIN이 아니면 수정/활성상태 버튼 표시 */
         if (!isAdminUser()) {
+            /* 수정 버튼 */
             html += '<button type="button" class="btn btn-edit"'
                 + ' data-action="edit" data-row-key="' + facilityNo + '">'
                 + '수정</button>';
 
-            /* 활성/비활성 처리는 수정 화면에서 진행 */
-            /* html += '<button type="button" class="btn btn-secondary"'
-                + ' data-action="toggleUseYn" data-row-key="' + facilityNo + '" data-use-yn="' + useYn + '">'
-                + toggleText + '</button>'; */
+            /* 활성상태 버튼 */
+            html += '<button type="button" class="btn btn-sm"'
+                + ' style="' + toggleStyle + '"'
+                + ' data-action="toggleUseYn"'
+                + ' data-row-key="' + facilityNo + '"'
+                + ' data-use-yn="' + useYn + '">'
+                + toggleText
+                + '</button>';
         }
 
         /* 관리 버튼 영역 종료 */
@@ -251,24 +275,14 @@ var FacilityGrid = (function () {
             {
                 headerName: "번호",
                 valueGetter: function (params) {
-                    /*
-                     * 전체 데이터 기준 역순 번호
-                     * - 전체 18개면 첫 번째 행은 18번
-                     * - 다음 행은 17번
-                     * - 페이지 이동 후에도 전체 기준 유지
-                     * - 필터 적용 시 필터 결과 기준 재계산
-                     */
-
-                    /* 현재 그리드에 표시되는 전체 행 수 */
+                    /* 현재 표시 행 수 */
                     var totalCount = params.api.getDisplayedRowCount();
 
-                    /* 현재 행의 전체 표시 기준 인덱스 */
+                    /* 현재 행 인덱스 */
                     var rowIndex = params.node.rowIndex;
 
-                    /* 전체 기준 역순 번호 */
-                    var reverseNo = totalCount - rowIndex;
-
-                    return reverseNo;
+                    /* 전체 데이터 기준 역순 번호 */
+                    return totalCount - rowIndex;
                 },
                 width: 70,
                 minWidth: 45,
@@ -322,10 +336,8 @@ var FacilityGrid = (function () {
                 minWidth: 45,
                 cellClass: "cell-center",
                 valueFormatter: function (params) {
-                    /* 동 번호 표시값 */
-                    var dongText = formatDongNo(params.value);
-
-                    return dongText;
+                    /* 동 표시값 */
+                    return formatDongNo(params.value);
                 }
             },
             {
@@ -346,16 +358,12 @@ var FacilityGrid = (function () {
             {
                 headerName: "관리",
                 valueGetter: function (params) {
-                    /* 현재 행 데이터 */
-                    var row = params.data;
-
                     /* 관리 버튼에 전달할 시설번호 */
-                    var facilityNo = row ? row.facilityNo : "";
-
-                    return facilityNo;
+                    var row = params.data;
+                    return row ? row.facilityNo : "";
                 },
-                width: isAdminUser() ? 80 : 120,
-                minWidth: isAdminUser() ? 70 : 100,
+                width: isAdminUser() ? 80 : 195,
+                minWidth: isAdminUser() ? 70 : 170,
                 cellClass: "cell-center",
                 sortable: false,
                 resizable: true,
@@ -371,7 +379,7 @@ var FacilityGrid = (function () {
         /* 그리드 대상 요소 조회 */
         gridTarget = document.getElementById(targetId);
 
-        /* 그리드 대상 요소 없음 처리 */
+        /* 대상 요소 없음 */
         if (!gridTarget) return null;
 
         /* AG Grid 생성 */
@@ -382,26 +390,21 @@ var FacilityGrid = (function () {
             suppressHorizontalScroll: true,
 
             /**
-             * 그리드 준비 완료 후 처리
+             * 그리드 준비 완료 후 컬럼 폭 맞춤
              */
             onGridReady: function (params) {
-                /*
-                 * 전체 폭 강제 맞춤
-                 * - 컬럼이 화면 밖으로 밀려 가로 스크롤 생기는 상황 방지
-                 */
                 params.api.sizeColumnsToFit();
             },
 
             /**
-             * 최초 데이터 렌더링 후 처리
+             * 최초 데이터 렌더링 후 컬럼 폭 맞춤
              */
             onFirstDataRendered: function (params) {
-                /* 최초 렌더링 이후 컬럼 폭 재조정 */
                 params.api.sizeColumnsToFit();
             }
         });
 
-        /* 생성된 AG Grid API 반환 */
+        /* AG Grid API 반환 */
         return gridTarget.__gridApi;
     }
 
@@ -409,7 +412,7 @@ var FacilityGrid = (function () {
      * 그리드 행 데이터 설정
      */
     function setRows(rowData) {
-        /* 그리드에 넣을 행 데이터 */
+        /* 행 데이터 기본값 */
         var rows = rowData || [];
 
         /* AG Grid 행 데이터 반영 */
@@ -434,11 +437,8 @@ var FacilityGrid = (function () {
         /* AG Grid API */
         var api = gridTarget && gridTarget.__gridApi;
 
-        /* 컬럼 폭 맞춤 가능 여부 확인 */
-        var canResize = api && typeof api.sizeColumnsToFit === "function";
-
-        /* 컬럼 폭 재조정 실행 */
-        if (canResize) {
+        /* 컬럼 폭 맞춤 */
+        if (api && typeof api.sizeColumnsToFit === "function") {
             api.sizeColumnsToFit();
         }
     }
@@ -450,13 +450,12 @@ var FacilityGrid = (function () {
         /* AG Grid API */
         var api = gridTarget && gridTarget.__gridApi;
 
-        /* CSV 내보내기 가능 여부 확인 */
-        var canExport = api && typeof api.exportDataAsCsv === "function";
+        /* 내보내기 가능 여부 */
+        if (!api || typeof api.exportDataAsCsv !== "function") {
+            return false;
+        }
 
-        /* 내보내기 불가 처리 */
-        if (!canExport) return false;
-
-        /* CSV 내보내기 실행 */
+        /* CSV 내보내기 */
         api.exportDataAsCsv({
             fileName: fileName || "facility-list.csv",
             columnKeys: [
@@ -488,24 +487,21 @@ var FacilityGrid = (function () {
         /* 행 데이터 배열 */
         var rows = [];
 
-        /* 노드 순회 가능 여부 확인 */
+        /* 노드 순회 불가 */
         if (!api || typeof api.forEachNode !== "function") {
             return rows;
         }
 
         /* 전체 노드 순회 */
         api.forEachNode(function (node) {
-            /* 행 데이터 존재 여부 */
-            var hasData = node && node.data;
-
-            /* 행 데이터 추가 */
-            if (hasData) {
+            if (node && node.data) {
                 rows.push(node.data);
             }
         });
 
         return rows;
     }
+
     /**
      * 현재 페이지 번호 조회
      * - AG Grid 현재 페이지 번호 반환
@@ -515,15 +511,12 @@ var FacilityGrid = (function () {
         /* AG Grid API */
         var api = gridTarget && gridTarget.__gridApi;
 
-        /* 페이지 조회 가능 여부 */
-        var canGetPage = api && typeof api.paginationGetCurrentPage === "function";
-
-        /* 페이지 조회 불가 처리 */
-        if (!canGetPage) {
+        /* 페이지 조회 불가 */
+        if (!api || typeof api.paginationGetCurrentPage !== "function") {
             return 0;
         }
 
-        /* 현재 페이지 번호 반환 */
+        /* 현재 페이지 반환 */
         return api.paginationGetCurrentPage();
     }
 
@@ -536,11 +529,8 @@ var FacilityGrid = (function () {
         /* AG Grid API */
         var api = gridTarget && gridTarget.__gridApi;
 
-        /* 페이지 이동 가능 여부 */
-        var canGoPage = api && typeof api.paginationGoToPage === "function";
-
-        /* 페이지 이동 불가 처리 */
-        if (!canGoPage) {
+        /* 페이지 이동 불가 */
+        if (!api || typeof api.paginationGoToPage !== "function") {
             return;
         }
 

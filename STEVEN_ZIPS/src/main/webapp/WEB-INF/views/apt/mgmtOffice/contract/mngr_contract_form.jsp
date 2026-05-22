@@ -85,6 +85,29 @@
         #contractFormPage .panel-title .material-symbols-rounded { font-size:17px; color:var(--accent); }
         #contractFormPage .panel-body { padding:16px; }
 
+        /* ── 상단 기본정보/협력업체 병렬 영역 ── */
+        #contractFormPage .contract-top-row {
+            display:grid;
+            grid-template-columns:minmax(0,1.25fr) minmax(420px,1fr);
+            gap:12px;
+            align-items:stretch;
+            margin-bottom:20px; /* 상단 기본정보/협력업체 묶음과 대상 시설 패널 사이 간격 */
+        }
+        #contractFormPage .contract-top-row .panel {
+            height:100%;
+            display:flex;
+            flex-direction:column;
+            margin-bottom:0; /* 간격은 contract-top-row에서만 관리 */
+        }
+        #contractFormPage .contract-top-row .panel-body { flex:1; }
+        #contractFormPage .partner-panel .form-grid { grid-template-columns:1fr; }
+        #contractFormPage .partner-panel .panel-body { display:flex; flex-direction:column; gap:12px; }
+        #contractFormPage .partner-panel .partner-select-row { grid-template-columns:minmax(0,1fr) auto; }
+        #contractFormPage .partner-file-section { margin-top:2px; padding-top:12px; border-top:1px solid var(--line); }
+        #contractFormPage .partner-sub-title { display:flex; align-items:center; gap:5px; margin-bottom:10px; font-size:12px; font-weight:800; color:var(--text-head); }
+        #contractFormPage .partner-sub-title .material-symbols-rounded { font-size:15px; color:var(--accent); }
+        #contractFormPage .partner-file-section .form-grid { grid-template-columns:1fr; gap:10px; }
+
         /* ── 폼 ── */
         #contractFormPage .form-grid {
             display:grid;
@@ -92,6 +115,7 @@
             gap:12px 14px;
         }
         #contractFormPage .form-grid.cols-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        #contractFormPage .partner-panel .form-grid.cols-2 { grid-template-columns:1fr; }
         #contractFormPage .form-field { display:flex; flex-direction:column; gap:5px; min-width:0; }
         #contractFormPage .form-field.full { grid-column:1 / -1; }
         #contractFormPage .form-field.half { grid-column:span 2; }
@@ -128,12 +152,82 @@
         }
         #contractFormPage .form-input[readonly] { background:#f8f9fb; color:#6b7280; }
 
+        /* ── 계약내용/비고 비율 : 계약내용을 더 넓게 표시 ── */
+        #contractFormPage .contract-content-grid {
+            display:grid;
+            grid-template-columns:minmax(0,2fr) minmax(260px,1fr);
+            gap:12px 14px;
+        }
+        #contractFormPage .contract-content-grid .form-textarea { min-height:124px; }
+
         /* ── 협력업체 선택 + 신규 등록 버튼 ── */
         #contractFormPage .partner-select-row {
             display:grid;
             grid-template-columns:minmax(0,1fr) auto;
             gap:7px;
             align-items:center;
+        }
+        #contractFormPage .partner-search-wrap {
+            position:relative;
+            min-width:0;
+        }
+        #contractFormPage .partner-native-select {
+            display:none;
+        }
+        #contractFormPage .partner-search-list {
+            display:none;
+            position:absolute;
+            left:0;
+            right:0;
+            top:calc(100% + 4px);
+            z-index:30;
+            max-height:220px;
+            overflow-y:auto;
+            border:1px solid var(--line);
+            border-radius:4px;
+            background:#fff;
+            box-shadow:0 8px 18px rgba(15,23,42,.12);
+        }
+        #contractFormPage .partner-search-list.open {
+            display:block;
+        }
+        #contractFormPage .partner-search-row {
+            width:100%;
+            border:0;
+            border-bottom:1px solid #eef1f3;
+            background:#fff;
+            padding:9px 10px;
+            text-align:left;
+            cursor:pointer;
+            font-family:'Noto Sans KR',sans-serif;
+        }
+        #contractFormPage .partner-search-row:last-child {
+            border-bottom:none;
+        }
+        #contractFormPage .partner-search-row:hover,
+        #contractFormPage .partner-search-row.is-active {
+            background:#f8fbf8;
+        }
+        #contractFormPage .partner-search-main {
+            display:block;
+            font-size:12px;
+            font-weight:800;
+            color:#1f2937;
+        }
+        #contractFormPage .partner-search-sub {
+            display:block;
+            margin-top:3px;
+            font-size:11px;
+            color:#7a8a7d;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        #contractFormPage .partner-search-empty {
+            padding:14px 10px;
+            font-size:12px;
+            color:var(--text-ter);
+            text-align:center;
         }
         #contractFormPage .partner-guide {
             display:flex;
@@ -203,7 +297,7 @@
         }
         #contractFormPage .file-row {
             display:grid;
-            grid-template-columns:1fr 110px 82px;
+            grid-template-columns:1fr 96px 128px;
             align-items:center;
             min-height:40px;
             padding:0 10px;
@@ -213,6 +307,13 @@
         #contractFormPage .file-row:last-child { border-bottom:none; }
         #contractFormPage .file-name { font-weight:700; color:#1f2d23; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         #contractFormPage .file-meta { color:#66736a; font-size:11px; text-align:center; }
+        #contractFormPage .file-actions { display:flex; align-items:center; justify-content:center; gap:8px; white-space:nowrap; }
+        #contractFormPage .file-view-link { height:26px; min-height:26px; padding:0 8px; font-size:11px; }
+        #contractFormPage .selected-file-list { margin-top:8px; border:1px solid var(--line); border-radius:4px; overflow:hidden; background:#fff; }
+        #contractFormPage .selected-file-row { display:grid; grid-template-columns:1fr 86px 66px; align-items:center; min-height:34px; padding:0 9px; border-bottom:1px solid #eef1f3; font-size:12px; }
+        #contractFormPage .selected-file-row:last-child { border-bottom:none; }
+        #contractFormPage .selected-file-name { font-weight:700; color:#1f2d23; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #contractFormPage .selected-file-meta { color:#66736a; font-size:11px; text-align:center; white-space:nowrap; }
 
         /* ── 하단 버튼 ── */
         #contractFormPage .form-actions {
@@ -262,12 +363,14 @@
         #contractFormPage .is-hidden { display:none !important; }
 
         @media(max-width:1200px) {
+            #contractFormPage .contract-top-row { grid-template-columns:1fr; }
             #contractFormPage .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
             #contractFormPage .choice-layout { grid-template-columns:1fr; }
         }
         @media(max-width:760px) {
             #contractFormPage .form-grid,
-            #contractFormPage .form-grid.cols-2 { grid-template-columns:1fr; }
+            #contractFormPage .form-grid.cols-2,
+            #contractFormPage .contract-content-grid { grid-template-columns:1fr; }
             #contractFormPage .form-field.half { grid-column:1; }
             #contractFormPage .page-header { flex-direction:column; align-items:flex-start; gap:8px; }
             #contractFormPage .form-actions { justify-content:flex-start; flex-wrap:wrap; }
@@ -320,135 +423,155 @@
                     <input type="hidden" name="fileGroupNo" value="${contract.fileGroupNo}">
                     <input type="hidden" id="formMode" value="${empty mode ? 'insert' : mode}">
 
-                    <%-- 계약 기본정보 --%>
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title"><span class="material-symbols-rounded">description</span>계약 기본정보</h3>
-                        </div>
+                    <%-- 계약 기본정보 / 협력업체 : 같은 높이의 병렬 패널 --%>
+                    <div class="contract-top-row">
+                        <%-- 계약 기본정보 --%>
+                        <div class="panel contract-basic-panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title"><span class="material-symbols-rounded">description</span>계약 기본정보</h3>
+                            </div>
 
-                        <div class="panel-body">
-                            <div class="form-grid">
-                                <c:if test="${mode eq 'update'}">
-                                    <div class="form-field">
-                                        <label class="field-label">계약번호</label>
-                                        <input type="text" class="form-input" value="${contract.contNo}" readonly>
+                            <div class="panel-body">
+                                <div class="form-grid cols-2">
+                                    <c:if test="${mode eq 'update'}">
+                                        <div class="form-field">
+                                            <label class="field-label">계약번호</label>
+                                            <input type="text" class="form-input" value="${contract.contNo}" readonly>
+                                        </div>
+                                    </c:if>
+
+                                    <div class="form-field half">
+                                        <label class="field-label" for="contNm">계약명<span class="required">*</span></label>
+                                        <input type="text" class="form-input" id="contNm" name="contNm"
+                                               value="${fn:escapeXml(contract.contNm)}"
+                                               placeholder="예: 승강기 정기 유지보수 계약" required>
                                     </div>
-                                </c:if>
 
-                                <div class="form-field half">
-                                    <label class="field-label" for="contNm">계약명<span class="required">*</span></label>
-                                    <input type="text" class="form-input" id="contNm" name="contNm"
-                                           value="${fn:escapeXml(contract.contNm)}"
-                                           placeholder="예: 승강기 정기 유지보수 계약" required>
-                                </div>
+                                    <div class="form-field">
+                                        <label class="field-label" for="contTyCd">계약유형<span class="required">*</span></label>
+                                        <select class="form-select" id="contTyCd" name="contTyCd" required>
+                                            <option value="">계약유형 선택</option>
+                                            <c:forEach var="type" items="${contractTypeList}">
+                                                <option value="${type.code}" <c:if test="${contract.contTyCd eq type.code}">selected</c:if>>
+                                                    <c:out value="${type.codeNm}"/>
+                                                </option>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
 
-                                <div class="form-field">
-                                    <label class="field-label" for="contTyCd">계약유형<span class="required">*</span></label>
-                                    <select class="form-select" id="contTyCd" name="contTyCd" required>
-                                        <option value="">선택</option>
-                                        <option value="MAINT"   <c:if test="${contract.contTyCd eq 'MAINT'}">selected</c:if>>유지보수</option>
-                                        <option value="REPAIR"  <c:if test="${contract.contTyCd eq 'REPAIR'}">selected</c:if>>보수공사</option>
-                                        <option value="INSTALL" <c:if test="${contract.contTyCd eq 'INSTALL'}">selected</c:if>>설치공사</option>
-                                        <option value="SERVICE" <c:if test="${contract.contTyCd eq 'SERVICE'}">selected</c:if>>용역</option>
-                                        <option value="METER"   <c:if test="${contract.contTyCd eq 'METER'}">selected</c:if>>검침</option>
-                                        <option value="ETC"     <c:if test="${contract.contTyCd eq 'ETC'}">selected</c:if>>기타</option>
-                                    </select>
-                                </div>
+                                    <div class="form-field">
+                                        <label class="field-label" for="contTargetCd">대상구분<span class="required">*</span></label>
+                                        <select class="form-select" id="contTargetCd" name="contTargetCd" required>
+                                            <option value="FACILITY" <c:if test="${empty contract.contTargetCd or contract.contTargetCd eq 'FACILITY'}">selected</c:if>>시설</option>
+                                            <option value="COMMON"   <c:if test="${contract.contTargetCd eq 'COMMON'}">selected</c:if>>단지공통</option>
+                                            <option value="METER"    <c:if test="${contract.contTargetCd eq 'METER'}">selected</c:if>>검침</option>
+                                            <option value="ETC"      <c:if test="${contract.contTargetCd eq 'ETC'}">selected</c:if>>기타</option>
+                                        </select>
+                                    </div>
 
-                                <div class="form-field">
-                                    <label class="field-label" for="contTargetCd">대상구분<span class="required">*</span></label>
-                                    <select class="form-select" id="contTargetCd" name="contTargetCd" required>
-                                        <option value="FACILITY" <c:if test="${empty contract.contTargetCd or contract.contTargetCd eq 'FACILITY'}">selected</c:if>>시설</option>
-                                        <option value="COMMON"   <c:if test="${contract.contTargetCd eq 'COMMON'}">selected</c:if>>단지공통</option>
-                                        <option value="METER"    <c:if test="${contract.contTargetCd eq 'METER'}">selected</c:if>>검침</option>
-                                        <option value="ETC"      <c:if test="${contract.contTargetCd eq 'ETC'}">selected</c:if>>기타</option>
-                                    </select>
-                                </div>
+                                    <div class="form-field">
+                                        <label class="field-label" for="bidTyCd">입찰유형<span class="required">*</span></label>
+                                        <select class="form-select" id="bidTyCd" name="bidTyCd" required>
+                                            <option value="PRT" <c:if test="${empty contract.bidTyCd or contract.bidTyCd eq 'PRT'}">selected</c:if>>수의계약</option>
+                                            <option value="GEN" <c:if test="${contract.bidTyCd eq 'GEN'}">selected</c:if>>일반경쟁입찰</option>
+                                            <option value="LIM" <c:if test="${contract.bidTyCd eq 'LIM'}">selected</c:if>>제한경쟁입찰</option>
+                                            <option value="SEL" <c:if test="${contract.bidTyCd eq 'SEL'}">selected</c:if>>지명경쟁입찰</option>
+                                        </select>
+                                    </div>
 
-                                <div class="form-field">
-                                    <label class="field-label" for="bidTyCd">입찰유형<span class="required">*</span></label>
-                                    <select class="form-select" id="bidTyCd" name="bidTyCd" required>
-                                        <option value="PRIVATE"   <c:if test="${empty contract.bidTyCd or contract.bidTyCd eq 'PRIVATE'}">selected</c:if>>수의계약</option>
-                                        <option value="OPEN"      <c:if test="${contract.bidTyCd eq 'OPEN'}">selected</c:if>>일반경쟁</option>
-                                        <option value="LIMIT"     <c:if test="${contract.bidTyCd eq 'LIMIT'}">selected</c:if>>제한경쟁</option>
-                                        <option value="DESIGNATE" <c:if test="${contract.bidTyCd eq 'DESIGNATE'}">selected</c:if>>지명경쟁</option>
-                                    </select>
-                                </div>
+                                    <div class="form-field">
+                                        <label class="field-label" for="contSttsCd">계약상태</label>
+                                        <select class="form-select" id="contSttsCd" name="contSttsCd">
+                                            <option value="DRAFT"  <c:if test="${contract.contSttsCd eq 'DRAFT'}">selected</c:if>>작성중</option>
+                                            <option value="ACTIVE" <c:if test="${empty contract.contSttsCd or contract.contSttsCd eq 'ACTIVE'}">selected</c:if>>유효</option>
+                                            <option value="END"    <c:if test="${contract.contSttsCd eq 'END'}">selected</c:if>>종료</option>
+                                            <option value="TERM"   <c:if test="${contract.contSttsCd eq 'TERM'}">selected</c:if>>해지</option>
+                                        </select>
+                                    </div>
 
-                                <div class="form-field">
-                                    <label class="field-label" for="contSttsCd">계약상태</label>
-                                    <select class="form-select" id="contSttsCd" name="contSttsCd">
-                                        <option value="ING"  <c:if test="${empty contract.contSttsCd or contract.contSttsCd eq 'ING'}">selected</c:if>>진행중</option>
-                                        <option value="EXP"  <c:if test="${contract.contSttsCd eq 'EXP'}">selected</c:if>>만료</option>
-                                        <option value="CNL"  <c:if test="${contract.contSttsCd eq 'CNL'}">selected</c:if>>해지</option>
-                                        <option value="WAIT" <c:if test="${contract.contSttsCd eq 'WAIT'}">selected</c:if>>대기</option>
-                                    </select>
-                                </div>
+                                    <div class="form-field">
+                                        <label class="field-label" for="contAmt">계약금액<span class="required">*</span></label>
+                                        <input type="number" class="form-input" id="contAmt" name="contAmt"
+                                               value="${contract.contAmt}" min="0" placeholder="숫자만 입력" required>
+                                    </div>
 
-                                <div class="form-field">
-                                    <label class="field-label" for="contAmt">계약금액<span class="required">*</span></label>
-                                    <input type="number" class="form-input" id="contAmt" name="contAmt"
-                                           value="${contract.contAmt}" min="0" placeholder="숫자만 입력" required>
-                                </div>
+                                    <div class="form-field">
+                                        <label class="field-label" for="contDt">계약일자</label>
+                                        <input type="date" class="form-input" id="contDt" name="contDt" value="${contract.contDt}">
+                                    </div>
 
-                                <div class="form-field">
-                                    <label class="field-label" for="contDt">계약일자</label>
-                                    <input type="date" class="form-input" id="contDt" name="contDt" value="${contract.contDt}">
-                                </div>
+                                    <div class="form-field">
+                                        <label class="field-label" for="contBgngDt">계약시작일<span class="required">*</span></label>
+                                        <input type="date" class="form-input" id="contBgngDt" name="contBgngDt" value="${contract.contBgngDt}" required>
+                                    </div>
 
-                                <div class="form-field">
-                                    <label class="field-label" for="contBgngDt">계약시작일<span class="required">*</span></label>
-                                    <input type="date" class="form-input" id="contBgngDt" name="contBgngDt" value="${contract.contBgngDt}" required>
-                                </div>
+                                    <div class="form-field">
+                                        <label class="field-label" for="contEndDt">계약종료일</label>
+                                        <input type="date" class="form-input" id="contEndDt" name="contEndDt" value="${contract.contEndDt}">
+                                    </div>
 
-                                <div class="form-field">
-                                    <label class="field-label" for="contEndDt">계약종료일</label>
-                                    <input type="date" class="form-input" id="contEndDt" name="contEndDt" value="${contract.contEndDt}">
-                                </div>
-
-                                <div class="form-field">
-                                    <label class="field-label" for="pymtDt">지급예정일</label>
-                                    <input type="date" class="form-input" id="pymtDt" name="pymtDt" value="${contract.pymtDt}">
+                                    <div class="form-field">
+                                        <label class="field-label" for="pymtDt">지급예정일</label>
+                                        <input type="date" class="form-input" id="pymtDt" name="pymtDt" value="${contract.pymtDt}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <%-- 협력업체 --%>
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title"><span class="material-symbols-rounded">business</span>협력업체</h3>
-                        </div>
+                        <%-- 협력업체 --%>
+                        <div class="panel partner-panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title"><span class="material-symbols-rounded">business</span>협력업체</h3>
+                            </div>
 
-                        <div class="panel-body">
-                            <div class="form-grid cols-2">
-                                <div class="form-field">
-                                    <label class="field-label" for="partnerNo">협력업체<span class="required">*</span></label>
-                                    <div class="partner-select-row">
-                                        <select class="form-select" id="partnerNo" name="partnerNo" required>
-                                            <option value="">협력업체 선택</option>
-                                            <c:forEach var="partner" items="${partnerList}">
-                                                <option value="${partner.partnerNo}"
-                                                        data-name="${fn:escapeXml(partner.partnerNm)}"
-                                                        data-biz="${fn:escapeXml(partner.bizTyNm)}"
-                                                        data-pic="${fn:escapeXml(partner.picNm)}"
-                                                        data-tel="${fn:escapeXml(partner.picTelno)}"
-                                                        <c:if test="${contract.partnerNo eq partner.partnerNo}">selected</c:if>>
-                                                        ${partner.partnerNm} (${partner.bizTyNm})
-                                                </option>
-                                            </c:forEach>
+                            <div class="panel-body">
+                                <div class="form-grid cols-2">
+                                    <div class="form-field">
+                                        <label class="field-label" for="partnerNo">협력업체<span class="required">*</span></label>
+                                        <div class="partner-select-row">
+                                            <%-- 실제 제출값은 select의 partnerNo를 사용하고, 화면에서는 검색 input으로 선택한다. --%>
+                                            <div class="partner-search-wrap">
+                                                <input type="text"
+                                                       class="form-input"
+                                                       id="partnerSearchInput"
+                                                       autocomplete="off"
+                                                       placeholder="업체명, 업종, 담당자, 연락처 검색"
+                                                       required>
+                                                <div class="partner-search-list" id="partnerSearchList"></div>
 
-                                            <%-- 화면 확인용 샘플 : DB 연결 후 제거 가능 --%>
-                                            <c:if test="${empty partnerList}">
-                                                <option value="PTR3002" data-name="SH승강기관리" data-biz="승강기 유지보수" data-pic="김현우" data-tel="010-3002-3002" <c:if test="${empty contract.partnerNo or contract.partnerNo eq 'PTR3002'}">selected</c:if>>SH승강기관리 (승강기 유지보수)</option>
-                                                <option value="PTR3003" data-name="SH성산 설비검침대행" data-biz="전기·수도·가스 검침" data-pic="박검침" data-tel="010-3003-3003" <c:if test="${contract.partnerNo eq 'PTR3003'}">selected</c:if>>SH성산 설비검침대행 (전기·수도·가스 검침)</option>
-                                            </c:if>
-                                        </select>
+                                                <select class="form-select partner-native-select" id="partnerNo" name="partnerNo" tabindex="-1">
+                                                    <option value="">협력업체 선택</option>
+                                                    <c:forEach var="partner" items="${partnerList}">
+                                                        <option value="${partner.partnerNo}"
+                                                                data-name="${fn:escapeXml(partner.partnerNm)}"
+                                                                data-biz="${fn:escapeXml(partner.bizTyNm)}"
+                                                                data-pic="${fn:escapeXml(partner.picNm)}"
+                                                                data-tel="${fn:escapeXml(partner.picTelno)}"
+                                                                <c:if test="${contract.partnerNo eq partner.partnerNo}">selected</c:if>>
+                                                                ${partner.partnerNm} (${partner.bizTyNm})
+                                                        </option>
+                                                    </c:forEach>
 
-                                        <button type="button" class="btn" id="openPartnerRegisterModalBtn">
-                                            <span class="material-symbols-rounded">add_business</span>
-                                            신규 업체
-                                        </button>
+                                                    <%-- 화면 확인용 샘플 : DB 연결 후 제거 가능 --%>
+                                                    <c:if test="${empty partnerList}">
+                                                        <option value="PTR3002" data-name="SH승강기관리" data-biz="승강기 유지보수" data-pic="김현우" data-tel="010-3002-3002" <c:if test="${empty contract.partnerNo or contract.partnerNo eq 'PTR3002'}">selected</c:if>>SH승강기관리 (승강기 유지보수)</option>
+                                                        <option value="PTR3003" data-name="SH성산 설비검침대행" data-biz="전기·수도·가스 검침" data-pic="박검침" data-tel="010-3003-3003" <c:if test="${contract.partnerNo eq 'PTR3003'}">selected</c:if>>SH성산 설비검침대행 (전기·수도·가스 검침)</option>
+                                                    </c:if>
+                                                </select>
+                                            </div>
+
+                                            <button type="button" class="btn" id="openPartnerRegisterModalBtn">
+                                                <span class="material-symbols-rounded">add_business</span>
+                                                신규 업체
+                                            </button>
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label">선택 업체 정보</label>
+                                        <input type="text" class="form-input" id="partnerSummary" readonly placeholder="협력업체를 선택하면 담당자 정보가 표시됩니다.">
                                     </div>
 
                                     <div class="partner-guide">
@@ -460,9 +583,66 @@
                                     </div>
                                 </div>
 
-                                <div class="form-field">
-                                    <label class="field-label">선택 업체 정보</label>
-                                    <input type="text" class="form-input" id="partnerSummary" readonly placeholder="협력업체를 선택하면 담당자 정보가 표시됩니다.">
+                                <%-- 계약서 첨부파일 : 협력업체 패널 하단 배치 --%>
+                                <div class="partner-file-section">
+                                    <div class="partner-sub-title">
+                                        <span class="material-symbols-rounded">attach_file</span>계약서 첨부파일
+                                    </div>
+                                    <div class="form-grid">
+                                        <div class="form-field full">
+                                            <label class="field-label" for="contractFiles">계약서 파일</label>
+                                            <input type="file" class="form-input" id="contractFiles" name="contractFiles" multiple>
+                                            <div class="field-help">계약서 관련 파일을 첨부합니다. 파일을 선택하면 아래에 선택한 파일명이 표시됩니다.</div>
+                                            <div class="selected-file-list is-hidden" id="selectedContractFileList"></div>
+                                        </div>
+
+                                        <c:if test="${mode eq 'update'}">
+                                            <div class="form-field full">
+                                                <label class="field-label">기존 첨부파일</label>
+
+                                                <c:choose>
+                                                    <c:when test="${not empty contract.fileList}">
+                                                        <div class="file-list">
+                                                            <c:forEach var="file" items="${contract.fileList}">
+                                                                <div class="file-row">
+                                                                    <div class="file-name"><c:out value="${file.fileOgName}"/></div>
+                                                                    <div class="file-meta">
+                                                                        <c:choose>
+                                                                            <c:when test="${file.fileSize ge 1048576}">
+                                                                                <fmt:formatNumber value="${file.fileSize / 1048576}" pattern="#,##0.0"/>MB
+                                                                            </c:when>
+                                                                            <c:when test="${file.fileSize ge 1024}">
+                                                                                <fmt:formatNumber value="${file.fileSize / 1024}" pattern="#,##0.0"/>KB
+                                                                            </c:when>
+                                                                            <c:otherwise>
+                                                                                <c:out value="${file.fileSize}"/>B
+                                                                            </c:otherwise>
+                                                                        </c:choose>
+                                                                    </div>
+                                                                    <div class="file-actions">
+                                                                            <%-- 수정 화면 기존 첨부파일은 보기 버튼으로 새 창에서 확인 --%>
+                                                                        <c:url var="fileViewUrl" value="/manager/facility/contract/file/view">
+                                                                            <c:param name="fileGroupNo" value="${file.fileGroupNo}" />
+                                                                            <c:param name="fileSaveUuid" value="${file.fileSaveUuid}" />
+                                                                        </c:url>
+                                                                        <a class="btn file-view-link" href="${fileViewUrl}" target="_blank" rel="noopener">보기</a>
+                                                                        <label>
+                                                                            <input type="checkbox" name="deleteFileSaveUuidList" value="${file.fileSaveUuid}">
+                                                                            삭제
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </c:forEach>
+                                                        </div>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <div class="empty-row">등록된 첨부파일이 없습니다.</div>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                        </c:if>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -539,6 +719,23 @@
                         </div>
                     </div>
 
+                    <%-- 설치공사 안내 : 설치공사는 시설 등록 후 계약 연결 가능 --%>
+                    <div class="panel is-hidden" id="installGuidePanel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><span class="material-symbols-rounded">construction</span>설치공사 계약 안내</h3>
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="partner-guide">
+                                <span class="material-symbols-rounded">info</span>
+                                <span>
+                                    설치공사는 시설이 아직 등록되지 않은 상태에서도 계약을 먼저 저장할 수 있습니다.
+                                    이후 시설자산 등록 화면에서 해당 설치공사 계약을 선택하면 신규 시설과 연결됩니다.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     <%-- 검침 설정 : 대상구분이 검침일 때 UTILITY_PROVIDER 생성/수정용 --%>
                     <div class="panel is-hidden" id="meterSettingPanel">
                         <div class="panel-header">
@@ -564,8 +761,8 @@
                                     <label class="field-label" for="extCustNo">외부 고객번호</label>
                                     <input type="text" class="form-input" id="extCustNo" name="extCustNo"
                                            value="${fn:escapeXml(contract.extCustNo)}"
-                                           placeholder="예: CUST-A12185003-003">
-                                    <div class="field-help">한전/수도/가스 공급기관 또는 대행업체 고객번호입니다.</div>
+                                           placeholder="예: 한전/수도/가스 고객번호 또는 대행업체 고객코드">
+                                    <div class="field-help">외부 기관에서 별도로 부여한 고객번호가 있을 때만 입력합니다. 없으면 비워둘 수 있습니다.</div>
                                 </div>
 
                                 <div class="form-field full">
@@ -584,75 +781,18 @@
                         </div>
 
                         <div class="panel-body">
-                            <div class="form-grid">
-                                <div class="form-field full">
+                            <div class="contract-content-grid">
+                                <div class="form-field">
                                     <label class="field-label" for="contCn">계약내용</label>
                                     <textarea class="form-textarea" id="contCn" name="contCn"
                                               placeholder="계약 범위, 주요 조건, 작업 내용을 입력하세요.">${fn:escapeXml(contract.contCn)}</textarea>
                                 </div>
 
-                                <div class="form-field full">
+                                <div class="form-field">
                                     <label class="field-label" for="rmrkCn">비고</label>
                                     <textarea class="form-textarea" id="rmrkCn" name="rmrkCn"
                                               placeholder="내부 참고사항을 입력하세요.">${fn:escapeXml(contract.rmrkCn)}</textarea>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <%-- 계약서 첨부파일 --%>
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h3 class="panel-title"><span class="material-symbols-rounded">attach_file</span>계약서 첨부파일</h3>
-                        </div>
-
-                        <div class="panel-body">
-                            <div class="form-grid">
-                                <div class="form-field full">
-                                    <label class="field-label" for="contractFiles">계약서 파일</label>
-                                    <input type="file" class="form-input" id="contractFiles" name="contractFiles" multiple>
-                                    <div class="field-help">계약서, 견적서, 산출내역서 등 계약 관련 파일을 첨부합니다. FACILITY_CONTRACT.FILE_GROUP_NO 기준으로 저장합니다.</div>
-                                </div>
-
-                                <c:if test="${mode eq 'update'}">
-                                    <div class="form-field full">
-                                        <label class="field-label">기존 첨부파일</label>
-
-                                        <c:choose>
-                                            <c:when test="${not empty contract.fileList}">
-                                                <div class="file-list">
-                                                    <c:forEach var="file" items="${contract.fileList}">
-                                                        <div class="file-row">
-                                                            <div class="file-name"><c:out value="${file.fileOgName}"/></div>
-                                                            <div class="file-meta">
-                                                                <c:choose>
-                                                                    <c:when test="${file.fileSize ge 1048576}">
-                                                                        <fmt:formatNumber value="${file.fileSize / 1048576}" pattern="#,##0.0"/>MB
-                                                                    </c:when>
-                                                                    <c:when test="${file.fileSize ge 1024}">
-                                                                        <fmt:formatNumber value="${file.fileSize / 1024}" pattern="#,##0.0"/>KB
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <c:out value="${file.fileSize}"/>B
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </div>
-                                                            <div class="file-meta">
-                                                                <label>
-                                                                    <input type="checkbox" name="deleteFileSaveUuidList" value="${file.fileSaveUuid}">
-                                                                    삭제
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </c:forEach>
-                                                </div>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <div class="empty-row">등록된 첨부파일이 없습니다.</div>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                </c:if>
                             </div>
                         </div>
                     </div>
@@ -784,6 +924,8 @@
         document.addEventListener('DOMContentLoaded', function () {
             var targetSelect = document.getElementById('contTargetCd');
             var partnerSelect = document.getElementById('partnerNo');
+            var partnerSearchInput = document.getElementById('partnerSearchInput');
+            var partnerSearchList = document.getElementById('partnerSearchList');
             var facilitySearchInput = document.getElementById('facilitySearchInput');
             var contractForm = document.getElementById('contractForm');
             var partnerRegisterOpenBtn = document.getElementById('openPartnerRegisterModalBtn');
@@ -791,6 +933,7 @@
             var partnerRegisterCancelBtn = document.getElementById('cancelPartnerRegisterModalBtn');
             var partnerRegisterModal = document.getElementById('contractPartnerRegisterModal');
             var makeCsvKeyBtn = document.getElementById('makeCsvKeyBtn');
+            var contractFilesInput = document.getElementById('contractFiles');
 
             /* 대상구분 변경 이벤트 */
             if (targetSelect) {
@@ -803,10 +946,25 @@
                 }
             }
 
-            /* 협력업체 변경 이벤트 */
+            /* 협력업체 검색/선택 이벤트 */
             if (partnerSelect) {
-                partnerSelect.addEventListener('change', updatePartnerSummary);
+                partnerSelect.addEventListener('change', function () {
+                    syncPartnerSearchInput();
+                    updatePartnerSummary();
+                });
             }
+
+            if (partnerSearchInput) {
+                partnerSearchInput.addEventListener('input', filterPartnerChoices);
+                partnerSearchInput.addEventListener('focus', filterPartnerChoices);
+                partnerSearchInput.addEventListener('keydown', handlePartnerSearchKeydown);
+            }
+
+            if (partnerSearchList) {
+                partnerSearchList.addEventListener('mousedown', selectPartnerFromSearch);
+            }
+
+            document.addEventListener('click', closePartnerSearchListByOutsideClick);
 
             /* 시설 검색 이벤트 */
             if (facilitySearchInput) {
@@ -823,6 +981,12 @@
             /* CSV 식별키 자동생성 버튼 */
             if (makeCsvKeyBtn) {
                 makeCsvKeyBtn.addEventListener('click', makeCsvIdntfKey);
+            }
+
+            /* 새 첨부파일 선택 목록 표시 */
+            if (contractFilesInput) {
+                contractFilesInput.addEventListener('change', renderSelectedContractFiles);
+                renderSelectedContractFiles();
             }
 
             /* 저장 전 최소 검증 */
@@ -853,6 +1017,7 @@
             }
 
             toggleTargetPanels();
+            syncPartnerSearchInput();
             updatePartnerSummary();
             renderSelectedFacilities();
         });
@@ -878,6 +1043,176 @@
             var partnerNo = partnerSelect.value;
 
             csvInput.value = 'CSV_' + aptCmplexNo + '_' + partnerNo;
+        }
+
+        /* ============================================================
+           협력업체 검색 선택
+           - 서버 추가 조회 없이 JSP에 내려온 partner option을 기준으로 필터링한다.
+           - 사용자가 결과를 클릭하면 실제 제출값인 partnerNo select 값이 세팅된다.
+        ============================================================ */
+        function getPartnerOptions() {
+            var select = document.getElementById('partnerNo');
+
+            if (!select) return [];
+
+            return Array.prototype.slice.call(select.options || []).filter(function (option) {
+                return !!option.value;
+            });
+        }
+
+        function syncPartnerSearchInput() {
+            var select = document.getElementById('partnerNo');
+            var input = document.getElementById('partnerSearchInput');
+
+            if (!select || !input) return;
+
+            var option = select.options[select.selectedIndex];
+
+            if (!option || !option.value) {
+                input.value = '';
+                return;
+            }
+
+            input.value = getPartnerOptionLabel(option);
+        }
+
+        function filterPartnerChoices() {
+            var input = document.getElementById('partnerSearchInput');
+            var list = document.getElementById('partnerSearchList');
+
+            if (!input || !list) return;
+
+            var keyword = String(input.value || '').toLowerCase().trim();
+            var options = getPartnerOptions();
+            var matchedOptions = options.filter(function (option) {
+                return getPartnerSearchText(option).indexOf(keyword) > -1;
+            }).slice(0, 12);
+
+            renderPartnerSearchList(matchedOptions, keyword);
+        }
+
+        function renderPartnerSearchList(options, keyword) {
+            var list = document.getElementById('partnerSearchList');
+
+            if (!list) return;
+
+            if (options.length === 0) {
+                list.innerHTML = '<div class="partner-search-empty">검색된 협력업체가 없습니다.</div>';
+                list.classList.add('open');
+                return;
+            }
+
+            var html = '';
+
+            options.forEach(function (option, index) {
+                var name = option.dataset.name || getPartnerOptionLabel(option);
+                var biz = option.dataset.biz || '';
+                var pic = option.dataset.pic || '';
+                var tel = option.dataset.tel || '';
+                var subText = [];
+
+                if (biz) subText.push(biz);
+                if (pic) subText.push('담당자 ' + pic);
+                if (tel) subText.push(tel);
+
+                html += '<button type="button" class="partner-search-row' + (index === 0 ? ' is-active' : '') + '" data-partner-value="' + escapeHtml(option.value) + '">';
+                html += '    <span class="partner-search-main">' + escapeHtml(name) + '</span>';
+                html += '    <span class="partner-search-sub">' + escapeHtml(subText.join(' / ') || '상세 정보 없음') + '</span>';
+                html += '</button>';
+            });
+
+            list.innerHTML = html;
+            list.classList.add('open');
+        }
+
+        function selectPartnerFromSearch(event) {
+            var row = event.target.closest('.partner-search-row');
+
+            if (!row) return;
+
+            var select = document.getElementById('partnerNo');
+            var list = document.getElementById('partnerSearchList');
+
+            if (!select) return;
+
+            select.value = row.dataset.partnerValue || '';
+            syncPartnerSearchInput();
+            updatePartnerSummary();
+
+            if (list) {
+                list.classList.remove('open');
+            }
+        }
+
+        function handlePartnerSearchKeydown(event) {
+            var list = document.getElementById('partnerSearchList');
+
+            if (!list || !list.classList.contains('open')) return;
+
+            var rows = Array.prototype.slice.call(list.querySelectorAll('.partner-search-row'));
+
+            if (rows.length === 0) return;
+
+            var activeIndex = rows.findIndex(function (row) {
+                return row.classList.contains('is-active');
+            });
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                setActivePartnerSearchRow(rows, activeIndex + 1);
+            }
+
+            if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                setActivePartnerSearchRow(rows, activeIndex - 1);
+            }
+
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                rows[Math.max(activeIndex, 0)].dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+            }
+
+            if (event.key === 'Escape') {
+                list.classList.remove('open');
+            }
+        }
+
+        function setActivePartnerSearchRow(rows, index) {
+            var safeIndex = index;
+
+            if (safeIndex < 0) safeIndex = rows.length - 1;
+            if (safeIndex >= rows.length) safeIndex = 0;
+
+            rows.forEach(function (row) {
+                row.classList.remove('is-active');
+            });
+
+            rows[safeIndex].classList.add('is-active');
+            rows[safeIndex].scrollIntoView({ block: 'nearest' });
+        }
+
+        function closePartnerSearchListByOutsideClick(event) {
+            var wrap = event.target.closest('.partner-search-wrap');
+            var list = document.getElementById('partnerSearchList');
+
+            if (!wrap && list) {
+                list.classList.remove('open');
+            }
+        }
+
+        function getPartnerSearchText(option) {
+            return [
+                option.value,
+                option.dataset.name,
+                option.dataset.biz,
+                option.dataset.pic,
+                option.dataset.tel,
+                option.textContent
+            ].join(' ').toLowerCase();
+        }
+
+        function getPartnerOptionLabel(option) {
+            return (option.dataset.name || String(option.textContent || '').trim()).trim();
         }
 
         /* ============================================================
@@ -915,37 +1250,52 @@
            대상구분별 패널 제어
         ============================================================ */
         function toggleTargetPanels() {
-            var contTyCdSelect  = document.getElementById('contTyCd');
-            var targetSelect    = document.getElementById('contTargetCd');
+            var contTyCdSelect = document.getElementById('contTyCd');
+            var targetSelect = document.getElementById('contTargetCd');
             var targetFacilityPanel = document.getElementById('targetFacilityPanel');
-            var meterSettingPanel   = document.getElementById('meterSettingPanel');
+            var meterSettingPanel = document.getElementById('meterSettingPanel');
+            var installGuidePanel = document.getElementById('installGuidePanel');
 
             if (!targetSelect) return;
 
-            /* 계약유형이 검침이면 대상구분 자동 고정 */
-            if (contTyCdSelect && contTyCdSelect.value === 'METER') {
-                targetSelect.value    = 'METER';
-                targetSelect.disabled = true;
-            } else {
-                targetSelect.disabled = false;
-            }
-
+            var contTyCd = contTyCdSelect ? contTyCdSelect.value : '';
             var targetValue = targetSelect.value;
 
-            if (targetFacilityPanel) {
-                if (targetValue === 'FACILITY') {
-                    targetFacilityPanel.classList.remove('is-hidden');
-                } else {
-                    targetFacilityPanel.classList.add('is-hidden');
+            /* 일단 전부 숨긴 뒤 필요한 영역만 다시 연다. */
+            if (targetFacilityPanel) targetFacilityPanel.classList.add('is-hidden');
+            if (meterSettingPanel) meterSettingPanel.classList.add('is-hidden');
+            if (installGuidePanel) installGuidePanel.classList.add('is-hidden');
+
+            /* 설치공사: 대상 시설 선택 대신 안내만 표시한다. */
+            if (contTyCd === 'INSTALL') {
+                targetSelect.value = 'FACILITY';
+
+                if (installGuidePanel) {
+                    installGuidePanel.classList.remove('is-hidden');
                 }
+
+                return;
             }
 
-            if (meterSettingPanel) {
-                if (targetValue === 'METER') {
-                    meterSettingPanel.classList.remove('is-hidden');
-                } else {
-                    meterSettingPanel.classList.add('is-hidden');
-                }
+            /* 검침: 검침 설정을 바로 입력할 수 있게 대상구분을 검침으로 맞춘다. */
+            if (contTyCd === 'METER') {
+                targetSelect.value = 'METER';
+                targetValue = 'METER';
+            }
+
+            /* 유지보수/보수공사: 기존 시설을 대상으로 보는 흐름이다. */
+            if (contTyCd === 'MAINT' || contTyCd === 'REPAIR') {
+                targetSelect.value = 'FACILITY';
+                targetValue = 'FACILITY';
+            }
+
+            /* 용역/기타는 강제로 숨기지 않고 대상구분 선택값을 그대로 따른다. */
+            if (targetValue === 'FACILITY' && targetFacilityPanel) {
+                targetFacilityPanel.classList.remove('is-hidden');
+            }
+
+            if (targetValue === 'METER' && meterSettingPanel) {
+                meterSettingPanel.classList.remove('is-hidden');
             }
         }
 
@@ -998,7 +1348,14 @@
             var checkedList = document.querySelectorAll('input[name="targetFacilityNoList"]:checked');
 
             if (checkedList.length === 0) {
-                box.innerHTML = '<div class="empty-row">선택된 시설이 없습니다.</div>';
+                var contTyCdSelect = document.getElementById('contTyCd');
+
+                if (contTyCdSelect && contTyCdSelect.value === 'INSTALL') {
+                    box.innerHTML = '<div class="empty-row">설치공사는 시설 등록 후 연결할 수 있습니다.</div>';
+                } else {
+                    box.innerHTML = '<div class="empty-row">선택된 시설이 없습니다.</div>';
+                }
+
                 return;
             }
 
@@ -1021,6 +1378,60 @@
         }
 
         /* ============================================================
+           새 첨부파일 선택 목록 표시
+           - 브라우저 기본 파일 input은 선택 파일명을 한 줄로만 보여준다.
+           - 여러 파일 선택 시 사용자가 확인할 수 있도록 파일명/크기/유형을 별도 목록으로 표시한다.
+        ============================================================ */
+        function renderSelectedContractFiles() {
+            var input = document.getElementById('contractFiles');
+            var box = document.getElementById('selectedContractFileList');
+
+            if (!input || !box) return;
+
+            var files = Array.prototype.slice.call(input.files || []);
+
+            if (files.length === 0) {
+                box.classList.add('is-hidden');
+                box.innerHTML = '';
+                return;
+            }
+
+            var html = '';
+
+            files.forEach(function (file) {
+                var ext = getSelectedFileExt(file.name);
+
+                html += '<div class="selected-file-row">';
+                html += '    <div class="selected-file-name">' + escapeHtml(file.name) + '</div>';
+                html += '    <div class="selected-file-meta">' + formatFileSize(file.size) + '</div>';
+                html += '    <div class="selected-file-meta">' + escapeHtml(ext ? ext.toUpperCase() : '-') + '</div>';
+                html += '</div>';
+            });
+
+            box.innerHTML = html;
+            box.classList.remove('is-hidden');
+        }
+
+        function getSelectedFileExt(fileName) {
+            if (!fileName || fileName.indexOf('.') === -1) return '';
+            return fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+        }
+
+        function formatFileSize(value) {
+            var size = Number(value || 0);
+
+            if (size >= 1024 * 1024) {
+                return (size / 1024 / 1024).toFixed(1) + 'MB';
+            }
+
+            if (size >= 1024) {
+                return (size / 1024).toFixed(1) + 'KB';
+            }
+
+            return size + 'B';
+        }
+
+        /* ============================================================
            저장 전 검증
         ============================================================ */
         function validateBeforeSubmit(event) {
@@ -1038,8 +1449,16 @@
             }
 
             if (!partnerNo || !partnerNo.value) {
+                var partnerSearchInput = document.getElementById('partnerSearchInput');
+
                 alertMessage('협력업체를 선택하세요.');
-                partnerNo.focus();
+
+                if (partnerSearchInput) {
+                    partnerSearchInput.focus();
+                } else if (partnerNo) {
+                    partnerNo.focus();
+                }
+
                 event.preventDefault();
                 return;
             }
@@ -1071,8 +1490,10 @@
 
             if (targetSelect && targetSelect.value === 'FACILITY') {
                 var checkedList = document.querySelectorAll('input[name="targetFacilityNoList"]:checked');
+                var contTyCdSelect = document.getElementById('contTyCd');
+                var isInstallContract = contTyCdSelect && contTyCdSelect.value === 'INSTALL';
 
-                if (checkedList.length === 0) {
+                if (!isInstallContract && checkedList.length === 0) {
                     alertMessage('대상 시설을 하나 이상 선택하세요.');
                     event.preventDefault();
                     return;

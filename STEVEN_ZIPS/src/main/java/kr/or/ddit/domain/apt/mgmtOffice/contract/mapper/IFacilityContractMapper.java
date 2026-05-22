@@ -49,6 +49,12 @@ public interface IFacilityContractMapper {
     /** 계약 첨부파일 목록 조회 */
     List<Map<String, Object>> selectContractFileList(Long fileGroupNo);
 
+    /** 계약유형 공통코드 목록 조회 */
+    List<Map<String, Object>> selectContractTypeList();
+
+    /** 시설 등록 화면용 연결 가능한 설치계약 목록 조회 */
+    List<Map<String, Object>> selectAvailableInstallContractList(String mgmtOfcNo);
+
     /** 계약 등록/수정 폼용 협력업체 목록 조회 */
     List<Map<String, Object>> selectContractPartnerList(String mgmtOfcNo);
 
@@ -63,6 +69,18 @@ public interface IFacilityContractMapper {
 
     /** 계약 대상 시설 등록 */
     int insertContractTarget(FacilityContractTargetVO target);
+
+    /** 계약 대상 시설 중복 건수 조회 */
+    int countContractTarget(
+            @Param("contNo") String contNo,
+            @Param("facilityNo") String facilityNo
+    );
+
+    /** 계약 대표 시설번호 수정 */
+    int updateContractMainFacilityNo(
+            @Param("contNo") String contNo,
+            @Param("facilityNo") String facilityNo
+    );
 
     /** 계약 대상 시설 전체 삭제 */
     int deleteContractTargets(String contNo);

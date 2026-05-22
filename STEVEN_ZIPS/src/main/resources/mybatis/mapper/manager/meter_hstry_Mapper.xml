@@ -29,6 +29,8 @@
         , mh.reg_dt
         , mh.mdf_dt
         , up.utility_provider_no
+        , up.meter_ty_cd
+        , meter_ty.code_name as meter_ty_nm
         , up.csv_idntf_key
         , up.ext_cust_no
         , p.partner_no
@@ -43,6 +45,9 @@
         on mh.utility_provider_no = up.utility_provider_no
         left join partner p
         on up.partner_no = p.partner_no
+        left join common_code meter_ty
+        on up.meter_ty_cd = meter_ty.code_no_cd
+        and meter_ty.group_code_no = 'METER_TY'
         left join common_code rslt
         on mh.meter_rslt_cd = rslt.code_no_cd
         and rslt.group_code_no = 'METER_RSLT'
@@ -55,6 +60,9 @@
         </if>
         <if test="utilityProviderNo != null and utilityProviderNo != ''">
             and up.utility_provider_no = #{utilityProviderNo}
+        </if>
+        <if test="meterTyCd != null and meterTyCd != ''">
+            and up.meter_ty_cd = #{meterTyCd}
         </if>
         <if test="meterRsltCd != null and meterRsltCd != ''">
             and mh.meter_rslt_cd = #{meterRsltCd}
@@ -81,23 +89,39 @@
     <!-- 공급/검침 설정 목록 조회 -->
     <select id="selectUtilityProviderList" parameterType="string" resultType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.UtilityProviderVO">
         select up.utility_provider_no
-        , up.apt_cmplex_no
-        , up.partner_no
+        , nvl(up.apt_cmplex_no, p.apt_cmplex_no) as apt_cmplex_no
+        , p.partner_no
         , up.csv_idntf_key
         , up.ext_cust_no
+        , up.meter_ty_cd
+        , meter_ty.code_name as meter_ty_nm
         , up.rmrk_cn
         , p.partner_nm
+        , fc.cont_no as cont_no
         , fc.cont_nm
         , fc.cont_cn
         , to_char(fc.cont_bgng_dt, 'yyyy.mm.dd') as cont_bgng_dt
         , to_char(fc.cont_end_dt,  'yyyy.mm.dd') as cont_end_dt
-        from utility_provider up
-        left join partner p
-        on up.partner_no = p.partner_no
-        left join facility_contract fc
+        from facility_contract fc
+        inner join partner p
+        on fc.partner_no = p.partner_no
+        left join utility_provider up
         on up.cont_no = fc.cont_no
-        where up.apt_cmplex_no = #{aptCmplexNo}
-        order by up.utility_provider_no
+        and up.apt_cmplex_no = #{aptCmplexNo}
+        left join common_code meter_ty
+        on up.meter_ty_cd = meter_ty.code_no_cd
+        and meter_ty.group_code_no = 'METER_TY'
+        where p.apt_cmplex_no = #{aptCmplexNo}
+        and (
+        fc.cont_ty_cd = 'METER'
+        or fc.cont_target_cd = 'METER'
+        or instr(nvl(fc.cont_nm, ''), '검침') &gt; 0
+        or instr(nvl(fc.cont_cn, ''), '검침') &gt; 0
+        or up.utility_provider_no is not null
+        )
+        and nvl(fc.cont_stts_cd, 'ING') not in ('EXP', 'CNL', 'TERMINATE', 'END')
+        order by fc.cont_bgng_dt desc
+        , fc.cont_no desc
     </select>
 
     <!-- 공급/검침 설정 상세 조회 -->
@@ -107,11 +131,17 @@
         , up.partner_no
         , up.csv_idntf_key
         , up.ext_cust_no
+        , up.meter_ty_cd
+        , meter_ty.code_name as meter_ty_nm
+        , up.cont_no
         , up.rmrk_cn
         , p.partner_nm
         from utility_provider up
         left join partner p
         on up.partner_no = p.partner_no
+        left join common_code meter_ty
+        on up.meter_ty_cd = meter_ty.code_no_cd
+        and meter_ty.group_code_no = 'METER_TY'
         where up.apt_cmplex_no = #{aptCmplexNo}
         and up.utility_provider_no = #{utilityProviderNo}
     </select>
@@ -124,6 +154,18 @@
         , sort_order as "sortOrder"
         from common_code
         where group_code_no = 'METER_RSLT'
+        and use_yn = 'Y'
+        order by sort_order
+    </select>
+
+    <!-- 검침유형 공통코드 목록 조회 -->
+    <select id="selectMeterTyCodeList" resultType="map">
+        select code_no_cd as "codeNoCd"
+        , code_name as "codeName"
+        , code_content as "codeContent"
+        , sort_order as "sortOrder"
+        from common_code
+        where group_code_no = 'METER_TY'
         and use_yn = 'Y'
         order by sort_order
     </select>
@@ -143,6 +185,56 @@
         from facility
         where apt_cmplex_no = #{aptCmplexNo}
         and facility_no = #{facilityNo}
+    </select>
+
+    <!-- 시설 검침 등록용 시설 단건 조회 -->
+    <select id="selectFacilityInfo" parameterType="map" resultType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterHstryVO">
+        select f.facility_no
+        , f.facility_nm
+        , f.facility_ty_cd
+        , fac_ty.code_name as facility_ty_nm
+        , f.loc_cn
+        , f.dong_no
+        from facility f
+        left join common_code fac_ty
+        on f.facility_ty_cd = fac_ty.code_no_cd
+        and fac_ty.group_code_no = 'FACILITY_TY'
+        where f.apt_cmplex_no = #{aptCmplexNo}
+        and f.facility_no = #{facilityNo}
+    </select>
+
+    <!-- 단지 검침 등록용 동 목록 조회 -->
+    <select id="selectDongNoList" parameterType="map" resultType="map">
+        select distinct regexp_substr(mh.ho_no, '[^_]+', 1, 2) as "dongNo"
+        from meter_hstry mh
+        inner join utility_provider up
+        on mh.utility_provider_no = up.utility_provider_no
+        where up.apt_cmplex_no = #{aptCmplexNo}
+        and mh.ho_no is not null
+        and regexp_substr(mh.ho_no, '[^_]+', 1, 2) is not null
+        order by to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 2))
+    </select>
+
+    <!-- 단지 검침 등록용 호 자동완성 조회 -->
+    <select id="selectHoSuggestList" parameterType="map" resultType="map">
+        select *
+        from (
+        select distinct regexp_substr(mh.ho_no, '[^_]+', 1, 2) as "dongNo"
+        , regexp_substr(mh.ho_no, '[^_]+', 1, 3) as "hoNo"
+        from meter_hstry mh
+        inner join utility_provider up
+        on mh.utility_provider_no = up.utility_provider_no
+        where up.apt_cmplex_no = #{aptCmplexNo}
+        and mh.ho_no is not null
+        <if test="dongNo != null and dongNo != ''">
+            and regexp_substr(mh.ho_no, '[^_]+', 1, 2) = #{dongNo}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            and regexp_substr(mh.ho_no, '[^_]+', 1, 3) like #{keyword} || '%'
+        </if>
+        order by to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 3))
+        )
+        where rownum &lt;= 30
     </select>
 
     <!-- 검침 업로드 이력 등록 -->
@@ -186,7 +278,7 @@
         , reg_dt
         , utility_provider_no
         ) values (
-        'MTR' || lpad(seq_meter_hstry.nextval, 6, '0')
+        'MH' || to_char(sysdate, 'yymmdd') || lpad(seq_meter_hstry.nextval, 7, '0')
         , #{facilityNo}
         , #{hoNo}
         , #{meterDt}
@@ -220,6 +312,8 @@
         , mh.reg_dt
         , mh.mdf_dt
         , up.utility_provider_no
+        , up.meter_ty_cd
+        , meter_ty.code_name as meter_ty_nm
         , p.partner_no
         , p.partner_nm
         , fc.cont_no
@@ -239,6 +333,9 @@
         on up.partner_no = p.partner_no
         left join facility_contract fc
         on up.cont_no = fc.cont_no
+        left join common_code meter_ty
+        on up.meter_ty_cd = meter_ty.code_no_cd
+        and meter_ty.group_code_no = 'METER_TY'
         left join common_code rslt
         on mh.meter_rslt_cd = rslt.code_no_cd
         and rslt.group_code_no = 'METER_RSLT'

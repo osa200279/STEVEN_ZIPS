@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.mgmtOffice.facility.mapper;
 
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.vo.FacilityVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -69,6 +70,34 @@ public interface IFacilityMapper {
     );
 
     /**
+     * 시설 설치계약 요약 조회
+     *
+     * 사용 위치
+     * - 시설 상세 화면
+     * - 시설 수정 화면
+     *
+     * 조회 기준
+     * - FACILITY_CONTRACT 기준
+     * - 설치/공사 계약 유형만 조회
+     * - 시설번호와 관리사무소 번호로 접근 범위 제한
+     *
+     * paramMap 사용 키
+     * - mgmtOfcNo  : 관리사무소 번호
+     * - facilityNo : 시설번호
+     *
+     * 반환 키 예시
+     * - CONTRACT_NO       : 계약번호
+     * - CONTRACT_NM       : 계약명
+     * - PARTNER_NM        : 업체명
+     * - CONTRACT_START_DT : 계약시작일
+     * - CONTRACT_END_DT   : 계약종료일
+     * - CONTRACT_STTS_CD  : 계약상태코드
+     * - CONTRACT_STTS_NM  : 계약상태명
+     */
+    Map<String, Object> selectFacilityInstallContract(Map<String, Object> paramMap);
+
+
+    /**
      * 시설 상세 조회
      * 관리사무소 기준 단지번호로 접근 권한 확인
      */
@@ -110,6 +139,35 @@ public interface IFacilityMapper {
     int insertFacility(FacilityVO facilityVO);
 
     /**
+     * 새 시설유형 코드 생성
+     *
+     * 처리 기준
+     * - COMMON_CODE의 FACILITY_TY 그룹에 추가할 신규 코드값 생성
+     * - 실제 생성 규칙은 facility_Mapper.xml에서 처리
+     * - 예: CUS001, CUS002 ...
+     */
+    String getNewFacilityTypeCode();
+
+    /**
+     * 시설유형명 중복 건수 조회
+     *
+     * 사용 위치
+     * - 시설 등록 화면에서 새 시설유형 추가 시
+     * - 같은 이름의 시설유형이 이미 있으면 COMMON_CODE 중복 등록 방지
+     */
+    int selectFacilityTypeNameCount(String codeName);
+
+    /**
+     * 새 시설유형 공통코드 등록
+     *
+     * paramMap 사용 키
+     * - codeNoCd    : 새 시설유형 코드
+     * - codeName    : 새 시설유형명
+     * - codeContent : 새 시설유형 설명
+     */
+    int insertFacilityTypeCode(Map<String, Object> paramMap);
+
+    /**
      * 시설 기본정보 수정
      *
      * 수정 가능 항목: 시설명 · 설치일자 · 상세위치 · 사용여부 · 첨부파일그룹번호
@@ -117,7 +175,7 @@ public interface IFacilityMapper {
      */
     int updateFacility(FacilityVO facilityVO);
 
-    int updateFacilityFileGroupNo(FacilityVO facilityVO);
+    //int updateFacilityFileGroupNo(FacilityVO facilityVO);
 
     /**
      * 시설유형 정정
@@ -208,4 +266,19 @@ public interface IFacilityMapper {
      */
     List<kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO> selectFacilityRoomList(@Param("dongNo") String dongNo,
                                                                                                    @Param("floor") String floor);
+
+
+    /**
+     * 시설 상세 화면 최근 점검·보수 이력 조회
+     *
+     * 처리 범위
+     * - 시설 상세 왼쪽 하단에 표시할 최근 점검·보수 이력 조회
+     * - FACILITY_CHECK_HSTRY 기준 최근 3건 조회
+     *
+     * @param paramMap 조회 조건
+     *                 - mgmtOfcNo  : 관리사무소 번호
+     *                 - facilityNo : 시설 번호
+     * @return 최근 점검·보수 이력 목록
+     */
+    List<FacilityCheckHstryVO> selectRecentCheckHistoryList(Map<String, Object> paramMap);
 }

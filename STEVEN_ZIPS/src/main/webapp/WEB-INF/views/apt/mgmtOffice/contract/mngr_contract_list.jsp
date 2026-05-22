@@ -200,6 +200,10 @@
         #contractPage .tbl .td-left { text-align:left; }
         #contractPage .tbl .td-right { text-align:right; }
 
+        /* 계약금액은 우측 정렬을 유지하되, 관리 컬럼과 붙어 보이지 않도록 오른쪽 여백을 추가한다. */
+        #contractPage .tbl th.col-cont-amt,
+        #contractPage .tbl td.col-cont-amt { padding-right:20px; }
+
         /* 관리 버튼 셀은 버튼 2개가 잘리지 않도록 overflow를 풀어둔다. */
         #contractPage .tbl td.col-action {
             overflow:visible;
@@ -253,6 +257,7 @@
             border-radius:8px; box-shadow:0 18px 45px rgba(15,23,42,.22);
             overflow:hidden;
         }
+        #contractPage .modal.modal-wide { width:min(1100px,96vw); }
         #contractPage .modal-header {
             display:flex; align-items:center; justify-content:space-between;
             min-height:48px; padding:0 18px;
@@ -308,6 +313,8 @@
             color:#243027; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
         }
         #contractPage .target-table .td-left { text-align:left; }
+        #contractPage .file-action-group { display:flex; justify-content:center; gap:6px; }
+        #contractPage .file-action-group .btn[disabled] { opacity:.45; cursor:not-allowed; }
 
         @media(max-width:1200px) {
             #contractPage .filter-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
@@ -426,12 +433,9 @@
                                     <label class="field-label" for="filterContTyCd">계약유형</label>
                                     <select class="form-select" id="filterContTyCd" name="contTyCd">
                                         <option value="">전체</option>
-                                        <option value="MAINT"   <c:if test="${search.contTyCd eq 'MAINT'}">selected</c:if>>유지보수</option>
-                                        <option value="REPAIR"  <c:if test="${search.contTyCd eq 'REPAIR'}">selected</c:if>>보수공사</option>
-                                        <option value="INSTALL" <c:if test="${search.contTyCd eq 'INSTALL'}">selected</c:if>>설치공사</option>
-                                        <option value="SERVICE" <c:if test="${search.contTyCd eq 'SERVICE'}">selected</c:if>>용역</option>
-                                        <option value="METER"   <c:if test="${search.contTyCd eq 'METER'}">selected</c:if>>검침</option>
-                                        <option value="ETC"     <c:if test="${search.contTyCd eq 'ETC'}">selected</c:if>>기타</option>
+                                        <c:forEach var="type" items="${contractTypeList}">
+                                            <option value="${type.code}" <c:if test="${search.contTyCd eq type.code}">selected</c:if>><c:out value="${type.codeNm}"/></option>
+                                        </c:forEach>
                                     </select>
                                 </div>
 
@@ -505,28 +509,28 @@
                         <table class="tbl">
                             <colgroup>
                                 <col style="width:5%">
-                                <col style="width:17%">
-                                <col style="width:8%">
-                                <col style="width:8%">
+                                <col style="width:10%">
                                 <col style="width:14%">
+                                <col style="width:8%">
+                                <col style="width:8%">
+                                <col style="width:15%">
                                 <col style="width:13%">
                                 <col style="width:10%">
-                                <col style="width:10%">
-                                <col style="width:5%">
-                                <col style="width:10%">
+                                <col style="width:9%">
+                                <col style="width:8%">
                             </colgroup>
 
                             <thead>
                             <tr>
                                 <th>번호</th>
-                                <th class="td-left">계약</th>
+                                <th>계약번호</th>
+                                <th class="td-left">계약명</th>
                                 <th>계약유형</th>
                                 <th>대상구분</th>
                                 <th class="td-left">대상</th>
                                 <th class="td-left">협력업체</th>
-                                <th>계약금액</th>
+                                <th class="col-cont-amt">계약금액</th>
                                 <th>계약기간</th>
-                                <th>파일</th>
                                 <th>관리</th>
                             </tr>
                             </thead>
@@ -537,7 +541,7 @@
                                     <c:forEach var="contract" items="${contractList}" varStatus="st">
 
                                         <%-- 계약유형 표시값 --%>
-                                        <c:set var="contTyText" value="${contract.contTyCd}" />
+                                        <c:set var="contTyText" value="${empty contract.contTyNm ? contract.contTyCd : contract.contTyNm}" />
                                         <c:set var="contTyBadge" value="badge-gray" />
                                         <c:choose>
                                             <c:when test="${contract.contTyCd eq 'MAINT'}"><c:set var="contTyText" value="유지보수"/><c:set var="contTyBadge" value="badge-green"/></c:when>
@@ -561,9 +565,10 @@
                                         <tr>
                                             <td class="mono">${fn:length(contractList) - st.index}</td>
 
+                                            <td class="mono"><c:out value="${contract.contNo}"/></td>
+
                                             <td class="td-left">
                                                 <div class="contract-name"><c:out value="${contract.contNm}"/></div>
-                                                <div class="contract-sub"><c:out value="${contract.contNo}"/></div>
                                             </td>
 
                                             <td><span class="badge ${contTyBadge}">${contTyText}</span></td>
@@ -595,7 +600,7 @@
                                                 <div class="mono"><c:out value="${contract.partnerNo}"/></div>
                                             </td>
 
-                                            <td class="td-right">
+                                            <td class="td-right col-cont-amt">
                                                 <fmt:formatNumber value="${contract.contAmt}" pattern="#,###"/>원
                                             </td>
 
@@ -612,16 +617,6 @@
                                             </c:choose>
                                             </td>
 
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${contract.fileCount gt 0}">
-                                                        <span class="badge badge-blue">${contract.fileCount}개</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span class="badge badge-gray">없음</span>
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </td>
 
                                             <td class="col-action">
                                                 <div class="grid-actions">
@@ -637,9 +632,9 @@
                                     <%-- 화면 확인용 샘플 데이터 : DB 연결 후 제거 가능 --%>
                                     <tr>
                                         <td class="mono">1</td>
+                                        <td class="mono">CONT_TEST_001</td>
                                         <td class="td-left">
                                             <div class="contract-name">승강기 정기 유지보수 계약</div>
-                                            <div class="contract-sub">CONT_TEST_001</div>
                                         </td>
                                         <td><span class="badge badge-green">유지보수</span></td>
                                         <td><span class="badge badge-green">시설</span></td>
@@ -648,9 +643,8 @@
                                             <div class="partner-name">SH승강기관리</div>
                                             <div class="mono">PTR3002</div>
                                         </td>
-                                        <td class="td-right">3,000,000원</td>
+                                        <td class="td-right col-cont-amt">3,000,000원</td>
                                         <td class="mono">2026.05.20<br>~ 미정</td>
-                                        <td><span class="badge badge-blue">1개</span></td>
                                         <td class="col-action">
                                             <div class="grid-actions">
                                                 <button type="button" class="btn btn-xs" data-detail-cont-no="CONT_TEST_001">상세</button>
@@ -718,6 +712,7 @@
                     </div>
                 </div>
 
+
             </div><!-- /contractPage -->
         </main>
     </div>
@@ -779,7 +774,7 @@
                     { facilityNo: 'FAC3001', facilityNm: '2호기 승강기', facilityTyCd: 'ELV', locCn: '102동 승강기홀' }
                 ],
                 fileList: [
-                    { fileNo: 'FILE_TEST_001', fileOgName: '승강기_유지보수_계약서.pdf', fileSize: 245760 }
+                    { fileGroupNo: '999', fileSaveUuid: 'sample-contract.pdf', fileOgName: '승강기_유지보수_계약서.pdf', fileSize: 245760, fileExt: 'pdf', mimeType: 'application/pdf' }
                 ]
             }
         };
@@ -794,7 +789,7 @@
 
             page.addEventListener('click', function (event) {
                 var detailBtn = event.target.closest('[data-detail-cont-no]');
-                var fileBtn = event.target.closest('[data-file-no]');
+                var fileViewBtn = event.target.closest('[data-file-view-no]');
 
                 /* 상세 버튼 */
                 if (detailBtn) {
@@ -802,10 +797,15 @@
                     return;
                 }
 
-                /* 파일 보기 버튼 */
-                if (fileBtn) {
-                    openContractFile(fileBtn.dataset.fileNo);
-                    return;
+                /* 첨부파일 보기 버튼 */
+                if (fileViewBtn) {
+                    openContractFilePreview({
+                        fileGroupNo: fileViewBtn.dataset.fileGroupNo,
+                        fileSaveUuid: fileViewBtn.dataset.fileSaveUuid,
+                        fileName: fileViewBtn.dataset.fileName,
+                        fileExt: fileViewBtn.dataset.fileExt,
+                        mimeType: fileViewBtn.dataset.mimeType
+                    });
                 }
             });
         });
@@ -833,13 +833,14 @@
                 /* 상세 기본정보 표시 */
                 setText('detailContNo', contract.contNo);
                 setText('detailContNm', contract.contNm);
-                setText('detailContTyCd', contTyMap[contract.contTyCd] || contract.contTyCd);
+                setText('detailContTyCd', contract.contTyNm || contTyMap[contract.contTyCd] || contract.contTyCd);
                 setText('detailContTargetCd', targetMap[contract.contTargetCd] || contract.contTargetCd);
                 setText('detailBidTyCd', contract.bidTyCd);
                 setText('detailContAmt', formatMoney(contract.contAmt));
-                setText('detailContDt', contract.contDt);
-                setText('detailPymtDt', contract.pymtDt);
-                setText('detailContPeriod', empty(contract.contBgngDt) + ' ~ ' + (contract.contEndDt || '미정'));
+                /* 상세 날짜는 서버 Date/문자열 형식이 섞여도 yyyy.MM.dd로 통일한다. */
+                setText('detailContDt', formatDateText(contract.contDt));
+                setText('detailPymtDt', formatDateText(contract.pymtDt));
+                setText('detailContPeriod', formatDateText(contract.contBgngDt) + ' ~ ' + (formatDateText(contract.contEndDt) || '미정'));
                 setText('detailPartner', empty(contract.partnerNm) + ' (' + empty(contract.partnerNo) + ')');
                 setText('detailContCn', contract.contCn);
                 setText('detailRmrkCn', contract.rmrkCn);
@@ -918,6 +919,8 @@
 
         /* ============================================================
            상세 첨부파일 렌더링
+           - 상세에서는 썸네일 카드가 아니라 목록형으로 표시
+           - 이미지/PDF는 iframe 보기 가능, 기타 파일은 다운로드만 제공
         ============================================================ */
         function renderDetailFiles(fileList) {
             var box = document.getElementById('detailFileList');
@@ -933,25 +936,61 @@
             html += '<table class="target-table">';
             html += '  <colgroup>';
             html += '      <col>';
-            html += '      <col style="width:120px;">';
-            html += '      <col style="width:90px;">';
+            html += '      <col style="width:100px;">';
+            html += '      <col style="width:110px;">';
+            html += '      <col style="width:150px;">';
             html += '  </colgroup>';
             html += '  <thead>';
             html += '      <tr>';
             html += '          <th>파일명</th>';
+            html += '          <th>유형</th>';
             html += '          <th>크기</th>';
-            html += '          <th>보기</th>';
+            html += '          <th>관리</th>';
             html += '      </tr>';
             html += '  </thead>';
             html += '  <tbody>';
 
             fileList.forEach(function (file) {
-                var fileNo = file.fileNo || file.fileId || '';
+                /* ATTACH_FILE 실제 식별값은 FILE_GROUP_NO + FILE_SAVE_UUID 이므로 fileNo에 의존하지 않는다. */
+                var fileGroupNo = file.fileGroupNo || file.file_group_no || '';
+                var fileSaveUuid = file.fileSaveUuid || file.file_save_uuid || file.fileUuid || '';
+                var fileName = file.fileOgName || file.fileName || file.file_og_name || '';
+                var fileExt = getFileExt(file);
+                var mimeType = file.mimeType || file.mime_type || '';
+                var hasFileKey = !!(fileGroupNo && fileSaveUuid);
+                var canPreview = hasFileKey && (isImageFile(fileExt, mimeType) || isPdfFile(fileExt, mimeType));
+                var downloadUrl = hasFileKey ? getFileDownloadUrl({
+                    fileGroupNo: fileGroupNo,
+                    fileSaveUuid: fileSaveUuid
+                }) : '#';
 
                 html += '      <tr>';
-                html += '          <td class="td-left">' + escapeHtml(file.fileOgName || file.fileName || '') + '</td>';
-                html += '          <td>' + formatFileSize(file.fileSize) + '</td>';
-                html += '          <td><button type="button" class="btn btn-xs" data-file-no="' + escapeHtml(fileNo) + '">보기</button></td>';
+                html += '          <td class="td-left">' + escapeHtml(fileName) + '</td>';
+                html += '          <td>' + escapeHtml((fileExt || '-').toUpperCase()) + '</td>';
+                html += '          <td>' + formatFileSize(file.fileSize || file.file_size) + '</td>';
+                html += '          <td>';
+                html += '              <div class="file-action-group">';
+
+                if (canPreview) {
+                    html += '                  <button type="button" class="btn btn-xs"';
+                    html += '                          data-file-view-no="Y"';
+                    html += '                          data-file-group-no="' + escapeHtml(fileGroupNo) + '"';
+                    html += '                          data-file-save-uuid="' + escapeHtml(fileSaveUuid) + '"';
+                    html += '                          data-file-name="' + escapeHtml(fileName) + '"';
+                    html += '                          data-file-ext="' + escapeHtml(fileExt) + '"';
+                    html += '                          data-mime-type="' + escapeHtml(mimeType) + '">보기</button>';
+                } else {
+                    html += '                  <button type="button" class="btn btn-xs" disabled title="이미지/PDF만 새 창 보기를 지원합니다.">보기</button>';
+                }
+
+                if (hasFileKey) {
+                    html += '                  <a class="btn btn-xs btn-primary" href="' + escapeHtml(downloadUrl) + '">다운로드</a>';
+                } else {
+                    html += '                  <button type="button" class="btn btn-xs btn-primary" disabled title="파일 식별값이 없습니다.">다운로드</button>';
+                }
+
+                html += '              </div>';
+                html += '          </td>';
                 html += '      </tr>';
             });
 
@@ -963,14 +1002,79 @@
 
         /* ============================================================
            첨부파일 보기
+           - 보안 설정에서 iframe이 막히므로 새 창/새 탭으로 연다.
+           - 이미지/PDF만 보기 버튼을 활성화한다.
+           - 기타 파일은 상세 목록의 다운로드 버튼으로만 확인한다.
         ============================================================ */
-        function openContractFile(fileNo) {
-            if (!fileNo) {
-                alertMessage('파일 번호가 없습니다.');
+        function openContractFilePreview(file) {
+            if (!file || !file.fileGroupNo || !file.fileSaveUuid) {
+                alertMessage('파일 식별값이 없습니다. 상세 API에서 fileGroupNo, fileSaveUuid를 내려주는지 확인하세요.');
                 return;
             }
 
-            window.open(contractConfig.contextPath + '/file/view/' + encodeURIComponent(fileNo), '_blank');
+            /* 이미지/PDF만 브라우저 새 창 보기를 지원한다. */
+            if (!(isImageFile(file.fileExt, file.mimeType) || isPdfFile(file.fileExt, file.mimeType))) {
+                alertMessage('이 파일 형식은 브라우저에서 바로 볼 수 없습니다. 다운로드 후 확인하세요.');
+                return;
+            }
+
+            /* iframe 대신 새 창/새 탭으로 파일 보기 */
+            window.open(getFileViewUrl(file), '_blank', 'noopener,noreferrer');
+        }
+
+
+        /* ============================================================
+           첨부파일 URL 생성
+        ============================================================ */
+        function getFileViewUrl(file) {
+            return buildFileUrl('/manager/facility/contract/file/view', file);
+        }
+
+        function getFileDownloadUrl(file) {
+            return buildFileUrl('/manager/facility/contract/file/download', file);
+        }
+
+        function buildFileUrl(path, file) {
+            var params = new URLSearchParams();
+
+            /* ATTACH_FILE 식별값 : FILE_GROUP_NO + FILE_SAVE_UUID */
+            if (file.fileGroupNo) {
+                params.append('fileGroupNo', file.fileGroupNo);
+            }
+
+            if (file.fileSaveUuid) {
+                params.append('fileSaveUuid', file.fileSaveUuid);
+            }
+
+            return contractConfig.contextPath + path + '?' + params.toString();
+        }
+
+        /* ============================================================
+           첨부파일 유형 판별
+        ============================================================ */
+        function getFileExt(file) {
+            var ext = file.fileExt || '';
+            var fileName = file.fileOgName || file.fileName || '';
+
+            if (!ext && fileName.indexOf('.') > -1) {
+                ext = fileName.substring(fileName.lastIndexOf('.') + 1);
+            }
+
+            return String(ext || '').replace('.', '').toLowerCase();
+        }
+
+        function isImageFile(fileExt, mimeType) {
+            var ext = String(fileExt || '').toLowerCase();
+            var mime = String(mimeType || '').toLowerCase();
+
+            return mime.indexOf('image/') === 0 || ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].indexOf(ext) > -1;
+        }
+
+        function isPdfFile(fileExt, mimeType) {
+            var ext = String(fileExt || '').toLowerCase();
+            var mime = String(mimeType || '').toLowerCase();
+
+            return mime === 'application/pdf' || ext === 'pdf';
         }
 
         /* ============================================================
@@ -1012,6 +1116,47 @@
                 return;
             }
             alert(message);
+        }
+
+        function formatDateText(value) {
+            if (value == null || value === '') return '';
+
+            var text = String(value).trim();
+
+            /* 이미 yyyy.MM.dd 형식이면 그대로 사용한다. */
+            if (/^\d{4}\.\d{2}\.\d{2}$/.test(text)) {
+                return text;
+            }
+
+            /* yyyy-MM-dd 또는 yyyy/MM/dd 앞 10자리를 화면 형식으로 변환한다. */
+            var basicMatch = text.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+            if (basicMatch) {
+                return basicMatch[1] + '.' + pad2(basicMatch[2]) + '.' + pad2(basicMatch[3]);
+            }
+
+            /* 타임스탬프 숫자가 내려오는 경우도 yyyy.MM.dd로 변환한다. */
+            if (/^\d+$/.test(text)) {
+                var numberDate = new Date(Number(text));
+                if (!isNaN(numberDate.getTime())) {
+                    return toDateString(numberDate);
+                }
+            }
+
+            /* 그 외 Date 문자열은 브라우저 Date 파싱 후 yyyy.MM.dd로 변환한다. */
+            var parsedDate = new Date(text);
+            if (!isNaN(parsedDate.getTime())) {
+                return toDateString(parsedDate);
+            }
+
+            return text;
+        }
+
+        function toDateString(date) {
+            return date.getFullYear() + '.' + pad2(date.getMonth() + 1) + '.' + pad2(date.getDate());
+        }
+
+        function pad2(value) {
+            return String(value).padStart(2, '0');
         }
 
         function formatMoney(value) {

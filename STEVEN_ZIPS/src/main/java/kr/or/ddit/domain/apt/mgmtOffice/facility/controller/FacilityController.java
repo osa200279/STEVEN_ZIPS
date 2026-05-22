@@ -2,6 +2,7 @@ package kr.or.ddit.domain.apt.mgmtOffice.facility.controller;
 
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.service.IFacilityService;
@@ -239,6 +240,13 @@ public class FacilityController {
 
     /**
      * 시설 상세 조회
+     *
+     * 처리 범위
+     * - 시설 기본 상세 조회
+     * - 시설 사진 목록 조회
+     * - 설치계약 요약 조회
+     * - 최근 점검·보수 이력 조회
+     * - 상세/수정 화면 공통 응답 구성
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/detail/{mgmtOfcNo}/{facilityNo}")
@@ -251,21 +259,69 @@ public class FacilityController {
         Map<String, Object> result = new HashMap<>();
 
         try {
-            /* 시설 상세 조회 */
+            /*
+             * 시설 상세 조회
+             * - FACILITY 기준 기본정보
+             * - PUBLIC_FACILITY 연결 정보가 있으면 함께 조회
+             */
             FacilityDTO detail = facilityService.selectFacilityViewDetail(mgmtOfcNo, facilityNo);
 
-            /* 시설 사진 목록 조회 */
+            /*
+             * 시설 사진 목록 조회
+             * - 상세 정보가 없거나 fileGroupNo가 없으면 Service에서 빈 목록 반환
+             */
             List<AttachFileVO> fileList = facilityService.selectFacilityFileList(
                     detail != null ? detail.getFileGroupNo() : null
+            );
+
+            /*
+             * 설치계약 요약 조회
+             * - 설치/공사 계약으로 연결된 계약이 있으면 Map으로 반환
+             * - 없으면 null 반환
+             * - 수정/상세 JSP에서 같은 값 사용
+             */
+            Map<String, Object> installContract = facilityService.selectFacilityInstallContract(
+                    mgmtOfcNo,
+                    facilityNo
+            );
+
+            /*
+             * 최근 점검·보수 이력 조회
+             * - 시설 상세 왼쪽 하단에 최근 3건 표시
+             * - FACILITY_CHECK_HSTRY 기준 조회
+             */
+            List<FacilityCheckHstryVO> recentHistoryList = facilityService.selectRecentCheckHistoryList(
+                    mgmtOfcNo,
+                    facilityNo
             );
 
             /* 성공 응답 구성 */
             result.put("success", true);
             result.put("detail", detail);
             result.put("fileList", fileList);
-            result.put("latestContract", null);
-            result.put("recentCheckList", new ArrayList<>());
+
+            /*
+             * 계약 연결 정보
+             * - 기존 latestContract 키는 JSP 호환용으로 유지
+             * - installContract 키는 설치계약 의미를 명확히 하기 위해 추가
+             */
+            result.put("latestContract", installContract);
+            result.put("installContract", installContract);
+
+            /*
+             * 최근 점검·보수 이력
+             * - recentHistoryList : 상세 JSP 왼쪽 하단 최근 이력 영역에서 사용
+             * - recentCheckList   : 기존 JSP 호환용
+             */
+            result.put("recentHistoryList", recentHistoryList);
+            result.put("recentCheckList", recentHistoryList);
+
+            /*
+             * 아직 별도 구현 전인 검침 연결 정보
+             * - 기존 JSP 호환을 위해 null 유지
+             */
             result.put("meterInfo", null);
+
         } catch (Exception e) {
             /* 시설 상세 조회 오류 로그 */
             log.error("시설 상세 조회 오류", e);
@@ -276,6 +332,8 @@ public class FacilityController {
             result.put("detail", null);
             result.put("fileList", new ArrayList<>());
             result.put("latestContract", null);
+            result.put("installContract", null);
+            result.put("recentHistoryList", new ArrayList<>());
             result.put("recentCheckList", new ArrayList<>());
             result.put("meterInfo", null);
         }
@@ -286,15 +344,39 @@ public class FacilityController {
 
     /**
      * 시설 등록
+     *
+     * 처리 범위
+     * - 기존 시설유형 선택 등록
+     * - 새 시설유형 추가 등록 준비
+     * - 설치계약 연결 여부 값 수신
+     * - 시설 사진 업로드 요청 전달
+     *
+     * 주의
+     * - 새 시설유형 COMMON_CODE insert 실제 처리는 ServiceImpl에서 수행
+     * - 설치계약 연결 실제 처리는 ServiceImpl 또는 계약 Service에서 수행
      */
     @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @PostMapping("/insert/{mgmtOfcNo}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> insertFacility(
             @PathVariable String mgmtOfcNo,
+
+            // 시설 기본정보
             @ModelAttribute FacilityVO facilityVO,
-            //** 수정: multipart/form-data의 동일 name 다중 파일을 안정적으로 받기 위해 RequestParam 사용
+
+            // 새 시설유형 처리용 값
+            @RequestParam(required = false, defaultValue = "EXISTING") String facilityTyMode,
+            @RequestParam(required = false, defaultValue = "") String newFacilityTyNm,
+            @RequestParam(required = false, defaultValue = "") String newFacilityTyCn,
+
+            // 설치계약 연결 처리용 값
+            @RequestParam(required = false, defaultValue = "N") String installContractYn,
+            @RequestParam(required = false, defaultValue = "") String installContractNo,
+
+            // multipart/form-data의 동일 name 다중 파일
             @RequestParam(required = false) MultipartFile[] facilityFiles,
+
+            // 로그인 사용자
             @AuthenticationPrincipal CustomUser customUser
     ) {
         /* JSON 응답 Map */
@@ -304,18 +386,77 @@ public class FacilityController {
             /* 로그인 사용자 번호 */
             String userNo = customUser.getMember().getUserNo();
 
-            /* 시설 기본정보 + 사진 업로드 동기 처리 */
+            /*
+             * 새 시설유형 입력값 기본 정리
+             * - 화면에서 공백이 넘어와도 Service에서 분기하기 쉽게 trim 처리
+             */
+            facilityTyMode = facilityTyMode == null ? "EXISTING" : facilityTyMode.trim();
+            newFacilityTyNm = newFacilityTyNm == null ? "" : newFacilityTyNm.trim();
+            newFacilityTyCn = newFacilityTyCn == null ? "" : newFacilityTyCn.trim();
+
+            /*
+             * 설치계약 입력값 기본 정리
+             * - Y가 아니면 N으로 간주
+             * - 계약번호는 공백 제거
+             */
+            installContractYn = "Y".equals(installContractYn) ? "Y" : "N";
+            installContractNo = installContractNo == null ? "" : installContractNo.trim();
+
+            /*
+             * Controller 1차 검증
+             * - 새 시설유형 모드인데 유형명이 없으면 저장 불가
+             * - 상세 중복/코드 생성 검증은 Service에서 처리
+             */
+            if ("NEW".equals(facilityTyMode) && newFacilityTyNm.isBlank()) {
+                result.put("success", false);
+                result.put("message", "새 시설유형명을 입력하세요.");
+                return ResponseEntity.ok(result);
+            }
+
+            /*
+             * Controller 1차 검증
+             * - 기존 시설유형 모드인데 facilityTyCd가 없으면 저장 불가
+             */
+            if (!"NEW".equals(facilityTyMode)
+                    && (facilityVO.getFacilityTyCd() == null || facilityVO.getFacilityTyCd().isBlank())) {
+                result.put("success", false);
+                result.put("message", "시설유형을 선택하세요.");
+                return ResponseEntity.ok(result);
+            }
+
+            /*
+             * Controller 1차 검증
+             * - 설치계약 있음 선택 시 계약번호가 없으면 저장 불가
+             * - 실제 계약 존재 여부/연결 가능 여부는 Service 또는 계약 Mapper에서 검증
+             */
+            if ("Y".equals(installContractYn) && installContractNo.isBlank()) {
+                result.put("success", false);
+                result.put("message", "설치계약이 있는 경우 설치계약을 선택하세요.");
+                return ResponseEntity.ok(result);
+            }
+
+            /*
+             * 시설 등록 처리
+             * - 기존 시설 등록 흐름에 새 시설유형/설치계약 값을 추가 전달
+             * - ServiceImpl에서 facilityTyMode가 NEW이면 COMMON_CODE 등록 후 facilityTyCd 세팅
+             */
             boolean success = facilityService.insertFacility(
                     mgmtOfcNo,
                     facilityVO,
                     facilityFiles,
-                    userNo
+                    userNo,
+                    facilityTyMode,
+                    newFacilityTyNm,
+                    newFacilityTyCn,
+                    installContractYn,
+                    installContractNo
             );
 
             /* 성공 응답 구성 */
             result.put("success", success);
             result.put("facilityNo", facilityVO.getFacilityNo());
             result.put("message", success ? "시설이 등록되었습니다." : "시설 등록에 실패했습니다.");
+
         } catch (Exception e) {
             /* 시설 등록 오류 로그 */
             log.error("시설 등록 오류", e);

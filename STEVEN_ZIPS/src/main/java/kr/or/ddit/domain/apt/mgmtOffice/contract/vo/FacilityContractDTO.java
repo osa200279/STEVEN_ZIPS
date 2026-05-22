@@ -30,6 +30,10 @@ public class FacilityContractDTO extends FacilityContractVO {
     private String picNm;
     private String picTelno;
 
+    /** 계약유형/대상구분 표시용 */
+    private String contTyNm;
+    private String contTargetNm;
+
     /** 대상 시설 요약 표시용 */
     private Integer targetCount;
     private String targetSummary;
@@ -51,4 +55,7 @@ public class FacilityContractDTO extends FacilityContractVO {
 
     /** 첨부파일 목록. ATTACH_FILE 조회 결과 Map 목록 */
     private List<Map<String, Object>> fileList;
+
+    private String bidTyNm;
+    private String contSttsNm;
 }

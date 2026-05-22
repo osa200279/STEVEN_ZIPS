@@ -21,74 +21,53 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
 
     <style>
-        #facilityPage {
-            --accent: #2e5c38;
-            --accent-light: #e8f0ea;
-            --accent-dim: rgba(38,92,48,.08);
-            --surface: #fff;
-            --line: #d7dce2;
-            --th-bg: #f4f6f4;
-            --text-head: #1a2e1e;
-            --text-sub: #6b7a6e;
-        }
-
-        #facilityPage .page-title-block h2 { color: var(--text-head); font-size: 20px; letter-spacing: -.5px; margin: 0; }
-        #facilityPage .page-title-block p  { color: var(--text-sub); font-size: 12px; margin-top: 6px; }
-
-        #facilityPage .detail-card      { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); overflow: hidden; }
-        #facilityPage .detail-card-body { padding: 24px 28px 28px; }
-
-        #facilityPage .btn               { border-radius: 4px; min-height: 34px; font-size: 12px; padding: 0 14px; }
-        #facilityPage .btn-primary       { background: var(--accent); border-color: var(--accent); }
-        #facilityPage .btn-primary:hover { background: #1a3d1f; border-color: #1a3d1f; }
-
-        #facilityPage .detail-section-title {
-            display: flex; align-items: center; gap: 6px;
-            margin: 0 0 12px; padding-bottom: 10px;
-            border-bottom: 1px solid var(--line);
-            font-size: 13px; font-weight: 700; color: var(--text-head);
-        }
-        #facilityPage .detail-section-title .material-symbols-rounded { font-size: 17px; color: var(--accent); }
-        #facilityPage .detail-section { margin-bottom: 24px; }
-        #facilityPage .detail-section:last-child { margin-bottom: 0; }
-
-        #facilityPage .detail-cols      { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
-        #facilityPage .detail-col-left  { padding-right: 28px; border-right: 1px solid var(--line); }
-        #facilityPage .detail-col-right { padding-left: 28px; }
-
-        #facilityPage .detail-table            { width: 100%; border-top: 1px solid var(--line); border-collapse: collapse; table-layout: fixed; }
-        #facilityPage .detail-table th         { width: 90px; padding: 11px 12px; border-bottom: 1px solid var(--line); background: var(--th-bg); color: #27382b; font-size: 12px; font-weight: 600; text-align: left; vertical-align: middle; }
-        #facilityPage .detail-table td         { padding: 11px 14px; border-bottom: 1px solid var(--line); color: #111827; font-size: 12px; font-weight: 500; vertical-align: middle; word-break: break-all; }
-        #facilityPage .detail-empty            { color: #9ca3af; font-weight: 400; }
-
-        #facilityPage .badge       { display: inline-flex; align-items: center; justify-content: center; min-height: 22px; padding: 0 8px; border-radius: 4px; font-size: 11px; font-weight: 600; line-height: 1; border: 1px solid transparent; }
-        #facilityPage .badge-blue  { background: #dbeafe; color: #1e3a5f; border-color: #bfdbfe; }
-        #facilityPage .badge-use-y { background: #dceee0; color: #1f7a3f; border-color: #c7e4cf; }
-        #facilityPage .badge-use-y::before { content: ""; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: #22c55e; }
-        #facilityPage .badge-use-n { background: #fee2e2; color: #b42318; border-color: #fecaca; }
-        #facilityPage .badge-use-n::before { content: ""; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: #ef4444; }
-
-        #facilityPage .file-preview-list     { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-        #facilityPage .file-preview-item     { border: 1px solid var(--line); border-radius: 6px; background: #fafcfb; overflow: hidden; }
-        #facilityPage .file-preview-item img { display: block; width: 100%; height: 110px; object-fit: cover; border-bottom: 1px solid var(--line); }
-        #facilityPage .file-preview-name     { padding: 8px 10px; font-size: 11px; color: #4a5c4e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #facilityPage .file-preview-empty    { grid-column: 1 / -1; padding: 14px 16px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font-size: 12px; color: #9caa9e; }
-
-        #facilityPage .disabled-notice {
-            display: none; align-items: flex-start; gap: 10px; margin-bottom: 20px;
-            padding: 13px 15px; border: 1px solid #fed7aa; border-left: 3px solid #f59e0b;
-            border-radius: 0 4px 4px 0; background: #fff7ed; color: #7c2d12; font-size: 12px; line-height: 1.6;
-        }
-        #facilityPage .disabled-notice .material-symbols-rounded { color: #f59e0b; font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-
-        #facilityPage .detail-info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-        #facilityPage .detail-link-row { display: flex; flex-direction: column; gap: 20px; }
-        #facilityPage .detail-link-row .detail-section { margin-bottom: 0; }
-
-        #facilityPage .notice-box { display: flex; gap: 10px; padding: 13px 15px; background: #f7faf7; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; font-size: 12px; color: #4a5c4e; line-height: 1.7; }
-        #facilityPage .notice-box .material-symbols-rounded { color: var(--accent); font-size: 17px; flex-shrink: 0; margin-top: 2px; }
-
-        /* 편의시설 운영정보 참고 박스 — facilityEdit의 cmn-ref-box와 동일한 구조 */
+        #facilityPage { --accent:#2e5c38; --accent-light:#e8f0ea; --accent-dim:rgba(38,92,48,.08); --surface:#fff; --line:#d7dce2; --th-bg:#f4f6f4; --text-head:#1a2e1e; --text-sub:#6b7a6e; }
+        #facilityPage .page-title-block h2 { color:var(--text-head); font-size:20px; letter-spacing:-.5px; margin:0; }
+        #facilityPage .page-title-block p { color:var(--text-sub); font-size:12px; margin-top:6px; }
+        #facilityPage .detail-card { border:1px solid var(--line); border-radius:8px; background:var(--surface); overflow:hidden; }
+        #facilityPage .detail-card-body { padding:24px 28px 28px; }
+        #facilityPage .btn { border-radius:4px; min-height:34px; font-size:12px; padding:0 14px; }
+        #facilityPage .btn-primary { background:var(--accent); border-color:var(--accent); }
+        #facilityPage .btn-primary:hover { background:#1a3d1f; border-color:#1a3d1f; }
+        #facilityPage .detail-section-title { display:flex; align-items:center; gap:6px; margin:0 0 12px; padding-bottom:10px; border-bottom:1px solid var(--line); font-size:13px; font-weight:700; color:var(--text-head); }
+        #facilityPage .detail-section-title .material-symbols-rounded { font-size:17px; color:var(--accent); }
+        #facilityPage .detail-section { margin-bottom:24px; }
+        #facilityPage .detail-section:last-child { margin-bottom:0; }
+        #facilityPage #detailFileSection { margin-bottom:0; }
+        #facilityPage .connection-guide-section { margin-top:auto; padding-top:42px; }
+        #facilityPage .connection-guide-section .notice-box { margin-top:0; }
+        #facilityPage .detail-cols { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+        #facilityPage .detail-col-left { padding-right:28px; border-right:1px solid var(--line); }
+        #facilityPage .detail-col-right { padding-left:28px; display:flex; flex-direction:column; min-height:100%; }
+        #facilityPage .detail-table { width:100%; border-top:1px solid var(--line); border-collapse:collapse; table-layout:fixed; }
+        #facilityPage .detail-table th { width:90px; padding:11px 12px; border-bottom:1px solid var(--line); background:var(--th-bg); color:#27382b; font-size:12px; font-weight:600; text-align:left; vertical-align:middle; }
+        #facilityPage .detail-table td { padding:11px 14px; border-bottom:1px solid var(--line); color:#111827; font-size:12px; font-weight:500; vertical-align:middle; word-break:break-all; }
+        #facilityPage .detail-empty { color:#9ca3af; font-weight:400; }
+        #facilityPage .badge { display:inline-flex; align-items:center; justify-content:center; min-height:22px; padding:0 8px; border-radius:4px; font-size:11px; font-weight:600; line-height:1; border:1px solid transparent; }
+        #facilityPage .badge-blue { background:#dbeafe; color:#1e3a5f; border-color:#bfdbfe; }
+        #facilityPage .badge-use-y { background:#dceee0; color:#1f7a3f; border-color:#c7e4cf; }
+        #facilityPage .badge-use-y::before { content:""; width:7px; height:7px; margin-right:6px; border-radius:50%; background:#22c55e; }
+        #facilityPage .badge-use-n { background:#fee2e2; color:#b42318; border-color:#fecaca; }
+        #facilityPage .badge-use-n::before { content:""; width:7px; height:7px; margin-right:6px; border-radius:50%; background:#ef4444; }
+        #facilityPage .file-preview-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+        #facilityPage .file-preview-item { border:1px solid var(--line); border-radius:6px; background:#fafcfb; overflow:hidden; }
+        #facilityPage .file-preview-item img { display:block; width:100%; height:110px; object-fit:cover; border-bottom:1px solid var(--line); }
+        #facilityPage .file-preview-name { padding:8px 10px; font-size:11px; color:#4a5c4e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #facilityPage .file-preview-empty { grid-column:1 / -1; padding:14px 16px; border:1px solid var(--line); border-radius:6px; background:#fff; font-size:12px; color:#9caa9e; }
+        #facilityPage .disabled-notice { display:none; align-items:flex-start; gap:10px; margin-bottom:20px; padding:13px 15px; border:1px solid #fed7aa; border-left:3px solid #f59e0b; border-radius:0 4px 4px 0; background:#fff7ed; color:#7c2d12; font-size:12px; line-height:1.6; }
+        #facilityPage .disabled-notice .material-symbols-rounded { color:#f59e0b; font-size:18px; flex-shrink:0; margin-top:1px; }
+        #facilityPage .detail-info-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+        #facilityPage .install-summary-table { width:100%; margin:0 0 16px; border-top:1px solid var(--line); border-collapse:collapse; table-layout:fixed; }
+        #facilityPage .install-summary-table th { width:90px; padding:11px 12px; border-bottom:1px solid var(--line); background:var(--th-bg); color:#27382b; font-size:12px; font-weight:600; text-align:left; vertical-align:middle; }
+        #facilityPage .install-summary-table td { padding:11px 14px; border-bottom:1px solid var(--line); color:#111827; font-size:12px; font-weight:500; vertical-align:middle; overflow:hidden; }
+        #facilityPage .install-summary-content { display:flex; align-items:center; gap:10px; min-width:0; white-space:nowrap; overflow:hidden; }
+        #facilityPage .install-summary-item { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+        #facilityPage .install-summary-item strong { color:#27382b; font-weight:700; margin-right:4px; }
+        #facilityPage .install-summary-sep { color:#c7cec9; flex-shrink:0; }
+        #facilityPage .detail-link-row { display:flex; flex-direction:column; gap:20px; }
+        #facilityPage .detail-link-row .detail-section { margin-bottom:0; }
+        #facilityPage .notice-box { display:flex; gap:10px; padding:13px 15px; background:#f7faf7; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:0 4px 4px 0; font-size:12px; color:#4a5c4e; line-height:1.7; }
+        #facilityPage .notice-box .material-symbols-rounded { color:var(--accent); font-size:17px; flex-shrink:0; margin-top:2px; }
         #facilityPage .cmn-ref-box { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:42px; padding:10px 12px; border:1px solid var(--line); border-radius:4px; background:#f6f7f8; margin-top:10px; }
         #facilityPage .cmn-ref-main { min-width:0; display:flex; align-items:center; gap:7px; color:#4a5c4e; font-size:12px; font-weight:400; line-height:1.45; white-space:nowrap; overflow:hidden; }
         #facilityPage .cmn-ref-main .material-symbols-rounded { font-size:16px; color:#9aa5a0; flex-shrink:0; }
@@ -98,30 +77,26 @@
         #facilityPage .cmn-ref-link .material-symbols-rounded { font-size:13px; }
         #facilityPage .cmn-ref-empty { display:flex; align-items:center; min-height:42px; padding:10px 12px; border:1px solid var(--line); border-radius:4px; background:#f6f7f8; margin-top:10px; font-size:12px; color:#9caa9e; }
 
-        #facilityPage .ds-row { display: grid; grid-template-columns: minmax(72px, .55fr) minmax(0, 1fr) auto; gap: 10px; align-items: center; min-height: 44px; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 12px; }
-        #facilityPage .ds-row:last-child { border-bottom: none; }
-        #facilityPage .ds-no   { color: #6b7280; font-family: 'SF Mono','Consolas',monospace; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #facilityPage .ds-nm   { color: #111827; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #facilityPage .ds-dt   { color: #9ca3af; font-family: 'SF Mono','Consolas',monospace; font-size: 11px; white-space: nowrap; }
-        #facilityPage .ds-empty { display: flex; align-items: center; min-height: 48px; padding: 0 14px; color: #9ca3af; font-size: 12px; }
+        /* 최근 점검·보수 이력 */
+        #facilityPage .detail-summary { border:1px solid var(--line); border-radius:6px; background:#fff; overflow:hidden; }
+        #facilityPage .ds-row { display:block; min-height:auto; padding:11px 13px; border-bottom:1px solid var(--line); font-size:12px; }
+        #facilityPage .ds-row:last-child { border-bottom:none; }
+        #facilityPage .ds-head { display:flex; align-items:center; gap:7px; min-width:0; margin-bottom:6px; }
+        #facilityPage .ds-no { color:#6b7280; font-family:'SF Mono','Consolas',monospace; font-size:11px; white-space:nowrap; }
+        #facilityPage .ds-type { display:inline-flex; align-items:center; min-height:20px; padding:0 7px; border-radius:4px; background:#f3f4f6; color:#374151; font-size:11px; font-weight:700; white-space:nowrap; }
+        #facilityPage .ds-status { display:inline-flex; align-items:center; min-height:20px; padding:0 7px; border-radius:4px; background:#eef7f0; color:#2e5c38; font-size:11px; font-weight:700; white-space:nowrap; }
+        #facilityPage .ds-dt { margin-left:auto; color:#9ca3af; font-family:'SF Mono','Consolas',monospace; font-size:11px; white-space:nowrap; }
+        #facilityPage .ds-nm { display:block; color:#111827; font-size:12px; font-weight:600; line-height:1.45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #facilityPage .ds-empty { display:flex; align-items:center; min-height:48px; padding:0 14px; color:#9ca3af; font-size:12px; }
 
-        #facilityPage .detail-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
-
-        #facilityPage .js-image-preview { cursor: zoom-in; }
-        .image-preview-modal { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; padding: 24px; background: rgba(0,0,0,.76); }
-        .image-preview-modal.is-open { display: flex; }
-        .image-preview-modal img { max-width: 92vw; max-height: 88vh; object-fit: contain; border-radius: 6px; background: #fff; }
-        .image-preview-close { position: absolute; top: 22px; right: 28px; border: 0; background: transparent; color: #fff; font-size: 38px; line-height: 1; cursor: pointer; }
-
-        @media (max-width: 900px) {
-            #facilityPage .detail-cols      { grid-template-columns: 1fr; }
-            #facilityPage .detail-col-left  { padding-right: 0; border-right: none; border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 24px; }
-            #facilityPage .detail-col-right { padding-left: 0; }
-        }
-        @media (max-width: 600px) {
-            #facilityPage .detail-info-row  { grid-template-columns: 1fr; }
-            #facilityPage .file-preview-list { grid-template-columns: 1fr; }
-        }
+        #facilityPage .detail-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
+        #facilityPage .js-image-preview { cursor:zoom-in; }
+        .image-preview-modal { display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; padding:24px; background:rgba(0,0,0,.76); }
+        .image-preview-modal.is-open { display:flex; }
+        .image-preview-modal img { max-width:92vw; max-height:88vh; object-fit:contain; border-radius:6px; background:#fff; }
+        .image-preview-close { position:absolute; top:22px; right:28px; border:0; background:transparent; color:#fff; font-size:38px; line-height:1; cursor:pointer; }
+        @media (max-width:900px) { #facilityPage .detail-cols { grid-template-columns:1fr; } #facilityPage .detail-col-left { padding-right:0; border-right:none; border-bottom:1px solid var(--line); padding-bottom:24px; margin-bottom:24px; } #facilityPage .detail-col-right { padding-left:0; display:flex; flex-direction:column; min-height:auto; } }
+        @media (max-width:600px) { #facilityPage .detail-info-row { grid-template-columns:1fr; } #facilityPage .install-summary-content { flex-wrap:wrap; white-space:normal; gap:6px 10px; } #facilityPage .file-preview-list { grid-template-columns:1fr; } }
     </style>
 
     <script>
@@ -141,7 +116,6 @@
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
         <main class="main-content">
             <div class="office-page" id="facilityPage">
-
                 <div class="page-header">
                     <div class="page-title-block">
                         <h2 id="detailModalTitle">시설 상세</h2>
@@ -151,7 +125,6 @@
 
                 <div class="detail-card">
                     <div class="detail-card-body">
-
                         <div class="disabled-notice" id="detailDisabledSection">
                             <span class="material-symbols-rounded">warning</span>
                             <div id="detailDisabledReason"></div>
@@ -159,22 +132,44 @@
 
                         <div class="detail-cols">
                             <div class="detail-col-left">
+                                <table class="install-summary-table" id="detailInstallContractSummary">
+                                    <tbody>
+                                    <tr>
+                                        <th>설치계약</th>
+                                        <td>
+                                            <div class="install-summary-content">
+                                                <span class="install-summary-item"><strong>계약번호</strong><span id="installSummaryNo">-</span></span>
+                                                <span class="install-summary-sep">|</span>
+                                                <span class="install-summary-item"><strong>계약명</strong><span id="installSummaryNm">-</span></span>
+                                                <span class="install-summary-sep">|</span>
+                                                <span class="install-summary-item"><strong>업체/기간</strong><span id="installSummaryPartnerPeriod">-</span></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
 
                                 <div class="detail-info-row">
                                     <div class="detail-section">
-                                        <h3 class="detail-section-title">
-                                            <span class="material-symbols-rounded">apartment</span>시설 정보
-                                        </h3>
+                                        <h3 class="detail-section-title"><span class="material-symbols-rounded">apartment</span>시설 정보</h3>
                                         <table class="detail-table">
-                                            <tbody id="detailFacilityInfoBody"></tbody>
+                                            <tbody>
+                                            <tr><th>시설번호</th><td id="detailFacilityNo">-</td></tr>
+                                            <tr><th>시설명</th><td id="detailFacilityNm">-</td></tr>
+                                            <tr><th>시설유형</th><td id="detailFacilityTyNm">-</td></tr>
+                                            <tr><th>활성여부</th><td id="detailUseYn">-</td></tr>
+                                            </tbody>
                                         </table>
                                     </div>
                                     <div class="detail-section">
-                                        <h3 class="detail-section-title">
-                                            <span class="material-symbols-rounded">location_on</span>위치 정보
-                                        </h3>
+                                        <h3 class="detail-section-title"><span class="material-symbols-rounded">location_on</span>위치 정보</h3>
                                         <table class="detail-table">
-                                            <tbody id="detailLocationInfoBody"></tbody>
+                                            <tbody>
+                                            <tr><th>위치구분</th><td id="detailLocationType">-</td></tr>
+                                            <tr><th>동</th><td id="detailDongNo">-</td></tr>
+                                            <tr><th>상세위치</th><td id="detailLocCn">-</td></tr>
+                                            <tr><th>설치일자</th><td id="detailInstlDt">-</td></tr>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -183,33 +178,25 @@
                                     <div class="detail-section" id="detailHistorySection">
                                         <h3 class="detail-section-title">
                                             <span class="material-symbols-rounded">history</span>최근 점검·보수 이력
-                                            <a href="${pageContext.request.contextPath}/manager/checkHistory"
-                                               id="historyMoreLink"
-                                               style="margin-left:auto; font-size:11px; font-weight:600; color:var(--accent); text-decoration:none;">전체보기 →</a>
+                                            <a href="${pageContext.request.contextPath}/manager/checkHistory" id="historyMoreLink" style="margin-left:auto; font-size:11px; font-weight:600; color:var(--accent); text-decoration:none;">전체보기 →</a>
                                         </h3>
                                         <div class="detail-summary">
                                             <div id="detailHistoryBody"></div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-                            <div class="detail-col-right">
 
+                            <div class="detail-col-right">
                                 <div class="detail-section" id="detailFileSection">
-                                    <h3 class="detail-section-title">
-                                        <span class="material-symbols-rounded">image</span>
-                                        <span id="detailPhotoSectionTitle">시설 사진</span>
-                                    </h3>
+                                    <h3 class="detail-section-title"><span class="material-symbols-rounded">image</span><span id="detailPhotoSectionTitle">시설 사진</span></h3>
                                     <div class="file-preview-list" id="detailFileList">
                                         <div class="file-preview-empty">등록된 사진이 없습니다.</div>
                                     </div>
                                 </div>
 
-                                <div class="detail-section">
-                                    <h3 class="detail-section-title">
-                                        <span class="material-symbols-rounded">info</span>연결 정보 안내
-                                    </h3>
+                                <div class="detail-section connection-guide-section">
+                                    <h3 class="detail-section-title"><span class="material-symbols-rounded">info</span>연결 정보 안내</h3>
                                     <div class="notice-box">
                                         <span class="material-symbols-rounded">info</span>
                                         <div>
@@ -222,29 +209,18 @@
 
                                     <%-- 편의시설 운영정보 연결 상태: 편의시설일 때만 JS에서 표시 --%>
                                     <div id="publicFacilitySection" style="display:none;margin-top:10px;">
-                                        <div class="detail-section-title" style="margin-top:14px;">
-                                            <span class="material-symbols-rounded">meeting_room</span>편의시설 운영정보
-                                        </div>
+                                        <div class="detail-section-title" style="margin-top:14px;"><span class="material-symbols-rounded">meeting_room</span>편의시설 운영정보</div>
                                         <%-- 등록된 경우: 상세 링크만 --%>
                                         <div class="cmn-ref-box" id="cmnRefBox" style="display:none;">
-                                            <div class="cmn-ref-main">
-                                                <span class="material-symbols-rounded">link</span>
-                                                <span class="cmn-ref-text" id="cmnRefText">-</span>
-                                            </div>
-                                            <a href="#" class="cmn-ref-link" id="cmnDetailLink">
-                                                상세<span class="material-symbols-rounded">arrow_forward</span>
-                                            </a>
+                                            <div class="cmn-ref-main"><span class="material-symbols-rounded">link</span><span class="cmn-ref-text" id="cmnRefText">-</span></div>
+                                            <a href="#" class="cmn-ref-link" id="cmnDetailLink">상세<span class="material-symbols-rounded">arrow_forward</span></a>
                                         </div>
                                         <%-- 미등록인 경우 --%>
-                                        <div class="cmn-ref-empty" id="cmnRefEmpty" style="display:none;">
-                                            <span>편의시설 운영정보가 아직 등록되지 않았습니다.</span>
-                                        </div>
+                                        <div class="cmn-ref-empty" id="cmnRefEmpty" style="display:none;"><span>편의시설 운영정보가 아직 등록되지 않았습니다.</span></div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
-
                     </div>
                 </div>
 
@@ -276,69 +252,19 @@
         function apiUrl(path) { return contextPath + "/manager/facility/" + path; }
         function listUrl() { return contextPath + "/manager/facility/page/" + encodeURIComponent(mgmtOfcNo); }
         function alertMessage(message) { if (typeof showAlert === "function") showAlert(message); else alert(message); }
-
-        function escapeHtml(value) {
-            if (value == null) return "";
-            return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#39;");
-        }
+        function escapeHtml(value) { if (value == null) return ""; return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#39;"); }
         function formatDate(value) { return value ? String(value).slice(0, 10) : ""; }
-        function formatDongNo(value) {
-            if (value == null || value === "") return "공용";
-            var text = String(value);
-            var idx = text.lastIndexOf("_");
-            return idx > -1 ? text.slice(idx + 1) : text;
-        }
+        function formatDongNo(value) { if (value == null || value === "") return "공용"; var text = String(value); var idx = text.lastIndexOf("_"); return idx > -1 ? text.slice(idx + 1) : text; }
         function badge(cls, text) { return '<span class="badge ' + cls + '">' + escapeHtml(text) + '</span>'; }
         function useYnBadge(useYn) { return useYn === "N" ? badge("badge-use-n","비활성") : badge("badge-use-y","활성"); }
-        function tableRow(label, value) {
-            var emptyHtml = '<span class="detail-empty">-</span>';
-            var safeValue = value == null || value === "" ? emptyHtml : value;
-            return '<tr><th>' + escapeHtml(label) + '</th><td>' + safeValue + '</td></tr>';
-        }
         function getResultFacility(result) { var d = result || {}; return d.detail || d.facility || d; }
-        function getFileImageUrl(file) {
-            var f = file || {};
-            if (f.viewUrl) return f.viewUrl;
-            if (f.fileUrl) return f.fileUrl;
-            if (f.googleId) return contextPath + "/file/display/" + encodeURIComponent(f.googleId);
-            return "";
-        }
-        function getCsrfHeaders() {
-            var tokenMeta = document.querySelector('meta[name="_csrf"]');
-            var headerMeta = document.querySelector('meta[name="_csrf_header"]');
-            var headers = {};
-            if (tokenMeta && headerMeta) headers[headerMeta.content] = tokenMeta.content;
-            return headers;
-        }
-        async function getJson(url) {
-            var response = await fetch(url, { method:"GET", headers:getCsrfHeaders() });
-            var data = await response.json();
-            if (!response.ok || data.success === false) throw new Error(data.message || "요청 처리 중 오류가 발생했습니다.");
-            return data;
-        }
+        function getFileImageUrl(file) { var f = file || {}; if (f.viewUrl) return f.viewUrl; if (f.fileUrl) return f.fileUrl; if (f.googleId) return contextPath + "/file/display/" + encodeURIComponent(f.googleId); return ""; }
+        function getCsrfHeaders() { var tokenMeta = document.querySelector('meta[name="_csrf"]'); var headerMeta = document.querySelector('meta[name="_csrf_header"]'); var headers = {}; if (tokenMeta && headerMeta) headers[headerMeta.content] = tokenMeta.content; return headers; }
+        async function getJson(url) { var response = await fetch(url, { method:"GET", headers:getCsrfHeaders() }); var data = await response.json(); if (!response.ok || data.success === false) throw new Error(data.message || "요청 처리 중 오류가 발생했습니다."); return data; }
 
-        window.openFacilityImagePreview = function (imgSrc) {
-            var modal = document.getElementById("imagePreviewModal");
-            var largeImg = document.getElementById("imagePreviewLargeImg");
-            if (!modal || !largeImg || !imgSrc) return;
-            largeImg.src = imgSrc;
-            modal.classList.add("is-open");
-        };
-        window.closeFacilityImagePreview = function () {
-            var modal = document.getElementById("imagePreviewModal");
-            var largeImg = document.getElementById("imagePreviewLargeImg");
-            if (!modal || !largeImg) return;
-            modal.classList.remove("is-open");
-            largeImg.src = "";
-        };
-        function bindImagePreviewModal() {
-            var modal = document.getElementById("imagePreviewModal");
-            var closeBtn = document.getElementById("imagePreviewCloseBtn");
-            if (!modal || !closeBtn) return;
-            closeBtn.addEventListener("click", window.closeFacilityImagePreview);
-            modal.addEventListener("click", function (e) { if (e.target === modal) window.closeFacilityImagePreview(); });
-            document.addEventListener("keydown", function (e) { if (e.key === "Escape") window.closeFacilityImagePreview(); });
-        }
+        window.openFacilityImagePreview = function (imgSrc) { var modal = document.getElementById("imagePreviewModal"); var largeImg = document.getElementById("imagePreviewLargeImg"); if (!modal || !largeImg || !imgSrc) return; largeImg.src = imgSrc; modal.classList.add("is-open"); };
+        window.closeFacilityImagePreview = function () { var modal = document.getElementById("imagePreviewModal"); var largeImg = document.getElementById("imagePreviewLargeImg"); if (!modal || !largeImg) return; modal.classList.remove("is-open"); largeImg.src = ""; };
+        function bindImagePreviewModal() { var modal = document.getElementById("imagePreviewModal"); var closeBtn = document.getElementById("imagePreviewCloseBtn"); if (!modal || !closeBtn) return; closeBtn.addEventListener("click", window.closeFacilityImagePreview); modal.addEventListener("click", function (e) { if (e.target === modal) window.closeFacilityImagePreview(); }); document.addEventListener("keydown", function (e) { if (e.key === "Escape") window.closeFacilityImagePreview(); }); }
 
         function renderDetailFiles(files) {
             var area = document.getElementById("detailFileList");
@@ -353,33 +279,72 @@
             }).join("");
         }
 
+        function formatContractPeriod(contract) {
+            // 설치계약 요약 표시용 계약기간 문자열 생성
+            var start = formatDate(contract && (contract.contBgngDt || contract.CONT_BGNG_DT));
+            var end = formatDate(contract && (contract.contEndDt || contract.CONT_END_DT));
+            if (start && end) return start + " ~ " + end;
+            if (start) return start + " ~";
+            if (end) return "~ " + end;
+            return "";
+        }
+
+        function setText(id, value) { var el = document.getElementById(id); if (!el) return; el.textContent = value || "-"; }
+        function setHtml(id, value) { var el = document.getElementById(id); if (!el) return; el.innerHTML = value || '<span class="detail-empty">-</span>'; }
+
+        function renderInstallContract(contract) {
+            // 시설 정보 위쪽에 설치계약 핵심 요약만 한 줄로 표시
+            // - 값이 없으면 "계약 없음"처럼 확정하지 않고 '-'로 표시
+            var data = contract || {};
+            var contractNo = data.contNo || data.CONT_NO || "";
+            var contractNm = data.contNm || data.CONT_NM || "";
+            var partnerNm = data.partnerNm || data.PARTNER_NM || "";
+            var period = formatContractPeriod(data);
+            var partnerPeriodText = [partnerNm, period].filter(Boolean).join(" · ");
+            setText("installSummaryNo", contractNo);
+            setText("installSummaryNm", contractNm);
+            setText("installSummaryPartnerPeriod", partnerPeriodText);
+        }
+
         function renderRelatedHistory(historyList) {
             var area = document.getElementById("detailHistoryBody");
             if (!historyList || historyList.length === 0) { area.innerHTML = '<div class="ds-empty">최근 점검·보수 이력이 없습니다.</div>'; return; }
             area.innerHTML = historyList.slice(0, 3).map(function (history) {
+                /* 작업명은 별도 컬럼이 없으므로 점검유형명(chkTyNm)을 사용 */
                 var historyNo = escapeHtml(history.facChkHstryNo || history.facChkHistNo || "-");
+                var type = escapeHtml(history.chkTyNm || history.chkTyCd || "점검");
                 var status = escapeHtml(history.chkSttsNm || history.chkSttsCd || "-");
                 var content = escapeHtml(history.chkCn || "-");
                 var date = escapeHtml(formatDate(history.chkDt) || "-");
-                return '<div class="ds-row"><span class="ds-no">' + historyNo + '</span><span class="ds-nm">[' + status + '] ' + content + '</span><span class="ds-dt">' + date + '</span></div>';
+
+                return ''
+                    + '<div class="ds-row">'
+                    + '    <div class="ds-head">'
+                    + '        <span class="ds-no">' + historyNo + '</span>'
+                    + '        <span class="ds-type">' + type + '</span>'
+                    + '        <span class="ds-status">' + status + '</span>'
+                    + '        <span class="ds-dt">' + date + '</span>'
+                    + '    </div>'
+                    + '    <div class="ds-nm">' + content + '</div>'
+                    + '</div>';
             }).join("");
         }
 
         function renderFacilityInfo(facility) {
-            var area = document.getElementById("detailFacilityInfoBody");
+            // 고정 항목은 JSP에 작성된 td id에 값만 주입
             var facilityTypeText = facility.facilityTyNm || facility.facilityTyCd || "-";
-            area.innerHTML = tableRow("시설번호", escapeHtml(facility.facilityNo))
-                + tableRow("시설명", escapeHtml(facility.facilityNm))
-                + tableRow("시설유형", badge("badge-blue", facilityTypeText))
-                + tableRow("활성여부", useYnBadge(facility.useYn));
+            setText("detailFacilityNo", facility.facilityNo);
+            setText("detailFacilityNm", facility.facilityNm);
+            setHtml("detailFacilityTyNm", badge("badge-blue", facilityTypeText));
+            setHtml("detailUseYn", useYnBadge(facility.useYn));
         }
 
         function renderLocationInfo(facility) {
-            var area = document.getElementById("detailLocationInfoBody");
-            area.innerHTML = tableRow("위치구분", escapeHtml(facility.dongNo ? "동 위치" : "공용 위치"))
-                + tableRow("동", escapeHtml(formatDongNo(facility.dongNo)))
-                + tableRow("상세위치", escapeHtml(facility.locCn || "-"))
-                + tableRow("설치일자", escapeHtml(formatDate(facility.instlDt) || "-"));
+            // 고정 항목은 JSP에 작성된 td id에 값만 주입
+            setText("detailLocationType", facility.dongNo ? "동 위치" : "공용 위치");
+            setText("detailDongNo", formatDongNo(facility.dongNo));
+            setText("detailLocCn", facility.locCn);
+            setText("detailInstlDt", formatDate(facility.instlDt));
         }
 
         function renderDisabledNotice(facility) {
@@ -395,29 +360,22 @@
             var section = document.getElementById("publicFacilitySection");
             var photoTitle = document.getElementById("detailPhotoSectionTitle");
             if (!section) return;
-
             var isPublicFacility = facility.facilityKind === "PUBLIC";
             section.style.display = isPublicFacility ? "" : "none";
-
-            /* 사진 섹션 타이틀도 편의시설이면 변경 */
             if (photoTitle) photoTitle.textContent = isPublicFacility ? "편의시설 사진" : "시설 사진";
-
             if (!isPublicFacility) return;
 
             var cmnNo = facility.cmnFacilityNo || "";
             var cmnNm = facility.cmnFacilityNm || "";
-            var refBox    = document.getElementById("cmnRefBox");
-            var refEmpty  = document.getElementById("cmnRefEmpty");
-
+            var refBox = document.getElementById("cmnRefBox");
+            var refEmpty = document.getElementById("cmnRefEmpty");
             if (cmnNo) {
-                /* 등록된 경우: 번호 · 이름 + 상세 링크 */
                 document.getElementById("cmnRefText").textContent = cmnNo + (cmnNm ? " · " + cmnNm : "");
                 document.getElementById("cmnDetailLink").href = contextPath + "/manager/publicFacility/detail-page/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(cmnNo);
-                refBox.style.display   = "";
+                refBox.style.display = "";
                 refEmpty.style.display = "none";
             } else {
-                /* 미등록인 경우: 안내 문구만 */
-                refBox.style.display   = "none";
+                refBox.style.display = "none";
                 refEmpty.style.display = "";
             }
         }
@@ -426,9 +384,7 @@
             var editBtn = document.getElementById("detailEditBtnTop");
             if (!editBtn || isAdmin) return;
             editBtn.textContent = "수정";
-            editBtn.onclick = function () {
-                location.href = contextPath + "/manager/facility/update-page/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facility.facilityNo);
-            };
+            editBtn.onclick = function () { location.href = contextPath + "/manager/facility/update-page/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facility.facilityNo); };
         }
 
         function renderDetail(result) {
@@ -438,6 +394,7 @@
             renderFacilityInfo(facility);
             renderLocationInfo(facility);
             renderDetailFiles(result.fileList || result.attachFileList || facility.fileList || []);
+            renderInstallContract(result.installContract || result.latestContract || null);
             renderRelatedHistory(result.recentHistoryList || result.recentCheckList || []);
             renderPublicFacilityNotice(facility);
             bindEditButton(facility);

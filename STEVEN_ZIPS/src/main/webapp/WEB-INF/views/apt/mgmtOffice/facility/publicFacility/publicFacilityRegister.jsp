@@ -886,12 +886,26 @@
                 var item = document.createElement("div"); item.className = "file-preview-item";
                 if (file.type && file.type.indexOf("image/") === 0) {
                     var img = document.createElement("img"); img.alt = file.name; img.src = URL.createObjectURL(file);
-                    if (window.CommonImageViewer) img.addEventListener("click", function () { CommonImageViewer.openUrl(this.src); });
+
+                    /*
+                     * 공통 이미지 확대 모듈 연결
+                     * - 이미지 클릭은 공통 bind 방식으로만 연결함
+                     * - DOM 생성 후 CommonImageViewer.bind("#regImgGrid")로 클릭 이벤트를 연결함
+                     */
+                    img.className = "js-image-preview";
+
                     item.appendChild(img);
                 }
                 var name = document.createElement("div"); name.className = "file-preview-name"; name.textContent = file.name;
                 item.appendChild(name); previewArea.appendChild(item);
             });
+
+            /*
+             * 새로 생성된 선택 사진 미리보기에 확대 보기 이벤트 재연결
+             */
+            if (window.CommonImageViewer && typeof window.CommonImageViewer.bind === "function") {
+                window.CommonImageViewer.bind("#regImgGrid");
+            }
         }
 
         async function saveRegister(event) {
@@ -942,7 +956,7 @@
             setRegisterMode("EXISTING");
             updateCandidateCount();
             updateOperationHourText();
-            if (window.CommonImageViewer) CommonImageViewer.bind("#regFileManageList");
+            if (window.CommonImageViewer && typeof window.CommonImageViewer.bind === "function") CommonImageViewer.bind("#regFileManageList");
             if (preselectFacilityNo) {
                 applyPreselectedFacility(preselectFacilityNo);
                 lockFacilitySelection();

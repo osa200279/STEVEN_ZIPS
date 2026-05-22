@@ -326,7 +326,6 @@
                                         <div class="form-section-title">
                                             <span class="material-symbols-rounded">image</span>편의시설 사진
                                         </div>
-                                        <div class="file-manage-list" id="regFileManageList" style="display:none;margin-bottom:8px;"></div>
                                         <div class="file-upload-box">
                                             <div class="file-upload-title"><span class="material-symbols-rounded">upload_file</span>사진 추가</div>
                                             <div class="file-upload-desc" style="margin-top:3px;margin-bottom:8px;">이미지 파일을 여러 장 선택할 수 있습니다.</div>
@@ -335,6 +334,8 @@
                                                 <div class="file-preview-empty">선택된 사진이 없습니다.</div>
                                             </div>
                                         </div>
+                                        <%-- 기존 등록 사진은 사진 추가 영역 아래에 표시 --%>
+                                        <div class="file-manage-list" id="regFileManageList" style="display:none;margin-top:10px;"></div>
                                     </div>
 
                                     <%-- 자원 아이템 목록 --%>
@@ -620,9 +621,14 @@
                     var img = document.createElement("img");
                     img.alt = file.name;
                     img.src = URL.createObjectURL(file);
-                    if (window.CommonImageViewer) {
-                        img.addEventListener("click", function () { CommonImageViewer.openUrl(this.src); });
-                    }
+
+                    /*
+                     * 공통 이미지 확대 모듈 연결
+                     * - 이미지 클릭은 공통 bind 방식으로만 연결함
+                     * - DOM 생성 후 CommonImageViewer.bind("#regImgGrid")로 클릭 이벤트를 연결함
+                     */
+                    img.className = "js-image-preview";
+
                     item.appendChild(img);
                 }
                 var name = document.createElement("div");
@@ -631,6 +637,13 @@
                 item.appendChild(name);
                 previewArea.appendChild(item);
             });
+
+            /*
+             * 새로 생성된 선택 사진 미리보기에 확대 보기 이벤트 재연결
+             */
+            if (window.CommonImageViewer && typeof window.CommonImageViewer.bind === "function") {
+                window.CommonImageViewer.bind("#regImgGrid");
+            }
         }
 
         async function saveRegister(event) {
@@ -662,7 +675,7 @@
             getEl("registerForm").addEventListener("submit", saveRegister);
             getEl("backToListBtn").addEventListener("click", function () { history.back(); });
             applyExistingOperationHour();
-            if (window.CommonImageViewer) CommonImageViewer.bind("#regFileManageList");
+            if (window.CommonImageViewer && typeof window.CommonImageViewer.bind === "function") CommonImageViewer.bind("#regFileManageList");
             if (getEl("selectedFacilityNo").value) loadExistingFiles(getEl("selectedFacilityNo").value);
         });
     })();

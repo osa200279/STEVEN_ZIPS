@@ -84,8 +84,8 @@
         #meterPage .panel-body { padding:14px 16px 16px; }
 
         /* 필터 */
-        #meterPage .filter-grid { display:grid; grid-template-columns:1.25fr .75fr 1.45fr minmax(220px,2fr) auto; gap:8px 12px; align-items:end; }
-        #meterPage .complex-filter-grid { grid-template-columns:1.25fr .75fr 1.45fr minmax(220px,2fr) auto; }
+        #meterPage .filter-grid { display:grid; grid-template-columns:1.2fr .8fr .75fr 1.45fr minmax(220px,2fr) auto; gap:8px 12px; align-items:end; }
+        #meterPage .complex-filter-grid { grid-template-columns:1.2fr .8fr .75fr 1.45fr minmax(220px,2fr) auto; }
         #meterPage .field-label { display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--text-sec); }
         #meterPage .form-select, #meterPage .form-input, #meterPage .form-textarea { width:100%; box-sizing:border-box; border:1px solid var(--line); background:#fff; border-radius:4px; font-family:'Noto Sans KR',sans-serif; color:#1f2d23; }
         #meterPage .form-select, #meterPage .form-input { height:32px; padding:0 9px; font-size:12px; }
@@ -137,6 +137,7 @@
         #meterPage .col-no { width:4%; }
         #meterPage .col-meter-no { width:10%; }
         #meterPage .col-meter-date { width:8%; }
+        #meterPage .col-meter-ty { width:8%; }
         #meterPage .col-complex-unit { width:15%; }
         #meterPage .col-facility { width:16%; }
         #meterPage .col-ho { width:10%; }
@@ -167,7 +168,12 @@
         #meterPage .modal-close { border:0; background:rgba(255,255,255,.12); cursor:pointer; color:rgba(255,255,255,.75); width:28px; height:28px; border-radius:4px; display:flex; align-items:center; justify-content:center; }
         #meterPage .modal-close:hover { background:rgba(255,255,255,.2); }
         #meterPage .modal-body { padding:18px; overflow-y:auto; flex:1; }
+        #meterPage .field-help { margin-top:6px; color:#64748b; font-size:12px; line-height:1.35; }
+        #meterPage .lookup-row { display:flex; gap:8px; align-items:center; }
+        #meterPage .lookup-row .form-input { flex:1; }
         #meterPage .modal-footer { display:flex; justify-content:flex-end; gap:8px; padding:12px 18px; border-top:1px solid var(--line); background:var(--surface-sub); }
+        #meterPage .unit-suffix { margin-left:6px; color:#6b7280; font-size:12px; font-weight:600; }
+        #meterPage .readonly-box.is-hidden-section, #meterPage .is-hidden-section { display:none !important; }
 
         /* 모달 폼 */
         #meterPage .form-section { margin-bottom:18px; }
@@ -266,9 +272,25 @@
                                                 <select class="form-select" id="complexUtilityProviderNo" name="complexUtilityProviderNo">
                                                     <option value="">전체</option>
                                                     <c:forEach var="provider" items="${providerList}">
-                                                        <option value="${provider.utilityProviderNo}" <c:if test="${complexSearch.utilityProviderNo eq provider.utilityProviderNo}">selected</c:if>>
-                                                                ${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
-                                                        </option>
+                                                        <c:choose>
+                                                            <c:when test="${empty provider.utilityProviderNo}">
+                                                                <option value="" disabled>[설정 필요] ${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if></option>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <option value="${provider.utilityProviderNo}" <c:if test="${complexSearch.utilityProviderNo eq provider.utilityProviderNo}">selected</c:if>>
+                                                                    <c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
+                                                                </option>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
+                                            <div class="form-field">
+                                                <label class="field-label" for="complexMeterTyCd">검침유형</label>
+                                                <select class="form-select" id="complexMeterTyCd" name="complexMeterTyCd">
+                                                    <option value="">전체</option>
+                                                    <c:forEach var="code" items="${meterTyCodeList}">
+                                                        <option value="${code.codeNoCd}" <c:if test="${complexSearch.meterTyCd eq code.codeNoCd}">selected</c:if>>${code.codeName}</option>
                                                     </c:forEach>
                                                 </select>
                                             </div>
@@ -315,6 +337,9 @@
                                         <span class="list-count">총 ${fn:length(complexMeterList)}건</span>
                                     </div>
                                     <div class="list-head-right">
+                                        <button type="button" class="btn btn-ghost" id="openComplexInsertModalBtn">
+                                            <span class="material-symbols-rounded">add</span>단지별 검침 등록
+                                        </button>
                                         <button type="button" class="btn btn-primary" id="openComplexUploadModalBtn">
                                             <span class="material-symbols-rounded">upload_file</span>단지별 검침 CSV 업로드
                                         </button>
@@ -323,13 +348,13 @@
                                 <div class="table-wrap">
                                     <table class="tbl">
                                         <colgroup>
-                                            <col class="col-no"><col class="col-meter-no"><col class="col-meter-date">
+                                            <col class="col-no"><col class="col-meter-no"><col class="col-meter-ty"><col class="col-meter-date">
                                             <col class="col-complex-unit"><col class="col-complex-value"><col class="col-complex-value">
                                             <col class="col-complex-usage"><col class="col-result"><col class="col-complex-partner"><col class="col-action">
                                         </colgroup>
                                         <thead>
                                         <tr>
-                                            <th>번호</th><th>검침번호</th><th>검침일자</th>
+                                            <th>번호</th><th>검침번호</th><th>검침유형</th><th>검침일자</th>
                                             <th class="td-left">동/호</th><th>이전값</th><th>현재값</th>
                                             <th>사용량</th><th>결과</th><th class="td-left">업체</th><th>관리</th>
                                         </tr>
@@ -337,18 +362,22 @@
                                         <tbody>
                                         <c:choose>
                                             <c:when test="${empty complexMeterList}">
-                                                <tr><td colspan="10" class="empty-row">조회된 단지별 검침 이력이 없습니다.</td></tr>
+                                                <tr><td colspan="11" class="empty-row">조회된 단지별 검침 이력이 없습니다.</td></tr>
                                             </c:when>
                                             <c:otherwise>
                                                 <c:forEach var="row" items="${complexMeterList}" varStatus="status">
                                                     <tr class="js-page-row" data-page-target="complex">
                                                         <c:set var="meterUnit" value="" />
-                                                        <c:if test="${row.facilityTyCd eq 'ELC' or fn:contains(row.facilityTyNm, '전기')}"><c:set var="meterUnit" value="kWh" /></c:if>
-                                                        <c:if test="${row.facilityTyCd eq 'GAS' or fn:contains(row.facilityTyNm, '가스')}"><c:set var="meterUnit" value="㎥" /></c:if>
-                                                        <c:if test="${row.facilityTyCd eq 'WTR' or fn:contains(row.facilityTyNm, '급수') or fn:contains(row.facilityTyNm, '수도')}"><c:set var="meterUnit" value="㎥" /></c:if>
+                                                        <c:if test="${row.meterTyCd eq 'ELEC'}"><c:set var="meterUnit" value="kWh" /></c:if>
+                                                        <c:if test="${row.meterTyCd eq 'GAS' or row.meterTyCd eq 'WATER'}"><c:set var="meterUnit" value="㎥" /></c:if>
+                                                        <c:if test="${row.meterTyCd eq 'HEAT'}"><c:set var="meterUnit" value="Gcal" /></c:if>
+                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'ELC' or fn:contains(row.facilityTyNm, '전기'))}"><c:set var="meterUnit" value="kWh" /></c:if>
+                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'GAS' or fn:contains(row.facilityTyNm, '가스'))}"><c:set var="meterUnit" value="㎥" /></c:if>
+                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'WTR' or fn:contains(row.facilityTyNm, '급수') or fn:contains(row.facilityTyNm, '수도'))}"><c:set var="meterUnit" value="㎥" /></c:if>
                                                         <c:set var="hoParts" value="${fn:split(row.hoNo, '_')}" />
                                                         <td class="mono">${fn:length(complexMeterList) - status.index}</td>
                                                         <td class="meter-no">${row.meterHstryNo}</td>
+                                                        <td><span class="badge badge-gray">${empty row.meterTyNm ? '-' : row.meterTyNm}</span></td>
                                                         <td><fmt:formatDate value="${row.meterDt}" pattern="yyyy.MM.dd"/></td>
                                                         <td class="td-left">
                                                             <c:choose>
@@ -413,9 +442,25 @@
                                                 <select class="form-select" id="filterUtilityProviderNo" name="utilityProviderNo">
                                                     <option value="">전체</option>
                                                     <c:forEach var="provider" items="${providerList}">
-                                                        <option value="${provider.utilityProviderNo}" <c:if test="${search.utilityProviderNo eq provider.utilityProviderNo}">selected</c:if>>
-                                                                ${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
-                                                        </option>
+                                                        <c:choose>
+                                                            <c:when test="${empty provider.utilityProviderNo}">
+                                                                <option value="" disabled>[설정 필요] ${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if></option>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <option value="${provider.utilityProviderNo}" <c:if test="${search.utilityProviderNo eq provider.utilityProviderNo}">selected</c:if>>
+                                                                    <c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
+                                                                </option>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
+                                            <div class="form-field">
+                                                <label class="field-label" for="filterMeterTyCd">검침유형</label>
+                                                <select class="form-select" id="filterMeterTyCd" name="meterTyCd">
+                                                    <option value="">전체</option>
+                                                    <c:forEach var="code" items="${meterTyCodeList}">
+                                                        <option value="${code.codeNoCd}" <c:if test="${search.meterTyCd eq code.codeNoCd}">selected</c:if>>${code.codeName}</option>
                                                     </c:forEach>
                                                 </select>
                                             </div>
@@ -462,6 +507,9 @@
                                         <span class="list-count">총 ${fn:length(facilityMeterList)}건</span>
                                     </div>
                                     <div class="list-head-right">
+                                        <button type="button" class="btn btn-ghost" id="openFacilityInsertModalBtn">
+                                            <span class="material-symbols-rounded">add</span>시설 검침 등록
+                                        </button>
                                         <button type="button" class="btn btn-primary" id="openFacilityUploadModalBtn">
                                             <span class="material-symbols-rounded">upload_file</span>시설 검침 CSV 업로드
                                         </button>
@@ -470,13 +518,13 @@
                                 <div class="table-wrap">
                                     <table class="tbl">
                                         <colgroup>
-                                            <col class="col-no"><col class="col-meter-no"><col class="col-meter-date">
+                                            <col class="col-no"><col class="col-meter-no"><col class="col-meter-ty"><col class="col-meter-date">
                                             <col class="col-facility"><col class="col-facility-value"><col class="col-facility-value">
                                             <col class="col-facility-usage"><col class="col-result"><col class="col-facility-partner"><col class="col-action">
                                         </colgroup>
                                         <thead>
                                         <tr>
-                                            <th>번호</th><th>검침번호</th><th>검침일자</th>
+                                            <th>번호</th><th>검침번호</th><th>검침유형</th><th>검침일자</th>
                                             <th class="td-left">시설</th><th>이전값</th><th>현재값</th>
                                             <th>사용량</th><th>결과</th><th class="td-left">업체</th><th>관리</th>
                                         </tr>
@@ -484,17 +532,21 @@
                                         <tbody>
                                         <c:choose>
                                             <c:when test="${empty facilityMeterList}">
-                                                <tr><td colspan="10" class="empty-row">조회된 시설 검침 이력이 없습니다.</td></tr>
+                                                <tr><td colspan="11" class="empty-row">조회된 시설 검침 이력이 없습니다.</td></tr>
                                             </c:when>
                                             <c:otherwise>
                                                 <c:forEach var="row" items="${facilityMeterList}" varStatus="status">
                                                     <tr class="js-page-row" data-page-target="facility">
                                                         <c:set var="meterUnit" value="" />
-                                                        <c:if test="${row.facilityTyCd eq 'ELC' or fn:contains(row.facilityTyNm, '전기')}"><c:set var="meterUnit" value="kWh" /></c:if>
-                                                        <c:if test="${row.facilityTyCd eq 'GAS' or fn:contains(row.facilityTyNm, '가스')}"><c:set var="meterUnit" value="㎥" /></c:if>
-                                                        <c:if test="${row.facilityTyCd eq 'WTR' or fn:contains(row.facilityTyNm, '급수') or fn:contains(row.facilityTyNm, '수도')}"><c:set var="meterUnit" value="㎥" /></c:if>
+                                                        <c:if test="${row.meterTyCd eq 'ELEC'}"><c:set var="meterUnit" value="kWh" /></c:if>
+                                                        <c:if test="${row.meterTyCd eq 'GAS' or row.meterTyCd eq 'WATER'}"><c:set var="meterUnit" value="㎥" /></c:if>
+                                                        <c:if test="${row.meterTyCd eq 'HEAT'}"><c:set var="meterUnit" value="Gcal" /></c:if>
+                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'ELC' or fn:contains(row.facilityTyNm, '전기'))}"><c:set var="meterUnit" value="kWh" /></c:if>
+                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'GAS' or fn:contains(row.facilityTyNm, '가스'))}"><c:set var="meterUnit" value="㎥" /></c:if>
+                                                        <c:if test="${empty meterUnit and (row.facilityTyCd eq 'WTR' or fn:contains(row.facilityTyNm, '급수') or fn:contains(row.facilityTyNm, '수도'))}"><c:set var="meterUnit" value="㎥" /></c:if>
                                                         <td class="mono">${fn:length(facilityMeterList) - status.index}</td>
                                                         <td class="meter-no">${row.meterHstryNo}</td>
+                                                        <td><span class="badge badge-gray">${empty row.meterTyNm ? '-' : row.meterTyNm}</span></td>
                                                         <td><fmt:formatDate value="${row.meterDt}" pattern="yyyy.MM.dd"/></td>
                                                         <td class="td-left facility-cell">
                                                             <div class="meter-main">${row.facilityNm}</div>
@@ -546,6 +598,7 @@
                         </div>
                         <form method="post" action="${ctx}/manager/meter/hstry/upload/${mgmtOfcNo}" enctype="multipart/form-data" id="complexMeterCsvUploadForm">
                             <sec:csrfInput/>
+                            <input type="hidden" name="meterScope" value="COMPLEX">
                             <div class="modal-body">
                                 <div class="form-section">
                                     <div class="form-section-title"><span class="material-symbols-rounded">upload_file</span>업로드 파일 선택</div>
@@ -556,11 +609,14 @@
                                                 <option value="">선택</option>
                                                 <c:forEach var="provider" items="${providerList}">
                                                     <option value="${provider.utilityProviderNo}"
+                                                            <c:if test="${empty provider.utilityProviderNo}">disabled</c:if>
+                                                            data-meter-ty-cd="${provider.meterTyCd}"
+                                                            data-meter-ty-nm="${provider.meterTyNm}"
                                                             data-cont-nm="${provider.contNm}"
                                                             data-cont-cn="${provider.contCn}"
                                                             data-cont-bgng-dt="${provider.contBgngDt}"
                                                             data-cont-end-dt="${provider.contEndDt}">
-                                                            ${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
+                                                        <c:choose><c:when test="${empty provider.utilityProviderNo}">[설정 필요] </c:when><c:otherwise><c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if></c:otherwise></c:choose>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
                                                         <c:if test="${not empty provider.contBgngDt}"> (${provider.contBgngDt} ~ <c:choose><c:when test="${not empty provider.contEndDt}">${provider.contEndDt}</c:when><c:otherwise>진행중</c:otherwise></c:choose>)</c:if>
                                                     </option>
                                                 </c:forEach>
@@ -601,6 +657,7 @@
                         </div>
                         <form method="post" action="${ctx}/manager/meter/hstry/upload/${mgmtOfcNo}" enctype="multipart/form-data" id="facilityMeterCsvUploadForm">
                             <sec:csrfInput/>
+                            <input type="hidden" name="meterScope" value="FACILITY">
                             <div class="modal-body">
                                 <div class="form-section">
                                     <div class="form-section-title"><span class="material-symbols-rounded">upload_file</span>업로드 파일 선택</div>
@@ -611,11 +668,14 @@
                                                 <option value="">선택</option>
                                                 <c:forEach var="provider" items="${providerList}">
                                                     <option value="${provider.utilityProviderNo}"
+                                                            <c:if test="${empty provider.utilityProviderNo}">disabled</c:if>
+                                                            data-meter-ty-cd="${provider.meterTyCd}"
+                                                            data-meter-ty-nm="${provider.meterTyNm}"
                                                             data-cont-nm="${provider.contNm}"
                                                             data-cont-cn="${provider.contCn}"
                                                             data-cont-bgng-dt="${provider.contBgngDt}"
                                                             data-cont-end-dt="${provider.contEndDt}">
-                                                            ${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
+                                                        <c:choose><c:when test="${empty provider.utilityProviderNo}">[설정 필요] </c:when><c:otherwise><c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if></c:otherwise></c:choose>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
                                                         <c:if test="${not empty provider.contBgngDt}"> (${provider.contBgngDt} ~ <c:choose><c:when test="${not empty provider.contEndDt}">${provider.contEndDt}</c:when><c:otherwise>진행중</c:otherwise></c:choose>)</c:if>
                                                     </option>
                                                 </c:forEach>
@@ -644,6 +704,174 @@
                     </div>
                 </div>
 
+
+
+                <%-- ===== 단지별 수동 등록 모달 ===== --%>
+                <div class="modal-overlay" id="complexInsertModal">
+                    <div class="modal">
+                        <div class="modal-header">
+                            <h3 class="modal-title">단지별 검침 등록</h3>
+                            <button type="button" class="modal-close js-modal-close" data-modal-id="complexInsertModal">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+                        <form method="post" action="${ctx}/manager/meter/hstry/insert/${mgmtOfcNo}" id="complexMeterInsertForm">
+                            <sec:csrfInput/>
+                            <input type="hidden" name="meterScope" value="COMPLEX">
+                            <div class="modal-body">
+                                <div class="form-section">
+                                    <div class="form-section-title"><span class="material-symbols-rounded">add</span>기본 정보</div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field">
+                                            <label class="field-label" for="complexInsertUtilityProviderNo">공급/검침 계약</label>
+                                            <select class="form-select" id="complexInsertUtilityProviderNo" name="utilityProviderNo" required>
+                                                <option value="">선택</option>
+                                                <c:forEach var="provider" items="${providerList}">
+                                                    <option value="${provider.utilityProviderNo}"
+                                                            <c:if test="${empty provider.utilityProviderNo}">disabled</c:if>
+                                                            data-meter-ty-cd="${provider.meterTyCd}"
+                                                            data-meter-ty-nm="${provider.meterTyNm}">
+                                                        <c:choose><c:when test="${empty provider.utilityProviderNo}">[설정 필요] </c:when><c:otherwise><c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if></c:otherwise></c:choose>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
+                                                    </option>
+                                                </c:forEach>
+                                            </select>
+                                            <div class="field-help" id="complexInsertMeterTypeGuide">검침 계약을 선택하면 유형과 단위가 표시됩니다.</div>
+                                        </div>
+                                        <input type="hidden" id="complexInsertFacilityNo" name="facilityNo">
+                                        <input type="hidden" id="complexInsertHoNo" name="hoNo">
+                                        <div class="form-field">
+                                            <label class="field-label" for="complexInsertDongNo">동</label>
+                                            <select class="form-select" id="complexInsertDongNo" required>
+                                                <option value="">동 선택</option>
+                                                <c:forEach var="dong" items="${dongList}">
+                                                    <option value="${dong.dongNo}">${dong.dongNo}동</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="field-label" for="complexInsertHoInput">호</label>
+                                            <input type="text" class="form-input" id="complexInsertHoInput" list="complexHoDatalist" placeholder="예: 1502" required>
+                                            <datalist id="complexHoDatalist"></datalist>
+                                        </div>
+                                        <div class="form-field"><label class="field-label" for="complexInsertMeterDt">검침일자</label><input type="date" class="form-input" id="complexInsertMeterDt" name="meterDt" required></div>
+                                    </div>
+                                </div>
+                                <div class="form-section">
+                                    <div class="form-section-title"><span class="material-symbols-rounded">edit</span>검침 값</div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field"><label class="field-label" for="complexInsertPreVal">이전값 <span class="unit-suffix js-complex-unit">-</span></label><input type="number" step="0.01" class="form-input" id="complexInsertPreVal" name="preVal" required></div>
+                                        <div class="form-field"><label class="field-label" for="complexInsertCurrVal">현재값 <span class="unit-suffix js-complex-unit">-</span></label><input type="number" step="0.01" class="form-input" id="complexInsertCurrVal" name="currVal" required></div>
+                                    </div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field">
+                                            <label class="field-label" for="complexInsertMeterRsltCd">결과</label>
+                                            <select class="form-select" id="complexInsertMeterRsltCd" name="meterRsltCd" required>
+                                                <option value="">선택</option>
+                                                <c:forEach var="code" items="${rsltCodeList}"><option value="${code.codeNoCd}">${code.codeName}</option></c:forEach>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row"><div class="form-field"><label class="field-label" for="complexInsertMeterCn">검침내용</label><textarea class="form-textarea" id="complexInsertMeterCn" name="meterCn" placeholder="검침 내용 또는 특이사항"></textarea></div></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn js-modal-close" data-modal-id="complexInsertModal">취소</button>
+                                <button type="submit" class="btn btn-primary">등록</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <%-- ===== 시설 수동 등록 모달 ===== --%>
+                <div class="modal-overlay" id="facilityInsertModal">
+                    <div class="modal">
+                        <div class="modal-header">
+                            <h3 class="modal-title">시설 검침 등록</h3>
+                            <button type="button" class="modal-close js-modal-close" data-modal-id="facilityInsertModal">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+                        <form method="post" action="${ctx}/manager/meter/hstry/insert/${mgmtOfcNo}" id="facilityMeterInsertForm">
+                            <sec:csrfInput/>
+                            <input type="hidden" name="meterScope" value="FACILITY">
+                            <div class="modal-body">
+                                <div class="form-section">
+                                    <div class="form-section-title"><span class="material-symbols-rounded">add</span>기본 정보</div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field">
+                                            <label class="field-label" for="facilityInsertUtilityProviderNo">공급/검침 계약</label>
+                                            <select class="form-select" id="facilityInsertUtilityProviderNo" name="utilityProviderNo" required>
+                                                <option value="">선택</option>
+                                                <c:forEach var="provider" items="${providerList}">
+                                                    <option value="${provider.utilityProviderNo}"
+                                                            <c:if test="${empty provider.utilityProviderNo}">disabled</c:if>
+                                                            data-meter-ty-cd="${provider.meterTyCd}"
+                                                            data-meter-ty-nm="${provider.meterTyNm}">
+                                                        <c:choose><c:when test="${empty provider.utilityProviderNo}">[설정 필요] </c:when><c:otherwise><c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if></c:otherwise></c:choose>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
+                                                    </option>
+                                                </c:forEach>
+                                            </select>
+                                            <div class="field-help" id="facilityInsertMeterTypeGuide">검침 계약을 선택하면 유형과 단위가 표시됩니다.</div>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="field-label" for="facilityInsertFacilityNo">시설번호</label>
+                                            <div class="lookup-row">
+                                                <input type="text" class="form-input" id="facilityInsertFacilityNo" name="facilityNo" placeholder="예: FAC1001" required>
+                                                <button type="button" class="btn btn-sm btn-ghost" id="facilityLookupBtn">확인</button>
+                                            </div>
+                                            <div class="field-help">시설번호 입력 후 확인하면 시설명/유형/위치가 표시됩니다.</div>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="field-label" for="facilityInsertMeterDt">검침일자</label>
+                                            <input type="date" class="form-input" id="facilityInsertMeterDt" name="meterDt" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-field">
+                                            <label class="field-label">선택 시설 정보</label>
+                                            <div class="readonly-box" id="facilityInsertFacilityInfo">시설번호를 입력하고 확인해주세요.</div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="facilityInsertValidFacilityNo" value="">
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="form-section-title"><span class="material-symbols-rounded">edit</span>검침 값</div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field">
+                                            <label class="field-label" for="facilityInsertPreVal">이전값 <span class="unit-suffix js-facility-unit">-</span></label>
+                                            <input type="number" step="0.01" class="form-input" id="facilityInsertPreVal" name="preVal" required>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="field-label" for="facilityInsertCurrVal">현재값 <span class="unit-suffix js-facility-unit">-</span></label>
+                                            <input type="number" step="0.01" class="form-input" id="facilityInsertCurrVal" name="currVal" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field">
+                                            <label class="field-label" for="facilityInsertMeterRsltCd">결과</label>
+                                            <select class="form-select" id="facilityInsertMeterRsltCd" name="meterRsltCd" required>
+                                                <option value="">선택</option>
+                                                <c:forEach var="code" items="${rsltCodeList}"><option value="${code.codeNoCd}">${code.codeName}</option></c:forEach>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-field">
+                                            <label class="field-label" for="facilityInsertMeterCn">검침내용</label>
+                                            <textarea class="form-textarea" id="facilityInsertMeterCn" name="meterCn" placeholder="검침 내용 또는 특이사항"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn js-modal-close" data-modal-id="facilityInsertModal">취소</button>
+                                <button type="submit" class="btn btn-primary">등록</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <%-- ===== 상세 모달 ===== --%>
                 <div class="modal-overlay" id="meterDetailModal">
                     <div class="modal modal-sm">
@@ -659,43 +887,44 @@
                                 <div class="form-section-title"><span class="material-symbols-rounded">electric_meter</span>검침 정보</div>
                                 <div class="form-row cols-2">
                                     <div class="form-field"><label class="field-label">검침이력번호</label><div class="readonly-box" id="detailMeterHstryNo">-</div></div>
+                                    <div class="form-field"><label class="field-label">검침유형</label><div class="readonly-box" id="detailMeterTyNm">-</div></div>
+                                </div>
+                                <div class="form-row cols-2">
                                     <div class="form-field"><label class="field-label">검침일자</label><div class="readonly-box" id="detailMeterDt">-</div></div>
+                                    <div class="form-field"><label class="field-label">결과</label><div class="readonly-box" id="detailMeterRsltNm">-</div></div>
+                                </div>
+                                <div class="form-row cols-2">
                                     <div class="form-field"><label class="field-label">이전값</label><div class="readonly-box" id="detailPreVal">-</div></div>
                                     <div class="form-field"><label class="field-label">현재값</label><div class="readonly-box" id="detailCurrVal">-</div></div>
-                                    <div class="form-field"><label class="field-label">결과</label><div class="readonly-box" id="detailMeterRsltNm">-</div></div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-field"><label class="field-label">검침내용</label><div class="readonly-box multiline" id="detailMeterCn">-</div></div>
                                 </div>
                             </div>
-                            <%-- 시설 정보 --%>
-                            <div class="form-section">
-                                <div class="form-section-title"><span class="material-symbols-rounded">domain</span>시설 정보</div>
+                            <%-- 단지 검침 대상 정보 --%>
+                            <div class="form-section" id="detailComplexTargetSection">
+                                <div class="form-section-title"><span class="material-symbols-rounded">apartment</span>단지 검침 대상</div>
+                                <div class="form-row cols-2">
+                                    <div class="form-field"><label class="field-label">동</label><div class="readonly-box" id="detailDongNo">-</div></div>
+                                    <div class="form-field"><label class="field-label">호</label><div class="readonly-box" id="detailHoNo">-</div></div>
+                                </div>
+                            </div>
+                            <%-- 시설 검침 대상 정보 --%>
+                            <div class="form-section" id="detailFacilityTargetSection">
+                                <div class="form-section-title"><span class="material-symbols-rounded">domain</span>시설 검침 대상</div>
                                 <div class="form-row cols-2">
                                     <div class="form-field"><label class="field-label">시설명</label><div class="readonly-box" id="detailFacilityNm">-</div></div>
                                     <div class="form-field"><label class="field-label">시설유형</label><div class="readonly-box" id="detailFacilityTyNm">-</div></div>
-                                    <div class="form-field"><label class="field-label">동</label><div class="readonly-box" id="detailDongNo">-</div></div>
-                                    <%-- 시설 검침이면 상세위치, 세대별이면 호 표시 (JS에서 제어) --%>
-                                    <div class="form-field" id="detailLocCnRow">
-                                        <label class="field-label">상세위치</label>
-                                        <div class="readonly-box" id="detailLocCn">-</div>
-                                    </div>
-                                    <div class="form-field" id="detailHoNoRow">
-                                        <label class="field-label">호</label>
-                                        <div class="readonly-box" id="detailHoNo">-</div>
-                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-field"><label class="field-label">상세위치</label><div class="readonly-box" id="detailLocCn">-</div></div>
                                 </div>
                             </div>
-                            <%-- 업체 / 계약 정보 --%>
+                            <%-- 업체 정보 : 상세 모달에서는 업체명/담당자/연락처만 한 줄로 간단히 표시 --%>
                             <div class="form-section">
-                                <div class="form-section-title"><span class="material-symbols-rounded">handshake</span>업체 / 계약 정보</div>
-                                <div class="form-row cols-2">
-                                    <div class="form-field"><label class="field-label">업체번호</label><div class="readonly-box" id="detailPartnerNo">-</div></div>
-                                    <div class="form-field"><label class="field-label">업체명</label><div class="readonly-box" id="detailPartnerNm">-</div></div>
-                                    <div class="form-field"><label class="field-label">담당자</label><div class="readonly-box" id="detailPicNm">-</div></div>
-                                    <div class="form-field"><label class="field-label">연락처</label><div class="readonly-box" id="detailPicTelno">-</div></div>
-                                    <div class="form-field"><label class="field-label">계약번호</label><div class="readonly-box" id="detailContNo">-</div></div>
-                                    <div class="form-field"><label class="field-label">계약명</label><div class="readonly-box" id="detailContNm">-</div></div>
+                                <div class="form-section-title"><span class="material-symbols-rounded">handshake</span>업체 정보</div>
+                                <div class="form-row">
+                                    <div class="form-field"><label class="field-label">업체</label><div class="readonly-box" id="detailPartnerSummary">-</div></div>
                                 </div>
                             </div>
                         </div>
@@ -722,19 +951,16 @@
                                     <div class="form-section-title"><span class="material-symbols-rounded">lock</span>변경 불가 정보</div>
                                     <div class="form-row cols-2">
                                         <div class="form-field"><label class="field-label">검침번호</label><div class="readonly-box" id="editReadonlyMeterHstryNo">-</div></div>
-                                        <div class="form-field"><label class="field-label">시설</label><div class="readonly-box" id="editReadonlyFacilityNm">-</div></div>
-                                        <div class="form-field"><label class="field-label">동/호</label><div class="readonly-box" id="editReadonlyHoNo">-</div></div>
+                                        <div class="form-field"><label class="field-label">검침유형</label><div class="readonly-box" id="editReadonlyMeterTyNm">-</div></div>
+                                        <div class="form-field" id="editFacilityTargetRow"><label class="field-label">시설</label><div class="readonly-box" id="editReadonlyFacilityNm">-</div></div>
+                                        <div class="form-field" id="editComplexTargetRow"><label class="field-label">동/호</label><div class="readonly-box" id="editReadonlyHoNo">-</div></div>
                                         <div class="form-field"><label class="field-label">업체</label><div class="readonly-box" id="editReadonlyPartnerNm">-</div></div>
                                     </div>
                                 </div>
                                 <div class="form-section">
                                     <div class="form-section-title"><span class="material-symbols-rounded">edit</span>수정 정보</div>
-                                    <div class="form-row cols-3">
-                                        <div class="form-field"><label class="field-label" for="editMeterDt">검침일자</label><input type="date" class="form-input" name="meterDt" id="editMeterDt" required></div>
-                                        <div class="form-field"><label class="field-label" for="editPreVal">이전값</label><input type="number" step="0.01" class="form-input" name="preVal" id="editPreVal" required></div>
-                                        <div class="form-field"><label class="field-label" for="editCurrVal">현재값</label><input type="number" step="0.01" class="form-input" name="currVal" id="editCurrVal" required></div>
-                                    </div>
                                     <div class="form-row cols-2">
+                                        <div class="form-field"><label class="field-label" for="editMeterDt">검침일자</label><input type="date" class="form-input" name="meterDt" id="editMeterDt" required></div>
                                         <div class="form-field">
                                             <label class="field-label" for="editMeterRsltCd">결과</label>
                                             <select class="form-select" name="meterRsltCd" id="editMeterRsltCd" required>
@@ -744,6 +970,10 @@
                                                 </c:forEach>
                                             </select>
                                         </div>
+                                    </div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field"><label class="field-label" for="editPreVal">이전값 <span class="unit-suffix" id="editUnitLabel1">-</span></label><input type="number" step="0.01" class="form-input" name="preVal" id="editPreVal" required></div>
+                                        <div class="form-field"><label class="field-label" for="editCurrVal">현재값 <span class="unit-suffix" id="editUnitLabel2">-</span></label><input type="number" step="0.01" class="form-input" name="currVal" id="editCurrVal" required></div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-field"><label class="field-label" for="editMeterCn">검침내용</label><textarea class="form-textarea" name="meterCn" id="editMeterCn"></textarea></div>
@@ -770,6 +1000,16 @@
 
         var ctx = '${ctx}';
         var mgmtOfcNo = '${mgmtOfcNo}';
+
+        /* 단지 검침 등록용 동/호 후보 목록 */
+        var complexUnitList = [
+            <c:forEach var="row" items="${complexMeterList}" varStatus="st">
+            <c:set var="hoPartsForJs" value="${fn:split(row.hoNo, '_')}" />
+            <c:if test="${fn:length(hoPartsForJs) ge 3}">
+            { dong: '${hoPartsForJs[1]}', ho: '${hoPartsForJs[2]}' }<c:if test="${not st.last}">,</c:if>
+            </c:if>
+            </c:forEach>
+        ];
 
         /* ============================================================
            모달 열기/닫기
@@ -806,8 +1046,12 @@
         ============================================================ */
         var complexUploadBtn = document.getElementById('openComplexUploadModalBtn');
         var facilityUploadBtn = document.getElementById('openFacilityUploadModalBtn');
+        var complexInsertBtn = document.getElementById('openComplexInsertModalBtn');
+        var facilityInsertBtn = document.getElementById('openFacilityInsertModalBtn');
         if (complexUploadBtn) complexUploadBtn.addEventListener('click', function () { openMeterModal('complexUploadModal'); });
         if (facilityUploadBtn) facilityUploadBtn.addEventListener('click', function () { openMeterModal('facilityUploadModal'); });
+        if (complexInsertBtn) complexInsertBtn.addEventListener('click', function () { openMeterModal('complexInsertModal'); });
+        if (facilityInsertBtn) facilityInsertBtn.addEventListener('click', function () { openMeterModal('facilityInsertModal'); });
 
         /* ============================================================
            업로드 모달 - 계약 선택 시 계약 내용 표시
@@ -846,44 +1090,117 @@
             return (value == null || value === '') ? '-' : String(value);
         }
 
+        /* ho_no 표시 변환
+           - DB 값 예: A12127003_4_1502
+           - 화면 표시: 4동 / 1502호 또는 4동 1502호 */
+        function parseHoNo(hoNo) {
+            if (!hoNo) return { dong: '', ho: '', text: '' };
+
+            var raw = String(hoNo);
+            var parts = raw.split('_');
+
+            // 단지코드_동_호 형태이면 사람이 읽기 좋은 동/호로 변환
+            if (parts.length >= 3) {
+                var dong = parts[1];
+                var ho = parts[2];
+                return {
+                    dong: dong + '동',
+                    ho: ho + '호',
+                    text: dong + '동 ' + ho + '호'
+                };
+            }
+
+            // 이미 사람이 읽는 형태로 들어온 값이면 그대로 사용
+            return { dong: '', ho: raw, text: raw };
+        }
+
+        /* 검침유형 표시 보정
+           - meter_ty_cd 업데이트 전 데이터도 상세에서 최대한 구분되도록 보정 */
+        function getMeterTypeText(row) {
+            if (row.meterTyNm) return row.meterTyNm;
+            if (row.meterTyCd) return row.meterTyCd;
+
+            var source = ((row.utilityProviderNo || '') + ' ' + (row.meterCn || '')).toUpperCase();
+            if (source.indexOf('ELC') > -1 || source.indexOf('ELEC') > -1 || source.indexOf('전기') > -1) return '전기계량';
+            if (source.indexOf('WTR') > -1 || source.indexOf('WATER') > -1 || source.indexOf('수도') > -1 || source.indexOf('급수') > -1) return '수도계량';
+            if (source.indexOf('GAS') > -1 || source.indexOf('가스') > -1) return '가스계량';
+            if (source.indexOf('HEAT') > -1 || source.indexOf('난방') > -1) return '난방계량';
+
+            return '-';
+        }
+
+
+        /* 검침유형별 단위 표시 */
+        function getMeterUnitByCd(meterTyCd) {
+            if (meterTyCd === 'ELEC') return 'kWh';
+            if (meterTyCd === 'WATER' || meterTyCd === 'GAS') return '㎥';
+            if (meterTyCd === 'HEAT') return 'Gcal';
+            return '';
+        }
+
+        function getMeterUnit(row) {
+            var unit = getMeterUnitByCd(row.meterTyCd);
+            if (unit) return unit;
+
+            var source = ((row.meterTyNm || '') + ' ' + (row.utilityProviderNo || '') + ' ' + (row.meterCn || '')).toUpperCase();
+            if (source.indexOf('ELC') > -1 || source.indexOf('ELEC') > -1 || source.indexOf('전기') > -1) return 'kWh';
+            if (source.indexOf('WTR') > -1 || source.indexOf('WATER') > -1 || source.indexOf('수도') > -1 || source.indexOf('급수') > -1) return '㎥';
+            if (source.indexOf('GAS') > -1 || source.indexOf('가스') > -1) return '㎥';
+            if (source.indexOf('HEAT') > -1 || source.indexOf('난방') > -1) return 'Gcal';
+            return '';
+        }
+
+        function setDisplay(elId, value) {
+            var el = document.getElementById(elId);
+            if (el) el.textContent = toDisplayValue(value);
+        }
+
+        function showElement(elId, show) {
+            var el = document.getElementById(elId);
+            if (el) el.style.display = show ? '' : 'none';
+        }
+
+        /* 업체 요약 표시
+           - 상세 모달에서는 계약번호/계약명까지 늘리지 않고 업체명, 담당자, 연락처만 한 줄로 표시 */
+        function getPartnerSummary(row) {
+            var values = [];
+            if (row.partnerNm) values.push(row.partnerNm);
+            if (row.picNm) values.push('담당자 ' + row.picNm);
+            if (row.picTelno) values.push(row.picTelno);
+            return values.length ? values.join(' / ') : '-';
+        }
+
         /* ============================================================
            상세 모달 값 세팅
         ============================================================ */
         function fillDetailModal(row) {
             /* 검침 정보 */
-            document.getElementById('detailMeterHstryNo').textContent  = toDisplayValue(row.meterHstryNo);
-            document.getElementById('detailMeterDt').textContent       = toDisplayValue(toDateInputValue(row.meterDt));
-            document.getElementById('detailPreVal').textContent        = toDisplayValue(row.preVal);
-            document.getElementById('detailCurrVal').textContent       = toDisplayValue(row.currVal);
-            document.getElementById('detailMeterRsltNm').textContent   = toDisplayValue(row.meterRsltNm || row.meterRsltCd);
-            document.getElementById('detailMeterCn').textContent       = toDisplayValue(row.meterCn);
+            var unit = getMeterUnit(row);
+            setDisplay('detailMeterHstryNo', row.meterHstryNo);
+            setDisplay('detailMeterTyNm', getMeterTypeText(row));
+            setDisplay('detailMeterDt', toDateInputValue(row.meterDt));
+            setDisplay('detailPreVal', (row.preVal == null ? '-' : row.preVal) + (unit ? ' ' + unit : ''));
+            setDisplay('detailCurrVal', (row.currVal == null ? '-' : row.currVal) + (unit ? ' ' + unit : ''));
+            setDisplay('detailMeterRsltNm', row.meterRsltNm || row.meterRsltCd);
+            setDisplay('detailMeterCn', row.meterCn);
 
-            /* 시설 정보 */
-            document.getElementById('detailFacilityNm').textContent    = toDisplayValue(row.facilityNm);
-            document.getElementById('detailFacilityTyNm').textContent  = toDisplayValue(row.facilityTyNm);
-
-            /* 시설 검침 / 세대별 검침 분기 */
+            /* 시설 검침 / 단지 검침 대상 정보 분리 */
             if (row.hoNo) {
-                /* 세대별 검침 - 호 표시, 상세위치 숨김 */
-                document.getElementById('detailDongNo').textContent        = toDisplayValue(row.dongNo);
-                document.getElementById('detailHoNo').textContent          = toDisplayValue(row.hoNo);
-                document.getElementById('detailHoNoRow').style.display     = '';
-                document.getElementById('detailLocCnRow').style.display    = 'none';
+                var hoInfo = parseHoNo(row.hoNo);
+                showElement('detailComplexTargetSection', true);
+                showElement('detailFacilityTargetSection', false);
+                setDisplay('detailDongNo', hoInfo.dong || row.dongNo);
+                setDisplay('detailHoNo', hoInfo.ho || row.hoNo);
             } else {
-                /* 시설 검침 - 상세위치 표시, 호 숨김 */
-                document.getElementById('detailDongNo').textContent        = row.dongNo ? toDisplayValue(row.dongNo) : '공용';
-                document.getElementById('detailLocCn').textContent         = toDisplayValue(row.locCn);
-                document.getElementById('detailLocCnRow').style.display    = '';
-                document.getElementById('detailHoNoRow').style.display     = 'none';
+                showElement('detailComplexTargetSection', false);
+                showElement('detailFacilityTargetSection', true);
+                setDisplay('detailFacilityNm', row.facilityNm);
+                setDisplay('detailFacilityTyNm', row.facilityTyNm);
+                setDisplay('detailLocCn', row.locCn);
             }
 
-            /* 업체 / 계약 정보 */
-            document.getElementById('detailPartnerNo').textContent     = toDisplayValue(row.partnerNo);
-            document.getElementById('detailPartnerNm').textContent     = toDisplayValue(row.partnerNm);
-            document.getElementById('detailPicNm').textContent         = toDisplayValue(row.picNm);
-            document.getElementById('detailPicTelno').textContent      = toDisplayValue(row.picTelno);
-            document.getElementById('detailContNo').textContent        = toDisplayValue(row.contNo);
-            document.getElementById('detailContNm').textContent        = toDisplayValue(row.contNm);
+            /* 업체 정보 */
+            setDisplay('detailPartnerSummary', getPartnerSummary(row));
         }
 
         /* ============================================================
@@ -891,10 +1208,16 @@
         ============================================================ */
         function fillEditModal(row) {
             /* 읽기전용 표시 */
-            document.getElementById('editReadonlyMeterHstryNo').textContent = toDisplayValue(row.meterHstryNo);
-            document.getElementById('editReadonlyFacilityNm').textContent   = toDisplayValue(row.facilityNm);
-            document.getElementById('editReadonlyHoNo').textContent         = toDisplayValue(row.hoNo);
-            document.getElementById('editReadonlyPartnerNm').textContent    = toDisplayValue(row.partnerNm);
+            var unit = getMeterUnit(row);
+            setDisplay('editReadonlyMeterHstryNo', row.meterHstryNo);
+            setDisplay('editReadonlyMeterTyNm', getMeterTypeText(row));
+            setDisplay('editReadonlyFacilityNm', row.facilityNm);
+            setDisplay('editReadonlyHoNo', row.hoNo ? parseHoNo(row.hoNo).text : '-');
+            setDisplay('editReadonlyPartnerNm', row.partnerNm);
+            showElement('editComplexTargetRow', !!row.hoNo);
+            showElement('editFacilityTargetRow', !row.hoNo);
+            setDisplay('editUnitLabel1', unit || '-');
+            setDisplay('editUnitLabel2', unit || '-');
             /* 수정 가능 필드 */
             document.getElementById('editMeterHstryNo').value  = row.meterHstryNo || '';
             document.getElementById('editMeterDt').value       = toDateInputValue(row.meterDt);
@@ -943,6 +1266,217 @@
                 });
             });
         });
+
+        /* ============================================================
+           단지/시설 등록 모달 보조 처리
+        ============================================================ */
+        function refreshUnitBySelect(selectId, selector, guideId) {
+            var sel = document.getElementById(selectId);
+            if (!sel) return;
+            var opt = sel.options[sel.selectedIndex];
+            var tyNm = opt ? (opt.getAttribute('data-meter-ty-nm') || '') : '';
+            var tyCd = opt ? (opt.getAttribute('data-meter-ty-cd') || '') : '';
+            var unit = getMeterUnitByCd(tyCd);
+
+            // 검침유형별 단위 표시 갱신
+            document.querySelectorAll(selector).forEach(function (el) { el.textContent = unit || '-'; });
+
+            // 등록 모달에서 사용자가 어떤 검침인지 바로 알 수 있도록 안내 문구 갱신
+            if (guideId) {
+                var guide = document.getElementById(guideId);
+                if (guide) {
+                    guide.textContent = tyNm ? ('선택 유형: ' + tyNm + (unit ? ' / 단위: ' + unit : '')) : '검침 계약을 선택하면 유형과 단위가 표시됩니다.';
+                }
+            }
+        }
+
+        function populateDongSelect() {
+            var dongEl = document.getElementById('complexInsertDongNo');
+            if (!dongEl) return;
+
+            // 서버에서 내려준 동 목록이 있으면 그대로 사용하고, 없을 때만 현재 목록 데이터에서 보강함
+            if (dongEl.options.length > 1) return;
+
+            var unique = {};
+            complexUnitList.forEach(function (item) { if (item.dong) unique[item.dong] = true; });
+            Object.keys(unique).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (dong) {
+                var opt = document.createElement('option');
+                opt.value = dong;
+                opt.textContent = dong + '동';
+                dongEl.appendChild(opt);
+            });
+        }
+
+        function renderHoOptions(list) {
+            var dongEl = document.getElementById('complexInsertDongNo');
+            var listEl = document.getElementById('complexHoDatalist');
+            if (!listEl) return;
+
+            var dong = dongEl ? dongEl.value : '';
+            listEl.innerHTML = '';
+            (list || []).forEach(function (item) {
+                var ho = item.hoNo || item.ho || item.HONO || item.HO_NO;
+                if (!ho) return;
+                var opt = document.createElement('option');
+                opt.value = ho;
+                opt.label = dong ? (dong + '동 ' + ho + '호') : (ho + '호');
+                listEl.appendChild(opt);
+            });
+        }
+
+        function refreshHoDatalist() {
+            var dongEl = document.getElementById('complexInsertDongNo');
+            var hoInput = document.getElementById('complexInsertHoInput');
+            var dong = dongEl ? dongEl.value : '';
+            var keyword = hoInput ? hoInput.value.replace('호', '').trim() : '';
+
+            // 서버 API로 동/호 후보를 조회함. 실패 시 현재 화면 데이터 기반 후보로 대체함
+            if (dong) {
+                fetch(ctx + '/manager/meter/hstry/ho-suggest/' + mgmtOfcNo + '?dongNo=' + encodeURIComponent(dong) + '&keyword=' + encodeURIComponent(keyword), {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                })
+                    .then(function (res) { return res.ok ? res.json() : Promise.reject(); })
+                    .then(function (result) {
+                        if (result && result.success) {
+                            renderHoOptions(result.hoList || []);
+                        } else {
+                            renderHoOptionsByPageData(dong, keyword);
+                        }
+                    })
+                    .catch(function () { renderHoOptionsByPageData(dong, keyword); });
+                return;
+            }
+
+            renderHoOptionsByPageData(dong, keyword);
+        }
+
+        function renderHoOptionsByPageData(dong, keyword) {
+            var listEl = document.getElementById('complexHoDatalist');
+            if (!listEl) return;
+
+            var unique = {};
+            listEl.innerHTML = '';
+            complexUnitList.forEach(function (item) {
+                if (dong && item.dong !== dong) return;
+                if (keyword && String(item.ho).indexOf(keyword) !== 0) return;
+                if (item.ho) unique[item.ho] = true;
+            });
+            Object.keys(unique).sort(function (a, b) { return Number(a) - Number(b); }).forEach(function (ho) {
+                var opt = document.createElement('option');
+                opt.value = ho;
+                opt.label = dong ? (dong + '동 ' + ho + '호') : (ho + '호');
+                listEl.appendChild(opt);
+            });
+        }
+
+        function lookupFacilityInfo() {
+            var input = document.getElementById('facilityInsertFacilityNo');
+            var valid = document.getElementById('facilityInsertValidFacilityNo');
+            var info = document.getElementById('facilityInsertFacilityInfo');
+            if (!input || !info) return;
+
+            var facilityNo = input.value.trim();
+            if (valid) valid.value = '';
+            if (!facilityNo) {
+                info.textContent = '시설번호를 입력하고 확인해주세요.';
+                return;
+            }
+
+            info.textContent = '시설 정보를 확인하는 중입니다.';
+            fetch(ctx + '/manager/meter/hstry/facility/' + mgmtOfcNo + '?facilityNo=' + encodeURIComponent(facilityNo), {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(function (res) {
+                    if (!res.ok) throw new Error('시설 정보 조회 실패');
+                    return res.json();
+                })
+                .then(function (result) {
+                    if (!result.success) throw new Error(result.message || '시설 정보를 찾을 수 없습니다.');
+                    var f = result.facility || {};
+                    if (valid) valid.value = f.facilityNo || facilityNo;
+                    info.textContent = (f.facilityNo || facilityNo) + ' / ' + (f.facilityNm || '-') + ' / ' + (f.facilityTyNm || '-') + ' / ' + (f.locCn || '-');
+                })
+                .catch(function (err) {
+                    if (valid) valid.value = '';
+                    info.textContent = err.message;
+                });
+        }
+
+        function bindComplexInsertForm() {
+            var form = document.getElementById('complexMeterInsertForm');
+            var provider = document.getElementById('complexInsertUtilityProviderNo');
+            var dong = document.getElementById('complexInsertDongNo');
+            var hoInput = document.getElementById('complexInsertHoInput');
+            var hoHidden = document.getElementById('complexInsertHoNo');
+            var facilityHidden = document.getElementById('complexInsertFacilityNo');
+            if (!form) return;
+
+            if (provider) {
+                provider.addEventListener('change', function () {
+                    refreshUnitBySelect('complexInsertUtilityProviderNo', '.js-complex-unit', 'complexInsertMeterTypeGuide');
+                    if (facilityHidden) facilityHidden.value = provider.value || '';
+                });
+            }
+            populateDongSelect();
+            if (dong) dong.addEventListener('change', refreshHoDatalist);
+            if (hoInput) hoInput.addEventListener('input', refreshHoDatalist);
+            refreshHoDatalist();
+
+            form.addEventListener('submit', function (e) {
+                var dongVal = dong ? dong.value : '';
+                var hoVal = hoInput ? hoInput.value.replace('호', '').trim() : '';
+                if (!dongVal || !hoVal) {
+                    e.preventDefault();
+                    alert('동과 호를 입력해주세요.');
+                    return;
+                }
+                // 화면은 4동/1502호 기준, 서버에서 단지번호_동_호 형태로 정규화함
+                hoHidden.value = dongVal + '_' + hoVal;
+                if (facilityHidden && !facilityHidden.value && provider) facilityHidden.value = provider.value || '';
+            });
+        }
+
+        function bindFacilityInsertForm() {
+            var form = document.getElementById('facilityMeterInsertForm');
+            var provider = document.getElementById('facilityInsertUtilityProviderNo');
+            var facilityInput = document.getElementById('facilityInsertFacilityNo');
+            var lookupBtn = document.getElementById('facilityLookupBtn');
+            var valid = document.getElementById('facilityInsertValidFacilityNo');
+            if (!form) return;
+
+            if (provider) {
+                provider.addEventListener('change', function () {
+                    refreshUnitBySelect('facilityInsertUtilityProviderNo', '.js-facility-unit', 'facilityInsertMeterTypeGuide');
+                });
+            }
+            if (lookupBtn) lookupBtn.addEventListener('click', lookupFacilityInfo);
+            if (facilityInput) {
+                facilityInput.addEventListener('blur', lookupFacilityInfo);
+                facilityInput.addEventListener('input', function () {
+                    if (valid) valid.value = '';
+                    setDisplay('facilityInsertFacilityInfo', '시설번호를 입력하고 확인해주세요.');
+                });
+            }
+
+            form.addEventListener('submit', function (e) {
+                var inputVal = facilityInput ? facilityInput.value.trim() : '';
+                var validVal = valid ? valid.value : '';
+                if (!inputVal) {
+                    e.preventDefault();
+                    alert('시설번호를 입력해주세요.');
+                    return;
+                }
+                if (valid && validVal !== inputVal) {
+                    e.preventDefault();
+                    alert('시설번호 확인 버튼으로 시설 정보를 먼저 확인해주세요.');
+                }
+            });
+        }
+
+        bindComplexInsertForm();
+        bindFacilityInsertForm();
 
         /* ============================================================
            페이지네이션

@@ -4,6 +4,7 @@ import com.google.api.services.drive.Drive;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.mapper.IFacilityMapper;
@@ -28,6 +29,7 @@ import java.util.UUID;
  * - 시설 화면 조회
  * - 시설 사진 업로드/삭제
  * - 시설유형 정정
+ * - 설치계약 요약 조회
  * - 위치 조회
  *
  * 저장 방식
@@ -57,6 +59,36 @@ public class FacilityServiceImpl implements IFacilityService {
     }
 
     /**
+     * 시설 상세 화면 최근 점검·보수 이력 조회
+     *
+     * 처리 범위
+     * - 시설 상세 왼쪽 하단에 표시할 최근 점검·보수 이력 조회
+     * - FACILITY_CHECK_HSTRY 기준 최근 3건 조회
+     *
+     * @param mgmtOfcNo 관리사무소 번호
+     * @param facilityNo 시설 번호
+     * @return 최근 점검·보수 이력 목록
+     */
+    @Override
+    public List<FacilityCheckHstryVO> selectRecentCheckHistoryList(String mgmtOfcNo, String facilityNo) {
+
+        /*
+         * Mapper 조회 조건 구성
+         * - 관리사무소 번호로 접근 범위 제한
+         * - 시설번호로 해당 시설의 점검 이력만 조회
+         */
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("mgmtOfcNo", mgmtOfcNo);
+        paramMap.put("facilityNo", facilityNo);
+
+        /*
+         * 최근 점검·보수 이력 조회
+         * - 실제 최근 3건 제한은 Mapper XML에서 처리
+         */
+        return facilityMapper.selectRecentCheckHistoryList(paramMap);
+    }
+
+    /**
      * 시설 화면 목록 조회
      */
     @Override
@@ -82,6 +114,26 @@ public class FacilityServiceImpl implements IFacilityService {
         /* 시설 화면 상세 반환 */
         return facilityMapper.selectFacilityViewDetail(mgmtOfcNo, facilityNo);
     }
+
+    /**
+     * 시설 설치계약 요약 조회
+     *
+     * 처리 기준
+     * - 상세/수정 화면에서 설치계약 연결 상태 표시용
+     * - 설치계약이 없으면 null 반환
+     */
+    @Override
+    public Map<String, Object> selectFacilityInstallContract(String mgmtOfcNo, String facilityNo) {
+        /* 조회 조건 구성 */
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("mgmtOfcNo", mgmtOfcNo);
+        paramMap.put("facilityNo", facilityNo);
+
+        /* 시설 설치계약 요약 반환 */
+        return facilityMapper.selectFacilityInstallContract(paramMap);
+    }
+
+
 
     /**
      * 시설 상세 조회
@@ -137,19 +189,93 @@ public class FacilityServiceImpl implements IFacilityService {
      * 시설 등록
      *
      * 처리 순서
-     * 1. 시설번호 채번
-     * 2. 단지번호 세팅
-     * 3. 사용여부 기본값 세팅
-     * 4. 시설 사진 업로드
-     * 5. FACILITY 등록
+     * 1. 시설유형 처리
+     *    - 기존 유형이면 facilityTyCd 그대로 사용
+     *    - 새 유형이면 COMMON_CODE 등록 후 생성된 codeNoCd를 facilityTyCd에 세팅
+     * 2. 시설번호 채번
+     * 3. 단지번호 세팅
+     * 4. 사용여부 기본값 세팅
+     * 5. 시설 사진 업로드
+     * 6. FACILITY 등록
+     *
+     * 주의
+     * - 설치계약 연결은 계약 Mapper/XML 구조 확인 후 다음 단계에서 처리
      */
     @Override
     public boolean insertFacility(
             String mgmtOfcNo,
             FacilityVO facilityVO,
             MultipartFile[] facilityFiles,
-            String userNo
+            String userNo,
+            String facilityTyMode,
+            String newFacilityTyNm,
+            String newFacilityTyCn,
+            String installContractYn,
+            String installContractNo
     ) {
+        /*
+         * 시설유형 처리
+         * - 기존 시설유형 선택: JSP에서 넘어온 facilityTyCd 사용
+         * - 새 시설유형 추가: COMMON_CODE에 먼저 등록하고 생성된 코드값을 facilityTyCd로 사용
+         */
+        if ("NEW".equals(facilityTyMode)) {
+            /* 새 시설유형명 필수 검증 */
+            if (newFacilityTyNm == null || newFacilityTyNm.isBlank()) {
+                throw new IllegalArgumentException("새 시설유형명을 입력하세요.");
+            }
+
+            /*
+             * 새 시설유형 코드 생성
+             * - Mapper XML에서 FACILITY_TY 그룹 내 신규 코드값 생성
+             */
+            String newFacilityTyCd = facilityMapper.getNewFacilityTypeCode();
+
+            /*
+             * 새 시설유형 등록 파라미터
+             * - COMMON_CODE 테이블에 들어갈 값
+             */
+            Map<String, Object> typeParamMap = new HashMap<>();
+            typeParamMap.put("codeNoCd", newFacilityTyCd);
+            typeParamMap.put("codeName", newFacilityTyNm.trim());
+            typeParamMap.put("codeContent",
+                    newFacilityTyCn == null || newFacilityTyCn.isBlank()
+                            ? "시설 등록 화면에서 추가"
+                            : newFacilityTyCn.trim()
+            );
+
+            /*
+             * 새 시설유형 중복 검증
+             * - 같은 이름의 시설유형이 이미 있으면 중복 추가 방지
+             */
+            int duplicateCount = facilityMapper.selectFacilityTypeNameCount(newFacilityTyNm.trim());
+            if (duplicateCount > 0) {
+                throw new IllegalArgumentException("이미 등록된 시설유형명입니다. 기존 시설유형을 선택하세요.");
+            }
+
+            /* COMMON_CODE에 새 시설유형 등록 */
+            facilityMapper.insertFacilityTypeCode(typeParamMap);
+
+            /* FACILITY 등록에 사용할 시설유형코드 세팅 */
+            facilityVO.setFacilityTyCd(newFacilityTyCd);
+        } else {
+            /*
+             * 기존 시설유형 선택 검증
+             */
+            if (facilityVO.getFacilityTyCd() == null || facilityVO.getFacilityTyCd().isBlank()) {
+                throw new IllegalArgumentException("시설유형을 선택하세요.");
+            }
+        }
+
+        /*
+         * 설치계약 연결 값 검증
+         * - 실제 계약 연결 처리는 계약 Mapper/XML 확인 후 다음 단계에서 추가
+         * - 현재는 Y 선택 시 계약번호가 비어 있는지만 한 번 더 방어
+         */
+        if ("Y".equals(installContractYn)
+                && (installContractNo == null || installContractNo.isBlank())) {
+            throw new IllegalArgumentException("설치계약이 있는 경우 설치계약을 선택하세요.");
+        }
+
         /* 시설번호 채번 */
         String facilityNo = facilityMapper.getFacilityNo();
         facilityVO.setFacilityNo(facilityNo);
@@ -163,11 +289,23 @@ public class FacilityServiceImpl implements IFacilityService {
             facilityVO.setUseYn("Y");
         }
 
-        /* 시설 사진 업로드 */
+        /*
+         * 시설 사진 업로드
+         * - Google Drive 경로에 facilityTyCd가 들어가므로
+         * - 새 시설유형 처리 후 호출해야 함
+         */
         uploadFacilityFiles(facilityVO, facilityFiles, userNo);
 
         /* 시설 기본정보 등록 */
-        return facilityMapper.insertFacility(facilityVO) > 0;
+        boolean success = facilityMapper.insertFacility(facilityVO) > 0;
+
+        /*
+         * 설치계약 연결 처리 예정 위치
+         * - success == true && installContractYn == "Y" 인 경우
+         * - installContractNo와 facilityNo를 연결
+         * - 단, FACILITY_CONTRACT 구조 확인 후 update/insert 방식 결정 필요
+         */
+        return success;
     }
 
     /**
@@ -441,7 +579,6 @@ public class FacilityServiceImpl implements IFacilityService {
 
                 /* DB 저장용 전체 경로 */
                 String fullPath = folderPath + "/" + savedFileName;
-
 
                 /* Google Drive 업로드 시작 시간 */
                 long uploadStartTime = System.currentTimeMillis();

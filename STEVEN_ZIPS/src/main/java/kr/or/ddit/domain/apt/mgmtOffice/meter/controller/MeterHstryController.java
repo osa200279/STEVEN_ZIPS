@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,12 +39,14 @@ public class MeterHstryController {
             @PathVariable String mgmtOfcNo,
             // 단지별 검침 검색 파라미터
             @RequestParam(required = false) String complexUtilityProviderNo,
+            @RequestParam(required = false) String complexMeterTyCd,
             @RequestParam(required = false) String complexMeterRsltCd,
             @RequestParam(required = false) String complexStartDt,
             @RequestParam(required = false) String complexEndDt,
             @RequestParam(required = false) String complexKeyword,
             // 시설 검침 검색 파라미터
             @RequestParam(required = false) String utilityProviderNo,
+            @RequestParam(required = false) String meterTyCd,
             @RequestParam(required = false) String meterRsltCd,
             @RequestParam(required = false) String startDt,
             @RequestParam(required = false) String endDt,
@@ -55,6 +58,7 @@ public class MeterHstryController {
         complexParamMap.put("mgmtOfcNo", mgmtOfcNo);
         complexParamMap.put("meterScope", "COMPLEX");
         complexParamMap.put("utilityProviderNo", complexUtilityProviderNo);
+        complexParamMap.put("meterTyCd", complexMeterTyCd);
         complexParamMap.put("meterRsltCd", complexMeterRsltCd);
         complexParamMap.put("startDt", complexStartDt);
         complexParamMap.put("endDt", complexEndDt);
@@ -65,6 +69,7 @@ public class MeterHstryController {
         facilityParamMap.put("mgmtOfcNo", mgmtOfcNo);
         facilityParamMap.put("meterScope", "FACILITY");
         facilityParamMap.put("utilityProviderNo", utilityProviderNo);
+        facilityParamMap.put("meterTyCd", meterTyCd);
         facilityParamMap.put("meterRsltCd", meterRsltCd);
         facilityParamMap.put("startDt", startDt);
         facilityParamMap.put("endDt", endDt);
@@ -76,7 +81,9 @@ public class MeterHstryController {
         model.addAttribute("complexMeterList", meterHstryService.selectMeterHstryList(complexParamMap));
         model.addAttribute("facilityMeterList", meterHstryService.selectMeterHstryList(facilityParamMap));
         model.addAttribute("providerList", meterHstryService.selectUtilityProviderList(mgmtOfcNo));
+        model.addAttribute("dongList", meterHstryService.selectDongNoList(mgmtOfcNo));
         model.addAttribute("rsltCodeList", meterHstryService.selectMeterRsltCodeList());
+        model.addAttribute("meterTyCodeList", meterHstryService.selectMeterTyCodeList());
 
         return "apt/mgmtOffice/meter/mngr_meter_hstry";
     }
@@ -88,6 +95,7 @@ public class MeterHstryController {
     @PostMapping("/upload/{mgmtOfcNo}")
     public String uploadCsv(
             @PathVariable String mgmtOfcNo,
+            @RequestParam String meterScope,
             @RequestParam String utilityProviderNo,
             @RequestParam("csvFile") MultipartFile csvFile,
             @AuthenticationPrincipal CustomUser customUser,
@@ -95,12 +103,80 @@ public class MeterHstryController {
     ) {
         try {
             String uploadUserNo = customUser.getMember().getUserNo();
-            int insertCnt = meterHstryService.uploadMeterCsv(mgmtOfcNo, utilityProviderNo, csvFile, uploadUserNo);
+            int insertCnt = meterHstryService.uploadMeterCsv(mgmtOfcNo, meterScope, utilityProviderNo, csvFile, uploadUserNo);
             redirectAttributes.addFlashAttribute("successMessage", insertCnt + "건의 검침 이력이 등록되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/manager/meter/hstry/" + mgmtOfcNo;
+    }
+
+    /**
+     * 검침 이력 수동 등록
+     * - CSV 업로드와 별개로 누락 건 또는 단건 보정 건을 직접 등록함
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @PostMapping("/insert/{mgmtOfcNo}")
+    public String insert(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam String meterScope,
+            MeterHstryVO meterHstryVO,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            meterHstryService.insertMeterHstry(mgmtOfcNo, meterScope, meterHstryVO);
+            redirectAttributes.addFlashAttribute("successMessage", "검침 이력이 등록되었습니다.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/manager/meter/hstry/" + mgmtOfcNo;
+    }
+
+    /**
+     * 시설 검침 등록용 시설 정보 조회 (JSON)
+     * - 시설번호 입력 후 시설명/유형/위치를 확인하기 위한 API
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/facility/{mgmtOfcNo}")
+    @ResponseBody
+    public Map<String, Object> facilityInfo(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam String facilityNo
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            MeterHstryVO facility = meterHstryService.selectFacilityInfo(mgmtOfcNo, facilityNo);
+            result.put("success", true);
+            result.put("facility", facility);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 단지 검침 등록용 호 자동완성 조회 (JSON)
+     * - 동 선택 후 호 입력값에 맞는 기존 세대/호 후보를 조회함
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/ho-suggest/{mgmtOfcNo}")
+    @ResponseBody
+    public Map<String, Object> hoSuggest(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(required = false) String dongNo,
+            @RequestParam(required = false, defaultValue = "") String keyword
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<Map<String, Object>> hoList = meterHstryService.selectHoSuggestList(mgmtOfcNo, dongNo, keyword);
+            result.put("success", true);
+            result.put("hoList", hoList);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
     }
 
     /**

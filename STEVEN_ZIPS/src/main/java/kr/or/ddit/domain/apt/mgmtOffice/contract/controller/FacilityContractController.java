@@ -70,6 +70,7 @@ public class FacilityContractController {
         // 계약 목록, 현황 카드 조회
         model.addAttribute("contractList", facilityContractService.selectContractList(search));
         model.addAttribute("contractSummary", facilityContractService.selectContractSummary(search));
+        model.addAttribute("contractTypeList", facilityContractService.selectContractTypeList());
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
 
         return "apt/mgmtOffice/contract/mngr_contract_list";
@@ -99,10 +100,12 @@ public class FacilityContractController {
 
         // 등록 화면 기본값
         FacilityContractDTO contract = new FacilityContractDTO();
+        // 계약대상 기본값
         contract.setContTargetCd("FACILITY");
 
-        // DB 아카이브에 확정되지 않은 코드값은 화면에서 선택하게 두고 기본값만 최소화
-        contract.setContSttsCd("ING");
+        // CONTRACT_STTS 공통코드 기준 기본값
+        // ACTIVE = 유효
+        contract.setContSttsCd("ACTIVE");
 
         // 폼 공통 model
         model.addAttribute("mode", "insert");
@@ -110,6 +113,7 @@ public class FacilityContractController {
         model.addAttribute("contract", contract);
         model.addAttribute("partnerList", facilityContractService.selectContractPartnerList(mgmtOfcNo));
         model.addAttribute("facilityList", facilityContractService.selectContractFacilityList(mgmtOfcNo));
+        model.addAttribute("contractTypeList", facilityContractService.selectContractTypeList());
 
         return "apt/mgmtOffice/contract/mngr_contract_form";
     }
@@ -140,6 +144,7 @@ public class FacilityContractController {
         model.addAttribute("contract", contract);
         model.addAttribute("partnerList", facilityContractService.selectContractPartnerList(mgmtOfcNo));
         model.addAttribute("facilityList", facilityContractService.selectContractFacilityList(mgmtOfcNo));
+        model.addAttribute("contractTypeList", facilityContractService.selectContractTypeList());
 
         return "apt/mgmtOffice/contract/mngr_contract_form";
     }
@@ -177,6 +182,11 @@ public class FacilityContractController {
     /**
      * 계약 등록 처리
      *
+     * 처리 내용
+     * - 계약 기본정보 저장
+     * - 대상 시설 연결
+     * - 계약서 첨부파일 업로드
+     *
      * form enctype
      * - multipart/form-data
      */
@@ -185,13 +195,21 @@ public class FacilityContractController {
     public String contractInsert(
             @PathVariable String mgmtOfcNo,
             @ModelAttribute FacilityContractDTO contract,
-            @RequestParam(value = "contractFiles", required = false) List<MultipartFile> contractFiles
+            @RequestParam(value = "contractFiles", required = false) List<MultipartFile> contractFiles,
+            @AuthenticationPrincipal CustomUser customUser
     ) {
         // 관리사무소 번호 세팅
         contract.setMgmtOfcNo(mgmtOfcNo);
 
-        // 계약 등록
-        facilityContractService.insertContract(contract, contractFiles);
+        // 로그인 사용자번호
+        // - 계약서 파일 업로드 시 업로드 사용자/폴더 구분에 사용
+        String userNo = customUser.getMember().getUserNo();
+
+        // 계약 등록 처리
+        // - 계약 기본정보 저장
+        // - 대상 시설 연결
+        // - 계약서 첨부파일 업로드
+        facilityContractService.insertContract(contract, contractFiles, userNo);
 
         return "redirect:/manager/facility/contract/list/" + mgmtOfcNo;
     }
@@ -199,9 +217,15 @@ public class FacilityContractController {
     /**
      * 계약 수정 처리
      *
+     * 처리 내용
+     * - 계약 기본정보 수정
+     * - 대상 시설 재연결
+     * - 계약서 첨부파일 추가 업로드
+     * - 선택한 기존 첨부파일 삭제
+     *
      * 주의
      * - ATTACH_FILE에는 FILE_NO가 없고 FILE_SAVE_UUID가 식별값이다.
-     * - JSP 삭제 체크박스 name도 deleteFileSaveUuidList로 맞추는 것을 권장한다.
+     * - JSP 삭제 체크박스 name도 deleteFileSaveUuidList로 맞춘다.
      */
     @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @PostMapping("/update/{mgmtOfcNo}")
@@ -209,13 +233,21 @@ public class FacilityContractController {
             @PathVariable String mgmtOfcNo,
             @ModelAttribute FacilityContractDTO contract,
             @RequestParam(value = "contractFiles", required = false) List<MultipartFile> contractFiles,
-            @RequestParam(value = "deleteFileSaveUuidList", required = false) List<String> deleteFileSaveUuidList
+            @RequestParam(value = "deleteFileSaveUuidList", required = false) List<String> deleteFileSaveUuidList,
+            @AuthenticationPrincipal CustomUser customUser
     ) {
         // 관리사무소 번호 세팅
         contract.setMgmtOfcNo(mgmtOfcNo);
 
-        // 계약 수정
-        facilityContractService.updateContract(contract, contractFiles, deleteFileSaveUuidList);
+        // 로그인 사용자번호
+        // - 계약서 파일 업로드 시 업로드 사용자/폴더 구분에 사용
+        String userNo = customUser.getMember().getUserNo();
+
+        // 계약 수정 처리
+        // - 계약 기본정보 수정
+        // - 대상 시설 재연결
+        // - 계약서 파일 추가/삭제
+        facilityContractService.updateContract(contract, contractFiles, deleteFileSaveUuidList, userNo);
 
         return "redirect:/manager/facility/contract/list/" + mgmtOfcNo;
     }
