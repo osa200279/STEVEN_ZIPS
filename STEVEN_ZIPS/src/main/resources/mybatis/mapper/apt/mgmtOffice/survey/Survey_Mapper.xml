@@ -46,78 +46,26 @@
             parameterType="string"
             resultType="kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO">
 
-        SELECT S.SURVEY_NO                        AS surveyNo,
-        S.SURVEY_NM                        AS surveyNm,
-        S.SURVEY_CN                        AS surveyCn,
-        S.SURVEY_TY_CD                     AS surveyTypeCd,
-        S.SURVEY_QITEM_CN                  AS surveyQitemCn,
+        SELECT
+            S.SURVEY_NO AS surveyNo,
+            S.SURVEY_NM AS surveyNm,
+            S.SURVEY_CN AS surveyCn,
+            S.SURVEY_TY_CD AS surveyTypeCd,
+            S.SURVEY_QITEM_CN AS surveyQitemCn,
 
-        TO_CHAR(S.SURVEY_BGNG_DT, 'YYYY-MM-DD')
-        AS surveyBgngDt,
+            TO_CHAR(S.SURVEY_BGNG_DT, 'YYYY-MM-DD')
+                AS surveyBgngDt,
 
-        TO_CHAR(S.SURVEY_END_DT, 'YYYY-MM-DD')
-        AS surveyEndDt,
+            TO_CHAR(S.SURVEY_END_DT, 'YYYY-MM-DD')
+                AS surveyEndDt,
 
-        S.SURVEY_STTS_CD                   AS surveySttsCd,
-        S.RGTR_ID                          AS rgtrId,
-        S.APT_CD                           AS aptCd,
-
-        (
-        SELECT COUNT(*)
-        FROM SURVEY_RSPNS SR
-        WHERE SR.SURVEY_NO = S.SURVEY_NO
-        ) AS participantCount,
-
-        (
-        SELECT COUNT(*)
-
-        FROM HSHLD_HEAD HM
-
-        INNER JOIN APT_DETAIL AD
-        ON AD.HO_NO = HM.HO_NO
-
-        INNER JOIN APT_UNIT AU
-        ON AU.DONG_NO = AD.DONG_NO
-
-        WHERE AU.APT_CMPLEX_NO = S.APT_CD
-
-        ) AS totalResident,
-
-        ROUND(
-        NVL(
-        (
-        (
-        SELECT COUNT(DISTINCT SR.USER_NO)
-        FROM SURVEY_RSPNS SR
-        WHERE SR.SURVEY_NO = S.SURVEY_NO
-        ) * 100
-        ) /
-        NULLIF(
-        (
-        SELECT COUNT(*)
-
-        FROM HSHLD_HEAD HM
-
-        INNER JOIN APT_DETAIL AD
-        ON AD.HO_NO = HM.HO_NO
-
-        INNER JOIN APT_UNIT AU
-        ON AU.DONG_NO = AD.DONG_NO
-
-        WHERE AU.APT_CMPLEX_NO = S.APT_CD
-        ),
-        0
-        ),
-        0
-        ),
-        1
-        ) AS answerRate
+            S.SURVEY_STTS_CD AS surveySttsCd,
+            S.RGTR_ID AS rgtrId,
+            S.APT_CD AS aptCd
 
         FROM SURVEY S
 
-        <if test='_parameter == "OPEN_ONLY"'>
-            WHERE S.SURVEY_STTS_CD = 'OPEN'
-        </if>
+        WHERE S.APT_CD = #{aptCd}
 
         ORDER BY S.SURVEY_BGNG_DT DESC
 
@@ -129,21 +77,20 @@
 
         SELECT
 
-            SURVEY_NO         surveyNo,
-            SURVEY_NM         surveyNm,
-            SURVEY_CN         surveyCn,
-            SURVEY_TY_CD      surveyTypeCd,
-            SURVEY_QITEM_CN   surveyQitemCn,
-            SURVEY_BGNG_DT    surveyBgngDt,
-            SURVEY_END_DT     surveyEndDt,
-            SURVEY_STTS_CD    surveySttsCd,
-            RGTR_ID           rgtrId,
-            APT_CD            aptCd
+            SURVEY_NO         AS surveyNo,
+            SURVEY_NM         AS surveyNm,
+            SURVEY_CN         AS surveyCn,
+            SURVEY_TY_CD      AS surveyTypeCd,
+            SURVEY_QITEM_CN   AS surveyQitemCn,
+            SURVEY_BGNG_DT    AS surveyBgngDt,
+            SURVEY_END_DT     AS surveyEndDt,
+            SURVEY_STTS_CD    AS surveySttsCd,
+            RGTR_ID           AS rgtrId,
+            APT_CD            AS aptCd
 
         FROM SURVEY
 
         WHERE SURVEY_NO = #{surveyNo}
-          AND SURVEY_STTS_CD = 'OPEN'
 
     </select>
 
