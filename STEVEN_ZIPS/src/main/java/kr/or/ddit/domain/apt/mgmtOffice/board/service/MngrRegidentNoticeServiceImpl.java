@@ -447,12 +447,26 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
             CustomUser customUser,
             String mgmtOfcNo
     ) {
-
         String aptCmplexNo = mapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
+
+        if (aptCmplexNo == null || aptCmplexNo.isBlank()) {
+            dto.setAptCmplexNo("");
+            dto.setBoardNo("");
+            dto.setWrtrId("");
+            return;
+        }
+
         String boardNo = mapper.selectNoticeBoardNoByAptCmplexNo(aptCmplexNo);
 
+        /*
+         * 게시글 데이터가 없는 것은 정상.
+         * 하지만 게시판 기본 데이터가 없는 경우도 화면은 접속되게 처리.
+         */
         if (boardNo == null || boardNo.isBlank()) {
-            throw new IllegalStateException("공지사항 게시판 번호가 없습니다. APT_BOARD_INSTANCE 데이터를 확인하세요.");
+            dto.setAptCmplexNo(aptCmplexNo);
+            dto.setBoardNo("");
+            dto.setWrtrId(customUser.getMember().getUserId());
+            return;
         }
 
         Map<String, Object> paramMap = new HashMap<>();
