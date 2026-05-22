@@ -18,7 +18,7 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
 
     @Override
     public List<Map<String, Object>> selectCtrt(int startRow, int endRow) {
-        return rentCtrtMapper.selectCtrt();
+        return rentCtrtMapper.selectCtrt(startRow, endRow);
     }
 
     @Override

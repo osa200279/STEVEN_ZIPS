@@ -65,32 +65,41 @@
 
     <!-- 계약 조회 -->
     <select id="selectCtrt" resultType="java.util.Map">
-        select  /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrt */
-                 C.RENT_CTRT_NO
-               , U.USER_ID
-               , C.USER_NO
-               , U.USER_NM
-               , A.APT_CMPLEX_NO
-               , A.APT_CMPLEX_NM
-               , C.CTRT_APRV_DT
-               , C.MVIN_DT
-               , C.MVOUT_DT
-               , L.RENT_TYPE_CD
-               , C.DPST_AMT
-               , C.MTHLY_RENT_AMT
-               , C.CTRT_STTS_CD
-               , M.USER_NO as CTRT_MGR_USER_NO
-               , U2.USER_ID as CTRT_MGR_USER_ID
-               , U2.USER_NM as CTRT_MGR_USER_NM
-          from RENT_CTRT C
-    inner join CTRT_MGR M on(C.RENT_CTRT_NO = M.RENT_CTRT_NO)
-    inner join RENT_LISTING L on(C.RENT_LSTG_NO = L.RENT_LSTG_NO)
-    inner join APT_DETAIL H on(H.HO_NO = L.HO_NO)
-    inner join APT_UNIT D on(D.DONG_NO = H.DONG_NO)
-    inner join APT_COMPLEX A on(A.APT_CMPLEX_NO = D.APT_CMPLEX_NO)
-    inner join MEMBER U on(C.USER_NO = U.USER_NO)
-    inner join MEMBER U2 on(M.USER_NO = U2.USER_NO)
-           and M.CHG_YN = 'N'
+        select *
+          from(
+                select A.*, ROWNUM as RNUM
+                  from (
+                        select /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrt */
+                            C.RENT_CTRT_NO
+                             , U.USER_ID
+                             , C.USER_NO
+                             , U.USER_NM
+                             , A.APT_CMPLEX_NO
+                             , A.APT_CMPLEX_NM
+                             , C.CTRT_APRV_DT
+                             , C.MVIN_DT
+                             , C.MVOUT_DT
+                             , L.RENT_TYPE_CD
+                             , C.DPST_AMT
+                             , C.MTHLY_RENT_AMT
+                             , C.CTRT_STTS_CD
+                             , M.USER_NO  as CTRT_MGR_USER_NO
+                             , U2.USER_ID as CTRT_MGR_USER_ID
+                             , U2.USER_NM as CTRT_MGR_USER_NM
+                        from RENT_CTRT C
+                                 inner join CTRT_MGR M on (C.RENT_CTRT_NO = M.RENT_CTRT_NO)
+                                 inner join RENT_LISTING L on (C.RENT_LSTG_NO = L.RENT_LSTG_NO)
+                                 inner join APT_DETAIL H on (H.HO_NO = L.HO_NO)
+                                 inner join APT_UNIT D on (D.DONG_NO = H.DONG_NO)
+                                 inner join APT_COMPLEX A on (A.APT_CMPLEX_NO = D.APT_CMPLEX_NO)
+                                 inner join MEMBER U on (C.USER_NO = U.USER_NO)
+                                 inner join MEMBER U2 on (M.USER_NO = U2.USER_NO)
+                            and M.CHG_YN = 'N'
+                        order by C.RENT_CTRT_NO desc
+                        ) A
+                        where ROWNUM &lt;=#{endRow}
+                    )
+                    where RNUM &gt;=#{startRow}
     </select>
 
     <select id="selectCtrtCount" resultType="java.lang.Integer">

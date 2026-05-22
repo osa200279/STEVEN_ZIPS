@@ -133,4 +133,10 @@ public class AdmDashBoardRestController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("ctrt/detail/{RENT_CTRT_NO}")
+    public ResponseEntity<?> getCtrtDetail(@PathVariable String RENT_CTRT_NO){
+        return ResponseEntity.ok().build();
+    }
+
 }
