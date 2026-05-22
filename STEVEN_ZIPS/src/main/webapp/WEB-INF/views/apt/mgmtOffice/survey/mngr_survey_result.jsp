@@ -240,11 +240,11 @@
                         <div class="summary-card">
 
                             <div class="summary-label">
-                                총 응답 수
+                                입주민 수
                             </div>
 
                             <div class="summary-value"
-                                 id="totalAnswerCount">
+                                 id="totalResident">
 
                                 0
 
@@ -410,9 +410,9 @@
             statusText(data.surveySttsCd);
 
         document
-            .getElementById("totalAnswerCount")
+            .getElementById("totalResident")
             .textContent =
-            data.totalAnswerCount || 0;
+            data.totalResident || 0;
 
         document
             .getElementById("participantCount")

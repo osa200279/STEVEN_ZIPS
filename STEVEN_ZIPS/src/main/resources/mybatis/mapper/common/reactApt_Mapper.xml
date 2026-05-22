@@ -57,15 +57,18 @@
 
     </select>
 
-    <select id="getDongList" resultType="string">
+    <select id="getDongList" resultType="map">
 
         SELECT DISTINCT AU.DONG_NO
+                      , AU.DONG_NM
+
         FROM RENT_LISTING RL
                  INNER JOIN APT_DETAIL AD
                             ON AD.HO_NO = RL.HO_NO
                  INNER JOIN APT_UNIT AU
                             ON AU.DONG_NO = AD.DONG_NO
         WHERE RL.RCRT_LSTG_STTS_CD = 'GENERAL'
+          AND RL.DEAL_STTS_CD = 'AVL'
           AND AU.APT_CMPLEX_NO = #{aptCmplexNo}
         ORDER BY AU.DONG_NO
 
@@ -92,6 +95,30 @@
           AND AU.DONG_NO = #{dongNo}
 
         ORDER BY AD.HO_NO
+
+    </select>
+
+    <select id="getRentListingDetail" resultType="map">
+
+        SELECT RL.RENT_LSTG_NO
+             , RL.RENT_TYPE_CD
+             , RL.DPST_AMT
+             , RL.MTHLY_RENT_AMT
+             , RL.RENT_TTL
+             , RL.RENT_LSTG_CN
+             , RL.MVIN_PSBL_DT
+
+        FROM RENT_LISTING RL
+
+        WHERE RL.HO_NO = #{hoNo}
+          AND RL.DEAL_STTS_CD = 'AVL'
+    </select>
+
+    <select id="getRequiredDocs" resultType="map">
+
+        SELECT RCD.SBMSN_DOC_TY_CD
+        FROM RENT_CTRT_DOC RCD
+        WHERE RCD.RENT_LSTG_NO = #{rentLstgNo}
 
     </select>
 

@@ -12,7 +12,11 @@ public interface IReactAptMapper {
 
     int countApartment(String keyword);
 
-    List<String> getDongList(String aptCmplexNo);
+    List<Map<String, Object>> getDongList(String aptCmplexNo);
 
     List<Map<String, Object>> getHoList(String aptCmplexNo, String dongNo);
+
+    Map<String, Object> getRentListingDetail(String hoNo);
+
+    List<Map<String, Object>> getRequiredDocs(String rentLstgNo);
 }

@@ -65,12 +65,24 @@ public class ReactAptServiceImpl implements IReactAptService {
     }
 
     @Override
-    public List<String> getDongList(String aptCmplexNo) {
+    public List<Map<String, Object>> getDongList(String aptCmplexNo) {
         return reactAptMapper.getDongList(aptCmplexNo);
     }
 
     @Override
     public List<Map<String, Object>> getHoList(String aptCmplexNo, String dongNo) {
         return reactAptMapper.getHoList(aptCmplexNo, dongNo);
+    }
+
+    @Override
+    public Map<String, Object>
+    getRentListingDetail(String hoNo) {
+        return reactAptMapper.getRentListingDetail(hoNo);
+    }
+
+    @Override
+    public List<Map<String, Object>>
+    getRequiredDocs(String rentLstgNo) {
+        return reactAptMapper.getRequiredDocs(rentLstgNo);
     }
 }

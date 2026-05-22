@@ -31,11 +31,11 @@ public class ReactAptController {
     }
 
     @GetMapping("/dong-list")
-    public ResponseEntity<List<String>> getDongList(
+    public ResponseEntity<List<Map<String, Object>>> getDongList(
             @RequestParam String aptCmplexNo
     ) {
 
-        List<String> result = reactAptService.getDongList(aptCmplexNo);
+        List<Map<String, Object>> result = reactAptService.getDongList(aptCmplexNo);
 
         return ResponseEntity.ok(result);
     }
@@ -51,6 +51,29 @@ public class ReactAptController {
                         aptCmplexNo,
                         dongNo
                 );
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/rent-detail")
+    public ResponseEntity<Map<String, Object>>
+    getRentListingDetail(
+            @RequestParam String hoNo
+    ) {
+
+        Map<String, Object> result = reactAptService.getRentListingDetail(hoNo);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/required-docs")
+    public ResponseEntity<List<Map<String, Object>>>
+    getRequiredDocs(
+            @RequestParam String rentLstgNo
+    ) {
+
+        List<Map<String, Object>> result =
+                reactAptService.getRequiredDocs(rentLstgNo);
 
         return ResponseEntity.ok(result);
     }
