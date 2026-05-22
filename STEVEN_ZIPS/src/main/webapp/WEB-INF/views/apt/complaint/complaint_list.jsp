@@ -1,23 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>민원신청 ${apt.aptCmplexNm}</title>
+    <title>민원 내역 - ${aptInfo.aptComplexInfo.aptCmplexNm}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/apt/apt.css">
     <style>
-        /* 모달 배경 레이어 */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             display: flex;
@@ -25,16 +23,13 @@
             justify-content: center;
             z-index: 2000;
         }
-
-        /* 모달 컨텐츠 박스 */
         .modal-content {
             width: 100%;
-            max-width: 800px; /* 상세 정보라 조금 넓게 잡음 */
+            max-width: 800px;
             max-height: 90vh;
             overflow-y: auto;
             animation: modalFadeIn 0.3s ease-out;
         }
-
         .modal-close-btn {
             background: none;
             border: none;
@@ -43,23 +38,11 @@
             display: flex;
             align-items: center;
         }
-
-        .modal-close-btn:hover {
-            color: var(--danger);
-        }
-
+        .modal-close-btn:hover { color: var(--danger); }
         @keyframes modalFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-
-        /* 모달 내 텍스트 영역 가독성 보완 */
         #modalCn {
             white-space: pre-wrap;
             word-break: break-all;
@@ -67,9 +50,23 @@
             line-height: 1.8;
             color: var(--text-dark);
         }
-
-        .panel {
-            width: 100%;
+        .panel { width: 100%; }
+        .pagination-wrap { margin-top: 20px; display: flex; justify-content: center; }
+        .pagination { display: flex; list-style: none; padding: 0; margin: 0; gap: 4px; }
+        .pagination .page-item .page-link {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 6px;
+            border: 1px solid var(--green-dark); color: var(--green-dark);
+            text-decoration: none; font-size: 13px; cursor: pointer;
+        }
+        .pagination .page-item.active .page-link {
+            background: var(--green-dark); color: #fff; border-color: var(--green-dark);
+        }
+        .pagination .page-item .page-link:hover {
+            background: var(--green-dark); color: #fff;
+        }
+        .pagination .page-item.disabled .page-link {
+            cursor: default; border: none; color: var(--text-light);
         }
     </style>
 </head>
@@ -80,7 +77,7 @@
     <main class="content-area">
         <div class="page-content-wrap">
             <div class="breadcrumb">
-                <a href="/apt/main/${apt.aptCmplexNo}">${apt.aptCmplexNm}</a>
+                <a href="/apt/main/${aptInfo.aptComplexInfo.aptCmplexNo}">${aptInfo.aptComplexInfo.aptCmplexNm}</a>
                 <span>›</span>
                 <a href="javascript:void(0);">민원접수</a>
                 <span>›</span>
@@ -94,27 +91,45 @@
                 <table class="data-table">
                     <thead>
                     <tr>
+                        <th>민원 번호</th>
                         <th>접수일</th>
-                        <th>민원인ID</th>
                         <th>카테고리</th>
                         <th>제목</th>
                         <th>발생장소</th>
                         <th>상태</th>
-                        <th></th>
                     </tr>
                     </thead>
                     <tbody id="cvplBody">
                     <c:forEach var="cvpl" items="${cvplList}">
                         <tr onclick="openCvplDetail('${cvpl.cvplNo}')" style="cursor:pointer;">
+                            <td>${cvpl.cvplNo}</td>
                             <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
-                            <td>${cvpl.userId}</td>
-                            <td>${cvpl.cvplTyCd}</td>
+                            <c:choose>
+                                <c:when test="${cvpl.cvplTyCd eq 'FAC'}">
+                                    <td><span class="badge wait">시설/하자</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplTyCd eq 'SEC'}">
+                                    <td><span class="badge cancel">보안/안전</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplTyCd eq 'ACC'}">
+                                    <td><span class="badge ok">회계/관리비</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplTyCd eq 'ENV'}">
+                                    <td><span class="badge wait">환경/위생</span></td>
+                                </c:when>
+                                <c:when test="${cvpl.cvplTyCd eq 'ETC'}">
+                                    <td><span class="badge wait">기타</span></td>
+                                </c:when>
+                                <c:otherwise>
+                                    <td>${cvpl.cvplTyCd}</td>
+                                </c:otherwise>
+                            </c:choose>
                             <td>${cvpl.cvplTtl}</td>
                             <td>${cvpl.cvplLoc}</td>
                             <c:choose>
                                 <c:when test="${cvpl.cvplSttsCd eq 'APLY'}">
                                     <td><span class="badge wait">민원 신청됨</span></td>
-                                 </c:when>
+                                </c:when>
                                 <c:when test="${cvpl.cvplSttsCd eq 'CNCL'}">
                                     <td><span class="badge cancel">민원 취소됨</span></td>
                                 </c:when>
@@ -137,17 +152,30 @@
                                     <td><span class="badge info">종결</span></td>
                                 </c:when>
                             </c:choose>
-                            <%--<td><button class="btn-sz-outline">상세보기</button></td>--%>
                         </tr>
                     </c:forEach>
+                    <c:if test="${empty cvplList}">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
+                                접수된 민원이 없습니다.
+                            </td>
+                        </tr>
+                    </c:if>
                     </tbody>
                 </table>
+
+                <%-- 페이징 --%>
+                <c:if test="${page.totalRecord > 0}">
+                    <div class="pagination-wrap">
+                        <%=((kr.or.ddit.common.model.PaginationInfoVO)request.getAttribute("page")).getPagingHTML()%>
+                    </div>
+                </c:if>
             </div>
         </div>
     </main>
 </div>
 
-<%-- 민원 상세 내역 모달창 --%>
+<%-- 민원 상세 내역 모달 --%>
 <div id="cvplDetailModal" class="modal-overlay" style="display: none;">
     <div class="modal-content panel">
         <div class="section-hd">
@@ -156,9 +184,11 @@
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-
         <div class="modal-body">
             <div class="label-grid">
+                <div class="th">민원 번호</div>
+                <div id="modalNo" class="td" style="grid-column: span 3;"></div>
+
                 <div class="th">제목</div>
                 <div id="modalTtl" class="td" style="grid-column: span 3;"></div>
 
@@ -178,8 +208,7 @@
                 <h3>민원 설명</h3>
             </div>
             <div id="modalCn" class="fake-textarea"
-                 style="background: var(--bg); border-color: var(--border); margin-bottom: 20px;">
-            </div>
+                 style="background: var(--bg); border-color: var(--border); margin-bottom: 20px;"></div>
 
             <div class="section-hd" style="border-bottom: none;">
                 <h3>첨부 파일</h3>
@@ -189,10 +218,8 @@
                 <span class="chip" style="background: var(--text-light);">첨부된 파일이 없습니다.</span>
             </div>
         </div>
-
         <div class="btn-row">
             <button class="btn-ghost" onclick="closeModal()">닫기</button>
-            <button id="modalModifyBtn" class="btn-main">수정하기</button>
         </div>
     </div>
 </div>
@@ -200,65 +227,90 @@
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 </body>
 <script>
+    const aptCmplexNo = '${aptInfo.aptComplexInfo.aptCmplexNo}';
+
     function closeModal() {
         document.querySelector('#cvplDetailModal').style.display = 'none';
-        document.body.style.overflow = 'auto'; // 스크롤 복구
+        document.body.style.overflow = 'auto';
     }
 
-    // 2. 민원 상세 조회 및 모달 오픈
     async function openCvplDetail(cvplNo) {
         try {
-            // 상세 데이터를 가져오는 API 호출 (예시 주소)
-            const resp = await fetch(`/apt/complaint/detail/${cvplNo}`);
+            const url = '/apt/complaint/detail/' + aptCmplexNo + '/' + cvplNo;
+            const resp = await fetch(url);
             if (!resp.ok) throw new Error("상세 정보를 불러올 수 없습니다.");
 
-            const cvpl = await resp.json();
+            const data = await resp.json();
+            const cvpl = data.detail;
+            const files = data.files;
 
-            // 모달 데이터 매핑
-            document.querySelector('#modalTtl').innerText = cvpl.cvplTtl;
-            document.querySelector('#modalTy').innerText = cvpl.cvplTyNm; // 카테고리 한글명
-            document.querySelector('#modalDate').innerText = new Date(cvpl.cvplRegDt).toLocaleString();
-            document.querySelector('#modalLoc').innerText = cvpl.cvplLoc || '장소 미지정';
-            document.querySelector('#modalCn').innerText = cvpl.cvplCn;
+            document.querySelector('#modalNo').innerText     = cvpl.cvplNo;
+            document.querySelector('#modalTtl').innerText    = cvpl.cvplTtl;
+            document.querySelector('#modalTy').innerText     = getCategoryText(cvpl.cvplTyCd);
+            document.querySelector('#modalDate').innerText   = new Date(cvpl.cvplRegDt).toLocaleString('ko-KR');
+            document.querySelector('#modalLoc').innerText    = cvpl.cvplLoc || '장소 미지정';
+            document.querySelector('#modalCn').innerText     = cvpl.cvplCn  || '';
+            document.querySelector('#modalStatus').innerText = getStatusText(cvpl.cvplSttsCd);
 
-            // 배지 처리 (상태 코드에 따른 HTML 생성)
-            const statusBox = document.querySelector('#modalStatus');
-            statusBox.innerHTML = getBadgeHtml(cvpl.cvplSttsCd); // 기존에 만든 getBadgeHtml 재사용
-
-            // 파일 칩 처리
             const fileBox = document.querySelector('#modalFiles');
-            if (cvpl.fileList && cvpl.fileList.length > 0) {
-                fileBox.innerHTML = cvpl.fileList.map(f => `
-                <a href="/download/${f.fileNo}" class="chip" style="background: var(--green-dark); cursor:pointer;">
-                    <span class="material-symbols-outlined" style="font-size:14px;">download</span>
-                    ${f.orgnlFileNm}
-                </a>
-            `).join('');
+            if (files && files.length > 0) {
+                fileBox.innerHTML = files.map(f =>
+                    '<a href="/download/' + f.fileNo + '" class="chip" style="background: var(--green-dark); cursor:pointer;">' +
+                    '<span class="material-symbols-outlined" style="font-size:14px;">download</span>' +
+                    f.orgnlFileNm + '</a>'
+                ).join('');
             } else {
                 fileBox.innerHTML = '<span class="chip" style="background: var(--text-light);">첨부된 파일이 없습니다.</span>';
             }
 
-            // 모달 표시
             document.querySelector('#cvplDetailModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+            document.body.style.overflow = 'hidden';
 
         } catch (error) {
             alert(error.message);
         }
     }
 
-    function getBadgeHtml(statusCd) {
-        const statusMap = {
-            'APLY': {text: '민원 신청됨', cls: 'wait'},
-            'RCPT': {text: '민원 접수됨', cls: 'ok'},
-            'SUPL': {text: '보완 요청', cls: 'wait'},
-            'REJS': {text: '처리 불가', cls: 'wait'},
-            'RJCT': {text: '반려', cls: 'wait'},
-            'COMP': {text: '처리 완료', cls: 'info'},
-            'END': {text: '종결', cls: 'info'}
+    function getCategoryText(tyCd) {
+        const categoryMap = {
+            'FAC': '시설/하자',
+            'SEC': '보안/안전',
+            'ACC': '회계/관리비',
+            'ENV': '환경/위생',
+            'ETC': '기타'
         };
-        const res = statusMap[statusCd] || {text: '대기', cls: 'wait'};
-        return `<span class="badge ${res.cls}">${res.text}</span>`;
+        return categoryMap[tyCd] || tyCd;
     }
+
+    function getStatusText(statusCd) {
+        const statusMap = {
+            'APLY': '민원 신청됨',
+            'CNCL': '민원 취소됨',
+            'RCPT': '민원 접수됨',
+            'SUPL': '보완 요청',
+            'REJS': '처리 불가',
+            'RJCT': '반려',
+            'COMP': '처리 완료',
+            'END' : '종결'
+        };
+        return statusMap[statusCd] || '알 수 없음';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    document.querySelector('#cvplDetailModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    document.addEventListener('click', function(e) {
+        const pageLink = e.target.closest('[data-page]');
+        if (pageLink) {
+            e.preventDefault();
+            const pageNum = pageLink.getAttribute('data-page');
+            location.href = '/apt/complaint/list/' + aptCmplexNo + '?curPage=' + pageNum;
+        }
+    });
 </script>
 </html>

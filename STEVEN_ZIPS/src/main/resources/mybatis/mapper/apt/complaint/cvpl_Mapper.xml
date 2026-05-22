@@ -65,126 +65,165 @@
 
     <!--해당 아파트 내 민원 리스트 조회-->
     <select id="selectCvplListByAptCmplexNo" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
-        select  /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectCvplListByAptCmplexNo */
-             CVPL_NO
-             , CVPL_TY_CD
-             , CVPL_LOC
-             , CVPL_CN
-             , CVPL_STTS_CD
-             , CVPL_REG_DT
-             , CVPL_MDF_DT
-             , CVPL_RCPT_DT
-             , CVPL_END_DT
-             , CVPL_PRRT
-             , CVPL_FILE_NO
-             , CVPL_TTL
-             , USER_NO
-             , HO_NO
-             , APT_CMPLEX_NO
-         from CVPL
-        where USER_NO = #{userNo}
-          and APT_CMPLEX_NO = #{aptCmplexNo}
-        order by CVPL_REG_DT desc
+        SELECT  /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectCvplListByAptCmplexNo */
+             cvpl_no
+             , cvpl_ty_cd
+             , cvpl_loc
+             , cvpl_cn
+             , cvpl_stts_cd
+             , cvpl_reg_dt
+             , cvpl_mdf_dt
+             , cvpl_rcpt_dt
+             , cvpl_end_dt
+             , cvpl_prrt
+             , cvpl_file_no
+             , cvpl_ttl
+             , user_no
+             , ho_no
+             , apt_cmplex_no
+         FROM cvpl
+        WHERE user_no = #{userNo}
+          AND apt_cmplex_no = #{aptCmplexNo}
+        ORDER BY cvpl_reg_dt DESC
     </select>
 
     <!-- 해당아파트 입주민의 민원 목록 총 갯수 -->
     <select id="selectCvplCount" resultType="java.lang.Integer" parameterType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
-        select COUNT(*) /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectCvplCount */
-        from CVPL
-        where USER_NO = #{userNo}
-          and APT_CMPLEX_NO = #{aptCmplexNo}
+        SELECT COUNT(*) /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectCvplCount */
+        FROM cvpl
+        WHERE user_no = #{userNo}
+          AND apt_cmplex_no = #{aptCmplexNo}
     </select>
 
     <!-- 페이징 처리할 민원 목록 조회 -->
     <select id="selectMyCvplList" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO" parameterType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
-        select *
-        from (select a.*, ROWNUM rnum
-              from (select /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectMyCvplList */
-                        CVPL_NO
-                         , CVPL_TY_CD
-                         , CVPL_LOC
-                         , CVPL_CN
-                         , CVPL_STTS_CD
-                         , CVPL_REG_DT
-                         , CVPL_MDF_DT
-                         , CVPL_RCPT_DT
-                         , CVPL_END_DT
-                         , CVPL_PRRT
-                         , CVPL_FILE_NO
-                         , CVPL_TTL
-                         , USER_NO
-                         , HO_NO
-                         , APT_CMPLEX_NO
-                    from CVPL
-                    where USER_NO = #{searchVO.userNo}
-                      and APT_CMPLEX_NO = #{searchVO.aptCmplexNo}
-                    order by CVPL_REG_DT desc) a
+        SELECT *
+        FROM (SELECT a.*, ROWNUM rnum
+              FROM (SELECT /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectMyCvplList */
+                        cvpl_no
+                         , cvpl_ty_cd
+                         , cvpl_loc
+                         , cvpl_cn
+                         , cvpl_stts_cd
+                         , cvpl_reg_dt
+                         , cvpl_mdf_dt
+                         , cvpl_rcpt_dt
+                         , cvpl_end_dt
+                         , cvpl_prrt
+                         , cvpl_file_no
+                         , cvpl_ttl
+                         , user_no
+                         , ho_no
+                         , apt_cmplex_no
+                    FROM cvpl
+                    WHERE user_no = #{searchVO.userNo}
+                      AND apt_cmplex_no = #{searchVO.aptCmplexNo}
+                    ORDER BY cvpl_reg_dt DESC) a
                     <![CDATA[
-              where ROWNUM <= #{endRow}
+              WHERE ROWNUM <= #{endRow}
                     ]]>
              )
-        where rnum >= #{startRow}
+        WHERE rnum >= #{startRow}
     </select>
 
     <!-- 해당 아파트 모든 민원내역 -->
     <select id="selectCvplListAllByAptCmplexNo" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
-        select  /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectCvplListAllByAptCmplexNo */
-            CVPL_NO
-             , CVPL_TY_CD
-             , CVPL_LOC
-             , CVPL_CN
-             , CVPL_STTS_CD
-             , CVPL_REG_DT
-             , CVPL_MDF_DT
-             , CVPL_RCPT_DT
-             , CVPL_END_DT
-             , CVPL_PRRT
-             , CVPL_FILE_NO
-             , CVPL_TTL
-             , C.USER_NO
-             , M.USER_ID
-             , M.USER_NM
-             , HO_NO
-             , APT_CMPLEX_NO
-         from CVPL  C
-   inner join MEMBER M on(M.USER_NO = C.USER_NO)
-        where APT_CMPLEX_NO = #{aptCmplexNo}
-        order by CVPL_REG_DT desc
+        SELECT  /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectCvplListAllByAptCmplexNo */
+            cvpl_no
+             , cvpl_ty_cd
+             , cvpl_loc
+             , cvpl_cn
+             , cvpl_stts_cd
+             , cvpl_reg_dt
+             , cvpl_mdf_dt
+             , cvpl_rcpt_dt
+             , cvpl_end_dt
+             , cvpl_prrt
+             , cvpl_file_no
+             , cvpl_ttl
+             , c.user_no
+             , m.user_id
+             , m.user_nm
+             , ho_no
+             , apt_cmplex_no
+         FROM cvpl c
+   INNER JOIN member m ON(m.user_no = c.user_no)
+        WHERE apt_cmplex_no = #{aptCmplexNo}
+        ORDER BY cvpl_reg_dt desc
     </select>
 
     <select id="selectOneCvplBrief" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
-        select /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectOneCvplBreif */
-              CVPL_NO
-             , C.USER_NO
-             , M.USER_ID
-             , M.USER_NM
-             , HO_NO
-             , APT_CMPLEX_NO
-         from CVPL C
-   inner join MEMBER M on (M.USER_NO = C.USER_NO)
-        where CVPL_NO = #{cvplNo}
+        SELECT /* kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper.selectOneCvplBreif */
+              cvpl_no
+             , c.user_no
+             , m.user_id
+             , m.user_nm
+             , ho_no
+             , apt_cmplex_no
+         FROM cvpl c
+        INNER JOIN member m on (m.user_no = c.user_no)
+        WHERE cvpl_no = #{cvplNo}
     </select>
 
     <select id="selectOneCvplDetailByCvplNo" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
-        select
-                CVPL_NO
-               , CVPL_TY_CD
-               , CVPL_LOC
-               , CVPL_CN
-               , CVPL_STTS_CD
-               , CVPL_REG_DT
-               , CVPL_MDF_DT
-               , CVPL_RCPT_DT
-               , CVPL_END_DT
-               , CVPL_FILE_NO
-               , CVPL_TTL
-          from CVPL
-         where CVPL_NO = #{cvplNo}
+        SELECT
+                cvpl_no
+               , cvpl_ty_cd
+               , cvpl_loc
+               , cvpl_cn
+               , cvpl_stts_cd
+               , cvpl_reg_dt
+               , cvpl_mdf_dt
+               , cvpl_rcpt_dt
+               , cvpl_end_dt
+               , cvpl_file_no
+               , cvpl_ttl
+          FROM cvpl
+         WHERE cvpl_no = #{cvplNo}
+    </select>
+
+    <!-- 단지 전체 민원 건수 (페이징용) -->
+    <select id="selectCvplCountByAptCmplexNo" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM cvpl
+        WHERE apt_cmplex_no = #{aptCmplexNo}
     </select>
 
     <update id="updateCvplSttsToCancel">
-        update CVPL
-           set CVPL_STTS_CD = 'CNCL'
-         where CVPL_NO = #{cvplNo}
+        UPDATE cvpl
+           SET cvpl_stts_cd = 'CNCL'
+         WHERE cvpl_no = #{cvplNo}
     </update>
+
+    <!--  단지 전체 민원 페이징 조회  -->
+    <select id="selectCvplListAllByAptCmplexNoPaged" resultType="kr.or.ddit.domain.apt.complaint.vo.CvplVO">
+        SELECT *
+        FROM (
+            SELECT a.*, ROWNUM rnum
+              FROM (
+                    SELECT c.cvpl_no
+                           ,cvpl_ty_cd
+                           ,cvpl_loc
+                           ,cvpl_cn
+                           ,cvpl_stts_cd
+                           ,cvpl_reg_dt
+                           ,cvpl_mdf_dt
+                           ,cvpl_rcpt_dt
+                           ,cvpl_end_dt
+                           ,cvpl_prrt
+                           ,cvpl_file_no
+                           ,cvpl_ttl
+                           ,c.user_no
+                           ,m.user_id
+                           ,m.user_nm
+                           ,ho_no
+                           ,apt_cmplex_no
+                    FROM cvpl c
+                             INNER JOIN member m ON (m.user_no = c.user_no)
+                    WHERE apt_cmplex_no = #{searchVO.aptCmplexNo}
+                    ORDER BY cvpl_reg_dt DESC) a
+            <![CDATA[ WHERE ROWNUM <= #{endRow} ]]>
+        )
+        WHERE rnum >= #{startRow}
+    </select>
 </mapper>

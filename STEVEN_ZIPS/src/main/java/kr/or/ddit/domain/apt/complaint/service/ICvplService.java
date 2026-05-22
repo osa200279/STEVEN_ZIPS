@@ -28,4 +28,8 @@ public interface ICvplService {
 
     // 민원 취하
     int cancelCvpl(String cvplNo);
+
+    int selectCvplCountByAptCmplexNo(CvplVO searchVO);
+
+    List<CvplVO> selectCvplListAllByAptCmplexNoPaged(PaginationInfoVO<CvplVO> page);
 }

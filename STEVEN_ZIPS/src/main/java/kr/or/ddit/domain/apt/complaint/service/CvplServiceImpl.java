@@ -27,6 +27,8 @@ import java.util.UUID;
 @Service
 public class CvplServiceImpl implements ICvplService {
 
+
+
     @Autowired
     private ICvplMapper cvplMapper;
 
@@ -143,5 +145,15 @@ public class CvplServiceImpl implements ICvplService {
     @Override
     public int cancelCvpl(String cvplNo) {
         return cvplMapper.updateCvplSttsToCancel(cvplNo);
+    }
+
+    @Override
+    public int selectCvplCountByAptCmplexNo(CvplVO searchVO) {
+        return cvplMapper.selectCvplCountByAptCmplexNo(searchVO);
+    }
+
+    @Override
+    public List<CvplVO> selectCvplListAllByAptCmplexNoPaged(PaginationInfoVO<CvplVO> page) {
+        return cvplMapper.selectCvplListAllByAptCmplexNoPaged(page);
     }
 }

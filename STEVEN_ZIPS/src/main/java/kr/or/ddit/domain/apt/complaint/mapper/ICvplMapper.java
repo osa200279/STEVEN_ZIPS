@@ -27,4 +27,8 @@ public interface ICvplMapper {
     CvplVO selectOneCvplDetailByCvplNo(String cvplNo);
 
     int updateCvplSttsToCancel(String cvplNo);
+
+    int selectCvplCountByAptCmplexNo(CvplVO searchVO);
+
+    List<CvplVO> selectCvplListAllByAptCmplexNoPaged(PaginationInfoVO<CvplVO> page);
 }
