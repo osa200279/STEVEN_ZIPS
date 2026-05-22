@@ -405,4 +405,22 @@ public class ManagerMainController {
         return "apt/mgmtOffice/mngr_complex_edit";
     }
 
+    // 민원 접수 현황 페이지
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping({"/complex/complaint/{mgmtOfcNo}"})
+    public String cvplList(
+            @PathVariable String mgmtOfcNo,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        // mgmtOfcNo 로 아파트 정보 가져오는 메서드
+        AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+        System.out.println("mgmtOfcNo = " + mgmtOfcNo);
+        System.out.println("complex = " + aptComplexVO);
+
+        return "apt/mgmtOffice/complaint/mngrComplaint";
+    }
+
 }

@@ -669,7 +669,8 @@ public class ResidentMainController {
         return "member/resident/service/service_move_out";
     }
 
-    @GetMapping("/service/moving/settlement")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+    @GetMapping("/service/moving/settlement/{aptCmplexNo}")
     public String seriveMoveSettlement(@PathVariable String aptCmplexNo,
                                        @AuthenticationPrincipal CustomUser principal,
                                        Model model) {
@@ -690,6 +691,7 @@ public class ResidentMainController {
 
         model.addAttribute("aptInfo", aptCommonDTO);
 
+        model.addAttribute("principal", principal);
         model.addAttribute("userNo", userNo);
         model.addAttribute("aptCmplexNo", aptCmplexNo);
         model.addAttribute("aptList", aptList);

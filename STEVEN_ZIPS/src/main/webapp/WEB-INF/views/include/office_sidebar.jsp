@@ -627,7 +627,7 @@
             <div class="submenu-wrap">
                 <div class="submenu-inner">
                     <span class="sub-group-label">민원</span>
-                    <a href="/manager/cvpl-list/${mgmtOfcNo}" class="nav-item" aria-disabled="true">
+                    <a href="/manager/complex/complaint/${mgmtOfcNo}" class="nav-item" aria-disabled="true">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">민원 접수 현황</span>
                     </a>
