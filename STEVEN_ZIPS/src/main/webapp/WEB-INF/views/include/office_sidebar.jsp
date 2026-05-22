@@ -469,10 +469,6 @@
 <%--                or fn:contains(uri, '/manager/contract')--%>
 <%--                ? 'open="open"' : ''}>--%>
 
-
-
-
-
             <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">apartment</span>
                 <span class="cat-label">시설·공사 관리</span>
@@ -517,11 +513,11 @@
                            ? 'is-open' : ''}"
                            id="publicFacilityChild">
 
-                        <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"
-                           class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">
-                            <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                            <span class="nav-text">편의시설 목록</span>
-                        </a>
+<%--                        <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"--%>
+<%--                           class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">--%>
+<%--                            <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+<%--                            <span class="nav-text">편의시설 목록</span>--%>
+<%--                        </a>--%>
 
                         <a href="${ctx}/manager/publicFacility/reservation/approval${mgmtPath}"
                            class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/approval') ? 'active' : ''}">
