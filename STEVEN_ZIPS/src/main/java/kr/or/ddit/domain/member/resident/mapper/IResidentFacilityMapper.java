@@ -51,4 +51,7 @@ public interface IResidentFacilityMapper {
 
 
     List<FacilityInfoDTO> selectFacilityDongList(String aptCmplexNo);
+
+    // 예약 가능한 편의시설 카드 목록 조회
+    List<FacilityInfoDTO> selectReservablePublicFacilityCardList(@Param("aptCmplexNo") String aptCmplexNo);
 }

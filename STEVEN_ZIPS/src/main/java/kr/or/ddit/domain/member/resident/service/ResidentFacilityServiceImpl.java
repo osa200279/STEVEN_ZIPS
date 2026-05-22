@@ -91,4 +91,15 @@ public class ResidentFacilityServiceImpl implements IResidentFacilityService {
     public List<ResidentFacilityHistoryDTO> getFacilityHistoryList(ResidentFacilityHistoryDTO dto) {
         return residentFacilityMapper.selectFacilityHistoryList(dto);
     }
+
+    @Override
+    public List<FacilityInfoDTO> getReservablePublicFacilityCardList(String aptCmplexNo) {
+        /*
+         * Service란?
+         * Controller와 Mapper 사이에서 업무 로직을 담당하는 계층입니다.
+         * 여기서는 Controller가 SQL을 직접 부르지 않도록 Mapper 호출을 감싸줍니다.
+         */
+        return residentFacilityMapper.selectReservablePublicFacilityCardList(aptCmplexNo);
+    }
+
 }

@@ -766,7 +766,27 @@ public class ResidentMainController {
     }
 
     @GetMapping("/service/facility")
-    public String serviceFacility() {
+    public String serviceFacility(
+            @AuthenticationPrincipal CustomUser principal,
+            Model model
+    ) {
+        /*
+         * Controller란?
+         * 사용자의 요청 URL을 받아서 Service를 호출하고,
+         * 조회 결과를 JSP로 전달하는 클래스입니다.
+         */
+
+        String userNo = principal.getMember().getUserNo();
+
+        // 로그인한 입주민이 속한 단지번호 조회
+        String aptCmplexNo = residentFacilityService.getResidentAptCmplexNo(userNo);
+
+        // 예약제 편의시설 목록 조회
+        List<FacilityInfoDTO> reservableFacilityList =
+                residentFacilityService.getReservablePublicFacilityCardList(aptCmplexNo);
+
+        model.addAttribute("reservableFacilityList", reservableFacilityList);
+
         return "member/resident/service/service_facility";
     }
 

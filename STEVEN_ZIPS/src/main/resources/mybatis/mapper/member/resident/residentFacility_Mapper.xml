@@ -383,4 +383,28 @@
         </if>
     </select>
 
+    <select id="selectReservablePublicFacilityCardList"
+            resultType="kr.or.ddit.domain.central.dto.FacilityInfoDTO">
+        /*
+         * 예약 가능한 편의시설 조회
+         * CMN_FACILITY_RSV_YN = 'Y' 인 데이터만 카드로 보여줍니다.
+         */
+        SELECT pf.cmn_facility_no      cmnFacilityNo
+             , pf.cmn_facility_nm      cmnFacilityNm
+             , pf.cmn_facility_cn      cmnFacilityCn
+             , pf.cmn_facility_amt     cmnFacilityAmt
+             , pf.cmn_facility_rsv_yn  cmnFacilityRsvYn
+             , pf.cmn_facility_opr_hr  cmnFacilityOprHr
+             , f.facility_no           facilityNo
+             , f.facility_nm           facilityNm
+             , f.dong_no               dongNo
+             , f.loc_cn                locCn
+        FROM public_facility pf
+                 LEFT JOIN facility f
+                           ON pf.facility_no = f.facility_no
+        WHERE pf.apt_cmplex_no = #{aptCmplexNo}
+          AND pf.cmn_facility_rsv_yn = 'Y'
+        ORDER BY pf.cmn_facility_nm
+    </select>
+
 </mapper>

@@ -48,4 +48,7 @@ public interface IResidentFacilityService {
      * 시설 점검 상세 이력 목록 조회
      */
     List<ResidentFacilityHistoryDTO> getFacilityHistoryList(ResidentFacilityHistoryDTO dto);
+
+    // 예약제 편의시설 목록 조회
+    List<FacilityInfoDTO> getReservablePublicFacilityCardList(String aptCmplexNo);
 }

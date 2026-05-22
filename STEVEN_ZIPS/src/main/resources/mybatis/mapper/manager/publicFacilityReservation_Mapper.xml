@@ -244,55 +244,6 @@
           AND RSVT_STTS_CD IN ('PENDING','APPROVED')
     </update>
 
-    <!--
-    입주민 - 예약 가능한 공용시설 종류 목록
-
-    PUBLIC_FACILITY:
-    단지독서실, 주민회의실, 피트니스센터 같은 큰 시설 정보
-
-    PUBLIC_ITEM:
-    독서실 좌석, 회의실 1호실 같은 세부 예약 대상
--->
-    <select id="selectResidentFacilityGroupList" resultMap="reservationMap">
-        SELECT
-        PF.CMN_FACILITY_NO,
-        PF.APT_CMPLEX_NO,
-        PF.FACILITY_NO,
-        PF.CMN_FACILITY_NM,
-        PF.CMN_FACILITY_CN,
-        PF.CMN_FACILITY_AMT,
-        PF.CMN_FACILITY_RSV_YN,
-        PF.CMN_FACILITY_OPR_HR,
-        F.FACILITY_TY_CD,
-        F.LOC_CN,
-        COUNT(PI.CMN_FACILITY_ITEM_NO) AS USE_PEOPLE_CNT
-        FROM PUBLIC_FACILITY PF
-        JOIN FACILITY F
-        ON F.FACILITY_NO = PF.FACILITY_NO
-        LEFT JOIN PUBLIC_ITEM PI
-        ON PI.CMN_FACILITY_NO = PF.CMN_FACILITY_NO
-        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
-        AND PF.CMN_FACILITY_RSV_YN = 'Y'
-        AND PF.CMN_FACILITY_NM IN ('주민회의실', '단지독서실', '피트니스센터')
-        GROUP BY
-        PF.CMN_FACILITY_NO,
-        PF.APT_CMPLEX_NO,
-        PF.FACILITY_NO,
-        PF.CMN_FACILITY_NM,
-        PF.CMN_FACILITY_CN,
-        PF.CMN_FACILITY_AMT,
-        PF.CMN_FACILITY_RSV_YN,
-        PF.CMN_FACILITY_OPR_HR,
-        F.FACILITY_TY_CD,
-        F.LOC_CN
-        ORDER BY
-        DECODE(PF.CMN_FACILITY_NM,
-        '단지독서실', 1,
-        '주민회의실', 2,
-        '피트니스센터', 3,
-        99
-        )
-    </select>
 
     <!--
         입주민 - 선택한 공용시설의 세부 항목 목록
@@ -346,6 +297,47 @@
         AND FH.RSVT_STTS_CD IN ('PENDING', 'APPROVED')
         AND FH.RSVT_BGNG_DTTM &lt; TO_DATE(#{rsvtEndDttm}, 'YYYY-MM-DD HH24:MI')
         AND FH.RSVT_END_DTTM &gt; TO_DATE(#{rsvtBgngDttm}, 'YYYY-MM-DD HH24:MI')
+    </select>
+
+    <select id="selectResidentFacilityGroupList" resultMap="reservationMap">
+        SELECT
+        PF.CMN_FACILITY_NO,
+        PF.APT_CMPLEX_NO,
+        PF.FACILITY_NO,
+        PF.CMN_FACILITY_NM,
+        PF.CMN_FACILITY_CN,
+        PF.CMN_FACILITY_AMT,
+        PF.CMN_FACILITY_RSV_YN,
+        PF.CMN_FACILITY_OPR_HR,
+        F.FACILITY_TY_CD,
+        F.LOC_CN,
+        COUNT(PI.CMN_FACILITY_ITEM_NO) AS USE_PEOPLE_CNT
+        FROM PUBLIC_FACILITY PF
+        JOIN FACILITY F
+        ON F.FACILITY_NO = PF.FACILITY_NO
+        LEFT JOIN PUBLIC_ITEM PI
+        ON PI.CMN_FACILITY_NO = PF.CMN_FACILITY_NO
+        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND PF.CMN_FACILITY_RSV_YN = 'Y'
+        /*
+        * CMN_FACILITY_RSV_YN = 'Y'
+        * 예약제 여부입니다.
+        * 왜 사용?
+        * 관리자 편의시설 목록에서 '예약제'로 등록된 시설만
+        * 입주민 예약 카드에 보여주기 위해 사용합니다.
+        */
+        GROUP BY
+        PF.CMN_FACILITY_NO,
+        PF.APT_CMPLEX_NO,
+        PF.FACILITY_NO,
+        PF.CMN_FACILITY_NM,
+        PF.CMN_FACILITY_CN,
+        PF.CMN_FACILITY_AMT,
+        PF.CMN_FACILITY_RSV_YN,
+        PF.CMN_FACILITY_OPR_HR,
+        F.FACILITY_TY_CD,
+        F.LOC_CN
+        ORDER BY PF.CMN_FACILITY_NM
     </select>
 
 </mapper>
