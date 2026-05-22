@@ -442,11 +442,15 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
     }
 
     @Override
+    @Transactional
     public void setManagerNoticeBaseInfo(
             MngrRegidentNoticeDTO dto,
             CustomUser customUser,
             String mgmtOfcNo
     ) {
+        /*
+         * 1. 관리사무소 번호로 단지번호 조회
+         */
         String aptCmplexNo = mapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
 
         if (aptCmplexNo == null || aptCmplexNo.isBlank()) {
@@ -456,25 +460,35 @@ public class MngrRegidentNoticeServiceImpl implements IMngrRegidentNoticeService
             return;
         }
 
+        /*
+         * 2. 공지게시판 기본 데이터 자동 생성
+         *
+         * APT_BOARD_INSTANCE에 아래 형태로 데이터가 없으면 자동 INSERT됨.
+         * BOARD_NO       = {APT_CMPLEX_NO}_notice
+         * APT_CMPLEX_NO  = {APT_CMPLEX_NO}
+         * BOARD_TY_CD    = NOTICE
+         * BOARD_NM       = 공지게시판
+         * USE_YN         = Y
+         */
+        mapper.mergeNoticeBoardInstance(aptCmplexNo);
+
+        /*
+         * 3. 생성된 게시판 번호 다시 조회
+         */
         String boardNo = mapper.selectNoticeBoardNoByAptCmplexNo(aptCmplexNo);
 
         /*
-         * 게시글 데이터가 없는 것은 정상.
-         * 하지만 게시판 기본 데이터가 없는 경우도 화면은 접속되게 처리.
+         * 4. 작성자명 조회
          */
-        if (boardNo == null || boardNo.isBlank()) {
-            dto.setAptCmplexNo(aptCmplexNo);
-            dto.setBoardNo("");
-            dto.setWrtrId(customUser.getMember().getUserId());
-            return;
-        }
-
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("aptCmplexNo", aptCmplexNo);
         paramMap.put("userNo", customUser.getMember().getUserNo());
 
         String writerName = mapper.selectNoticeWriterName(paramMap);
 
+        /*
+         * 5. 공지 등록/수정/삭제에 필요한 기본값 세팅
+         */
         dto.setAptCmplexNo(aptCmplexNo);
         dto.setBoardNo(boardNo);
         dto.setWrtrId(writerName);

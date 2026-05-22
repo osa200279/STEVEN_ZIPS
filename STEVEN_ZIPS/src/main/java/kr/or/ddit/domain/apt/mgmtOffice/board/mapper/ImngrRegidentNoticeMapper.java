@@ -56,7 +56,13 @@ public interface ImngrRegidentNoticeMapper {
 
     MngrRegidentNoticeDTO selectManagerOfficeInfo(String mgmtOfcNo);
 
-
+    /*
+     * 공지게시판 기본 데이터가 없을 때 자동 생성
+     *
+     * 왜 필요?
+     * → APT_BOARD_INSTANCE에 게시판이 없으면 공지글을 등록할 BOARD_NO가 없기 때문.
+     */
+    int mergeNoticeBoardInstance(String aptCmplexNo);
 
 
 

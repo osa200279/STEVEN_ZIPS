@@ -434,5 +434,45 @@
 
     </select>
 
+    <insert id="mergeNoticeBoardInstance"
+            parameterType="string">
+        /*
+         * MERGE란?
+         * → 있으면 INSERT 안 하고, 없으면 INSERT 하는 Oracle 문법.
+         *
+         * 왜 사용?
+         * → 글쓰기 버튼을 여러 번 눌러도 같은 게시판이 중복 생성되지 않게 하기 위해.
+         */
+        MERGE INTO APT_BOARD_INSTANCE B
+        USING (
+            SELECT
+                #{aptCmplexNo} || '_notice' AS BOARD_NO,
+                #{aptCmplexNo}              AS APT_CMPLEX_NO,
+                'NOTICE'                    AS BOARD_TY_CD,
+                '공지게시판'                 AS BOARD_NM,
+                'Y'                         AS USE_YN
+            FROM DUAL
+        ) S
+        ON (
+            B.APT_CMPLEX_NO = S.APT_CMPLEX_NO
+                AND B.BOARD_TY_CD = S.BOARD_TY_CD
+            )
+        WHEN NOT MATCHED THEN
+            INSERT (
+                BOARD_NO,
+                APT_CMPLEX_NO,
+                BOARD_TY_CD,
+                BOARD_NM,
+                USE_YN
+            )
+            VALUES (
+                       S.BOARD_NO,
+                       S.APT_CMPLEX_NO,
+                       S.BOARD_TY_CD,
+                       S.BOARD_NM,
+                       S.USE_YN
+                   )
+    </insert>
+
 
 </mapper>
