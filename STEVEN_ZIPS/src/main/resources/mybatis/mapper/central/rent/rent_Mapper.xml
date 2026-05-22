@@ -18,6 +18,10 @@
         <result property="rcrtBgngDt" column="RCRT_BGNG_DT"/>
         <result property="rcrtEndDt" column="RCRT_END_DT"/>
 
+        <!-- 공고 매핑 -->
+        <result property="annNo" column="ANN_NO"/>
+        <result property="annTtl" column="ANN_TTL"/>
+
         <!-- APT_DETAIL -->
         <result property="dongNo" column="DONG_NO"/>
         <result property="floor" column="FLOOR"/>
@@ -44,6 +48,7 @@
         <result property="unitCnt" column="UNIT_CNT"/>
         <result property="dongCnt" column="DONG_CNT"/>
         <result property="bldYr" column="BLD_YR"/>
+        <result property="cnscoNm" column="CNSCO_NM"/>
         <result property="rprsntImgFileNo" column="RPRSNT_IMG_FILE_NO"/>
         <result property="rprsntImgGoogleIds" column="RPRSNT_IMG_GOOGLE_IDS"/>
 
@@ -135,6 +140,8 @@
         , R.RENT_LSTG_CN
         , R.HO_NO
         , R.RENT_TTL
+        , R.ANN_NO
+        , P.TTL AS ANN_TTL
 
         <!--모집기간: DATE 타입의 UTC 변환으로 하루 빠지는 문제 방지-->
         , TO_CHAR(P.RCRT_BGNG_DT, 'YYYY-MM-DD') AS RCRT_BGNG_DT
@@ -163,6 +170,7 @@
         , A.UNIT_CNT
         , A.DONG_CNT
         , A.BLD_YR
+        , A.CNSCO_NM
         , A.RPRSNT_IMG_FILE_NO
         , IMG.GOOGLE_IDS AS RPRSNT_IMG_GOOGLE_IDS
 
@@ -256,6 +264,8 @@
         , R.RENT_LSTG_CN
         , R.HO_NO
         , R.RENT_TTL
+        , R.ANN_NO
+        , P.TTL AS ANN_TTL
 
         , TO_CHAR(P.RCRT_BGNG_DT, 'YYYY-MM-DD') AS RCRT_BGNG_DT
         , TO_CHAR(P.RCRT_END_DT, 'YYYY-MM-DD') AS RCRT_END_DT
@@ -283,6 +293,7 @@
         , A.UNIT_CNT
         , A.DONG_CNT
         , A.BLD_YR
+        , A.CNSCO_NM
         , A.RPRSNT_IMG_FILE_NO
 
         , IMG.GOOGLE_IDS AS RPRSNT_IMG_GOOGLE_IDS
@@ -350,6 +361,8 @@
         , R.RENT_LSTG_CN
         , R.HO_NO
         , R.RENT_TTL
+        , R.ANN_NO
+        , P.TTL AS ANN_TTL
 
         , TO_CHAR(P.RCRT_BGNG_DT, 'YYYY-MM-DD') AS RCRT_BGNG_DT
         , TO_CHAR(P.RCRT_END_DT, 'YYYY-MM-DD') AS RCRT_END_DT
@@ -377,6 +390,7 @@
         , A.UNIT_CNT
         , A.DONG_CNT
         , A.BLD_YR
+        , A.CNSCO_NM
         , A.RPRSNT_IMG_FILE_NO
 
         , IMG.GOOGLE_IDS AS RPRSNT_IMG_GOOGLE_IDS

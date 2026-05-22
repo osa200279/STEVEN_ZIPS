@@ -90,6 +90,8 @@ function normalizeRentList(list) {
         normalized.rentTypeNm = nvl(item.rentTypeNm, item.rentTypeCd);
         normalized.rentTtl = nvl(item.rentTtl, item.aptCmplexNm);
         normalized.aptCmplexNo = nvl(item.aptCmplexNo);
+        normalized.annNo = nvl(item.annNo);
+        normalized.annTtl = nvl(item.annTtl, item.rentTtl);
         normalized.aptCmplexNm = nvl(item.aptCmplexNm, "아파트 단지");
         normalized.dorojuso = nvl(item.dorojuso);
         normalized.dongNm = nvl(item.dongNm, item.dongNo);
@@ -188,6 +190,51 @@ function getFilteredList() {
 function getRentListByComplex(aptCmplexNo) {
     return getFilteredList().filter(function (item) {
         return item.aptCmplexNo === aptCmplexNo;
+    });
+}
+
+/**
+ * 같은 단지의 매물들을 공고번호 기준으로 묶는다.
+ *
+ * 예:
+ * ANN0024에 연결된 세대 매물 24개
+ * → 좌측 카드에서는 공고 카드 1개로 출력
+ */
+function groupRentListByAnnouncement(complexRentList) {
+    const announcementMap = {};
+
+    complexRentList.forEach(function (item) {
+
+        /*
+         * 공고번호가 없는 매물은 서로 묶이면 안 되므로
+         * 매물번호를 임시 key로 사용한다.
+         */
+        const key = item.annNo
+            ? item.annNo
+            : "RENT_" + item.rentLstgNo;
+
+        if (!announcementMap[key]) {
+            announcementMap[key] = {
+                annNo: item.annNo,
+                annTtl: item.annTtl,
+                representativeItem: item,
+                rentList: [],
+                rentNoSet: new Set()
+            };
+        }
+
+        /*
+         * JOIN으로 동일 매물 행이 중복되는 경우까지 방지
+         */
+        if (!announcementMap[key].rentNoSet.has(item.rentLstgNo)) {
+            announcementMap[key].rentNoSet.add(item.rentLstgNo);
+            announcementMap[key].rentList.push(item);
+        }
+    });
+
+    return Object.values(announcementMap).map(function (group) {
+        group.supplyCount = group.rentList.length;
+        return group;
     });
 }
 
@@ -429,41 +476,92 @@ function selectComplex(aptCmplexNo) {
 }
 
 /**
- * 선택한 단지의 매물 목록 렌더링
+ * 선택한 단지의 공고별 매물 목록 렌더링
+ *
+ * 같은 ANN_NO에 연결된 세대 매물은 카드 1개만 출력한다.
+ * 카드 클릭 시 해당 공고에 연결된 첫 번째 세대 매물을 상세 패널에 표시한다.
  */
 function renderComplexRentList(complexInfo, complexRentList) {
     const complexNameEl = document.getElementById("selectedComplexName");
     const listEl = document.getElementById("complexRentList");
 
+    /* 같은 공고번호의 세대 매물들을 하나의 공고 카드로 묶는다. */
+    const announcementList = groupRentListByAnnouncement(complexRentList);
+
+    /* 실제 공급 세대수는 중복 제거된 RENT_LSTG_NO 기준으로 계산한다. */
+    const totalSupplyCount = new Set(
+        complexRentList.map(function (item) {
+            return item.rentLstgNo;
+        })
+    ).size;
+
     if (complexNameEl) {
-        complexNameEl.textContent =
-            complexInfo.aptCmplexNm + " · 총 " + complexRentList.length + "건";
+        complexNameEl.innerHTML =
+            escapeHtml(complexInfo.aptCmplexNm)
+            + '<br><span class="selected-complex-count">· 공고 '
+            + announcementList.length
+            + '건 / 공급 '
+            + totalSupplyCount
+            + '세대</span>';
     }
 
     if (!listEl) {
         return;
     }
 
-    listEl.innerHTML = complexRentList.map(function (item) {
-        const activeClass = item.rentLstgNo === selectedRentNo ? "active" : "";
+    listEl.innerHTML = announcementList.map(function (group) {
+        const item = group.representativeItem;
+
+        /* 현재 선택된 세대 매물이 이 공고 그룹에 포함되어 있으면 카드 active 처리 */
+        const activeClass = group.rentList.some(function (rent) {
+            return rent.rentLstgNo === selectedRentNo;
+        }) ? "active" : "";
+
+        /*
+         * 공고번호가 있는 카드에만 공고 상세 링크를 표시한다.
+         * 카드 전체의 selectRent() 클릭 이벤트와 링크 이동을 분리한다.
+         */
+        const announcementButtonHtml = group.annNo
+            ? ''
+            + '<a href="' + escapeHtml(getAnnouncementDetailUrl(group.annNo)) + '"'
+            + ' class="complex-ann-link-btn"'
+            + ' onclick="event.stopPropagation();">'
+            + '  공고확인하기'
+            + '  <span class="material-symbols-outlined">arrow_forward</span>'
+            + '</a>'
+            : '';
 
         return ''
-            + '<article class="complex-rent-card ' + activeClass + '" onclick="selectRent(\'' + escapeJs(item.rentLstgNo) + '\')">'
+            + '<article class="complex-rent-card ' + activeClass + '"'
+            + ' onclick="selectRent(\'' + escapeJs(item.rentLstgNo) + '\')">'
+
             + '  <div class="complex-rent-card-top">'
             + '    <span class="rent-type-badge">' + escapeHtml(item.rentTypeNm) + '</span>'
-            + '    <span style="font-size:12px; color:#667085;">' + escapeHtml(formatDate(item.rcrtEndDt)) + ' 마감</span>'
+            + '    <span style="font-size:12px; color:#667085;">'
+            +          escapeHtml(formatDate(item.rcrtEndDt)) + ' 마감'
+            + '    </span>'
             + '  </div>'
-            + '  <h3 class="complex-rent-title">' + escapeHtml(item.aptCmplexNm) + ' ' + escapeHtml(item.dongNm) + '</h3>'
-            + '  <p class="complex-rent-price">' + escapeHtml(formatPrice(item)) + '</p>'
-            + '  <p class="complex-rent-info">'
-            +       escapeHtml(item.exclusiveSize) + '㎡ · '
-            +       escapeHtml(item.floor) + '층 · '
-            +       escapeHtml(item.ho) + '호<br>'
-            +       escapeHtml(item.dorojuso)
+
+            + '  <h3 class="complex-rent-title">'
+            +       escapeHtml(item.aptCmplexNm)
+            + '  </h3>'
+
+            + '  <p class="complex-rent-price">'
+            +       escapeHtml(formatPrice(item))
             + '  </p>'
+
+            + '  <p class="complex-rent-info">'
+            + '    공급 ' + escapeHtml(group.supplyCount) + '세대 · '
+            +      escapeHtml(item.exclusiveSize) + '㎡<br>'
+            +      escapeHtml(item.dorojuso)
+            + '  </p>'
+
+            + announcementButtonHtml
+
             + '</article>';
     }).join("");
 }
+
 
 /**
  * 매물 선택
@@ -803,6 +901,22 @@ function escapeJs(value) {
 function goRentDetail(rentLstgNo) {
     const contextPath = typeof CONTEXT_PATH !== "undefined" ? CONTEXT_PATH : "";
     location.href = contextPath + "/rent/detail/" + encodeURIComponent(rentLstgNo);
+}
+
+/**
+ * 공고 상세 페이지 URL 생성
+ * ContractUserController: GET /contract/detail.do?annNo={annNo}
+ */
+function getAnnouncementDetailUrl(annNo) {
+    const contextPath = typeof CONTEXT_PATH !== "undefined" ? CONTEXT_PATH : "";
+
+    if (!annNo) {
+        return "#";
+    }
+
+    return contextPath
+        + "/contract/detail.do?annNo="
+        + encodeURIComponent(annNo);
 }
 
 /**

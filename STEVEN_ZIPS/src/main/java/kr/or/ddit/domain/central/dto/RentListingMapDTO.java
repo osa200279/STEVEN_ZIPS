@@ -80,6 +80,10 @@ public class RentListingMapDTO {
     private String dorojuso;        // 도로명 주소
     private String rprsntImgGoogleIds;
 
+    // 공고 관련
+    private String annNo;
+    private String annTtl;
+
     // 검색 조건용
     private String searchRentTypeCd;      // ALL, JS, PE
     private String searchRegion;          // 서울특별시 마포구

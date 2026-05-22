@@ -569,3 +569,39 @@ body {
 .rent-slider-btn .material-symbols-outlined {
     font-size: 24px;
 }
+
+/* 선택 단지 헤더 - 공고/공급 세대수 */
+.selected-complex-count {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0b1f17;
+}
+
+.complex-ann-link-btn {
+    width: 100%;
+    height: 40px;
+    margin-top: 14px;
+    border: 1px solid #005f46;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #005f46;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 800;
+    transition: all 0.2s ease;
+}
+
+.complex-ann-link-btn .material-symbols-outlined {
+    font-size: 17px;
+}
+
+.complex-ann-link-btn:hover {
+    background: #005f46;
+    color: #ffffff;
+}

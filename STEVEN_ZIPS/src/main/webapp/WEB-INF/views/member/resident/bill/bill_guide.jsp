@@ -209,6 +209,7 @@
   <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
   <script>
     const contextPath = '${pageContext.request.contextPath}';
+    const billNoFromPath = '${billNo}';
 
     let myHouseList = [];
     let selectedHouse = null;
@@ -218,6 +219,10 @@
       initSearchDate();
       loadMyHouseList();
       resetGuideView();
+
+      if (billNoFromPath && billNoFromPath !== 'null' && billNoFromPath !== '') {
+        loadPaymentGuideByBillNo(billNoFromPath);
+      }
     });
 
     function initSearchDate() {
@@ -299,6 +304,14 @@
         select.value = list[0].hoNo;
         selectedHouse = list[0];
         loadPaymentGuide();
+      }
+
+      if (currentBill && currentBill.hoNo) {
+        select.value = currentBill.hoNo;
+
+        selectedHouse = list.find(function (house) {
+          return house.hoNo === currentBill.hoNo;
+        }) || selectedHouse;
       }
     }
 
@@ -600,6 +613,72 @@
               .replaceAll('>', '&gt;')
               .replaceAll('"', '&quot;')
               .replaceAll("'", '&#039;');
+    }
+
+    async function loadPaymentGuideByBillNo(billNo) {
+      hideMessage();
+
+      try {
+        const detailResponse = await fetch(
+                contextPath + '/resident/bill/detail/' + encodeURIComponent(billNo)
+        );
+
+        if (!detailResponse.ok) {
+          showMessage('납부 상세 조회 중 오류가 발생했습니다. 상태코드: ' + detailResponse.status);
+          return;
+        }
+
+        const detailResult = await detailResponse.json();
+
+        if (!detailResult.success) {
+          showMessage(detailResult.message || '납부 상세 조회에 실패했습니다.');
+          return;
+        }
+
+        currentBill = detailResult.bill;
+
+        // 상세 화면 렌더링
+        renderPaymentGuide(currentBill);
+
+        // 조회 조건 영역도 상세 고지서 기준으로 맞춰주기
+        syncSearchConditionByBill(currentBill);
+
+      } catch (e) {
+        console.error(e);
+        showMessage('납부 상세 조회 중 오류가 발생했습니다.');
+      }
+    }
+
+    function syncSearchConditionByBill(bill) {
+      if (!bill) {
+        return;
+      }
+
+      // 연월 select 맞추기
+      if (bill.billYm && String(bill.billYm).length === 6) {
+        const year = String(bill.billYm).substring(0, 4);
+        const month = Number(String(bill.billYm).substring(4, 6));
+
+        document.getElementById('billYear').value = year;
+        document.getElementById('billMonth').value = month;
+      }
+
+      // 세대 select는 loadMyHouseList()가 비동기라 아직 options가 없을 수 있음
+      // 그래서 hoNo 값만 보관했다가 세대 목록 렌더링 후에도 맞춰줌
+      if (bill.hoNo) {
+        const select = document.getElementById('myHouseSelect');
+
+        if (select) {
+          select.value = bill.hoNo;
+        }
+
+        selectedHouse = {
+          hoNo: bill.hoNo,
+          dongNm: bill.dongNm,
+          ho: bill.ho,
+          displayDongHo: bill.displayDongHo
+        };
+      }
     }
   </script>
 </body>
