@@ -255,9 +255,9 @@
             const fileBox = document.querySelector('#modalFiles');
             if (files && files.length > 0) {
                 fileBox.innerHTML = files.map(f =>
-                    '<a href="/download/' + f.fileNo + '" class="chip" style="background: var(--green-dark); cursor:pointer;">' +
+                    '<a href="/file/download/' + f.googleId + '" class="chip" style="background: var(--green-dark); cursor:pointer;">' +
                     '<span class="material-symbols-outlined" style="font-size:14px;">download</span>' +
-                    f.orgnlFileNm + '</a>'
+                    f.fileOgName + '</a>'
                 ).join('');
             } else {
                 fileBox.innerHTML = '<span class="chip" style="background: var(--text-light);">첨부된 파일이 없습니다.</span>';
