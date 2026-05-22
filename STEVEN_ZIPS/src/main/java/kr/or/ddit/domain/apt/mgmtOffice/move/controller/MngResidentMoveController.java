@@ -34,6 +34,7 @@ public class MngResidentMoveController {
             @RequestParam(required = false, defaultValue = "") String moveInEnd,
             @RequestParam(required = false, defaultValue = "") String moveOutStart,
             @RequestParam(required = false, defaultValue = "") String moveOutEnd,
+            @RequestParam(required = false, defaultValue = "1") int currentPage,
             @AuthenticationPrincipal CustomUser user
     ) {
 
@@ -50,13 +51,28 @@ public class MngResidentMoveController {
         searchDTO.setMoveOutStart(moveOutStart);
         searchDTO.setMoveOutEnd(moveOutEnd);
 
+        searchDTO.setCurrentPage(currentPage);
+
+        int screenSize = 10;
+
+        int endRow = currentPage * screenSize;
+        int startRow = endRow - (screenSize - 1);
+
+        searchDTO.setStartRow(startRow);
+        searchDTO.setEndRow(endRow);
+
+
+
         List<MngResidentMoveVO> list =
                 residentMoveService.selectResidentMoveList(searchDTO);
+
+        int totalCount =
+                residentMoveService.selectResidentMoveCount(searchDTO);
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("list", list);
-        result.put("count", list.size());
+        result.put("totalCount", totalCount);
         result.put("waitCnt",
                 list.stream().filter(row -> "WAIT".equals(row.getMoveStatus())).count());
         result.put("liveCnt",

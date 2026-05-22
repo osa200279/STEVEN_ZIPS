@@ -15,4 +15,9 @@ public class MngResidentMoveSearchDTO {
     private String moveInEnd;
     private String moveOutStart;
     private String moveOutEnd;
+
+    private int currentPage;
+    private int startRow;
+    private int endRow;
+
 }

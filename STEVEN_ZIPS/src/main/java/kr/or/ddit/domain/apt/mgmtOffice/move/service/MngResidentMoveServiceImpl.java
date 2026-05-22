@@ -108,6 +108,11 @@ public class MngResidentMoveServiceImpl implements IMngResidentMoveService {
     public MngResidentMoveVO selectMemberInfo(String userNo) {
         return residentMoveMapper.selectMemberInfo(userNo);
     }
+
+    @Override
+    public int selectResidentMoveCount(MngResidentMoveSearchDTO searchDTO) {
+        return residentMoveMapper.selectResidentMoveCount(searchDTO);
+    }
     private void normalizeMoveDates(MngResidentMoveVO vo) {
 
         if (!StringUtils.hasText(vo.getInoutCd())) {

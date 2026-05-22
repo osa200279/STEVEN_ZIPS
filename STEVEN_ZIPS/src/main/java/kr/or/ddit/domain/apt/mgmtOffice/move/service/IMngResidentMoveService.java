@@ -21,4 +21,6 @@ public interface IMngResidentMoveService {
     Map<String, Object> updateResidentMove(MngResidentMoveVO vo);
 
     MngResidentMoveVO selectMemberInfo(String userNo);
+
+    int selectResidentMoveCount(MngResidentMoveSearchDTO searchDTO);
 }

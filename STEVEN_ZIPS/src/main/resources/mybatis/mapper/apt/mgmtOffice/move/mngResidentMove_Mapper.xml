@@ -76,48 +76,65 @@
     <select id="selectResidentMoveList"
             parameterType="kr.or.ddit.domain.apt.mgmtOffice.move.dto.MngResidentMoveSearchDTO"
             resultMap="residentMoveMap">
+
+        SELECT *
+        FROM (
         SELECT
-            M.USER_NO AS userNo,
-            M.USER_ID AS userId,
-            M.USER_NM AS userNm,
-            M.USER_TELNO AS userTelno,
-            M.USER_EML AS userEml,
-            MO.MGMT_OFC_NO AS mgmtOfcNo,
-            AC.APT_CMPLEX_NO AS aptCmplexNo,
-            AC.APT_CMPLEX_NM AS complexName,
-            HH.HO_NO AS hoNo,
-            AD.DONG_NO AS dong,
-            AD.HO AS ho,
-            HH.INOUT_CD AS inoutCd,
-            CASE HH.INOUT_CD
-                WHEN 'WAIT' THEN '입주대기'
-                WHEN 'LIVE' THEN '입주'
-                WHEN 'OUT' THEN '퇴거'
-                WHEN 'MID' THEN '중도퇴거'
-                ELSE HH.INOUT_CD
-            END AS inoutNm,
-            CASE HH.INOUT_CD
-                WHEN 'WAIT' THEN 'WAIT'
-                WHEN 'LIVE' THEN 'LIVE'
-                WHEN 'OUT' THEN 'OUT'
-                WHEN 'MID' THEN 'MID'
-                ELSE HH.INOUT_CD
-            END AS moveStatus,
-            HH.HEAD_YN AS headYn,
-            CASE HH.HEAD_YN
-                WHEN 'Y' THEN '세대주'
-                ELSE '세대원'
-            END AS headYnNm,
-            TO_CHAR(HH.MOVE_IN_DT, 'YYYY-MM-DD') AS moveInDt,
-            TO_CHAR(HH.MOVE_OUT_DT, 'YYYY-MM-DD') AS moveOutDt
-        FROM HSHLD_HEAD HH
-                 INNER JOIN MEMBER M ON M.USER_NO = HH.USER_NO
-                 INNER JOIN APT_DETAIL AD ON AD.HO_NO = HH.HO_NO
-                 INNER JOIN APT_UNIT AU ON AU.DONG_NO = AD.DONG_NO
-                 INNER JOIN APT_COMPLEX AC ON AC.APT_CMPLEX_NO = AU.APT_CMPLEX_NO
-                 INNER JOIN MGMT_OFFICE MO ON MO.APT_CMPLEX_NO = AC.APT_CMPLEX_NO
-        <include refid="residentMoveWhere"/>
+        ROW_NUMBER() OVER (
         ORDER BY AD.DONG_NO, AD.HO, HH.MOVE_IN_DT DESC, M.USER_NM
+        ) rn,
+
+        M.USER_NO AS userNo,
+        M.USER_ID AS userId,
+        M.USER_NM AS userNm,
+        M.USER_TELNO AS userTelno,
+        M.USER_EML AS userEml,
+        MO.MGMT_OFC_NO AS mgmtOfcNo,
+        AC.APT_CMPLEX_NO AS aptCmplexNo,
+        AC.APT_CMPLEX_NM AS complexName,
+        HH.HO_NO AS hoNo,
+        AD.DONG_NO AS dong,
+        AD.HO AS ho,
+        HH.INOUT_CD AS inoutCd,
+
+        CASE HH.INOUT_CD
+        WHEN 'WAIT' THEN '입주대기'
+        WHEN 'LIVE' THEN '입주'
+        WHEN 'OUT' THEN '퇴거'
+        WHEN 'MID' THEN '중도퇴거'
+        ELSE HH.INOUT_CD
+        END AS inoutNm,
+
+        CASE HH.INOUT_CD
+        WHEN 'WAIT' THEN 'WAIT'
+        WHEN 'LIVE' THEN 'LIVE'
+        WHEN 'OUT' THEN 'OUT'
+        WHEN 'MID' THEN 'MID'
+        ELSE HH.INOUT_CD
+        END AS moveStatus,
+
+        HH.HEAD_YN AS headYn,
+
+        CASE HH.HEAD_YN
+        WHEN 'Y' THEN '세대주'
+        ELSE '세대원'
+        END AS headYnNm,
+
+        TO_CHAR(HH.MOVE_IN_DT, 'YYYY-MM-DD') AS moveInDt,
+        TO_CHAR(HH.MOVE_OUT_DT, 'YYYY-MM-DD') AS moveOutDt
+
+        FROM HSHLD_HEAD HH
+        INNER JOIN MEMBER M ON M.USER_NO = HH.USER_NO
+        INNER JOIN APT_DETAIL AD ON AD.HO_NO = HH.HO_NO
+        INNER JOIN APT_UNIT AU ON AU.DONG_NO = AD.DONG_NO
+        INNER JOIN APT_COMPLEX AC ON AC.APT_CMPLEX_NO = AU.APT_CMPLEX_NO
+        INNER JOIN MGMT_OFFICE MO ON MO.APT_CMPLEX_NO = AC.APT_CMPLEX_NO
+
+        <include refid="residentMoveWhere"/>
+
+        )
+        WHERE rn BETWEEN #{startRow} AND #{endRow}
+
     </select>
 
     <select id="selectResidentMoveDetail" resultMap="residentMoveMap">
@@ -238,6 +255,26 @@
         WHERE USER_NO = #{userNo}
         AND HO_NO = #{hoNo}
     </update>
+
+
+
+    <select id="selectResidentMoveCount"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.move.dto.MngResidentMoveSearchDTO"
+            resultType="int">
+
+        SELECT COUNT(*)
+
+        FROM HSHLD_HEAD HH
+        INNER JOIN MEMBER M ON M.USER_NO = HH.USER_NO
+        INNER JOIN APT_DETAIL AD ON AD.HO_NO = HH.HO_NO
+        INNER JOIN APT_UNIT AU ON AU.DONG_NO = AD.DONG_NO
+        INNER JOIN APT_COMPLEX AC ON AC.APT_CMPLEX_NO = AU.APT_CMPLEX_NO
+        INNER JOIN MGMT_OFFICE MO ON MO.APT_CMPLEX_NO = AC.APT_CMPLEX_NO
+
+        <include refid="residentMoveWhere"/>
+
+    </select>
+
 
     <select id="selectMemberInfo"
             parameterType="string"

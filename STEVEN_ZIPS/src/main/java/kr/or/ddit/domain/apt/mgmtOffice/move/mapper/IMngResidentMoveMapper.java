@@ -32,4 +32,6 @@ public interface IMngResidentMoveMapper {
     MngResidentMoveVO selectMemberInfo(
             @Param("userNo") String userNo
     );
+
+    int selectResidentMoveCount(MngResidentMoveSearchDTO searchDTO);
 }

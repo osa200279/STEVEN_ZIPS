@@ -227,6 +227,12 @@
               <tbody id="moveTableBody"></tbody>
             </table>
           </div>
+
+          <div id="paginationArea"
+               style="display:flex; justify-content:center; gap:6px; margin-top:20px;">
+          </div>
+
+
         </div>
 
         <div class="modal-overlay" id="residentMoveModal">
@@ -386,6 +392,8 @@
           var currentDetail = null;
           var currentMode = "register";
 
+          var currentPage = 1;
+
           var currentHoNo = null;
 
           var detailModeLocked = false;
@@ -504,7 +512,12 @@
               tbody.innerHTML =
                 '<tr><td colspan="9" class="td-empty">조회된 입주/퇴거 내역이 없습니다.</td></tr>';
               return;
+
             }
+
+
+
+
 
             tbody.innerHTML = list.map(function (row) {
               return [
@@ -533,6 +546,67 @@
                 "</tr>"
               ].join("");
             }).join("");
+          }
+
+
+          function renderPagination(totalCount) {
+
+            var area = document.getElementById("paginationArea");
+
+            var totalPage = Math.ceil(totalCount / 10);
+
+            if (totalPage <= 1) {
+              area.innerHTML = "";
+              return;
+            }
+
+            var blockSize = 5;
+
+            var startPage =
+                    Math.floor((currentPage - 1) / blockSize) * blockSize + 1;
+
+            var endPage = startPage + blockSize - 1;
+
+            if (endPage > totalPage) {
+              endPage = totalPage;
+            }
+
+            var html = "";
+
+            // 이전 블록
+            if (startPage > 1) {
+              html +=
+                      '<button type="button" ' +
+                      'class="btn btn-secondary btn-sm" ' +
+                      'data-page="' + (startPage - 1) + '">' +
+                      '&lt;' +
+                      '</button>';
+            }
+
+            // 숫자
+            for (var i = startPage; i <= endPage; i++) {
+
+              html +=
+                      '<button type="button" ' +
+                      'class="btn ' +
+                      (i === currentPage ? 'btn-primary' : 'btn-secondary') +
+                      '" ' +
+                      'data-page="' + i + '">' +
+                      i +
+                      '</button>';
+            }
+
+            // 다음 블록
+            if (endPage < totalPage) {
+              html +=
+                      '<button type="button" ' +
+                      'class="btn btn-secondary btn-sm" ' +
+                      'data-page="' + (endPage + 1) + '">' +
+                      '&gt;' +
+                      '</button>';
+            }
+
+            area.innerHTML = html;
           }
 
           function resetForm() {
@@ -613,6 +687,8 @@
 
           async function fetchList() {
             var filters = collectFilters();
+
+            filters.currentPage = currentPage;
             var query = new URLSearchParams(filters);
             var response = await fetch(apiBase + "?" + query.toString(), {
               headers: {
@@ -632,6 +708,8 @@
               var payload = await fetchList();
               updateSummary(payload);
               renderTable(payload.list || []);
+              renderPagination(payload.totalCount || 0);
+
             } catch (err) {
               console.error(err);
               tbody.innerHTML = '<tr><td colspan="9" class="td-empty">목록을 불러오지 못했습니다.</td></tr>';
@@ -723,13 +801,26 @@
           }
 
           page.addEventListener("click", function (e) {
-            var btn = e.target.closest("[data-action]");
-            if (!btn) return;
+            var btn =
+                    e.target.closest("[data-action]") ||
+                    e.target.closest("[data-page]");
 
+            if (!btn) return;
             var action = btn.dataset.action;
             var userNo = btn.dataset.userNo;
             var hoNo = btn.dataset.hoNo;
 
+
+            var pageNo = btn.dataset.page;
+
+            if (pageNo) {
+
+              currentPage = parseInt(pageNo);
+
+              loadList();
+
+              return;
+            }
 
             if (action === "reload") {
               loadList();
