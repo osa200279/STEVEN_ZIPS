@@ -51,6 +51,31 @@
             color: var(--text-dark);
         }
         .panel { width: 100%; }
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .search-bar select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-dark);
+            background: #fff;
+            cursor: pointer;
+        }
+        .search-bar button {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            background: var(--green-dark);
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .search-bar button:hover { opacity: 0.9; }
         .pagination-wrap { margin-top: 20px; display: flex; justify-content: center; }
         .pagination { display: flex; list-style: none; padding: 0; margin: 0; gap: 4px; }
         .pagination .page-item .page-link {
@@ -88,68 +113,96 @@
                 <div class="section-hd">
                     <h3>민원 내역</h3>
                 </div>
+
+                <%-- 검색 바 --%>
+                <form id="searchForm" method="get"
+                      action="/apt/complaint/list/${aptInfo.aptComplexInfo.aptCmplexNo}">
+                    <div class="search-bar">
+                        <select name="cvplTyCd">
+                            <option value="">카테고리 전체</option>
+                            <option value="FAC" ${cvplTyCd eq 'FAC' ? 'selected' : ''}>시설/하자</option>
+                            <option value="SEC" ${cvplTyCd eq 'SEC' ? 'selected' : ''}>보안/안전</option>
+                            <option value="ACC" ${cvplTyCd eq 'ACC' ? 'selected' : ''}>회계/관리비</option>
+                            <option value="ENV" ${cvplTyCd eq 'ENV' ? 'selected' : ''}>환경/위생</option>
+                            <option value="ETC" ${cvplTyCd eq 'ETC' ? 'selected' : ''}>기타</option>
+                        </select>
+                        <select name="cvplSttsCd">
+                            <option value="">상태 전체</option>
+                            <option value="APLY" ${cvplSttsCd eq 'APLY' ? 'selected' : ''}>민원 신청됨</option>
+                            <option value="RCPT" ${cvplSttsCd eq 'RCPT' ? 'selected' : ''}>민원 접수됨</option>
+                            <option value="SUPL" ${cvplSttsCd eq 'SUPL' ? 'selected' : ''}>보완 요청</option>
+                            <option value="REJS" ${cvplSttsCd eq 'REJS' ? 'selected' : ''}>처리 불가</option>
+                            <option value="RJCT" ${cvplSttsCd eq 'RJCT' ? 'selected' : ''}>반려</option>
+                            <option value="COMP" ${cvplSttsCd eq 'COMP' ? 'selected' : ''}>처리 완료</option>
+                            <option value="END"  ${cvplSttsCd eq 'END'  ? 'selected' : ''}>종결</option>
+                            <option value="CNCL" ${cvplSttsCd eq 'CNCL' ? 'selected' : ''}>민원 취소됨</option>
+                        </select>
+                        <button type="submit">검색</button>
+                    </div>
+                </form>
+
                 <table class="data-table">
                     <thead>
                     <tr>
-                        <th>민원 번호</th>
-                        <th>접수일</th>
-                        <th>카테고리</th>
+                        <th style="text-align: center; vertical-align: middle;">민원 번호</th>
+                        <th style="text-align: center; vertical-align: middle;">접수일</th>
+                        <th style="text-align: center; vertical-align: middle;">카테고리</th>
                         <th>제목</th>
                         <th>발생장소</th>
-                        <th>상태</th>
+                        <th style="text-align: center; vertical-align: middle;">상태</th>
                     </tr>
                     </thead>
                     <tbody id="cvplBody">
                     <c:forEach var="cvpl" items="${cvplList}">
                         <tr onclick="openCvplDetail('${cvpl.cvplNo}')" style="cursor:pointer;">
-                            <td>${cvpl.cvplNo}</td>
-                            <td><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
+                            <td style="text-align: center; vertical-align: middle;">${cvpl.cvplNo}</td>
+                            <td style="text-align: center; vertical-align: middle;"><fmt:formatDate value="${cvpl.cvplRegDt}" pattern="yyyy.MM.dd HH:mm"/></td>
                             <c:choose>
                                 <c:when test="${cvpl.cvplTyCd eq 'FAC'}">
-                                    <td><span class="badge wait">시설/하자</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge wait">시설/하자</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplTyCd eq 'SEC'}">
-                                    <td><span class="badge cancel">보안/안전</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge cancel">보안/안전</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplTyCd eq 'ACC'}">
-                                    <td><span class="badge ok">회계/관리비</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge ok">회계/관리비</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplTyCd eq 'ENV'}">
-                                    <td><span class="badge wait">환경/위생</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge wait">환경/위생</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplTyCd eq 'ETC'}">
-                                    <td><span class="badge wait">기타</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge wait">기타</span></td>
                                 </c:when>
                                 <c:otherwise>
-                                    <td>${cvpl.cvplTyCd}</td>
+                                    <td style="text-align: center; vertical-align: middle;">${cvpl.cvplTyCd}</td>
                                 </c:otherwise>
                             </c:choose>
                             <td>${cvpl.cvplTtl}</td>
                             <td>${cvpl.cvplLoc}</td>
                             <c:choose>
                                 <c:when test="${cvpl.cvplSttsCd eq 'APLY'}">
-                                    <td><span class="badge wait">민원 신청됨</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge wait">민원 신청됨</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplSttsCd eq 'CNCL'}">
-                                    <td><span class="badge cancel">민원 취소됨</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge cancel">민원 취소됨</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplSttsCd eq 'RCPT'}">
-                                    <td><span class="badge ok">민원 접수됨</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge ok">민원 접수됨</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplSttsCd eq 'SUPL'}">
-                                    <td><span class="badge wait">보완 요청</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge wait">보완 요청</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplSttsCd eq 'REJS'}">
-                                    <td><span class="badge wait">처리 불가</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge wait">처리 불가</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplSttsCd eq 'RJCT'}">
-                                    <td><span class="badge wait">반려</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge wait">반려</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplSttsCd eq 'COMP'}">
-                                    <td><span class="badge info">처리 완료</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge info">처리 완료</span></td>
                                 </c:when>
                                 <c:when test="${cvpl.cvplSttsCd eq 'END'}">
-                                    <td><span class="badge info">종결</span></td>
+                                    <td style="text-align: center; vertical-align: middle;"><span class="badge info">종결</span></td>
                                 </c:when>
                             </c:choose>
                         </tr>
@@ -157,7 +210,7 @@
                     <c:if test="${empty cvplList}">
                         <tr>
                             <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
-                                접수된 민원이 없습니다.
+                                해당 조건의 민원이 없습니다.
                             </td>
                         </tr>
                     </c:if>
@@ -304,12 +357,16 @@
         if (e.target === this) closeModal();
     });
 
+    <%-- 페이징 클릭 시 검색 조건 유지 --%>
     document.addEventListener('click', function(e) {
         const pageLink = e.target.closest('[data-page]');
         if (pageLink) {
             e.preventDefault();
             const pageNum = pageLink.getAttribute('data-page');
-            location.href = '/apt/complaint/list/' + aptCmplexNo + '?curPage=' + pageNum;
+            const form = document.querySelector('#searchForm');
+            const params = new URLSearchParams(new FormData(form));
+            params.set('curPage', pageNum);
+            location.href = '/apt/complaint/list/' + aptCmplexNo + '?' + params.toString();
         }
     });
 </script>
