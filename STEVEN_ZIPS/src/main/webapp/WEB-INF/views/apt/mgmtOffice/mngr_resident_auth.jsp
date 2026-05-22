@@ -457,9 +457,14 @@
                         document.getElementById("detailRqstTy").value = rqstTypeText(row.rqstTyCd);
                         document.getElementById("detailStatus").value = statusText(row.rqstSttsCd);
                         document.getElementById("detailUnit").value = (row.dong || "-") + " " + (row.ho || "");
-                        document.getElementById("detailRcptDt").value = row.rcptDt || "";
-                        document.getElementById("detailMvinPrdDt").value = row.mvinPrdDt || "";
-                        document.getElementById("detailMvoutPrdDt").value = row.mvoutPrdDt || "";
+                        document.getElementById("detailRcptDt").value =
+                            row.rcptDt ? row.rcptDt.substring(0, 10) : "";
+
+                        document.getElementById("detailMvinPrdDt").value =
+                            row.mvinPrdDt ? row.mvinPrdDt.substring(0, 10) : "";
+
+                        document.getElementById("detailMvoutPrdDt").value =
+                            row.mvoutPrdDt ? row.mvoutPrdDt.substring(0, 10) : "";
                         document.getElementById("detailReason").value = row.mvoutRsnCn || "";
 
                         var isWait = row.rqstSttsCd === "WAIT";

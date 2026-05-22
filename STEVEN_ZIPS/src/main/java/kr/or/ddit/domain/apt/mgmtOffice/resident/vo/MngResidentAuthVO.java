@@ -12,11 +12,11 @@ public class MngResidentAuthVO extends MngResidentMoveVO {
     private String rqstNo;
     private String rqstTyCd;
 
-    private Date rcptDt;
-    private Date mvinPrdDt;
-    private Date mvoutPrdDt;
+    private String rcptDt;
+    private String mvinPrdDt;
+    private String mvoutPrdDt;
 
-    private Date aprvDt;
+    private String aprvDt;
 
     private String mvoutRsnCn;
     private String rjctRsnCn;

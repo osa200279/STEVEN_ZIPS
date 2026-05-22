@@ -10,10 +10,10 @@
         SELECT
             rr.RQST_NO,
             rr.RQST_TY_CD,
-            rr.RCPT_DT,
-            rr.MVIN_PRD_DT,
-            rr.MVOUT_PRD_DT,
-            rr.APRV_DT,
+            TO_CHAR(rr.RCPT_DT, 'YYYY-MM-DD')      AS RCPT_DT,
+            TO_CHAR(rr.MVIN_PRD_DT, 'YYYY-MM-DD') AS MVIN_PRD_DT,
+            TO_CHAR(rr.MVOUT_PRD_DT, 'YYYY-MM-DD') AS MVOUT_PRD_DT,
+            TO_CHAR(rr.APRV_DT, 'YYYY-MM-DD')      AS APRV_DT,
             rr.MVOUT_RSN_CN,
             rr.RJCT_RSN_CN,
 
