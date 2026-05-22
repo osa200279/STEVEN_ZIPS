@@ -29,4 +29,6 @@ public interface IMgmtOfficeMapper {
 
     // 아파트 단지번호로 관리사무소 정보 조회
     MgmtOfficeVO selectMgmtOfficeByAptCmplexNo(String aptCmplexNo);
+
+    String selectAptComplexNo(String mgmtOfcNo);
 }

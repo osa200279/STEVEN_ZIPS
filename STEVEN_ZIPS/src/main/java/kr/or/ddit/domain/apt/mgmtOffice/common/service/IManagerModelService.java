@@ -21,4 +21,6 @@ public interface IManagerModelService {
      * - mgmtOfcNm, aptCmplexNm : 화면 표시용 관리사무소/단지명
      */
     void addManagerViewModel(Model model, CustomUser customUser, String mgmtOfcNo);
+
+    String getAptComplexNo(String mgmtOfcNo);
 }

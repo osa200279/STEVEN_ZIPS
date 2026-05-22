@@ -68,7 +68,12 @@ public class MngSurveyController {
                 customUser.getMember().getUserNo()
         );
 
-        dto.setAptCd(mgmtOfcNo);
+        String aptComplexNo =
+                managerAccessService.getAptComplexNo(mgmtOfcNo);
+
+        dto.setAptCd(aptComplexNo);
+
+
 
         try {
 
@@ -100,8 +105,11 @@ public class MngSurveyController {
         System.out.println("설문 목록 조회");
         System.out.println("mgmtOfcNo = " + mgmtOfcNo);
 
+        String aptComplexNo =
+                managerAccessService.getAptComplexNo(mgmtOfcNo);
+
         return ResponseEntity.ok(
-                surveyService.selectSurveyList(mgmtOfcNo)
+                surveyService.selectSurveyList(aptComplexNo)
         );
     }
 
@@ -165,7 +173,10 @@ public class MngSurveyController {
 
             dto.setSurveyNo(surveyNo);
 
-            dto.setAptCd(mgmtOfcNo);
+            String aptComplexNo =
+                    managerAccessService.getAptComplexNo(mgmtOfcNo);
+
+            dto.setAptCd(aptComplexNo);
 
             System.out.println("설문 수정");
             System.out.println(dto);

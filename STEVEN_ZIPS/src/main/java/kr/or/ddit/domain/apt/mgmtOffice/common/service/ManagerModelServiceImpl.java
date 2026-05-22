@@ -70,4 +70,10 @@ public class ManagerModelServiceImpl implements IManagerModelService {
             }
         }
     }
+
+    @Override
+    public String getAptComplexNo(String mgmtOfcNo) {
+
+        return mgmtOfficeMapper.selectAptComplexNo(mgmtOfcNo);
+    }
 }

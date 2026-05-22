@@ -182,5 +182,14 @@
         WHERE APT_CMPLEX_NO = #{aptCmplexNo}
     </select>
 
+    <select id="selectAptComplexNo"
+            parameterType="string"
+            resultType="string">
+
+        SELECT MO.APT_CMPLEX_NO
+        FROM MGMT_OFFICE MO
+        WHERE MO.MGMT_OFC_NO = #{mgmtOfcNo}
+
+    </select>
 
 </mapper>
