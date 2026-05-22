@@ -104,7 +104,7 @@ public class ContractUserServiceImpl implements IContractUserService {
      * aplctNo       서류를 제출할 계약 신청 번호
      * userNo        업로드하는 사용자 번호 (드라이브 경로에 사용)
      */
-    @Transactional
+    /*@Transactional
     @Override
     public void insertContractDoc(MultipartFile file, String sbmsnDocTyCd, String aplctNo, String userNo) throws IOException {
         if (file != null && !file.isEmpty()) {
@@ -114,13 +114,12 @@ public class ContractUserServiceImpl implements IContractUserService {
             contractUserMapper.deleteContractDoc(aplctNo, sbmsnDocTyCd);
             log.info("insertContractDoc 실행 시작");
 
-
             // 1. UUID로 고유한 저장 파일명 생성 (원본 파일명 앞에 UUID 접두사 추가)
             String uuid = UUID.randomUUID().toString().replace("-", "");
             String savedFileName = uuid + "_" + file.getOriginalFilename();
 
             // 2. 구글 드라이브 저장 경로 설정 (사용자별 폴더 분리)
-            String folderPath = "contract/doc/" + userNo;
+            String folderPath = "contract/doc/" + aplctNo;
             String fullPath = folderPath + "/" + savedFileName;
 
             // 3. 구글 드라이브에 파일 업로드, 업로드된 파일의 구글 고유 ID 반환
@@ -151,6 +150,48 @@ public class ContractUserServiceImpl implements IContractUserService {
             }
 
         }
+    }*/
+
+    @Transactional
+    @Override
+    public void insertContractDoc(List<MultipartFile> files, List<String> cat, String aplctNo, String userNo) throws IOException {
+
+        // FILE_GROUP_NO를 한번만 채번(전체 파일을 같은 그룹으로 묶음)
+        long fileGroupSeq = iAttachFileMapper.getSeqFileGroupNo();
+
+        for (int i = 0; i < files.size(); i++) {
+            MultipartFile file = files.get(i);
+
+            // EMPLOY, FAMILY, ID 등 공통코드
+            String category = cat.get(i); // 파라미터 cat과 구분하기 위해 category로 명명
+
+            if (file == null || file.isEmpty()) continue;
+
+            // 2. UUID 기반 고유 파일명 생성
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            String savedFileName = uuid + "_" + file.getOriginalFilename();
+
+            // 3. 구글드라이브에 저장할 폴더 경로
+            String folderPath = "contract/doc/" + aplctNo;
+
+            // 4. 구글드라이브에 저장할 파일 경로
+            String fullPath = folderPath + "/" + savedFileName;
+
+            // 5. 구글드라이브 업로드
+            String googleId = googleDriveService.uploadFile(file, folderPath, savedFileName);
+
+            // 6. ATTACH_FILE INSERT
+            //    FILE_GROUP_NO: 한 번 채번한 seq (전체 공유)
+            //    CAT: 공통코드 그대로 저장 (EMPLOY, FAMILY 등)
+            //    FILE_SORT_ORDER: 파일 순서 (i+1)
+            AttachFileVO attachFileVO = AttachFileVO.fileSettings(
+                    file, fileGroupSeq, category,
+                    savedFileName, googleId, fullPath, i + 1
+            );
+            iAttachFileMapper.insertAttachFile(attachFileVO);
+        }
+
+        contractUserMapper.isAllSubmitted(aplctNo);
     }
 
 
@@ -158,6 +199,8 @@ public class ContractUserServiceImpl implements IContractUserService {
     public List<ContractUserVO> selectContractDoc(String userNo) {
         return contractUserMapper.selectContractDoc(userNo);
     }*/
+
+
 
     // 계약공고 조회수 증가 메소드
     @Transactional

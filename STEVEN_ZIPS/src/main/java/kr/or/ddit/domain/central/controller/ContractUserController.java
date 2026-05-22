@@ -241,7 +241,7 @@ public class ContractUserController {
     * MEMBER 권한을 가진 사용자만 접근 가능
     * 멀티파트 파일을 받아 서류 종류 공통 코드와 함께 저장
     */
-    @PreAuthorize("hasRole('MEMBER')")
+    /*@PreAuthorize("hasRole('MEMBER')")
     @PostMapping("/insertContractDoc.do")
     @ResponseBody
     public Map<String, Object> insertContractDoc(
@@ -257,6 +257,27 @@ public class ContractUserController {
             for (int i = 0; i < files.size(); i++) {
                 contractUserService.insertContractDoc(files.get(i), sbmsnDocTyCds.get(i), aplctNo, userNo);
             }
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("서류 업로드 오류: {}", e.getMessage());
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }*/
+
+    @PostMapping("/insertContractDoc.do")
+    @ResponseBody
+    public Map<String, Object> insertContractDoc(
+            @RequestParam List<MultipartFile> files,
+            @RequestParam List<String> cat,
+            @RequestParam String aplctNo,
+            @AuthenticationPrincipal CustomUser principal) {
+
+        Map<String, Object> result = new HashMap<>();
+        try {
+            String userNo = principal.getMember().getUserNo();
+            contractUserService.insertContractDoc(files, cat, aplctNo, userNo);
             result.put("success", true);
         } catch (Exception e) {
             log.error("서류 업로드 오류: {}", e.getMessage());
