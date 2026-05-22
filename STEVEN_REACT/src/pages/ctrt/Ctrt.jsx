@@ -53,6 +53,14 @@ const Ctrt = () => {
     }
   };
 
+  const openDetail = (RENT_CTRT_NO) => {
+    // if (!RENT_CTRT_NO) {
+    //   alert("계약 정보가 없습니다.");
+    //   return;
+    // }
+    navigate(`/adm/ctrt/detail/${RENT_CTRT_NO}`);
+  };
+
   return (
     <div className="content-wrapper" style={{ paddingTop: '0px' }}>
       {/* 타이틀 세션 */}
@@ -185,7 +193,7 @@ const Ctrt = () => {
                         </div>
                       </td>
                       <td> {/* 상세 버튼 */}
-                        <button className='btn-cell'>상세보기</button>
+                        <button className='btn-cell' onClick={() => openDetail(item.RENT_CTRT_NO)}>상세보기</button>
                       </td>
                     </tr>
                   )
@@ -199,16 +207,17 @@ const Ctrt = () => {
         <div className="table-pagination">
           <div className="pagination-right">
             <p className="table-info-text mr-4">Total {pagination.totalRecord}건</p>
-            {/* 이전 버튼 */}
-            <button className="btn-page-nav"
-              disabled={pagination.curPage === 1}
-              onClick={() => paging(pagination.curPage - 1)}
-            >
-              <span className="material-symbols-outlined">&lt;</span>
-            </button>
 
-            {/* 페이지 번호 동적 생성 */}
             <div className="page-numbers">
+              {/* 이전 버튼 */}
+              <button className="btn-page-nav"
+                disabled={pagination.curPage === 1}
+                onClick={() => paging(pagination.curPage - 1)}
+              >
+                <span className="material-symbols-outlined">&lt;</span>
+              </button>
+
+              {/* 페이지 번호 동적 생성 */}
               {Array.from({ length: pagination.totalPage || 1 }, (_, i) => i + 1).map((pageNum) => (
                 <button key={pageNum}
                   className={`btn-page-number ${pagination.curPage === pageNum ? 'active' : ''}`}

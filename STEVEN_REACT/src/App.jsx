@@ -15,6 +15,7 @@ import './styles/common.css';
 import './styles/header.css';
 import './styles/sidebar.css';
 import { getCookie } from './util/api/requestApi';
+import CtrtDetail from './pages/ctrt/CtrtDetail';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 function App() {
@@ -46,6 +47,9 @@ function App() {
             <Route path="/adm/applicant" element={<Applicant />} />
             {/* 계약 관리 */}
             <Route path="/adm/ctrt" element={<Ctrt />} />
+            {/* 계약 상세 */}
+            <Route path="/adm/ctrt/detail/:RENT_CTRT_NO" element={<CtrtDetail />} />
+
             <Route
               path="/apt/residentAssign"
               element={<ResidentAssignPage />}

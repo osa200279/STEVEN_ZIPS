@@ -371,7 +371,7 @@ const Applicant = () => {
     return (
         <div style={{ width: '100%', height: '100%' }}>
             <div style={{ marginBottom: '15px' }}>
-                <h2 style={{ fontSize: '20px', fontWeight: '700' }}>청약 신청 현황</h2>
+                <h2 style={{ fontSize: '20px', fontWeight: '700' }}>임대 모집 신청 현황</h2>
             </div>
 
             {/* AG Grid 테마 적용 영역 */}
