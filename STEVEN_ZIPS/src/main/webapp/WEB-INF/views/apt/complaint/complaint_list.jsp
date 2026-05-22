@@ -93,6 +93,18 @@
         .pagination .page-item.disabled .page-link {
             cursor: default; border: none; color: var(--text-light);
         }
+        .search-bar select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-dark) !important;
+            background: #fff !important;
+            cursor: pointer;
+            appearance: auto !important;
+            -webkit-appearance: auto !important;
+            min-width: 130px;
+        }
     </style>
 </head>
 <body>
@@ -137,6 +149,7 @@
                             <option value="END"  ${cvplSttsCd eq 'END'  ? 'selected' : ''}>종결</option>
                             <option value="CNCL" ${cvplSttsCd eq 'CNCL' ? 'selected' : ''}>민원 취소됨</option>
                         </select>
+                        <input type="text" name="searchWord" value="${searchWord}" placeholder="제목 검색" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px;">
                         <button type="submit">검색</button>
                     </div>
                 </form>
