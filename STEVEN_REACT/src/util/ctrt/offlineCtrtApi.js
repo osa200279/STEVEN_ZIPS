@@ -89,16 +89,15 @@ export const getRequiredDocs =
 
 export const assignResident = async (formData) => {
 
-    const response = await fetch('/api/react/adm/offlineCtrt/apt/assign', {
+    const response = await requestApi.post(
+        '/api/react/adm/offlineCtrt/apt/assign',
+        formData,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
 
-        method: 'POST',
-
-        body: formData
-    });
-
-    if (!response.ok) {
-        throw new Error('입주 배정 실패');
-    }
-
-    return response.json();
+    return response.data;
 };

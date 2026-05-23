@@ -59,7 +59,7 @@ export const searchApartmentList = async (
 ) => {
 
   const res = await requestApi.get(
-    '/api/react/adm/sales/list',
+    '/api/react/adm/sales/apt/list',
     {
       params: {
         ...searchForm,
