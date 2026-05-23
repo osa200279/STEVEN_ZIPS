@@ -543,7 +543,10 @@
                             on mo.apt_cmplex_no = f.apt_cmplex_no
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
           and fc.partner_no = #{partnerNo}
-          and fc.cont_stts_cd = 'ING'
+          <!-- ***# 점검계약시설필터: 선택한 시설에 연결된 계약만 점검 등록 계약 목록에 표시하는 조건 -->
+          and fct.facility_no = #{facilityNo}
+          <!-- ***# 점검계약상태조회조건: 계약 관리의 유효 상태(ACTIVE)와 기존 진행 상태(ING)를 함께 허용하는 조건 -->
+          and fc.cont_stts_cd in ('ACTIVE', 'ING')
         order by "contBgngDt" desc
     </select>
 

@@ -308,9 +308,10 @@
                                         <div class="notice-box">
                                             <span class="material-symbols-rounded">info</span>
                                             <div>시설 기본정보만 수정합니다.<br>
-                                                · 계약 체결 → <a href="${pageContext.request.contextPath}/manager/facility/contractList" style="color:#2e5c38;font-weight:600;">계약 관리</a><br>
-                                                · 점검이력 → <a href="${pageContext.request.contextPath}/manager/checkHistory" style="color:#2e5c38;font-weight:600;">유지보수·점검 이력</a><br>
-                                                · 검침 연결 → <a href="${pageContext.request.contextPath}/manager/facility/partnerList" style="color:#2e5c38;font-weight:600;">협력업체 관리</a></div>
+                                                <%-- ***# 시설수정연계바로가기: 계약/점검/검침의 실제 컨트롤러 매핑 기준 링크 묶음 --%>
+                                                · 계약 체결 → <a href="${pageContext.request.contextPath}/manager/facility/contract/list/${mgmtOfcNo}" style="color:#2e5c38;font-weight:600;">계약 관리</a><br>
+                                                · 점검이력 → <a href="${pageContext.request.contextPath}/manager/checkHistory/${mgmtOfcNo}" style="color:#2e5c38;font-weight:600;">유지보수·점검 이력</a><br>
+                                                · 검침 연결 → <a href="${pageContext.request.contextPath}/manager/meter/hstry/${mgmtOfcNo}" style="color:#2e5c38;font-weight:600;">검침 이력</a></div>
                                         </div>
                                     </div>
                                 </div>

@@ -858,9 +858,11 @@
             fill('dRecentMeterDt', meterLinkedYn === 'Y'
                 ? (data.recentMeterDt ? '최근검침 ' + data.recentMeterDt : '최근검침 기록없음')
                 : '최근검침 -');
-            el('scContract').href = makeUrl(ctx + '/manager/facility/contract/'  + mgmtOfcNo, { partnerNo: data.partnerNo });
+            // ***# 협력업체계약바로가기: 실제 계약 관리 목록 매핑(/manager/facility/contract/list/{mgmtOfcNo}) 기준 링크
+            el('scContract').href = makeUrl(ctx + '/manager/facility/contract/list/'  + mgmtOfcNo, { partnerNo: data.partnerNo });
             el('scCheck').href    = makeUrl(ctx + '/manager/checkHistory/'        + mgmtOfcNo, { partnerNo: data.partnerNo });
-            el('scMeter').href    = makeUrl(ctx + '/manager/meterReading/'        + mgmtOfcNo, { partnerNo: data.partnerNo });
+            // ***# 협력업체검침바로가기: 실제 검침 이력 매핑(/manager/meter/hstry/{mgmtOfcNo}) 기준 링크
+            el('scMeter').href    = makeUrl(ctx + '/manager/meter/hstry/'         + mgmtOfcNo, { partnerNo: data.partnerNo });
             el('scMeter').classList.toggle('disabled', meterLinkedYn !== 'Y');
             openModal('partnerDetailModal');
         }

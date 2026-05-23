@@ -178,7 +178,8 @@
                                     <div class="detail-section" id="detailHistorySection">
                                         <h3 class="detail-section-title">
                                             <span class="material-symbols-rounded">history</span>최근 점검·보수 이력
-                                            <a href="${pageContext.request.contextPath}/manager/checkHistory" id="historyMoreLink" style="margin-left:auto; font-size:11px; font-weight:600; color:var(--accent); text-decoration:none;">전체보기 →</a>
+                                            <%-- ***# 시설상세점검전체보기: 실제 점검 이력 목록 매핑(/manager/checkHistory/{mgmtOfcNo}) 기준 링크 --%>
+                                            <a href="${pageContext.request.contextPath}/manager/checkHistory/${mgmtOfcNo}" id="historyMoreLink" style="margin-left:auto; font-size:11px; font-weight:600; color:var(--accent); text-decoration:none;">전체보기 →</a>
                                         </h3>
                                         <div class="detail-summary">
                                             <div id="detailHistoryBody"></div>
@@ -201,9 +202,10 @@
                                         <span class="material-symbols-rounded">info</span>
                                         <div>
                                             계약·점검·검침의 상세 내역은 각 전용 페이지에서 확인하세요.<br>
-                                            · 계약 상세 → <a href="${pageContext.request.contextPath}/manager/facility/contractList" style="color:var(--accent);font-weight:600;">계약 관리</a><br>
-                                            · 점검이력 → <a href="${pageContext.request.contextPath}/manager/checkHistory" style="color:var(--accent);font-weight:600;">유지보수·점검 이력</a><br>
-                                            · 검침기록 → <a href="${pageContext.request.contextPath}/manager/facility/partnerList" style="color:var(--accent);font-weight:600;">협력업체 관리</a>
+                                            <%-- ***# 시설상세연계바로가기: 계약/점검/검침의 실제 컨트롤러 매핑 기준 링크 묶음 --%>
+                                            · 계약 상세 → <a href="${pageContext.request.contextPath}/manager/facility/contract/list/${mgmtOfcNo}" style="color:var(--accent);font-weight:600;">계약 관리</a><br>
+                                            · 점검이력 → <a href="${pageContext.request.contextPath}/manager/checkHistory/${mgmtOfcNo}" style="color:var(--accent);font-weight:600;">유지보수·점검 이력</a><br>
+                                            · 검침기록 → <a href="${pageContext.request.contextPath}/manager/meter/hstry/${mgmtOfcNo}" style="color:var(--accent);font-weight:600;">검침 이력</a>
                                         </div>
                                     </div>
 

@@ -991,6 +991,8 @@
                 + encodeURIComponent(partnerNo))
                 .then(function (d) {
                     var list = (d && d.success ? d.contractList : []) || [];
+                    // ***# 점검계약자동선택: 선택 시설과 협력업체로 조회된 계약이 1건이면 계약 없음 대신 해당 계약을 기본 선택하는 플래그
+                    var autoSelectSingleContract = !el('contNo').value && list.length === 1;
 
                     /* 기본 옵션 (계약 없음) */
                     var html = '<option value="">계약 없음 (계약 미연결 점검)</option>';
@@ -1009,6 +1011,7 @@
                     /* 기존에 저장된 contNo가 있으면 해당 계약 선택 복원 */
                     var savedContNo = el('contNo').value;
                     if (savedContNo) contSel.value = savedContNo;
+                    if (autoSelectSingleContract && list[0]) contSel.value = list[0].contNo || '';
 
                     /* select 변경 시 hidden input / 계약유형 연동 */
                     syncContNo();
