@@ -2,6 +2,7 @@ package kr.or.ddit.domain.apt.mgmtOffice.facility.controller;
 
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
+import kr.or.ddit.domain.apt.mgmtOffice.contract.service.IFacilityContractService;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO;
@@ -49,6 +50,9 @@ public class FacilityController {
     @Autowired
     private IManagerModelService managerModelService; // 관리사무소 공통 모델 Service
 
+    @Autowired
+    private IFacilityContractService facilityContractService; // ***# 설치계약 목록 조회 서비스
+
 
 
     /**
@@ -72,6 +76,9 @@ public class FacilityController {
 
         /* 등록 화면 편의시설 유형 목록 */
         model.addAttribute("publicFacilityTypeList", facilityService.selectPublicFacilityTypeList());
+
+        /* ***# 연결 가능 설치계약 목록 모델 */
+        model.addAttribute("installContractList", facilityContractService.selectAvailableInstallContractList(mgmtOfcNo));
 
         /* 시설자산 등록 JSP */
         return "apt/mgmtOffice/facility/mngr_facility_register";

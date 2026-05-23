@@ -2,6 +2,7 @@ package kr.or.ddit.domain.apt.mgmtOffice.facility.publicFacility.controller;
 
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
+import kr.or.ddit.domain.apt.mgmtOffice.contract.service.IFacilityContractService;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.publicFacility.dto.PublicFacilityFormDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.service.IFacilityService;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.publicFacility.service.IPublicFacilityService;
@@ -48,6 +49,9 @@ public class PublicFacilityController {
     @Autowired
     private IManagerModelService managerModelService;
 
+    @Autowired
+    private IFacilityContractService facilityContractService; // ***# 설치계약 목록 조회 서비스
+
 
     @PreAuthorize("@authService.canMgmtCrud(principal, #mgmtOfcNo)")
     @GetMapping("/register/{mgmtOfcNo}")
@@ -63,6 +67,8 @@ public class PublicFacilityController {
         model.addAttribute("publicFacilityTypeList", facilityService.selectPublicFacilityTypeList());
         List<FacilityVO> facilityCandidateList = publicFacilityService.selectFacilityCandidateList(mgmtOfcNo);
         model.addAttribute("facilityCandidateList", facilityCandidateList);
+        /* ***# 연결 가능 설치계약 목록 모델 */
+        model.addAttribute("installContractList", facilityContractService.selectAvailableInstallContractList(mgmtOfcNo));
         return "apt/mgmtOffice/facility/publicFacility/publicFacilityRegister";
     }
 

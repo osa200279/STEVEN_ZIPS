@@ -1002,7 +1002,8 @@
                         var label = (c.contNm || c.contNo)
                             + (c.contBgngDt ? ' (' + c.contBgngDt + ' ~ ' + (c.contEndDt || '진행중') + ')' : '');
                         html += '<option value="' + esc(c.contNo) + '"'
-                            + ' data-cont-ty-cd="' + esc(c.contTyCd || '') + '">'
+                            + ' data-cont-ty-cd="' + esc(c.contTyCd || '') + '"'
+                            + ' data-partner-no="' + esc(partnerNo || '') + '">'
                             + esc(label) + '</option>';
                     });
 
@@ -1020,6 +1021,74 @@
                 .catch(function () {
                     contSel.innerHTML = '<option value="">계약 목록 조회 실패</option>';
                     setVal('contNo', '');
+                    updateCurrentContractType();
+                });
+        }
+
+        /* ***# 계약 목록 옵션 HTML 생성 */
+        function buildContractOptions(list, includeEmptyOption) {
+            var html = includeEmptyOption ? '<option value="">계약 없음 (계약 미연결 점검)</option>' : '';
+
+            (list || []).forEach(function (c) {
+                var label = (c.contNm || c.contNo)
+                    + (c.contBgngDt ? ' (' + c.contBgngDt + ' ~ ' + (c.contEndDt || '진행중') + ')' : '');
+
+                html += '<option value="' + esc(c.contNo || '') + '"'
+                    + ' data-cont-ty-cd="' + esc(c.contTyCd || '') + '"'
+                    + ' data-partner-no="' + esc(c.partnerNo || '') + '"'
+                    + ' data-partner-nm="' + esc(c.partnerNm || '') + '"'
+                    + ' data-biz-ty="' + esc(c.bizTyNm || '') + '"'
+                    + ' data-pic-nm="' + esc(c.picNm || '') + '"'
+                    + ' data-pic-telno="' + esc(c.picTelno || '') + '"'
+                    + ' data-pic-email="' + esc(c.picEmail || '') + '">'
+                    + esc(label) + '</option>';
+            });
+
+            return html;
+        }
+
+        /* ***# 계약 옵션 기준 협력업체 카드 세팅 */
+        function applyPartnerFromContractOption(option) {
+            if (!option || !option.value) return;
+
+            applyOwnerType('PARTNER');
+            var partnerNo = option.getAttribute('data-partner-no') || '';
+            setVal('partnerNo', partnerNo);
+
+            /* ***# 기존협력업체선택보존: 협력업체 직접 선택 후 계약 변경 시 카드 정보 유지 */
+            if (!option.hasAttribute('data-partner-nm')) return;
+
+            setText('partnerNoText', partnerNo || '-');
+            setText('partnerNmText', option.getAttribute('data-partner-nm') || '-');
+            setText('bizTyText', option.getAttribute('data-biz-ty') || '-');
+            setText('partnerPicNmText', option.getAttribute('data-pic-nm') || '-');
+            setText('partnerPicTelText', option.getAttribute('data-pic-telno') || '-');
+            setText('partnerEmailText', option.getAttribute('data-pic-email') || '-');
+
+            el('partnerEmptyState').classList.add('is-hidden');
+            el('partnerSelectedState').classList.remove('is-hidden');
+        }
+
+        /* ***# 시설 선택 기준 최신 유지보수성 계약 자동 세팅 */
+        function loadRecommendedFacilityContracts(facilityNo) {
+            var contSel = el('contNoSelect');
+            if (!contSel || !facilityNo) return;
+
+            fetchJson(CTX + '/manager/checkHistory/facility/recommended-contracts/'
+                + encodeURIComponent(OFC_NO) + '/'
+                + encodeURIComponent(facilityNo))
+                .then(function (d) {
+                    var list = (d && d.success ? d.contractList : []) || [];
+                    if (!list.length) return;
+
+                    contSel.innerHTML = buildContractOptions(list, false);
+                    contSel.value = list[0].contNo || '';
+                    syncContNo();
+
+                    applyPartnerFromContractOption(contSel.options[contSel.selectedIndex]);
+                    updateCurrentContractType();
+                })
+                .catch(function () {
                     updateCurrentContractType();
                 });
         }
@@ -1376,10 +1445,8 @@
             /* 선택 시설 이력 AJAX 로드 */
             loadHistory(row.dataset.facilityNo);
 
-            /* 협력업체가 이미 선택되어 있으면 새 시설 기준 계약 목록을 다시 조회 */
-            if (el('partnerNo') && el('partnerNo').value) {
-                loadPartnerContracts(el('partnerNo').value);
-            }
+            /* ***# 시설 선택 기준 최신 유지보수성 계약 자동 세팅 */
+            loadRecommendedFacilityContracts(row.dataset.facilityNo);
         }
 
         /* ── 협력업체 선택 처리 ── */
@@ -1513,6 +1580,8 @@
         if (contNoSelect) {
             contNoSelect.addEventListener('change', function () {
                 setVal('contNo', this.value);
+                /* ***# 계약변경협력업체동기화: 시설 기준 추천 계약 선택 시 협력업체 카드 갱신 */
+                applyPartnerFromContractOption(this.options[this.selectedIndex]);
                 updateCurrentContractType();
                 if (!followTypeLocked && currentMode !== 'detail') clearCheckType();
             });

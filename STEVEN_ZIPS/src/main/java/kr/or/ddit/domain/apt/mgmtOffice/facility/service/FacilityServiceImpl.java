@@ -4,6 +4,7 @@ import com.google.api.services.drive.Drive;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.mgmtOffice.contract.service.IFacilityContractService;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.dto.FacilityLocationDTO;
@@ -48,6 +49,9 @@ public class FacilityServiceImpl implements IFacilityService {
 
     @Autowired
     private GoogleDriveService googleDriveService; // Google Drive Service
+
+    @Autowired
+    private IFacilityContractService facilityContractService; // ***# 설치계약 시설 연결 서비스
 
     /**
      * 시설 목록 조회
@@ -299,12 +303,11 @@ public class FacilityServiceImpl implements IFacilityService {
         /* 시설 기본정보 등록 */
         boolean success = facilityMapper.insertFacility(facilityVO) > 0;
 
-        /*
-         * 설치계약 연결 처리 예정 위치
-         * - success == true && installContractYn == "Y" 인 경우
-         * - installContractNo와 facilityNo를 연결
-         * - 단, FACILITY_CONTRACT 구조 확인 후 update/insert 방식 결정 필요
-         */
+        /* ***# 설치계약 시설번호 연결 */
+        if (success && "Y".equals(installContractYn)) {
+            facilityContractService.connectInstallContractToFacility(installContractNo, facilityNo);
+        }
+
         return success;
     }
 

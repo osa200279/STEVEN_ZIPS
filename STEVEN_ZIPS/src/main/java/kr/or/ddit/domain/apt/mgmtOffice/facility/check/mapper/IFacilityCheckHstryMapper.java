@@ -98,4 +98,14 @@ public interface IFacilityCheckHstryMapper {
             @Param("facilityNo") String facilityNo,
             @Param("partnerNo") String partnerNo
     );
+
+    /**
+     * ***# 시설 선택 기준 최신 유지보수성 계약 목록 조회
+     * - FACILITY_CONTRACT_TARGET 연결 기준
+     * - 설치공사/검침 계약 제외
+     */
+    List<Map<String, Object>> selectRecommendedFacilityContractList(
+            @Param("mgmtOfcNo") String mgmtOfcNo,
+            @Param("facilityNo") String facilityNo
+    );
 }

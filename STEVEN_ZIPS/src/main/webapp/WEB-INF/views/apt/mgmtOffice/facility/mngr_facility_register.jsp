@@ -293,8 +293,9 @@
                                                 <select class="form-select" id="installContractNo" name="installContractNo">
                                                     <option value="">설치계약 선택</option>
                                                     <c:forEach var="contract" items="${installContractList}">
-                                                        <option value="${contract.contractNo}">
-                                                                ${contract.contractNm}
+                                                        <%-- ***# 설치계약 조회 결과 alias 매핑 --%>
+                                                        <option value="${contract.contNo}">
+                                                                ${contract.contNm} / ${contract.partnerNm} / ${contract.contBgngDt} ~ ${contract.contEndDt}
                                                         </option>
                                                     </c:forEach>
                                                 </select>

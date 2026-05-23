@@ -4,6 +4,7 @@ import com.google.api.services.drive.Drive;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
+import kr.or.ddit.domain.apt.mgmtOffice.contract.service.IFacilityContractService;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.publicFacility.dto.PublicFacilityFormDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.publicFacility.mapper.IPublicFacilityMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.facility.publicFacility.vo.PublicFacilityVO;
@@ -36,6 +37,9 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
 
     /** Google Drive 업로드/삭제 Service */
     private final GoogleDriveService googleDriveService;
+
+    /** 설치계약 시설 연결 Service */
+    private final IFacilityContractService facilityContractService;
 
     /** 기존 시설자산 선택 등록 모드 */
     private static final String REGISTER_MODE_EXISTING = "EXISTING";
@@ -118,6 +122,9 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
         // PUBLIC_FACILITY 등록 처리
         publicFacilityMapper.insertPublicFacility(publicFacilityParam);
 
+        // ***# 새 시설자산 설치계약 시설번호 연결
+        connectInstallContractForNewFacility(formDTO, facilityNo);
+
         // 시설 사진 추가/삭제 처리
         processFacilityFiles(facilityNo, facilityFiles, formDTO.getDeleteFileUuids(), userNo);
 
@@ -194,10 +201,34 @@ public class PublicFacilityServiceImpl implements IPublicFacilityService {
             formDTO.setUseYn(DEFAULT_USE_YN);
         }
 
+        // ***# 설치계약 연결값 기본값 처리
+        if (!REGISTER_MODE_NEW.equals(formDTO.getRegisterMode())) {
+            formDTO.setInstallContractYn("N");
+            formDTO.setInstallContractNo(null);
+        } else if (!"Y".equals(formDTO.getInstallContractYn())) {
+            formDTO.setInstallContractYn("N");
+            formDTO.setInstallContractNo(null);
+        } else if (!StringUtils.hasText(formDTO.getInstallContractNo())) {
+            throw new IllegalArgumentException("설치계약이 있는 경우 설치계약을 선택하세요.");
+        }
+
         // 편의 위치 선택 시 동번호는 DB에 저장하지 않음
         if (LOCATION_TYPE_COMMON.equals(formDTO.getLocationType())) {
             formDTO.setDongNo(null);
         }
+    }
+
+    /**
+     * 새 시설자산 설치계약 연결
+     * - NEW 모드에서 설치계약 있음 선택 시 계약관리 설치공사에 시설번호 반영
+     */
+    private void connectInstallContractForNewFacility(PublicFacilityFormDTO formDTO, String facilityNo) {
+        // ***# 새 시설자산 설치계약 연결 조건
+        if (!REGISTER_MODE_NEW.equals(formDTO.getRegisterMode()) || !"Y".equals(formDTO.getInstallContractYn())) {
+            return;
+        }
+
+        facilityContractService.connectInstallContractToFacility(formDTO.getInstallContractNo(), facilityNo);
     }
 
     /**

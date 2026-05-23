@@ -71,6 +71,12 @@ public class PublicFacilityFormDTO {
     /** 사용여부 */
     private String useYn;
 
+    /** 설치계약 연결 여부 */
+    private String installContractYn;
+
+    /** 설치계약번호 */
+    private String installContractNo;
+
 
     /*
      * ============================================================

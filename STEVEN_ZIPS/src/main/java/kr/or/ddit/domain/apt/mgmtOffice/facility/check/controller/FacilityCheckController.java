@@ -641,4 +641,46 @@ public class FacilityCheckController {
 
         return result;
     }
+
+    /**
+     * 시설 선택 기준 최신 유지보수성 계약 목록 AJAX 조회
+     *
+     * 사용 위치
+     * - 등록/수정 폼에서 시설을 선택했을 때 협력업체/계약 자동 세팅
+     *
+     * 조회 기준
+     * - FACILITY_CONTRACT_TARGET 연결 기준
+     * - 시설 대상 계약
+     * - 설치공사/검침 계약 제외
+     */
+    @ResponseBody
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/facility/recommended-contracts/{mgmtOfcNo}/{facilityNo}")
+    public Map<String, Object> selectRecommendedFacilityContractList(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String facilityNo
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            /* ***# 시설 기준 유지보수성 계약 목록 조회 */
+            List<Map<String, Object>> contractList =
+                    facilityCheckService.selectRecommendedFacilityContractList(mgmtOfcNo, facilityNo);
+
+            result.put("success", true);
+            result.put("contractList", contractList);
+        } catch (Exception e) {
+            log.error(
+                    "시설 기준 유지보수성 계약 목록 AJAX 조회 실패. mgmtOfcNo={}, facilityNo={}",
+                    mgmtOfcNo,
+                    facilityNo,
+                    e
+            );
+
+            result.put("success", false);
+            result.put("message", "시설 기준 계약 목록 조회 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
 }

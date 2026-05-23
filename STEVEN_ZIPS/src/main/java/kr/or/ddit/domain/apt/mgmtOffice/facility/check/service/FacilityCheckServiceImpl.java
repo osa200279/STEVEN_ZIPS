@@ -314,5 +314,11 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
         return facilityCheckHstryMapper.selectPartnerContractList(mgmtOfcNo, facilityNo, partnerNo);
     }
 
+    /** ***# 시설 선택 기준 최신 유지보수성 계약 목록 조회 */
+    @Override
+    public List<Map<String, Object>> selectRecommendedFacilityContractList(String mgmtOfcNo, String facilityNo) {
+        return facilityCheckHstryMapper.selectRecommendedFacilityContractList(mgmtOfcNo, facilityNo);
+    }
+
 
 }
