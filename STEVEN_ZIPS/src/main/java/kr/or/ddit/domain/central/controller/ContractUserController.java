@@ -240,6 +240,7 @@ public class ContractUserController {
     * 계약 서류를 업로드하는 메소드
     * MEMBER 권한을 가진 사용자만 접근 가능
     * 멀티파트 파일을 받아 서류 종류 공통 코드와 함께 저장
+    * 현재 제출서류 업로드 로직 수정중
     */
     /*@PreAuthorize("hasRole('MEMBER')")
     @PostMapping("/insertContractDoc.do")
@@ -266,6 +267,21 @@ public class ContractUserController {
         return result;
     }*/
 
+
+    /**
+     * 계약 서류를 업로드하는 메소드
+     *
+     * 사용자가 선택한 파일 목록과 각 파일의 카테고리 정보를 받아
+     * 해당 신청 건에 대한 계약 서류를 저장합니다.
+     * 처리 결과는 success 여부와 함께 JSON 형태로 반환됩니다.
+     *
+     * files    업로드할 파일 목록 (MultipartFile 리스트)
+     * cat      각 파일에 대응하는 서류 카테고리 목록
+     * aplctNo  서류를 등록할 신청 번호
+     * principal 현재 로그인한 사용자 정보 (사용자 번호 추출에 사용)
+     * 처리 결과 Map ("success": true/false, 실패 시 "message": 오류 내용)
+     * 바로 위에 있는 메소드 대신 이 메소드 사용할 것
+     */
     @PostMapping("/insertContractDoc.do")
     @ResponseBody
     public Map<String, Object> insertContractDoc(
