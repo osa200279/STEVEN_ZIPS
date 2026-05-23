@@ -213,6 +213,18 @@ public class MngSurveyServiceImpl implements IMngSurveyService {
 
             for(Map<String, Object> answer : answerList){
 
+
+
+                String type =
+                        String.valueOf(answer.get("type"));
+
+                if(!"MULTI".equals(type)
+                        && !"YN".equals(type)){
+
+                    continue;
+                }
+
+
                 String qitemNm =
                         "Q" + answer.get("questionNo");
 

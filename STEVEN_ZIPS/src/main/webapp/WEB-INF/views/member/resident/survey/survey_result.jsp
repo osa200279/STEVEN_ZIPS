@@ -163,13 +163,31 @@ request.getAttribute("survey")).getSurveyQitemCn()
 
 
 
-      const totalCount =
-              questionStats.reduce(
-                      (sum, s) =>
-                              sum + parseInt(s.ANSR_CNT || 0),
-                      0
-              );
+      let totalCount = 0;
 
+      if(q.type === "SHORT" || q.type === "LONG"){
+
+        const myResponse =
+                JSON.parse(
+                        '<%= org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript(
+                    String.valueOf(request.getAttribute("myResponse"))
+                  ) %>'
+                );
+
+        totalCount =
+                myResponse.filter(
+                        r => r.questionNo == (idx + 1)
+                ).length;
+
+      }else{
+
+        totalCount =
+                questionStats.reduce(
+                        (sum, s) =>
+                                sum + parseInt(s.ANSR_CNT || 0),
+                        0
+                );
+      }
 
       html +=
               "<div style='display:flex;justify-content:flex-end;margin-bottom:18px;'>";

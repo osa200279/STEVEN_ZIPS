@@ -250,7 +250,10 @@
                 if(q.type === "SHORT"){
 
                   const input =
-                          document.querySelectorAll('.fake-input')[idx];
+                          document.querySelectorAll('.fake-input')[0];
+
+                  console.log("SHORT INPUT =", input);
+                  console.log("SHORT VALUE =", input?.value);
 
                   answer =
                           input
