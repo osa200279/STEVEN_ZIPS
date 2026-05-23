@@ -60,7 +60,14 @@ public interface IPublicFacilityReservationMapper {
      * 예: 헬스장 러닝머신1번의 08:00~21:00 예약현황
      */
     List<PublicFacilityReservationVO> selectReservationTimeSlotList(PublicFacilityReservationVO searchVO);
+
+    int updateItemStatusRepair(PublicFacilityReservationVO vo);
+    int updateItemStatusUse(PublicFacilityReservationVO vo);
+    int updateItemStatusOpenForExpired();
+
 }
+
+
 
 
 

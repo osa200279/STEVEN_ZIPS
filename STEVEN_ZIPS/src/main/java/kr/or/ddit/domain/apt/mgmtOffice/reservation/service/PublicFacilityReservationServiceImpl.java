@@ -112,10 +112,28 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
             vo.setAutoApproveYn("Y");
         }
         mapper.insertReservation(vo);
+
+        /*
+         * 회의실은 승인대기 상태가 되면 다른 사람이 선택하지 못하도록
+         * PUBLIC_ITEM 상태를 REPAIR(점검중)로 변경합니다.
+         */
+        if ("PENDING".equals(vo.getRsvtSttsCd())) {
+            mapper.updateItemStatusRepair(vo);
+        }
+
         return rsvtNo;
     }
 
-    @Override @Transactional public void approve(PublicFacilityReservationVO vo) { mapper.approveReservation(vo); }
+    @Override
+    @Transactional
+    public void approve(PublicFacilityReservationVO vo) {
+        mapper.approveReservation(vo);
+
+        /*
+         * 관리자가 승인하면 회의실 자원 상태를 USE(사용중)로 변경합니다.
+         */
+        mapper.updateItemStatusUse(vo);
+    }
 
     @Override
     @Transactional

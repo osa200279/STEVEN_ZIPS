@@ -383,6 +383,28 @@
             color: #6b7280;
             cursor: not-allowed;
         }
+
+        .time-panel{
+            width:320px;
+            background:#fff;
+            border:1px solid #ddd;
+            border-radius:14px;
+            padding:20px;
+            max-height:520px;
+            overflow:hidden;
+        }
+
+        .time-slot-list{
+            margin-top:20px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+
+            /* 시간 버튼이 많아질 때 이 영역만 스크롤 */
+            max-height:390px;
+            overflow-y:auto;
+            padding-right:6px;
+        }
     </style>
 </head>
 
@@ -428,10 +450,10 @@
             <%--                        <div class="seat-grid">--%>
             <%--                            <c:forEach var="item" items="${itemList}">--%>
             <%--                                <button type="button"--%>
-            <%--                                        class="seat-btn ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}"--%>
+            <%--                                        class="seat-btn ${item.cmnFacilitySttsCd ne 'OPEN' ? 'disabled' : ''}"--%>
             <%--                                        data-item-no="${item.cmnFacilityItemNo}"--%>
             <%--                                        data-item-name="${item.itemNm}"--%>
-            <%--                                    ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}>--%>
+            <%--                                    ${item.cmnFacilitySttsCd ne 'OPEN' ? 'disabled' : ''}>--%>
             <%--                                        ${item.itemNm}--%>
             <%--                                </button>--%>
             <%--                            </c:forEach>--%>
@@ -548,13 +570,11 @@
                         <c:forEach var="item" items="${itemList}">
                             <button type="button"
                                     class="seat-btn
-                        ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}"
+                        ${item.cmnFacilitySttsCd ne 'OPEN' ? 'disabled' : ''}"
                                     data-item-no="${item.cmnFacilityItemNo}"
                                     data-item-nm="${item.itemNm}"
-                                ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}>
-
+                                ${item.cmnFacilitySttsCd ne 'OPEN' ? 'disabled' : ''}>
                                     ${item.itemNm}
-
                             </button>
                         </c:forEach>
 
@@ -1239,10 +1259,10 @@
 <%--&lt;%&ndash;                        <div class="seat-grid">&ndash;%&gt;--%>
 <%--&lt;%&ndash;                            <c:forEach var="item" items="${itemList}">&ndash;%&gt;--%>
 <%--&lt;%&ndash;                                <button type="button"&ndash;%&gt;--%>
-<%--&lt;%&ndash;                                        class="seat-btn ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}"&ndash;%&gt;--%>
+<%--&lt;%&ndash;                                        class="seat-btn ${item.cmnFacilitySttsCd ne 'OPEN' ? 'disabled' : ''}"&ndash;%&gt;--%>
 <%--&lt;%&ndash;                                        data-item-no="${item.cmnFacilityItemNo}"&ndash;%&gt;--%>
 <%--&lt;%&ndash;                                        data-item-name="${item.itemNm}"&ndash;%&gt;--%>
-<%--&lt;%&ndash;                                    ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}>&ndash;%&gt;--%>
+<%--&lt;%&ndash;                                    ${item.cmnFacilitySttsCd ne 'OPEN' ? 'disabled' : ''}>&ndash;%&gt;--%>
 <%--&lt;%&ndash;                                        ${item.itemNm}&ndash;%&gt;--%>
 <%--&lt;%&ndash;                                </button>&ndash;%&gt;--%>
 <%--&lt;%&ndash;                            </c:forEach>&ndash;%&gt;--%>
@@ -1359,10 +1379,10 @@
 <%--                        <c:forEach var="item" items="${itemList}">--%>
 <%--                            <button type="button"--%>
 <%--                                    class="seat-btn--%>
-<%--                        ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}"--%>
+<%--                        ${item.cmnFacilitySttsCd ne 'OPEN' ? 'disabled' : ''}"--%>
 <%--                                    data-item-no="${item.cmnFacilityItemNo}"--%>
 <%--                                    data-item-nm="${item.itemNm}"--%>
-<%--                                ${item.cmnFacilitySttsCd ne 'NORMAL' ? 'disabled' : ''}>--%>
+<%--                                ${item.cmnFacilitySttsCd ne 'OPEN' ? 'disabled' : ''}>--%>
 
 <%--                                    ${item.itemNm}--%>
 

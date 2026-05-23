@@ -291,6 +291,12 @@
         AND PF.CMN_FACILITY_RSV_YN = 'Y'
         AND F.USE_YN = 'Y'
         AND NVL(PI.CMN_FACILITY_STTS_CD, 'OPEN') = 'OPEN'
+        AND (
+        PI.ITEM_NM LIKE '%러닝머신%'
+        OR PI.ITEM_NM LIKE '%의자%'
+        OR PI.ITEM_NM LIKE '%회의실%'
+        )
+        AND NVL(PI.CMN_FACILITY_STTS_CD, 'OPEN') IN ('OPEN', 'REPAIR', 'USE')
         ORDER BY PI.ITEM_NM
     </select>
 
@@ -404,6 +410,35 @@
         ON M.USER_NO = FH.USER_NO
         ORDER BY TS.BGNG_DTTM
     </select>
+
+    <update id="updateItemStatusRepair">
+        UPDATE PUBLIC_ITEM
+        SET CMN_FACILITY_STTS_CD = 'REPAIR'
+        WHERE CMN_FACILITY_ITEM_NO = #{cmnFacilityItemNo}
+    </update>
+
+    <update id="updateItemStatusUse">
+        UPDATE PUBLIC_ITEM
+        SET CMN_FACILITY_STTS_CD = 'USE'
+        WHERE CMN_FACILITY_ITEM_NO = (
+        SELECT CMN_FACILITY_ITEM_NO
+        FROM FACILITY_HSTRY
+        WHERE RSVT_NO = #{rsvtNo}
+        )
+    </update>
+
+    <update id="updateItemStatusOpenForExpired">
+        UPDATE PUBLIC_ITEM PI
+        SET PI.CMN_FACILITY_STTS_CD = 'OPEN'
+        WHERE PI.CMN_FACILITY_STTS_CD IN ('USE', 'REPAIR')
+        AND NOT EXISTS (
+        SELECT 1
+        FROM FACILITY_HSTRY FH
+        WHERE FH.CMN_FACILITY_ITEM_NO = PI.CMN_FACILITY_ITEM_NO
+        AND FH.RSVT_STTS_CD IN ('PENDING', 'APPROVED')
+        AND FH.RSVT_END_DTTM > SYSDATE
+        )
+    </update>
 
 </mapper>
 
