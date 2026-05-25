@@ -23,6 +23,7 @@
         , sbmsn_doc
         , del_yn
         , opn_yn
+        , apt_cmplex_no
         ) VALUES (
         #{annNo}
         , (SELECT board_no FROM center_board_instance
@@ -41,6 +42,7 @@
         , #{sbmsnDoc}
         , 'N'
         , 'Y'
+        , #{aptCmplexNo}
         )
     </insert>
 
