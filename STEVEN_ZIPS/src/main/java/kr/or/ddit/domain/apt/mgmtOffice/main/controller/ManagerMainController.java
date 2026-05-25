@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import kr.or.ddit.domain.apt.mgmtOffice.main.service.IAptScheduleCalendarService;
+import kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO;
 
 @Controller
 @RequestMapping("/manager")
@@ -42,6 +44,10 @@ public class ManagerMainController {
     // ADMIN/MNGR 접근 기준 및 화면 공통 모델 처리
     private final IManagerModelService managerAccessService;
     private final IFacilityService facilityService;
+
+    //관리사무소 - 단지일정캘린더
+    private final IAptScheduleCalendarService aptScheduleCalendarService;
+
 
     @Autowired
     private IAptComplexService aptComplexService;
@@ -198,17 +204,88 @@ public class ManagerMainController {
         return "apt/mgmtOffice/employee/mngr_account";
     }
 
-    // 휴가 일정
+    // 관리사무소 - 단지 일정 캘린더
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
-    @GetMapping("/vacation/{mgmtOfcNo}")
-    public String vacation(
+    @GetMapping("/aptScheduleCalendar/{mgmtOfcNo}")
+    public String aptScheduleCalendar(
             @PathVariable String mgmtOfcNo,
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/employee/vacation";
+
+        /*
+         * 직원 목록을 미리 넣는 이유
+         * - 휴가 등록 모달의 직원 select box에서 DB 직원 목록을 보여주기 위해서입니다.
+         */
+        model.addAttribute("managerEmployeeList", aptScheduleCalendarService.selectManagerEmployeeList(mgmtOfcNo));
+
+        return "apt/mgmtOffice/calendar/aptScheduleCalendar";
     }
+
+    // 관리사무소 - 단지 일정 캘린더 - 월간 일정 조회 Ajax API
+    @ResponseBody
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/aptScheduleCalendar/{mgmtOfcNo}/list")
+    public ResponseEntity<Map<String, Object>> aptScheduleCalendarList(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam String monthStartDt,
+            @RequestParam String monthEndDt,
+            @RequestParam(required = false, defaultValue = "ALL") String scheduleTy,
+            @RequestParam(required = false) String keyword
+    ) {
+        AptScheduleCalendarDTO searchDTO = new AptScheduleCalendarDTO();
+        searchDTO.setMgmtOfcNo(mgmtOfcNo);
+        searchDTO.setMonthStartDt(monthStartDt);
+        searchDTO.setMonthEndDt(monthEndDt);
+        searchDTO.setScheduleTy(scheduleTy);
+        searchDTO.setKeyword(keyword);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", aptScheduleCalendarService.selectScheduleCalendarList(searchDTO));
+        result.put("stat", aptScheduleCalendarService.selectScheduleCalendarStat(searchDTO));
+
+        return ResponseEntity.ok(result);
+    }
+
+    // 관리사무소 - 단지 일정 캘린더 - 직원 휴가 등록 Ajax API
+    @ResponseBody
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @PostMapping("/aptScheduleCalendar/{mgmtOfcNo}/vacation")
+    public ResponseEntity<Map<String, Object>> insertVacationSchedule(
+            @PathVariable String mgmtOfcNo,
+            @RequestBody AptScheduleCalendarDTO aptScheduleCalendarDTO
+    ) {
+        aptScheduleCalendarDTO.setMgmtOfcNo(mgmtOfcNo);
+
+        Map<String, Object> result = new HashMap<>();
+        int cnt = aptScheduleCalendarService.insertVacationSchedule(aptScheduleCalendarDTO);
+        result.put("success", cnt > 0);
+        result.put("message", cnt > 0 ? "휴가 일정이 등록되었습니다." : "휴가 일정 등록에 실패했습니다.");
+
+        return ResponseEntity.ok(result);
+    }
+
+    // 관리사무소 - 단지 일정 캘린더 - 직원 휴가 삭제 Ajax API
+    @ResponseBody
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @DeleteMapping("/aptScheduleCalendar/{mgmtOfcNo}/vacation/{scheduleNo}")
+    public ResponseEntity<Map<String, Object>> deleteVacationSchedule(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String scheduleNo
+    ) {
+        AptScheduleCalendarDTO deleteDTO = new AptScheduleCalendarDTO();
+        deleteDTO.setMgmtOfcNo(mgmtOfcNo);
+        deleteDTO.setScheduleNo(scheduleNo);
+
+        Map<String, Object> result = new HashMap<>();
+        int cnt = aptScheduleCalendarService.deleteVacationSchedule(deleteDTO);
+        result.put("success", cnt > 0);
+        result.put("message", cnt > 0 ? "휴가 일정이 삭제되었습니다." : "삭제할 휴가 일정이 없습니다.");
+
+        return ResponseEntity.ok(result);
+    }
+
 
     // 입주민 목록
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")

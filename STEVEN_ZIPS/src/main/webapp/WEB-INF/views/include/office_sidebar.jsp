@@ -662,7 +662,7 @@
         </details>
 
         <div class="section-divider"></div>
-        <details class="nav-group" ${fn:contains(uri, '/manager/complex') or fn:contains(uri, '/manager/vacation') ? 'open="open"' : ''}>
+        <details class="nav-group" ${fn:contains(uri, '/manager/complex') or fn:contains(uri, '/manager/aptScheduleCalendar') ? 'open="open"' : ''}>
             <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">home_work</span>
                 <span class="cat-label">단지 운영 관리</span>
@@ -680,14 +680,9 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 구조 관리</span>
                     </a>
-
-                    <%--                    <span class="sub-group-label">일정</span>--%>
-                    <%--                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">단지 일정 캘린더</span></a>--%>
-
                     <span class="sub-group-label">일정</span>
-
-                    <a href="${ctx}/manager/vacation${mgmtPath}"
-                       class="nav-item ${fn:contains(uri, '/manager/vacation') ? 'active' : ''}">
+                    <a href="${ctx}/manager/aptScheduleCalendar${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/aptScheduleCalendar') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">단지 일정 캘린더</span>
                     </a>

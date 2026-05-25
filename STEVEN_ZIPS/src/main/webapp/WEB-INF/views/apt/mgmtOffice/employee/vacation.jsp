@@ -10,6 +10,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>관리사무소</title>
 
+  <%-- -김보라- 단지 일정 캘린더로 복사하여 사용중. 이건 사용안하고 있어요. --%>
+
   <!-- Spring Security CSRF 토큰 -->
   <sec:csrfMetaTags/>
 

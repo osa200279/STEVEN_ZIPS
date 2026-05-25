@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IAptScheduleCalendarMapper">
+
+    <resultMap id="aptScheduleCalendarMap" type="kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO">
+        <result property="mgmtOfcNo" column="MGMT_OFC_NO"/>
+        <result property="aptCmplexNo" column="APT_CMPLEX_NO"/>
+        <result property="scheduleNo" column="SCHEDULE_NO"/>
+        <result property="scheduleTy" column="SCHEDULE_TY"/>
+        <result property="scheduleTyNm" column="SCHEDULE_TY_NM"/>
+        <result property="scheduleTtl" column="SCHEDULE_TTL"/>
+        <result property="scheduleCn" column="SCHEDULE_CN"/>
+        <result property="locCn" column="LOC_CN"/>
+        <result property="startDt" column="START_DT"/>
+        <result property="endDt" column="END_DT"/>
+        <result property="colorCd" column="COLOR_CD"/>
+        <result property="rgtrId" column="RGTR_ID"/>
+        <result property="userNo" column="USER_NO"/>
+        <result property="userNm" column="USER_NM"/>
+        <result property="totalCnt" column="TOTAL_CNT"/>
+        <result property="todayCnt" column="TODAY_CNT"/>
+        <result property="monthCnt" column="MONTH_CNT"/>
+        <result property="vacationCnt" column="VACATION_CNT"/>
+    </resultMap>
+
+    <select id="selectAptCmplexNoByMgmtOfcNo" parameterType="string" resultType="string">
+        SELECT APT_CMPLEX_NO
+          FROM MGMT_OFFICE
+         WHERE MGMT_OFC_NO = #{mgmtOfcNo}
+           AND USE_YN = 'Y'
+    </select>
+
+    <sql id="scheduleUnionSql">
+        /* 1. 관리사무소 공지 일정 */
+        SELECT BI.APT_CMPLEX_NO,
+               P.ANN_NO AS SCHEDULE_NO,
+               'NOTICE' AS SCHEDULE_TY,
+               '공지' AS SCHEDULE_TY_NM,
+               P.TTL AS SCHEDULE_TTL,
+               DBMS_LOB.SUBSTR(P.CN, 1000, 1) AS SCHEDULE_CN,
+               '관리사무소' AS LOC_CN,
+               TO_CHAR(NVL(P.PBLANC_BGNG_DT, P.REG_DTTM), 'YYYY-MM-DD') AS START_DT,
+               TO_CHAR(NVL(P.PBLANC_END_DT, NVL(P.PBLANC_BGNG_DT, P.REG_DTTM)), 'YYYY-MM-DD') AS END_DT,
+               CASE WHEN P.TOP_FIX_YN = 'Y' THEN 'RED' ELSE 'BLUE' END AS COLOR_CD,
+               P.WRTR_ID AS RGTR_ID,
+               NULL AS USER_NO,
+               NULL AS USER_NM
+          FROM APT_ANN_BOARD_POST P
+               INNER JOIN APT_BOARD_INSTANCE BI
+                  ON P.BOARD_NO = BI.BOARD_NO
+         WHERE BI.APT_CMPLEX_NO = #{aptCmplexNo}
+           AND BI.USE_YN = 'Y'
+           AND P.DEL_YN = 'N'
+           AND NVL(P.PBLANC_BGNG_DT, P.REG_DTTM) <![CDATA[<=]]> TO_DATE(#{monthEndDt}, 'YYYY-MM-DD')
+           AND NVL(P.PBLANC_END_DT, NVL(P.PBLANC_BGNG_DT, P.REG_DTTM)) <![CDATA[>=]]> TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
+
+        UNION ALL
+
+        /* 2. 단지 내 행사/공사 일정: COMPLEX_SCHEDULE은 별도 일정 시작일 컬럼이 없어 REG_DT 기준으로 표시 */
+        SELECT CS.APT_CMPLEX_NO,
+               CS.SCHEDULE_NO,
+               CASE
+                   WHEN CS.SCHDL_TTL LIKE '%공사%' THEN 'CONSTRUCTION'
+                   ELSE 'EVENT'
+               END AS SCHEDULE_TY,
+               CASE
+                   WHEN CS.SCHDL_TTL LIKE '%공사%' THEN '공사'
+                   ELSE '행사'
+               END AS SCHEDULE_TY_NM,
+               CS.SCHDL_TTL AS SCHEDULE_TTL,
+               CS.SCHDL_CN AS SCHEDULE_CN,
+               CS.LOC_CN AS LOC_CN,
+               TO_CHAR(CS.REG_DT, 'YYYY-MM-DD') AS START_DT,
+               TO_CHAR(CS.REG_DT, 'YYYY-MM-DD') AS END_DT,
+               CASE
+                   WHEN CS.SCHDL_TTL LIKE '%공사%' THEN 'ORANGE'
+                   ELSE 'GREEN'
+               END AS COLOR_CD,
+               CS.RGTR_ID AS RGTR_ID,
+               NULL AS USER_NO,
+               NULL AS USER_NM
+          FROM COMPLEX_SCHEDULE CS
+         WHERE CS.APT_CMPLEX_NO = #{aptCmplexNo}
+           AND CS.REG_DT BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
+                             AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD') + 0.99999
+
+        UNION ALL
+
+        /* 3. 직원 휴가 일정 */
+        SELECT MO.APT_CMPLEX_NO,
+               VS.VACATION_SCHDL_NO AS SCHEDULE_NO,
+               'VACATION' AS SCHEDULE_TY,
+               '직원휴가' AS SCHEDULE_TY_NM,
+               VS.SCHDL_TTL AS SCHEDULE_TTL,
+               M.USER_NM || ' 직원 휴가' AS SCHEDULE_CN,
+               '관리사무소' AS LOC_CN,
+               TO_CHAR(VS.SCHDL_BGNG_DT, 'YYYY-MM-DD') AS START_DT,
+               TO_CHAR(VS.SCHDL_END_DT, 'YYYY-MM-DD') AS END_DT,
+               NVL(VS.COLOR_CD, 'PURPLE') AS COLOR_CD,
+               M.USER_ID AS RGTR_ID,
+               VS.USER_NO AS USER_NO,
+               M.USER_NM AS USER_NM
+          FROM MNGR_VACATION_SCHDL VS
+               INNER JOIN MANAGER MG
+                  ON VS.USER_NO = MG.USER_NO
+               INNER JOIN MGMT_OFFICE MO
+                  ON MG.MGMT_OFC_NO = MO.MGMT_OFC_NO
+               INNER JOIN MEMBER M
+                  ON VS.USER_NO = M.USER_NO
+         WHERE MO.APT_CMPLEX_NO = #{aptCmplexNo}
+           AND MO.USE_YN = 'Y'
+           AND VS.SCHDL_BGNG_DT <![CDATA[<=]]> TO_DATE(#{monthEndDt}, 'YYYY-MM-DD')
+           AND VS.SCHDL_END_DT <![CDATA[>=]]> TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
+
+        UNION ALL
+
+        /* 4. 검침일자 */
+        SELECT F.APT_CMPLEX_NO,
+               MH.METER_HSTRY_NO AS SCHEDULE_NO,
+               'METER' AS SCHEDULE_TY,
+               '검침' AS SCHEDULE_TY_NM,
+               F.FACILITY_NM || ' 검침' AS SCHEDULE_TTL,
+               MH.METER_CN AS SCHEDULE_CN,
+               F.LOC_CN AS LOC_CN,
+               TO_CHAR(MH.METER_DT, 'YYYY-MM-DD') AS START_DT,
+               TO_CHAR(MH.METER_DT, 'YYYY-MM-DD') AS END_DT,
+               'SKY' AS COLOR_CD,
+               NULL AS RGTR_ID,
+               NULL AS USER_NO,
+               NULL AS USER_NM
+          FROM METER_HSTRY MH
+               INNER JOIN FACILITY F
+                  ON MH.FACILITY_NO = F.FACILITY_NO
+         WHERE F.APT_CMPLEX_NO = #{aptCmplexNo}
+           AND F.USE_YN = 'Y'
+           AND MH.METER_DT BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
+                               AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD') + 0.99999
+
+        UNION ALL
+
+        /* 5. 점검일자 */
+        SELECT F.APT_CMPLEX_NO,
+               FH.FAC_CHK_HSTRY_NO AS SCHEDULE_NO,
+               'CHECK' AS SCHEDULE_TY,
+               '점검' AS SCHEDULE_TY_NM,
+               F.FACILITY_NM || ' 점검' AS SCHEDULE_TTL,
+               FH.CHK_CN AS SCHEDULE_CN,
+               F.LOC_CN AS LOC_CN,
+               TO_CHAR(FH.CHK_DT, 'YYYY-MM-DD') AS START_DT,
+               TO_CHAR(FH.CHK_DT, 'YYYY-MM-DD') AS END_DT,
+               'GRAY' AS COLOR_CD,
+               NULL AS RGTR_ID,
+               NULL AS USER_NO,
+               NULL AS USER_NM
+          FROM FACILITY_CHECK_HSTRY FH
+               INNER JOIN FACILITY F
+                  ON FH.FACILITY_NO = F.FACILITY_NO
+         WHERE F.APT_CMPLEX_NO = #{aptCmplexNo}
+           AND F.USE_YN = 'Y'
+           AND FH.CHK_DT BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
+                             AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD') + 0.99999
+    </sql>
+
+    <select id="selectScheduleCalendarList" parameterType="kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO" resultMap="aptScheduleCalendarMap">
+        SELECT *
+          FROM (
+                <include refid="scheduleUnionSql"/>
+               ) CAL
+         WHERE 1 = 1
+        <if test="scheduleTy != null and scheduleTy != '' and scheduleTy != 'ALL'">
+           AND CAL.SCHEDULE_TY = #{scheduleTy}
+        </if>
+        <if test="keyword != null and keyword != ''">
+           AND (
+                UPPER(CAL.SCHEDULE_TTL) LIKE '%' || UPPER(#{keyword}) || '%'
+             OR UPPER(CAL.SCHEDULE_CN) LIKE '%' || UPPER(#{keyword}) || '%'
+             OR UPPER(CAL.LOC_CN) LIKE '%' || UPPER(#{keyword}) || '%'
+             OR UPPER(CAL.USER_NM) LIKE '%' || UPPER(#{keyword}) || '%'
+           )
+        </if>
+         ORDER BY CAL.START_DT ASC, CAL.SCHEDULE_TY ASC, CAL.SCHEDULE_TTL ASC
+    </select>
+
+    <select id="selectScheduleCalendarStat" parameterType="kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO" resultMap="aptScheduleCalendarMap">
+        SELECT COUNT(*) AS TOTAL_CNT,
+               SUM(CASE WHEN TO_CHAR(SYSDATE, 'YYYY-MM-DD') BETWEEN START_DT AND END_DT THEN 1 ELSE 0 END) AS TODAY_CNT,
+               COUNT(*) AS MONTH_CNT,
+               SUM(CASE WHEN SCHEDULE_TY = 'VACATION' THEN 1 ELSE 0 END) AS VACATION_CNT
+          FROM (
+                SELECT *
+                  FROM (
+                        <include refid="scheduleUnionSql"/>
+                       ) CAL
+                 WHERE 1 = 1
+                <if test="scheduleTy != null and scheduleTy != '' and scheduleTy != 'ALL'">
+                   AND CAL.SCHEDULE_TY = #{scheduleTy}
+                </if>
+                <if test="keyword != null and keyword != ''">
+                   AND (
+                        UPPER(CAL.SCHEDULE_TTL) LIKE '%' || UPPER(#{keyword}) || '%'
+                     OR UPPER(CAL.SCHEDULE_CN) LIKE '%' || UPPER(#{keyword}) || '%'
+                     OR UPPER(CAL.LOC_CN) LIKE '%' || UPPER(#{keyword}) || '%'
+                     OR UPPER(CAL.USER_NM) LIKE '%' || UPPER(#{keyword}) || '%'
+                   )
+                </if>
+               )
+    </select>
+
+    <select id="selectManagerEmployeeList" parameterType="string" resultMap="aptScheduleCalendarMap">
+        SELECT MG.USER_NO,
+               M.USER_NM,
+               MG.MGMT_OFC_NO
+          FROM MANAGER MG
+               INNER JOIN MEMBER M
+                  ON MG.USER_NO = M.USER_NO
+         WHERE MG.MGMT_OFC_NO = #{mgmtOfcNo}
+           AND M.USER_YN = 'Y'
+         ORDER BY M.USER_NM ASC
+    </select>
+
+    <select id="selectNextVacationScheduleNo" resultType="string">
+        SELECT 'VAC' || LPAD(SEQ_MNGR_VACATION_SCHDL.NEXTVAL, 12, '0')
+          FROM DUAL
+    </select>
+
+    <insert id="insertVacationSchedule" parameterType="kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO">
+        INSERT INTO MNGR_VACATION_SCHDL (
+              VACATION_SCHDL_NO
+            , SCHDL_BGNG_DT
+            , SCHDL_END_DT
+            , SCHDL_TTL
+            , COLOR_CD
+            , REG_DT
+            , USER_NO
+        ) VALUES (
+              #{scheduleNo}
+            , TO_DATE(#{startDt}, 'YYYY-MM-DD')
+            , TO_DATE(#{endDt}, 'YYYY-MM-DD')
+            , #{scheduleTtl}
+            , NVL(#{colorCd}, 'PURPLE')
+            , SYSDATE
+            , #{userNo}
+        )
+    </insert>
+
+    <delete id="deleteVacationSchedule" parameterType="kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO">
+        DELETE FROM MNGR_VACATION_SCHDL
+         WHERE VACATION_SCHDL_NO = #{scheduleNo}
+           AND USER_NO IN (
+                SELECT USER_NO
+                  FROM MANAGER
+                 WHERE MGMT_OFC_NO = #{mgmtOfcNo}
+           )
+    </delete>
+
+</mapper>
