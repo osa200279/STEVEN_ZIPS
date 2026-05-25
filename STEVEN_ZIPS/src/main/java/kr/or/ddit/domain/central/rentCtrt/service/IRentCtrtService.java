@@ -10,4 +10,6 @@ public interface IRentCtrtService {
     int selectCtrtCount(String userNo);
 
     Map<String, Object> selectCtrtDashboard();
+
+    Map<String, Object> selectOneCtrtDetail(String rentCtrtNo);
 }

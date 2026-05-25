@@ -135,8 +135,18 @@ public class AdmDashBoardRestController {
     }
 
     @GetMapping("ctrt/detail/{RENT_CTRT_NO}")
-    public ResponseEntity<?> getCtrtDetail(@PathVariable String RENT_CTRT_NO){
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> getCtrtDetail(@PathVariable("RENT_CTRT_NO") String rentCtrtNo){
+        log.info("계약 상세 컨트롤러 진입, rentCtrtNo : {}", rentCtrtNo);
+        Map<String, Object> response = new HashMap<>();
+
+        Map<String, Object> ctrtDetail = rentCtrtService.selectOneCtrtDetail(rentCtrtNo);
+        if (ctrtDetail == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        log.info("## ctrtDetail : {}", ctrtDetail);
+        response.put("ctrtDetail", ctrtDetail);
+
+        return ResponseEntity.ok(response);
     }
 
 }

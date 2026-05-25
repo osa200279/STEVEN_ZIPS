@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.central.rentCtrt.mapper;
 
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,4 +24,8 @@ public interface IRentCtrtMapper {
     Map<String, Object> selectCtrtDashboard();
 
     String getUserNo(String aplctNo);
+
+    Map<String, Object> selectOneCtrtDetail(String rentCtrtNo);
+
+    List<AttachFileVO> selectSbmsnDocList(@Param("atchFileNo") long fileNo);
 }

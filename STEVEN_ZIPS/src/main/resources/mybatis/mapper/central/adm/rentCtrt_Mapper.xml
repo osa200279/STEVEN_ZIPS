@@ -43,6 +43,7 @@
         </foreach>
     </insert>
 
+    <!-- 담당자 배정 인서트 -->
     <insert id="insertCtrtMgr">
         INSERT INTO CTRT_MGR (
                                CTRT_MGR_NO
@@ -102,6 +103,7 @@
                     where RNUM &gt;=#{startRow}
     </select>
 
+    <!-- 계약데이터 총 갯수-->
     <select id="selectCtrtCount" resultType="java.lang.Integer">
         select COUNT(*)     /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrtCount */
           from RENT_CTRT C
@@ -109,6 +111,7 @@
          where M.USER_NO = #{userNo}
     </select>
 
+    <!--  -->
     <select id="selectCtrtDashboard" resultType="java.util.Map">
         select /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrtCount */
         count(*) as "totalCnt"
@@ -123,7 +126,7 @@
                     and <![CDATA[trunc(MVOUT_DT) >= trunc(sysdate)]]>
                     and <![CDATA[trunc(MVOUT_DT) <= trunc(sysdate + 30)]]> then 1 end) as "urgentCnt"
         ,nvl(
-            round(
+             round(
                     case when sum(case when CTRT_STTS_CD = 'APPROVED' and trunc(CTRT_APRV_DT, 'MM') = trunc(add_months(sysdate, -1), 'MM')then 1 else 0 end) = 0
                         then 100
                     else (
@@ -139,6 +142,54 @@
         SELECT  USER_NO
         FROM    APLCT
         WHERE   APLCT_NO = #{aplctNo}
+    </select>
+
+    <select id="selectOneCtrtDetail" resultType="java.util.Map">
+        select /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectOneCtrtDetail */
+                C.RENT_CTRT_NO
+                 , C.CTRT_STTS_CD
+                 , C.RENT_LSTG_NO
+                 , M.USER_ID
+                 , C.USER_NO
+                 , M.USER_NM
+                 , B.APT_CMPLEX_NO
+                 , A.APT_CMPLEX_NM
+                 , HT.TY_NM
+                 , HT.EXCLUSIVE_SIZE
+                 , L.HO_NO
+                 , L.RENT_TYPE_CD
+                 , C.DPST_AMT
+                 , C.CTRT_AMT
+                 , C.MID_PAY_AMT
+                 , C.BAL_AMT
+                 , C.MTHLY_RENT_AMT
+                 , C.MVIN_DT
+                 , C.MVOUT_DT
+                 , C.MVOUT_CMPL_DT
+                 , C.RENTOR_NM
+                 , C.RENTOR_TELNO
+                 , C.AGNT_NM
+                 , C.AGNT_TELNO
+                 , C.SPCL_STPLTN_CN
+                 , C.SBMSN_DOC_NO
+                 , D.ATCH_FILE_ID
+                 , C.CTRT_APRV_DT
+                 , L.RCRT_LSTG_STTS_CD
+                 , CM.CTRT_MGR_NO
+                 , CM.USER_NO AS CTRT_MGR_USER_NO
+                 , M2.USER_NM AS CTRT_MGR_USER_NM
+                 , CM.MGR_ASGN_DT
+                 , CM.CHG_YN
+           from RENT_CTRT C
+     inner join MEMBER M on(M.USER_NO = C.USER_NO)
+left outer join RENT_LISTING L on(L.RENT_LSTG_NO = C.RENT_LSTG_NO)
+left outer join CTRT_MGR CM on(CM.RENT_CTRT_NO = C.RENT_CTRT_NO)
+left outer join MEMBER M2 on(M2.USER_NO = CM.USER_NO)
+left outer join CENTER_ANN_BOARD_POST B on(B.ANN_NO = L.ANN_NO)
+left outer join SBMSN_DOC D on(D.SBMSN_DOC_NO = C.SBMSN_DOC_NO)
+     inner join APT_HO_TY HT on(HT.APT_CMPLEX_NO = B.APT_CMPLEX_NO)
+     inner join APT_COMPLEX A on(A.APT_CMPLEX_NO = HT.APT_CMPLEX_NO)
+          where C.RENT_CTRT_NO = #{rentCtrtNo}
     </select>
 
 </mapper>

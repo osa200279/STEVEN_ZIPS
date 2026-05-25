@@ -79,7 +79,6 @@ public class AttachFileServiceImpl implements IAttachFileService {
         }
     }
 
-
     /**
      * fileGroupNo 가 같은 첨부파일 테이블 데이터 전부 삭제!
      * @author 도선호
@@ -169,7 +168,5 @@ public class AttachFileServiceImpl implements IAttachFileService {
     public int insertAttachFile(AttachFileVO fileVO) {
         return attachFileMapper.insertAttachFile(fileVO);
     }
-
-
 
 }

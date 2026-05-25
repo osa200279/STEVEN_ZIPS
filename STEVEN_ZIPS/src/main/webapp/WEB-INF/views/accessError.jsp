@@ -14,4 +14,10 @@
     <h1>${msg}</h1>
     <a href="${prevPage}">${prevPage}</a>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', event => {
+        alert(`\${msg}`);
+        location.href = `\${prevPage}`;
+    })
+</script>
 </html>
