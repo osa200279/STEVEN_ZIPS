@@ -7,7 +7,6 @@ import { getNameByStatus, getNameOfJm } from '../../util/ctrt/ctrt';
 import CtrtBoard from './CtrtBoard';
 
 const Ctrt = () => {
-
   const navigate = useNavigate();
 
   const { admInfo } = useOutletContext() || {};
@@ -54,12 +53,13 @@ const Ctrt = () => {
   };
 
   const openDetail = (RENT_CTRT_NO) => {
-    // if (!RENT_CTRT_NO) {
-    //   alert("계약 정보가 없습니다.");
-    //   return;
-    // }
+    if (!RENT_CTRT_NO) {
+      alert("계약 정보가 없습니다.");
+      return;
+    }
     navigate(`/adm/ctrt/detail/${RENT_CTRT_NO}`);
   };
+
 
   return (
     <div className="content-wrapper" style={{ paddingTop: '0px' }}>
@@ -162,7 +162,7 @@ const Ctrt = () => {
                         <p className="cell-sub">{item.APT_CMPLEX_NM}</p>
                       </td>
                       <td> {/* 계약 승인일 */}
-                        <span className="cell-title">{item.CTRT_APRV_DT ? new Date(item.CTRT_APRV_DT).toLocaleDateString() : "미승인"}</span>
+                        <span className="cell-title">{item.CTRT_APRV_DT ? new Date(item.CTRT_APRV_DT).toLocaleDateString() : "승인대기"}</span>
                       </td>
                       <td> {/* 기간 */}
                         {item.MVIN_DT && item.MVOUT_DT ?
