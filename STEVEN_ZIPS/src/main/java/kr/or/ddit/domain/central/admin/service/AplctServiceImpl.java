@@ -1,5 +1,7 @@
 package kr.or.ddit.domain.central.admin.service;
 
+import kr.or.ddit.common.notification.dto.NotificationDTO;
+import kr.or.ddit.common.notification.service.NotificationService;
 import kr.or.ddit.common.util.BusinessException;
 import kr.or.ddit.domain.central.admin.dto.AplctDTO;
 import kr.or.ddit.domain.central.admin.mapper.IAplctMapper;
@@ -25,6 +27,9 @@ public class AplctServiceImpl implements IAplctService {
     @Autowired
     private IRentCtrtMapper rentCtrtMapper;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Override
     public List<AplctDTO> selectAplctList() {
         return aplctMapper.selectAplctList();
@@ -39,12 +44,37 @@ public class AplctServiceImpl implements IAplctService {
      */
     @Override
     public int approveAplct(List<Map<String, Object>> updateList, String manager) {
+
         int cnt = aplctMapper.updateAplctStatus(updateList);
-        if (cnt == 0) throw new RuntimeException("청약 상태 업데이트 실패");
+
+        if (cnt == 0) {
+            throw new RuntimeException("청약 상태 업데이트 실패");
+        }
+
+        /* 알림 발송 */
+        for (Map<String, Object> map : updateList) {
+            String aplctNo = (String) map.get("aplctNo");
+            String stts = String.valueOf(map.get("aplctSttsCd"));
+
+            String userNo = rentCtrtMapper.getUserNo(aplctNo);
+
+            if ("WINNER".equals(stts)) {
+                notificationService.send(
+                        userNo,
+                        NotificationDTO.success(
+                                "청약 신청 승인",
+                                "청약 신청이 접수되었습니다. 제출 서류를 확인해주세요.",
+                                "/central/contract/contractAList"
+                        )
+                );
+            }
+        }
 
         List<Map<String, Object>> qualifiedList = updateList.stream()
                 .filter(map -> "QUALIFIED".equals(map.get("aplctSttsCd")))
                 .collect(Collectors.toList());
+
+
 
         if (!qualifiedList.isEmpty()) {
             // 각 리스트에 대해 업데이트할 데이터 생성 및 매핑
@@ -55,6 +85,8 @@ public class AplctServiceImpl implements IAplctService {
                 String aplctNo = (String) map.get("aplctNo");
                 String rentCtrtNo = aplctNo + "_" + seq;
                 map.put("rentCtrtNo", rentCtrtNo);
+
+
 
                 // 신청한 공고의 매물 리스트 조회
                 List<String> rentLstgNo = aplctMapper.getRentLstgNoByAplctNo(aplctNo);

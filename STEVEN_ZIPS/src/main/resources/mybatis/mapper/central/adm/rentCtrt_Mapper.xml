@@ -135,5 +135,10 @@
                     )end, 2), 0) as "increaseRate"
         from RENT_CTRT
     </select>
+    <select id="getUserNo" resultType="java.lang.String">
+        SELECT  USER_NO
+        FROM    APLCT
+        WHERE   APLCT_NO = #{aplctNo}
+    </select>
 
 </mapper>

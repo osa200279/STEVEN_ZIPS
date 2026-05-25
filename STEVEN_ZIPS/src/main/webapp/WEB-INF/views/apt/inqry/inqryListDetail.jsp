@@ -257,7 +257,8 @@
           <button type="button" class="btn-secondary" onclick="history.back()">취소</button>
           <button type="submit" class="btn-primary" id="submitBtn">
             <span class="inline-flex items-center gap-2">
-              <span class="material-symbols-outlined" style="font-size:18px">send</span>
+              <span class="material-symbols-outlined" style="font-size:18px">sen
+              d</span>
               <c:choose>
                 <c:when test="${not empty inqry.postNo}">수정</c:when>
                 <c:otherwise>문의 제출</c:otherwise>

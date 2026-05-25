@@ -21,4 +21,6 @@ public interface IRentCtrtMapper {
 
     @SuppressWarnings("MyBatisMapperMethod") // 인텔리제이 마이바티스 검사 무시
     Map<String, Object> selectCtrtDashboard();
+
+    String getUserNo(String aplctNo);
 }
