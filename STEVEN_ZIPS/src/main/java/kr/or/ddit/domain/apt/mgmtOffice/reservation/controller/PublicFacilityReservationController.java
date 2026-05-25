@@ -99,75 +99,60 @@ public class PublicFacilityReservationController {
         return "apt/mgmtOffice/facility/reservation/managerUseHistory";
     }
 
-    /** 입주민 - 시설예약 */
     /**
      * 입주민 - 공용시설 예약 메인
      *
-     * 공용시설 예약 메인 화면입니다.
-     * 이 화면에서는 바로 예약하지 않고,
-     * 단지독서실 / 주민회의실 / 피트니스센터 중 하나를 선택합니다.
+     * aptCmplexNo는 URL에 표시하지만,
+     * 실제 조회 기준은 로그인 사용자 기준 단지번호를 사용합니다.
      */
     @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/resident/publicFacility/reservation/{aptCmplexNo}")
     public String residentReservePage(
+            @PathVariable String aptCmplexNo,
             PublicFacilityReservationVO searchVO,
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
-        /*
-         * 로그인한 입주민이 속한 단지번호 조회
-         */
-        searchVO.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
+        String loginUserAptCmplexNo =
+                service.getResidentAptCmplexNo(customUser.getMember().getUserNo());
 
-        /*
-         * 예약 가능한 공용시설 종류 목록 조회
-         */
+        searchVO.setAptCmplexNo(loginUserAptCmplexNo);
+
         model.addAttribute("facilityList", service.getResidentFacilityGroupList(searchVO));
+        model.addAttribute("aptCmplexNo", loginUserAptCmplexNo);
 
         return "member/resident/facility/residentReservation";
     }
 
     /**
      * 입주민 - 공용시설 상세 예약 화면
-     *
-     * 예:
-     * /resident/publicFacility/reservation/PF000000000001
-     *
-     * cmnFacilityNo란?
-     * 공용시설 번호입니다.
-     * 예: 단지독서실, 주민회의실 같은 큰 시설 1개를 구분하는 번호입니다.
      */
     @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/resident/publicFacility/reservation/{aptCmplexNo}/{cmnFacilityNo}")
     public String residentReserveDetailPage(
+            @PathVariable String aptCmplexNo,
             @PathVariable String cmnFacilityNo,
             PublicFacilityReservationVO searchVO,
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
-        searchVO.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
+        String loginUserAptCmplexNo =
+                service.getResidentAptCmplexNo(customUser.getMember().getUserNo());
+
+        searchVO.setAptCmplexNo(loginUserAptCmplexNo);
         searchVO.setSearchCmnFacilityNo(cmnFacilityNo);
 
-        List<PublicFacilityReservationVO> itemList = service.getResidentFacilityItemList(searchVO);
+        List<PublicFacilityReservationVO> itemList =
+                service.getResidentFacilityItemList(searchVO);
 
         PublicFacilityReservationVO facility = null;
-
         if (itemList != null && !itemList.isEmpty()) {
             facility = itemList.get(0);
         }
 
         model.addAttribute("facility", facility);
         model.addAttribute("itemList", itemList);
-        /*
-         * PathVariable로 받은 시설번호를 JSP에서 Ajax URL 만들 때 사용합니다.
-         * facility가 null이어도 cmnFacilityNo는 유지됩니다.
-         */
-        model.addAttribute("cmnFacilityNo", cmnFacilityNo);
-
-        /*
-         * PathVariable로 받은 시설번호를 JSP에서 Ajax URL 만들 때 사용합니다.
-         * facility가 null이어도 cmnFacilityNo는 유지됩니다.
-         */
+        model.addAttribute("aptCmplexNo", loginUserAptCmplexNo);
         model.addAttribute("cmnFacilityNo", cmnFacilityNo);
 
         return "member/resident/facility/residentReservationDetail";
@@ -175,14 +160,9 @@ public class PublicFacilityReservationController {
 
     /**
      * 입주민 - 선택 시간 기준 예약된 좌석 조회
-     *
-     * Ajax란?
-     * 화면 전체 새로고침 없이 서버와 데이터를 주고받는 방식입니다.
-     * 왜 사용?
-     * 날짜/시간을 바꿀 때마다 예약 불가능한 좌석만 다시 표시하기 위해 사용합니다.
      */
     @PreAuthorize("hasRole('RESIDENT')")
-    @GetMapping("/resident/publicFacility/reservation/{aptCmplexNo}/{cmnFacilityNo}/reserved-items")
+    @GetMapping("/resident/publicFacility/reservation/{cmnFacilityNo}/reserved-items")
     @ResponseBody
     public List<String> reservedItemList(
             @PathVariable String cmnFacilityNo,
@@ -195,62 +175,118 @@ public class PublicFacilityReservationController {
         return service.getReservedItemNoList(searchVO);
     }
 
-    /** 입주민 - 예약 등록 */
+    /**
+     * 입주민 - 예약 등록
+     */
     @PreAuthorize("hasRole('RESIDENT')")
-    @PostMapping("/resident/publicFacility/reservation/{aptCmplexNo}")
+    @PostMapping("/resident/publicFacility/reservation")
     @ResponseBody
-    public String reserve(PublicFacilityReservationVO vo, @AuthenticationPrincipal CustomUser customUser) {
+    public String reserve(
+            PublicFacilityReservationVO vo,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
         vo.setUserNo(customUser.getMember().getUserNo());
         vo.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
+
         return service.reserve(vo);
     }
 
-    /** 입주민 - 예약내역 */
+    /**
+     * 입주민 예약내역 조회
+     * 아래 2개 URL 모두 처리합니다.
+     * 1.
+     /resident/publicFacility/myReservation
+     * 2.
+     /resident/publicFacility/myReservation/{aptCmplexNo}
+     */
     @PreAuthorize("hasRole('RESIDENT')")
-    @GetMapping("/resident/publicFacility/myReservation/{aptCmplexNo}")
-    public String myReservation(@RequestParam(defaultValue = "1") int currentPage,
-                                PublicFacilityReservationVO searchVO,
-                                @AuthenticationPrincipal CustomUser customUser,
-                                Model model) {
-        searchVO.setUserNo(customUser.getMember().getUserNo());
-        searchVO.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
-        PaginationInfoVO<PublicFacilityReservationVO> pagingVO = service.getMyReservationPaging(searchVO, currentPage);
+    @GetMapping({
+            "/resident/publicFacility/myReservation",
+            "/resident/publicFacility/myReservation/{aptCmplexNo}"
+    })
+    public String myReservation(
+            @PathVariable(required = false) String aptCmplexNo,
+            @RequestParam(defaultValue = "1") int currentPage,
+            PublicFacilityReservationVO searchVO,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        /*
+         * 실제 조회는 로그인 사용자 기준 단지 사용
+         */
+        String loginUserAptCmplexNo =
+                service.getResidentAptCmplexNo(
+                        customUser.getMember().getUserNo()
+                );
+
+        searchVO.setUserNo(
+                customUser.getMember().getUserNo()
+        );
+
+        searchVO.setAptCmplexNo(
+                loginUserAptCmplexNo
+        );
+
+        PaginationInfoVO<PublicFacilityReservationVO> pagingVO =
+                service.getMyReservationPaging(
+                        searchVO,
+                        currentPage
+                );
+
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
+        model.addAttribute("aptCmplexNo", loginUserAptCmplexNo);
+
         return "member/resident/facility/residentMyReservation";
     }
 
-    /** 입주민 - 예약 상세 JSON */
+    /**
+     * 입주민 - 예약 상세 JSON
+     */
     @PreAuthorize("hasRole('RESIDENT')")
-    @GetMapping("/resident/publicFacility/myReservation/{aptCmplexNo}/{rsvtNo}")
+    @GetMapping("/resident/publicFacility/myReservation/detail/{rsvtNo}")
     @ResponseBody
-    public PublicFacilityReservationVO myReservationDetail(@PathVariable String rsvtNo,
-                                                           @AuthenticationPrincipal CustomUser customUser) {
+    public PublicFacilityReservationVO myReservationDetail(
+            @PathVariable String rsvtNo,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
         PublicFacilityReservationVO searchVO = new PublicFacilityReservationVO();
         searchVO.setRsvtNo(rsvtNo);
         searchVO.setUserNo(customUser.getMember().getUserNo());
         searchVO.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
+
         return service.getMyReservationDetail(searchVO);
     }
 
-    /** 입주민 - 예약 취소 */
+    /**
+     * 입주민 - 예약 취소
+     *
+     * cancel이란? 예약 상태를 취소(CANCELLED)로 바꾸는 기능입니다.
+     * 왜 POST? DB 데이터가 변경되기 때문에 GET이 아니라 POST를 사용합니다.
+     */
     @PreAuthorize("hasRole('RESIDENT')")
-    @PostMapping("/resident/publicFacility/myReservation/{aptCmplexNo}/{rsvtNo}/cancel")
+    @PostMapping("/resident/publicFacility/myReservation/cancel/{rsvtNo}")
     @ResponseBody
-    public String cancel(@PathVariable String rsvtNo, @AuthenticationPrincipal CustomUser customUser) {
+    public String cancel(
+            @PathVariable String rsvtNo,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
         PublicFacilityReservationVO vo = new PublicFacilityReservationVO();
+
         vo.setRsvtNo(rsvtNo);
         vo.setUserNo(customUser.getMember().getUserNo());
         vo.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
+
         service.cancel(vo);
+
         return "OK";
     }
 
-    /*
-     * 입주민 - 선택한 시설/좌석의 시간표 조회
+    /**
+     * 입주민 - 선택한 시설의 시간표 조회
      */
     @PreAuthorize("hasRole('RESIDENT')")
-    @GetMapping("/resident/publicFacility/reservation/{aptCmplexNo}/{cmnFacilityNo}/time-slots")
+    @GetMapping("/resident/publicFacility/reservation/{cmnFacilityNo}/time-slots")
     @ResponseBody
     public List<PublicFacilityReservationVO> reservationTimeSlots(
             @PathVariable String cmnFacilityNo,

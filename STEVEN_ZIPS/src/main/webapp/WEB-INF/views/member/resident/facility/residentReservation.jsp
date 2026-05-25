@@ -181,7 +181,7 @@
             <c:forEach var="facility" items="${facilityList}">
 
               <a class="facility-card"
-                 href="${pageContext.request.contextPath}/resident/publicFacility/reservation/${facility.cmnFacilityNo}">
+                 href="${pageContext.request.contextPath}/resident/publicFacility/reservation/${aptCmplexNo}/${facility.cmnFacilityNo}">
 
                 <div class="facility-card-title">
                     ${facility.cmnFacilityNm} 예약

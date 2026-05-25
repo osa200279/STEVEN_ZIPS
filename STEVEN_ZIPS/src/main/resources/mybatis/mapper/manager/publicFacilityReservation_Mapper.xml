@@ -61,13 +61,29 @@
     </select>
 
     <select id="selectAptCmplexNoByResidentUserNo" resultType="string">
-        SELECT AU.APT_CMPLEX_NO
+        /*
+        * 로그인 입주민의 현재 거주 단지 조회
+        *
+        * ROWNUM만 사용하면 여러 세대가 있을 때 임의 단지가 잡힐 수 있습니다.
+        * 그래서 현재 거주 중인 세대 중 세대주 여부, 입주일 기준으로 1건만 선택합니다.
+        */
+        SELECT APT_CMPLEX_NO
+        FROM (
+        SELECT
+        AU.APT_CMPLEX_NO
         FROM HSHLD_HEAD HH
-        JOIN APT_DETAIL AD ON AD.HO_NO = HH.HO_NO
-        JOIN APT_UNIT AU ON AU.DONG_NO = AD.DONG_NO
+        JOIN APT_DETAIL AD
+        ON AD.HO_NO = HH.HO_NO
+        JOIN APT_UNIT AU
+        ON AU.DONG_NO = AD.DONG_NO
         WHERE HH.USER_NO = #{userNo}
         AND NVL(HH.INOUT_CD, 'IN') != 'OUT'
-        AND ROWNUM = 1
+        ORDER BY
+        CASE WHEN HH.HEAD_YN = 'Y' THEN 0 ELSE 1 END,
+        HH.MOVE_IN_DT DESC NULLS LAST,
+        HH.HO_NO
+        )
+        WHERE ROWNUM = 1
     </select>
 
     <select id="selectNextRsvtNo" resultType="string">
@@ -101,18 +117,52 @@
 
     <sql id="reservationJoin">
         FROM FACILITY_HSTRY FH
-        JOIN PUBLIC_ITEM PI ON PI.CMN_FACILITY_ITEM_NO = FH.CMN_FACILITY_ITEM_NO
-        JOIN PUBLIC_FACILITY PF ON PF.CMN_FACILITY_NO = PI.CMN_FACILITY_NO
-        JOIN FACILITY F ON F.FACILITY_NO = PF.FACILITY_NO
-        LEFT JOIN MEMBER M ON M.USER_NO = FH.USER_NO
-        LEFT JOIN HSHLD_HEAD HH ON HH.USER_NO = FH.USER_NO
-        LEFT JOIN APT_DETAIL AD ON AD.HO_NO = HH.HO_NO
-        LEFT JOIN APT_UNIT AU ON AU.DONG_NO = AD.DONG_NO AND AU.APT_CMPLEX_NO = PF.APT_CMPLEX_NO
+        JOIN PUBLIC_ITEM PI
+        ON PI.CMN_FACILITY_ITEM_NO = FH.CMN_FACILITY_ITEM_NO
+        JOIN PUBLIC_FACILITY PF
+        ON PF.CMN_FACILITY_NO = PI.CMN_FACILITY_NO
+        JOIN FACILITY F
+        ON F.FACILITY_NO = PF.FACILITY_NO
+        LEFT JOIN MEMBER M
+        ON M.USER_NO = FH.USER_NO
+
+        /*
+        * 예약자 세대정보는 사용자당 1건만 선택합니다.
+        * 왜? 한 사용자가 여러 호/여러 단지에 연결되어 있으면 JOIN 결과가 중복되기 때문입니다.
+        */
+        LEFT JOIN (
+        SELECT *
+        FROM (
+        SELECT
+        HH.USER_NO,
+        HH.HO_NO,
+        AD.HO,
+        AU.DONG_NO,
+        AU.DONG_NM,
+        AU.APT_CMPLEX_NO,
+        ROW_NUMBER() OVER (
+        PARTITION BY HH.USER_NO, AU.APT_CMPLEX_NO
+        ORDER BY
+        CASE WHEN HH.HEAD_YN = 'Y' THEN 0 ELSE 1 END,
+        HH.MOVE_IN_DT DESC NULLS LAST,
+        HH.HO_NO
+        ) AS RN
+        FROM HSHLD_HEAD HH
+        JOIN APT_DETAIL AD
+        ON AD.HO_NO = HH.HO_NO
+        JOIN APT_UNIT AU
+        ON AU.DONG_NO = AD.DONG_NO
+        WHERE NVL(HH.INOUT_CD, 'IN') != 'OUT'
+        )
+        WHERE RN = 1
+        ) RHH
+        ON RHH.USER_NO = FH.USER_NO
+        AND RHH.APT_CMPLEX_NO = PF.APT_CMPLEX_NO
     </sql>
 
     <sql id="reservationColumns">
         FH.RSVT_NO, FH.CMN_FACILITY_ITEM_NO, PF.CMN_FACILITY_NO, PF.FACILITY_NO, PF.APT_CMPLEX_NO,
-        FH.USER_NO, M.USER_ID, M.USER_NM, HH.HO_NO, AD.HO, AU.DONG_NO, AU.DONG_NM,
+        FH.USER_NO, M.USER_ID, M.USER_NM, RHH.HO_NO, RHH.HO, RHH.DONG_NO, RHH.DONG_NM,
         PF.CMN_FACILITY_NM, PI.ITEM_NM, F.FACILITY_TY_CD, F.LOC_CN,
         PI.CMN_FACILITY_STTS_CD,
         TO_CHAR(FH.RSVT_DT, 'YYYY.MM.DD') RSVT_DT,
@@ -134,7 +184,7 @@
         <if test="searchItemNo != null and searchItemNo != ''">AND PI.CMN_FACILITY_ITEM_NO = #{searchItemNo}</if>
         <if test="searchUserNm != null and searchUserNm != ''">AND M.USER_NM LIKE '%' || #{searchUserNm} || '%'</if>
         <if test="searchRsvtSttsCd != null and searchRsvtSttsCd != ''">AND FH.RSVT_STTS_CD = #{searchRsvtSttsCd}</if>
-        <if test="searchDongNo != null and searchDongNo != ''">AND AU.DONG_NO = #{searchDongNo}</if>
+        <if test="searchDongNo != null and searchDongNo != ''">AND RHH.DONG_NO = #{searchDongNo}</if>
         <if test="searchWord != null and searchWord != ''">AND (PF.CMN_FACILITY_NM LIKE '%' || #{searchWord} || '%' OR PI.ITEM_NM LIKE '%' || #{searchWord} || '%')</if>
         <if test="searchAutoApproveYn != null and searchAutoApproveYn != ''">
             AND (CASE WHEN FH.RSVT_STTS_CD = 'APPROVED' AND FH.REG_DT = FH.MDF_DT THEN 'Y' ELSE 'N' END) = #{searchAutoApproveYn}
