@@ -70,11 +70,11 @@
                         <span class="nav-text">직원 계정 관리</span>
                     </a>
 
-<%--                    <a href="${ctx}/manager/vacation${mgmtPath}"--%>
-<%--                       class="nav-item ${fn:contains(uri, '/manager/vacation') ? 'active' : ''}">--%>
-<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
-<%--                        <span class="nav-text">휴가 일정</span>--%>
-<%--                    </a>--%>
+                    <%--                    <a href="${ctx}/manager/vacation${mgmtPath}"--%>
+                    <%--                       class="nav-item ${fn:contains(uri, '/manager/vacation') ? 'active' : ''}">--%>
+                    <%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+                    <%--                        <span class="nav-text">휴가 일정</span>--%>
+                    <%--                    </a>--%>
                 </div>
             </div>
         </details>
@@ -513,11 +513,11 @@
                            ? 'is-open' : ''}"
                          id="publicFacilityChild">
 
-<%--                        <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"--%>
-<%--                           class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">--%>
-<%--                            <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
-<%--                            <span class="nav-text">편의시설 목록</span>--%>
-<%--                        </a>--%>
+                        <%--                        <a href="${ctx}/manager/publicFacility/reservation/facilities${mgmtPath}"--%>
+                        <%--                           class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/facilities') ? 'active' : ''}">--%>
+                        <%--                            <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+                        <%--                            <span class="nav-text">편의시설 목록</span>--%>
+                        <%--                        </a>--%>
 
                         <a href="${ctx}/manager/publicFacility/reservation/approval${mgmtPath}"
                            class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/approval') ? 'active' : ''}">
@@ -547,11 +547,11 @@
                         <span class="nav-text">검침 이력</span>
                     </a>
 
-<%--                    <a href="${ctx}/manager/facility/workCalendar${mgmtPath}"--%>
-<%--                       class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">--%>
-<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
-<%--                        <span class="nav-text">시설 일정</span>--%>
-<%--                    </a>--%>
+                    <%--                    <a href="${ctx}/manager/facility/workCalendar${mgmtPath}"--%>
+                    <%--                       class="nav-item ${fn:contains(uri, '/manager/facility/workCalendar') ? 'active' : ''}">--%>
+                    <%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+                    <%--                        <span class="nav-text">시설 일정</span>--%>
+                    <%--                    </a>--%>
 
                     <span class="sub-group-label">협력업체</span>
 
@@ -590,14 +590,14 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">검침요금 계산</span>
                     </a>
-<%--                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">--%>
-<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
-<%--                        <span class="nav-text">예산 편성·조회</span>--%>
-<%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
-<%--                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">--%>
-<%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
-<%--                        <span class="nav-text">지출 통계</span>--%>
-<%--                    </a>--%>
+                    <%--                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">--%>
+                    <%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+                    <%--                        <span class="nav-text">예산 편성·조회</span>--%>
+                    <%--&lt;%&ndash;                    </a>&ndash;%&gt;--%>
+                    <%--                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">--%>
+                    <%--                        <span class="material-symbols-rounded nav-icon">chevron_right</span>--%>
+                    <%--                        <span class="nav-text">지출 통계</span>--%>
+                    <%--                    </a>--%>
                     <span class="sub-group-label">관리비</span>
                     <a href="${ctx}/manager/bill/charge${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/charge') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
@@ -662,7 +662,7 @@
         </details>
 
         <div class="section-divider"></div>
-        <details class="nav-group">
+        <details class="nav-group" ${fn:contains(uri, '/manager/complex') or fn:contains(uri, '/manager/vacation') ? 'open="open"' : ''}>
             <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">home_work</span>
                 <span class="cat-label">단지 운영 관리</span>
@@ -681,8 +681,16 @@
                         <span class="nav-text">단지 구조 관리</span>
                     </a>
 
-<%--                    <span class="sub-group-label">일정</span>--%>
-<%--                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">단지 일정 캘린더</span></a>--%>
+                    <%--                    <span class="sub-group-label">일정</span>--%>
+                    <%--                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">단지 일정 캘린더</span></a>--%>
+
+                    <span class="sub-group-label">일정</span>
+
+                    <a href="${ctx}/manager/vacation${mgmtPath}"
+                       class="nav-item ${fn:contains(uri, '/manager/vacation') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">단지 일정 캘린더</span>
+                    </a>
                 </div>
             </div>
         </details>
