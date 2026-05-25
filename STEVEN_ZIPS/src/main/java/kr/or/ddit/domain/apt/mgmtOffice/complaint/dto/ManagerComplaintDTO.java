@@ -6,44 +6,47 @@ import lombok.Data;
 public class ManagerComplaintDTO {
 
     /**
-     * 민원 접수 현황 전체 조회 필드(민원 테이블)
+     * 민원 필드(CVPL)
      */
-    private String cvplNo;
-    private String cvplTyCd;
-    private String cvplLoc;
-    private String cvplCn;
-    private String cvplSttsCd;
-    private String cvplRegDt;
-    private String cvplMdfDt;
-    private String cvplRcptDt;
-    private String cvplEndDt;
-    private String cvplPrrt;
-    private String cvplFileNo;
-    private String cvplTtl;
-    private String userNo;
-    private String hoNo;
-    private String aptCmplexNo;
+    private String cvplNo;        // 민원번호
+    private String cvplTyCd;      // 민원유형코드
+    private String cvplLoc;       // 민원발생위치
+    private String cvplCn;        // 민원내용
+    private String cvplSttsCd;    // 민원상태코드
+    private String cvplRegDt;     // 민원생성일자
+    private String cvplMdfDt;     // 민원수정일자
+    private String cvplRcptDt;    // 민원접수일자
+    private String cvplEndDt;     // 민원종결일자
+    private String cvplPrrt;      // 민원우선순위
+    private String cvplFileNo;    // 민원파일번호
+    private String cvplTtl;       // 민원제목
+    private String userNo;        // 사용자번호
+    private String hoNo;          // 호번호
+    private String aptCmplexNo;   // 아파트단지번호
 
     /**
-     * 민원 이력 필드(민원이력 테이블)
+     * 민원 이력 필드(CVPL_HSTRY)
      */
-    private String cvplHstryId;
-    private String cvplAns;
-    private String picId;
+    private String cvplHstryId;   // 민원이력번호
+    private String cvplAns;       // 민원답변
+    private String picId;         // 담당자아이디
+    private String cvplSttscd;    // 민원상태코드 (이력)
 
     /**
-     * 민원 AI분석 필드(민원AI분석 테이블)
-     */
-    private String analysisNo;
-    private int riskScr;
-    private String riskGrad;
-    private String predCtgry;
-    private String chnRiskCn;
-    private String anlsDt;
-
-    /**
-     * 신고자 정보(일반회원 테이블)
+     * 신고자 정보 필드(MEMBER)
      */
     private String userId;
     private String userNm;
+
+    /**
+     * 세대정보 필드(APT_DETAIL, APT_UNIT)
+     */
+    private String dongNm;        // 동이름
+    private String ho;            // 호수
+
+    /**
+     * 검색조건 필드(접수기간)
+     */
+    private String searchDateFrom; // 접수기간 시작일
+    private String searchDateTo;   // 접수기간 종료일
 }

@@ -9,4 +9,6 @@ public interface ManagerComplaintService {
     int selectComplaintCount(PaginationInfoVO<ManagerComplaintDTO> page);
 
     List<ManagerComplaintDTO> selectComplaintList(PaginationInfoVO<ManagerComplaintDTO> page);
+
+    void updateComplaint(ManagerComplaintDTO dto);
 }

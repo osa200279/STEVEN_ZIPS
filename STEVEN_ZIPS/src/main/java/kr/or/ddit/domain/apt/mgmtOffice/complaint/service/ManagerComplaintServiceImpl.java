@@ -5,6 +5,7 @@ import kr.or.ddit.domain.apt.mgmtOffice.complaint.dto.ManagerComplaintDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.complaint.mapper.ManagerComplaintMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,5 +23,11 @@ public class ManagerComplaintServiceImpl implements ManagerComplaintService{
     @Override
     public List<ManagerComplaintDTO> selectComplaintList(PaginationInfoVO<ManagerComplaintDTO> page) {
         return managerComplaintMapper.selectComplaintList(page);
+    }
+
+    @Transactional
+    public void updateComplaint(ManagerComplaintDTO dto) {
+        managerComplaintMapper.updateCvplStts(dto);
+        managerComplaintMapper.insertCvplHstry(dto);
     }
 }

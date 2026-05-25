@@ -416,7 +416,9 @@ public class ManagerMainController {
         // mgmtOfcNo 로 아파트 정보 가져오는 메서드
         AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
 
+
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
         System.out.println("mgmtOfcNo = " + mgmtOfcNo);
         System.out.println("complex = " + aptComplexVO);
 

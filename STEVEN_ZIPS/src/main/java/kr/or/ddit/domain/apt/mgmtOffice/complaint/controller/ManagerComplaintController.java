@@ -39,9 +39,10 @@ public class ManagerComplaintController {
             @RequestParam(defaultValue = "1") int curPage,
             @RequestParam(required = false) String cvplTyCd,
             @RequestParam(required = false) String cvplSttsCd,
-            @RequestParam(required = false, defaultValue = "") String keyword
-            ) {
-
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam(required = false) String searchDateFrom,  // 추가
+            @RequestParam(required = false) String searchDateTo     // 추가
+    ) {
         Map<String, Object> result = new HashMap<>();
 
         // 단지번호 조회
@@ -55,6 +56,9 @@ public class ManagerComplaintController {
         searchDTO.setAptCmplexNo(aptCmplexNo);
         searchDTO.setCvplTyCd(cvplTyCd);
         searchDTO.setCvplSttsCd(cvplSttsCd);
+        searchDTO.setSearchDateFrom(searchDateFrom); // 추가
+        searchDTO.setSearchDateTo(searchDateTo);     // 추가
+
         page.setSearchVO(searchDTO);
         page.setSearchWord(keyword);
         page.setCurrentPage(curPage);
@@ -62,7 +66,7 @@ public class ManagerComplaintController {
         // 건수 조회
         int totalRecord = managerComplaintService.selectComplaintCount(page);
         page.setTotalRecord(totalRecord);
-        page.setCurrentPage(curPage);
+        page.setCurrentPage(curPage); // totalRecord 세팅 후 다시 세팅 (startRow/endRow 재계산)
 
         // 목록 조회
         List<ManagerComplaintDTO> list = managerComplaintService.selectComplaintList(page);
@@ -73,6 +77,26 @@ public class ManagerComplaintController {
 
         return ResponseEntity.ok(result);
     }
+
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @PostMapping("/updateComplaint/{mgmtOfcNo}")
+    public ResponseEntity<Map<String, Object>> updateComplaint(
+            @PathVariable String mgmtOfcNo,
+            @RequestBody ManagerComplaintDTO dto
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            managerComplaintService.updateComplaint(dto);
+            result.put("success", true);
+        } catch (Exception e) {
+            log.error("[updateComplaint] 오류: {}", e.getMessage());
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(result);
+    }
+
+
 
 }
 

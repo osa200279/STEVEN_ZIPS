@@ -11,4 +11,8 @@ public interface ManagerComplaintMapper {
     int selectComplaintCount(PaginationInfoVO<ManagerComplaintDTO> page);
 
     List<ManagerComplaintDTO> selectComplaintList(PaginationInfoVO<ManagerComplaintDTO> page);
+
+    int updateCvplStts(ManagerComplaintDTO dto);
+
+    void insertCvplHstry(ManagerComplaintDTO dto);
 }
