@@ -8,6 +8,13 @@ const CtrtDetail = () => {
   const [detail, setDetail] = useState(null);
   const navigate = useNavigate();
 
+  const isEditable = detail?.CTRT_STTS_CD === 'PENDING';
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setDetail(prev => ({ ...prev, [name]: value }));
+  };
+
   useEffect(() => {
     const fetchCtrtDetails = async () => {
       try {
@@ -74,22 +81,27 @@ const CtrtDetail = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
               <div className="compact-input-group">
                 <label>계약 번호</label>
-                <input type="text" value={detail.RENT_CTRT_NO} readOnly />
+                <input type="text" value={detail.RENT_CTRT_NO} className="bg-gray-disabled" readOnly />
               </div>
               <div className="compact-input-group">
                 <label>계약 상태</label>
-                <input type="text" value={getCtrtSttsName(detail.CTRT_STTS_CD)} readOnly className="font-bold text-primary-color" />
+                <input
+                  type="text"
+                  value={getCtrtSttsName(detail.CTRT_STTS_CD)}
+                  readOnly={!isEditable}
+                  className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
+                />
               </div>
               <div className="compact-input-group">
                 <label>임대매물번호</label>
-                <input type="text" value={detail.RENT_LSTG_NO} readOnly />
+                <input type="text" value={detail.RENT_LSTG_NO} className="bg-gray-disabled" readOnly />
               </div>
               <div className="compact-input-group">
                 <label>담당자 (배정일)</label>
                 <input type="text"
                   value={`${detail.CTRT_MGR_USER_NM} (${new Date(detail.MGR_ASGN_DT).toLocaleDateString('ko-KR', {
                     year: '2-digit', month: '2-digit', day: '2-digit'
-                  })})`} readOnly />
+                  })})`} readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
               </div>
             </div>
           </div>
@@ -103,19 +115,19 @@ const CtrtDetail = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 <div className="compact-input-group" style={{ gridColumn: '2 / 1' }}>
                   <label>아파트 정보</label>
-                  <input type="text" value={detail.APT_CMPLEX_NM} readOnly />
+                  <input type="text" value={detail.APT_CMPLEX_NM} className="bg-gray-disabled" readOnly />
                 </div>
                 <div className="compact-input-group" style={{ gridColumn: '2 / -1' }}>
                   <label>타입</label>
-                  <input type="text" value={`${detail.TY_NM} ${detail.EXCLUSIVE_SIZE}㎡`} readOnly />
+                  <input type="text" value={`${detail.TY_NM} ${detail.EXCLUSIVE_SIZE}㎡`} className="bg-gray-disabled" readOnly />
                 </div>
                 <div className="compact-input-group">
                   <label>임차인 이름</label>
-                  <input type="text" value={detail.USER_NM} readOnly />
+                  <input type="text" value={detail.USER_NM} className="bg-gray-disabled" readOnly />
                 </div>
                 <div className="compact-input-group">
                   <label>임차인 ID (번호)</label>
-                  <input type="text" value={`${detail.USER_ID} (${detail.USER_NO})`} readOnly />
+                  <input type="text" value={`${detail.USER_ID} (${detail.USER_NO})`} className="bg-gray-disabled" readOnly />
                 </div>
               </div>
             </div>
@@ -130,11 +142,11 @@ const CtrtDetail = () => {
 
                   {detail.SPCL_STPLTN_CN ?
                     <textarea
-                      readOnly
                       style={{ resize: 'none', height: '60px' }}
                       value={detail.SPCL_STPLTN_CN}
+                      readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
                     />
-                    : <input type="text" value="없음" readOnly />
+                    : <input type="text" value="없음" readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                   }
                 </div>
                 <div className="compact-input-group">
@@ -167,27 +179,27 @@ const CtrtDetail = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 <div className="compact-input-group" >
                   <label>임대 유형</label>
-                  <input type="text" value={(detail.RENT_TYPE_CD === 'JS' ? '전세' : '월세')} readOnly />
+                  <input type="text" value={(detail.RENT_TYPE_CD === 'JS' ? '전세' : '월세')} className="bg-gray-disabled" readOnly />
                 </div>
                 <div className="compact-input-group">
                   <label>보증금</label>
-                  <input type="text" value={detail.DPST_AMT != null ? `${detail.DPST_AMT.toLocaleString()} 원` : "-"} className="text-right" />
+                  <input type="text" value={detail.DPST_AMT != null ? `${detail.DPST_AMT.toLocaleString()} 원` : "-"} readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>계약금</label>
-                  <input type="text" value={detail.CTRT_AMT != null ? `${detail.CTRT_AMT.toLocaleString()} 원` : "-"} className="text-right" />
+                  <input type="text" value={detail.CTRT_AMT != null ? `${detail.CTRT_AMT.toLocaleString()} 원` : "-"} readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>중도금</label>
-                  <input type="text" value={detail.MID_PAY_AMT != null ? `${detail.MID_PAY_AMT.toLocaleString()} 원` : "-"} className="text-right" />
+                  <input type="text" value={detail.MID_PAY_AMT != null ? `${detail.MID_PAY_AMT.toLocaleString()} 원` : "-"} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>잔금</label>
-                  <input type="text" value={detail.BAL_AMT != null ? `${detail.BAL_AMT.toLocaleString()} 원` : "-"} className="text-right" />
+                  <input type="text" value={detail.BAL_AMT != null ? `${detail.BAL_AMT.toLocaleString()} 원` : "-"} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>월세</label>
-                  <input type="text" value={detail.MTHLY_RENT_AMT != null ? `${detail.MTHLY_RENT_AMT.toLocaleString()} 원` : "-"} className="text-right font-bold text-primary-color" />
+                  <input type="text" value={detail.MTHLY_RENT_AMT != null ? `${detail.MTHLY_RENT_AMT.toLocaleString()} 원` : "-"} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
               </div>
             </div>
@@ -201,25 +213,25 @@ const CtrtDetail = () => {
                   <label>입주 예정일</label>
                   <input type="text" value={`${new Date(detail.MVIN_DT).toLocaleDateString('ko-KR', {
                     year: '2-digit', month: '2-digit', day: '2-digit'
-                  })}`} readOnly />
+                  })}`} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>퇴거일 (완료일)</label>
                   <input type="text" value={detail.MVOUT_DT ? `${new Date(detail.MVOUT_DT).toLocaleDateString('ko-KR', {
                     year: '2-digit', month: '2-digit', day: '2-digit'
-                  })}` : '-'} readOnly />
+                  })}` : '-'} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>임대인</label>
                   <input type="text" value={detail.RENTOR_NM
                     ? `${detail.RENTRO_NM}${detail.RENTOR_TELNO ? ` (${detail.RENTOR_TELNO})` : ''}`
-                    : '-'} readOnly />
+                    : '-'} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>대리인</label>
                   <input type="text" value={detail.AGNT_NM
                     ? `${detail.AGNT_NM}${detail.AGNT_TELNO ? ` (${detail.AGNT_TELNO})` : ''}`
-                    : '-'} readOnly />
+                    : '-'} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
               </div>
             </div>
