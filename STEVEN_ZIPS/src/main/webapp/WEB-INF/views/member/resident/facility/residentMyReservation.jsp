@@ -7,7 +7,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>내 예약내역</title>
+  <title>예약내역</title>
 
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
@@ -288,10 +288,10 @@
         <span>›</span>
         <a href="javascript:void(0);">생활지원서비스</a>
         <span>›</span>
-        <span class="cur">내 예약내역</span>
+        <span class="cur">예약내역</span>
       </div>
 
-      <h1 class="page-title">내 예약내역</h1>
+      <h1 class="page-title">예약내역</h1>
       <p class="page-desc">단지 내 공용시설 예약 정보를 조회합니다.</p>
 
       <form id="searchForm" method="get" action="${pageContext.request.contextPath}/resident/publicFacility/myReservation">
@@ -350,7 +350,7 @@
 
       <div class="pf-card">
         <div class="pf-card-hd">
-          <span>내 예약내역 <b>${pagingVO.totalRecord}</b>건</span>
+          <span>예약내역 <b>${pagingVO.totalRecord}</b>건</span>
         </div>
 
         <div class="pf-card-bd">

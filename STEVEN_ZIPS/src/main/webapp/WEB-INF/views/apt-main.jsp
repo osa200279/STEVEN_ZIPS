@@ -585,7 +585,7 @@ body.map-modal-open {
   </a>
 
   <!-- 시설예약 -->
-  <a href="${pageContext.request.contextPath}/resident/stats/custom" class="quick-menu-item">
+  <a href="${pageContext.request.contextPath}/resident/publicFacility/reservation" class="quick-menu-item">
     <svg class="qm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <rect x="3" y="4" width="18" height="18" rx="2"/>
       <line x1="16" y1="2" x2="16" y2="6"/>

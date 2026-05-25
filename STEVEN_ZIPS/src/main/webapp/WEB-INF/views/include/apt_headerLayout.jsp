@@ -82,7 +82,8 @@
                 <a href="/resident/service/car/${aptCmplexNo}">차량등록</a>
                 <a href="${pageContext.request.contextPath}/resident/service/visitor/${aptCmplexNo}">방문차량등록</a>
 <%--                <a href="${pageContext.request.contextPath}/resident/service/facility">편의시설예약</a>--%>
-                <a href="${pageContext.request.contextPath}/resident/publicFacility/reservation">편의시설예약</a>
+                <a href="${pageContext.request.contextPath}/resident/publicFacility/reservation/${apt.aptCmplexNo}">편의시설예약</a>
+                <a href="${pageContext.request.contextPath}/resident/publicFacility/myReservation/${apt.aptCmplexNo}">예약내역</a>
             </div>
         </div>
 
