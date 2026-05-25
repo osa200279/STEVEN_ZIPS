@@ -38,6 +38,12 @@ public interface IPublicFacilityReservationMapper {
     int selectDuplicateReservationCount(PublicFacilityReservationVO vo);
 
     /*
+     * 예약할 좌석번호로 시설 정보를 다시 조회합니다.
+     * 왜 사용? 화면에서 넘어온 시설명이 아니라 DB 기준으로 자동승인 여부를 판단하기 위해 사용합니다.
+     */
+    PublicFacilityReservationVO selectFacilityInfoByItemNo(PublicFacilityReservationVO vo);
+
+    /*
      * 입주민 - 예약 가능한 공용시설 종류 목록
      * 예: 단지독서실, 주민회의실, 피트니스센터
      */

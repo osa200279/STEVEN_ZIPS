@@ -6,6 +6,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" content="${_csrf.token}">
+    <meta name="_csrf_header" content="${_csrf.headerName}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${facility.cmnFacilityNm} 예약</title>
 
@@ -785,37 +787,60 @@
 
     /*
      * 예약 신청
-     * PENDING 상태로 저장되면 단지관리자 예약승인관리 화면에서 조회됨.
      */
     reserveBtn.addEventListener('click', function () {
         if (reserveBtn.disabled) {
             return;
         }
 
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
         const formData = new URLSearchParams();
 
+        /*
+         * rsvtDt란? 예약일.
+         * 왜 필요? FACILITY_HSTRY.RSVT_DT 컬럼에 저장하기 위해 필요합니다.
+         */
+        formData.append('rsvtDt', rsvtDtInput.value);
+
+        /*
+         * cmnFacilityItemNo란? 좌석/회의실 같은 세부시설 번호.
+         * 왜 필요? 어떤 좌석을 예약했는지 저장하기 위해 필요합니다.
+         */
         formData.append('cmnFacilityItemNo', selectedItemNo);
-        formData.append('cmnFacilityNm', cmnFacilityNm);
         formData.append('rsvtBgngDttm', selectedStartDttm);
         formData.append('rsvtEndDttm', selectedEndDttm);
         formData.append('purposeCn', purposeCn.value.trim());
 
         fetch(contextPath + '/resident/publicFacility/reservation', {
             method: 'POST',
+            headers: {
+                [csrfHeader]: csrfToken,
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            },
             body: formData
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('예약 처리 중 오류가 발생했습니다.');
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
                 }
                 return response.text();
             })
             .then(rsvtNo => {
-                alert('예약 신청이 완료되었습니다. 예약번호: ' + rsvtNo);
+                alert('예약 신청이 완료되었습니다.');
+
+                /*
+                 * 예약 후 입주민은 본인 예약내역으로 이동.
+                 * 관리자는 예약승인관리 화면에서 PENDING 예약을 확인합니다.
+                 */
                 location.href = contextPath + '/resident/publicFacility/myReservation';
             })
             .catch(error => {
-                alert(error.message);
+                console.error(error);
+                alert('예약 신청 중 오류가 발생했습니다.');
             });
     });
 

@@ -214,6 +214,21 @@
         AND RSVT_END_DTTM &gt; TO_DATE(#{rsvtBgngDttm}, 'YYYY-MM-DD HH24:MI')
     </select>
 
+    <select id="selectFacilityInfoByItemNo" resultMap="reservationMap">
+        SELECT
+        PF.CMN_FACILITY_NO,
+        PF.APT_CMPLEX_NO,
+        PF.CMN_FACILITY_NM,
+        PI.CMN_FACILITY_ITEM_NO,
+        PI.ITEM_NM,
+        PI.CMN_FACILITY_STTS_CD
+        FROM PUBLIC_ITEM PI
+        JOIN PUBLIC_FACILITY PF
+        ON PF.CMN_FACILITY_NO = PI.CMN_FACILITY_NO
+        WHERE PI.CMN_FACILITY_ITEM_NO = #{cmnFacilityItemNo}
+        AND PF.APT_CMPLEX_NO = #{aptCmplexNo}
+    </select>
+
     <insert id="insertReservation">
         INSERT INTO FACILITY_HSTRY (
         RSVT_NO, CMN_FACILITY_ITEM_NO, RSVT_DT, RSVT_BGNG_DTTM, RSVT_END_DTTM,

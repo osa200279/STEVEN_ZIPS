@@ -87,23 +87,35 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     @Override
     @Transactional
     public String reserve(PublicFacilityReservationVO vo) {
-        if (mapper.selectDuplicateReservationCount(vo) > 0) throw new IllegalStateException("이미 예약된 시간입니다.");
-        String rsvtNo = mapper.selectNextRsvtNo();
-        vo.setRsvtNo(rsvtNo);
+
         /*
-         * 예약 승인 정책
-         * - 단지독서실, 피트니스센터: 자동 승인
-         * - 주민회의실, 커뮤니티룸: 관리자 승인 필요
+         * DB 기준 시설정보 조회
+         * 왜 사용? 사용자가 화면에서 시설명을 조작해도 서버가 DB 기준으로 판단하기 위해 사용합니다.
          */
+        PublicFacilityReservationVO facilityInfo = mapper.selectFacilityInfoByItemNo(vo);
+
+        if (facilityInfo == null) {
+            throw new IllegalArgumentException("예약 가능한 시설 정보가 없습니다.");
+        }
+
         /*
-         * 자동승인 정책
-         * - 시설명에 회의실/커뮤니티룸이 포함되면 관리자 승인 필요
-         * - 그 외 독서실/피트니스센터는 자동 승인
-         *
-         * contains란? 문자열 안에 특정 단어가 들어있는지 확인하는 메서드입니다.
-         * 왜 사용? DB 시설명이 '주민회의실', '입주민 회의실'처럼 조금 달라도 처리하기 위해 사용합니다.
+         * 이미 예약된 시간인지 검사합니다.
          */
-        String facilityNm = vo.getCmnFacilityNm() == null ? "" : vo.getCmnFacilityNm();
+        if (mapper.selectDuplicateReservationCount(vo) > 0) {
+            throw new IllegalStateException("이미 예약된 시간입니다.");
+        }
+
+        vo.setRsvtNo(mapper.selectNextRsvtNo());
+        vo.setCmnFacilityNo(facilityInfo.getCmnFacilityNo());
+        vo.setCmnFacilityNm(facilityInfo.getCmnFacilityNm());
+
+        String facilityNm = facilityInfo.getCmnFacilityNm() == null ? "" : facilityInfo.getCmnFacilityNm();
+
+        /*
+         * 승인 정책
+         * - 회의실/커뮤니티룸: 관리자 승인 필요 → PENDING
+         * - 독서실/헬스장: 자동 승인 → APPROVED
+         */
         if (facilityNm.contains("회의실") || facilityNm.contains("커뮤니티룸")) {
             vo.setRsvtSttsCd("PENDING");
             vo.setAutoApproveYn("N");
@@ -111,17 +123,18 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
             vo.setRsvtSttsCd("APPROVED");
             vo.setAutoApproveYn("Y");
         }
+
         mapper.insertReservation(vo);
 
         /*
-         * 회의실은 승인대기 상태가 되면 다른 사람이 선택하지 못하도록
-         * PUBLIC_ITEM 상태를 REPAIR(점검중)로 변경합니다.
+         * 승인대기 예약도 다른 사람이 같은 시간에 중복 예약하지 못하도록
+         * FACILITY_HSTRY에서 PENDING 상태로 조회되게 합니다.
+         *
+         * 주의:
+         * PUBLIC_ITEM 자체를 REPAIR로 바꾸면 전체 시간대에서 좌석이 막힐 수 있으므로
+         * 시간대별 예약 여부는 FACILITY_HSTRY 기준으로 판단하는 게 더 안전합니다.
          */
-        if ("PENDING".equals(vo.getRsvtSttsCd())) {
-            mapper.updateItemStatusRepair(vo);
-        }
-
-        return rsvtNo;
+        return vo.getRsvtNo();
     }
 
     @Override

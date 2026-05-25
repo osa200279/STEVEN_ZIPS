@@ -201,6 +201,11 @@
            href="${pageContext.request.contextPath}/resident/publicFacility/reservation">
           편의시설예약
         </a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5
+                 ${fn:contains(pageContext.request.requestURI,'/resident/publicFacility/myReservation') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}"
+           href="${pageContext.request.contextPath}/resident/publicFacility/myReservation">
+          내 예약내역
+        </a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/service/car') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/service/car"/${apt.aptCmplexNo}>차량등록</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/service/visitor') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/service/visitor/${apt.aptCmplexNo}">방문차량등록</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/service/facility') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/service/facility/${apt.aptCmplexNo}">공용시설예약</a>
