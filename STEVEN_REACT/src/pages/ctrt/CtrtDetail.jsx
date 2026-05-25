@@ -78,7 +78,7 @@ const CtrtDetail = () => {
             <h3 className="compact-card-title">
               계약 기본 정보
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px' }}>
               <div className="compact-input-group">
                 <label>계약 번호</label>
                 <input type="text" value={detail.RENT_CTRT_NO} className="bg-gray-disabled" readOnly />
@@ -97,11 +97,19 @@ const CtrtDetail = () => {
                 <input type="text" value={detail.RENT_LSTG_NO} className="bg-gray-disabled" readOnly />
               </div>
               <div className="compact-input-group">
-                <label>담당자 (배정일)</label>
+                <label>담당자 번호</label>
                 <input type="text"
-                  value={`${detail.CTRT_MGR_USER_NM} (${new Date(detail.MGR_ASGN_DT).toLocaleDateString('ko-KR', {
-                    year: '2-digit', month: '2-digit', day: '2-digit'
-                  })})`} readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+                  value={`${detail.CTRT_MGR_USER_NO}`}
+                  name='CTRT_MGR_USER_NO'
+                  onChange={handleChange}
+                  readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+              </div>
+              <div className="compact-input-group">
+                <label>담당자 이름</label>
+                <input type="text"
+                  value={`${detail.CTRT_MGR_USER_NM}`}
+                  name='CTRT_MGR_USER_NM'
+                  className="bg-gray-disabled" readOnly />
               </div>
             </div>
           </div>
@@ -174,7 +182,7 @@ const CtrtDetail = () => {
 
             <div className="compact-card">
               <h3 className="compact-card-title">
-                계약 금액 정보
+                계약 금액 정보(원&#8361;)
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                 <div className="compact-input-group" >
@@ -183,23 +191,38 @@ const CtrtDetail = () => {
                 </div>
                 <div className="compact-input-group">
                   <label>보증금</label>
-                  <input type="text" value={detail.DPST_AMT != null ? `${detail.DPST_AMT.toLocaleString()} 원` : "-"} readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+                  <input type="text" value={detail.DPST_AMT != null ? `${detail.DPST_AMT.toLocaleString()}` : "-"}
+                    name='DPST_AMT'
+                    onChange={handleChange}
+                    readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>계약금</label>
-                  <input type="text" value={detail.CTRT_AMT != null ? `${detail.CTRT_AMT.toLocaleString()} 원` : "-"} readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+                  <input type="text" value={detail.CTRT_AMT != null ? `${detail.CTRT_AMT.toLocaleString()} ` : "-"}
+                    name='CTRT_AMT'
+                    onChange={handleChange}
+                    readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>중도금</label>
-                  <input type="text" value={detail.MID_PAY_AMT != null ? `${detail.MID_PAY_AMT.toLocaleString()} 원` : "-"} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+                  <input type="text" value={detail.MID_PAY_AMT != null ? `${detail.MID_PAY_AMT.toLocaleString()}` : "-"}
+                    name='MID_PAY_AMT'
+                    onChange={handleChange}
+                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>잔금</label>
-                  <input type="text" value={detail.BAL_AMT != null ? `${detail.BAL_AMT.toLocaleString()} 원` : "-"} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+                  <input type="text" value={detail.BAL_AMT != null ? `${detail.BAL_AMT.toLocaleString()}` : "-"}
+                    name='BAL_AMT'
+                    onChange={handleChange}
+                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>월세</label>
-                  <input type="text" value={detail.MTHLY_RENT_AMT != null ? `${detail.MTHLY_RENT_AMT.toLocaleString()} 원` : "-"} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+                  <input type="text" value={detail.MTHLY_RENT_AMT != null ? `${detail.MTHLY_RENT_AMT.toLocaleString()}` : "-"}
+                    name='MTHLY_RENT_AMT'
+                    onChange={handleChange}
+                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
               </div>
             </div>
@@ -219,7 +242,10 @@ const CtrtDetail = () => {
                   <label>퇴거일 (완료일)</label>
                   <input type="text" value={detail.MVOUT_DT ? `${new Date(detail.MVOUT_DT).toLocaleDateString('ko-KR', {
                     year: '2-digit', month: '2-digit', day: '2-digit'
-                  })}` : '-'} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+                  })}` : '-'}
+                    name='MVOUT_DT'
+                    onChange={handleChange}
+                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
                   <label>임대인</label>
