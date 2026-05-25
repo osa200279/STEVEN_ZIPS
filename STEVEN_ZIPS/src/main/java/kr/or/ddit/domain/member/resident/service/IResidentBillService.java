@@ -11,4 +11,6 @@ public interface IResidentBillService {
     public List<BillVO> selectMyBillList(String userNo, String hoNo, String billYm);
 
     public BillVO selectMyBillDetail(String userNo, String billNo);
+
+    List<BillVO> selectYearBillList(String hoNo, String billYear);
 }

@@ -21,4 +21,15 @@ public interface IResidentBillMapper {
                               @Param("billNo") String billNo);
 
     List<BillDetailVO> selectBillDetailList(@Param("billNo") String billNo);
+
+    /**
+     * 선택 세대의 연도별 관리비 고지서 목록 조회
+     * @param hoNo
+     * @param billYear
+     * @return 해당 연도 관리비 고지서 목록
+     */
+    List<BillVO> selectYearBillList(
+            @Param("hoNo") String hoNo,
+            @Param("billYear") String billYear
+    );
 }

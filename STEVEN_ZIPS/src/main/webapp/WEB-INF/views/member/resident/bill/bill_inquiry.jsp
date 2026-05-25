@@ -658,12 +658,17 @@
       return;
     }
 
-    const billYm = getBillYm();
+    const billYear = document.getElementById('billYear').value;
+
+    if (!billYear) {
+      showMessage('조회연도를 선택해 주세요.', 'warn');
+      return;
+    }
 
     try {
       const url = contextPath
-              + '/resident/bill/list?hoNo=' + encodeURIComponent(selectedHouse.hoNo)
-              + '&billYm=' + encodeURIComponent(billYm);
+              + '/resident/bill/year-list?hoNo=' + encodeURIComponent(selectedHouse.hoNo)
+              + '&billYear=' + encodeURIComponent(billYear);
 
       const response = await fetch(url);
 
@@ -681,14 +686,27 @@
       }
 
       currentBillList = result.list || [];
+
       renderBillHistory(currentBillList);
 
-      if (result.latestBill && result.latestBill.billNo) {
-        await loadMyBillDetail(result.latestBill.billNo);
-        showMessage(formatBillYm(billYm) + ' 관리비를 조회했습니다.', 'info');
+      if (currentBillList.length > 0) {
+        /*
+         * XML에서 ORDER BY B.BILL_YM DESC 처리했으므로
+         * 첫 번째 데이터가 해당 연도의 가장 최근 고지서이다.
+         */
+        await loadMyBillDetail(currentBillList[0].billNo);
+
+        showMessage(
+                billYear + '년 관리비 내역을 조회했습니다.',
+                'info'
+        );
       } else {
-        renderNoBillFound(billYm);
-        showMessage(formatBillYm(billYm) + '에 등록된 관리비 고지서가 없습니다.', 'warn');
+        renderNoYearBillFound(billYear);
+
+        showMessage(
+                billYear + '년에 등록된 관리비 고지서가 없습니다.',
+                'warn'
+        );
       }
 
     } catch (e) {
@@ -931,6 +949,27 @@
             .replaceAll('"', '&quot;')
             .replaceAll("'", '&#039;');
   }
+
+  function renderNoYearBillFound(billYear) {
+    document.getElementById('billHistoryList').innerHTML =
+            '<div class="empty panel">' + escapeHtml(billYear) + '년에 등록된 관리비 내역이 없습니다.</div>';
+
+    document.getElementById('detailTitle').textContent =
+            billYear + '년 관리비 상세';
+
+    document.getElementById('infoBillNo').textContent = '-';
+    document.getElementById('infoBillYm').textContent = '-';
+    document.getElementById('infoPblancDt').textContent = '-';
+    document.getElementById('infoDueDt').textContent = '-';
+    document.getElementById('infoStatus').textContent = '-';
+    document.getElementById('infoBillTotAmt').textContent = '0원';
+
+    document.getElementById('billDetailTbody').innerHTML =
+            '<tr><td colspan="3" class="empty">조회된 관리비 상세 내역이 없습니다.</td></tr>';
+
+    document.getElementById('detailTotalAmt').textContent = '0원';
+  }
+
 </script>
 
 </body>

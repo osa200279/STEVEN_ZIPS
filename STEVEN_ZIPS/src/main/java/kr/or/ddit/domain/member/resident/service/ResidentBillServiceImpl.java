@@ -53,4 +53,17 @@ public class ResidentBillServiceImpl implements IResidentBillService{
         return billVO;
     }
 
+    @Override
+    public List<BillVO> selectYearBillList(String hoNo, String billYear) {
+        if (hoNo == null || hoNo.isBlank()) {
+            throw new IllegalArgumentException("세대번호가 없습니다.");
+        }
+
+        if (billYear == null || !billYear.matches("\\d{4}")) {
+            throw new IllegalArgumentException("조회연도는 YYYY 형식이어야 합니다.");
+        }
+
+        return residentBillMapper.selectYearBillList(hoNo, billYear);
+    }
+
 }

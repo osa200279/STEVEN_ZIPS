@@ -131,6 +131,36 @@ public class ResidentBillController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 선택 세대의 연도별 관리비 고지서 목록 조회
+     * GET /resident/bill/year-list?hoNo=A12127003_7_1901&billYear=2026
+     */
+    @GetMapping("/year-list")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> selectYearBillList(
+            @RequestParam String hoNo,
+            @RequestParam String billYear
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            List<BillVO> billList = residentBillService.selectYearBillList(hoNo, billYear);
+
+            result.put("success", true);
+            result.put("list", billList);
+            result.put("billYear", billYear);
+            result.put("hoNo", hoNo);
+
+        } catch (Exception e) {
+            log.error("연도별 관리비 목록 조회 실패", e);
+
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
     // 납부안내
     @GetMapping("/guide")
     public String billGuide() {
