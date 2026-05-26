@@ -15,7 +15,7 @@ const ApplicantDetailModal = ({ isOpen, data, onClose }) => {
                         <X size={24} />
                     </button>
                 </div>
-                <hr />
+                <hr />  
                 <div>
                     <div><strong>아이디:</strong> {data.userId}</div>
                     <div><strong>이름:</strong> {data.userNm}</div>
@@ -30,7 +30,7 @@ const ApplicantDetailModal = ({ isOpen, data, onClose }) => {
                             const formattedDate = hasDate ? new Date(doc.mdfcnDt || doc.regDt).toLocaleDateString('sv-SE') : "미등록";
                             return (
                                 <div key={index}>
-                                    {index+1}.&nbsp;<a href={`http://localhost:8080/file/download/${doc.fileInfo?.googleId}`} rel='noopener noreferrer'>
+                                    {index+1}.&nbsp;<a href={`/file/download/${doc.fileInfo?.googleId}`} rel='noopener noreferrer'>
                                         [ {doc.mdfcnDt ? `수정일:  ${formattedDate}` : `등록일: ${formattedDate}`} ] {doc.sbmsnDocTyCd}: {doc.fileInfo?.fileOgName}
                                     </a>
                                     <br />

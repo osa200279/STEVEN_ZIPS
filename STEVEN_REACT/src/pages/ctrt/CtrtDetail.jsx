@@ -164,7 +164,7 @@ const CtrtDetail = () => {
                       return (
                         <div key={idx}>
                           <span className='text-small'>{idx + 1}.&nbsp;</span>
-                          <a href={`http://localhost:8080/file/download/${doc.googleId}`} rel='noopener noreferrer'>
+                          <a href={`/file/download/${doc.googleId}`} rel='noopener noreferrer'>
                             <span className='text-small'>{doc.fileOgName}</span>
                           </a>
                           <br />

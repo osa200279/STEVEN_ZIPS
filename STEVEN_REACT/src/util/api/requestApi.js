@@ -2,15 +2,18 @@ import axios from "axios";
 
 // 쿠키에서 토큰 꺼내기
 export const getCookie = (name) => {
-    const value = `; ${document.cookie}`;   // 쿠키 전체를 ; value 형식으로 포매팅
+    const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();  // 정상적인경우 길이가 2이고 쿠키가없거나 하면 길이가 1이다. 그 이상은 드문경우로 나오는 예외라 처리안했음
+    if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+    }
 };
 
 // 쿠키 삭제
 export const deleteCookie = (name) => {
-    document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0;`;    // 강제로 만료시간 과거로 설정해서 브라우저에서 삭제 유도
-}
+    document.cookie =
+        `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0;`;
+};
 
 /**
  * 1. const requestApi = axios.create(...) : 메모리에 requestApi라는 객체 생성
@@ -20,9 +23,10 @@ export const deleteCookie = (name) => {
  */
 // Axios 인스턴스 설정
 const requestApi = axios.create({
-    baseURL: 'http://localhost:8080',
+    // localhost 제거
+    baseURL: '/',
     withCredentials: true,
-})
+});
 
 // 요청 인터셉터(모든 요청에 JWT헤더 추가)
 requestApi.interceptors.request.use(
@@ -36,14 +40,16 @@ requestApi.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+// 응답 인터셉터
 requestApi.interceptors.response.use(
     (response) => response,
+/* 응답에러가 발생했을때, 404, 등등 */
     (error) => {
-        // 응답 에러가 발생했을 때 (예: 401, 403, 500 등)
         if (error.response && error.response.status === 401) {
             deleteCookie('JWT');
             alert("로그인 세션이 만료되었습니다. 다시 로그인 해주세요.");
-            window.location.href = "http://localhost:8080/login.do";
+            // localhost 제거
+            window.location.href = "/login.do";
         }
         return Promise.reject(error);
     }
