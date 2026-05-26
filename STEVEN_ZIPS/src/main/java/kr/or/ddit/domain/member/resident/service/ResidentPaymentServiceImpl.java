@@ -336,6 +336,19 @@ public class ResidentPaymentServiceImpl implements IResidentPaymentService{
         return result;
     }
 
+    @Override
+    public List<PaymentVO> selectReceiptList(String userNo, String billYear) {
+        if (userNo == null || userNo.isBlank()) {
+            throw new IllegalArgumentException("로그인 사용자 정보를 확인할 수 없습니다.");
+        }
+
+        if (billYear == null || !billYear.matches("\\d{4}")) {
+            throw new IllegalArgumentException("조회연도는 YYYY 형식이어야 합니다.");
+        }
+
+        return residentPaymentMapper.selectReceiptList(userNo, billYear);
+    }
+
     /* 결제 요청 파라미터 검증 */
     private void validatePrepareParameter(String billNo, String payMthdCd, String userNo) {
 

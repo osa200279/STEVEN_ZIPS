@@ -182,14 +182,19 @@ public class ResidentBillController {
     }
 
     // 자동이체신청
-    @GetMapping("/auto")
-    public String billAuto() {
-        return "member/resident/bill/bill_auto";
-    }
+//    @GetMapping("/auto")
+//    public String billAuto() {
+//        return "member/resident/bill/bill_auto";
+//    }
 
     // 납부영수증
-    @GetMapping("/receipt")
-    public String billReceipt() {
-        return "member/resident/bill/bill_receipt";
+    @GetMapping("/receipt/{aptCmplexNo}")
+    public String billReceipt(@AuthenticationPrincipal CustomUser customUser,
+                              @PathVariable String aptCmplexNo,
+                              Model model) {
+       AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
+
+       model.addAttribute("aptInfo", aptMainPageDTO);
+       return "member/resident/bill/bill_receipt";
     }
 }

@@ -175,4 +175,37 @@ public class ResidentPaymentController {
 
         return ResponseEntity.ok(result);
     }
+
+    /**
+     * 로그인 입주민의 연도별 납부영수증 목록 조회
+     *
+     * 예:
+     * GET /resident/payment/receipt/list?billYear=2026
+     */
+    @GetMapping("/receipt/list")
+    public ResponseEntity<Map<String, Object>> selectReceiptList(
+            @RequestParam String billYear,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            String userNo = customUser.getMember().getUserNo();
+
+            List<PaymentVO> receiptList =
+                    residentPaymentService.selectReceiptList(userNo, billYear);
+
+            result.put("success", true);
+            result.put("list", receiptList);
+            result.put("billYear", billYear);
+
+        } catch (Exception e) {
+            log.error("납부영수증 목록 조회 실패", e);
+
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
 }

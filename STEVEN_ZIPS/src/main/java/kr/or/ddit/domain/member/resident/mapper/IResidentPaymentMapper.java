@@ -35,4 +35,8 @@ public interface IResidentPaymentMapper {
     int updateBillPaid(String billNo, int payAmt);
 
     int updatePaymentCancel(PaymentVO paymentVO);
+
+    // 로그인 입주민의 연도별 납부완료 영수증 목록 조회
+    List<PaymentVO> selectReceiptList( @Param("userNo") String userNo,
+                                       @Param("billYear") String billYear);
 }

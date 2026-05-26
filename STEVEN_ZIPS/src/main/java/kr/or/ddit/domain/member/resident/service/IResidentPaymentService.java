@@ -43,4 +43,7 @@ public interface IResidentPaymentService {
     Map<String, Object> completePayment(String impUid, String ordId, String userNo);
 
     Map<String, Object> cancelPayment(String pymtNo, String ordId, String failRsnCn, String userNo);
+
+    // 로그인 입주민의 연도별 납부완료 영수증 목록 조회
+    List<PaymentVO> selectReceiptList(String userNo, String billYear);
 }

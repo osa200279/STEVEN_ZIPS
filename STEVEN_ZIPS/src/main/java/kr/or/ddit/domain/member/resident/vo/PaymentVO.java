@@ -39,6 +39,7 @@ public class PaymentVO {
     private int billTotAmt;         // 고지서 청구금액
     private String hoNo;            // 세대번호
     private String displayDongHo;   // 화면 표시용 세대 정보
+    private String userNm;          // 납부자명
     private String portOnePayMethod;// PortOne 결제 요청용 결제수단
     private boolean paymentSuccess; // PortOne 결제 완료 응답 상태
     private String paymentMessage;  // PortOne 결제 응답 메시지
