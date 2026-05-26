@@ -8,8 +8,8 @@ const CtrtDetail = () => {
   const [detail, setDetail] = useState(null);
   const navigate = useNavigate();
 
-  const isEditable = detail?.CTRT_STTS_CD === 'PENDING';
 
+  const isEditable = detail?.CTRT_STTS_CD === 'PENDING';
   const handleChange = (e) => {
     const { name, value } = e.target;
     setDetail(prev => ({ ...prev, [name]: value }));
@@ -85,12 +85,20 @@ const CtrtDetail = () => {
               </div>
               <div className="compact-input-group">
                 <label>계약 상태</label>
-                <input
-                  type="text"
-                  value={getCtrtSttsName(detail.CTRT_STTS_CD)}
-                  readOnly={!isEditable}
+                <select
+                  name="CTRT_STTS_CD"
+                  value={detail.CTRT_STTS_CD}
+                  onChange={handleChange}
+                  disabled={!isEditable}
                   className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
-                />
+                >
+                  <option value="PENDING">승인대기</option>
+                  <option value="APPROVED">승인</option>
+                  <option value="CANCEL">취소</option>
+                  <option value="REJECT">반려</option>
+                  <option value="TERMINATED">중도해지</option>
+                  <option value="EXPIRED">계약만료</option>
+                </select>
               </div>
               <div className="compact-input-group">
                 <label>임대매물번호</label>
@@ -147,15 +155,14 @@ const CtrtDetail = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div className="compact-input-group">
                   <label>특약 사항</label>
-
-                  {detail.SPCL_STPLTN_CN ?
-                    <textarea
-                      style={{ resize: 'none', height: '60px' }}
-                      value={detail.SPCL_STPLTN_CN}
-                      readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
-                    />
-                    : <input type="text" value="없음" readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-                  }
+                  <textarea
+                    name="SPCL_STPLTN_CN"
+                    style={{ resize: 'none', height: '60px' }}
+                    value={detail.SPCL_STPLTN_CN || ''} // null일 경우를 대비해 빈 문자열 처리
+                    onChange={handleChange}
+                    readOnly={!isEditable}
+                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
+                  />
                 </div>
                 <div className="compact-input-group">
                   <p className="upload-main-text" style={{ fontSize: '13px', margin: '0 0 2px 0' }}>첨부 서류 {docs?.length || 0}건</p>
@@ -198,10 +205,14 @@ const CtrtDetail = () => {
                 </div>
                 <div className="compact-input-group">
                   <label>계약금</label>
-                  <input type="text" value={detail.CTRT_AMT != null ? `${detail.CTRT_AMT.toLocaleString()} ` : "-"}
-                    name='CTRT_AMT'
+                  <input
+                    type="text"
+                    value={detail.CTRT_AMT != null ? detail.CTRT_AMT.toLocaleString() : "-"}
+                    name="CTRT_AMT"
                     onChange={handleChange}
-                    readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+                    readOnly={!isEditable}
+                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
+                  />
                 </div>
                 <div className="compact-input-group">
                   <label>중도금</label>
@@ -231,7 +242,7 @@ const CtrtDetail = () => {
               <h3 className="compact-card-title">
                 일정 및 관계자 정보
               </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
                 <div className="compact-input-group">
                   <label>입주 예정일</label>
                   <input type="text" value={`${new Date(detail.MVIN_DT).toLocaleDateString('ko-KR', {
@@ -239,7 +250,7 @@ const CtrtDetail = () => {
                   })}`} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
-                  <label>퇴거일 (완료일)</label>
+                  <label>퇴거 예정일</label>
                   <input type="text" value={detail.MVOUT_DT ? `${new Date(detail.MVOUT_DT).toLocaleDateString('ko-KR', {
                     year: '2-digit', month: '2-digit', day: '2-digit'
                   })}` : '-'}
@@ -248,17 +259,36 @@ const CtrtDetail = () => {
                     className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
                 <div className="compact-input-group">
-                  <label>임대인</label>
-                  <input type="text" value={detail.RENTOR_NM
-                    ? `${detail.RENTRO_NM}${detail.RENTOR_TELNO ? ` (${detail.RENTOR_TELNO})` : ''}`
-                    : '-'} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
+                  <label>퇴거일</label>
+                  <input type="text" value={detail.MVOUT_CMPL_DT ? `${new Date(detail.MVOUT_DT).toLocaleDateString('ko-KR', {
+                    year: '2-digit', month: '2-digit', day: '2-digit'
+                  })}` : '-'}
+                    name='MVOUT_DT'
+                    onChange={handleChange}
+                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
                 </div>
-                <div className="compact-input-group">
-                  <label>대리인</label>
-                  <input type="text" value={detail.AGNT_NM
-                    ? `${detail.AGNT_NM}${detail.AGNT_TELNO ? ` (${detail.AGNT_TELNO})` : ''}`
-                    : '-'} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                {detail.RENTOR_NM && (
+                  <div className="compact-input-group">
+                    <label>임대인</label>
+                    <input
+                      type="text"
+                      value={detail.RENTOR_NM}
+                      className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
+                    />
+                  </div>
+                )}
+                {detail.AGNT_NM && (
+                  <div className="compact-input-group">
+                    <label>대리인</label>
+                    <input
+                      type="text"
+                      value={`${detail.AGNT_NM}${detail.AGNT_TELNO ? ` (${detail.AGNT_TELNO})` : ''}`}
+                      className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
