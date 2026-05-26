@@ -46,6 +46,9 @@ public class UtilityProviderVO {
     /** 계약내용 */
     private String contCn;
 
+    /** 계약상태코드 */
+    private String contSttsCd;
+
     /** 계약시작일 */
     private String contBgngDt;
 

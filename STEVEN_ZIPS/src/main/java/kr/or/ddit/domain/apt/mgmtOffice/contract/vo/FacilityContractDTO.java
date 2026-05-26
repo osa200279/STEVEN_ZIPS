@@ -53,6 +53,9 @@ public class FacilityContractDTO extends FacilityContractVO {
     private String extCustNo;
     private String utilityRmrkCn;
 
+    /** 검침 설정용 검침종류 */
+    private String meterTyCd;
+
     /** 첨부파일 목록. ATTACH_FILE 조회 결과 Map 목록 */
     private List<Map<String, Object>> fileList;
 

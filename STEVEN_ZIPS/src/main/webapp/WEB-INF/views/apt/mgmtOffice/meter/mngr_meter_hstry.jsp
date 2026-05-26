@@ -4,6 +4,11 @@
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:url var="meterResetUrl" value="/manager/meter/hstry/${mgmtOfcNo}">
+    <c:if test="${not empty search.partnerNo}">
+        <c:param name="partnerNo" value="${search.partnerNo}" />
+    </c:if>
+</c:url>
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -259,6 +264,8 @@
                                 </div>
                                 <div class="panel-body">
                                     <form method="get" action="${ctx}/manager/meter/hstry/${mgmtOfcNo}" id="complexSearchForm">
+                                        <%-- 협력업체 상세에서 넘어온 partnerNo 필터를 검색 후에도 유지함 --%>
+                                        <input type="hidden" name="partnerNo" value="${complexSearch.partnerNo}">
                                         <div class="filter-grid complex-filter-grid">
                                             <div class="form-field">
                                                 <label class="field-label" for="complexUtilityProviderNo">공급/검침 업체</label>
@@ -315,7 +322,7 @@
                                                 <label class="field-label">&nbsp;</label>
                                                 <div class="filter-actions">
                                                     <button type="submit" class="btn btn-primary">검색</button>
-                                                    <a href="${ctx}/manager/meter/hstry/${mgmtOfcNo}" class="btn">초기화</a>
+                                                    <a href="${meterResetUrl}" class="btn">초기화</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -423,6 +430,8 @@
                                 </div>
                                 <div class="panel-body">
                                     <form method="get" action="${ctx}/manager/meter/hstry/${mgmtOfcNo}" id="facilitySearchForm">
+                                        <%-- 협력업체 상세에서 넘어온 partnerNo 필터를 검색 후에도 유지함 --%>
+                                        <input type="hidden" name="partnerNo" value="${search.partnerNo}">
                                         <div class="filter-grid">
                                             <div class="form-field">
                                                 <label class="field-label" for="filterUtilityProviderNo">공급/검침 업체</label>
@@ -479,7 +488,7 @@
                                                 <label class="field-label">&nbsp;</label>
                                                 <div class="filter-actions">
                                                     <button type="submit" class="btn btn-primary">검색</button>
-                                                    <a href="${ctx}/manager/meter/hstry/${mgmtOfcNo}" class="btn">초기화</a>
+                                                    <a href="${meterResetUrl}" class="btn">초기화</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -821,6 +830,14 @@
     </div>
 </div>
 
+
+<%-- 처리 결과 메시지 보관 영역
+     - JSP 값을 JavaScript 문자열에 직접 넣으면 줄바꿈/따옴표 때문에 SyntaxError가 날 수 있으므로 textarea에 보관한다. --%>
+<div id="meterFlashMessage" style="display:none;">
+    <textarea id="meterSuccessMessage"><c:out value="${successMessage}" /></textarea>
+    <textarea id="meterErrorMessage"><c:out value="${errorMessage}" /></textarea>
+</div>
+
 <script src="${ctx}/js/manager/manager-common.js"></script>
 <script>
     (function () {
@@ -831,10 +848,15 @@
 
         /* ============================================================
            처리 결과 알림
-           - 화면 상단 alert 박스 대신 기본 window.alert로 한 번만 안내한다.
+           - redirect 메시지는 hidden textarea에서 읽어 JS 문자열 깨짐을 방지한다.
         ============================================================ */
-        var successMessage = '<c:out value="${successMessage}" />';
-        var errorMessage = '<c:out value="${errorMessage}" />';
+        function readFlashMessage(messageId) {
+            var messageEl = document.getElementById(messageId);
+            return messageEl ? messageEl.value.trim() : '';
+        }
+
+        var successMessage = readFlashMessage('meterSuccessMessage');
+        var errorMessage = readFlashMessage('meterErrorMessage');
 
         if (successMessage) {
             alert(successMessage);
@@ -1112,14 +1134,17 @@
         function getMeterScope(row) {
             var meterCn = row && row.meterCn ? String(row.meterCn) : '';
 
-            // 신규 업로드는 Service에서 검침내용 앞에 붙이는 구분값을 우선 기준으로 사용함
+            // 신규 기준: METER_HSTRY.METER_SCOPE 컬럼값을 최우선으로 사용함
+            if (row && row.meterScope) return row.meterScope;
+
+            // 기존 더미 보정: scope 보정 전 데이터가 상세로 들어오는 경우만 예외적으로 판단함
             if (meterCn.indexOf('[단지검침]') === 0) return 'COMPLEX';
             if (meterCn.indexOf('[시설검침]') === 0) return 'FACILITY';
 
-            // 기존 더미 보정: 세대 검침 문구와 ho_no가 함께 있으면 단지별로 봄
-            if (row && row.hoNo && meterCn.indexOf('세대') > -1) return 'COMPLEX';
+            // 세대 검침도 계량기 시설번호를 가지므로 facilityNo보다 hoNo를 먼저 확인해야 함
+            if (row && row.hoNo) return 'COMPLEX';
+            if (row && row.facilityNo) return 'FACILITY';
 
-            // 그 외에는 시설 검침으로 처리함. 시설도 호 정보를 가질 수 있으므로 ho_no만으로 단지 검침을 판단하지 않음
             return 'FACILITY';
         }
 

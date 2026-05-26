@@ -75,9 +75,11 @@
         /* ── 필터 ── */
         #contractPage .filter-grid {
             display:grid;
-            grid-template-columns:1fr 1fr 1.5fr 1.5fr minmax(260px,2fr) auto;
-            gap:8px 12px; align-items:end;
+            /* 검색/초기화가 잘리지 않도록 입력 최소 폭은 낮추고, 버튼 영역은 실제 버튼 2개 폭보다 넉넉하게 확보한다. */
+            grid-template-columns:minmax(95px,.8fr) minmax(110px,.85fr) minmax(230px,1.35fr) minmax(240px,1.45fr) minmax(280px,1.8fr) 150px;
+            gap:8px 8px; align-items:end;
         }
+        #contractPage .filter-grid .form-field { min-width:0; overflow:visible; }
         #contractPage .field-label {
             display:block; margin-bottom:5px;
             font-size:11px; font-weight:800; color:var(--text-sec);
@@ -101,13 +103,15 @@
             align-items:center; gap:5px;
         }
         #contractPage .date-filter-sep { color:#9ca3af; font-size:12px; text-align:center; }
+        #contractPage .date-range-inputs .form-input { min-width:0; }
         #contractPage .search-wrap { position:relative; }
         #contractPage .search-wrap .material-symbols-rounded {
             position:absolute; left:9px; top:50%; transform:translateY(-50%);
             font-size:15px; color:#9caa9e; pointer-events:none;
         }
         #contractPage .search-wrap input { padding-left:30px; }
-        #contractPage .filter-actions { display:flex; justify-content:flex-end; gap:7px; white-space:nowrap; }
+        #contractPage .filter-actions { display:flex; align-items:center; justify-content:flex-end; gap:6px; width:150px; height:32px; white-space:nowrap; overflow:visible; }
+        #contractPage .filter-actions .btn { flex:0 0 68px; min-width:68px; padding:0 8px; box-sizing:border-box; }
 
         /* ── 현황 카드 ── */
         #contractPage .contract-summary-row {
@@ -139,17 +143,31 @@
             flex-shrink:0;
         }
         #contractPage .contract-summary-card .summary-icon .material-symbols-rounded { font-size:20px; }
+        #contractPage .contract-summary-card > div:last-child {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            flex:1;
+            min-width:0;
+        }
         #contractPage .contract-summary-card .summary-label {
-            margin-bottom:2px;
+            margin-bottom:0;
             font-size:11px;
             font-weight:700;
             color:#6b7a6e;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
         }
         #contractPage .contract-summary-card .summary-value {
+            flex-shrink:0;
+            min-width:34px;
             font-size:22px;
             font-weight:800;
             color:var(--text-head);
             line-height:1;
+            text-align:right;
         }
         #contractPage .contract-summary-card.primary {
             background:var(--accent);
@@ -161,6 +179,12 @@
         }
         #contractPage .contract-summary-card.primary .summary-label { color:rgba(255,255,255,.72); }
         #contractPage .contract-summary-card.primary .summary-value { color:#fff; }
+
+        /* 30일 이내 만료예정은 전체 배경을 빨갛게 채우지 않고, 아이콘/숫자만 차분한 경고색으로 표시한다. */
+        #contractPage .contract-summary-card.warning { border-color:#f3c7c7; }
+        #contractPage .contract-summary-card.warning .summary-icon { background:#fbeaea; color:#b42318; }
+        #contractPage .contract-summary-card.warning .summary-label { color:#7f1d1d; font-weight:800; }
+        #contractPage .contract-summary-card.warning .summary-value { color:#b42318; }
 
         /* ── 목록 헤더 ── */
         #contractPage .list-count {
@@ -191,7 +215,7 @@
         #contractPage .tbl td {
             height:43px; padding:6px 8px;
             border-bottom:1px solid #eef1f3;
-            color:#243027; font-size:12px;
+            color:#243027; font-size:12px; font-weight:400;
             text-align:center; vertical-align:middle;
             white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
         }
@@ -212,18 +236,101 @@
             padding-right:6px;
         }
 
-        #contractPage .mono { font-family:'Consolas','SF Mono',monospace; font-size:11px; color:#66736a; }
-        #contractPage .contract-name { font-weight:800; color:#1f2d23; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        #contractPage .contract-sub { margin-top:2px; font-family:'Consolas','SF Mono',monospace; font-size:11px; color:#66736a; }
+        /* 목록 그리드 본문은 굵기/글씨체를 통일한다. */
+        #contractPage .tbl td,
+        #contractPage .tbl td .mono,
+        #contractPage .tbl td .contract-name,
+        #contractPage .tbl td .contract-sub,
+        #contractPage .tbl td .partner-name,
+        #contractPage .tbl td .badge,
+        #contractPage .tbl td .btn {
+            font-family:'Noto Sans KR',sans-serif;
+            font-weight:400;
+        }
+        #contractPage .mono { font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:400; color:#66736a; }
+        #contractPage .contract-name { font-weight:400; color:#1f2d23; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #contractPage .contract-sub { margin-top:2px; font-family:'Noto Sans KR',sans-serif; font-size:11px; font-weight:400; color:#66736a; }
         #contractPage .partner-cell { padding-left:12px !important; }
-        #contractPage .partner-name { font-weight:700; color:#243027; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #contractPage .partner-name { font-weight:400; color:#243027; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         #contractPage .grid-actions {
             display:inline-flex;
             align-items:center;
             justify-content:center;
-            gap:5px;
+            gap:6px;
             width:100%;
             white-space:nowrap;
+        }
+        #contractPage .btn-detail {
+            border-color:#d7dce2;
+            background:#fff;
+            color:#39443d;
+        }
+        #contractPage .btn-detail:hover {
+            background:#f4f7f4;
+        }
+        #contractPage .btn-edit {
+            border-color:var(--accent);
+            background:var(--accent);
+            color:#fff;
+        }
+        #contractPage .btn-edit:hover {
+            border-color:var(--accent-hover);
+            background:var(--accent-hover);
+            color:#fff;
+        }
+        #contractPage .btn-term {
+            border-color:#c2410c;
+            background:#fff7ed;
+            color:#9a3412;
+        }
+        #contractPage .btn-term:hover {
+            border-color:#9a3412;
+            background:#ffedd5;
+            color:#7c2d12;
+        }
+        #contractPage .btn-term.is-disabled {
+            opacity:.45;
+            cursor:not-allowed;
+            pointer-events:none;
+        }
+        /* 관리 버튼 글씨는 목록 본문 통일 규칙보다 우선 적용한다. */
+        #contractPage .tbl td.col-action .grid-actions .btn,
+        #contractPage .tbl td.col-action .grid-actions .btn-detail,
+        #contractPage .tbl td.col-action .grid-actions .btn-edit,
+        #contractPage .tbl td.col-action .grid-actions .btn-term {
+            font-weight:800 !important;
+        }
+
+        /* 계약기간은 컬럼 폭을 줄이기 위해 두 줄로 표시하고, 계약명 영역을 더 확보한다. */
+        #contractPage .contract-period {
+            white-space:normal;
+            line-height:1.55;
+            font-size:12px;
+            letter-spacing:0;
+        }
+        #contractPage .contract-period .period-sep {
+            margin-right:3px;
+            color:#9ca3af;
+        }
+
+        /* 상세 협력업체는 한 줄로 유지하고, 업체번호만 괄호형 보조 텍스트로 구분한다. */
+        #contractPage .detail-partner-inline {
+            display:inline-flex;
+            align-items:baseline;
+            gap:6px;
+            max-width:100%;
+            white-space:nowrap;
+        }
+        #contractPage .detail-partner-name {
+            color:#1f2d23;
+            font-size:12px;
+            font-weight:400;
+        }
+        #contractPage .detail-partner-no {
+            color:#9ca3af;
+            font-size:11px;
+            font-weight:400;
+            line-height:1.3;
         }
 
         /* ── 배지 ── */
@@ -316,8 +423,9 @@
         #contractPage .file-action-group { display:flex; justify-content:center; gap:6px; }
         #contractPage .file-action-group .btn[disabled] { opacity:.45; cursor:not-allowed; }
 
-        @media(max-width:1200px) {
+        @media(max-width:1350px) {
             #contractPage .filter-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+            #contractPage .filter-actions { width:auto; justify-content:flex-start; }
         }
         @media(max-width:760px) {
             #contractPage .contract-summary-row { grid-template-columns:1fr 1fr; }
@@ -350,7 +458,6 @@
 
                 <%-- 계약 현황 카드
                      - 최종값은 Controller에서 contractSummary로 내려주는 것을 기준으로 사용
-                     - DB 연결 전 화면 확인을 위해 contractSummary가 없으면 샘플값을 표시
                 --%>
                 <div class="contract-summary-row">
                     <div class="contract-summary-card primary">
@@ -362,7 +469,6 @@
                                     <c:when test="${not empty contractSummary.totalCnt}">
                                         <c:out value="${contractSummary.totalCnt}"/>
                                     </c:when>
-                                    <c:when test="${empty contractList}">1</c:when>
                                     <c:otherwise>
                                         <c:out value="${fn:length(contractList)}"/>
                                     </c:otherwise>
@@ -380,17 +486,16 @@
                                     <c:when test="${not empty contractSummary.activeCnt}">
                                         <c:out value="${contractSummary.activeCnt}"/>
                                     </c:when>
-                                    <c:when test="${empty contractList}">1</c:when>
                                     <c:otherwise>0</c:otherwise>
                                 </c:choose>
                             </div>
                         </div>
                     </div>
 
-                    <div class="contract-summary-card">
+                    <div class="contract-summary-card warning">
                         <div class="summary-icon"><span class="material-symbols-rounded">event_upcoming</span></div>
                         <div>
-                            <div class="summary-label">만료 예정</div>
+                            <div class="summary-label">30일 이내 만료예정</div>
                             <div class="summary-value">
                                 <c:choose>
                                     <c:when test="${not empty contractSummary.expireSoonCnt}">
@@ -428,6 +533,8 @@
 
                     <div class="panel-body">
                         <form method="get" action="${ctx}/manager/facility/contract/list/${mgmtOfcNo}" id="searchForm">
+                            <%-- 협력업체 상세에서 넘어온 업체 필터 유지 --%>
+                            <input type="hidden" name="partnerNo" value="${fn:escapeXml(search.partnerNo)}">
                             <div class="filter-grid">
                                 <div class="form-field">
                                     <label class="field-label" for="filterContTyCd">계약유형</label>
@@ -440,31 +547,31 @@
                                 </div>
 
                                 <div class="form-field">
-                                    <label class="field-label" for="filterContTargetCd">대상구분</label>
-                                    <select class="form-select" id="filterContTargetCd" name="contTargetCd">
+                                    <label class="field-label">계약상태</label>
+                                    <select class="form-select" id="filterContSttsCd" name="contSttsCd">
                                         <option value="">전체</option>
-                                        <option value="FACILITY" <c:if test="${search.contTargetCd eq 'FACILITY'}">selected</c:if>>시설</option>
-                                        <option value="COMMON"   <c:if test="${search.contTargetCd eq 'COMMON'}">selected</c:if>>단지공통</option>
-                                        <option value="METER"    <c:if test="${search.contTargetCd eq 'METER'}">selected</c:if>>검침</option>
-                                        <option value="ETC"      <c:if test="${search.contTargetCd eq 'ETC'}">selected</c:if>>기타</option>
+                                        <option value="DRAFT"  <c:if test="${search.contSttsCd eq 'DRAFT'}">selected</c:if>>작성중</option>
+                                        <option value="ACTIVE" <c:if test="${search.contSttsCd eq 'ACTIVE'}">selected</c:if>>진행중</option>
+                                        <option value="END"    <c:if test="${search.contSttsCd eq 'END'}">selected</c:if>>종료</option>
+                                        <option value="TERM"   <c:if test="${search.contSttsCd eq 'TERM'}">selected</c:if>>해지</option>
                                     </select>
                                 </div>
 
                                 <div class="form-field">
-                                    <label class="field-label">계약시작일</label>
+                                    <label class="field-label">계약기간</label>
                                     <div class="date-range-inputs">
-                                        <input type="date" class="form-input" id="filterStartDt" name="startDt" value="${search.startDt}">
+                                        <input type="date" class="form-input" id="filterPeriodStartDt" name="periodStartDt" value="${search.periodStartDt}">
                                         <span class="date-filter-sep">~</span>
-                                        <input type="date" class="form-input" id="filterEndDt" name="endDt" value="${search.endDt}">
+                                        <input type="date" class="form-input" id="filterPeriodEndDt" name="periodEndDt" value="${search.periodEndDt}">
                                     </div>
                                 </div>
 
                                 <div class="form-field">
-                                    <label class="field-label">계약종료일</label>
+                                    <label class="field-label">계약금액</label>
                                     <div class="date-range-inputs">
-                                        <input type="date" class="form-input" id="filterEndStartDt" name="endStartDt" value="${search.endStartDt}">
+                                        <input type="number" class="form-input" id="filterMinContAmt" name="minContAmt" value="${search.minContAmt}" min="0" placeholder="최소금액">
                                         <span class="date-filter-sep">~</span>
-                                        <input type="date" class="form-input" id="filterEndEndDt" name="endEndDt" value="${search.endEndDt}">
+                                        <input type="number" class="form-input" id="filterMaxContAmt" name="maxContAmt" value="${search.maxContAmt}" min="0" placeholder="최대금액">
                                     </div>
                                 </div>
 
@@ -473,7 +580,7 @@
                                     <div class="search-wrap">
                                         <span class="material-symbols-rounded">search</span>
                                         <input type="text" class="form-input" id="filterKeyword" name="keyword"
-                                               value="${fn:escapeXml(search.keyword)}" placeholder="계약명, 업체명, 시설명 검색">
+                                               value="${fn:escapeXml(search.keyword)}" placeholder="계약명/번호, 업체명, 대상 검색">
                                     </div>
                                 </div>
 
@@ -498,11 +605,14 @@
                             <span class="result-desc">시설 · 공사 · 용역 · 검침 계약</span>
                         </div>
 
-                        <div class="list-head-right">
-                            <a class="btn btn-primary" href="${ctx}/manager/facility/contract/form/${mgmtOfcNo}">
-                                <span class="material-symbols-rounded">add</span>계약 등록
-                            </a>
-                        </div>
+                        <%-- ADMIN은 조회 전용이므로 계약 등록 버튼을 숨긴다. --%>
+                        <sec:authorize access="!hasRole('ADMIN')">
+                            <div class="list-head-right">
+                                <a class="btn btn-primary" href="${ctx}/manager/facility/contract/form/${mgmtOfcNo}">
+                                    <span class="material-symbols-rounded">add</span>계약 등록
+                                </a>
+                            </div>
+                        </sec:authorize>
                     </div>
 
                     <div class="table-wrap">
@@ -510,14 +620,14 @@
                             <colgroup>
                                 <col style="width:5%">
                                 <col style="width:10%">
-                                <col style="width:14%">
+                                <col style="width:16%">
                                 <col style="width:8%">
-                                <col style="width:8%">
-                                <col style="width:15%">
                                 <col style="width:13%">
-                                <col style="width:10%">
-                                <col style="width:9%">
+                                <col style="width:11%">
                                 <col style="width:8%">
+                                <col style="width:7%">
+                                <col style="width:10%">
+                                <col style="width:12%">
                             </colgroup>
 
                             <thead>
@@ -526,10 +636,10 @@
                                 <th>계약번호</th>
                                 <th class="td-left">계약명</th>
                                 <th>계약유형</th>
-                                <th>대상구분</th>
                                 <th class="td-left">대상</th>
                                 <th class="td-left">협력업체</th>
                                 <th class="col-cont-amt">계약금액</th>
+                                <th>계약상태</th>
                                 <th>계약기간</th>
                                 <th>관리</th>
                             </tr>
@@ -552,14 +662,15 @@
                                             <c:when test="${contract.contTyCd eq 'ETC'}"><c:set var="contTyText" value="기타"/><c:set var="contTyBadge" value="badge-gray"/></c:when>
                                         </c:choose>
 
-                                        <%-- 대상구분 표시값 --%>
-                                        <c:set var="targetText" value="${contract.contTargetCd}" />
-                                        <c:set var="targetBadge" value="badge-gray" />
+                                        <%-- 계약상태 표시값 --%>
+                                        <c:set var="contSttsText" value="${contract.contSttsCd}" />
+                                        <c:set var="contSttsBadge" value="badge-gray" />
                                         <c:choose>
-                                            <c:when test="${contract.contTargetCd eq 'FACILITY'}"><c:set var="targetText" value="시설"/><c:set var="targetBadge" value="badge-green"/></c:when>
-                                            <c:when test="${contract.contTargetCd eq 'COMMON'}"><c:set var="targetText" value="단지공통"/><c:set var="targetBadge" value="badge-blue"/></c:when>
-                                            <c:when test="${contract.contTargetCd eq 'METER'}"><c:set var="targetText" value="검침"/><c:set var="targetBadge" value="badge-yellow"/></c:when>
-                                            <c:when test="${contract.contTargetCd eq 'ETC'}"><c:set var="targetText" value="기타"/><c:set var="targetBadge" value="badge-gray"/></c:when>
+                                            <c:when test="${contract.contSttsCd eq 'DRAFT'}"><c:set var="contSttsText" value="작성중"/><c:set var="contSttsBadge" value="badge-gray"/></c:when>
+                                            <c:when test="${contract.contSttsCd eq 'ACTIVE'}"><c:set var="contSttsText" value="진행중"/><c:set var="contSttsBadge" value="badge-green"/></c:when>
+                                            <c:when test="${contract.contSttsCd eq 'END'}"><c:set var="contSttsText" value="종료"/><c:set var="contSttsBadge" value="badge-blue"/></c:when>
+                                            <c:when test="${contract.contSttsCd eq 'TERM'}"><c:set var="contSttsText" value="해지"/><c:set var="contSttsBadge" value="badge-orange"/></c:when>
+                                            <c:when test="${empty contract.contSttsCd}"><c:set var="contSttsText" value="-"/><c:set var="contSttsBadge" value="badge-gray"/></c:when>
                                         </c:choose>
 
                                         <tr>
@@ -572,8 +683,6 @@
                                             </td>
 
                                             <td><span class="badge ${contTyBadge}">${contTyText}</span></td>
-
-                                            <td><span class="badge ${targetBadge}">${targetText}</span></td>
 
                                             <td class="td-left">
                                                 <c:choose>
@@ -596,32 +705,49 @@
                                             </td>
 
                                             <td class="td-left partner-cell">
+                                                    <%-- 목록에서는 협력업체 번호를 숨기고 업체명만 표시한다. 업체번호는 상세 모달에서 보조 텍스트로 확인한다. --%>
                                                 <div class="partner-name"><c:out value="${contract.partnerNm}"/></div>
-                                                <div class="mono"><c:out value="${contract.partnerNo}"/></div>
                                             </td>
 
                                             <td class="td-right col-cont-amt">
                                                 <fmt:formatNumber value="${contract.contAmt}" pattern="#,###"/>원
                                             </td>
 
-                                            <td class="mono">
-                                                    <%-- Date 타입을 화면 표시용 날짜 형식으로 변환 --%>
-                                                <fmt:formatDate value="${contract.contBgngDt}" pattern="yyyy.MM.dd"/><br>
+                                            <td><span class="badge ${contSttsBadge}">${contSttsText}</span></td>
 
-                                                ~ <c:choose>
-                                                <c:when test="${empty contract.contEndDt}">
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <fmt:formatDate value="${contract.contEndDt}" pattern="yyyy.MM.dd"/>
-                                                </c:otherwise>
-                                            </c:choose>
+                                            <td class="mono contract-period">
+                                                    <%-- Date 타입을 화면 표시용 날짜 형식으로 변환하고 두 줄로 표시한다. --%>
+                                                <fmt:formatDate value="${contract.contBgngDt}" pattern="yyyy.MM.dd"/><br>
+                                                <span class="period-sep">~</span>
+                                                <c:choose>
+                                                    <c:when test="${empty contract.contEndDt}">
+                                                        미정
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <fmt:formatDate value="${contract.contEndDt}" pattern="yyyy.MM.dd"/>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </td>
 
 
                                             <td class="col-action">
                                                 <div class="grid-actions">
-                                                    <button type="button" class="btn btn-xs" data-detail-cont-no="${contract.contNo}">상세</button>
-                                                    <a class="btn btn-xs" href="${ctx}/manager/facility/contract/form/${mgmtOfcNo}/${contract.contNo}">수정</a>
+                                                        <%-- 상세는 ADMIN/MNGR 모두 조회 가능하다. --%>
+                                                    <button type="button" class="btn btn-xs btn-detail" data-detail-cont-no="${contract.contNo}">상세</button>
+
+                                                        <%-- ADMIN은 조회 전용이므로 수정/해지 버튼을 숨긴다. --%>
+                                                    <sec:authorize access="!hasRole('ADMIN')">
+                                                        <a class="btn btn-xs btn-edit" href="${ctx}/manager/facility/contract/form/${mgmtOfcNo}/${contract.contNo}">수정</a>
+                                                        <c:choose>
+                                                            <c:when test="${contract.contSttsCd eq 'ACTIVE'}">
+                                                                <%-- 해지는 목록에서 즉시 처리하지 않고 해지 모드 수정 화면으로 이동시킨다. --%>
+                                                                <a class="btn btn-xs btn-term" href="${ctx}/manager/facility/contract/form/${mgmtOfcNo}/${contract.contNo}?mode=terminate">해지</a>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="btn btn-xs btn-term is-disabled" title="진행중 계약만 해지 처리할 수 있습니다.">해지</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </sec:authorize>
                                                 </div>
                                             </td>
                                         </tr>
@@ -629,28 +755,8 @@
                                 </c:when>
 
                                 <c:otherwise>
-                                    <%-- 화면 확인용 샘플 데이터 : DB 연결 후 제거 가능 --%>
                                     <tr>
-                                        <td class="mono">1</td>
-                                        <td class="mono">CONT_TEST_001</td>
-                                        <td class="td-left">
-                                            <div class="contract-name">승강기 정기 유지보수 계약</div>
-                                        </td>
-                                        <td><span class="badge badge-green">유지보수</span></td>
-                                        <td><span class="badge badge-green">시설</span></td>
-                                        <td class="td-left">1호기 승강기 외 1건</td>
-                                        <td class="td-left partner-cell">
-                                            <div class="partner-name">SH승강기관리</div>
-                                            <div class="mono">PTR3002</div>
-                                        </td>
-                                        <td class="td-right col-cont-amt">3,000,000원</td>
-                                        <td class="mono">2026.05.20<br>~ 미정</td>
-                                        <td class="col-action">
-                                            <div class="grid-actions">
-                                                <button type="button" class="btn btn-xs" data-detail-cont-no="CONT_TEST_001">상세</button>
-                                                <a class="btn btn-xs" href="${ctx}/manager/facility/contract/form/${mgmtOfcNo}/CONT_TEST_001">수정</a>
-                                            </div>
-                                        </td>
+                                        <td colspan="10" class="empty-cell">조회된 계약이 없습니다.</td>
                                     </tr>
                                 </c:otherwise>
                             </c:choose>
@@ -752,31 +858,12 @@
             ETC: '기타'
         };
 
-        /* 화면 확인용 샘플 상세 데이터 : DB 상세 API 연결 후 제거 가능 */
-        var sampleContractMap = {
-            CONT_TEST_001: {
-                contNo: 'CONT_TEST_001',
-                contNm: '승강기 정기 유지보수 계약',
-                contTyCd: 'MAINT',
-                contTargetCd: 'FACILITY',
-                partnerNo: 'PTR3002',
-                partnerNm: 'SH승강기관리',
-                bidTyCd: 'PRIVATE',
-                contAmt: 3000000,
-                contDt: '2026.05.20',
-                contBgngDt: '2026.05.20',
-                contEndDt: '',
-                pymtDt: '2026.06.10',
-                contCn: '승강기 1호기, 2호기 정기 유지보수 계약입니다. 월 1회 정기점검과 긴급 출동 대응을 포함합니다.',
-                rmrkCn: '화면 확인용 샘플 데이터입니다. DB 연결 후 삭제하세요.',
-                targetFacilityList: [
-                    { facilityNo: 'FAC1001', facilityNm: '1호기 승강기', facilityTyCd: 'ELV', locCn: '101동 승강기홀' },
-                    { facilityNo: 'FAC3001', facilityNm: '2호기 승강기', facilityTyCd: 'ELV', locCn: '102동 승강기홀' }
-                ],
-                fileList: [
-                    { fileGroupNo: '999', fileSaveUuid: 'sample-contract.pdf', fileOgName: '승강기_유지보수_계약서.pdf', fileSize: 245760, fileExt: 'pdf', mimeType: 'application/pdf' }
-                ]
-            }
+        /* 입찰유형 표시명 */
+        var bidTyMap = {
+            GEN: '일반경쟁입찰',
+            LIM: '제한경쟁입찰',
+            SEL: '지명경쟁입찰',
+            PRT: '수의계약'
         };
 
         /* ============================================================
@@ -815,33 +902,29 @@
         ============================================================ */
         async function openDetailModal(contNo) {
             try {
-                /* 화면 확인용 샘플은 서버 요청 없이 상세 표시 */
-                var contract = sampleContractMap[contNo];
+                /* 실제 데이터는 상세 API에서만 조회한다. */
+                var res = await requestJson(contractConfig.detailUrl + encodeURIComponent(contNo));
 
-                /* 실제 데이터는 상세 API 조회 */
-                if (!contract) {
-                    var res = await requestJson(contractConfig.detailUrl + encodeURIComponent(contNo));
-
-                    if (!res.success) {
-                        alertMessage(res.message || '계약 정보를 조회하지 못했습니다.');
-                        return;
-                    }
-
-                    contract = res.contract || {};
+                if (!res.success) {
+                    alertMessage(res.message || '계약 정보를 조회하지 못했습니다.');
+                    return;
                 }
+
+                var contract = res.contract || {};
 
                 /* 상세 기본정보 표시 */
                 setText('detailContNo', contract.contNo);
                 setText('detailContNm', contract.contNm);
                 setText('detailContTyCd', contract.contTyNm || contTyMap[contract.contTyCd] || contract.contTyCd);
                 setText('detailContTargetCd', targetMap[contract.contTargetCd] || contract.contTargetCd);
-                setText('detailBidTyCd', contract.bidTyCd);
+                setText('detailBidTyCd', contract.bidTyNm || bidTyMap[contract.bidTyCd] || contract.bidTyCd);
                 setText('detailContAmt', formatMoney(contract.contAmt));
                 /* 상세 날짜는 서버 Date/문자열 형식이 섞여도 yyyy.MM.dd로 통일한다. */
                 setText('detailContDt', formatDateText(contract.contDt));
                 setText('detailPymtDt', formatDateText(contract.pymtDt));
                 setText('detailContPeriod', formatDateText(contract.contBgngDt) + ' ~ ' + (formatDateText(contract.contEndDt) || '미정'));
-                setText('detailPartner', empty(contract.partnerNm) + ' (' + empty(contract.partnerNo) + ')');
+                /* 협력업체명과 업체번호를 분리 표시한다. 업체번호는 옅은 보조 텍스트로만 보여준다. */
+                renderDetailPartner(contract.partnerNm, contract.partnerNo);
                 setText('detailContCn', contract.contCn);
                 setText('detailRmrkCn', contract.rmrkCn);
 
@@ -858,6 +941,31 @@
             } catch (e) {
                 alertMessage(e.message || '계약 정보를 조회하지 못했습니다.');
             }
+        }
+
+        /* ============================================================
+           상세 협력업체 렌더링
+           - 업체명은 기본 텍스트
+           - 업체번호는 상세 확인용 보조 텍스트로 옅게 표시
+        ============================================================ */
+        function renderDetailPartner(partnerNm, partnerNo) {
+            var element = document.getElementById('detailPartner');
+
+            if (!element) return;
+
+            var html = '';
+
+            /* 상세 행 높이가 늘어나지 않도록 업체명과 업체번호를 한 줄로 묶는다. */
+            html += '<span class="detail-partner-inline">';
+            html += '<span class="detail-partner-name">' + escapeHtml(partnerNm || '-') + '</span>';
+
+            if (partnerNo) {
+                html += '<span class="detail-partner-no">(업체번호 ' + escapeHtml(partnerNo) + ')</span>';
+            }
+
+            html += '</span>';
+
+            element.innerHTML = html;
         }
 
         /* ============================================================
@@ -905,9 +1013,9 @@
             targetList.forEach(function (facility) {
                 html += '      <tr>';
                 html += '          <td class="mono">' + escapeHtml(facility.facilityNo) + '</td>';
-                html += '          <td class="td-left">' + escapeHtml(facility.facilityNm) + '</td>';
-                html += '          <td>' + escapeHtml(facility.facilityTyCd) + '</td>';
-                html += '          <td class="td-left">' + escapeHtml(facility.locCn || '위치 미등록') + '</td>';
+                html += '          <td>' + escapeHtml(facility.facilityNm) + '</td>';
+                html += '          <td>' + escapeHtml(facility.facilityTyNm || facility.facilityTyCd) + '</td>';
+                html += '          <td>' + escapeHtml(facility.locCn || '위치 미등록') + '</td>';
                 html += '      </tr>';
             });
 

@@ -11,12 +11,6 @@
         from dual
     </select>
 
-    <!-- 다음 파일그룹번호 -->
-    <select id="selectNextFileGroupNo" resultType="long">
-        select seq_attach_file_group_no.nextval
-        from dual
-    </select>
-
     <!-- 다음 검침 설정번호 -->
     <select id="selectNextUtilityProviderNo" resultType="string">
         select 'UTP' || lpad(seq_meter_work.nextval, 4, '0')
@@ -97,40 +91,47 @@
             and fc.cont_ty_cd = #{contTyCd}
         </if>
 
+        <if test="partnerNo != null and partnerNo != ''">
+            and fc.partner_no = #{partnerNo}
+        </if>
+
         <if test="contTargetCd != null and contTargetCd != ''">
             and fc.cont_target_cd = #{contTargetCd}
         </if>
 
-        <if test="startDt != null and startDt != ''">
-            and fc.cont_bgng_dt &gt;= to_date(#{startDt}, 'yyyy-mm-dd')
+        <if test="contSttsCd != null and contSttsCd != ''">
+            and fc.cont_stts_cd = #{contSttsCd}
         </if>
 
-        <if test="endDt != null and endDt != ''">
-            and fc.cont_bgng_dt &lt; to_date(#{endDt}, 'yyyy-mm-dd') + 1
+        <if test="periodStartDt != null and periodStartDt != ''">
+            and fc.cont_bgng_dt &gt;= to_date(#{periodStartDt}, 'yyyy-mm-dd')
         </if>
 
-        <if test="endStartDt != null and endStartDt != ''">
-            and fc.cont_end_dt &gt;= to_date(#{endStartDt}, 'yyyy-mm-dd')
+        <if test="periodEndDt != null and periodEndDt != ''">
+            and fc.cont_end_dt &lt; to_date(#{periodEndDt}, 'yyyy-mm-dd') + 1
         </if>
 
-        <if test="endEndDt != null and endEndDt != ''">
-            and fc.cont_end_dt &lt; to_date(#{endEndDt}, 'yyyy-mm-dd') + 1
+        <if test="minContAmt != null">
+            and fc.cont_amt &gt;= #{minContAmt}
+        </if>
+
+        <if test="maxContAmt != null">
+            and fc.cont_amt &lt;= #{maxContAmt}
         </if>
 
         <if test="keyword != null and keyword != ''">
             and (
             lower(fc.cont_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(fc.cont_no) like '%' || lower(#{keyword}) || '%'
             or lower(p.partner_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(p.partner_no) like '%' || lower(#{keyword}) || '%'
             or exists (
             select 1
             from facility_contract_target fct2
             inner join facility f2
             on fct2.facility_no = f2.facility_no
             where fct2.cont_no = fc.cont_no
-            and (
-            lower(f2.facility_nm) like '%' || lower(#{keyword}) || '%'
-            or lower(f2.facility_no) like '%' || lower(#{keyword}) || '%'
-            )
+            and lower(f2.facility_nm) like '%' || lower(#{keyword}) || '%'
             )
             )
         </if>
@@ -180,40 +181,47 @@
             and fc.cont_ty_cd = #{contTyCd}
         </if>
 
+        <if test="partnerNo != null and partnerNo != ''">
+            and fc.partner_no = #{partnerNo}
+        </if>
+
         <if test="contTargetCd != null and contTargetCd != ''">
             and fc.cont_target_cd = #{contTargetCd}
         </if>
 
-        <if test="startDt != null and startDt != ''">
-            and fc.cont_bgng_dt &gt;= to_date(#{startDt}, 'yyyy-mm-dd')
+        <if test="contSttsCd != null and contSttsCd != ''">
+            and fc.cont_stts_cd = #{contSttsCd}
         </if>
 
-        <if test="endDt != null and endDt != ''">
-            and fc.cont_bgng_dt &lt; to_date(#{endDt}, 'yyyy-mm-dd') + 1
+        <if test="periodStartDt != null and periodStartDt != ''">
+            and fc.cont_bgng_dt &gt;= to_date(#{periodStartDt}, 'yyyy-mm-dd')
         </if>
 
-        <if test="endStartDt != null and endStartDt != ''">
-            and fc.cont_end_dt &gt;= to_date(#{endStartDt}, 'yyyy-mm-dd')
+        <if test="periodEndDt != null and periodEndDt != ''">
+            and fc.cont_end_dt &lt; to_date(#{periodEndDt}, 'yyyy-mm-dd') + 1
         </if>
 
-        <if test="endEndDt != null and endEndDt != ''">
-            and fc.cont_end_dt &lt; to_date(#{endEndDt}, 'yyyy-mm-dd') + 1
+        <if test="minContAmt != null">
+            and fc.cont_amt &gt;= #{minContAmt}
+        </if>
+
+        <if test="maxContAmt != null">
+            and fc.cont_amt &lt;= #{maxContAmt}
         </if>
 
         <if test="keyword != null and keyword != ''">
             and (
             lower(fc.cont_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(fc.cont_no) like '%' || lower(#{keyword}) || '%'
             or lower(p.partner_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(p.partner_no) like '%' || lower(#{keyword}) || '%'
             or exists (
             select 1
             from facility_contract_target fct2
             inner join facility f2
             on fct2.facility_no = f2.facility_no
             where fct2.cont_no = fc.cont_no
-            and (
-            lower(f2.facility_nm) like '%' || lower(#{keyword}) || '%'
-            or lower(f2.facility_no) like '%' || lower(#{keyword}) || '%'
-            )
+            and lower(f2.facility_nm) like '%' || lower(#{keyword}) || '%'
             )
             )
         </if>
@@ -339,6 +347,7 @@
         on mo.apt_cmplex_no = p.apt_cmplex_no
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
         and fc.cont_ty_cd = 'INSTALL'
+        and fc.cont_stts_cd = 'ACTIVE'
         and not exists (
         select 1
         from facility_contract_target fct
@@ -512,6 +521,7 @@
         , csv_idntf_key as csv_idntf_key
         , ext_cust_no as ext_cust_no
         , rmrk_cn as utility_rmrk_cn
+        , meter_ty_cd as meter_ty_cd
         from utility_provider
         where cont_no = #{contNo}
     </select>
@@ -536,6 +546,7 @@
         , rmrk_cn
         , partner_no
         , cont_no
+        , meter_ty_cd
         ) values (
         #{utilityProviderNo}
         , #{aptCmplexNo}
@@ -544,6 +555,7 @@
         , nvl(#{utilityRmrkCn}, '-')
         , #{partnerNo}
         , #{contNo}
+        , #{meterTyCd}
         )
     </insert>
 
@@ -556,6 +568,7 @@
         , ext_cust_no = #{extCustNo}
         , rmrk_cn = nvl(#{utilityRmrkCn}, '-')
         , partner_no = #{partnerNo}
+        , meter_ty_cd = #{meterTyCd}
         where cont_no = #{contNo}
     </update>
 

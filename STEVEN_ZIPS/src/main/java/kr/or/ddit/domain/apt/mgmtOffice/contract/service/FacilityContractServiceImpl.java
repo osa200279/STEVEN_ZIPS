@@ -85,10 +85,22 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
         FacilityContractDTO utilityInfo = facilityContractMapper.selectUtilityProviderByContNo(contNo);
 
         if (utilityInfo != null) {
+            // 검침 설정번호 세팅
             contract.setUtilityProviderNo(utilityInfo.getUtilityProviderNo());
+
+            // CSV 식별키 세팅
             contract.setCsvIdntfKey(utilityInfo.getCsvIdntfKey());
+
+            // 외부 고객번호 세팅
             contract.setExtCustNo(utilityInfo.getExtCustNo());
+
+            // 검침 설정 비고 세팅
             contract.setUtilityRmrkCn(utilityInfo.getUtilityRmrkCn());
+
+            // 검침 종류 세팅
+            // - UTILITY_PROVIDER.METER_TY_CD
+            // - 수정 화면에서 전기/수도/가스 선택값 복원용
+            contract.setMeterTyCd(utilityInfo.getMeterTyCd());
         }
 
         // 첨부파일 목록 조회
@@ -221,8 +233,14 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
 
         // 검침 계약이면 검침 설정 등록/수정
         if ("METER".equals(contract.getContTargetCd())) {
+            // 검침 종류 필수 확인
+            // - 수정 화면에서 검침 종류가 빠진 상태로 저장되는 것을 방지한다.
+            validateMeterTyCd(contract);
+
+            // 기존 검침 설정 존재 여부 확인
             int utilityCount = facilityContractMapper.countUtilityProviderByContNo(contract.getContNo());
 
+            // 기존 설정이 있으면 수정, 없으면 신규 등록
             if (utilityCount > 0) {
                 facilityContractMapper.updateUtilityProvider(contract);
             } else {
@@ -303,6 +321,11 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
      * 검침 설정 등록
      */
     private void insertUtilityProvider(FacilityContractDTO contract) {
+        // 검침 종류 필수 확인
+        // - UTILITY_PROVIDER.METER_TY_CD 저장값
+        // - 전기/수도/가스 구분이 없으면 검침 화면에서 데이터 분류가 어려워진다.
+        validateMeterTyCd(contract);
+
         // UTILITY_PROVIDER_NO 생성
         contract.setUtilityProviderNo(facilityContractMapper.selectNextUtilityProviderNo());
 
@@ -311,7 +334,20 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
             contract.setUtilityRmrkCn("-");
         }
 
+        // 검침 설정 등록
         facilityContractMapper.insertUtilityProvider(contract);
+    }
+
+    /**
+     * 검침 종류 필수 검증
+     * - 검침 계약은 전기/수도/가스 구분값이 반드시 필요하다.
+     * - 화면에서 검침 종류를 선택하지 않고 저장되는 것을 방지한다.
+     */
+    private void validateMeterTyCd(FacilityContractDTO contract) {
+        // 검침 종류가 없으면 저장 중단
+        if (contract.getMeterTyCd() == null || contract.getMeterTyCd().isBlank()) {
+            throw new RuntimeException("검침 계약은 검침 종류를 선택해야 합니다.");
+        }
     }
 
     /**

@@ -122,6 +122,11 @@
         #chkDetailPage .modal-title { margin:0; color:var(--text-head); font-size:14px; font-weight:900; }
         #chkDetailPage .modal-close { border:0; background:transparent; cursor:pointer; color:#66736a; }
         #chkDetailPage .modal-body { padding:14px 16px; overflow:auto; }
+        #chkDetailPage .modal-section { margin-bottom:16px; }
+        #chkDetailPage .modal-section:last-child { margin-bottom:0; }
+        #chkDetailPage .modal-section-title { display:flex; align-items:center; gap:6px; margin:0 0 8px; padding-bottom:7px; border-bottom:1px solid var(--line); color:var(--text-head); font-size:13px; font-weight:900; }
+        #chkDetailPage .modal-section-title .material-symbols-rounded { color:var(--accent); font-size:16px; }
+        #chkDetailPage .modal-section .info-compact { border:1px solid var(--line); border-radius:6px; overflow:hidden; }
 
         /* 버튼 */
         #chkDetailPage .btn { display:inline-flex; align-items:center; justify-content:center; gap:4px; min-height:34px; height:34px; padding:0 14px; border-radius:4px; border:1px solid var(--line); background:var(--surface); color:#39443d; font-size:12px; font-weight:700; cursor:pointer; text-decoration:none; box-sizing:border-box; }
@@ -216,7 +221,7 @@
                                     <div class="target-title">
                                         <span class="material-symbols-rounded">handshake</span>협력업체 정보
                                     </div>
-                                    <a class="target-link" href="${ctx}/manager/facility/partnerList/${mgmtOfcNo}">
+                                    <a class="target-link" href="${ctx}/manager/facility/partner/list/${mgmtOfcNo}<c:if test="${not empty check.partnerNo}">?searchWord=${check.partnerNo}</c:if>">
                                         협력업체 상세 보기 <span class="material-symbols-rounded">arrow_forward</span>
                                     </a>
                                 </div>
@@ -295,9 +300,16 @@
                                                             <button type="button"
                                                                     class="btn history-detail-btn"
                                                                     data-history-no="${fn:escapeXml(history.facChkHstryNo)}"
+                                                                    data-check-flow="${fn:escapeXml(history.chkFlowNo)}"
                                                                     data-check-date="${fn:escapeXml(history.chkDt)}"
                                                                     data-check-type="${fn:escapeXml(history.chkTyNm)}"
                                                                     data-check-status="${fn:escapeXml(history.chkSttsNm)}"
+                                                                    data-partner-no="${fn:escapeXml(history.partnerNo)}"
+                                                                    data-partner-name="${fn:escapeXml(history.partnerNm)}"
+                                                                    data-cont-no="${fn:escapeXml(history.contNo)}"
+                                                                    data-cont-name="${fn:escapeXml(history.contNm)}"
+                                                                    data-cont-start="${fn:escapeXml(history.contBgngDt)}"
+                                                                    data-cont-end="${fn:escapeXml(history.contEndDt)}"
                                                                     data-check-content="${fn:escapeXml(history.chkCn)}"
                                                                     data-check-remark="${fn:escapeXml(history.rmk)}">
                                                                 보기
@@ -409,9 +421,25 @@
             if (!button) return;
 
             document.getElementById("modalHistoryNo").textContent = safeText(button.getAttribute("data-history-no"));
+            document.getElementById("modalCheckFlowNo").textContent = safeText(button.getAttribute("data-check-flow"));
             document.getElementById("modalHistoryDt").textContent = safeText(button.getAttribute("data-check-date"));
             document.getElementById("modalHistoryTy").textContent = safeText(button.getAttribute("data-check-type"));
             document.getElementById("modalHistoryStts").textContent = safeText(button.getAttribute("data-check-status"));
+
+            var partnerNo = button.getAttribute("data-partner-no") || "";
+            var contStart = button.getAttribute("data-cont-start") || "";
+            var contEnd = button.getAttribute("data-cont-end") || "";
+            var contPeriod = "-";
+
+            if (contStart || contEnd) {
+                contPeriod = safeText(contStart) + " ~ " + safeText(contEnd);
+            }
+
+            document.getElementById("modalOwnerType").textContent = partnerNo ? "협력업체점검" : "자체점검";
+            document.getElementById("modalPartnerNm").textContent = partnerNo ? safeText(button.getAttribute("data-partner-name")) : "-";
+            document.getElementById("modalContNo").textContent = safeText(button.getAttribute("data-cont-no"));
+            document.getElementById("modalContNm").textContent = safeText(button.getAttribute("data-cont-name"));
+            document.getElementById("modalContPeriod").textContent = contPeriod;
             document.getElementById("modalHistoryCn").textContent = safeText(button.getAttribute("data-check-content"));
             document.getElementById("modalHistoryRmk").textContent = safeText(button.getAttribute("data-check-remark"));
 

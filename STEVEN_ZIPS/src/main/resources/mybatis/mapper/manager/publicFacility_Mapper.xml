@@ -186,37 +186,6 @@
         where rownum &lt;= 10
     </select>
 
-    <!--
-    자원 등록 모달 - 상위 편의시설 검색
-    - PUBLIC_ITEM 등록 시 연결할 PUBLIC_FACILITY 후보 조회
-    - 편의시설번호 / 편의시설명 둘 다 검색
--->
-    <select id="selectPublicFacilitySuggestList" parameterType="map"
-            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.publicFacility.vo.PublicFacilityVO">
-        select *
-        from (
-        select
-        pf.cmn_facility_no
-        , pf.facility_no
-        , nvl(pf.cmn_facility_nm, f.facility_nm) as cmn_facility_nm
-        from facility f
-        inner join public_facility pf
-        on pf.facility_no = f.facility_no
-        and pf.apt_cmplex_no = f.apt_cmplex_no
-        where f.apt_cmplex_no = <include refid="subqueryaptcmplexno"/>
-        and f.facility_ty_cd in (<include refid="publicfacilitytypecodes"/>)
-        and nvl(f.use_yn, 'Y') = 'Y'
-        and pf.cmn_facility_no is not null
-        <if test="keyword != null and keyword != ''">
-            and (
-            lower(pf.cmn_facility_no) like '%' || lower(#{keyword}) || '%'
-            or lower(nvl(pf.cmn_facility_nm, f.facility_nm)) like '%' || lower(#{keyword}) || '%'
-            )
-        </if>
-        order by pf.cmn_facility_no asc
-        )
-        where rownum &lt;= 10
-    </select>
 
     <!--
         공용시설 목록 조회

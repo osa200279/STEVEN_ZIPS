@@ -126,6 +126,10 @@
                     <div class="panel-body">
                         <form id="searchForm" method="get" action="${ctx}/manager/checkHistory/${mgmtOfcNo}">
                             <input type="hidden" name="page" id="page" value="${pagingVO.currentPage}">
+                            <%-- 시설 상세 화면에서 넘어온 시설번호 필터 유지 --%>
+                            <input type="hidden" name="facilityNo" value="${fn:escapeXml(searchVO.facilityNo)}">
+                            <%-- 협력업체 상세 화면에서 넘어온 협력업체번호 필터 유지 --%>
+                            <input type="hidden" name="partnerNo" value="${fn:escapeXml(searchVO.partnerNo)}">
                             <div class="filter-grid">
                                 <div class="form-field">
                                     <label class="field-label">점검유형</label>

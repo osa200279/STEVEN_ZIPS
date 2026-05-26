@@ -50,6 +50,8 @@ public class MeterHstryController {
             @RequestParam(required = false) String startDt,
             @RequestParam(required = false) String endDt,
             @RequestParam(required = false) String keyword,
+            // 협력업체 상세에서 검침 이력으로 이동할 때 유지할 협력업체 필터
+            @RequestParam(required = false) String partnerNo,
             Model model
     ) {
         // 단지별 검침 조회 조건
@@ -62,6 +64,8 @@ public class MeterHstryController {
         complexParamMap.put("startDt", complexStartDt);
         complexParamMap.put("endDt", complexEndDt);
         complexParamMap.put("keyword", complexKeyword);
+        // 협력업체 상세에서 넘어온 경우 단지별 검침에도 같은 업체 필터를 적용함
+        complexParamMap.put("partnerNo", partnerNo);
 
         // 시설 검침 조회 조건
         Map<String, Object> facilityParamMap = new HashMap<>();
@@ -73,6 +77,8 @@ public class MeterHstryController {
         facilityParamMap.put("startDt", startDt);
         facilityParamMap.put("endDt", endDt);
         facilityParamMap.put("keyword", keyword);
+        // 협력업체 상세에서 넘어온 경우 시설 검침에도 같은 업체 필터를 적용함
+        facilityParamMap.put("partnerNo", partnerNo);
 
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
         model.addAttribute("complexSearch", complexParamMap);

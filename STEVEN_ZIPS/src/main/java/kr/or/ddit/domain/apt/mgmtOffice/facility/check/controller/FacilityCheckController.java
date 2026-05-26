@@ -54,6 +54,8 @@ public class FacilityCheckController {
             @PathVariable String mgmtOfcNo,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "") String searchWord,
+            @RequestParam(required = false, defaultValue = "") String facilityNo,
+            @RequestParam(required = false, defaultValue = "") String partnerNo,
             @RequestParam(required = false, defaultValue = "") String chkTyCd,
             @RequestParam(required = false, defaultValue = "") String chkSttsCd,
             @RequestParam(required = false, defaultValue = "") String chkStartDt,
@@ -67,6 +69,10 @@ public class FacilityCheckController {
         /* 목록 검색 조건 VO 생성 */
         FacilityCheckHstryVO searchVO = new FacilityCheckHstryVO();
         searchVO.setMgmtOfcNo(mgmtOfcNo);
+        /* 시설 상세 화면에서 넘어온 시설번호 필터 */
+        searchVO.setFacilityNo(facilityNo);
+        /* 협력업체 상세 화면에서 넘어온 협력업체번호 필터 */
+        searchVO.setPartnerNo(partnerNo);
         searchVO.setChkTyCd(chkTyCd);
         searchVO.setChkSttsCd(chkSttsCd);
         searchVO.setChkStartDt(chkStartDt);
@@ -93,6 +99,8 @@ public class FacilityCheckController {
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
         model.addAttribute("searchWord", searchWord);
+        model.addAttribute("facilityNo", facilityNo);
+        model.addAttribute("partnerNo", partnerNo);
 
         /* 현황 카드 건수 */
         FacilityCheckHstryVO summary = facilityCheckService.selectFacilityCheckSummary(mgmtOfcNo);

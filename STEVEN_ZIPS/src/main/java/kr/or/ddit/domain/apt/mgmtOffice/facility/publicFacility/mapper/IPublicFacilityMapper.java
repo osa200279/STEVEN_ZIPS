@@ -99,15 +99,6 @@ public interface IPublicFacilityMapper {
     int insertPublicFacility(Map<String, Object> paramMap);
 
 
-    /**
-     * FACILITY 기본정보 수정
-     * - 공용시설 수정 화면에서 함께 수정되는 시설명/동/상세위치 저장
-     * - PUBLIC_FACILITY 운영정보는 updatePublicFacility에서 별도 처리
-     *
-     * @param formDTO 수정 요청 DTO
-     * @return 처리 건수
-     */
-    int updateFacilityForPublicFacility(PublicFacilityFormDTO formDTO);
 
     /**
      * PUBLIC_FACILITY 운영정보 수정

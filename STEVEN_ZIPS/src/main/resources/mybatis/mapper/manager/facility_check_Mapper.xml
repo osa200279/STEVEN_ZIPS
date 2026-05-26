@@ -34,6 +34,16 @@
         and chk_stts.use_yn = 'Y'
         where mo.mgmt_ofc_no = #{searchVO.mgmtOfcNo}
 
+        <!-- 시설 상세에서 넘어온 시설번호 필터 -->
+        <if test="searchVO.facilityNo != null and searchVO.facilityNo != ''">
+            and fch.facility_no = #{searchVO.facilityNo}
+        </if>
+
+        <!-- 협력업체 상세에서 넘어온 협력업체번호 필터 -->
+        <if test="searchVO.partnerNo != null and searchVO.partnerNo != ''">
+            and fch.partner_no = #{searchVO.partnerNo}
+        </if>
+
         <!-- 통합 검색: 이력번호, 처리과정번호, 시설번호, 시설명, 업체명, 자체점검, 점검내용 -->
         <if test="searchWord != null and searchWord != ''">
             and (
@@ -528,59 +538,59 @@
     <select id="selectPartnerContractList"
             resultType="map">
         select fc.cont_no        as "contNo"
-             , fc.cont_nm        as "contNm"
-             , fc.cont_ty_cd     as "contTyCd"
-             , fc.cont_target_cd as "contTargetCd"
-             , fc.cont_stts_cd   as "contSttsCd"
-             , to_char(fc.cont_bgng_dt, 'yyyy.mm.dd') as "contBgngDt"
-             , to_char(fc.cont_end_dt,  'yyyy.mm.dd') as "contEndDt"
+        , fc.cont_nm        as "contNm"
+        , fc.cont_ty_cd     as "contTyCd"
+        , fc.cont_target_cd as "contTargetCd"
+        , fc.cont_stts_cd   as "contSttsCd"
+        , to_char(fc.cont_bgng_dt, 'yyyy.mm.dd') as "contBgngDt"
+        , to_char(fc.cont_end_dt,  'yyyy.mm.dd') as "contEndDt"
         from facility_contract fc
-                 inner join facility_contract_target fct
-                            on fct.cont_no = fc.cont_no
-                 inner join facility f
-                            on f.facility_no = fct.facility_no
-                 inner join mgmt_office mo
-                            on mo.apt_cmplex_no = f.apt_cmplex_no
+        inner join facility_contract_target fct
+        on fct.cont_no = fc.cont_no
+        inner join facility f
+        on f.facility_no = fct.facility_no
+        inner join mgmt_office mo
+        on mo.apt_cmplex_no = f.apt_cmplex_no
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
-          and fc.partner_no = #{partnerNo}
-          <!-- ***# 점검계약시설필터: 선택한 시설에 연결된 계약만 점검 등록 계약 목록에 표시하는 조건 -->
-          and fct.facility_no = #{facilityNo}
-          <!-- ***# 점검계약상태조회조건: 계약 관리의 유효 상태(ACTIVE)와 기존 진행 상태(ING)를 함께 허용하는 조건 -->
-          and fc.cont_stts_cd in ('ACTIVE', 'ING')
+        and fc.partner_no = #{partnerNo}
+        <!-- ***# 점검계약시설필터: 선택한 시설에 연결된 계약만 점검 등록 계약 목록에 표시하는 조건 -->
+        and fct.facility_no = #{facilityNo}
+        <!-- ***# 점검계약상태조회조건: 해지 계약 제외, 유효 계약만 표시 -->
+        and fc.cont_stts_cd = 'ACTIVE'
         order by "contBgngDt" desc
     </select>
 
     <select id="selectRecommendedFacilityContractList"
             resultType="map">
         select fc.cont_no        as "contNo"
-             , fc.cont_nm        as "contNm"
-             , fc.cont_ty_cd     as "contTyCd"
-             , fc.cont_target_cd as "contTargetCd"
-             , fc.cont_stts_cd   as "contSttsCd"
-             , fc.partner_no     as "partnerNo"
-             , p.partner_nm      as "partnerNm"
-             , p.biz_ty_nm       as "bizTyNm"
-             , p.pic_nm          as "picNm"
-             , p.pic_telno       as "picTelno"
-             , p.pic_email       as "picEmail"
-             , to_char(fc.cont_bgng_dt, 'yyyy.mm.dd') as "contBgngDt"
-             , to_char(fc.cont_end_dt,  'yyyy.mm.dd') as "contEndDt"
+        , fc.cont_nm        as "contNm"
+        , fc.cont_ty_cd     as "contTyCd"
+        , fc.cont_target_cd as "contTargetCd"
+        , fc.cont_stts_cd   as "contSttsCd"
+        , fc.partner_no     as "partnerNo"
+        , p.partner_nm      as "partnerNm"
+        , p.biz_ty_nm       as "bizTyNm"
+        , p.pic_nm          as "picNm"
+        , p.pic_telno       as "picTelno"
+        , p.pic_email       as "picEmail"
+        , to_char(fc.cont_bgng_dt, 'yyyy.mm.dd') as "contBgngDt"
+        , to_char(fc.cont_end_dt,  'yyyy.mm.dd') as "contEndDt"
         from facility_contract fc
-                 inner join facility_contract_target fct
-                            on fct.cont_no = fc.cont_no
-                 inner join partner p
-                            on p.partner_no = fc.partner_no
-                 inner join mgmt_office mo
-                            on mo.apt_cmplex_no = p.apt_cmplex_no
+        inner join facility_contract_target fct
+        on fct.cont_no = fc.cont_no
+        inner join partner p
+        on p.partner_no = fc.partner_no
+        inner join mgmt_office mo
+        on mo.apt_cmplex_no = p.apt_cmplex_no
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
-          <!-- ***# 자동계약시설연결기준: 시설 계약 대상 테이블 기준 -->
-          and fct.facility_no = #{facilityNo}
-          <!-- ***# 자동계약대상구분조건: 시설 대상 계약만 자동 세팅 -->
-          and fc.cont_target_cd = 'FACILITY'
-          <!-- ***# 자동계약유형제외조건: 설치공사/검침 계약 제외 -->
-          and fc.cont_ty_cd not in ('INSTALL', 'METER')
-          <!-- ***# 자동계약상태조건: 유효 계약 상태 -->
-          and fc.cont_stts_cd in ('ACTIVE', 'ING')
+        <!-- ***# 자동계약시설연결기준: 시설 계약 대상 테이블 기준 -->
+        and fct.facility_no = #{facilityNo}
+        <!-- ***# 자동계약대상구분조건: 시설 대상 계약만 자동 세팅 -->
+        and fc.cont_target_cd = 'FACILITY'
+        <!-- ***# 자동계약유형제외조건: 설치공사/검침 계약 제외 -->
+        and fc.cont_ty_cd not in ('INSTALL', 'METER')
+        <!-- ***# 자동계약상태조건: 해지 계약 제외, 유효 계약만 자동 세팅 -->
+        and fc.cont_stts_cd = 'ACTIVE'
         order by nvl(fc.cont_end_dt, fc.cont_bgng_dt) desc, fc.cont_no desc
     </select>
 

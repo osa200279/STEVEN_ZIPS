@@ -131,8 +131,10 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
 
         // 첫 데이터 행의 식별값으로 공급/검침 설정을 자동 매칭함
         Map<String, String> firstRow = csvRows.get(0);
-        String csvIdntfKey = firstRow.get("csv_idntf_key");
-        String extCustNo = firstRow.get("ext_cust_no");
+
+        // CSV 값의 BOM, 따옴표, 앞뒤 공백을 제거해 DB 값과 같은 기준으로 맞춤
+        String csvIdntfKey = cleanCsvValue(firstRow.get("csv_idntf_key"));
+        String extCustNo = cleanCsvValue(firstRow.get("ext_cust_no"));
 
         validateRequired(firstRow.get("_lineNo"), "csv_idntf_key", csvIdntfKey);
         validateRequired(firstRow.get("_lineNo"), "ext_cust_no", extCustNo);
@@ -145,6 +147,11 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
         UtilityProviderVO provider = meterHstryMapper.selectUtilityProviderByCsvKey(providerParam);
         if (provider == null) {
             throw new IllegalArgumentException("CSV 식별키와 외부 고객번호에 맞는 검침 설정을 찾을 수 없습니다.");
+        }
+
+        // 검침 업로드는 진행중인 계약에 연결된 설정만 허용함
+        if (!"ACTIVE".equals(provider.getContSttsCd())) {
+            throw new IllegalArgumentException("진행중인 검침 계약이 아닙니다.");
         }
 
         // 미리보기 행과 검증 메시지를 구성함
@@ -164,8 +171,15 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
             String meterUnit = toMeterUnit(meterTyCd);
 
             // 업로드 구분별 최소 기준을 안내 메시지로 표시함. 실제 업로드 검증은 최종 업로드에서 다시 수행함
-            if ("COMPLEX".equals(meterScope) && !StringUtils.hasText(hoNo)) {
-                warnings.add(lineNo + "행: 단지별 검침 CSV는 ho_no가 필요합니다.");
+            if ("COMPLEX".equals(meterScope)) {
+                // 단지별 검침도 관리비 집계 연계를 위해 계량기 시설번호가 반드시 필요함
+                if (!StringUtils.hasText(facilityNo)) {
+                    warnings.add(lineNo + "행: 단지별 검침 CSV는 facility_no가 필요합니다.");
+                }
+                // 단지별 검침은 세대/호 기준 검침이므로 ho_no가 반드시 필요함
+                if (!StringUtils.hasText(hoNo)) {
+                    warnings.add(lineNo + "행: 단지별 검침 CSV는 ho_no가 필요합니다.");
+                }
             }
             if ("FACILITY".equals(meterScope) && !StringUtils.hasText(facilityNo)) {
                 warnings.add(lineNo + "행: 시설 검침 CSV는 facility_no가 필요합니다.");
@@ -376,9 +390,24 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
         }
 
         if ("COMPLEX".equals(meterScope)) {
+            // 단지별 검침도 관리비 집계 연계를 위해 계량기 시설번호가 반드시 필요함
+            if (facilityNoCnt == 0) {
+                throw new IllegalArgumentException("단지별 검침 CSV에는 facility_no 값이 필요합니다. 계량기 시설번호를 포함해주세요.");
+            }
+
+            // 일부 행만 facility_no가 비어 있는 경우도 DB 정합성을 위해 차단함
+            if (facilityNoCnt < csvRows.size()) {
+                throw new IllegalArgumentException("단지별 검침 CSV에는 모든 행에 facility_no 값이 필요합니다.");
+            }
+
             // 단지별 검침은 세대/호 기준 대량 검침이므로 ho_no가 반드시 필요함
             if (hoNoCnt == 0) {
                 throw new IllegalArgumentException("단지별 검침 CSV에는 ho_no 값이 필요합니다. 시설번호만 있는 CSV는 시설 검침 업로드를 사용해주세요.");
+            }
+
+            // 일부 행만 ho_no가 비어 있는 경우도 세대 검침으로 저장할 수 없으므로 차단함
+            if (hoNoCnt < csvRows.size()) {
+                throw new IllegalArgumentException("단지별 검침 CSV에는 모든 행에 ho_no 값이 필요합니다.");
             }
             return;
         }
@@ -549,15 +578,15 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
             String lineNo = row.get("_lineNo");
 
             // 필수 컬럼 값 추출
-            String csvIdntfKey = row.get("csv_idntf_key");
-            String extCustNo = row.get("ext_cust_no");
-            String facilityNo = row.get("facility_no");
-            String hoNo = row.get("ho_no");
-            String meterDt = row.get("meter_dt");
-            String preVal = row.get("pre_val");
-            String currVal = row.get("curr_val");
-            String meterCn = row.get("meter_cn");
-            String meterRsltCd = row.get("meter_rslt_cd");
+            String csvIdntfKey = cleanCsvValue(row.get("csv_idntf_key"));
+            String extCustNo = cleanCsvValue(row.get("ext_cust_no"));
+            String facilityNo = cleanCsvValue(row.get("facility_no"));
+            String hoNo = cleanCsvValue(row.get("ho_no"));
+            String meterDt = cleanCsvValue(row.get("meter_dt"));
+            String preVal = cleanCsvValue(row.get("pre_val"));
+            String currVal = cleanCsvValue(row.get("curr_val"));
+            String meterCn = cleanCsvValue(row.get("meter_cn"));
+            String meterRsltCd = cleanCsvValue(row.get("meter_rslt_cd"));
 
             // 공급/검침 설정 식별값 검증
             if (StringUtils.hasText(provider.getCsvIdntfKey()) && !provider.getCsvIdntfKey().equals(csvIdntfKey)) {
@@ -569,7 +598,10 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
 
             // 업로드 구분별 필수값 검증
             if ("COMPLEX".equals(meterScope)) {
-                // 단지별 검침은 동/호 식별값이 필수임. 기존 더미 호환을 위해 facility_no는 있으면 검증만 함
+                // 단지별 검침도 관리비 집계 연계를 위해 계량기 시설번호가 반드시 필요함
+                validateRequired(lineNo, "facility_no", facilityNo);
+
+                // 단지별 검침은 세대/호 식별값이 반드시 필요함
                 validateRequired(lineNo, "ho_no", hoNo);
             } else {
                 // 시설 검침은 시설번호가 필수임. 시설도 호 정보를 가질 수 있으므로 ho_no는 보조값으로만 둠
@@ -586,15 +618,13 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
             // 검침유형 확정
             String meterTyCd = resolveMeterTyCd(row, provider, lineNo);
 
-            // 시설번호가 들어온 경우에만 현재 단지의 시설인지 검증함
-            if (StringUtils.hasText(facilityNo)) {
-                Map<String, Object> facilityParam = new HashMap<>();
-                facilityParam.put("aptCmplexNo", aptCmplexNo);
-                facilityParam.put("facilityNo", facilityNo);
+            // 시설번호는 단지별/시설 검침 모두 필수값이므로 현재 단지의 실제 시설인지 검증함
+            Map<String, Object> facilityParam = new HashMap<>();
+            facilityParam.put("aptCmplexNo", aptCmplexNo);
+            facilityParam.put("facilityNo", facilityNo);
 
-                if (meterHstryMapper.selectFacilityCnt(facilityParam) == 0) {
-                    throw new IllegalArgumentException(lineNo + "행: 존재하지 않는 시설번호입니다. facility_no=" + facilityNo);
-                }
+            if (meterHstryMapper.selectFacilityCnt(facilityParam) == 0) {
+                throw new IllegalArgumentException(lineNo + "행: 존재하지 않는 시설번호입니다. facility_no=" + facilityNo);
             }
 
             // 검침결과코드 유효성 검증
@@ -604,13 +634,17 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
 
             // 검침 이력 VO 구성
             MeterHstryVO vo = new MeterHstryVO();
-            vo.setFacilityNo(StringUtils.hasText(facilityNo) ? facilityNo : null);
-            vo.setHoNo(StringUtils.hasText(hoNo) ? hoNo : null);
+            // facility_no는 세대/시설 검침 모두 실제 FACILITY.FACILITY_NO로 저장함
+            vo.setFacilityNo(facilityNo.trim());
+            vo.setHoNo(StringUtils.hasText(hoNo) ? hoNo.trim() : null);
             vo.setMeterTyCd(meterTyCd);
             vo.setMeterDt(java.sql.Date.valueOf(LocalDate.parse(meterDt)));
             vo.setPreVal(new BigDecimal(preVal));
             vo.setCurrVal(new BigDecimal(currVal));
-            vo.setMeterCn(applyScopePrefix(meterScope, meterCn));
+            // 검침구분은 METER_HSTRY.METER_SCOPE에 명확히 저장함
+            vo.setMeterScope(meterScope);
+            // 신규 데이터는 검침내용에 [단지검침]/[시설검침] prefix를 붙이지 않음
+            vo.setMeterCn(removeScopePrefix(meterCn));
             vo.setMeterRsltCd(meterRsltCd);
             vo.setUtilityProviderNo(provider.getUtilityProviderNo());
 
@@ -620,19 +654,39 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
         return meterRows;
     }
 
+
     /**
-     * 신규 업로드 검침내용 구분값 보정
-     * - 단지/시설 목록 분리 보정을 위해 기존 meter_cn에 prefix를 남김
+     * CSV 값 정리
+     * - UTF-8 BOM, 따옴표, 앞뒤 공백을 제거함
+     * - CSV 자동 매칭과 행 검증에서 같은 기준으로 비교하기 위한 처리
      */
-    private String applyScopePrefix(String meterScope, String meterCn) {
-        String prefix = "FACILITY".equals(meterScope) ? "[시설검침]" : "[단지검침]";
+    private String cleanCsvValue(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        return value
+                .replace("\uFEFF", "")
+                .replace("\"", "")
+                .trim();
+    }
+
+    /**
+     * 검침내용 prefix 제거
+     * - METER_SCOPE 컬럼을 사용하므로 신규 저장 시 METER_CN에는 순수 검침내용만 남김
+     * - 예전 CSV나 더미에 prefix가 포함되어 들어와도 중복 저장하지 않도록 정리함
+     */
+    private String removeScopePrefix(String meterCn) {
         String value = StringUtils.hasText(meterCn) ? meterCn.trim() : "";
 
-        // 이미 prefix가 있는 경우 중복으로 붙이지 않음
-        if (value.startsWith("[단지검침]") || value.startsWith("[시설검침]")) {
-            return value;
+        // 예전 prefix가 들어온 경우 검침내용에서 제거함
+        if (value.startsWith("[단지검침]")) {
+            return value.substring("[단지검침]".length()).trim();
         }
-        return prefix + " " + value;
+        if (value.startsWith("[시설검침]")) {
+            return value.substring("[시설검침]".length()).trim();
+        }
+        return value;
     }
 
     /**

@@ -57,13 +57,12 @@
         #facilityPage .disabled-notice { display:none; align-items:flex-start; gap:10px; margin-bottom:20px; padding:13px 15px; border:1px solid #fed7aa; border-left:3px solid #f59e0b; border-radius:0 4px 4px 0; background:#fff7ed; color:#7c2d12; font-size:12px; line-height:1.6; }
         #facilityPage .disabled-notice .material-symbols-rounded { color:#f59e0b; font-size:18px; flex-shrink:0; margin-top:1px; }
         #facilityPage .detail-info-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
-        #facilityPage .install-summary-table { width:100%; margin:0 0 16px; border-top:1px solid var(--line); border-collapse:collapse; table-layout:fixed; }
-        #facilityPage .install-summary-table th { width:90px; padding:11px 12px; border-bottom:1px solid var(--line); background:var(--th-bg); color:#27382b; font-size:12px; font-weight:600; text-align:left; vertical-align:middle; }
-        #facilityPage .install-summary-table td { padding:11px 14px; border-bottom:1px solid var(--line); color:#111827; font-size:12px; font-weight:500; vertical-align:middle; overflow:hidden; }
-        #facilityPage .install-summary-content { display:flex; align-items:center; gap:10px; min-width:0; white-space:nowrap; overflow:hidden; }
-        #facilityPage .install-summary-item { min-width:0; overflow:hidden; text-overflow:ellipsis; }
-        #facilityPage .install-summary-item strong { color:#27382b; font-weight:700; margin-right:4px; }
-        #facilityPage .install-summary-sep { color:#c7cec9; flex-shrink:0; }
+        #facilityPage .install-section { margin-bottom:16px; }
+        #facilityPage .install-line { display:flex; align-items:center; gap:10px; min-height:38px; padding:9px 12px; border:1px solid var(--line); border-radius:6px; background:#fbfcfb; }
+        #facilityPage .install-line-label { flex:0 0 auto; color:#27382b; font-size:12px; font-weight:600; }
+        #facilityPage .install-line-text { min-width:0; color:#111827; font-size:12px; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #facilityPage .install-tag { color:#6b7280; font-weight:500; }
+        #facilityPage .install-line-empty { color:#9ca3af; font-weight:400; }
         #facilityPage .detail-link-row { display:flex; flex-direction:column; gap:20px; }
         #facilityPage .detail-link-row .detail-section { margin-bottom:0; }
         #facilityPage .notice-box { display:flex; gap:10px; padding:13px 15px; background:#f7faf7; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:0 4px 4px 0; font-size:12px; color:#4a5c4e; line-height:1.7; }
@@ -96,7 +95,7 @@
         .image-preview-modal img { max-width:92vw; max-height:88vh; object-fit:contain; border-radius:6px; background:#fff; }
         .image-preview-close { position:absolute; top:22px; right:28px; border:0; background:transparent; color:#fff; font-size:38px; line-height:1; cursor:pointer; }
         @media (max-width:900px) { #facilityPage .detail-cols { grid-template-columns:1fr; } #facilityPage .detail-col-left { padding-right:0; border-right:none; border-bottom:1px solid var(--line); padding-bottom:24px; margin-bottom:24px; } #facilityPage .detail-col-right { padding-left:0; display:flex; flex-direction:column; min-height:auto; } }
-        @media (max-width:600px) { #facilityPage .detail-info-row { grid-template-columns:1fr; } #facilityPage .install-summary-content { flex-wrap:wrap; white-space:normal; gap:6px 10px; } #facilityPage .file-preview-list { grid-template-columns:1fr; } }
+        @media (max-width:600px) { #facilityPage .detail-info-row { grid-template-columns:1fr; } #facilityPage .install-line { align-items:flex-start; } #facilityPage .install-line-text { white-space:normal; } #facilityPage .file-preview-list { grid-template-columns:1fr; } }
     </style>
 
     <script>
@@ -132,22 +131,13 @@
 
                         <div class="detail-cols">
                             <div class="detail-col-left">
-                                <table class="install-summary-table" id="detailInstallContractSummary">
-                                    <tbody>
-                                    <tr>
-                                        <th>설치계약</th>
-                                        <td>
-                                            <div class="install-summary-content">
-                                                <span class="install-summary-item"><strong>계약번호</strong><span id="installSummaryNo">-</span></span>
-                                                <span class="install-summary-sep">|</span>
-                                                <span class="install-summary-item"><strong>계약명</strong><span id="installSummaryNm">-</span></span>
-                                                <span class="install-summary-sep">|</span>
-                                                <span class="install-summary-item"><strong>업체/기간</strong><span id="installSummaryPartnerPeriod">-</span></span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                                <div class="detail-section install-section" id="detailInstallContractSummary">
+                                    <h3 class="detail-section-title"><span class="material-symbols-rounded">construction</span>설치 정보</h3>
+                                    <div class="install-line">
+                                        <span class="install-line-label">설치계약</span>
+                                        <span class="install-line-text install-line-empty" id="installSummaryText">연결된 설치계약이 없습니다.</span>
+                                    </div>
+                                </div>
 
                                 <div class="detail-info-row">
                                     <div class="detail-section">
@@ -295,17 +285,38 @@
         function setHtml(id, value) { var el = document.getElementById(id); if (!el) return; el.innerHTML = value || '<span class="detail-empty">-</span>'; }
 
         function renderInstallContract(contract) {
-            // 시설 정보 위쪽에 설치계약 핵심 요약만 한 줄로 표시
-            // - 값이 없으면 "계약 없음"처럼 확정하지 않고 '-'로 표시
+            // 설치 정보 영역에는 설치계약을 한 줄 요약으로만 표시
+            // - 업체는 제외하고 계약번호·계약명·기간만 표시
+            // - 라벨칩 대신 [계약번호] 같은 텍스트형 구분자를 사용
+            var target = document.getElementById("installSummaryText");
+            if (!target) return;
+
             var data = contract || {};
             var contractNo = data.contNo || data.CONT_NO || "";
             var contractNm = data.contNm || data.CONT_NM || "";
-            var partnerNm = data.partnerNm || data.PARTNER_NM || "";
             var period = formatContractPeriod(data);
-            var partnerPeriodText = [partnerNm, period].filter(Boolean).join(" · ");
-            setText("installSummaryNo", contractNo);
-            setText("installSummaryNm", contractNm);
-            setText("installSummaryPartnerPeriod", partnerPeriodText);
+            var html = [];
+
+            if (contractNo) {
+                html.push('<span class="install-tag">[계약번호]</span> ' + escapeHtml(contractNo));
+            }
+
+            if (contractNm) {
+                html.push('<span class="install-tag">[계약명]</span> ' + escapeHtml(contractNm));
+            }
+
+            if (period) {
+                html.push('<span class="install-tag">[기간]</span> ' + escapeHtml(period));
+            }
+
+            if (html.length === 0) {
+                target.textContent = "연결된 설치계약이 없습니다.";
+                target.classList.add("install-line-empty");
+                return;
+            }
+
+            target.innerHTML = html.join(' <span class="install-separator">·</span> ');
+            target.classList.remove("install-line-empty");
         }
 
         function renderRelatedHistory(historyList) {
@@ -389,6 +400,19 @@
             editBtn.onclick = function () { location.href = contextPath + "/manager/facility/update-page/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facility.facilityNo); };
         }
 
+
+        function bindHistoryMoreLink() {
+            // 최근 점검·보수 이력 전체보기 링크에 현재 시설번호를 검색 파라미터로 붙임
+            var link = document.getElementById("historyMoreLink");
+            if (!link) return;
+
+            link.href = contextPath
+                + "/manager/checkHistory/"
+                + encodeURIComponent(mgmtOfcNo)
+                + "?facilityNo="
+                + encodeURIComponent(facilityNo);
+        }
+
         function renderDetail(result) {
             var facility = getResultFacility(result);
             document.getElementById("detailModalTitle").textContent = "시설 상세";
@@ -404,6 +428,7 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             bindImagePreviewModal();
+            bindHistoryMoreLink();
             document.getElementById("backToListBtnTop").addEventListener("click", function () { location.href = listUrl(); });
             getJson(apiUrl("detail/" + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facilityNo)))
                 .then(renderDetail)

@@ -1108,7 +1108,7 @@
             el('facilityHistoryList').innerHTML = '<div class="history-empty">불러오는 중...</div>';
             setMode('empty');
 
-            fetchJson(CTX + '/manager/checkHistory/history/list/'
+            return fetchJson(CTX + '/manager/checkHistory/history/list/'
                 + encodeURIComponent(OFC_NO) + '/' + encodeURIComponent(facilityNo))
                 .then(function (data) {
                     allList = (data && data.success ? data.historyList : []) || [];
@@ -1442,11 +1442,12 @@
             }
             updateCurrentContractType();
 
-            /* 선택 시설 이력 AJAX 로드 */
-            loadHistory(row.dataset.facilityNo);
-
-            /* ***# 시설 선택 기준 최신 유지보수성 계약 자동 세팅 */
-            loadRecommendedFacilityContracts(row.dataset.facilityNo);
+            /* 선택 시설 이력 AJAX 로드 후 계약 자동 세팅
+               - loadHistory 내부 setMode('register')가 점검주체/계약값을 초기화하므로
+               - 이력 목록 로드가 끝난 뒤 추천 계약을 조회해야 첫 선택에서도 협력업체/계약이 유지된다. */
+            loadHistory(row.dataset.facilityNo).then(function () {
+                loadRecommendedFacilityContracts(row.dataset.facilityNo);
+            });
         }
 
         /* ── 협력업체 선택 처리 ── */

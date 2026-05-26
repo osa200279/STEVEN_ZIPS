@@ -4,12 +4,19 @@
 <%@ taglib prefix="fn"  uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:set var="isTerminateMode" value="${param.mode eq 'terminate' or mode eq 'terminate'}" />
+<fmt:formatDate value="${contract.contDt}" pattern="yyyy-MM-dd" var="contDtValue"/>
+<fmt:formatDate value="${contract.contBgngDt}" pattern="yyyy-MM-dd" var="contBgngDtValue"/>
+<fmt:formatDate value="${contract.contEndDt}" pattern="yyyy-MM-dd" var="contEndDtValue"/>
+<fmt:formatDate value="${contract.pymtDt}" pattern="yyyy-MM-dd" var="pymtDtValue"/>
 
 <%--
     계약 등록/수정 공용 폼
     - mode 값 기준으로 등록/수정 구분
     - 등록: mode = insert
     - 수정: mode = update
+    - 해지: param.mode = terminate 또는 mode = terminate
+    - 해지 모드는 기존 계약정보를 잠그고 계약상태/해지 사유만 저장하도록 유도
     - 계약서 첨부파일은 FACILITY_CONTRACT.FILE_GROUP_NO 기준으로 연결
     - 상세 조회는 목록 JSP의 모달에서 처리
 --%>
@@ -20,6 +27,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
         <c:choose>
+            <c:when test="${isTerminateMode}">계약 해지</c:when>
             <c:when test="${mode eq 'update'}">계약 수정</c:when>
             <c:otherwise>계약 등록</c:otherwise>
         </c:choose>
@@ -64,6 +72,8 @@
         #contractFormPage .btn-primary:hover { background:var(--accent-hover); border-color:var(--accent-hover); }
         #contractFormPage .btn-danger { background:#fff; border-color:#fecaca; color:#991b1b; }
         #contractFormPage .btn-danger:hover { background:#fef2f2; }
+        #contractFormPage .btn-danger-solid { background:#b91c1c; border-color:#b91c1c; color:#fff; }
+        #contractFormPage .btn-danger-solid:hover { background:#991b1b; border-color:#991b1b; color:#fff; }
         #contractFormPage .btn .material-symbols-rounded { font-size:15px; }
 
         /* ── 패널 ── */
@@ -126,6 +136,25 @@
         #contractFormPage .required { color:#dc2626; margin-left:2px; }
         #contractFormPage .field-help { font-size:11px; color:var(--text-ter); line-height:1.45; margin-top:2px; }
 
+        /* ── 해지 모드 안내/잠금 표시 ── */
+        #contractFormPage .terminate-guide {
+            display:flex; align-items:flex-start; gap:8px;
+            margin-bottom:12px; padding:12px 14px;
+            border:1px solid #fed7aa; border-radius:6px;
+            background:#fff7ed; color:#7c2d12;
+            font-size:12px; line-height:1.55;
+        }
+        #contractFormPage .terminate-guide .material-symbols-rounded { font-size:18px; color:#c2410c; margin-top:1px; flex-shrink:0; }
+        #contractFormPage .terminate-guide strong { display:block; margin-bottom:2px; font-size:12px; font-weight:800; color:#7c2d12; }
+        #contractFormPage .terminate-locked .form-input[readonly],
+        #contractFormPage .terminate-locked .form-textarea[readonly],
+        #contractFormPage .terminate-locked .readonly-control {
+            background:#f8f9fb !important;
+            color:#6b7280 !important;
+            cursor:not-allowed !important;
+        }
+        #contractFormPage .terminate-locked .readonly-choice { cursor:not-allowed; opacity:.72; }
+
         #contractFormPage .form-select,
         #contractFormPage .form-input,
         #contractFormPage .form-textarea {
@@ -151,6 +180,29 @@
             outline:none;
         }
         #contractFormPage .form-input[readonly] { background:#f8f9fb; color:#6b7280; }
+
+
+        /* ── 검침 설정 : 검침 종류 / CSV 식별키 / 외부 고객번호 한 줄 배치 ── */
+        #contractFormPage .meter-setting-grid {
+            display:grid;
+            grid-template-columns:160px minmax(360px,1fr) 320px;
+            gap:12px 14px;
+            align-items:start;
+        }
+        #contractFormPage .meter-setting-grid .meter-kind-field,
+        #contractFormPage .meter-setting-grid .meter-csv-field,
+        #contractFormPage .meter-setting-grid .meter-ext-field {
+            min-width:0;
+        }
+        #contractFormPage .meter-setting-grid .meter-rmrk-field {
+            grid-column:1 / -1;
+        }
+        #contractFormPage .meter-csv-input-row {
+            display:grid;
+            grid-template-columns:minmax(0,1fr) auto;
+            gap:7px;
+            align-items:center;
+        }
 
         /* ── 계약내용/비고 비율 : 계약내용을 더 넓게 표시 ── */
         #contractFormPage .contract-content-grid {
@@ -366,6 +418,8 @@
             #contractFormPage .contract-top-row { grid-template-columns:1fr; }
             #contractFormPage .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
             #contractFormPage .choice-layout { grid-template-columns:1fr; }
+            #contractFormPage .meter-setting-grid { grid-template-columns:1fr; }
+            #contractFormPage .meter-setting-grid .meter-rmrk-field { grid-column:1; }
         }
         @media(max-width:760px) {
             #contractFormPage .form-grid,
@@ -382,7 +436,7 @@
 
 <c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/facility/contract/list/${mgmtOfcNo}" />
 <c:set var="activeSidebarParent" value="시설·공사 관리" />
-<c:set var="activeSidebarCurrent" value="${mode eq 'update' ? '계약 수정' : '계약 등록'}" />
+<c:set var="activeSidebarCurrent" value="${isTerminateMode ? '계약 해지' : (mode eq 'update' ? '계약 수정' : '계약 등록')}" />
 
 <div class="app-wrapper">
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
@@ -398,11 +452,17 @@
                     <div class="page-title-block">
                         <h2>
                             <c:choose>
+                                <c:when test="${isTerminateMode}">계약 해지</c:when>
                                 <c:when test="${mode eq 'update'}">계약 수정</c:when>
                                 <c:otherwise>계약 등록</c:otherwise>
                             </c:choose>
                         </h2>
-                        <p>협력업체 계약 기본정보, 대상 시설, 검침 설정, 계약서 파일을 등록합니다.</p>
+                        <p>
+                            <c:choose>
+                                <c:when test="${isTerminateMode}">계약 정보를 확인하고 해지 사유를 남긴 뒤 계약상태를 해지로 저장합니다.</c:when>
+                                <c:otherwise>협력업체 계약 기본정보, 대상 시설, 검침 설정, 계약서 파일을 등록합니다.</c:otherwise>
+                            </c:choose>
+                        </p>
                     </div>
 
                     <div class="page-actions">
@@ -413,15 +473,27 @@
                 </div>
 
                 <form id="contractForm"
+                      class="${isTerminateMode ? 'terminate-locked' : ''}"
+                      data-terminate-mode="${isTerminateMode ? 'Y' : 'N'}"
                       method="post"
                       enctype="multipart/form-data"
-                      action="${ctx}/manager/facility/contract/${mode eq 'update' ? 'update' : 'insert'}/${mgmtOfcNo}">
+                      action="${ctx}/manager/facility/contract/${(mode eq 'update' or isTerminateMode) ? 'update' : 'insert'}/${mgmtOfcNo}">
                     <sec:csrfInput/>
 
                     <%-- 수정 시 계약번호와 파일그룹번호 유지 --%>
                     <input type="hidden" name="contNo" value="${contract.contNo}">
                     <input type="hidden" name="fileGroupNo" value="${contract.fileGroupNo}">
-                    <input type="hidden" id="formMode" value="${empty mode ? 'insert' : mode}">
+                    <input type="hidden" id="formMode" value="${isTerminateMode ? 'terminate' : (empty mode ? 'insert' : mode)}">
+
+                    <c:if test="${isTerminateMode}">
+                        <div class="terminate-guide">
+                            <span class="material-symbols-rounded">warning</span>
+                            <span>
+                                <strong>계약 해지 처리</strong>
+                                해지 모드에서는 기존 계약정보를 변경하지 않도록 대부분의 입력값을 잠급니다. 계약상태는 해지로 저장되며, 계약내용 또는 비고에 해지 사유와 내부 메모를 남겨주세요.
+                            </span>
+                        </div>
+                    </c:if>
 
                     <%-- 계약 기본정보 / 협력업체 : 같은 높이의 병렬 패널 --%>
                     <div class="contract-top-row">
@@ -433,7 +505,7 @@
 
                             <div class="panel-body">
                                 <div class="form-grid cols-2">
-                                    <c:if test="${mode eq 'update'}">
+                                    <c:if test="${mode eq 'update' or isTerminateMode}">
                                         <div class="form-field">
                                             <label class="field-label">계약번호</label>
                                             <input type="text" class="form-input" value="${contract.contNo}" readonly>
@@ -483,9 +555,9 @@
                                         <label class="field-label" for="contSttsCd">계약상태</label>
                                         <select class="form-select" id="contSttsCd" name="contSttsCd">
                                             <option value="DRAFT"  <c:if test="${contract.contSttsCd eq 'DRAFT'}">selected</c:if>>작성중</option>
-                                            <option value="ACTIVE" <c:if test="${empty contract.contSttsCd or contract.contSttsCd eq 'ACTIVE'}">selected</c:if>>유효</option>
-                                            <option value="END"    <c:if test="${contract.contSttsCd eq 'END'}">selected</c:if>>종료</option>
-                                            <option value="TERM"   <c:if test="${contract.contSttsCd eq 'TERM'}">selected</c:if>>해지</option>
+                                            <option value="ACTIVE" <c:if test="${not isTerminateMode and (empty contract.contSttsCd or contract.contSttsCd eq 'ACTIVE')}">selected</c:if>>진행중</option>
+                                            <option value="END"    <c:if test="${not isTerminateMode and contract.contSttsCd eq 'END'}">selected</c:if>>종료</option>
+                                            <option value="TERM"   <c:if test="${isTerminateMode or contract.contSttsCd eq 'TERM'}">selected</c:if>>해지</option>
                                         </select>
                                     </div>
 
@@ -497,22 +569,22 @@
 
                                     <div class="form-field">
                                         <label class="field-label" for="contDt">계약일자</label>
-                                        <input type="date" class="form-input" id="contDt" name="contDt" value="${contract.contDt}">
+                                        <input type="date" class="form-input" id="contDt" name="contDt" value="${contDtValue}">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label" for="contBgngDt">계약시작일<span class="required">*</span></label>
-                                        <input type="date" class="form-input" id="contBgngDt" name="contBgngDt" value="${contract.contBgngDt}" required>
+                                        <input type="date" class="form-input" id="contBgngDt" name="contBgngDt" value="${contBgngDtValue}" required>
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label" for="contEndDt">계약종료일</label>
-                                        <input type="date" class="form-input" id="contEndDt" name="contEndDt" value="${contract.contEndDt}">
+                                        <input type="date" class="form-input" id="contEndDt" name="contEndDt" value="${contEndDtValue}">
                                     </div>
 
                                     <div class="form-field">
                                         <label class="field-label" for="pymtDt">지급예정일</label>
-                                        <input type="date" class="form-input" id="pymtDt" name="pymtDt" value="${contract.pymtDt}">
+                                        <input type="date" class="form-input" id="pymtDt" name="pymtDt" value="${pymtDtValue}">
                                     </div>
                                 </div>
                             </div>
@@ -551,11 +623,8 @@
                                                                 ${partner.partnerNm} (${partner.bizTyNm})
                                                         </option>
                                                     </c:forEach>
-
-                                                    <%-- 화면 확인용 샘플 : DB 연결 후 제거 가능 --%>
                                                     <c:if test="${empty partnerList}">
-                                                        <option value="PTR3002" data-name="SH승강기관리" data-biz="승강기 유지보수" data-pic="김현우" data-tel="010-3002-3002" <c:if test="${empty contract.partnerNo or contract.partnerNo eq 'PTR3002'}">selected</c:if>>SH승강기관리 (승강기 유지보수)</option>
-                                                        <option value="PTR3003" data-name="SH성산 설비검침대행" data-biz="전기·수도·가스 검침" data-pic="박검침" data-tel="010-3003-3003" <c:if test="${contract.partnerNo eq 'PTR3003'}">selected</c:if>>SH성산 설비검침대행 (전기·수도·가스 검침)</option>
+                                                        <option value="" disabled>등록 가능한 협력업체가 없습니다.</option>
                                                     </c:if>
                                                 </select>
                                             </div>
@@ -596,7 +665,7 @@
                                             <div class="selected-file-list is-hidden" id="selectedContractFileList"></div>
                                         </div>
 
-                                        <c:if test="${mode eq 'update'}">
+                                        <c:if test="${mode eq 'update' or isTerminateMode}">
                                             <div class="form-field full">
                                                 <label class="field-label">기존 첨부파일</label>
 
@@ -685,23 +754,8 @@
                                                 </span>
                                             </label>
                                         </c:forEach>
-
-                                        <%-- 화면 확인용 샘플 : DB 연결 후 제거 가능 --%>
                                         <c:if test="${empty facilityList}">
-                                            <label class="choice-row" data-facility-row data-search-text="fac1001 1호기 승강기 elv 101동 승강기홀">
-                                                <input type="checkbox" name="targetFacilityNoList" value="FAC1001" checked>
-                                                <span>
-                                                    <span class="choice-main">1호기 승강기</span>
-                                                    <span class="choice-sub">FAC1001 · ELV · 101동 승강기홀</span>
-                                                </span>
-                                            </label>
-                                            <label class="choice-row" data-facility-row data-search-text="fac3001 2호기 승강기 elv 102동 승강기홀">
-                                                <input type="checkbox" name="targetFacilityNoList" value="FAC3001">
-                                                <span>
-                                                    <span class="choice-main">2호기 승강기</span>
-                                                    <span class="choice-sub">FAC3001 · ELV · 102동 승강기홀</span>
-                                                </span>
-                                            </label>
+                                            <div class="empty-row">선택 가능한 시설이 없습니다.</div>
                                         </c:if>
                                     </div>
                                 </div>
@@ -745,27 +799,38 @@
                         <div class="panel-body">
                             <input type="hidden" name="utilityProviderNo" value="${contract.utilityProviderNo}">
 
-                            <div class="form-grid cols-2">
-                                <div class="form-field">
-                                    <label class="field-label" for="csvIdntfKey">CSV 식별키</label>
-                                    <div class="partner-select-row">
-                                        <input type="text" class="form-input" id="csvIdntfKey" name="csvIdntfKey"
-                                               value="${fn:escapeXml(contract.csvIdntfKey)}"
-                                               placeholder="예: CSV_A10023118_PTR3003">
-                                        <button type="button" class="btn" id="makeCsvKeyBtn">자동생성</button>
-                                    </div>
-                                    <div class="field-help">검침 CSV 업로드 시 공급/검침 설정을 식별하는 값입니다. 자동생성 규칙은 CSV_단지번호_협력업체번호입니다.</div>
+                            <div class="meter-setting-grid">
+                                <div class="form-field meter-kind-field">
+                                    <label class="field-label" for="meterTyCd">검침 종류<span class="required">*</span></label>
+                                    <select class="form-select" id="meterTyCd" name="meterTyCd">
+                                        <option value="">선택</option>
+                                        <option value="ELEC" <c:if test="${contract.meterTyCd eq 'ELEC'}">selected</c:if>>전기</option>
+                                        <option value="WATER" <c:if test="${contract.meterTyCd eq 'WATER'}">selected</c:if>>수도</option>
+                                        <option value="GAS" <c:if test="${contract.meterTyCd eq 'GAS'}">selected</c:if>>가스</option>
+                                    </select>
+                                    <div class="field-help">전기, 수도, 가스 중 선택합니다.</div>
                                 </div>
 
-                                <div class="form-field">
+                                <div class="form-field meter-csv-field">
+                                    <label class="field-label" for="csvIdntfKey">CSV 식별키</label>
+                                    <div class="meter-csv-input-row">
+                                        <input type="text" class="form-input" id="csvIdntfKey" name="csvIdntfKey"
+                                               value="${fn:escapeXml(contract.csvIdntfKey)}"
+                                               placeholder="예: CSV_A12185003_ELEC">
+                                        <button type="button" class="btn" id="makeCsvKeyBtn">자동생성</button>
+                                    </div>
+                                    <div class="field-help">검침 CSV 업로드 시 공급/검침 설정을 식별하는 값입니다.</div>
+                                </div>
+
+                                <div class="form-field meter-ext-field">
                                     <label class="field-label" for="extCustNo">외부 고객번호</label>
                                     <input type="text" class="form-input" id="extCustNo" name="extCustNo"
                                            value="${fn:escapeXml(contract.extCustNo)}"
-                                           placeholder="예: 한전/수도/가스 고객번호 또는 대행업체 고객코드">
-                                    <div class="field-help">외부 기관에서 별도로 부여한 고객번호가 있을 때만 입력합니다. 없으면 비워둘 수 있습니다.</div>
+                                           placeholder="예: CUST-A12185003-ELEC">
+                                    <div class="field-help">외부 기관에서 별도로 부여한 고객번호가 있을 때만 입력합니다.</div>
                                 </div>
 
-                                <div class="form-field full">
+                                <div class="form-field meter-rmrk-field">
                                     <label class="field-label" for="utilityRmrkCn">검침 설정 비고</label>
                                     <textarea class="form-textarea" id="utilityRmrkCn" name="utilityRmrkCn"
                                               placeholder="검침 계약과 공급/검침 설정에 대한 참고사항을 입력하세요.">${fn:escapeXml(contract.utilityRmrkCn)}</textarea>
@@ -783,15 +848,25 @@
                         <div class="panel-body">
                             <div class="contract-content-grid">
                                 <div class="form-field">
-                                    <label class="field-label" for="contCn">계약내용</label>
+                                    <label class="field-label" for="contCn">
+                                        <c:choose>
+                                            <c:when test="${isTerminateMode}">해지 메모</c:when>
+                                            <c:otherwise>계약내용</c:otherwise>
+                                        </c:choose>
+                                    </label>
                                     <textarea class="form-textarea" id="contCn" name="contCn"
-                                              placeholder="계약 범위, 주요 조건, 작업 내용을 입력하세요.">${fn:escapeXml(contract.contCn)}</textarea>
+                                              placeholder="${isTerminateMode ? '해지 처리와 관련된 내부 메모를 입력하세요.' : '계약 범위, 주요 조건, 작업 내용을 입력하세요.'}">${fn:escapeXml(contract.contCn)}</textarea>
                                 </div>
 
                                 <div class="form-field">
-                                    <label class="field-label" for="rmrkCn">비고</label>
+                                    <label class="field-label" for="rmrkCn">
+                                        <c:choose>
+                                            <c:when test="${isTerminateMode}">해지 사유/비고<span class="required">*</span></c:when>
+                                            <c:otherwise>비고</c:otherwise>
+                                        </c:choose>
+                                    </label>
                                     <textarea class="form-textarea" id="rmrkCn" name="rmrkCn"
-                                              placeholder="내부 참고사항을 입력하세요.">${fn:escapeXml(contract.rmrkCn)}</textarea>
+                                              placeholder="${isTerminateMode ? '예: 업체 요청에 따른 중도 해지, 계약 조건 변경으로 해지 처리' : '내부 참고사항을 입력하세요.'}">${fn:escapeXml(contract.rmrkCn)}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -800,9 +875,10 @@
                     <%-- 저장 버튼 --%>
                     <div class="form-actions">
                         <a href="${ctx}/manager/facility/contract/list/${mgmtOfcNo}" class="btn">취소</a>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn ${isTerminateMode ? 'btn-danger-solid' : 'btn-primary'}">
                             <span class="material-symbols-rounded">save</span>
                             <c:choose>
+                                <c:when test="${isTerminateMode}">해지 처리</c:when>
                                 <c:when test="${mode eq 'update'}">수정 저장</c:when>
                                 <c:otherwise>계약 등록</c:otherwise>
                             </c:choose>
@@ -911,7 +987,8 @@
            - CSV 식별키 자동생성에 단지번호를 사용
         ============================================================ */
         var contractFormConfig = {
-            aptCmplexNo: '${not empty office.aptCmplexNo ? office.aptCmplexNo : contract.aptCmplexNo}'
+            aptCmplexNo: '${not empty office.aptCmplexNo ? office.aptCmplexNo : contract.aptCmplexNo}',
+            isTerminateMode: ${isTerminateMode ? 'true' : 'false'}
         };
 
         /* ============================================================
@@ -1020,29 +1097,109 @@
             syncPartnerSearchInput();
             updatePartnerSummary();
             renderSelectedFacilities();
+            applyTerminateMode();
         });
+
+        /* ============================================================
+           해지 모드 화면 잠금
+           - disabled는 제출값이 빠질 수 있으므로 select/checkbox는 클릭만 막는다.
+           - 계약내용/비고는 해지 사유 기록을 위해 수정 가능하게 둔다.
+        ============================================================ */
+        function applyTerminateMode() {
+            if (!contractFormConfig.isTerminateMode) return;
+
+            var statusSelect = document.getElementById('contSttsCd');
+            var readonlyInputIds = [
+                'contNm', 'contAmt', 'contDt', 'contBgngDt', 'contEndDt', 'pymtDt',
+                'partnerSearchInput', 'partnerSummary', 'csvIdntfKey', 'extCustNo', 'utilityRmrkCn'
+            ];
+            var readonlySelectIds = ['contTyCd', 'contTargetCd', 'bidTyCd', 'contSttsCd', 'partnerNo', 'meterTyCd'];
+
+            if (statusSelect) {
+                statusSelect.value = 'TERM';
+            }
+
+            readonlyInputIds.forEach(function (id) {
+                var element = document.getElementById(id);
+                if (element) {
+                    element.readOnly = true;
+                    element.classList.add('readonly-control');
+                }
+            });
+
+            readonlySelectIds.forEach(function (id) {
+                var element = document.getElementById(id);
+                if (element) {
+                    element.classList.add('readonly-control');
+                    element.addEventListener('mousedown', preventReadonlyChange);
+                    element.addEventListener('keydown', preventReadonlyChange);
+                }
+            });
+
+            document.querySelectorAll('input[name="targetFacilityNoList"]').forEach(function (checkbox) {
+                checkbox.classList.add('readonly-choice');
+                checkbox.addEventListener('click', preventReadonlyChange);
+            });
+
+            document.querySelectorAll('input[name="deleteFileSaveUuidList"]').forEach(function (checkbox) {
+                checkbox.disabled = true;
+            });
+
+            var contractFiles = document.getElementById('contractFiles');
+            if (contractFiles) {
+                contractFiles.disabled = true;
+                contractFiles.classList.add('readonly-control');
+            }
+
+            var makeCsvKeyBtn = document.getElementById('makeCsvKeyBtn');
+            if (makeCsvKeyBtn) {
+                makeCsvKeyBtn.disabled = true;
+            }
+
+            var partnerRegisterBtn = document.getElementById('openPartnerRegisterModalBtn');
+            if (partnerRegisterBtn) {
+                partnerRegisterBtn.disabled = true;
+            }
+        }
+
+        function preventReadonlyChange(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (event.currentTarget && typeof event.currentTarget.blur === 'function') {
+                event.currentTarget.blur();
+            }
+        }
 
         /* ============================================================
            CSV 식별키 자동생성
            - 검침 계약 저장 시 UTILITY_PROVIDER.CSV_IDNTF_KEY로 저장될 값
-           - 규칙: CSV_단지번호_협력업체번호
+           - 협력업체번호가 아니라 검침 종류(METER_TY_CD)를 기준으로 만든다.
+           - 규칙: CSV_단지번호_검침종류
         ============================================================ */
         function makeCsvIdntfKey() {
-            var partnerSelect = document.getElementById('partnerNo');
+            var meterTySelect = document.getElementById('meterTyCd');
             var csvInput = document.getElementById('csvIdntfKey');
+            var extCustInput = document.getElementById('extCustNo');
 
-            if (!partnerSelect || !csvInput) return;
+            if (!meterTySelect || !csvInput) return;
 
-            if (!partnerSelect.value) {
-                alertMessage('CSV 식별키를 만들려면 협력업체를 먼저 선택하세요.');
-                partnerSelect.focus();
+            if (!meterTySelect.value) {
+                alertMessage('CSV 식별키를 만들려면 검침 종류를 먼저 선택하세요.');
+                meterTySelect.focus();
                 return;
             }
 
             var aptCmplexNo = contractFormConfig.aptCmplexNo || 'APT';
-            var partnerNo = partnerSelect.value;
+            var meterTyCd = meterTySelect.value;
 
-            csvInput.value = 'CSV_' + aptCmplexNo + '_' + partnerNo;
+            // 검침 종류 기준 CSV 식별키 생성
+            csvInput.value = 'CSV_' + aptCmplexNo + '_' + meterTyCd;
+
+            // 외부 고객번호가 비어 있으면 같은 기준으로 자동 보조값을 채운다.
+            if (extCustInput && !extCustInput.value.trim()) {
+                extCustInput.value = 'CUST-' + aptCmplexNo + '-' + meterTyCd;
+            }
         }
 
         /* ============================================================
@@ -1266,6 +1423,17 @@
             if (meterSettingPanel) meterSettingPanel.classList.add('is-hidden');
             if (installGuidePanel) installGuidePanel.classList.add('is-hidden');
 
+            /* 해지 모드에서는 기존 계약의 대상구분을 변경하지 않는다. */
+            if (contractFormConfig.isTerminateMode) {
+                if (targetValue === 'FACILITY' && targetFacilityPanel) {
+                    targetFacilityPanel.classList.remove('is-hidden');
+                }
+                if (targetValue === 'METER' && meterSettingPanel) {
+                    meterSettingPanel.classList.remove('is-hidden');
+                }
+                return;
+            }
+
             /* 설치공사: 대상 시설 선택 대신 안내만 표시한다. */
             if (contTyCd === 'INSTALL') {
                 targetSelect.value = 'FACILITY';
@@ -1441,6 +1609,25 @@
             var contAmt = document.getElementById('contAmt');
             var contBgngDt = document.getElementById('contBgngDt');
 
+            if (contractFormConfig.isTerminateMode) {
+                var statusSelect = document.getElementById('contSttsCd');
+                var contCn = document.getElementById('contCn');
+                var rmrkCn = document.getElementById('rmrkCn');
+
+                if (statusSelect) {
+                    statusSelect.value = 'TERM';
+                }
+
+                if ((!contCn || !contCn.value.trim()) && (!rmrkCn || !rmrkCn.value.trim())) {
+                    alertMessage('해지 사유나 해지 메모를 입력하세요.');
+                    if (rmrkCn) {
+                        rmrkCn.focus();
+                    }
+                    event.preventDefault();
+                    return;
+                }
+            }
+
             if (!contNm || !contNm.value.trim()) {
                 alertMessage('계약명을 입력하세요.');
                 contNm.focus();
@@ -1478,7 +1665,17 @@
             }
 
             if (targetSelect && targetSelect.value === 'METER') {
+                var meterTyCd = document.getElementById('meterTyCd');
                 var csvIdntfKey = document.getElementById('csvIdntfKey');
+
+                if (!meterTyCd || !meterTyCd.value) {
+                    alertMessage('검침 계약은 검침 종류를 선택해야 합니다.');
+                    if (meterTyCd) {
+                        meterTyCd.focus();
+                    }
+                    event.preventDefault();
+                    return;
+                }
 
                 if (!csvIdntfKey || !csvIdntfKey.value.trim()) {
                     alertMessage('검침 계약은 CSV 식별키를 입력해야 합니다.');

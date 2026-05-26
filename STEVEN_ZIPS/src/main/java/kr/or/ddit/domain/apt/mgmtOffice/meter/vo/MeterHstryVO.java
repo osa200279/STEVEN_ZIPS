@@ -23,6 +23,9 @@ public class MeterHstryVO {
     /** 세대/호 번호 */
     private String hoNo;
 
+    /** 검침구분, COMPLEX: 일반 세대별 검침, FACILITY: 시설 검침 */
+    private String meterScope;
+
     /** 검침일자 */
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date meterDt;

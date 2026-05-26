@@ -19,9 +19,6 @@ public interface IFacilityContractMapper {
     /** 다음 계약번호 조회 */
     String selectNextContNo();
 
-    /** 다음 파일그룹번호 조회 */
-    Long selectNextFileGroupNo();
-
     /** 다음 검침 설정번호 조회 */
     String selectNextUtilityProviderNo();
 

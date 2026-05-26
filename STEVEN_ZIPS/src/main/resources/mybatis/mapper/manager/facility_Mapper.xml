@@ -450,6 +450,7 @@
                                      and cont_stts.code_no_cd = fc.cont_stts_cd
         where fc.facility_no = #{facilityNo}
           and fc.cont_ty_cd = 'INSTALL'
+          and fc.cont_stts_cd = 'ACTIVE'
           and f.apt_cmplex_no = (
             select mo.apt_cmplex_no
             from mgmt_office mo
