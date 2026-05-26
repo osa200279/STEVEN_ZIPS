@@ -5,116 +5,116 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta content="width=device-width, initial-scale=1.0" name="viewport" />
-<script
-		src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link
-		href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Manrope:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-		rel="stylesheet" />
-<link
-		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-		rel="stylesheet" />
-<script id="tailwind-config">
-	tailwind.config = {
-		darkMode : "class",
-		theme : {
-			extend : {
-				"colors" : {
-					"tertiary-fixed" : "#ffdcc1",
-					"background" : "#f8f9fa",
-					"tertiary-container" : "#a45b00",
-					"primary-fixed" : "#b1f0ce",
-					"on-secondary-fixed-variant" : "#274e45",
-					"outline" : "#707a6c",
-					"primary-fixed-dim" : "#95d4b3",
-					"on-background" : "#191c1d",
-					"inverse-on-surface" : "#f0f1f2",
-					"on-error-container" : "#93000a",
-					"on-primary-fixed" : "#002114",
-					"outline-variant" : "#bfcaba",
-					"surface-variant" : "#e1e3e4",
-					"inverse-surface" : "#2e3132",
-					"surface-tint" : "#2c694e",
-					"on-tertiary-fixed-variant" : "#6c3a00",
-					"on-tertiary-fixed" : "#2e1500",
-					"surface-container-low" : "#f3f4f5",
-					"primary-container" : "#3d795d",
-					"on-primary-container" : "#c1ffdd",
-					"surface-dim" : "#d9dadb",
-					"secondary-fixed-dim" : "#a6cfc3",
-					"surface-container-high" : "#e7e8e9",
-					"surface" : "#f8f9fa",
-					"secondary-container" : "#bee8dc",
-					"tertiary-fixed-dim" : "#ffb778",
-					"on-secondary" : "#ffffff",
-					"inverse-primary" : "#95d4b3",
-					"primary" : "#226046",
-					"secondary-fixed" : "#c1ebdf",
-					"on-secondary-container" : "#436a60",
-					"on-surface" : "#191c1d",
-					"on-surface-variant" : "#40493d",
-					"surface-container-lowest" : "#ffffff",
-					"secondary" : "#3f665c",
-					"on-tertiary-container" : "#ffeee2",
-					"on-primary" : "#ffffff",
-					"on-tertiary" : "#ffffff",
-					"surface-container-highest" : "#e1e3e4",
-					"error" : "#ba1a1a",
-					"on-error" : "#ffffff",
-					"on-secondary-fixed" : "#00201a",
-					"on-primary-fixed-variant" : "#0e5138",
-					"surface-container" : "#edeeef",
-					"surface-bright" : "#f8f9fa",
-					"tertiary" : "#814700",
-					"error-container" : "#ffdad6"
+	<meta charset="utf-8" />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<script
+			src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+	<link
+			href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Manrope:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet" />
+	<link
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+			rel="stylesheet" />
+	<script id="tailwind-config">
+		tailwind.config = {
+			darkMode : "class",
+			theme : {
+				extend : {
+					"colors" : {
+						"tertiary-fixed" : "#ffdcc1",
+						"background" : "#f8f9fa",
+						"tertiary-container" : "#a45b00",
+						"primary-fixed" : "#b1f0ce",
+						"on-secondary-fixed-variant" : "#274e45",
+						"outline" : "#707a6c",
+						"primary-fixed-dim" : "#95d4b3",
+						"on-background" : "#191c1d",
+						"inverse-on-surface" : "#f0f1f2",
+						"on-error-container" : "#93000a",
+						"on-primary-fixed" : "#002114",
+						"outline-variant" : "#bfcaba",
+						"surface-variant" : "#e1e3e4",
+						"inverse-surface" : "#2e3132",
+						"surface-tint" : "#2c694e",
+						"on-tertiary-fixed-variant" : "#6c3a00",
+						"on-tertiary-fixed" : "#2e1500",
+						"surface-container-low" : "#f3f4f5",
+						"primary-container" : "#3d795d",
+						"on-primary-container" : "#c1ffdd",
+						"surface-dim" : "#d9dadb",
+						"secondary-fixed-dim" : "#a6cfc3",
+						"surface-container-high" : "#e7e8e9",
+						"surface" : "#f8f9fa",
+						"secondary-container" : "#bee8dc",
+						"tertiary-fixed-dim" : "#ffb778",
+						"on-secondary" : "#ffffff",
+						"inverse-primary" : "#95d4b3",
+						"primary" : "#226046",
+						"secondary-fixed" : "#c1ebdf",
+						"on-secondary-container" : "#436a60",
+						"on-surface" : "#191c1d",
+						"on-surface-variant" : "#40493d",
+						"surface-container-lowest" : "#ffffff",
+						"secondary" : "#3f665c",
+						"on-tertiary-container" : "#ffeee2",
+						"on-primary" : "#ffffff",
+						"on-tertiary" : "#ffffff",
+						"surface-container-highest" : "#e1e3e4",
+						"error" : "#ba1a1a",
+						"on-error" : "#ffffff",
+						"on-secondary-fixed" : "#00201a",
+						"on-primary-fixed-variant" : "#0e5138",
+						"surface-container" : "#edeeef",
+						"surface-bright" : "#f8f9fa",
+						"tertiary" : "#814700",
+						"error-container" : "#ffdad6"
+					},
+					"borderRadius" : {
+						"DEFAULT" : "0.25rem",
+						"lg" : "0.5rem",
+						"xl" : "1.5rem",
+						"full" : "9999px"
+					},
+					"fontFamily" : {
+						"headline" : [ "Plus Jakarta Sans" ],
+						"body" : [ "Manrope" ],
+						"label" : [ "Manrope" ]
+					}
 				},
-				"borderRadius" : {
-					"DEFAULT" : "0.25rem",
-					"lg" : "0.5rem",
-					"xl" : "1.5rem",
-					"full" : "9999px"
-				},
-				"fontFamily" : {
-					"headline" : [ "Plus Jakarta Sans" ],
-					"body" : [ "Manrope" ],
-					"label" : [ "Manrope" ]
-				}
 			},
-		},
-	}
-</script>
-<style>
-	body {
-		font-family: 'Manrope', sans-serif;
-		background-color: #f8f9fa;
-		color: #191c1d;
-	}
+		}
+	</script>
+	<style>
+		body {
+			font-family: 'Manrope', sans-serif;
+			background-color: #f8f9fa;
+			color: #191c1d;
+		}
 
-	.font-headline {
-		font-family: 'Plus Jakarta Sans', sans-serif;
-	}
+		.font-headline {
+			font-family: 'Plus Jakarta Sans', sans-serif;
+		}
 
-	.material-symbols-outlined {
-		font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-	}
+		.material-symbols-outlined {
+			font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+		}
 
-	/* Smooth Mega Menu Transition */
-	.mega-menu {
-		max-height: 0;
-		overflow: hidden;
-		transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s
-		ease;
-		opacity: 0;
-		pointer-events: none;
-	}
+		/* Smooth Mega Menu Transition */
+		.mega-menu {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s
+			ease;
+			opacity: 0;
+			pointer-events: none;
+		}
 
-	.group:hover .mega-menu {
-		max-height: 600px;
-		opacity: 1;
-		pointer-events: auto;
-	}
-</style>
+		.group:hover .mega-menu {
+			max-height: 600px;
+			opacity: 1;
+			pointer-events: auto;
+		}
+	</style>
 </head>
 <body class="min-h-screen flex flex-col">
 <%@ include file="/WEB-INF/views/include/main_headerLayout.jsp" %>
@@ -152,17 +152,6 @@
 			<form action="${pageContext.request.contextPath}/" method="get"
 			      class="bg-surface-container-lowest p-4 md:p-6 rounded-full shadow-[0_30px_60px_rgba(0,0,0,0.06)] flex flex-col md:flex-row items-center gap-4">
 
-				<!-- 단지명 / 주소 키워드 -->
-				<div class="flex items-center flex-1 w-full gap-3 px-6 py-3 bg-surface-container-low rounded-full">
-					<span class="material-symbols-outlined text-outline">search</span>
-					<input
-							name="keyword"
-							value="${keyword}"
-							class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-outline-variant font-body"
-							placeholder="단지명 또는 주소를 검색하세요"
-							type="text" />
-				</div>
-
 				<!-- 지역 선택 -->
 				<div class="flex items-center w-full md:w-auto gap-3 px-6 py-3 bg-surface-container-low rounded-full group">
 					<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">location_on</span>
@@ -176,6 +165,17 @@
 							</option>
 						</c:forEach>
 					</select>
+				</div>
+
+				<!-- 단지명 / 주소 키워드 -->
+				<div class="flex items-center flex-1 w-full gap-3 px-6 py-3 bg-surface-container-low rounded-full">
+					<span class="material-symbols-outlined text-outline">search</span>
+					<input
+							name="keyword"
+							value="${keyword}"
+							class="bg-transparent border-none focus:ring-0 w-full text-on-surface placeholder:text-outline-variant font-body"
+							placeholder="단지명 또는 주소를 검색하세요"
+							type="text" />
 				</div>
 
 				<button type="submit"
@@ -214,60 +214,70 @@
 				<!-- 결과 있음 -->
 				<c:if test="${not empty aptList}">
 					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
 						<c:forEach var="apt" items="${aptList}">
-							<article class="bg-surface-container-lowest rounded-xl p-7 shadow-sm border border-outline-variant/30 hover:-translate-y-1 hover:shadow-lg transition-all">
-								<div class="flex items-center justify-between gap-3 mb-5">
-										<span class="inline-flex items-center px-3 py-1 rounded-full bg-primary-container/15 text-primary text-sm font-semibold">
-												${apt.sidoNm}
-										</span>
-									<c:if test="${not empty apt.bldYr}">
-											<span class="text-sm text-outline">
-												${apt.bldYr} 준공
-											</span>
-									</c:if>
-								</div>
+							<a href="${pageContext.request.contextPath}/main/apt/detail.do?aptCmplexNo=${apt.aptCmplexNo}"
+							   class="block no-underline text-inherit">
 
-								<h3 class="text-xl font-bold text-on-surface font-headline mb-3">
-										${apt.aptCmplexNm}
-								</h3>
+								<article class="h-full bg-surface-container-lowest rounded-xl p-7 shadow-sm border border-outline-variant/30 hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer">
 
-								<p class="text-on-surface-variant font-body leading-relaxed min-h-[48px] mb-6">
-									<c:choose>
-										<c:when test="${not empty apt.dorojuso}">
-											${apt.dorojuso}
-										</c:when>
-										<c:otherwise>
-											${apt.sidoNm} ${apt.sigunguNm} ${apt.emdNm}
-										</c:otherwise>
-									</c:choose>
-								</p>
+									<div class="flex items-center justify-between gap-3 mb-5">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary-container/15 text-primary text-sm font-semibold">
+								${apt.sidoNm}
+						</span>
 
-								<div class="grid grid-cols-2 gap-3 pt-5 border-t border-outline-variant/30">
-									<div>
-										<p class="text-xs text-outline mb-1">세대수</p>
-										<p class="font-bold text-on-surface">
-											<c:choose>
-												<c:when test="${not empty apt.unitCnt}">
-													<fmt:formatNumber value="${apt.unitCnt}" pattern="#,###"/>세대
-												</c:when>
-												<c:otherwise>-</c:otherwise>
-											</c:choose>
-										</p>
+										<c:if test="${not empty apt.bldYr}">
+                            <span class="text-sm text-outline">
+                                ${apt.bldYr} 준공
+                            </span>
+										</c:if>
 									</div>
-									<div>
-										<p class="text-xs text-outline mb-1">동수</p>
-										<p class="font-bold text-on-surface">
-											<c:choose>
-												<c:when test="${not empty apt.dongCnt}">
-													${apt.dongCnt}개동
-												</c:when>
-												<c:otherwise>-</c:otherwise>
-											</c:choose>
-										</p>
+
+									<h3 class="text-xl font-bold text-on-surface font-headline mb-3">
+											${apt.aptCmplexNm}
+									</h3>
+
+									<p class="text-on-surface-variant font-body leading-relaxed min-h-[48px] mb-6">
+										<c:choose>
+											<c:when test="${not empty apt.dorojuso}">
+												${apt.dorojuso}
+											</c:when>
+											<c:otherwise>
+												${apt.sidoNm} ${apt.sigunguNm} ${apt.emdNm}
+											</c:otherwise>
+										</c:choose>
+									</p>
+
+									<div class="grid grid-cols-2 gap-3 pt-5 border-t border-outline-variant/30">
+										<div>
+											<p class="text-xs text-outline mb-1">세대수</p>
+											<p class="font-bold text-on-surface">
+												<c:choose>
+													<c:when test="${not empty apt.unitCnt}">
+														<fmt:formatNumber value="${apt.unitCnt}" pattern="#,###"/>세대
+													</c:when>
+													<c:otherwise>-</c:otherwise>
+												</c:choose>
+											</p>
+										</div>
+
+										<div>
+											<p class="text-xs text-outline mb-1">동수</p>
+											<p class="font-bold text-on-surface">
+												<c:choose>
+													<c:when test="${not empty apt.dongCnt}">
+														${apt.dongCnt}개동
+													</c:when>
+													<c:otherwise>-</c:otherwise>
+												</c:choose>
+											</p>
+										</div>
 									</div>
-								</div>
-							</article>
+
+								</article>
+							</a>
 						</c:forEach>
+
 					</div>
 
 					<!-- 페이징 -->
@@ -289,13 +299,16 @@
 							</c:if>
 
 							<!-- 페이지 번호 -->
-							<c:forEach var="pageNo" begin="${pagingVO.startPage}" end="${pagingVO.endPage lt pagingVO.totalPage ? pagingVO.endPage : pagingVO.totalPage}">
+							<c:forEach var="pageNo"
+							           begin="${pagingVO.startPage}"
+							           end="${pagingVO.endPage lt pagingVO.totalPage ? pagingVO.endPage : pagingVO.totalPage}">
 								<c:choose>
 									<c:when test="${pageNo eq pagingVO.currentPage}">
-										<span class="w-10 h-10 inline-flex items-center justify-center rounded-full bg-primary text-on-primary font-bold">
-												${pageNo}
-										</span>
+                        <span class="w-10 h-10 inline-flex items-center justify-center rounded-full bg-primary text-on-primary font-bold">
+								${pageNo}
+						</span>
 									</c:when>
+
 									<c:otherwise>
 										<c:url var="pageUrl" value="/">
 											<c:param name="sidoNm" value="${sidoNm}" />
@@ -325,10 +338,10 @@
 								</a>
 							</c:if>
 
-
 						</div>
 					</c:if>
 				</c:if>
+
 
 				<!-- 결과 없음 -->
 				<c:if test="${empty aptList}">
@@ -358,10 +371,11 @@
 					<h3 class="text-xl font-bold text-on-surface font-headline mb-4">계약공고</h3>
 					<p class="text-on-surface-variant font-body leading-relaxed">
 						최신 공공주택 분양 및 임대 공고를 실시간으로 확인하세요. 맞춤형 알림 서비스로 기회를 놓치지 마세요.</p>
-					<div
-							class="mt-8 flex items-center text-primary font-bold gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-						자세히 보기 <span class="material-symbols-outlined">arrow_forward</span>
-					</div>
+					<a href="${pageContext.request.contextPath}/contract/notice.do"
+					   class="mt-8 flex items-center text-primary font-bold gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity no-underline">
+						자세히 보기
+						<span class="material-symbols-outlined">arrow_forward</span>
+					</a>
 				</div>
 				<!-- Card 2 -->
 				<div
@@ -374,10 +388,11 @@
 					<h3 class="text-xl font-bold text-on-surface font-headline mb-4">공지사항</h3>
 					<p class="text-on-surface-variant font-body leading-relaxed">
 						우리집맵핑의 새로운 소식과 정책 변경, 주거 지원 혜택에 대한 중요한 안내를 확인하실 수 있습니다.</p>
-					<div
-							class="mt-8 flex items-center text-primary font-bold gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-						자세히 보기 <span class="material-symbols-outlined">arrow_forward</span>
-					</div>
+					<a href="${pageContext.request.contextPath}/board/notice/list.do"
+					   class="mt-8 flex items-center text-primary font-bold gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity no-underline">
+						자세히 보기
+						<span class="material-symbols-outlined">arrow_forward</span>
+					</a>
 				</div>
 				<!-- Card 3 -->
 				<div
@@ -390,10 +405,11 @@
 					<h3 class="text-xl font-bold text-on-surface font-headline mb-4">문의사항</h3>
 					<p class="text-on-surface-variant font-body leading-relaxed">
 						이용 중 궁금한 점이나 도움이 필요하신가요? 전문 상담사가 친절하고 정확하게 답변해 드립니다.</p>
-					<div
-							class="mt-8 flex items-center text-primary font-bold gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-						문의하기 <span class="material-symbols-outlined">arrow_forward</span>
-					</div>
+					<a href="${pageContext.request.contextPath}/apt/board/inqry/list.do"
+					   class="mt-8 flex items-center text-primary font-bold gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity no-underline">
+						문의하기
+						<span class="material-symbols-outlined">arrow_forward</span>
+					</a>
 				</div>
 			</div>
 		</div>
