@@ -246,7 +246,10 @@
                             <div class="form-section-title">
                                 <span class="material-symbols-rounded">engineering</span>처리 내역
                             </div>
-                            <!-- 종결/반려 상태 안내 -->
+                            <div class="form-field" style="margin-bottom:10px;">
+                                <label class="field-label">처리 메모 / 반려 사유</label>
+                                <div class="history-box" id="dAnswer" style="min-height:70px; white-space:pre-wrap;">-</div>
+                            </div>
                             <div id="processingNotice" style="display:none;">
                                 <span class="material-symbols-rounded" style="font-size:16px; vertical-align:middle; margin-right:4px;">lock</span>
                                 현재 상태에서는 승인/반려 처리를 할 수 없습니다.
@@ -325,6 +328,7 @@
         var $dStatus          = document.getElementById('dStatus');
         var $dTitle           = document.getElementById('dTitle');
         var $dContent         = document.getElementById('dContent');
+        var $dAnswer         = document.getElementById('dAnswer');
         var $processingNotice = document.getElementById('processingNotice');
         var $btnApproveDetail = document.getElementById('btnApproveDetail');
         var $btnRejectDetail  = document.getElementById('btnRejectDetail');
@@ -467,6 +471,7 @@
             $dStatus.innerHTML     = statBadge(row.cvplSttsCd);
             $dTitle.textContent    = safe(row.cvplTtl);
             $dContent.textContent  = safe(row.cvplCn);
+            $dAnswer.textContent   = safe(row.cvplAns);
 
             /* 승인/반려 버튼 표시 여부 */
             const nextStatus = NEXT_STATUS[row.cvplSttsCd];
