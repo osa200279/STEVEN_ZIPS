@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,6 +25,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
     /**
      * 타겟 파일 메타데이터 세팅 구버전 setFileMetaData 쓸 것 권장
+     *
      * @param fileId - target(FILE_GROUP_NO + "_" + SAVE_FILE_UUID)
      * @return (AttachFileVO)file
      * @author 이용로
@@ -51,9 +51,10 @@ public class AttachFileServiceImpl implements IAttachFileService {
     /**
      * 타겟 파일(or 파일리스트) 메타데이터 세팅
      * 단일 파일도 List(.of())로 넘김
-     * @author 이용로
+     *
      * @param fileNo
      * @return List<AttachFileVO>
+     * @author 이용로
      */
     @Override
     public List<AttachFileVO> setFileMetaData(String fileNo) {
@@ -81,8 +82,9 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
     /**
      * fileGroupNo 가 같은 첨부파일 테이블 데이터 전부 삭제!
-     * @author 도선호
+     *
      * @param fileNo 각 테이블에 적혀있는 fileNo를 적을것!
+     * @author 도선호
      */
     @Override
     public void deleteAllByGroupNo(String fileNo) {
@@ -99,12 +101,12 @@ public class AttachFileServiceImpl implements IAttachFileService {
             String fileSaveUuid = parts[1];   // limit 총 몇개로 나눌지
             AttachFileVO file = attachFileMapper.getAttachFile(fileGroupNo, fileSaveUuid);
 
-        try {
-            Drive drive = googleDriveService.getDriveService();
+            try {
+                Drive drive = googleDriveService.getDriveService();
 
-                    if (file.getGoogleId() != null) {
-                        googleDriveService.moveToTrash(drive, file.getGoogleId());
-                    }
+                if (file.getGoogleId() != null) {
+                    googleDriveService.moveToTrash(drive, file.getGoogleId());
+                }
             } catch (Exception e) {
                 throw new RuntimeException("구글 파일 삭제 실패", e);
             }
@@ -127,12 +129,12 @@ public class AttachFileServiceImpl implements IAttachFileService {
         attachFileMapper.deleteByFileGroupNo(fileGroupNo);
     }
 
-
     /**
      * fileGroupNo 중에 여러 파일이 있을 경우 선택한 파일 삭제!
      * 테이블과 구글 같이 삭제되는 메서드입니다!
-     * @author 도선호
+     *
      * @param googleId
+     * @author 도선호
      */
     @Override
     public void deleteOne(String googleId) {
@@ -151,8 +153,9 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
     /**
      * attachFileGroupNo 얻는 메서드
-     * @author 도선호
+     *
      * @return
+     * @author 도선호
      */
     @Override
     public long getSeqFileGroupNo() {
@@ -161,8 +164,9 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
     /**
      * 첨부파일정보 db에 insert 하는 메서드
-     * @author 도선호
+     *
      * @param fileVO
+     * @author 도선호
      */
     @Override
     public int insertAttachFile(AttachFileVO fileVO) {

@@ -106,7 +106,7 @@
         where M.USER_NO = #{userNo}
     </select>
 
-    <!--  -->
+
     <select id="selectCtrtDashboard" resultType="java.util.Map">
         select /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrtCount */
             count(*)                                                                   as "totalCnt"
@@ -148,6 +148,7 @@
                                 ) end, 2), 0)                                          as "increaseRate"
         from RENT_CTRT
     </select>
+
     <select id="getUserNo" resultType="java.lang.String">
         SELECT USER_NO
         FROM APLCT
@@ -186,20 +187,20 @@
              , C.CTRT_APRV_DT
              , L.RCRT_LSTG_STTS_CD
              , CM.CTRT_MGR_NO
-             , CM.USER_NO                AS CTRT_MGR_USER_NO
-             , M2.USER_NM                AS CTRT_MGR_USER_NM
+             , CM.USER_NO as CTRT_MGR_USER_NO
+             , M2.USER_NM as CTRT_MGR_USER_NM
              , CM.MGR_ASGN_DT
              , CM.CHG_YN
-        from RENT_CTRT C
-                 inner join MEMBER M on (M.USER_NO = C.USER_NO)
-                 left outer join RENT_LISTING L on (L.RENT_LSTG_NO = C.RENT_LSTG_NO)
-                 left outer join CTRT_MGR CM on (CM.RENT_CTRT_NO = C.RENT_CTRT_NO)
-                 left outer join MEMBER M2 on (M2.USER_NO = CM.USER_NO)
-                 left outer join CENTER_ANN_BOARD_POST B on (B.ANN_NO = L.ANN_NO)
-                 left outer join SBMSN_DOC D on (D.SBMSN_DOC_NO = C.SBMSN_DOC_NO)
-                 inner join APT_HO_TY HT on (HT.APT_CMPLEX_NO = B.APT_CMPLEX_NO)
-                 inner join APT_COMPLEX A on (A.APT_CMPLEX_NO = HT.APT_CMPLEX_NO)
-        where C.RENT_CTRT_NO = #{rentCtrtNo}
+           from RENT_CTRT C
+left outer join MEMBER M on (M.USER_NO = C.USER_NO)
+left outer join RENT_LISTING L on (L.RENT_LSTG_NO = C.RENT_LSTG_NO)
+left outer join CTRT_MGR CM on (CM.RENT_CTRT_NO = C.RENT_CTRT_NO)
+left outer join MEMBER M2 on (M2.USER_NO = CM.USER_NO)
+left outer join CENTER_ANN_BOARD_POST B on (B.ANN_NO = L.ANN_NO)
+left outer join SBMSN_DOC D on (D.SBMSN_DOC_NO = C.SBMSN_DOC_NO)
+left outer join APT_HO_TY HT on (HT.APT_CMPLEX_NO = B.APT_CMPLEX_NO)
+left outer join APT_COMPLEX A on (A.APT_CMPLEX_NO = HT.APT_CMPLEX_NO)
+          where C.RENT_CTRT_NO = #{rentCtrtNo}
     </select>
 
     <update id="updateCtrt" parameterType="map">
@@ -245,8 +246,8 @@
         INNER JOIN APT_DETAIL H ON (H.HO_NO = L.HO_NO)
         INNER JOIN APT_UNIT D ON (D.DONG_NO = H.DONG_NO)
         INNER JOIN APT_COMPLEX A ON (A.APT_CMPLEX_NO = D.APT_CMPLEX_NO)
-        INNER JOIN MEMBER U2 ON (M.USER_NO = U2.USER_NO)
-        INNER JOIN MEMBER U ON (C.USER_NO = U.USER_NO)
+        left outer join MEMBER U2 ON (M.USER_NO = U2.USER_NO)
+        left outer join MEMBER U ON (C.USER_NO = U.USER_NO)
         <where>
             AND M.CHG_YN = 'N'
             AND M.USER_NO = #{userNo}
@@ -304,8 +305,8 @@
         INNER JOIN APT_DETAIL H ON (H.HO_NO = L.HO_NO)
         INNER JOIN APT_UNIT D ON (D.DONG_NO = H.DONG_NO)
         INNER JOIN APT_COMPLEX A ON (A.APT_CMPLEX_NO = D.APT_CMPLEX_NO)
-        INNER JOIN MEMBER U ON (C.USER_NO = U.USER_NO)
-        INNER JOIN MEMBER U2 ON (M.USER_NO = U2.USER_NO)
+        left outer join MEMBER U ON (C.USER_NO = U.USER_NO)
+        left outer join MEMBER U2 ON (M.USER_NO = U2.USER_NO)
         <where>
             AND M.CHG_YN = 'N'
             AND M.USER_NO = #{userNo}
