@@ -17,6 +17,7 @@ import './styles/header.css';
 import './styles/sidebar.css';
 import { getCookie } from './util/api/requestApi';
 import CtrtDetail from './pages/ctrt/CtrtDetail';
+import AptRegisterPage from './pages/sales/AptRegisterPage';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 function App() {
@@ -40,7 +41,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             {/* 아파트 등록 메뉴 */}
-            <Route path="/adm/apt/register" element={<AptRegister />} />
+            <Route path="/adm/apt/register" element={<AptRegisterPage />} />
             {/* 아파트 통합 검색 메뉴 */}
             {/* 임대 매물 관리 */}
             <Route path="/adm/sales" element={<SalesList />} />
