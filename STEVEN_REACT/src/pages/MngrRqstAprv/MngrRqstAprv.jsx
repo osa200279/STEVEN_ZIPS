@@ -1,10 +1,10 @@
 ﻿import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import AccountDetailModal from '../../components/mngrRqstAprv/AccountDetailModal';
-import AccountTab from '../../components/mngrRqstAprv/AccountTab';
+import AccountList from '../../components/mngrRqstAprv/AccountList';
 import RejectModal from '../../components/mngrRqstAprv/RejectModal';
 import RequestDetailModal from '../../components/mngrRqstAprv/RequestDetailModal';
-import RequestTab from '../../components/mngrRqstAprv/RequestTab';
+import RequestList from '../../components/mngrRqstAprv/RequestList';
 import { PAGE_SIZE } from '../../components/mngrRqstAprv/shared';
 import {
   approveRequest,
@@ -241,7 +241,7 @@ export default function MngrRqstAprv() {
         {loading && <div className="mngr-loading">데이터를 불러오는 중입니다.</div>}
 
         {isRequestsTab ? (
-          <RequestTab
+          <RequestList
             loading={loading}
             requestSearch={requestSearch}
             requestRows={requestRows}
@@ -262,7 +262,7 @@ export default function MngrRqstAprv() {
             onOpenDetail={setSelectedRequest}
           />
         ) : (
-          <AccountTab
+          <AccountList
             loading={loading}
             accountSearch={accountSearch}
             accountRows={accountRows}

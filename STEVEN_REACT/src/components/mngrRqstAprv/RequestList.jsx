@@ -1,6 +1,6 @@
 import { formatDateDot, RoleBadge, StatusBadge, TablePagination } from './shared';
 
-export default function RequestTab({
+export default function RequestList({
   loading,
   requestSearch,
   requestRows,
@@ -77,7 +77,7 @@ export default function RequestTab({
                 <th>신청 직무</th>
                 <th>신청일자</th>
                 <th>처리상태</th>
-                <th>관리</th>
+                <th>비고</th>
               </tr>
             </thead>
             <tbody>

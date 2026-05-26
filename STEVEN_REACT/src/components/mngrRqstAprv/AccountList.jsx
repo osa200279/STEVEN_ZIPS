@@ -1,6 +1,6 @@
 import { formatDateDot, RoleBadge, TablePagination } from './shared';
 
-export default function AccountTab({
+export default function AccountList({
   loading,
   accountSearch,
   accountRows,
