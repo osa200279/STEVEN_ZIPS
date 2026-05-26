@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/annRegister")
+@RequestMapping("/api/react/adm/annRegister")
 @RequiredArgsConstructor
 public class AnnRegisterController {
 
@@ -130,7 +130,7 @@ public class AnnRegisterController {
             result.put("success", true);
         } catch (Exception e) {
             result.put("success", false);
-            result.put("messeage", e.getMessage());
+            result.put("message", e.getMessage());
         }
         return result;
     }

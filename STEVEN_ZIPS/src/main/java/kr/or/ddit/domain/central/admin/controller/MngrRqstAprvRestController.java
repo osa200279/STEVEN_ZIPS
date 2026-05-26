@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/adm/mngrRqstAprv")
+@RequestMapping("/api/react/adm/mngrRqstAprv")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class MngrRqstAprvRestController {
