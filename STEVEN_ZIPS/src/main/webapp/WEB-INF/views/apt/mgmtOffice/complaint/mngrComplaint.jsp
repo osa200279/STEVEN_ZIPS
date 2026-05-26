@@ -249,7 +249,7 @@
                             <!-- 종결/반려 상태 안내 -->
                             <div id="processingNotice" style="display:none;">
                                 <span class="material-symbols-rounded" style="font-size:16px; vertical-align:middle; margin-right:4px;">lock</span>
-                                이미 처리 완료된 민원입니다.
+                                현재 상태에서는 승인/반려 처리를 할 수 없습니다.
                             </div>
                         </div>
 
@@ -294,11 +294,12 @@
 
         /* 승인 시 변경될 다음 상태 */
         var NEXT_STATUS = {
-            APLY: 'RCPT',
-            RCPT: 'COMP',
-            POCS: 'COMP',
-            SUPL: 'COMP',
-            COMP: 'END',
+            APLY: 'RCPT', // 민원 접수 -> 접수 완료까지만 승인 가능
+            RCPT: null,
+            POCS: null,
+            SUPL: null,
+            REJS: null,
+            COMP: null,
             RJCT: null,
             END:  null
         };
