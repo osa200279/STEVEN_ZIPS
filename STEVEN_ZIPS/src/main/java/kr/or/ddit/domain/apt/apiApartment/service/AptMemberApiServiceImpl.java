@@ -4,12 +4,16 @@ import kr.or.ddit.common.util.AESUtil;
 import kr.or.ddit.domain.apt.apiApartment.mapper.IApiMemberMapper;
 import kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity;
+import kr.or.ddit.domain.apt.apiApartment.vo.HshldHeadEntity;
+import kr.or.ddit.domain.apt.apiApartment.vo.HshldMemberEntity;
+import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.member.vo.AuthVO;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -77,6 +81,64 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService{
     @Override
     public int getNotAssignedUserCount() {
         return memberMapper.selectNotAssignedUserCount();
+    }
+
+    @Override
+    public void assignResidents(List<String> aptList, int count) {
+
+        Random random = new Random();
+
+        List<AptDetailVO> units = aptMapper.selectAvailableUnits(aptList);
+
+        List<MemberVO> users = memberMapper.selectNotAssignedTestUsers();
+
+        if (users.isEmpty()) {
+            throw new RuntimeException("유저 없음");
+        }
+
+        if(units.isEmpty()){
+            throw new RuntimeException("호실 없음");
+        }
+
+        Collections.shuffle(units);
+        Collections.shuffle(users);
+
+        int assigned = 0;
+        int userIndex = 0;
+
+        for (AptDetailVO unit : units) {
+
+            if (assigned >= count) break;
+
+            int peopleCnt = 1 + random.nextInt(3);
+
+            for (int i = 0; i < peopleCnt; i++) {
+
+                if (assigned >= count || userIndex >= users.size()) break;
+
+                MemberVO user = users.get(userIndex);
+                HshldHeadEntity hshldHeadEntity = new HshldHeadEntity();
+                HshldMemberEntity HshldMember = new HshldMemberEntity();
+
+                String userNo = user.getUserNo();
+
+                hshldHeadEntity.setUserNo(user.getUserNo());
+                hshldHeadEntity.setHeadYn(i == 0 ? "Y" : "N");
+                hshldHeadEntity.setHoNo(unit.getHoNo());
+                hshldHeadEntity.setInoutCd("LIVE");
+
+                HshldMember.setHoNo(unit.getHoNo());
+                HshldMember.setHshldMbrNm(user.getUserNm());
+
+                memberMapper.insertMemberAssign(hshldHeadEntity);
+                memberMapper.updateMemberAuth(userNo);
+                aptMapper.updateEmpty(unit.getHoNo());
+                memberMapper.insertHshldMember(HshldMember);
+
+                assigned++;
+                userIndex++;
+            }
+        }
     }
 
     private static final String[] LAST_NAMES = {

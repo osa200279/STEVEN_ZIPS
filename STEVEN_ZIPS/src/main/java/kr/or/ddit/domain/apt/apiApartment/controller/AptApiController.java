@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/api/react/adm/aptCmplex")
 @Slf4j
 public class AptApiController {
 
@@ -23,66 +23,120 @@ public class AptApiController {
     @Autowired
     private IAptMemberApiService aptMemberService;
 
-    @PostMapping("/apt/collect")
+    /**
+     * 아파트 등록
+     */
+    @PostMapping("/apt/register")
     @ResponseBody
-    public String collectApt(@RequestBody Map<String, String> param) {
+    public String registerApt(
+            @RequestBody Map<String, Object> param
+    ) {
 
-        String sido = param.get("sido");
-        String sigungu = param.get("sigungu");
-        String emd = param.get("emd");
+        List<String> kaptCodeList =
+                (List<String>) param.get("kaptCodeList");
 
-        aptService.collectApt(sido, sigungu, emd);
+        log.info("등록 요청 단지 수 : {}", kaptCodeList.size());
 
-        return "OK";
+        aptService.registerAptList(kaptCodeList);
+
+        return "등록 완료";
     }
 
+    /**
+     * 시도 목록
+     */
     @GetMapping("/sido")
     @ResponseBody
     public List<String> getSido() {
+
         return aptMemberService.getSidoList();
     }
 
+    /**
+     * 시군구 목록
+     */
     @GetMapping("/sigungu")
     @ResponseBody
-    public List<String> getSigungu(@RequestParam String sido) {
+    public List<String> getSigungu(
+            @RequestParam String sido
+    ) {
+
         return aptMemberService.getSigunguList(sido);
     }
 
+    /**
+     * 법정동 목록
+     */
     @GetMapping("/emd")
     @ResponseBody
-    public List<String> getEmd(@RequestParam String sido,
-                               @RequestParam String sigungu) {
-        return aptMemberService.getEmdList(sido, sigungu);
+    public List<String> getEmd(
+            @RequestParam String sido,
+            @RequestParam String sigungu
+    ) {
+
+        return aptMemberService.getEmdList(
+                sido,
+                sigungu
+        );
     }
 
+    /**
+     * 아파트 목록 조회
+     */
     @GetMapping("/aptList")
     @ResponseBody
     public List<AptComplexEntity> getAptList(
-            @RequestParam(required = false) String sido,
-            @RequestParam(required = false) String sigungu,
-            @RequestParam(required = false) String emd) {
 
-        return aptMemberService.getAptList(sido, sigungu, emd);
+            @RequestParam(required = false)
+            String sido,
+
+            @RequestParam(required = false)
+            String sigungu,
+
+            @RequestParam(required = false)
+            String emd
+
+    ) {
+
+        return aptMemberService.getAptList(
+                sido,
+                sigungu,
+                emd
+        );
     }
 
-    @PostMapping("/user/createDummy")
+    /**
+     * 기본정보 조회
+     */
+    @PostMapping("/apt/checkBaseInfo")
     @ResponseBody
-    public String createDummyUser(@RequestBody Map<String, Object> param) {
+    public List<AptBass> checkBaseInfo(
+            @RequestBody Map<String, String> param
+    ){
 
-        int count = Integer.parseInt(param.get("count").toString());
+        String sido = param.get("sido");
 
-        aptMemberService.createDummyUsers(count);
+        String sigungu = param.get("sigungu");
 
-        return count + "명 생성 완료";
+        String emd = param.get("emd");
+
+        log.info(
+                "checkBaseInfo : {} {} {}",
+                sido,
+                sigungu,
+                emd
+        );
+
+        return aptService.checkBaseInfo(
+                sido,
+                sigungu,
+                emd
+        );
     }
 
-    @GetMapping("/user/notAssignedCount")
-    @ResponseBody
-    public int getNotAssignedCount() {
-        return aptMemberService.getNotAssignedUserCount();
-    }
-
-
+    /**
+     * 좌표 업데이트
+     */
     @PostMapping("/updateLatLng.do")
     @ResponseBody
     public String updateLatLng() {
@@ -92,29 +146,58 @@ public class AptApiController {
         return "좌표 업데이트 완료";
     }
 
-    @PostMapping("/apt/assignResidents")
+    /**
+     * 더미 유저 생성
+     */
+    @PostMapping("/user/createDummy")
     @ResponseBody
-    public String assignResidents(@RequestBody Map<String, Object> param) {
+    public String createDummyUser(
+            @RequestBody Map<String, Object> param
+    ) {
 
-        List<String> aptList = (List<String>) param.get("aptList");
-        int count = Integer.parseInt(param.get("count").toString());
+        int count =
+                Integer.parseInt(
+                        param.get("count").toString()
+                );
 
-        aptService.assignResidents(aptList, count);
+        aptMemberService.createDummyUsers(count);
 
-        return count + "명 입주 완료";
+        return count + "명 생성 완료";
     }
 
-    @PostMapping("/apt/checkBaseInfo")
+    /**
+     * 미배정 유저 수
+     */
+    @GetMapping("/user/notAssignedCount")
     @ResponseBody
-    public List<AptBass> checkBaseInfo(@RequestBody Map<String, String> param){
+    public int getNotAssignedCount() {
 
-        log.info("search Start");
+        return aptMemberService.getNotAssignedUserCount();
+    }
 
-        String sido = param.get("sido");
-        String sigungu = param.get("sigungu");
-        String emd = param.get("emd");
+    /**
+     * 입주민 랜덤 배정
+     */
+    @PostMapping("/apt/assignResidents")
+    @ResponseBody
+    public String assignResidents(
+            @RequestBody Map<String, Object> param
+    ) {
 
-        return aptService.checkBaseInfo(sido, sigungu, emd);
+        List<String> aptList =
+                (List<String>) param.get("aptList");
+
+        int count =
+                Integer.parseInt(
+                        param.get("count").toString()
+                );
+
+        aptMemberService.assignResidents(
+                aptList,
+                count
+        );
+
+        return count + "명 입주 완료";
     }
 
 }

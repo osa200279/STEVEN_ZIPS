@@ -1,61 +1,129 @@
 package kr.or.ddit.domain.apt.apiApartment.mapper;
 
-
 import kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyDTO;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptInfraEntity;
 import kr.or.ddit.domain.apt.apiApartment.vo.MgmtOfficeEntity;
-import kr.or.ddit.domain.member.manager.vo.ManagerVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.main.vo.AptUnitVO;
+import kr.or.ddit.domain.member.manager.vo.ManagerVO;
 import kr.or.ddit.domain.member.vo.AuthVO;
 import kr.or.ddit.domain.member.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-
 @Mapper
 public interface IAptApiMapper {
 
+    List<String> selectLawdCdList(
+            String sido,
+            String sigungu,
+            String emd
+    );
 
-    List<String> selectLawdCdList(String sido, String sigungu, String emd);
+    // =========================
+    // 단건 등록
+    // =========================
+    int existsApt(String kaptCode);
 
-    void insertAptBatch(List<AptComplexEntity> list);
+    void insertApt(AptComplexEntity apt);
 
-    void insertMgmtOfficeBatch(List<MgmtOfficeEntity> list);
+    void insertMgmtOffice(MgmtOfficeEntity mgmt);
 
-    void insertMemberBatch(List<MemberVO> list);
+    void insertMember(MemberVO member);
 
-    void insertManagerBatch(List<ManagerVO> list);
+    void insertManager(ManagerVO manager);
 
-    void insertAptUnitBatch(List<AptUnitVO> list);
+    void insertAuth(AuthVO auth);
 
-    void insertAptDetailBatch(List<AptDetailVO> list);
+    // =========================
+    // batch
+    // =========================
+    void insertAptBatch(
+            List<AptComplexEntity> list
+    );
 
-    void insertInfraOne(AptInfraEntity infra);
+    void insertMgmtOfficeBatch(
+            List<MgmtOfficeEntity> list
+    );
 
+    void insertMemberBatch(
+            List<MemberVO> list
+    );
+
+    void insertManagerBatch(
+            List<ManagerVO> list
+    );
+
+    void insertAuthBatch(
+            List<AuthVO> list
+    );
+
+    void insertAptUnitBatch(
+            List<AptUnitVO> list
+    );
+
+    void insertAptDetailBatch(
+            List<AptDetailVO> list
+    );
+
+    void insertAptHoTyBatch(
+            List<AptHoTyDTO> list
+    );
+
+    // =========================
+    // infra
+    // =========================
+    void insertInfraOne(
+            AptInfraEntity infra
+    );
+
+    // =========================
+    // sequence
+    // =========================
     long getMemberSeq();
 
     long getMgmtOfcNoSeq();
 
+    // =========================
+    // 지역 조회
+    // =========================
     List<String> selectSidoList();
 
-    List<String> selectSigunguList(String sido);
+    List<String> selectSigunguList(
+            String sido
+    );
 
-    List<String> selectEmdList(String sido, String sigungu);
+    List<String> selectEmdList(
+            String sido,
+            String sigungu
+    );
 
-    List<AptComplexEntity> selectAptList(String sido, String sigungu, String emd);
+    // =========================
+    // 단지 조회
+    // =========================
+    List<AptComplexEntity> selectAptList(
+            String sido,
+            String sigungu,
+            String emd
+    );
 
-    void insertAuthBatch(List<AuthVO> list);
-
+    // =========================
+    // 좌표
+    // =========================
     List<AptComplexEntity> selectNoCoordList();
 
-    void updateLatLng(AptComplexEntity apt);
+    void updateLatLng(
+            AptComplexEntity apt
+    );
 
-    List<AptDetailVO> selectAvailableUnits(List<String> aptList);
+    // =========================
+    // 입주민 배정
+    // =========================
+    List<AptDetailVO> selectAvailableUnits(
+            List<String> aptList
+    );
 
     void updateEmpty(String hoNo);
-
-    void insertAptHoTyBatch(List<AptHoTyDTO> list);
 }

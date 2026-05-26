@@ -64,7 +64,7 @@ public class AplctServiceImpl implements IAplctService {
                         NotificationDTO.success(
                                 "청약 신청 승인",
                                 "청약 신청이 접수되었습니다. 제출 서류를 확인해주세요.",
-                                "/contract/history.do"
+                                "/contract/historyDetail.do?aplctNo="+aplctNo
                         )
                 );
             }

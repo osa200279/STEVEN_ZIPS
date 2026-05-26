@@ -8,9 +8,7 @@ public interface IAptApiService {
 
     void updateLatLng();
 
-    void assignResidents(List<String> aptList, int count);
-
-    void collectApt(String sido, String sigungu, String emd);
-
     List<AptBass> checkBaseInfo(String sido, String sigungu, String emd);
+
+    void registerAptList(List<String> kaptCodeList);
 }

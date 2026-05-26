@@ -1,7 +1,8 @@
 package kr.or.ddit.domain.apt.apiApartment.service;
 
-import kr.or.ddit.domain.apt.apiApartment.mapper.IApiMemberMapper;
 import kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper;
+import kr.or.ddit.domain.apt.apiApartment.service.IAptApiService;
+import kr.or.ddit.domain.apt.apiApartment.service.ISeqService;
 import kr.or.ddit.domain.apt.apiApartment.vo.*;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.main.vo.AptUnitVO;
@@ -14,624 +15,62 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import tools.jackson.databind.ObjectMapper;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
+@Transactional
 public class AptApiServiceImpl implements IAptApiService {
 
     @Autowired
     private IAptApiMapper aptMapper;
 
     @Autowired
-    private IApiMemberMapper memberMapper;
+    private ISeqService seqService;
 
     @Autowired
-    private ISeqService aptService;
+    private PasswordEncoder passwordEncoder;
 
     private final String serviceKey = "279564b17283c0863ff904cbfee96deb15c26cd426ec71fe7c5966a865f64f2f";
-    private final String kakaoKey = "e91015a224888fbe9e2afc3320c22a1b";
-    RestTemplate rt = new RestTemplate();
+
+    private final RestTemplate rt = new RestTemplate();
 
     @Override
-    @Transactional
-    public void collectApt(String sido, String sigungu, String emd) {
-        log.info("collectMapoApt() 실행됨2...!");
-
-        List<String> lawdCdList = aptMapper.selectLawdCdList(sido, sigungu, emd);
-
-        List<AptListItem> AptItemList = new ArrayList<>();
-
-        for (String bjdCode : lawdCdList) {
-            int pageNo = 1;
-            while (true) {
-                String url = "https://apis.data.go.kr/1613000/AptListService3/getLegaldongAptList3"
-                        + "?serviceKey=" + serviceKey
-                        + "&pageNo=" + pageNo
-                        + "&numOfRows=100"
-                        + "&bjdCode=" + bjdCode;
-
-                ResponseEntity<AptListResponse> response =
-                        rt.getForEntity(url, AptListResponse.class);
-
-                AptListResponse dto = response.getBody();
-
-                if (dto == null
-                        || dto.getResponse() == null
-                        || dto.getResponse().getBody() == null) {
-                    break;
-                }
-
-                List<AptListItem> items = response.getBody().getResponse().getBody().getItems();
-
-                if (items == null || items.isEmpty()) {
-                    break;
-                }
-
-                AptItemList.addAll(items);
-
-                pageNo++;
-
-            }
-        }
-
-        Map<String, AptBass> bassMap = new HashMap<>();
-
-        for (AptListItem item : AptItemList) {
-
-            String kaptCode = item.getKaptCode();
-
-
-            String url = "https://apis.data.go.kr/1613000/AptBasisInfoServiceV4/getAphusBassInfoV4"
-                    + "?serviceKey=" + serviceKey
-                    + "&kaptCode=" + kaptCode;
-
-            try {
-                ResponseEntity<AptBassResponse> res =
-                        rt.getForEntity(url, AptBassResponse.class);
-
-                AptBassResponse dto = res.getBody();
-
-                if (dto == null
-                        || dto.getResponse() == null
-                        || dto.getResponse().getBody() == null
-                        || dto.getResponse().getBody().getItem() == null) {
-                    continue;
-                }
-
-                AptBass bassItem =
-                        dto.getResponse().getBody().getItem();
-
-                bassMap.put(kaptCode, bassItem);
-
-            } catch (Exception e) {
-                log.error("kaptCode {} bass API 오류", kaptCode, e);
-            }
-        }
-
-        Map<String, AptDetail> detailMap = new HashMap<>();
-
-        for (AptListItem item : AptItemList) {
-
-            String kaptCode = item.getKaptCode();
-
-            String url = "https://apis.data.go.kr/1613000/AptBasisInfoServiceV4/getAphusDtlInfoV4"
-                    + "?serviceKey=" + serviceKey
-                    + "&kaptCode=" + kaptCode;
-
-            try {
-                ResponseEntity<AptDetailResponse> res =
-                        rt.getForEntity(url, AptDetailResponse.class);
-
-                AptDetailResponse dto = res.getBody();
-
-                if (dto == null
-                        || dto.getResponse() == null
-                        || dto.getResponse().getBody() == null
-                        || dto.getResponse().getBody().getItem() == null) {
-                    continue;
-                }
-
-                AptDetail detailItem =
-                        dto.getResponse().getBody().getItem();
-
-                detailMap.put(kaptCode, detailItem);
-
-            } catch (Exception e) {
-                log.error("kaptCode {} detail API 오류", kaptCode, e);
-            }
-        }
-
-
-
-        List<AptInfraEntity> infraEntityList = new ArrayList<>();
-        List<AptComplexEntity> entityList = new ArrayList<>();
-        List<MgmtOfficeEntity> mgmtOfficeEntityList = new ArrayList<>();
-        List<ManagerVO> managerVOList = new ArrayList<>();
-        List<MemberVO> memberVOList = new ArrayList<>();
-        List<AptUnitVO> aptUnitVOList = new ArrayList<>();
-        List<AptDetailVO> aptDetailVOList = new ArrayList<>();
-        List<AuthVO> authVOList = new ArrayList<>();
-        List<AptHoTyDTO> aptHoTyDTOList = new ArrayList<>();
-
-
-        for (AptListItem listItem : AptItemList) {
-
-            String userNo = aptService.getMemberSeq();
-            String mgmtOfcNo = aptService.getMgmtSeq();
-
-            AptBass bassItem = bassMap.get(listItem.getKaptCode());
-            AptDetail detailItem = detailMap.get(listItem.getKaptCode());
-            String welfareFacility = detailMap.get(listItem.getKaptCode()).getWelfareFacility();
-            String convenientFacility = detailMap.get(listItem.getKaptCode()).getConvenientFacility();
-            String educationFacility = detailMap.get(listItem.getKaptCode()).getEducationFacility();
-            String subwayLine = detailMap.get(listItem.getKaptCode()).getSubwayLine();
-            String kaptdWtimesub = detailMap.get(listItem.getKaptCode()).getKaptdWtimesub();
-
-            /*      인프라 entity 구성 시작! */
-            toInfraEntity(welfareFacility, "WELFARE", listItem.getKaptCode(), infraEntityList);
-            toInfraEntity(convenientFacility, "CONVENIENCE", listItem.getKaptCode(), infraEntityList);
-            toInfraEntity(educationFacility, "EDUCATION", listItem.getKaptCode(), infraEntityList);
-            toInfraEntity2(subwayLine,"TRANSIT_LINES",listItem.getKaptCode(), infraEntityList);
-            toInfraEntity2(kaptdWtimesub,"TRANSIT_ACCESS",listItem.getKaptCode(), infraEntityList);
-            /*      인프라 entity 구성 끝! */
-
-            /*      단지관리소 entity 구성 시작! */
-            toMgmtOfficeEntity(bassItem,mgmtOfficeEntityList,mgmtOfcNo);
-            /*      단지관리소 entity 구성 끝! */
-
-            /*      단지관리자(member+manager) entity 구성 시작! */
-            toMemberEntity(bassItem,memberVOList, userNo);
-            toManagerEntity(managerVOList,userNo, mgmtOfcNo);
-            toAuthEntity(authVOList,userNo);
-            /*      단지관리자(member) entity 구성 끝! */
-
-            /*      동 테이블 entity 구성 시작! */
-            toAptUnitVO(aptUnitVOList,bassItem);
-            /*      동 테이블 entity 구성 끝! */
-
-            /*      호 테이블 entity 구성 시작! */
-            toAptDetailVO(aptDetailVOList, bassItem);
-            /*      호 테이블 entity 구성 끝! */
-
-            /* 호 타입 구성*/
-            toAptHoTyVO(aptHoTyDTOList, bassItem);
-
-            entityList.add(toEntity(listItem, bassItem,detailItem));
-        }
-
-
-
-        log.info("총 엔티티 개수: {}", entityList.size());
-        log.info("총 인프라 개수: {}", infraEntityList.size());
-
-        entityList.stream().limit(5)
-                .forEach(e -> log.info("샘플: {}", e));
-
-
-        /*                   inser 작업 실행 start                */
-
-        batchInsert(entityList, aptMapper::insertAptBatch);
-        batchInsert(mgmtOfficeEntityList, aptMapper::insertMgmtOfficeBatch);
-        batchInsert(memberVOList, aptMapper::insertMemberBatch);
-        batchInsert(managerVOList, aptMapper::insertManagerBatch);
-        batchInsert(authVOList, aptMapper::insertAuthBatch);
-        batchInsert(aptUnitVOList, aptMapper::insertAptUnitBatch);
-        batchInsert(aptHoTyDTOList, aptMapper::insertAptHoTyBatch);
-        batchInsert(aptDetailVOList, aptMapper::insertAptDetailBatch);
-
-        for (AptInfraEntity infra : infraEntityList) {
-            aptMapper.insertInfraOne(infra);
-        }
-
-        log.info("APT {}건 insert 완료", entityList.size());
-        log.info("INFRA {}건 insert 완료", infraEntityList.size());
-        log.info("MGMT {}건 insert 완료", mgmtOfficeEntityList.size());
-        /*                   inser 작업 실행 end                */
-
-    }
-
-    private AptComplexEntity toEntity(AptListItem listItem, AptBass bassItem, AptDetail detailItem) {
-
-        AptComplexEntity apt = new AptComplexEntity();
-
-        // 아파트리스트 api 에서 가져온 정보
-        apt.setAptCmplexNo(listItem.getKaptCode());
-        apt.setAptCmplexNm(listItem.getKaptName());
-        apt.setBjdCd(listItem.getBjdCode());
-        apt.setSidoNm(listItem.getAs1());
-        apt.setSigunguNm(listItem.getAs2());
-        apt.setEmdNm(listItem.getAs3());
-
-        // 기본정보 api 에서 가져온 정보
-        if (bassItem != null) {
-            apt.setHeatTy(bassItem.getCodeHeatNm());
-            apt.setBldYr(bassItem.getKaptUsedate());
-            apt.setCnscoNm(bassItem.getKaptBcompany());
-            int maxFloor = Math.max(
-                    bassItem.getKaptTopFloor(),
-                    bassItem.getKtownFlrNo()
-            );
-
-            apt.setMaxFloor(maxFloor);
-
-            if (bassItem.getKaptDongCnt() != null
-                    && !bassItem.getKaptDongCnt().trim().isEmpty()) {
-
-                apt.setDongCnt(safeParseInt(bassItem.getKaptDongCnt()));
-            }
-            if (bassItem.getKaptdaCnt() != null
-                    && !bassItem.getKaptdaCnt().trim().isEmpty()) {
-
-                apt.setUnitCnt(safeParseInt(bassItem.getKaptdaCnt()));
-            }
-            apt.setDorojuso(bassItem.getDoroJuso());
-        }
-
-        // 상세정보 api 에서 가져온 정보
-        if (detailItem != null && "Y".equals(detailItem.getUseYn())){
-            if (detailItem.getKaptdPcnt() != null
-                    && !detailItem.getKaptdPcnt().trim().isEmpty()) {
-                apt.setPkgCnt(safeParseInt(detailItem.getKaptdPcnt())+safeParseInt(detailItem.getKaptdPcntu()));
-            }
-            if (detailItem.getKaptdCccnt() != null
-                    && !detailItem.getKaptdCccnt().trim().isEmpty()) {
-                apt.setCcCnt(safeParseInt(detailItem.getKaptdCccnt()));
-            }
-        }
-
-        return apt;
-    }
-
-    private List<AptInfraEntity> toInfraEntity(
-
-            String value,
-            String categoryCd,
-            String kaptCode,
-            List<AptInfraEntity> infraEntityList) {
-
-        if (value == null || value.trim().isEmpty()) return infraEntityList;
-
-        // 괄호 없는 경우
-        if (!value.contains("(")) {
-            String[] simpleItems = value.split(",");
-            for (String name : simpleItems) {
-
-                String trimmed = name.trim();
-
-                if (trimmed.isEmpty()) continue;
-
-                AptInfraEntity infra = new AptInfraEntity();
-                infra.setCategoryCd(categoryCd);
-                infra.setInfraNm(name.trim());
-                infra.setAptCmplexNo(kaptCode);
-
-                infraEntityList.add(infra);
-            }
-            return infraEntityList;
-        }
-
-        // 괄호 있는 경우
-        String[] items = value.split("\\) ");
-
-        for (String item : items) {
-
-            item = item.trim();
-
-            if (!item.endsWith(")")) {
-                item = item + ")";
-            }
-
-            int start = item.indexOf("(");
-            int end = item.indexOf(")");
-
-            if (start == -1 || end == -1) continue;
-
-            String inner = item.substring(start + 1, end);
-
-            String[] names = inner.split(",");
-
-            for (String name : names) {
-
-                String trimmed = name.trim();
-
-                if (trimmed.isEmpty()) continue;
-
-                AptInfraEntity infra = new AptInfraEntity();
-                infra.setCategoryCd(categoryCd);
-                infra.setInfraNm(name.trim());
-                infra.setAptCmplexNo(kaptCode);
-
-                infraEntityList.add(infra);
-            }
-        }
-
-        return infraEntityList;
-    }
-
-    private List<AptInfraEntity> toInfraEntity2(
-            String value,
-            String categoryCd,
-            String kaptCode,
-            List<AptInfraEntity> infraEntityList) {
-
-        if (value == null || value.trim().isEmpty()) return infraEntityList;
-
-        AptInfraEntity infra = new AptInfraEntity();
-
-        infra.setCategoryCd(categoryCd);
-        infra.setAptCmplexNo(kaptCode);
-        infra.setInfraNm(value);
-
-        infraEntityList.add(infra);
-
-        return infraEntityList;
-    }
-
-    // 카카오 경도위도 API
-    private Map<String, String> getLatLng(String address) {
-
-        String url = "https://dapi.kakao.com/v2/local/search/address.json?query=" + address;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "KakaoAK " + kakaoKey);
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<Map> response = rt.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                Map.class
-        );
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        String json = mapper.writeValueAsString(response.getBody());
-
-        List<Map<String, Object>> documents =
-                (List<Map<String, Object>>) response.getBody().get("documents");
-
-        if (documents == null || documents.isEmpty()) return null;
-        Map<String, Object> first = documents.get(0);
-
-        String lat = (String) first.get("y");
-        String lng = (String) first.get("x");
-
-        if (lat == null || lng == null) {
-            Map<String, Object> road = (Map<String, Object>) first.get("road_address");
-            if (road != null) {
-                lat = (String) road.get("y");
-                lng = (String) road.get("x");
-            }
-        }
-
-        if (lat == null || lng == null) {
-            Map<String, Object> addr = (Map<String, Object>) first.get("address");
-            if (addr != null) {
-                lat = (String) addr.get("y");
-                lng = (String) addr.get("x");
-            }
-        }
-
-        if (lat == null || lng == null) {
-            return null;
-        }
-
-        Map<String, String> result = new HashMap<>();
-        result.put("lat", lat);
-        result.put("lng", lng);
-
-        return result;
-    }
-    private List<MgmtOfficeEntity> toMgmtOfficeEntity (AptBass bassItem,List<MgmtOfficeEntity> MgmtOfficeEntityList,String mgmtOfcNo){
-
-        MgmtOfficeEntity mgmtOfficeEntity = new MgmtOfficeEntity();
-        mgmtOfficeEntity.setMgmtOfcNo(mgmtOfcNo);
-        mgmtOfficeEntity.setAptCmplexNo(bassItem.getKaptCode());
-        mgmtOfficeEntity.setMgmtOfcNm(bassItem.getKaptName()+" 관리사무소");
-
-        if (bassItem.getKaptTel() == null || bassItem.getKaptTel().trim().isEmpty()) {
-            mgmtOfficeEntity.setMgmtOfcTelno("000-0000");
-        } else {
-            mgmtOfficeEntity.setMgmtOfcTelno(bassItem.getKaptTel());
-        }
-
-        mgmtOfficeEntity.setMgmtOfcBankCd("KB");
-        mgmtOfficeEntity.setMgmtOfcAcntHldrNm(bassItem.getKaptName()+" 관리사무소");
-        mgmtOfficeEntity.setMgmtOfcAcntNo("0000-0000");
-
-        MgmtOfficeEntityList.add(mgmtOfficeEntity);
-
-        return MgmtOfficeEntityList;
-    }
-
-    private List<ManagerVO> toManagerEntity(List<ManagerVO> ManagerList, String userNo, String mgmtOfcNo){
-
-        ManagerVO manager = new ManagerVO();
-
-        manager.setUserNo(userNo);
-        manager.setMngrDutyCd("HEAD");
-        manager.setMgmtOfcNo(mgmtOfcNo);
-
-        ManagerList.add(manager);
-
-        return ManagerList;
-    }
-
-    private List<MemberVO> toMemberEntity(AptBass bassItem, List<MemberVO>memberList, String userNo){
-
-        MemberVO member = new MemberVO();
-        member.setUserNo(userNo);
-        member.setUserId(bassItem.getKaptCode());
-        member.setUserPw("1234");
-        member.setUserNm(bassItem.getKaptName()+"_관리소장");
-        member.setUserRrno("1234561234567");
-        member.setUserTelno(bassItem.getKaptTel());
-
-        memberList.add(member);
-
-        return memberList;
-    }
-
-    private List<AuthVO> toAuthEntity(List<AuthVO> authVOList, String userNo){
-
-        AuthVO auth = new AuthVO();
-
-        auth.setUserNo(userNo);
-        auth.setAuth("ROLE_MNGR");
-
-        authVOList.add(auth);
-
-        return authVOList;
-    }
-
-    private List<AptUnitVO> toAptUnitVO (List<AptUnitVO> AptUnitVOList, AptBass bassItem){
-
-        int dongCnt = 0;
-        int TotalunitCnt = 0;
-        int unitCnt = 0;
-        int unitCntRemain = 0;
-
-        if (bassItem.getKaptdaCnt()!=null&&!bassItem.getKaptdaCnt().trim().isEmpty()){
-            TotalunitCnt = safeParseInt(bassItem.getKaptdaCnt());
-        }
-        if (bassItem.getKaptDongCnt() != null
-                && !bassItem.getKaptDongCnt().trim().isEmpty()) {
-
-            dongCnt = safeParseInt(bassItem.getKaptDongCnt());
-        }
-
-
-        if (dongCnt != 0){
-            unitCnt = TotalunitCnt/dongCnt;
-            unitCntRemain =TotalunitCnt%dongCnt;
-        }
-
-        for(int i=1;i<=dongCnt;i++){
-            AptUnitVO aptUnitVO = new AptUnitVO();
-
-            aptUnitVO.setDongNo(bassItem.getKaptCode()+"_"+i);
-            aptUnitVO.setAptCmplexNo(bassItem.getKaptCode());
-            aptUnitVO.setDongNm(i+"");
-
-            int maxFloor = Math.max(
-                    bassItem.getKaptTopFloor(),
-                    bassItem.getKtownFlrNo()
-            );
-
-            aptUnitVO.setFloor(maxFloor);
-
-            if(i == dongCnt){
-                aptUnitVO.setUnitCnt(unitCnt+unitCntRemain);
-            }else{
-                aptUnitVO.setUnitCnt(unitCnt);
-            }
-
-            AptUnitVOList.add(aptUnitVO);
-        }
-
-        return AptUnitVOList;
-    }
-
-    private List<AptDetailVO> toAptDetailVO (List<AptDetailVO> aptDetailVOList, AptBass bassItem){
-
-        int totalUnitCnt = safeParseInt(bassItem.getKaptdaCnt());
-        int dongCnt = safeParseInt(bassItem.getKaptDongCnt());
-        int maxFloor = Math.max(
-                bassItem.getKaptTopFloor(),
-                bassItem.getKtownFlrNo()
-        );
-
-        if (dongCnt == 0 || maxFloor == 0) return aptDetailVOList;
-
-        int householdsPerFloor = (int) Math.ceil(
-                (double) totalUnitCnt / dongCnt / maxFloor
-        );
-
-        Map<String, Integer> map = new HashMap<>();
-        map.put("60", safeParseInt(bassItem.getKaptMparea60()));
-        map.put("85", safeParseInt(bassItem.getKaptMparea85()));
-        map.put("135", safeParseInt(bassItem.getKaptMparea135()));
-        map.put("136", safeParseInt(bassItem.getKaptMparea136()));
-
-        String maxKey = null;
-        int maxValue = Integer.MIN_VALUE;
-
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
-            if (entry.getValue() > maxValue) {
-                maxValue = entry.getValue();
-                maxKey = entry.getKey();
-            }
-        }
-
-        for(int i=1; i<=dongCnt; i++){
-
-            int unitCnt = totalUnitCnt / dongCnt;
-
-            if(i == dongCnt){
-                unitCnt += totalUnitCnt % dongCnt;
-            }
-
-            int unitIndex = 1;
-
-            for(int f=1; f<=maxFloor; f++){
-                for(int h=1; h<=householdsPerFloor; h++){
-
-                    if(unitIndex > unitCnt) break;
-
-                    AptDetailVO aptDetail = new AptDetailVO();
-
-                    aptDetail.setDongNo(bassItem.getKaptCode()+"_"+i);
-                    aptDetail.setFloor(f);
-                    aptDetail.setHo(String.valueOf(f*100 + h));
-                    aptDetail.setHoNo(bassItem.getKaptCode()+"_"+i+"_"+(f*100+h));
-                    aptDetail.setHoTyNo(bassItem.getKaptCode() + "_1");
-
-                    aptDetailVOList.add(aptDetail);
-
-                    unitIndex++;
-                }
-            }
-        }
-        return aptDetailVOList;
-    }
-
-    private int safeParseInt(String str) {
-        if (str == null || str.trim().isEmpty()) return 0;
-        return (int) Double.parseDouble(str);
-    }
-
-    private <T> void batchInsert(List<T> list, Consumer<List<T>> mapperFunc) {
-
-        if (list == null || list.isEmpty()) return;
-
-        int batchSize = 200;
-
-        for (int i = 0; i < list.size(); i += batchSize) {
-            List<T> subList = list.subList(i, Math.min(i + batchSize, list.size()));
-            mapperFunc.accept(subList);
-        }
-    }
-
     public void updateLatLng() {
 
-        List<AptComplexEntity> list = aptMapper.selectNoCoordList();
+        log.info("좌표 업데이트 시작");
+
+        List<AptComplexEntity> list =
+                aptMapper.selectNoCoordList();
 
         for (AptComplexEntity apt : list) {
 
             try {
-                Map<String, String> coord = getLatLng(apt.getDorojuso());
+
+                log.info("좌표 조회 : {}", apt.getAptCmplexNm());
+
+                Map<String, String> coord =
+                        getLatLng(apt.getDorojuso());
 
                 if (coord != null) {
-                    apt.setLatVal(Double.parseDouble(coord.get("lat")));
-                    apt.setLonVal(Double.parseDouble(coord.get("lng")));
+
+                    apt.setLatVal(
+                            Double.parseDouble(coord.get("lat"))
+                    );
+
+                    apt.setLonVal(
+                            Double.parseDouble(coord.get("lng"))
+                    );
 
                     aptMapper.updateLatLng(apt);
                 }
@@ -639,219 +78,782 @@ public class AptApiServiceImpl implements IAptApiService {
                 Thread.sleep(200);
 
             } catch (Exception e) {
-                log.error("좌표 실패: {}", apt.getAptCmplexNo());
+
+                log.error(
+                        "좌표 업데이트 실패 : {}",
+                        apt.getAptCmplexNo(),
+                        e
+                );
             }
         }
-    }
 
-
-    
-    @Override
-    public void assignResidents(List<String> aptList, int count) {
-
-        Random random = new Random();
-
-        List<AptDetailVO> units = aptMapper.selectAvailableUnits(aptList);
-
-        List<MemberVO> users = memberMapper.selectNotAssignedTestUsers();
-
-        if (users.isEmpty()) {
-            throw new RuntimeException("유저 없음");
-        }
-
-        if(units.isEmpty()){
-            throw new RuntimeException("호실 없음");
-        }
-
-        Collections.shuffle(units);
-        Collections.shuffle(users);
-
-        int assigned = 0;
-        int userIndex = 0;
-
-        for (AptDetailVO unit : units) {
-
-            if (assigned >= count) break;
-
-            int peopleCnt = 1 + random.nextInt(3);
-
-            for (int i = 0; i < peopleCnt; i++) {
-
-                if (assigned >= count || userIndex >= users.size()) break;
-
-                MemberVO user = users.get(userIndex);
-                HshldHeadEntity hshldHeadEntity = new HshldHeadEntity();
-                HshldMemberEntity HshldMember = new HshldMemberEntity();
-
-                String userNo = user.getUserNo();
-
-                hshldHeadEntity.setUserNo(user.getUserNo());
-                hshldHeadEntity.setHeadYn(i == 0 ? "Y" : "N");
-                hshldHeadEntity.setHoNo(unit.getHoNo());
-                hshldHeadEntity.setInoutCd("LIVE");
-
-                HshldMember.setHoNo(unit.getHoNo());
-                HshldMember.setHshldMbrNm(user.getUserNm());
-
-                memberMapper.insertMemberAssign(hshldHeadEntity);
-                memberMapper.updateMemberAuth(userNo);
-                aptMapper.updateEmpty(unit.getHoNo());
-                memberMapper.insertHshldMember(HshldMember);
-
-                assigned++;
-                userIndex++;
-            }
-        }
+        log.info("좌표 업데이트 종료");
     }
 
     @Override
-    public List<AptBass> checkBaseInfo(String sido, String sigungu, String emd) {
+    public List<AptBass> checkBaseInfo(
+            String sido,
+            String sigungu,
+            String emd
+    ) {
 
-        log.info("===== checkBaseInfo 시작 =====");
-        log.info("조회 조건 sido={}, sigungu={}, emd={}", sido, sigungu, emd);
+        log.info(
+                "기본정보 조회 : {} {} {}",
+                sido,
+                sigungu,
+                emd
+        );
+
+        List<AptBass> result =
+                new ArrayList<>();
 
         List<String> lawdCdList =
-                aptMapper.selectLawdCdList(sido, sigungu, emd);
-
-        log.info("조회된 법정동 코드 수 : {}", lawdCdList.size());
-
-        List<AptBass> result = new ArrayList<>();
+                aptMapper.selectLawdCdList(
+                        sido,
+                        sigungu,
+                        emd
+                );
 
         for (String bjdCode : lawdCdList) {
-
-            log.info("========== 법정동 시작 ==========");
-            log.info("bjdCode={}", bjdCode);
 
             int pageNo = 1;
 
             while (true) {
 
-                log.info("페이지 조회 시작 pageNo={}", pageNo);
+                try {
 
-                String listUrl =
-                        "https://apis.data.go.kr/1613000/AptListService3/getLegaldongAptList3"
-                                + "?serviceKey=" + serviceKey
-                                + "&pageNo=" + pageNo
-                                + "&numOfRows=100"
-                                + "&bjdCode=" + bjdCode;
+                    String listUrl =
+                            "https://apis.data.go.kr/1613000/AptListService3/getLegaldongAptList3"
+                                    + "?serviceKey=" + serviceKey
+                                    + "&pageNo=" + pageNo
+                                    + "&numOfRows=100"
+                                    + "&bjdCode=" + bjdCode;
 
-                ResponseEntity<AptListResponse> listResponse =
-                        rt.getForEntity(listUrl, AptListResponse.class);
+                    ResponseEntity<AptListResponse> response =
+                            rt.getForEntity(
+                                    listUrl,
+                                    AptListResponse.class
+                            );
 
-                AptListResponse dto = listResponse.getBody();
+                    AptListResponse dto =
+                            response.getBody();
 
-                if (dto == null
-                        || dto.getResponse() == null
-                        || dto.getResponse().getBody() == null) {
-
-                    log.warn("목록 API 응답 없음");
-                    break;
-                }
-
-                List<AptListItem> items =
-                        listResponse.getBody()
-                                .getResponse()
-                                .getBody()
-                                .getItems();
-
-                if (items == null || items.isEmpty()) {
-
-                    log.info("현재 법정동 조회 결과 없음");
-                    break;
-                }
-
-                log.info("현재 페이지 아파트 수 : {}", items.size());
-
-                for (AptListItem item : items) {
-
-                    try {
-
-                        log.info("[page {}] 상세조회 시작 : {}",
-                                pageNo,
-                                item.getKaptName());
-
-                        String detailUrl =
-                                "https://apis.data.go.kr/1613000/AptBasisInfoServiceV4/getAphusBassInfoV4"
-                                        + "?serviceKey=" + serviceKey
-                                        + "&kaptCode=" + item.getKaptCode();
-
-                        ResponseEntity<AptBassResponse> response =
-                                rt.getForEntity(detailUrl, AptBassResponse.class);
-
-                        Thread.sleep(100);
-
-                        AptBassResponse bassDto = response.getBody();
-
-                        if (bassDto == null
-                                || bassDto.getResponse() == null
-                                || bassDto.getResponse().getBody() == null
-                                || bassDto.getResponse().getBody().getItem() == null) {
-
-                            continue;
-                        }
-
-                        result.add(
-                                bassDto.getResponse().getBody().getItem()
-                        );
-
-                        log.info("[page {}] 조회 성공 : {}",
-                                pageNo,
-                                item.getKaptName());
-
-                    } catch (Exception e) {
-
-                        log.error("조회 실패 : {}", item.getKaptCode(), e);
+                    if (dto == null
+                            || dto.getResponse() == null
+                            || dto.getResponse().getBody() == null
+                            || dto.getResponse()
+                            .getBody()
+                            .getItems() == null
+                    ) {
+                        break;
                     }
-                }
 
-                pageNo++;
+                    List<AptListItem> items =
+                            dto.getResponse()
+                                    .getBody()
+                                    .getItems();
+
+                    if (items.isEmpty()) {
+                        break;
+                    }
+
+                    for (AptListItem item : items) {
+
+                        AptBass bass =
+                                getBassInfo(
+                                        item.getKaptCode()
+                                );
+
+                        if (bass != null) {
+                            result.add(bass);
+                        }
+                    }
+
+                    pageNo++;
+
+                } catch (Exception e) {
+
+                    log.error(
+                            "기본정보 조회 실패",
+                            e
+                    );
+
+                    break;
+                }
             }
         }
-
-        log.info("===== checkBaseInfo 종료 =====");
-        log.info("최종 결과 수 : {}", result.size());
 
         return result;
     }
 
+    /**
+     * 체크된 아파트 등록
+     */
+    @Override
+    public void registerAptList(List<String> kaptCodeList) {
 
-    private List<AptHoTyDTO> toAptHoTyVO(
-            List<AptHoTyDTO> aptHoTyDTOList,
-            AptBass bassItem){
+        if (kaptCodeList == null || kaptCodeList.isEmpty()) {
+            return;
+        }
 
-        Map<String, Integer> map = new HashMap<>();
+        for (String kaptCode : kaptCodeList) {
 
-        map.put("60", safeParseInt(bassItem.getKaptMparea60()));
-        map.put("85", safeParseInt(bassItem.getKaptMparea85()));
-        map.put("135", safeParseInt(bassItem.getKaptMparea135()));
-        map.put("136", safeParseInt(bassItem.getKaptMparea136()));
+            try {
 
-        String maxKey = null;
-        int maxValue = Integer.MIN_VALUE;
+                // 이미 등록된 경우 skip
+                if (aptMapper.existsApt(kaptCode) > 0) {
 
-        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                    log.info("이미 등록된 단지 : {}", kaptCode);
+                    continue;
+                }
 
-            if (entry.getValue() > maxValue) {
-                maxValue = entry.getValue();
-                maxKey = entry.getKey();
+                registerSingleApt(kaptCode);
+
+            } catch (Exception e) {
+
+                log.error("단지 등록 실패 : {}", kaptCode, e);
+            }
+        }
+    }
+
+    /**
+     * 단지 하나 등록
+     */
+    private void registerSingleApt(String kaptCode) {
+
+        log.info("단지 등록 시작 : {}", kaptCode);
+
+        AptBass bass = getBassInfo(kaptCode);
+        AptDetail detail = getDetailInfo(kaptCode);
+
+        if (bass == null) {
+            throw new RuntimeException("기본정보 조회 실패");
+        }
+
+        // =========================
+        // 단지
+        // =========================
+        AptComplexEntity aptEntity =
+                createAptEntity(bass, detail);
+
+        aptMapper.insertApt(aptEntity);
+
+        // =========================
+        // 관리사무소
+        // =========================
+        String mgmtOfcNo = seqService.getMgmtSeq();
+
+        MgmtOfficeEntity mgmt =
+                createMgmtOffice(bass, mgmtOfcNo);
+
+        aptMapper.insertMgmtOffice(mgmt);
+
+        // =========================
+        // 관리자 회원
+        // =========================
+        String userNo = seqService.getMemberSeq();
+
+        MemberVO member =
+                createManagerMember(bass, userNo);
+
+        aptMapper.insertMember(member);
+
+        // =========================
+        // 관리자 정보
+        // =========================
+        ManagerVO manager =
+                createManager(userNo, mgmtOfcNo);
+
+        aptMapper.insertManager(manager);
+
+        // =========================
+        // 권한
+        // =========================
+        AuthVO auth =
+                createAuth(userNo);
+
+        aptMapper.insertAuth(auth);
+
+        // =========================
+        // 동 생성
+        // =========================
+        List<AptUnitVO> unitList =
+                createUnitList(bass);
+
+        if (!unitList.isEmpty()) {
+            aptMapper.insertAptUnitBatch(unitList);
+        }
+
+        // =========================
+        // 호 타입
+        // =========================
+        List<AptHoTyDTO> hoTyList =
+                createHoTypeList(bass);
+
+        if (!hoTyList.isEmpty()) {
+            aptMapper.insertAptHoTyBatch(hoTyList);
+        }
+
+        // =========================
+        // 호 생성
+        // =========================
+        List<AptDetailVO> detailList =
+                createHoList(bass);
+
+        if (!detailList.isEmpty()) {
+            aptMapper.insertAptDetailBatch(detailList);
+        }
+
+        // =========================
+        // 인프라
+        // =========================
+        insertInfra(detail, kaptCode);
+
+        log.info("단지 등록 완료 : {}", kaptCode);
+    }
+
+    /**
+     * 기본정보 조회
+     */
+    private AptBass getBassInfo(String kaptCode) {
+
+        try {
+
+            String url =
+                    "https://apis.data.go.kr/1613000/AptBasisInfoServiceV4/getAphusBassInfoV4"
+                            + "?serviceKey=" + serviceKey
+                            + "&kaptCode=" + kaptCode;
+
+            ResponseEntity<AptBassResponse> response =
+                    rt.getForEntity(url, AptBassResponse.class);
+
+            AptBassResponse dto = response.getBody();
+
+            if (dto == null
+                    || dto.getResponse() == null
+                    || dto.getResponse().getBody() == null
+                    || dto.getResponse().getBody().getItem() == null) {
+
+                return null;
+            }
+
+            return dto.getResponse().getBody().getItem();
+
+        } catch (Exception e) {
+
+            log.error("기본정보 조회 실패 : {}", kaptCode, e);
+            return null;
+        }
+    }
+
+    /**
+     * 상세정보 조회
+     */
+    private AptDetail getDetailInfo(String kaptCode) {
+
+        try {
+
+            String url =
+                    "https://apis.data.go.kr/1613000/AptBasisInfoServiceV4/getAphusDtlInfoV4"
+                            + "?serviceKey=" + serviceKey
+                            + "&kaptCode=" + kaptCode;
+
+            ResponseEntity<AptDetailResponse> response =
+                    rt.getForEntity(url, AptDetailResponse.class);
+
+            AptDetailResponse dto = response.getBody();
+
+            if (dto == null
+                    || dto.getResponse() == null
+                    || dto.getResponse().getBody() == null
+                    || dto.getResponse().getBody().getItem() == null) {
+
+                return null;
+            }
+
+            return dto.getResponse().getBody().getItem();
+
+        } catch (Exception e) {
+
+            log.error("상세정보 조회 실패 : {}", kaptCode, e);
+            return null;
+        }
+    }
+
+    /**
+     * 단지 entity 생성
+     */
+    private AptComplexEntity createAptEntity(
+            AptBass bass,
+            AptDetail detail
+    ) {
+
+        AptComplexEntity apt = new AptComplexEntity();
+
+        apt.setAptCmplexNo(bass.getKaptCode());
+        apt.setAptCmplexNm(bass.getKaptName());
+
+        apt.setHeatTy(bass.getCodeHeatNm());
+        apt.setBldYr(bass.getKaptUsedate());
+        apt.setCnscoNm(bass.getKaptBcompany());
+
+        apt.setDorojuso(bass.getDoroJuso());
+
+        apt.setDongCnt(
+                safeParseInt(bass.getKaptDongCnt())
+        );
+
+        apt.setUnitCnt(
+                safeParseInt(bass.getKaptdaCnt())
+        );
+
+        int maxFloor = Math.max(
+                bass.getKaptTopFloor(),
+                bass.getKtownFlrNo()
+        );
+
+        apt.setMaxFloor(maxFloor);
+
+        if (detail != null) {
+
+            apt.setPkgCnt(
+                    safeParseInt(detail.getKaptdPcnt())
+                            + safeParseInt(detail.getKaptdPcntu())
+            );
+
+            apt.setCcCnt(
+                    safeParseInt(detail.getKaptdCccnt())
+            );
+        }
+
+        return apt;
+    }
+
+    /**
+     * 관리사무소 생성
+     */
+    private MgmtOfficeEntity createMgmtOffice(
+            AptBass bass,
+            String mgmtOfcNo
+    ) {
+
+        MgmtOfficeEntity entity =
+                new MgmtOfficeEntity();
+
+        entity.setMgmtOfcNo(mgmtOfcNo);
+
+        entity.setAptCmplexNo(
+                bass.getKaptCode()
+        );
+
+        entity.setMgmtOfcNm(
+                bass.getKaptName() + " 관리사무소"
+        );
+
+        entity.setMgmtOfcTelno(
+                bass.getKaptTel()
+        );
+
+        entity.setMgmtOfcBankCd("KB");
+
+        entity.setMgmtOfcAcntNo("0000-0000");
+
+        entity.setMgmtOfcAcntHldrNm(
+                bass.getKaptName() + " 관리사무소"
+        );
+
+        return entity;
+    }
+
+    /**
+     * 관리자 회원 생성
+     */
+    private MemberVO createManagerMember(
+            AptBass bass,
+            String userNo
+    ) {
+
+        MemberVO member = new MemberVO();
+
+        member.setUserNo(userNo);
+
+        member.setUserId(
+                bass.getKaptCode()
+        );
+
+        member.setUserPw(
+                passwordEncoder.encode("1234")
+        );
+
+        member.setUserNm(
+                bass.getKaptName() + "_관리소장"
+        );
+
+        member.setUserTelno(
+                bass.getKaptTel()
+        );
+
+        member.setUserRrno("1234561234567");
+
+        return member;
+    }
+
+    /**
+     * 관리자 생성
+     */
+    private ManagerVO createManager(
+            String userNo,
+            String mgmtOfcNo
+    ) {
+
+        ManagerVO manager = new ManagerVO();
+
+        manager.setUserNo(userNo);
+
+        manager.setMgmtOfcNo(mgmtOfcNo);
+
+        manager.setMngrDutyCd("HEAD");
+
+        return manager;
+    }
+
+    /**
+     * 권한 생성
+     */
+    private AuthVO createAuth(String userNo) {
+
+        AuthVO auth = new AuthVO();
+
+        auth.setUserNo(userNo);
+
+        auth.setAuth("ROLE_MNGR");
+
+        return auth;
+    }
+
+    /**
+     * 동 생성
+     */
+    private List<AptUnitVO> createUnitList(
+            AptBass bass
+    ) {
+
+        List<AptUnitVO> list =
+                new ArrayList<>();
+
+        int dongCnt =
+                safeParseInt(bass.getKaptDongCnt());
+
+        int totalCnt =
+                safeParseInt(bass.getKaptdaCnt());
+
+        if (dongCnt == 0) {
+            return list;
+        }
+
+        int perDong = totalCnt / dongCnt;
+
+        int remain = totalCnt % dongCnt;
+
+        int maxFloor = Math.max(
+                bass.getKaptTopFloor(),
+                bass.getKtownFlrNo()
+        );
+
+        for (int i = 1; i <= dongCnt; i++) {
+
+            AptUnitVO unit = new AptUnitVO();
+
+            unit.setDongNo(
+                    bass.getKaptCode() + "_" + i
+            );
+
+            unit.setAptCmplexNo(
+                    bass.getKaptCode()
+            );
+
+            unit.setDongNm(i + "");
+
+            unit.setFloor(maxFloor);
+
+            if (i == dongCnt) {
+                unit.setUnitCnt(perDong + remain);
+            } else {
+                unit.setUnitCnt(perDong);
+            }
+
+            list.add(unit);
+        }
+
+        return list;
+    }
+
+    /**
+     * 호 생성
+     */
+    private List<AptDetailVO> createHoList(
+            AptBass bass
+    ) {
+
+        List<AptDetailVO> list =
+                new ArrayList<>();
+
+        int totalUnitCnt =
+                safeParseInt(bass.getKaptdaCnt());
+
+        int dongCnt =
+                safeParseInt(bass.getKaptDongCnt());
+
+        int maxFloor = Math.max(
+                bass.getKaptTopFloor(),
+                bass.getKtownFlrNo()
+        );
+
+        if (dongCnt == 0 || maxFloor == 0) {
+            return list;
+        }
+
+        int householdsPerFloor =
+                (int) Math.ceil(
+                        (double) totalUnitCnt
+                                / dongCnt
+                                / maxFloor
+                );
+
+        for (int i = 1; i <= dongCnt; i++) {
+
+            int unitCnt =
+                    totalUnitCnt / dongCnt;
+
+            if (i == dongCnt) {
+                unitCnt += totalUnitCnt % dongCnt;
+            }
+
+            int unitIndex = 1;
+
+            for (int f = 1; f <= maxFloor; f++) {
+
+                for (int h = 1; h <= householdsPerFloor; h++) {
+
+                    if (unitIndex > unitCnt) {
+                        break;
+                    }
+
+                    AptDetailVO detail =
+                            new AptDetailVO();
+
+                    detail.setDongNo(
+                            bass.getKaptCode() + "_" + i
+                    );
+
+                    detail.setFloor(f);
+
+                    detail.setHo(
+                            String.valueOf(f * 100 + h)
+                    );
+
+                    detail.setHoNo(
+                            bass.getKaptCode()
+                                    + "_" + i
+                                    + "_" + (f * 100 + h)
+                    );
+
+                    detail.setHoTyNo(
+                            bass.getKaptCode() + "_1"
+                    );
+
+                    list.add(detail);
+
+                    unitIndex++;
+                }
             }
         }
 
-        AptHoTyDTO hoTy = new AptHoTyDTO();
-
-        hoTy.setHoTyNo(bassItem.getKaptCode() + "_1");
-        hoTy.setAptCmplexNo(bassItem.getKaptCode());
-
-        hoTy.setTyNm("A타입");
-
-        hoTy.setExclusiveSize(maxKey);
-
-        hoTy.setRoomCnt(1);
-        hoTy.setBathroomCnt(1);
-
-        aptHoTyDTOList.add(hoTy);
-
-        return aptHoTyDTOList;
+        return list;
     }
 
+    /**
+     * 호 타입 생성
+     */
+    private List<AptHoTyDTO> createHoTypeList(
+            AptBass bass
+    ) {
+
+        List<AptHoTyDTO> list =
+                new ArrayList<>();
+
+        AptHoTyDTO dto = new AptHoTyDTO();
+
+        dto.setHoTyNo(
+                bass.getKaptCode() + "_1"
+        );
+
+        dto.setAptCmplexNo(
+                bass.getKaptCode()
+        );
+
+        dto.setTyNm("A타입");
+
+        dto.setExclusiveSize("84");
+
+        dto.setRoomCnt(3);
+
+        dto.setBathroomCnt(2);
+
+        list.add(dto);
+
+        return list;
+    }
+
+    /**
+     * 인프라 저장
+     */
+    private void insertInfra(
+            AptDetail detail,
+            String kaptCode
+    ) {
+
+        if (detail == null) {
+            return;
+        }
+
+        addInfra(
+                detail.getWelfareFacility(),
+                "WELFARE",
+                kaptCode
+        );
+
+        addInfra(
+                detail.getConvenientFacility(),
+                "CONVENIENCE",
+                kaptCode
+        );
+
+        addInfra(
+                detail.getEducationFacility(),
+                "EDUCATION",
+                kaptCode
+        );
+    }
+
+    /**
+     * 인프라 등록
+     */
+    private void addInfra(
+            String value,
+            String categoryCd,
+            String kaptCode
+    ) {
+
+        if (value == null || value.trim().isEmpty()) {
+            return;
+        }
+
+        String[] arr = value.split(",");
+
+        for (String item : arr) {
+
+            AptInfraEntity infra =
+                    new AptInfraEntity();
+
+            infra.setAptCmplexNo(kaptCode);
+
+            infra.setCategoryCd(categoryCd);
+
+            infra.setInfraNm(item.trim());
+
+            aptMapper.insertInfraOne(infra);
+        }
+    }
+
+    /**
+     * 숫자 변환
+     */
+    private int safeParseInt(String str) {
+
+        if (str == null || str.trim().isEmpty()) {
+            return 0;
+        }
+
+        return (int) Double.parseDouble(str);
+    }
+
+    private Map<String, String> getLatLng(
+            String address
+    ) {
+
+        try {
+
+            String kakaoKey =
+                    "e91015a224888fbe9e2afc3320c22a1b";
+
+            String url =
+                    "https://dapi.kakao.com/v2/local/search/address.json?query="
+                            + URLEncoder.encode(
+                            address,
+                            StandardCharsets.UTF_8
+                    );
+
+            HttpHeaders headers =
+                    new HttpHeaders();
+
+            headers.set(
+                    "Authorization",
+                    "KakaoAK " + kakaoKey
+            );
+
+            HttpEntity<String> entity =
+                    new HttpEntity<>(headers);
+
+            ResponseEntity<Map> response =
+                    rt.exchange(
+                            url,
+                            HttpMethod.GET,
+                            entity,
+                            Map.class
+                    );
+
+            Map body = response.getBody();
+
+            if (body == null) {
+                return null;
+            }
+
+            List<Map<String, Object>> docs =
+                    (List<Map<String, Object>>)
+                            body.get("documents");
+
+            if (docs == null || docs.isEmpty()) {
+                return null;
+            }
+
+            Map<String, Object> first =
+                    docs.get(0);
+
+            Map<String, String> result =
+                    new HashMap<>();
+
+            result.put(
+                    "lat",
+                    String.valueOf(first.get("y"))
+            );
+
+            result.put(
+                    "lng",
+                    String.valueOf(first.get("x"))
+            );
+
+            return result;
+
+        } catch (Exception e) {
+
+            log.error(
+                    "좌표 조회 실패 : {}",
+                    address,
+                    e
+            );
+
+            return null;
+        }
+    }
 }

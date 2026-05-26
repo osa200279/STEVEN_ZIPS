@@ -280,4 +280,146 @@
         WHERE HO_NO = #{hoNo}
     </update>
 
+    <insert id="insertApt">
+
+        INSERT INTO APT_COMPLEX (
+
+            APT_CMPLEX_NO,
+            APT_CMPLEX_NM,
+            BJD_CD,
+            SIDO_NM,
+            SIGUNGU_NM,
+            EMD_NM,
+            LAT_VAL,
+            LON_VAL,
+            UNIT_CNT,
+            BLD_YR,
+            CNSCO_NM,
+            HEAT_TY,
+            PKG_CNT,
+            MAX_FLOOR,
+            DONG_CNT,
+            DOROJUSO,
+            CC_CNT
+
+        ) VALUES (
+
+                     #{aptCmplexNo},
+                     #{aptCmplexNm},
+                     #{bjdCd},
+                     #{sidoNm},
+                     #{sigunguNm},
+                     #{emdNm},
+                     #{latVal},
+                     #{lonVal},
+                     #{unitCnt},
+                     #{bldYr},
+                     #{cnscoNm},
+                     #{heatTy},
+                     #{pkgCnt},
+                     #{maxFloor},
+                     #{dongCnt},
+                     #{dorojuso},
+                     #{ccCnt}
+
+                 )
+
+    </insert>
+
+    <insert id="insertMgmtOffice">
+
+        INSERT INTO MGMT_OFFICE(
+
+            MGMT_OFC_NO,
+            APT_CMPLEX_NO,
+            MGMT_OFC_NM,
+            MGMT_OFC_TELNO,
+            MGMT_OFC_BANK_CD,
+            MGMT_OFC_ACNT_HLDR_NM,
+            MGMT_OFC_ACNT_NO,
+            REG_DT
+
+        ) VALUES (
+
+                     #{mgmtOfcNo},
+                     #{aptCmplexNo},
+                     #{mgmtOfcNm},
+                     #{mgmtOfcTelno},
+                     #{mgmtOfcBankCd},
+                     #{mgmtOfcAcntHldrNm},
+                     #{mgmtOfcAcntNo},
+                     SYSDATE
+
+                 )
+
+    </insert>
+
+    <insert id="insertMember">
+
+        INSERT INTO MEMBER(
+
+            USER_NO,
+            USER_ID,
+            USER_PW,
+            USER_NM,
+            USER_RRNO,
+            USER_TELNO
+
+        ) VALUES (
+
+                     #{userNo},
+                     #{userId},
+                     #{userPw},
+                     #{userNm},
+                     #{userRrno},
+                     #{userTelno}
+
+                 )
+
+    </insert>
+
+    <insert id="insertManager">
+
+        INSERT INTO MANAGER(
+
+            USER_NO,
+            MGMT_OFC_NO,
+            MNGR_DUTY_CD
+
+        ) VALUES (
+
+                     #{userNo},
+                     #{mgmtOfcNo},
+                     #{mngrDutyCd}
+
+                 )
+
+    </insert>
+
+    <insert id="insertAuth">
+
+        INSERT INTO AUTH(
+
+            USER_NO,
+            USER_ROLE_CD
+
+        ) VALUES (
+
+                     #{userNo},
+                     #{auth}
+
+                 )
+
+    </insert>
+
+    <select id="existsApt" resultType="int">
+
+        SELECT COUNT(*)
+        FROM APT_COMPLEX
+        WHERE APT_CMPLEX_NO = #{kaptCode}
+
+    </select>
+
+
+
 </mapper>

@@ -16,4 +16,6 @@ public interface IAptMemberApiService {
     void createDummyUsers(int count);
 
     int getNotAssignedUserCount();
+
+    void assignResidents(List<String> aptList, int count);
 }
