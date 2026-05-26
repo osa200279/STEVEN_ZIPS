@@ -169,8 +169,13 @@ public class ResidentBillController {
     }
 
     // 납부안내
-    @GetMapping("/guide")
-    public String billGuide(Model model) {
+    @GetMapping("/guide/{aptCmplexNo}")
+    public String billGuide(@AuthenticationPrincipal CustomUser customUser,
+                            @PathVariable String aptCmplexNo,
+                            Model model) {
+        AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
+
+        model.addAttribute("aptInfo", aptMainPageDTO);
         model.addAttribute("portOneImpCode", portOneImpCode);
         model.addAttribute("portOneChannelKey", portOneChannelKey);
         return "member/resident/bill/bill_guide";
