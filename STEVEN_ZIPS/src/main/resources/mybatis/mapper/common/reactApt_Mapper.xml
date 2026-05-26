@@ -50,7 +50,7 @@
 
         ) VALUES (
         #{rentCtrtNo}
-        ,#{rentListingNo}
+        ,#{rentLstgNo}
         ,TO_DATE(#{mvinDt}, 'YYYY-MM-DD')
         ,TO_DATE(#{mvoutDt}, 'YYYY-MM-DD')
         ,SYSDATE
@@ -66,7 +66,7 @@
         ,#{agntNm}
         ,#{agntTelno}
         ,#{spclStpltnCn}
-        ,#{SBMSN_DOC_NO}
+        ,#{sbmsnDocNo}
         )
     </insert>
 

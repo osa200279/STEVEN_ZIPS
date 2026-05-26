@@ -139,13 +139,14 @@ public class ReactAptServiceImpl implements IReactAptService {
             }
 
             reactAptMapper.insertSbmsnDoc(param);
-            reactAptMapper.insertRentCtrt(param);
-            reactAptMapper.insertCtrtMgr(param);
-
-            // 매물 상태 변경
-            reactAptMapper.updateRentListingStatus(param.get("rentListingNo"));
-
             //
         }
+
+        System.out.println(param);
+        reactAptMapper.insertRentCtrt(param);
+        reactAptMapper.insertCtrtMgr(param);
+
+        // 매물 상태 변경
+        reactAptMapper.updateRentListingStatus(param.get("rentLstgNo"));
     }
 }
