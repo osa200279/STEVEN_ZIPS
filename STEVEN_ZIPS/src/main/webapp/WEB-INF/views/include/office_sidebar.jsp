@@ -95,7 +95,7 @@
                     </a>
                     <a href="${ctx}/manager/resident/auth${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/resident/auth') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">회원 권한 변경</span>
+                        <span class="nav-text">입주 신청 관리</span>
                     </a>
                     <a href="${ctx}/manager/resident/moveList${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/resident/moveList') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>

@@ -132,7 +132,7 @@
                     <div class="panel-header">
                         <h3 class="panel-title">
                             <span class="material-symbols-rounded">how_to_reg</span>
-                            권한 신청 목록
+                            입주 신청 목록
                         </h3>
                         <span class="list-count" id="rqstCount">0건</span>
                     </div>
