@@ -5,6 +5,7 @@ import kr.or.ddit.domain.apt.mgmtOffice.complaint.dto.ManagerComplaintDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ManagerComplaintMapper {
@@ -15,4 +16,8 @@ public interface ManagerComplaintMapper {
     int updateCvplStts(ManagerComplaintDTO dto);
 
     void insertCvplHstry(ManagerComplaintDTO dto);
+
+    List<ManagerComplaintDTO> selectMngrList(String mgmtOfcNo);
+
+    List<Map<String, Object>> selectCvplFileList(String cvplFileNo);
 }

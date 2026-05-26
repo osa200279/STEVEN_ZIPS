@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,5 +30,15 @@ public class ManagerComplaintServiceImpl implements ManagerComplaintService{
     public void updateComplaint(ManagerComplaintDTO dto) {
         managerComplaintMapper.updateCvplStts(dto);
         managerComplaintMapper.insertCvplHstry(dto);
+    }
+
+    @Override
+    public List<ManagerComplaintDTO> selectMngrList(String mgmtOfcNo) {
+        return managerComplaintMapper.selectMngrList(mgmtOfcNo);
+    }
+
+    @Override
+    public List<Map<String, Object>> selectCvplFileList(String cvplFileNo) {
+        return managerComplaintMapper.selectCvplFileList(cvplFileNo);
     }
 }

@@ -8,9 +8,11 @@ import kr.or.ddit.domain.apt.mgmtOffice.complaint.service.ManagerComplaintServic
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.tags.shaded.org.apache.xpath.operations.Mod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -96,6 +98,24 @@ public class ManagerComplaintController {
         return ResponseEntity.ok(result);
     }
 
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/mngrList/{mgmtOfcNo}")
+    public ResponseEntity<List<ManagerComplaintDTO>> selectMngrList(
+            @PathVariable String mgmtOfcNo
+    ) {
+        return ResponseEntity.ok(managerComplaintService.selectMngrList(mgmtOfcNo));
+    }
+
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/cvplFileList/{mgmtOfcNo}")
+    public ResponseEntity<List<Map<String, Object>>> selectCvplFileList(@PathVariable String mgmtOfcNo,
+                                                                        @RequestParam String cvplFileNo,
+                                                                        @AuthenticationPrincipal CustomUser principal,
+                                                                        Model model){
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+        model.addAttribute("currentUserId", principal.getMember().getUserId());
+        return ResponseEntity.ok(managerComplaintService.selectCvplFileList(cvplFileNo));
+    }
 
 
 }

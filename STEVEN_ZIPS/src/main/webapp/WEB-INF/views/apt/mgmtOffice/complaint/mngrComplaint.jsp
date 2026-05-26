@@ -19,8 +19,7 @@
            테이블
         ──────────────────────────────────── */
         #cvplTable { table-layout: fixed; width: 100%; }
-        #cvplTable th,
-        #cvplTable td {
+        #cvplTable th, #cvplTable td {
             text-align: center;
             vertical-align: middle;
             overflow: hidden;
@@ -33,17 +32,13 @@
         #cvplTable .col-name { width: 100px; }
         #cvplTable .col-type { width: 100px; }
         #cvplTable .col-stat { width: 120px; }
-        #cvplTable .col-mngr { width: 100px; }
         #cvplTable .col-done { width: 100px; }
         #cvplTable .col-act  { width: 80px; }
-
         #cvplTable tbody tr {
             cursor: pointer;
             transition: background 0.15s;
         }
-        #cvplTable tbody tr:hover {
-            background: var(--gray-50, #f9fafb);
-        }
+        #cvplTable tbody tr:hover { background: var(--gray-50, #f9fafb); }
 
         /* ────────────────────────────────────
            검색 패널
@@ -54,34 +49,18 @@
             gap: 12px;
             flex-wrap: wrap;
         }
-        .search-panel .search-field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        .search-panel .search-field { display: flex; flex-direction: column; gap: 6px; }
         .search-panel .search-field label {
             font-size: 12px;
             font-weight: 600;
             color: var(--text-secondary);
             letter-spacing: 0.02em;
         }
-        .search-panel .date-range {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .search-panel .date-range { display: flex; align-items: center; gap: 6px; }
         .search-panel .date-range input { width: 160px; }
-        .search-panel .date-sep {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            flex-shrink: 0;
-        }
+        .search-panel .date-sep { font-size: 12px; color: var(--text-tertiary); flex-shrink: 0; }
         .search-panel select.filter-sel { width: 160px; }
-        .search-panel .keyword-wrap {
-            flex: 1;
-            min-width: 220px;
-            position: relative;
-        }
+        .search-panel .keyword-wrap { flex: 1; min-width: 220px; position: relative; }
         .search-panel .keyword-wrap .material-symbols-rounded {
             position: absolute;
             left: 10px;
@@ -91,11 +70,7 @@
             color: var(--text-tertiary);
             pointer-events: none;
         }
-        .search-panel .keyword-wrap input {
-            width: 100%;
-            padding-left: 34px;
-            box-sizing: border-box;
-        }
+        .search-panel .keyword-wrap input { width: 100%; padding-left: 34px; box-sizing: border-box; }
         .search-panel .search-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .search-panel .search-divider {
             width: 1px; height: 32px;
@@ -141,12 +116,6 @@
                     <div class="page-title-block">
                         <h2>민원 접수 현황</h2>
                         <p>입주민이 접수한 민원을 조회하고 처리 상태를 관리합니다.</p>
-                    </div>
-                    <div class="page-actions">
-                        <button type="button" class="btn btn-secondary" id="btnExcelDownload">
-                            <span class="material-symbols-rounded">download</span>
-                            엑셀 다운로드
-                        </button>
                     </div>
                 </div>
 
@@ -246,7 +215,6 @@
                                 <col class="col-type">
                                 <col class="col-title">
                                 <col class="col-stat">
-                                <col class="col-mngr">
                                 <col class="col-done">
                                 <col class="col-act">
                             </colgroup>
@@ -259,7 +227,6 @@
                                 <th>유형</th>
                                 <th style="text-align:left;">민원 제목</th>
                                 <th>상태</th>
-                                <th>담당자</th>
                                 <th>처리일</th>
                                 <th>관리</th>
                             </tr>
@@ -277,7 +244,7 @@
             </div><!-- /office-page -->
 
             <!-- ══════════════════════════════════════
-                 민원 상세 슬라이드오버 모달
+                 민원 상세 모달
             ══════════════════════════════════════ -->
             <div class="modal-overlay" id="cvplDetailModal">
                 <div class="modal modal-lg">
@@ -337,33 +304,33 @@
                             </div>
                         </div>
 
+                        <!-- 첨부파일 -->
+                        <div class="form-section" id="fileSection" style="display:none;">
+                            <div class="form-section-title">
+                                <span class="material-symbols-rounded">attach_file</span>
+                                첨부파일
+                            </div>
+                            <ul id="dFileList" style="padding:0; margin:0; list-style:none;"></ul>
+                        </div>
+
                         <!-- 처리 내역 -->
                         <div class="form-section">
                             <div class="form-section-title">
                                 <span class="material-symbols-rounded">engineering</span>
                                 처리 내역
                             </div>
-                            <div class="form-row cols-2">
-                                <div class="form-field">
-                                    <label class="field-label">처리 담당자</label>
-                                    <select class="form-select" id="dMngr">
-                                        <option value="">담당자 선택</option>
-                                        <%-- TODO: 담당자 목록 동적으로 가져오기 --%>
-                                    </select>
-                                </div>
-                                <div class="form-field">
-                                    <label class="field-label">처리 상태 변경</label>
-                                    <select class="form-select" id="dStatusChange">
-                                        <option value="APLY">민원 접수</option>
-                                        <option value="RCPT">접수 완료</option>
-                                        <option value="POCS">처리중</option>
-                                        <option value="SUPL">보완 요청</option>
-                                        <option value="REJS">처리 불가</option>
-                                        <option value="COMP">처리 완료</option>
-                                        <option value="RJCT">반려</option>
-                                        <option value="END">종결</option>
-                                    </select>
-                                </div>
+                            <div class="form-field">
+                                <label class="field-label">처리 상태 변경</label>
+                                <select class="form-select" id="dStatusChange">
+                                    <option value="APLY">민원 접수</option>
+                                    <option value="RCPT">접수 완료</option>
+                                    <option value="POCS">처리중</option>
+                                    <option value="SUPL">보완 요청</option>
+                                    <option value="REJS">처리 불가</option>
+                                    <option value="COMP">처리 완료</option>
+                                    <option value="RJCT">반려</option>
+                                    <option value="END">종결</option>
+                                </select>
                             </div>
                             <div class="form-field">
                                 <label class="field-label">처리 메모</label>
@@ -401,7 +368,6 @@
 
         var TYPE_TEXT  = { FAC:'시설/하자', SEC:'보안/안전', ACC:'회계/관리비', ENV:'환경/위생', ETC:'기타' };
         var TYPE_BADGE = { FAC:'badge-green', SEC:'badge-red', ACC:'badge-blue', ENV:'badge-orange', ETC:'badge-gray' };
-
         var STAT_TEXT  = {
             APLY:'민원 접수',  RCPT:'접수 완료', POCS:'처리중',
             SUPL:'보완 요청',  REJS:'처리 불가', COMP:'처리 완료',
@@ -416,11 +382,11 @@
         /* ══════════════════════════════════════
            2. DOM 참조
         ══════════════════════════════════════ */
-        /* 목록 */
-        var $tbody     = document.getElementById('cvplTableBody');
-        var $listCount = document.getElementById('cvplListCount');
-        var $pageInfo  = document.getElementById('pageInfo');
-        var $pageBtns  = document.getElementById('pageBtns');
+        var $tbody         = document.getElementById('cvplTableBody');
+        var $listCount     = document.getElementById('cvplListCount');
+        var $pageInfo      = document.getElementById('pageInfo');
+        var $pageBtns      = document.getElementById('pageBtns');
+        var $detailModal   = document.getElementById('cvplDetailModal');
 
         /* 검색 필터 */
         var $filterDateFrom  = document.getElementById('filterDateFrom');
@@ -431,7 +397,6 @@
         var $filterUnhandled = document.getElementById('filterUnhandled');
 
         /* 상세 모달 */
-        var $detailModal   = document.getElementById('cvplDetailModal');
         var $dNo           = document.getElementById('dNo');
         var $dDate         = document.getElementById('dDate');
         var $dReporter     = document.getElementById('dReporter');
@@ -439,7 +404,6 @@
         var $dStatus       = document.getElementById('dStatus');
         var $dTitle        = document.getElementById('dTitle');
         var $dContent      = document.getElementById('dContent');
-        var $dMngr         = document.getElementById('dMngr');
         var $dStatusChange = document.getElementById('dStatusChange');
         var $dMemo         = document.getElementById('dMemo');
 
@@ -470,12 +434,10 @@
         /* ══════════════════════════════════════
            5. API 호출
         ══════════════════════════════════════ */
-        function fetchList(page) {
+        async function fetchList(page) {
             currentPage = page || 1;
-
-            var cvplSttsCd = $filterUnhandled.checked ? 'UNHANDLED' : $filterStatus.value;
-
-            var params = new URLSearchParams({
+            const cvplSttsCd = $filterUnhandled.checked ? 'UNHANDLED' : $filterStatus.value;
+            const params = new URLSearchParams({
                 curPage:        currentPage,
                 cvplTyCd:       $filterType.value,
                 cvplSttsCd:     cvplSttsCd,
@@ -484,38 +446,33 @@
                 searchDateTo:   $filterDateTo.value
             });
 
-            fetch('/manager/complex/complaintList/' + MGMT_OFC_NO + '?' + params)
-                .then(function (res) {
-                    if (!res.ok) throw new Error('서버 오류: ' + res.status);
-                    return res.json();
-                })
-                .then(function (data) {
-                    cachedList  = data.list  || [];
-                    totalRecord = data.page.totalRecord || 0;
-                    renderTable(cachedList, data.page);
-                })
-                .catch(function (err) {
-                    console.error('[fetchList] 실패:', err);
-                    $tbody.innerHTML = '<tr><td colspan="10" style="padding:34px 12px; color:var(--text-tertiary);">데이터를 불러오지 못했습니다.</td></tr>';
-                });
+            try {
+                const res  = await fetch('/manager/complex/complaintList/' + MGMT_OFC_NO + '?' + params);
+                if (!res.ok) throw new Error('서버 오류: ' + res.status);
+                const data = await res.json();
+                cachedList  = data.list  || [];
+                totalRecord = data.page.totalRecord || 0;
+                renderTable(cachedList, data.page);
+            } catch (err) {
+                console.error('[fetchList] 실패:', err);
+                $tbody.innerHTML = '<tr><td colspan="9" style="padding:34px 12px; color:var(--text-tertiary);">데이터를 불러오지 못했습니다.</td></tr>';
+            }
         }
 
-        function saveComplaint(payload) {
-            /* CSRF 토큰 */
-            var csrfToken  = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-            var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        async function saveComplaint(payload) {
+            const csrfToken  = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-            return fetch('/manager/complex/updateComplaint/' + MGMT_OFC_NO, {
+            const res = await fetch('/manager/complex/updateComplaint/' + MGMT_OFC_NO, {
                 method:  'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    [csrfHeader]:   csrfToken           // X-CSRF-TOKEN: 토큰값
+                    [csrfHeader]:   csrfToken
                 },
                 body: JSON.stringify(payload)
-            }).then(function (res) {
-                if (!res.ok) throw new Error('서버 오류: ' + res.status);
-                return res.json();
             });
+            if (!res.ok) throw new Error('서버 오류: ' + res.status);
+            return res.json();
         }
 
         /* ══════════════════════════════════════
@@ -532,17 +489,13 @@
                 : startRow + '–' + endRow + ' / ' + total + '건';
 
             if (!list || list.length === 0) {
-                $tbody.innerHTML = '<tr><td colspan="10" style="padding:34px 12px; color:var(--text-tertiary);">조건에 맞는 민원이 없습니다.</td></tr>';
+                $tbody.innerHTML = '<tr><td colspan="9" style="padding:34px 12px; color:var(--text-tertiary);">조건에 맞는 민원이 없습니다.</td></tr>';
                 renderPager(pageVO);
                 return;
             }
 
-            $tbody.innerHTML = list.map(function (row, i) {
-                var dongHo = ((row.dongNm || '') + ' ' + (row.ho || '')).trim();
-                var mngr   = row.picId
-                    ? row.picId
-                    : '<span style="color:var(--text-tertiary)">-</span>';
-
+            $tbody.innerHTML = list.map((row, i) => {
+                const dongHo = ((row.dongNm || '') + '동 ' + (row.ho || '') + '호').trim();
                 return '<tr data-cvpl-no="' + row.cvplNo + '">'
                     + '<td>' + (startRow + i) + '</td>'
                     + '<td class="td-mono">' + safe(row.cvplRegDt) + '</td>'
@@ -551,7 +504,6 @@
                     + '<td>' + typeBadge(row.cvplTyCd) + '</td>'
                     + '<td style="text-align:left;" title="' + safe(row.cvplTtl) + '">' + safe(row.cvplTtl) + '</td>'
                     + '<td>' + statBadge(row.cvplSttsCd) + '</td>'
-                    + '<td>' + mngr + '</td>'
                     + '<td class="td-mono">' + safe(row.cvplEndDt) + '</td>'
                     + '<td><button type="button" class="btn btn-xs" data-cvpl-no="' + row.cvplNo + '">상세</button></td>'
                     + '</tr>';
@@ -587,11 +539,11 @@
         /* ══════════════════════════════════════
            7. 모달
         ══════════════════════════════════════ */
-        function openDetail(cvplNo) {
-            var row = cachedList.filter(function (r) { return r.cvplNo === cvplNo; })[0];
+        async function openDetail(cvplNo) {
+            const row = cachedList.filter(r => r.cvplNo === cvplNo)[0];
             if (!row) return;
 
-            var dongHo = ((row.dongNm || '') + ' ' + (row.ho || '')).trim();
+            const dongHo = ((row.dongNm || '') + '동 ' + (row.ho || '') + '호').trim();
 
             document.getElementById('detailModalTitle').textContent = '민원 상세 — ' + row.cvplNo;
             $dNo.textContent       = safe(row.cvplNo);
@@ -601,9 +553,51 @@
             $dStatus.innerHTML     = statBadge(row.cvplSttsCd);
             $dTitle.textContent    = safe(row.cvplTtl);
             $dContent.textContent  = safe(row.cvplCn);
-            $dMngr.value           = row.picId      || '';
             $dStatusChange.value   = row.cvplSttsCd || '';
             $dMemo.value           = row.cvplAns    || '';
+
+            /* 첨부파일 조회 */
+            const $fileSection = document.getElementById('fileSection');
+            const $dFileList   = document.getElementById('dFileList');
+
+            $fileSection.style.setProperty('display', 'none', 'important');
+            $dFileList.innerHTML = '';
+
+            if (row.cvplFileNo) {
+                try {
+                    const res   = await fetch('/manager/complex/cvplFileList/' + MGMT_OFC_NO + '?cvplFileNo=' + row.cvplFileNo);
+                    if (!res.ok) throw new Error('서버 오류: ' + res.status);
+                    const files = await res.json();
+
+                    if (files.length > 0) {
+                        $dFileList.innerHTML = files.map(f => {
+                            const isImage  = f.MIME_TYPE && f.MIME_TYPE.startsWith('image/');
+                            const googleId = f.GOOGLE_ID || '';
+
+                            if (isImage) {
+                                return '<li style="padding:6px 0; border-bottom:1px solid var(--border);">'
+                                    + '<img src="/file/display/' + googleId + '" '
+                                    + 'alt="' + (f.FILE_OG_NAME || '') + '" '
+                                    + 'style="max-width:100%; max-height:200px; border-radius:8px; object-fit:contain; display:block;">'
+                                    + '<span style="font-size:12px; color:var(--text-tertiary);">'
+                                    + (f.FILE_OG_NAME || '-') + ' (' + Math.round((f.FILE_SIZE || 0) / 1024) + 'KB)</span>'
+                                    + '</li>';
+                            } else {
+                                return '<li style="padding:6px 0; border-bottom:1px solid var(--border); font-size:13px;">'
+                                    + '<a href="/file/download/' + googleId + '" '
+                                    + 'style="display:inline-flex; align-items:center; gap:6px; text-decoration:none; color:var(--text-secondary);">'
+                                    + '<span class="material-symbols-rounded" style="font-size:16px;">attach_file</span>'
+                                    + (f.FILE_OG_NAME || '-') + ' (' + Math.round((f.FILE_SIZE || 0) / 1024) + 'KB)'
+                                    + '</a>'
+                                    + '</li>';
+                            }
+                        }).join('');
+                        $fileSection.style.setProperty('display', 'block', 'important');
+                    }
+                } catch (err) {
+                    console.error('[fileList] 실패:', err);
+                }
+            }
 
             $detailModal.dataset.currentNo = cvplNo;
             $detailModal.classList.add('open');
@@ -614,30 +608,28 @@
             $detailModal.dataset.currentNo = '';
         }
 
-        function saveDetail() {
-            var cvplNo = $detailModal.dataset.currentNo;
+        async function saveDetail() {
+            const cvplNo = $detailModal.dataset.currentNo;
             if (!cvplNo) return;
 
-            var payload = {
+            const payload = {
                 cvplNo:     cvplNo,
-                picId:      $dMngr.value,
                 cvplSttsCd: $dStatusChange.value,
                 cvplAns:    $dMemo.value
             };
 
-            saveComplaint(payload)
-                .then(function (data) {
-                    if (data.success) {
-                        closeDetail();
-                        fetchList(currentPage);
-                    } else {
-                        alert('저장 실패: ' + data.message);
-                    }
-                })
-                .catch(function (err) {
-                    console.error('[saveDetail] 오류:', err);
-                    alert('저장 중 오류가 발생했습니다.');
-                });
+            try {
+                const data = await saveComplaint(payload);
+                if (data.success) {
+                    closeDetail();
+                    fetchList(currentPage);
+                } else {
+                    alert('저장 실패: ' + data.message);
+                }
+            } catch (err) {
+                console.error('[saveDetail] 오류:', err);
+                alert('저장 중 오류가 발생했습니다.');
+            }
         }
 
         /* ══════════════════════════════════════
@@ -645,11 +637,11 @@
         ══════════════════════════════════════ */
 
         /* 검색 */
-        document.getElementById('btnSearch').addEventListener('click', function () { fetchList(1); });
-        $filterKeyword.addEventListener('keydown', function (e) { if (e.key === 'Enter') fetchList(1); });
+        document.getElementById('btnSearch').addEventListener('click', () => fetchList(1));
+        $filterKeyword.addEventListener('keydown', e => { if (e.key === 'Enter') fetchList(1); });
 
         /* 초기화 */
-        document.getElementById('btnReset').addEventListener('click', function () {
+        document.getElementById('btnReset').addEventListener('click', () => {
             $filterDateFrom.value    = '';
             $filterDateTo.value      = '';
             $filterType.value        = '';
@@ -666,19 +658,19 @@
             if (this.checked) $filterStatus.value = '';
         });
 
-        /* 테이블 - 행 클릭 및 상세 버튼 (이벤트 위임) */
-        $tbody.addEventListener('click', function (e) {
-            var btn = e.target.closest('[data-cvpl-no]');
+        /* 테이블 행 클릭 / 상세 버튼 (이벤트 위임) */
+        $tbody.addEventListener('click', e => {
+            const btn = e.target.closest('[data-cvpl-no]');
             if (btn) openDetail(btn.dataset.cvplNo);
         });
 
         /* 페이지 버튼 (이벤트 위임) */
-        $pageBtns.addEventListener('click', function (e) {
-            var btn = e.target.closest('[data-page]');
+        $pageBtns.addEventListener('click', e => {
+            const btn = e.target.closest('[data-page]');
             if (!btn || btn.disabled) return;
 
-            var p         = btn.dataset.page;
-            var totalPage = Math.ceil(totalRecord / 10) || 1;
+            const p         = btn.dataset.page;
+            const totalPage = Math.ceil(totalRecord / 10) || 1;
 
             if      (p === 'prev') currentPage = Math.max(1, currentPage - 1);
             else if (p === 'next') currentPage = Math.min(totalPage, currentPage + 1);
@@ -690,17 +682,10 @@
         /* 모달 닫기 */
         document.getElementById('btnCloseDetail').addEventListener('click',  closeDetail);
         document.getElementById('btnCloseDetail2').addEventListener('click', closeDetail);
-        $detailModal.addEventListener('click', function (e) {
-            if (e.target === $detailModal) closeDetail();
-        });
+        $detailModal.addEventListener('click', e => { if (e.target === $detailModal) closeDetail(); });
 
         /* 처리 저장 */
         document.getElementById('btnSaveDetail').addEventListener('click', saveDetail);
-
-        /* 엑셀 다운로드 */
-        document.getElementById('btnExcelDownload').addEventListener('click', function () {
-            alert('엑셀 다운로드 기능은 서버 연동 후 구현 예정입니다.');
-        });
 
         /* ══════════════════════════════════════
            9. 초기 로드

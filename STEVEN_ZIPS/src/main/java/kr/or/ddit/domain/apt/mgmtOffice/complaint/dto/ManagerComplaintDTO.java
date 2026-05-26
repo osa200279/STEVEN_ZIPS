@@ -49,4 +49,5 @@ public class ManagerComplaintDTO {
      */
     private String searchDateFrom; // 접수기간 시작일
     private String searchDateTo;   // 접수기간 종료일
+
 }

@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ICentralAptComplexMapper {
@@ -38,9 +39,10 @@ public interface ICentralAptComplexMapper {
     // 단지 상세화면
     AptComplexVO selectAptComplexDetail(@Param("aptCmplexNo") String aptCmplexNo);
 
-    List<AptComplexVO> selectAptMapList();
 
     List<String> selectDongList(@Param("sidoNm") String sidoNm,@Param("sigunguNm") String sigunguNm);
+
+    List<AptComplexVO> selectAptMapList();
 
 }
 
