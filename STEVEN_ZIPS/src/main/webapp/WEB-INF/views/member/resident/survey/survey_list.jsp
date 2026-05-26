@@ -46,6 +46,20 @@
     .process-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:14px;} .process-step {padding:18px 14px;border-radius:14px;border:1px solid var(--border);background:#fff;text-align:center;} .process-step.active {background:#eef8f0;border-color:#b8d9c0;}
     @media (max-width:1200px){.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid{grid-template-columns:repeat(2,1fr)} .grid-2,.grid-2.equal,.chat-layout{grid-template-columns:1fr} .label-grid{grid-template-columns:140px 1fr}}
     @media (max-width:900px){.main-shell{flex-direction:column}.content-area{padding:24px 18px 48px}.page-content-wrap{max-width:100%}.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid,.seat-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:120px 1fr}.label-grid{grid-template-columns:120px 1fr}}
+
+    @keyframes popupFade{
+
+      from{
+        opacity:0;
+        transform:translateY(10px) scale(0.96);
+      }
+
+      to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+      }
+    }
+
   </style>
 
 </head>
@@ -107,9 +121,11 @@
                     <c:when test="${survey.surveySttsCd eq 'OPEN'}">
 
                       <a href="${pageContext.request.contextPath}/resident/survey/detail/${survey.surveyNo}"
-                         style="font-weight:700;
-           color:var(--text-dark);
-           text-decoration:none;">
+                         style="
+            font-weight:700;
+            color:var(--text-dark);
+            text-decoration:none;
+         ">
 
                           ${survey.surveyNm}
 
@@ -120,10 +136,12 @@
                     <c:otherwise>
 
                       <a href="javascript:void(0);"
-                         onclick="alert('현재 참여할 수 없는 설문입니다.');"
-                         style="font-weight:700;
-           color:var(--text-dark);
-           text-decoration:none;">
+                         onclick="showSurveyAlert();"
+                         style="
+            font-weight:700;
+            color:var(--text-dark);
+            text-decoration:none;
+         ">
 
                           ${survey.surveyNm}
 
@@ -212,7 +230,97 @@
               + "/resident/survey/list?type="
               + type;
     }
+    function showSurveyAlert(){
+
+      document.getElementById(
+              "surveyAlertModal"
+      ).style.display = "flex";
+    }
+
+    function closeSurveyAlert(){
+
+      document.getElementById(
+              "surveyAlertModal"
+      ).style.display = "none";
+    }
 
   </script>
+
+
+  <div id="surveyAlertModal"
+       style="
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.45);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        z-index:9999;
+     ">
+
+    <div style="
+        width:320px;
+        background:#fff;
+        border-radius:20px;
+        padding:28px 24px;
+        text-align:center;
+        box-shadow:0 20px 50px rgba(0,0,0,0.18);
+        animation:popupFade .18s ease;
+  ">
+
+      <div style="
+        width:64px;
+        height:64px;
+        margin:0 auto 18px;
+        border-radius:50%;
+        background:#fff5df;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:30px;
+    ">
+        ⚠️
+      </div>
+
+      <div style="
+        font-size:18px;
+        font-weight:800;
+        color:#111827;
+        margin-bottom:10px;
+    ">
+        참여 불가
+      </div>
+
+      <div style="
+        font-size:14px;
+        color:#6b7280;
+        line-height:1.6;
+        margin-bottom:22px;
+    ">
+        진행중인 설문만<br>
+        참여 가능합니다.
+      </div>
+
+      <button type="button"
+              onclick="closeSurveyAlert()"
+              style="
+                width:100%;
+                border:none;
+                background:#2f6b3d;
+                color:#fff;
+                border-radius:12px;
+                padding:13px;
+                font-size:14px;
+                font-weight:700;
+                cursor:pointer;
+            ">
+
+        확인
+
+      </button>
+
+    </div>
+
+  </div>
 </body>
 </html>

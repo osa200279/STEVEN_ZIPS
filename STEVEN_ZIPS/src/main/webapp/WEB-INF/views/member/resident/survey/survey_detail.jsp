@@ -138,7 +138,7 @@
 
 
 
-        <a class="btn-ghost" href="${pageContext.request.contextPath}/resident/survey/list">목록으로</a>
+        <a class="btn-ghost"href="${pageContext.request.contextPath}/resident/survey/list/${survey.aptCd}">목록으로</a>
         </div>
       </section>
 

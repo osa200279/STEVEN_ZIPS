@@ -431,21 +431,31 @@
 
 
 
-        if(!data.resultList || !data.resultList.length){
+        const hasChoice =
+            data.resultList && data.resultList.length;
+
+        const hasShort =
+            data.shortAnswerList && data.shortAnswerList.length;
+
+        if(!hasChoice && !hasShort){
 
             container.innerHTML =
                 `
-        <div style="
-            padding:40px;
-            text-align:center;
-            color:#6b7280;
-        ">
-            결과 데이터가 없습니다.
-        </div>
-        `;
+    <div style="
+        padding:40px;
+        text-align:center;
+        color:#6b7280;
+    ">
+        결과 데이터가 없습니다.
+    </div>
+    `;
 
             return;
         }
+
+
+
+
 
         let html = "";
 
@@ -553,7 +563,23 @@
 
                     const shortAnswers =
                         data.shortAnswerList || [];
+
+                    let shortCount = 0;
+
                     shortAnswers.forEach(function(answer){
+
+                        const parsed =
+                            JSON.parse(answer.rspnsCn);
+
+                        const matched =
+                            parsed.find(function(r){
+
+                                return r.questionNo === (qIdx + 1);
+                            });
+
+                        if(!matched || !matched.answer) return;
+
+                        shortCount++;
 
                         html +=
                             '<div class="essay-box">'
@@ -563,11 +589,22 @@
                             + '</div>'
 
                             + '<div>'
-                            + JSON.parse(answer.rspnsCn)[0].answer
+                            + matched.answer
                             + '</div>'
 
                             + '</div>';
                     });
+
+                    html =
+                        html.replace(
+                            '<div class="question-body">',
+                            '<div class="question-body">'
+                            + '<div style="margin-bottom:16px;text-align:right;">'
+                            + '<span style="background:#eef6ef;color:#2f6b3d;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:700;">'
+                            + '응답 수 ' + shortCount + '명'
+                            + '</span>'
+                            + '</div>'
+                        );
                 }
 
 

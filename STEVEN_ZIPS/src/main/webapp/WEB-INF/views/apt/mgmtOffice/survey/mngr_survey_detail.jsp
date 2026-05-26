@@ -340,19 +340,16 @@
         }
     });
 
+
     document.getElementById("resultBtn").addEventListener("click", function () {
-        const match = window.location.pathname.match(/\/manager\/survey\/([^/]+)\/(?:detail|result)\/([^/]+)/);
-        const resolvedMgmtOfcNo = mgmtOfcNo || (match ? match[1] : "");
-        const resolvedSurveyNo = surveyNo || (match ? match[2] : "");
 
-        if (!resolvedMgmtOfcNo || !resolvedSurveyNo) {
-            alert("설문 번호를 찾지 못했습니다.");
-            return;
-        }
-
-        window.location.href = `${ctx}/manager/survey/${resolvedMgmtOfcNo}/result/${resolvedSurveyNo}`;
+        location.href =
+            ctx
+            + "/manager/survey/"
+            + mgmtOfcNo
+            + "/result/"
+            + surveyNo;
     });
-
 
 
 </script>
