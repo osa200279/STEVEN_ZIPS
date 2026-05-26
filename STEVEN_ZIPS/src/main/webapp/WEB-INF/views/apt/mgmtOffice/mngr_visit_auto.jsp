@@ -82,12 +82,7 @@
             <p>세대별 방문 차량 정보를 조회하고 관리합니다.</p>
           </div>
 
-          <div class="page-actions">
-            <button type="button" class="btn btn-primary" data-action="openRegister">
-              <span class="material-symbols-rounded">add</span>
-              차량 등록
-            </button>
-          </div>
+
         </div>
 
         <!-- 검색 조건 -->
@@ -155,9 +150,9 @@
               <tr>
                 <th>동</th>
                 <th>호수</th>
-                <th>방문자명</th>
+                <th>입주민명</th>
                 <th>차량유형</th>
-                <th>차량명</th>
+                <th>방문자명</th>
                 <th>차량번호</th>
                 <th>방문일시</th>
                 <th>체류시간</th>
@@ -327,7 +322,7 @@
            * - DB에는 GEN/WRK/DLV/MOV/EMG 코드가 들어가고 화면에서는 한글명으로 보여줌
            */
           var VHCL_TY_TEXT = {
-            SEDAN: "세단",
+            SEDAN: "승용차",
             SUV: "SUV",
             VAN: "승합차",
             LIGHT_TRUCK: "소형트럭",
@@ -384,7 +379,7 @@
                       + '<td class="td-date">'
                       + (
                               row.vstYmd
-                                      ? row.vstYmd.substring(0, 10)
+                                      ? "20" + row.vstYmd.substring(0, 8).replaceAll("/", "-")
                                       : '-'
                       )
                       + '</td>'
