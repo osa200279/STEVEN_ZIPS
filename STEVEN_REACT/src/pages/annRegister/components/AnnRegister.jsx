@@ -85,6 +85,8 @@ const setAnnField = (name, value) =>
     setemd('');
     setAptCmplexNo('');
     setAddr('');
+    setRentList([]);
+    setSelectedRentList([]);
     setHoTyList([]);
     setSubmitDocOptions([]);
   };
@@ -172,12 +174,12 @@ const setAnnField = (name, value) =>
   const handleAptChange = async (e) => {
     const aptCmplexNo = e.target.value;
     setAptCmplexNo(aptCmplexNo);
+    setRentList([]);
+    setSelectedRentList([]);
+    setSubmitDocOptions([]);
 
     if (!aptCmplexNo) {
         setAddr('');
-        setRentList([]);
-        setSelectedRentList([]);
-        setSubmitDocOptions([]);
         return;
     }
 
@@ -187,8 +189,6 @@ const setAnnField = (name, value) =>
 
         if (data.success) setAddr(data.dorojuso);
         if (rentData.success) setRentList(rentData.list ?? []);
-        
-        setSubmitDocOptions([]); // 매물 선택 전까지 초기화
     } catch (e) {
         console.error('단지 상세·매물 조회 오류', e);
     }
@@ -202,11 +202,14 @@ useEffect(() => {
   getSubmitDocTypes(selectedRentList) // rentLstgNoList로 넘기기
       .then((docData) => {
           if (docData.success && Array.isArray(docData.list)) {
-              setSubmitDocOptions(
-                  docData.list.map((item) => ({
+              const options = docData.list
+                  .map((item) => ({
                       value: String(item.SBMSN_DOC_TY_CD ?? item.sbmsn_doc_ty_cd ?? ''),
                       label: String(item.CODE_NAME ?? item.code_name ?? ''),
-                  })).filter((o) => o.value && o.label)
+                  }))
+                  .filter((o) => o.value && o.label);
+              setSubmitDocOptions(
+                  Array.from(new Map(options.map((option) => [option.value, option])).values())
               );
           } else {
               setSubmitDocOptions([]);
@@ -216,9 +219,9 @@ useEffect(() => {
 }, [selectedRentList]);
 
 
-  /** 사용자 공고 상세 JSP: sbmsn_doc를 쉼표 구분 문자열로 저장 */
+  /** 후속 제출서류 매칭을 위해 sbmsn_doc에는 서류 타입 코드를 저장 */
   const buildSbmsnDoc = () =>
-    submitDocOptions.map((o) => o.label).join(', ');
+    submitDocOptions.map((o) => o.value).join(', ');
 
   /** DB insert용: 입주 예정일 컬럼은 모집 종료일과 동일하게 전달 */
   const getInsertPayload = () => ({
@@ -237,6 +240,7 @@ useEffect(() => {
     if (!annForm.ttl.trim()) return alert('공고 제목을 입력하세요');
     if (!annForm.cn.trim()) return alert('공고 내용을 입력하세요');
     if (!aptCmplexNo) return alert('아파트 단지를 선택하세요');
+    if (selectedRentList.length === 0) return alert('공고에 포함할 매물을 선택하세요');
     const { pblancBgngDt, pblancEndDt, rcrtBgngDt, rcrtEndDt } = annForm;
     if (!pblancBgngDt || !pblancEndDt || !rcrtBgngDt || !rcrtEndDt) {
       return alert('게시·모집 기간을 모두 입력하세요');
@@ -267,6 +271,8 @@ useEffect(() => {
   const resetBelow = () => {
     setAptCmplexNo('');
     setAddr('');
+    setRentList([]);
+    setSelectedRentList([]);
     setHoTyList([]);
     setSubmitDocOptions([]);
   };

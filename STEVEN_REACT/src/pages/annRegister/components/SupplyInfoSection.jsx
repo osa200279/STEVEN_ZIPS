@@ -82,9 +82,7 @@ export default function SupplyInfoSection({
               disabled={!sigungu}
               onChange={(e) => {
                 setemd(e.target.value);
-                setAptCmplexNo('');
-                setAddr('');
-                setSubmitDocOptions?.([]);
+                resetBelow?.();
               }}
             >
               <option value="">{sigungu ? L.emdSelect : L.needSigungu}</option>
