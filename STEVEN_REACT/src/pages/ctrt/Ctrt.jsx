@@ -18,14 +18,52 @@ const Ctrt = () => {
     totalRecord: 0
   });
 
-  // 필터 상태값 정의
-  const [filterStatus, setFilterStatus] = useState('ALL');
+  const [searchParams, setSearchParams] = useState({
+    ctrtNo: '',
+    aptNm: '',
+    aprvStartDt: '',
+    aprvEndDt: '',
+    startDt: '',
+    endDt: '',
+    minRent: '',
+    maxRent: '',
+    manager: '',
+    status: 'ALL'
+  });
+
+  const [apiParams, setApiParams] = useState(searchParams);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSearchParams(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSearch = () => {
+    setApiParams(searchParams); // 검색 시에만 API용 상태 업데이트
+    setPagination(prev => ({ ...prev, curPage: 1 }));
+  };
+
+  const handleReset = () => {
+    const resetParams = {
+      ctrtNo: '', aptNm: '', aprvDt: '', startDt: '', endDt: '',
+      minRent: '', maxRent: '', manager: '', status: 'ALL'
+    };
+    setSearchParams(resetParams);
+    setApiParams(resetParams); // 초기화 시 API 호출용도 초기화
+    setPagination(prev => ({ ...prev, curPage: 1 }));
+  };
 
   // 리스트 조회 API 호출
   useEffect(() => {
     const fetchContracts = async () => {
       try {
-        const response = await requestApi.get(`/api/react/adm/ctrt?page=${pagination.curPage}`);
+        // 1. URL에서 쿼리스트링 제거 (params 객체로 전달해야 함)
+        const response = await requestApi.get(`/api/react/adm/ctrt`, {
+          params: {
+            page: pagination.curPage,
+            ...apiParams // 여기에 검색어들이 포함됨
+          }
+        });
 
         if (response.data && Array.isArray(response.data.ctrtList)) {
           setList(response.data.ctrtList);
@@ -35,7 +73,6 @@ const Ctrt = () => {
             totalRecord: response.data.totalRecord
           }));
         } else {
-          console.error("서버 응답이 배열 형식이 아닙니다: ", response.data);
           setList([]);
         }
       } catch (error) {
@@ -44,7 +81,7 @@ const Ctrt = () => {
       }
     };
     fetchContracts();
-  }, [pagination.curPage, filterStatus]);
+  }, [pagination.curPage, apiParams]);
 
   const paging = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPage) {
@@ -87,27 +124,80 @@ const Ctrt = () => {
       {/* 대시보드 통계 그리드 컴포넌트 */}
       <CtrtBoard />
 
-      {/* 필터 및 컨트롤 바 */}
-      <div className="filter-bar">
-        <div className="filter-badge">
-          <span className="material-symbols-outlined select-icon">filter_list</span>
-          <span>Status: All</span>
-          <span className="material-symbols-outlined select-icon">expand_more</span>
-        </div>
-        <div className="filter-badge">
-          <span>Department: Legal & HR</span>
-          <span className="material-symbols-outlined select-icon">expand_more</span>
-        </div>
-        <div className="filter-badge">
-          <span className="material-symbols-outlined select-icon">calendar_today</span>
-          <span>Date Range: Q3 2024</span>
-        </div>
+      <div className="filter-panel">
+        <div className="filter-grid">
+          {/* 1열 */}
+          {/* 필터 패널 내부에 이렇게 적용하세요 */}
 
-        <div className="filter-right-group">
-          <p className="table-info-text mr-4">Total {pagination.totalRecord}건</p>
-          <div className="view-toggle-box">
-            <button className="toggle-btn active"><span className="material-symbols-outlined">list</span></button>
-            <button className="toggle-btn"><span className="material-symbols-outlined">grid_view</span></button>
+          {/* 1열 */}
+          <div className="filter-column">
+            <div className="filter-group">
+              <label className="filter-label">계약 번호</label>
+              <input name="ctrtNo" value={searchParams.ctrtNo} onChange={handleInputChange} className="filter-input" placeholder="검색" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+            </div>
+            <div className="filter-group">
+              <label className="filter-label">계약자 (이름/ID)</label>
+              <input name="userSearch" value={searchParams.userSearch} onChange={handleInputChange} className="filter-input" placeholder="이름 또는 ID 입력" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+            </div>
+          </div>
+
+          {/* 2열 */}
+          <div className="filter-column">
+            <div className="filter-group">
+              <label className="filter-label">상태</label>
+              <select name="status" value={searchParams.status} onChange={handleInputChange} className="filter-input">
+                <option value="ALL">전체</option>
+                <option value="PENDING">승인대기</option>
+                <option value="APPROVED">승인</option>
+                <option value="CANCEL">취소</option>
+                <option value="REJECT">반려</option>
+                <option value="TERMINATED">중도해지</option>
+                <option value="EXPIRED">계약만료</option>
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">아파트</label>
+              <input name="aptNm" value={searchParams.aptNm} onChange={handleInputChange} className="filter-input" placeholder="아파트 명 검색" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+            </div>
+          </div>
+
+          {/* 3열 */}
+          <div className="filter-column">
+            <div className="filter-group">
+              <label className="filter-label">승인일</label>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <input name="aprvStartDt" type="date" value={searchParams.aprvStartDt} onChange={handleInputChange} className="filter-input" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+                <input name="aprvEndDt" type="date" value={searchParams.aprvEndDt} onChange={handleInputChange} className="filter-input" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+              </div>
+            </div>
+            <div className="filter-group">
+              <label className="filter-label">계약 기간</label>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <input name="startDt" type="date" value={searchParams.startDt} onChange={handleInputChange} className="filter-input" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+                <input name="endDt" type="date" value={searchParams.endDt} onChange={handleInputChange} className="filter-input" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+              </div>
+            </div>
+
+          </div>
+
+          {/* 4열 */}
+          <div className="filter-column">
+            <div className="filter-group">
+              <label className="filter-label">담당자</label>
+              <input name="manager" value={searchParams.manager} onChange={handleInputChange} className="filter-input" placeholder="담당자 이름/번호" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+            </div>
+            <div className="filter-group">
+              <label className="filter-label">임대료 범위</label>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <input name="minRent" type="number" value={searchParams.minRent} onChange={handleInputChange} className="filter-input" placeholder="최소" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+                <input name="maxRent" type="number" value={searchParams.maxRent} onChange={handleInputChange} className="filter-input" placeholder="최대" />
+              </div>
+            </div>
+            <div style={{ marginTop: 'auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <button onClick={handleReset} className="btn-outline" style={{ height: '38px', cursor: 'pointer', margin: 0 }}>초기화</button>
+              <button onClick={handleSearch} className="btn-primary" style={{ height: '38px', cursor: 'pointer', margin: 0 }}>검색</button>
+            </div>
           </div>
         </div>
       </div>
@@ -154,7 +244,7 @@ const Ctrt = () => {
                       </td>
                       <td> {/* 이름 */}
                         <div>
-                          <p className="cell-title">이름 : {item.USER_NM}</p>
+                          <p className="cell-title">{item.USER_NM}</p>
                         </div>
                       </td>
                       <td> {/* 아파트 */}
@@ -162,7 +252,7 @@ const Ctrt = () => {
                         <p className="cell-sub">{item.APT_CMPLEX_NM}</p>
                       </td>
                       <td> {/* 계약 승인일 */}
-                        <span className="cell-title">{item.CTRT_APRV_DT ? new Date(item.CTRT_APRV_DT).toLocaleDateString() : "승인대기"}</span>
+                        <span className="cell-title">{item.CTRT_APRV_DT ? new Date(item.CTRT_APRV_DT).toLocaleDateString().replace(/\.$/, '') : '-'}</span>
                       </td>
                       <td> {/* 기간 */}
                         {item.MVIN_DT && item.MVOUT_DT ?

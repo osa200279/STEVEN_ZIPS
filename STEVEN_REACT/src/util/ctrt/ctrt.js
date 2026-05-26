@@ -4,7 +4,7 @@ export const getNameByStatus = (ctrtSttsCd, mvinDt, mvoutDt) => {
 
     switch (ctrtSttsCd) {
         case 'PENDING':
-            return { text: '미승인', className: 'badge-pending' };
+            return { text: '승인대기', className: 'badge-pending' };
 
         case 'EXPIRED':
             return { text: '계약만료', className: 'badge-expired' };

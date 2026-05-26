@@ -8,8 +8,6 @@ const CtrtDetail = () => {
   const [detail, setDetail] = useState(null);
   const navigate = useNavigate();
 
-
-  const isEditable = detail?.CTRT_STTS_CD === 'PENDING';
   const handleChange = (e) => {
     const { name, value } = e.target;
     setDetail(prev => ({ ...prev, [name]: value }));
@@ -32,7 +30,39 @@ const CtrtDetail = () => {
     };
 
     fetchCtrtDetails();
-  }, [])
+  }, []);
+
+  // 폼 제출 핸들러 (PUT 요청)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!window.confirm("수정된 내용을 저장하시겠습니까?")) return;
+
+    // 1. 전송할 데이터를 위한 깊은 복사 (원본 detail 객체 보호)
+    const submitData = { ...detail };
+
+    // 2. 금액 관련 필드들의 콤마 제거
+    const amountFields = ['DPST_AMT', 'CTRT_AMT', 'MID_PAY_AMT', 'BAL_AMT', 'MTHLY_RENT_AMT'];
+    amountFields.forEach(field => {
+      if (submitData[field]) {
+        // 입력값에 콤마가 포함되어 있다면 제거 (문자열 타입 처리)
+        submitData[field] = String(submitData[field]).replace(/,/g, '');
+      }
+    });
+
+    try {
+      // 3. 콤마가 제거된 submitData를 전송
+      const response = await requestApi.put(`/api/react/adm/ctrt/update/${RENT_CTRT_NO}`, submitData);
+
+      if (response.status === 200) {
+        alert("성공적으로 수정되었습니다.");
+        navigate('/adm/ctrt');
+      }
+    } catch (error) {
+      console.error("수정 요청 실패 : ", error);
+      alert("수정 중 오류가 발생했습니다.");
+    }
+  };
 
   const getCtrtSttsName = (code) => {
     // 코드와 한글 이름을 연결한 맵(Map) 객체
@@ -56,243 +86,276 @@ const CtrtDetail = () => {
     <div className="content-wrapper" >
       <div className="form-max-container" style={{ maxWidth: '1440px', width: '100%' }}>
 
-        {/* 타이틀 영역 */}
-        <div className="page-header" style={{ marginBottom: '10px' }}>
-          <div style={{ marginBottom: '0px' }}>
-            <h2 className="page-title" style={{ fontSize: '24px', marginBottom: '0px' }}>계약 상세 정보</h2>
-            <p className="page-subtitle" style={{ fontSize: '13px', margin: '0px' }}>Contract Detail</p>
-          </div>
-          <div className="header-actions">
-            <button className="btn-outline" onClick={() => navigate('/adm/ctrt')}
-              style={{ padding: '6px 12px', fontSize: '13px' }}>
-              목록으로
-            </button>
-            <button className="btn-primary" style={{ padding: '6px 12px', fontSize: '13px' }}>수정하기</button>
-          </div>
-        </div>
+        <form onSubmit={handleSubmit}>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-
-          {/* 1. 계약 기본 정보 (상단 전체 너비) */}
-          <div className="compact-card" style={{ gridColumn: '1 / -1' }}>
-            <h3 className="compact-card-title">
-              계약 기본 정보
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px' }}>
-              <div className="compact-input-group">
-                <label>계약 번호</label>
-                <input type="text" value={detail.RENT_CTRT_NO} className="bg-gray-disabled" readOnly />
-              </div>
-              <div className="compact-input-group">
-                <label>계약 상태</label>
-                <select
-                  name="CTRT_STTS_CD"
-                  value={detail.CTRT_STTS_CD}
-                  onChange={handleChange}
-                  disabled={!isEditable}
-                  className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
-                >
-                  <option value="PENDING">승인대기</option>
-                  <option value="APPROVED">승인</option>
-                  <option value="CANCEL">취소</option>
-                  <option value="REJECT">반려</option>
-                  <option value="TERMINATED">중도해지</option>
-                  <option value="EXPIRED">계약만료</option>
-                </select>
-              </div>
-              <div className="compact-input-group">
-                <label>임대매물번호</label>
-                <input type="text" value={detail.RENT_LSTG_NO} className="bg-gray-disabled" readOnly />
-              </div>
-              <div className="compact-input-group">
-                <label>담당자 번호</label>
-                <input type="text"
-                  value={`${detail.CTRT_MGR_USER_NO}`}
-                  name='CTRT_MGR_USER_NO'
-                  onChange={handleChange}
-                  readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-              </div>
-              <div className="compact-input-group">
-                <label>담당자 이름</label>
-                <input type="text"
-                  value={`${detail.CTRT_MGR_USER_NM}`}
-                  name='CTRT_MGR_USER_NM'
-                  className="bg-gray-disabled" readOnly />
-              </div>
+          {/* 타이틀 영역 */}
+          <div className="page-header" style={{ marginBottom: '10px' }}>
+            <div style={{ marginBottom: '0px' }}>
+              <h2 className="page-title" style={{ fontSize: '24px', marginBottom: '0px' }}>계약 상세 정보</h2>
+              <p className="page-subtitle" style={{ fontSize: '13px', margin: '0px' }}>Contract Detail</p>
+            </div>
+            <div className="header-actions">
+              <button
+                type="button"
+                className="btn-outline"
+                onClick={() => navigate('/adm/ctrt')}
+                style={{ padding: '6px 12px', fontSize: '13px' }}
+              >
+                목록으로
+              </button>
+              <button
+                type="submit"
+                className="btn-primary"
+                style={{ padding: '6px 12px', fontSize: '13px' }}
+              >
+                수정하기
+              </button>
             </div>
           </div>
 
-          {/* 좌측 영역 (매물/임차인 + 특약/서류) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="compact-card">
-              <h3 className="compact-card-title">
-                매물 및 임차인 정보
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                <div className="compact-input-group" style={{ gridColumn: '2 / 1' }}>
-                  <label>아파트 정보</label>
-                  <input type="text" value={detail.APT_CMPLEX_NM} className="bg-gray-disabled" readOnly />
-                </div>
-                <div className="compact-input-group" style={{ gridColumn: '2 / -1' }}>
-                  <label>타입</label>
-                  <input type="text" value={`${detail.TY_NM} ${detail.EXCLUSIVE_SIZE}㎡`} className="bg-gray-disabled" readOnly />
-                </div>
-                <div className="compact-input-group">
-                  <label>임차인 이름</label>
-                  <input type="text" value={detail.USER_NM} className="bg-gray-disabled" readOnly />
-                </div>
-                <div className="compact-input-group">
-                  <label>임차인 ID (번호)</label>
-                  <input type="text" value={`${detail.USER_ID} (${detail.USER_NO})`} className="bg-gray-disabled" readOnly />
-                </div>
-              </div>
-            </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
 
-            <div className="compact-card" style={{ flex: 1 }}>
+            {/* 1. 계약 기본 정보 (상단 전체 너비) */}
+            <div className="compact-card" style={{ gridColumn: '1 / -1' }}>
               <h3 className="compact-card-title">
-                특약 및 서류
+                계약 기본 정보
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '12px' }}>
                 <div className="compact-input-group">
-                  <label>특약 사항</label>
-                  <textarea
-                    name="SPCL_STPLTN_CN"
-                    style={{ resize: 'none', height: '60px' }}
-                    value={detail.SPCL_STPLTN_CN || ''} // null일 경우를 대비해 빈 문자열 처리
+                  <label>계약 번호</label>
+                  <input type="text" value={detail.RENT_CTRT_NO} className="bg-gray-disabled" readOnly />
+                </div>
+                <div className="compact-input-group">
+                  <label>계약 상태</label>
+                  <select
+                    name="CTRT_STTS_CD"
+                    value={detail.CTRT_STTS_CD}
                     onChange={handleChange}
-                    readOnly={!isEditable}
-                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
+                    className="font-bold text-primary-color bg-white-force"
+                  >
+                    <option value="PENDING">승인대기</option>
+                    <option value="APPROVED">승인</option>
+                    <option value="CANCEL">취소</option>
+                    <option value="REJECT">반려</option>
+                    <option value="TERMINATED">중도해지</option>
+                  </select>
+                </div>
+                <div className="compact-input-group">
+                  <label>계약 승인일</label>
+                  <input type="text" value={detail.CTRT_APRV_DT
+                    ? new Date(detail.CTRT_APRV_DT).toLocaleDateString('ko-KR', {
+                      year: '2-digit', month: '2-digit', day: '2-digit'
+                    }).replace(/\.$/, '')
+                    : ''} className="bg-gray-disabled" readOnly />
+                </div>
+                <div className="compact-input-group">
+                  <label>임대매물번호</label>
+                  <input type="text" value={detail.RENT_LSTG_NO} className="bg-gray-disabled" readOnly />
+                </div>
+                <div className="compact-input-group">
+                  <label>담당자 번호</label>
+                  <input type="text"
+                    value={`${detail.CTRT_MGR_USER_NO}`}
+                    name='CTRT_MGR_USER_NO'
+                    onChange={handleChange}
+                    className="font-bold text-primary-color bg-white-force"
                   />
                 </div>
                 <div className="compact-input-group">
-                  <p className="upload-main-text" style={{ fontSize: '13px', margin: '0 0 2px 0' }}>첨부 서류 {docs?.length || 0}건</p>
-                  {
-                    docs.map((doc, idx) => {
-                      return (
-                        <div key={idx}>
-                          <span className='text-small'>{idx + 1}.&nbsp;</span>
-                          <a href={`/file/download/${doc.googleId}`} rel='noopener noreferrer'>
-                            <span className='text-small'>{doc.fileOgName}</span>
-                          </a>
-                          <br />
-                        </div>
-                      )
-                    })
-                  }
+                  <label>담당자 이름</label>
+                  <input type="text"
+                    value={`${detail.CTRT_MGR_USER_NM}`}
+                    name='CTRT_MGR_USER_NM'
+                    className="bg-gray-disabled" readOnly />
+                </div>
+              </div>
+            </div>
+
+            {/* 좌측 영역 (매물/임차인 + 특약/서류) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="compact-card">
+                <h3 className="compact-card-title">
+                  매물 및 임차인 정보
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  <div className="compact-input-group" style={{ gridColumn: '2 / 1' }}>
+                    <label>아파트 정보</label>
+                    <input type="text" value={detail.APT_CMPLEX_NM} className="bg-gray-disabled" readOnly />
+                  </div>
+                  <div className="compact-input-group" style={{ gridColumn: '2 / -1' }}>
+                    <label>타입</label>
+                    <input type="text" value={`${detail.TY_NM} ${detail.EXCLUSIVE_SIZE}㎡`} className="bg-gray-disabled" readOnly />
+                  </div>
+                  <div className="compact-input-group">
+                    <label>임차인 이름</label>
+                    <input type="text" value={detail.USER_NM} className="bg-gray-disabled" readOnly />
+                  </div>
+                  <div className="compact-input-group">
+                    <label>임차인 ID (번호)</label>
+                    <input type="text" value={`${detail.USER_ID} (${detail.USER_NO})`} className="bg-gray-disabled" readOnly />
+                  </div>
+                </div>
+              </div>
+
+              <div className="compact-card" style={{ flex: 1 }}>
+                <h3 className="compact-card-title">
+                  특약 및 서류
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div className="compact-input-group">
+                    <label>특약 사항</label>
+                    <textarea
+                      name="SPCL_STPLTN_CN"
+                      style={{ resize: 'none', height: '60px' }}
+                      value={detail.SPCL_STPLTN_CN || ''}
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
+                  <div className="compact-input-group">
+                    <p className="upload-main-text" style={{ fontSize: '13px', margin: '0 0 2px 0' }}>첨부 서류 {docs?.length || 0}건</p>
+                    {
+                      docs.map((doc, idx) => {
+                        return (
+                          <div key={idx}>
+                            <span className='text-small'>{idx + 1}.&nbsp;</span>
+                            <a href={`/file/download/${doc.googleId}`} rel='noopener noreferrer'>
+                              <span className='text-small'>{doc.fileOgName}</span>
+                            </a>
+                            <br />
+                          </div>
+                        )
+                      })
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 우측 영역 (금액 + 일정/관계자) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+              <div className="compact-card">
+                <h3 className="compact-card-title">
+                  계약 금액 정보(원&#8361;)
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  <div className="compact-input-group" >
+                    <label>임대 유형</label>
+                    <input type="text" value={(detail.RENT_TYPE_CD === 'JS' ? '전세' : '월세')} className="bg-gray-disabled" readOnly />
+                  </div>
+                  <div className="compact-input-group">
+                    <label>보증금</label>
+                    <input type="text" value={detail.DPST_AMT != null ? `${detail.DPST_AMT.toLocaleString()}` : ''}
+                      name='DPST_AMT'
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
+                  <div className="compact-input-group">
+                    <label>계약금</label>
+                    <input
+                      type="text"
+                      value={detail.CTRT_AMT != null ? detail.CTRT_AMT.toLocaleString() : ''}
+                      name="CTRT_AMT"
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
+                  <div className="compact-input-group">
+                    <label>중도금</label>
+                    <input type="text" value={detail.MID_PAY_AMT != null ? `${detail.MID_PAY_AMT.toLocaleString()}` : ''}
+                      name='MID_PAY_AMT'
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
+                  <div className="compact-input-group">
+                    <label>잔금</label>
+                    <input type="text" value={detail.BAL_AMT != null ? `${detail.BAL_AMT.toLocaleString()}` : ''}
+                      name='BAL_AMT'
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
+                  {/* 월세 입력칸: RENT_TYPE_CD가 'JS(전세)'가 아닐 때만 출력 */}
+                  {detail.RENT_TYPE_CD !== 'JS' && (
+                    <div className="compact-input-group">
+                      <label>월세</label>
+                      <input type="text" value={detail.MTHLY_RENT_AMT != null ? `${detail.MTHLY_RENT_AMT.toLocaleString()}` : ''}
+                        name='MTHLY_RENT_AMT'
+                        onChange={handleChange}
+                        className="font-bold text-primary-color bg-white-force"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="compact-card" style={{ flex: 1 }}>
+                <h3 className="compact-card-title">
+                  일정 및 관계자 정보
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div className="compact-input-group">
+                    <label>입주 예정일</label>
+                    <input
+                      type="date"
+                      name="MVIN_DT"
+                      // 값이 있으면 문자열(YYYY-MM-DD)로 전달, 없으면 빈 문자열
+                      value={detail.MVIN_DT ? detail.MVIN_DT.substring(0, 10) : ''}
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
+                  <div className="compact-input-group">
+                    <label>퇴거 예정일</label>
+                    <input
+                      type="date"
+                      name="MVOUT_DT"
+                      value={detail.MVOUT_DT ? detail.MVOUT_DT.substring(0, 10) : ''}
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
+                  <div className="compact-input-group">
+                    <label>퇴거일</label>
+                    <input
+                      type="date"
+                      name="MVOUT_CMPL_DT"
+                      value={detail.MVOUT_CMPL_DT ? detail.MVOUT_CMPL_DT.substring(0, 10) : ''}
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                  {detail.RENTOR_NM && (
+                    <div className="compact-input-group">
+                      <label>임대인</label>
+                      <input
+                        type="text"
+                        value={detail.RENTOR_NM}
+                        className="font-bold text-primary-color bg-white-force"
+                      />
+                    </div>
+                  )}
+                  {detail.AGNT_NM && (
+                    <div className="compact-input-group">
+                      <label>대리인</label>
+                      <input
+                        type="text"
+                        value={`${detail.AGNT_NM}${detail.AGNT_TELNO ? ` (${detail.AGNT_TELNO})` : ''}`}
+                        className="font-bold text-primary-color bg-white-force"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
-
-          {/* 우측 영역 (금액 + 일정/관계자) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-            <div className="compact-card">
-              <h3 className="compact-card-title">
-                계약 금액 정보(원&#8361;)
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                <div className="compact-input-group" >
-                  <label>임대 유형</label>
-                  <input type="text" value={(detail.RENT_TYPE_CD === 'JS' ? '전세' : '월세')} className="bg-gray-disabled" readOnly />
-                </div>
-                <div className="compact-input-group">
-                  <label>보증금</label>
-                  <input type="text" value={detail.DPST_AMT != null ? `${detail.DPST_AMT.toLocaleString()}` : "-"}
-                    name='DPST_AMT'
-                    onChange={handleChange}
-                    readOnly={!isEditable} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-                </div>
-                <div className="compact-input-group">
-                  <label>계약금</label>
-                  <input
-                    type="text"
-                    value={detail.CTRT_AMT != null ? detail.CTRT_AMT.toLocaleString() : "-"}
-                    name="CTRT_AMT"
-                    onChange={handleChange}
-                    readOnly={!isEditable}
-                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
-                  />
-                </div>
-                <div className="compact-input-group">
-                  <label>중도금</label>
-                  <input type="text" value={detail.MID_PAY_AMT != null ? `${detail.MID_PAY_AMT.toLocaleString()}` : "-"}
-                    name='MID_PAY_AMT'
-                    onChange={handleChange}
-                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-                </div>
-                <div className="compact-input-group">
-                  <label>잔금</label>
-                  <input type="text" value={detail.BAL_AMT != null ? `${detail.BAL_AMT.toLocaleString()}` : "-"}
-                    name='BAL_AMT'
-                    onChange={handleChange}
-                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-                </div>
-                <div className="compact-input-group">
-                  <label>월세</label>
-                  <input type="text" value={detail.MTHLY_RENT_AMT != null ? `${detail.MTHLY_RENT_AMT.toLocaleString()}` : "-"}
-                    name='MTHLY_RENT_AMT'
-                    onChange={handleChange}
-                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-                </div>
-              </div>
-            </div>
-
-            <div className="compact-card" style={{ flex: 1 }}>
-              <h3 className="compact-card-title">
-                일정 및 관계자 정보
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                <div className="compact-input-group">
-                  <label>입주 예정일</label>
-                  <input type="text" value={`${new Date(detail.MVIN_DT).toLocaleDateString('ko-KR', {
-                    year: '2-digit', month: '2-digit', day: '2-digit'
-                  })}`} className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-                </div>
-                <div className="compact-input-group">
-                  <label>퇴거 예정일</label>
-                  <input type="text" value={detail.MVOUT_DT ? `${new Date(detail.MVOUT_DT).toLocaleDateString('ko-KR', {
-                    year: '2-digit', month: '2-digit', day: '2-digit'
-                  })}` : '-'}
-                    name='MVOUT_DT'
-                    onChange={handleChange}
-                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-                </div>
-                <div className="compact-input-group">
-                  <label>퇴거일</label>
-                  <input type="text" value={detail.MVOUT_CMPL_DT ? `${new Date(detail.MVOUT_DT).toLocaleDateString('ko-KR', {
-                    year: '2-digit', month: '2-digit', day: '2-digit'
-                  })}` : '-'}
-                    name='MVOUT_DT'
-                    onChange={handleChange}
-                    className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`} />
-                </div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                {detail.RENTOR_NM && (
-                  <div className="compact-input-group">
-                    <label>임대인</label>
-                    <input
-                      type="text"
-                      value={detail.RENTOR_NM}
-                      className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
-                    />
-                  </div>
-                )}
-                {detail.AGNT_NM && (
-                  <div className="compact-input-group">
-                    <label>대리인</label>
-                    <input
-                      type="text"
-                      value={`${detail.AGNT_NM}${detail.AGNT_TELNO ? ` (${detail.AGNT_TELNO})` : ''}`}
-                      className={`font-bold text-primary-color ${isEditable ? 'bg-white-force' : 'bg-gray-force'}`}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
   );

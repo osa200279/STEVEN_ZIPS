@@ -46,7 +46,7 @@ function CtrtBoard() {
 
     { label: '승인된 계약', value: stats.approvedCnt, icon: <FileBracesCorner />, color: 'bg-primary-green', hasTrend: true },
 
-    { label: '미승인 계약', value: stats.pendingCnt, icon: <SquarePen />, color: 'bg-pending-container', pending: true },
+    { label: '승인대기 계약', value: stats.pendingCnt, icon: <SquarePen />, color: 'bg-pending-container', pending: true },
 
     { label: '만료 임박 계약', value: stats.urgentCnt, icon: <FileClock />, color: 'bg-error-container', urgent: true },
 

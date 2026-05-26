@@ -135,7 +135,10 @@ const Sidebar = ({ isCollapsed, toggleSidebar, admInfo }) => {
         {!isCollapsed && (
           <div style={{ flex: 1, marginLeft: '12px' }}>
             <p style={{ color: '#fff', fontSize: '12px', fontWeight: '700', margin: 0 }}>중앙관리자</p>
-            <span style={{ color: 'var(--sb-label)', fontSize: '10px' }}>{admInfo ? `${admInfo.userNm} 님` : '정보 로딩중...'}</span>
+            <span style={{ color: 'var(--sb-label)', fontSize: '10px' }}>{admInfo ? `${admInfo.userNm} 님 ` : '정보 로딩중...'}</span>
+            <span style={{ color: 'var(--sb-label)', fontSize: '10px' }}>
+              {admInfo?.userNo ? `(no.${admInfo.userNo})` : ''}
+            </span>
           </div>
         )}
       </div>
