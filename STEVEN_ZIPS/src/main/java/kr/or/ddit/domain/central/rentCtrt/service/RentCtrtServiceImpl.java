@@ -53,4 +53,9 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
 
         return map;
     }
+
+    @Override
+    public int updateCtrt(String rentCtrtNo, Map<String, Object> detail) {
+        return rentCtrtMapper.updateCtrt(rentCtrtNo, detail);
+    }
 }

@@ -12,4 +12,6 @@ public interface IRentCtrtService {
     Map<String, Object> selectCtrtDashboard();
 
     Map<String, Object> selectOneCtrtDetail(String rentCtrtNo);
+
+    int updateCtrt(String rentCtrtNo, Map<String, Object> detail);
 }

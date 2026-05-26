@@ -148,4 +148,17 @@ public class AdmDashBoardRestController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/ctrt/update/{RENT_CTRT_NO}")
+    public ResponseEntity<?> updateCtrt(
+            @PathVariable("RENT_CTRT_NO") String rentCtrtNo, @RequestBody Map<String, Object> detail) {
+        log.info("계약 업데이트 컨트롤러 진입");
+
+        int res = rentCtrtService.updateCtrt(rentCtrtNo, detail);
+
+        if(res == 0){
+            return ResponseEntity.badRequest().body("계약 정보 수정 실패");
+        }
+
+        return ResponseEntity.ok().build();
+    }
 }

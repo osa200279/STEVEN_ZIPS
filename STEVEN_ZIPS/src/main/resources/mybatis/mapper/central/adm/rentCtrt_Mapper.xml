@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper">
-
     <!-- 계약 시퀀스 키 생성 -->
     <select id="getNextRentCtrtSeq" resultType="java.lang.String">
         select SEQ_RENT_CTRT.nextval
@@ -170,7 +169,7 @@
                  , C.RENTOR_TELNO
                  , C.AGNT_NM
                  , C.AGNT_TELNO
-                 , C.SPCL_STPLTN_CN
+                 , TO_CHAR(C.SPCL_STPLTN_CN) as SPCL_STPLTN_CN
                  , C.SBMSN_DOC_NO
                  , D.ATCH_FILE_ID
                  , C.CTRT_APRV_DT
@@ -192,4 +191,28 @@ left outer join SBMSN_DOC D on(D.SBMSN_DOC_NO = C.SBMSN_DOC_NO)
           where C.RENT_CTRT_NO = #{rentCtrtNo}
     </select>
 
+    <update id="updateCtrt" parameterType="map">
+        UPDATE RENT_CTRT
+        <set>
+            <if test="detail.CTRT_STTS_CD != null and detail.CTRT_STTS_CD != ''">CTRT_STTS_CD = #{detail.CTRT_STTS_CD},</if>
+            <if test="detail.DPST_AMT != null and detail.DPST_AMT != ''">DPST_AMT = #{detail.DPST_AMT},</if>
+            <if test="detail.CTRT_AMT != null and detail.CTRT_AMT != ''">CTRT_AMT = #{detail.CTRT_AMT},</if>
+            <if test="detail.MID_PAY_AMT != null and detail.MID_PAY_AMT != ''">MID_PAY_AMT = #{detail.MID_PAY_AMT},</if>
+            <if test="detail.BAL_AMT != null and detail.BAL_AMT != ''">BAL_AMT = #{detail.BAL_AMT},</if>
+            <if test="detail.MTHLY_RENT_AMT != null and detail.MTHLY_RENT_AMT != ''">MTHLY_RENT_AMT = #{detail.MTHLY_RENT_AMT},</if>
+
+            <if test="detail.MVIN_DT != null and detail.MVIN_DT != ''">
+                MVIN_DT = TO_DATE(SUBSTR(#{detail.MVIN_DT}, 1, 10), 'YYYY-MM-DD'),
+            </if>
+            <if test="detail.MVOUT_DT != null and detail.MVOUT_DT != ''">
+                MVOUT_DT = TO_DATE(SUBSTR(#{detail.MVOUT_DT}, 1, 10), 'YYYY-MM-DD'),
+            </if>
+            <if test="detail.MVOUT_CMPL_DT != null and detail.MVOUT_CMPL_DT != ''">
+                MVOUT_CMPL_DT = TO_DATE(SUBSTR(#{detail.MVOUT_CMPL_DT}, 1, 10), 'YYYY-MM-DD'),
+            </if>
+
+            <if test="detail.SPCL_STPLTN_CN != null and detail.SPCL_STPLTN_CN != ''">SPCL_STPLTN_CN = #{detail.SPCL_STPLTN_CN},</if>
+        </set>
+        WHERE RENT_CTRT_NO = #{rentCtrtNo}
+    </update>
 </mapper>
