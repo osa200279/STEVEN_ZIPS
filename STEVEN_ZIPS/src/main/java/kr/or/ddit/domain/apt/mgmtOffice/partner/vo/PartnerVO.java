@@ -69,7 +69,19 @@ public class PartnerVO {
     /** 전체 검침건수 */
     private int meterCnt;
 
+    /** 단지별 검침건수 */
+    private int complexMeterCnt;
+
+    /** 시설 검침건수 */
+    private int facilityMeterCnt;
+
     /** 최근 검침일자 */
     private String recentMeterDt;
+
+    /** 최근 단지별 검침일자 */
+    private String recentComplexMeterDt;
+
+    /** 최근 시설 검침일자 */
+    private String recentFacilityMeterDt;
 
 }

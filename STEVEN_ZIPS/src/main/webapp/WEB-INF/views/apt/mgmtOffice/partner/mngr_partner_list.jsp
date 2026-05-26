@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
@@ -256,27 +257,57 @@
         }
         #partnerPage .info-value.has-border { border-right:1px solid var(--line); }
 
-        /* 연결 카드 */
-        #partnerPage .link-card-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-        #partnerPage .link-card {
-            display:flex; flex-direction:column; gap:5px;
-            min-height:108px; padding:13px 14px;
-            border:1px solid var(--line); border-radius:6px;
-            background:var(--surface-sub); text-decoration:none;
-            transition:border-color .15s, background .15s; box-sizing:border-box;
+        /* 연결 카드 - 4개를 한 줄에 보여주기 위해 카드 높이/간격을 압축함 */
+        #partnerPage .link-card-row {
+            display:grid !important;
+            grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+            gap:10px !important;
+            align-items:stretch !important;
+            width:100% !important;
         }
-        #partnerPage .link-card:hover { border-color:#bdd7c5; background:var(--accent-light); }
-        #partnerPage .link-card.disabled { opacity:.45; pointer-events:none; }
+        #partnerPage .link-card {
+            display:flex !important;
+            flex-direction:column !important;
+            gap:5px !important;
+            min-height:96px !important;
+            padding:12px 13px !important;
+            border:1px solid #d4ddd7 !important;
+            border-radius:8px !important;
+            background:#f9fbfa !important;
+            text-decoration:none !important;
+            box-shadow:0 1px 0 rgba(17, 24, 39, .03) !important;
+            transition:border-color .15s, background .15s, transform .15s, box-shadow .15s !important;
+            box-sizing:border-box !important;
+        }
+        #partnerPage .link-card:not(.disabled):hover {
+            border-color:#a9c5b2 !important;
+            background:#f1f7f3 !important;
+            transform:translateY(-1px) !important;
+            box-shadow:0 4px 10px rgba(17, 24, 39, .06) !important;
+        }
+        #partnerPage .link-card.disabled {
+            cursor:default !important;
+            pointer-events:none !important;
+            border-color:#d9dee3 !important;
+            background:#f3f4f6 !important;
+            box-shadow:none !important;
+        }
         #partnerPage .link-card-title { display:flex; align-items:center; gap:5px; color:var(--text-sec); font-size:11px; font-weight:800; }
         #partnerPage .link-card-title .material-symbols-rounded { font-size:15px; color:var(--accent); }
-        #partnerPage .link-card-cnt  { font-size:18px; font-weight:700; color:var(--text-head); line-height:1.25; }
+        #partnerPage .link-card-cnt  { font-size:17px; font-weight:800; color:var(--text-head); line-height:1.2; }
         #partnerPage .link-card-sub,
         #partnerPage .link-card-meta { font-size:11px; color:var(--text-sec); line-height:1.35; }
         #partnerPage .link-card-arrow {
             display:flex; align-items:center; gap:3px;
-            font-size:11px; font-weight:700; color:var(--accent); margin-top:auto;
+            font-size:11px; font-weight:800; color:var(--accent); margin-top:auto;
         }
         #partnerPage .link-card-arrow .material-symbols-rounded { font-size:14px; }
+        #partnerPage .link-card.disabled .link-card-title,
+        #partnerPage .link-card.disabled .link-card-title .material-symbols-rounded,
+        #partnerPage .link-card.disabled .link-card-cnt,
+        #partnerPage .link-card.disabled .link-card-sub,
+        #partnerPage .link-card.disabled .link-card-meta,
+        #partnerPage .link-card.disabled .link-card-arrow { color:#9ca3af !important; }
 
         /* 경고 박스 */
         #partnerPage .warn-box {
@@ -294,7 +325,7 @@
             #partnerPage .status-card-row { grid-template-columns:repeat(2,1fr); }
             #partnerPage .filter-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
         }
-        @media(max-width:1100px) { #partnerPage .link-card-row { grid-template-columns:1fr 1fr; } }
+        @media(max-width:920px) { #partnerPage .link-card-row { grid-template-columns:repeat(2, minmax(0, 1fr)) !important; } }
         @media(max-width:760px) {
             #partnerPage .status-card-row,
             #partnerPage .link-card-row,
@@ -429,22 +460,28 @@
                             </button>
                         </c:if>
                     </div>
+                    <%-- 역순 번호 계산용 현재 페이지 기본값 --%>
+                    <c:set var="currentPage" value="${empty pageInfo.currentPage ? 1 : pageInfo.currentPage}" />
+
                     <div class="table-wrap">
                         <table class="tbl">
                             <colgroup>
+                                <%-- 번호 컬럼 추가로 관리 버튼이 밀리지 않도록 관리 컬럼 폭은 기존 수준으로 유지 --%>
+                                <col style="width:4%">
                                 <col style="width:7%">
+                                <col style="width:12%">
+                                <col style="width:9%">
+                                <col style="width:9%">
                                 <col style="width:13%">
-                                <col style="width:9%">
-                                <col style="width:10%">
-                                <col style="width:14%">
                                 <col style="width:6%">
-                                <col style="width:9%">
-                                <col style="width:9%">
-                                <col style="width:7%">
-                                <col style="width:16%">
+                                <col style="width:8%">
+                                <col style="width:8%">
+                                <col style="width:6%">
+                                <col style="width:18%">
                             </colgroup>
                             <thead>
                             <tr>
+                                <th>번호</th>
                                 <th>업체번호</th>
                                 <th class="td-left">업체명</th>
                                 <th>업종</th>
@@ -461,11 +498,11 @@
                             <c:choose>
                                 <c:when test="${empty partnerList}">
                                     <tr>
-                                        <td colspan="10" class="empty-row">조회된 협력업체가 없습니다.</td>
+                                        <td colspan="11" class="empty-row">조회된 협력업체가 없습니다.</td>
                                     </tr>
                                 </c:when>
                                 <c:otherwise>
-                                    <c:forEach var="partner" items="${partnerList}">
+                                    <c:forEach var="partner" items="${partnerList}" varStatus="st">
                                         <tr class="partner-row"
                                             data-partner-no="${partner.partnerNo}"
                                             data-apt-cmplex-no="${partner.aptCmplexNo}"
@@ -484,8 +521,23 @@
                                             data-active-contract-cnt="${empty partner.activeContractCnt ? 0 : partner.activeContractCnt}"
                                             data-check-cnt="${empty partner.checkCnt ? 0 : partner.checkCnt}"
                                             data-meter-cnt="${empty partner.meterCnt ? 0 : partner.meterCnt}"
+                                            data-complex-meter-cnt="${empty partner.complexMeterCnt ? 0 : partner.complexMeterCnt}"
+                                            data-facility-meter-cnt="${empty partner.facilityMeterCnt ? 0 : partner.facilityMeterCnt}"
                                             data-recent-check-dt="${partner.recentCheckDt}"
-                                            data-recent-meter-dt="${partner.recentMeterDt}">
+                                            data-recent-meter-dt="${partner.recentMeterDt}"
+                                            data-recent-complex-meter-dt="${partner.recentComplexMeterDt}"
+                                            data-recent-facility-meter-dt="${partner.recentFacilityMeterDt}">
+                                                <%-- 화면 표시용 역순 번호. 페이지네이션이 있으면 전체 건수 기준, 없으면 현재 목록 기준으로 계산 --%>
+                                            <td class="mono">
+                                                <c:choose>
+                                                    <c:when test="${not empty pageInfo and not empty pageInfo.totalRecord}">
+                                                        ${pageInfo.totalRecord - ((currentPage - 1) * pageInfo.screenSize + st.index)}
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        ${fn:length(partnerList) - st.index}
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
                                             <td class="partner-no">${partner.partnerNo}</td>
                                             <td class="td-left">${partner.partnerNm}</td>
                                             <td>${partner.bizTyNm}</td>
@@ -708,19 +760,25 @@
                                         <div class="link-card-title"><span class="material-symbols-rounded">contract</span>계약</div>
                                         <div class="link-card-cnt" id="dContractCnt">-</div>
                                         <div class="link-card-sub" id="dActiveContractCnt">유효 계약 -</div>
-                                        <div class="link-card-arrow">바로가기<span class="material-symbols-rounded">arrow_forward</span></div>
+                                        <div class="link-card-arrow" id="dContractAction">바로가기<span class="material-symbols-rounded">arrow_forward</span></div>
                                     </a>
                                     <a class="link-card" id="scCheck" href="#">
                                         <div class="link-card-title"><span class="material-symbols-rounded">fact_check</span>점검 이력</div>
                                         <div class="link-card-cnt" id="dCheckCnt">-</div>
                                         <div class="link-card-meta" id="dRecentCheckDt">최근점검 -</div>
-                                        <div class="link-card-arrow">바로가기<span class="material-symbols-rounded">arrow_forward</span></div>
+                                        <div class="link-card-arrow" id="dCheckAction">바로가기<span class="material-symbols-rounded">arrow_forward</span></div>
                                     </a>
-                                    <a class="link-card" id="scMeter" href="#">
-                                        <div class="link-card-title"><span class="material-symbols-rounded">electric_meter</span>검침</div>
-                                        <div class="link-card-cnt" id="dMeterCnt">-</div>
-                                        <div class="link-card-meta" id="dRecentMeterDt">최근검침 -</div>
-                                        <div class="link-card-arrow">바로가기<span class="material-symbols-rounded">arrow_forward</span></div>
+                                    <a class="link-card" id="scComplexMeter" href="#">
+                                        <div class="link-card-title"><span class="material-symbols-rounded">apartment</span>단지검침</div>
+                                        <div class="link-card-cnt" id="dComplexMeterCnt">-</div>
+                                        <div class="link-card-meta" id="dRecentComplexMeterDt">최근검침 -</div>
+                                        <div class="link-card-arrow" id="dComplexMeterAction">바로가기<span class="material-symbols-rounded">arrow_forward</span></div>
+                                    </a>
+                                    <a class="link-card" id="scFacilityMeter" href="#">
+                                        <div class="link-card-title"><span class="material-symbols-rounded">electric_meter</span>시설검침</div>
+                                        <div class="link-card-cnt" id="dFacilityMeterCnt">-</div>
+                                        <div class="link-card-meta" id="dRecentFacilityMeterDt">최근검침 -</div>
+                                        <div class="link-card-arrow" id="dFacilityMeterAction">바로가기<span class="material-symbols-rounded">arrow_forward</span></div>
                                     </a>
                                 </div>
                             </div>
@@ -834,6 +892,23 @@
             openModal('partnerFormModal');
         }
 
+        function setLinkCard(cardId, actionId, enabled, href) {
+            var card = el(cardId);
+            var action = el(actionId);
+
+            // 카드 상태 초기화
+            card.classList.toggle('disabled', !enabled);
+            card.href = enabled ? href : '#';
+            card.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+
+            // 미등록 카드에서는 바로가기 문구 대신 상태 문구 표시
+            if (action) {
+                action.innerHTML = enabled
+                    ? '바로가기<span class="material-symbols-rounded">arrow_forward</span>'
+                    : '미등록';
+            }
+        }
+
         function openDetail(row) {
             selectedRow = row;
             var data = d(row);
@@ -849,21 +924,27 @@
             fill('dPicNm',       data.picNm);
             fill('dPicTelno',    data.picTelno);
             fill('dPicEmail',    data.picEmail);
-            fill('dContractCnt', '전체 ' + Number(data.contractCnt || 0) + '건');
-            fill('dActiveContractCnt', '유효 계약 ' + Number(data.activeContractCnt || 0) + '건');
-            fill('dCheckCnt',    '전체 ' + Number(data.checkCnt || 0) + '건');
-            fill('dRecentCheckDt', data.recentCheckDt ? '최근점검 ' + data.recentCheckDt : '최근점검 없음');
-            var meterLinkedYn = data.meterLinkedYn || (data.utilityProviderNo ? 'Y' : 'N');
-            fill('dMeterCnt', meterLinkedYn === 'Y' ? '전체 ' + Number(data.meterCnt || 0) + '건' : '미연결');
-            fill('dRecentMeterDt', meterLinkedYn === 'Y'
-                ? (data.recentMeterDt ? '최근검침 ' + data.recentMeterDt : '최근검침 기록없음')
-                : '최근검침 -');
-            // ***# 협력업체계약바로가기: 실제 계약 관리 목록 매핑(/manager/facility/contract/list/{mgmtOfcNo}) 기준 링크
-            el('scContract').href = makeUrl(ctx + '/manager/facility/contract/list/'  + mgmtOfcNo, { partnerNo: data.partnerNo });
-            el('scCheck').href    = makeUrl(ctx + '/manager/checkHistory/'        + mgmtOfcNo, { partnerNo: data.partnerNo });
-            // ***# 협력업체검침바로가기: 실제 검침 이력 매핑(/manager/meter/hstry/{mgmtOfcNo}) 기준 링크
-            el('scMeter').href    = makeUrl(ctx + '/manager/meter/hstry/'         + mgmtOfcNo, { partnerNo: data.partnerNo });
-            el('scMeter').classList.toggle('disabled', meterLinkedYn !== 'Y');
+            var contractCnt = Number(data.contractCnt || 0);
+            var activeContractCnt = Number(data.activeContractCnt || 0);
+            var checkCnt = Number(data.checkCnt || 0);
+            var complexMeterCnt = Number(data.complexMeterCnt || 0);
+            var facilityMeterCnt = Number(data.facilityMeterCnt || 0);
+
+            // ***# 연결현황카드: 이력이 없으면 숨기지 않고 회색 미등록 카드로 표시함
+            fill('dContractCnt', contractCnt > 0 ? '전체 ' + contractCnt + '건' : '미등록');
+            fill('dActiveContractCnt', contractCnt > 0 ? '유효 계약 ' + activeContractCnt + '건' : '계약 이력 없음');
+            fill('dCheckCnt', checkCnt > 0 ? '전체 ' + checkCnt + '건' : '미등록');
+            fill('dRecentCheckDt', checkCnt > 0 && data.recentCheckDt ? '최근점검 ' + data.recentCheckDt : '점검 이력 없음');
+            fill('dComplexMeterCnt', complexMeterCnt > 0 ? '전체 ' + complexMeterCnt + '건' : '미등록');
+            fill('dRecentComplexMeterDt', complexMeterCnt > 0 && data.recentComplexMeterDt ? '최근검침 ' + data.recentComplexMeterDt : '단지검침 이력 없음');
+            fill('dFacilityMeterCnt', facilityMeterCnt > 0 ? '전체 ' + facilityMeterCnt + '건' : '미등록');
+            fill('dRecentFacilityMeterDt', facilityMeterCnt > 0 && data.recentFacilityMeterDt ? '최근검침 ' + data.recentFacilityMeterDt : '시설검침 이력 없음');
+
+            setLinkCard('scContract', 'dContractAction', contractCnt > 0, makeUrl(ctx + '/manager/facility/contract/list/' + mgmtOfcNo, { partnerNo: data.partnerNo }));
+            setLinkCard('scCheck', 'dCheckAction', checkCnt > 0, makeUrl(ctx + '/manager/checkHistory/' + mgmtOfcNo, { partnerNo: data.partnerNo }));
+            // ***# 협력업체검침바로가기: 단지검침/시설검침 카드별로 검침 화면 탭을 분리함
+            setLinkCard('scComplexMeter', 'dComplexMeterAction', complexMeterCnt > 0, makeUrl(ctx + '/manager/meter/hstry/' + mgmtOfcNo, { partnerNo: data.partnerNo, meterScope: 'COMPLEX' }));
+            setLinkCard('scFacilityMeter', 'dFacilityMeterAction', facilityMeterCnt > 0, makeUrl(ctx + '/manager/meter/hstry/' + mgmtOfcNo, { partnerNo: data.partnerNo, meterScope: 'FACILITY' }));
             openModal('partnerDetailModal');
         }
 

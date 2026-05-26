@@ -229,7 +229,7 @@
                                             <div class="form-field">
                                                 <label class="field-label">위치구분 <span class="req">*</span></label>
                                                 <select class="form-select" id="locationType">
-                                                    <option value="COMMON">편의 위치</option>
+                                                    <option value="COMMON">공용 위치</option>
                                                     <option value="DONG">동 위치</option>
                                                     <option value="HOUSEHOLD">세대 위치</option>
                                                 </select>
@@ -258,7 +258,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="help-inline">편의 위치·동 위치·세대 위치 중 실제 관리 위치에 맞게 선택하세요.</div>
+                                        <div class="help-inline">공용 위치·동 위치·세대 위치 중 실제 관리 위치에 맞게 선택하세요.</div>
                                         <div class="form-field location-detail-row">
                                             <label class="field-label">상세위치</label>
                                             <input type="text" class="form-input" id="locCn" name="locCn" placeholder="예) 1층 로비, 옥상, 지하주차장 B2 A구역">

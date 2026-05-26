@@ -2,6 +2,7 @@ package kr.or.ddit.domain.apt.mgmtOffice.contract.service;
 
 import com.google.api.services.drive.Drive;
 import kr.or.ddit.common.api.google.service.GoogleDriveService;
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.common.file.mapper.IAttachFileMapper;
 import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.mapper.IFacilityContractMapper;
@@ -37,6 +38,15 @@ import java.util.UUID;
 @Service
 public class FacilityContractServiceImpl implements IFacilityContractService {
 
+    /** 검침 범위 : 일반 시설 검침 */
+    private static final String METER_SCOPE_NORMAL_FACILITY = "NORMAL_FACILITY";
+
+    /** 검침 범위 : 시설설비 검침 */
+    private static final String METER_SCOPE_EQUIPMENT = "EQUIPMENT";
+
+    /** 검침 범위 : 단지/세대 검침 */
+    private static final String METER_SCOPE_COMPLEX = "COMPLEX";
+
     @Autowired
     private IFacilityContractMapper facilityContractMapper;
 
@@ -47,11 +57,24 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
     private GoogleDriveService googleDriveService;
 
     /**
+     * 계약 목록 전체 건수 조회
+     */
+    @Override
+    public int selectContractTotalCount(FacilityContractSearchVO search) {
+        // 검색조건 전체 기준 계약 건수를 조회한다.
+        return facilityContractMapper.selectContractTotalCount(search);
+    }
+
+    /**
      * 계약 목록 조회
      */
     @Override
-    public List<FacilityContractDTO> selectContractList(FacilityContractSearchVO search) {
-        return facilityContractMapper.selectContractList(search);
+    public List<FacilityContractDTO> selectContractList(
+            FacilityContractSearchVO search,
+            PaginationInfoVO<FacilityContractDTO> pagingVO
+    ) {
+        // 검색조건과 페이징 정보를 함께 전달해 현재 페이지 목록만 조회한다.
+        return facilityContractMapper.selectContractList(search, pagingVO);
     }
 
     /**
@@ -81,10 +104,19 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
         // 수정 폼 체크박스 선택값 복원용 시설번호 목록 조회
         contract.setTargetFacilityNoList(facilityContractMapper.selectContractTargetNoList(contNo));
 
-        // 검침 설정 조회
-        FacilityContractDTO utilityInfo = facilityContractMapper.selectUtilityProviderByContNo(contNo);
+        // 검침 범위 DB 컬럼은 아직 없으므로 기존 대상 시설번호로 단지/세대 검침 여부를 추정한다.
+        inferMeterScopeForDisplay(contract);
 
-        if (utilityInfo != null) {
+        // 검침 설정 목록 조회
+        // - 시설 검침 용역 계약 1건에 전기/가스/수도 CSV 설정이 여러 건 연결될 수 있다.
+        List<FacilityContractDTO> utilityProviderList = facilityContractMapper.selectUtilityProviderListByContNo(contNo);
+        contract.setUtilityProviderList(utilityProviderList);
+
+        // 기존 JSP/단건 필드 호환용 대표값 세팅
+        // - 실제 수정 저장은 UTILITY_PROVIDER를 일괄 갱신하지 않도록 updateContract에서 차단한다.
+        if (utilityProviderList != null && !utilityProviderList.isEmpty()) {
+            FacilityContractDTO utilityInfo = utilityProviderList.get(0);
+
             // 검침 설정번호 세팅
             contract.setUtilityProviderNo(utilityInfo.getUtilityProviderNo());
 
@@ -98,9 +130,8 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
             contract.setUtilityRmrkCn(utilityInfo.getUtilityRmrkCn());
 
             // 검침 종류 세팅
-            // - UTILITY_PROVIDER.METER_TY_CD
-            // - 수정 화면에서 전기/수도/가스 선택값 복원용
             contract.setMeterTyCd(utilityInfo.getMeterTyCd());
+            contract.setMeterTyNm(utilityInfo.getMeterTyNm());
         }
 
         // 첨부파일 목록 조회
@@ -168,6 +199,11 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
         // 관리사무소 번호로 단지번호 조회
         contract.setAptCmplexNo(facilityContractMapper.selectAptCmplexNoByMgmtOfcNo(contract.getMgmtOfcNo()));
 
+        // 검침 계약 대상 시설 보정
+        // - 일반 시설/시설설비 검침은 화면에서 선택한 FAC 시설 1개를 사용한다.
+        // - 단지/세대 검침은 선택한 검침유형별 MTR 대표 시설번호를 서버에서 연결한다.
+        prepareMeterTargetFacility(contract, true);
+
         // 대표 시설번호 보정
         applyMainFacilityNo(contract);
 
@@ -177,14 +213,17 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
         // 계약 기본정보 등록
         facilityContractMapper.insertContract(contract);
 
-        // 시설 대상 계약이면 FACILITY_CONTRACT_TARGET 등록
-        if ("FACILITY".equals(contract.getContTargetCd())) {
+        // 대상 시설 연결 등록
+        // - 시설 계약은 기존처럼 대상 시설을 등록한다.
+        // - 검침 계약도 시설 검침 용역이면 대상 시설이 있을 수 있으므로 제출된 경우 등록한다.
+        if ("FACILITY".equals(contract.getContTargetCd())
+                || ("METER".equals(contract.getContTargetCd()) && hasTargetFacilityNoList(contract))) {
             insertContractTargets(contract);
         }
 
-        // 검침 계약이면 UTILITY_PROVIDER 등록
+        // 검침 계약이면 선택된 검침 종류별로 UTILITY_PROVIDER를 여러 건 등록한다.
         if ("METER".equals(contract.getContTargetCd())) {
-            insertUtilityProvider(contract);
+            insertUtilityProviderList(contract, true);
         }
     }
 
@@ -214,8 +253,27 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
         // 기존 첨부파일 삭제
         deleteContractFiles(contract.getFileGroupNo(), deleteFileSaveUuidList);
 
+        // 검침 계약 대상 시설 보정
+        // - 단지/세대 검침으로 새 검침유형을 추가하는 경우 MTR 대표 시설번호를 자동 연결한다.
+        // - 수정 화면에서 검침유형을 추가하지 않은 경우에는 기존 대상 시설을 보존한다.
+        prepareMeterTargetFacility(contract, false);
+
+        // 대상 시설 제출 여부 확인
+        // - 일반 시설/시설설비 검침은 화면에서 선택한 대상 시설 1개가 넘어온다.
+        // - 단지/세대 검침은 선택한 검침유형이 있으면 MTR 대표 시설번호가 서버에서 세팅된다.
+        boolean hasSubmittedTargetFacility = hasTargetFacilityNoList(contract);
+
         // 대표 시설번호 보정
-        applyMainFacilityNo(contract);
+        if ("METER".equals(contract.getContTargetCd()) && !hasSubmittedTargetFacility) {
+            // 검침 계약에서 대상시설이 제출되지 않았으면 기존 대표 시설번호를 보존한다.
+            FacilityContractDTO currentContract = facilityContractMapper.selectContractDetail(contract.getMgmtOfcNo(), contract.getContNo());
+
+            if (currentContract != null) {
+                contract.setFacilityNo(currentContract.getFacilityNo());
+            }
+        } else {
+            applyMainFacilityNo(contract);
+        }
 
         // 새 계약서 파일 업로드
         uploadContractFiles(contract, contractFiles, userNo);
@@ -223,29 +281,21 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
         // 계약 기본정보 수정
         facilityContractMapper.updateContract(contract);
 
-        // 기존 대상 시설 연결 삭제
-        facilityContractMapper.deleteContractTargets(contract.getContNo());
-
-        // 시설 대상 계약이면 대상 시설 재등록
-        if ("FACILITY".equals(contract.getContTargetCd())) {
+        // 대상 시설 재구성
+        // - 시설 계약은 기존처럼 삭제 후 재등록한다.
+        // - 검침 계약은 대상시설이 실제로 제출된 경우에만 재구성한다.
+        // - 검침 계약에서 대상시설이 제출되지 않았는데 삭제하면 기존 CONT3104 대상시설이 통째로 사라질 수 있다.
+        if ("FACILITY".equals(contract.getContTargetCd())
+                || ("METER".equals(contract.getContTargetCd()) && hasSubmittedTargetFacility)) {
+            facilityContractMapper.deleteContractTargets(contract.getContNo());
             insertContractTargets(contract);
         }
 
-        // 검침 계약이면 검침 설정 등록/수정
+        // 검침 계약이면 선택된 검침 종류만 추가 등록한다.
+        // - 기존 UTILITY_PROVIDER는 수정/삭제하지 않는다.
+        // - 이미 존재하는 검침 종류는 중복 insert하지 않는다.
         if ("METER".equals(contract.getContTargetCd())) {
-            // 검침 종류 필수 확인
-            // - 수정 화면에서 검침 종류가 빠진 상태로 저장되는 것을 방지한다.
-            validateMeterTyCd(contract);
-
-            // 기존 검침 설정 존재 여부 확인
-            int utilityCount = facilityContractMapper.countUtilityProviderByContNo(contract.getContNo());
-
-            // 기존 설정이 있으면 수정, 없으면 신규 등록
-            if (utilityCount > 0) {
-                facilityContractMapper.updateUtilityProvider(contract);
-            } else {
-                insertUtilityProvider(contract);
-            }
+            insertUtilityProviderList(contract, false);
         }
     }
 
@@ -293,6 +343,176 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
     }
 
     /**
+     * 대상 시설 제출 여부 확인
+     * - 빈 문자열만 넘어온 경우는 제출된 대상 시설이 없는 것으로 본다.
+     */
+    private boolean hasTargetFacilityNoList(FacilityContractDTO contract) {
+        if (contract.getTargetFacilityNoList() == null || contract.getTargetFacilityNoList().isEmpty()) {
+            return false;
+        }
+
+        for (String facilityNo : contract.getTargetFacilityNoList()) {
+            if (facilityNo != null && !facilityNo.isBlank()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 상세/수정 화면용 검침 범위 추정
+     * - 현재 최소수정 버전에서는 FACILITY_CONTRACT에 검침 범위 컬럼을 추가하지 않는다.
+     * - 대상 시설이 MTR 계열이면 단지/세대 검침으로 보고, 그 외에는 일반 시설 검침으로 표시한다.
+     */
+    private void inferMeterScopeForDisplay(FacilityContractDTO contract) {
+        if (!"METER".equals(contract.getContTargetCd())) {
+            return;
+        }
+
+        if (contract.getTargetFacilityNoList() == null || contract.getTargetFacilityNoList().isEmpty()) {
+            contract.setMeterScope(METER_SCOPE_NORMAL_FACILITY);
+            return;
+        }
+
+        boolean allRepresentativeMeterFacility = true;
+
+        for (String facilityNo : contract.getTargetFacilityNoList()) {
+            if (facilityNo == null || !facilityNo.toUpperCase().startsWith("MTR")) {
+                allRepresentativeMeterFacility = false;
+                break;
+            }
+        }
+
+        contract.setMeterScope(allRepresentativeMeterFacility ? METER_SCOPE_COMPLEX : METER_SCOPE_NORMAL_FACILITY);
+    }
+
+    /**
+     * 검침 계약 대상 시설 보정
+     * - 일반 시설 검침/NORMAL_FACILITY : 화면에서 선택한 실제 시설 1개를 사용한다.
+     * - 시설설비 검침/EQUIPMENT : 화면에서 선택한 실제 설비 1개를 사용한다.
+     * - 단지/세대 검침/COMPLEX : 화면 시설 선택 없이 검침유형별 MTR 대표 시설번호를 자동 연결한다.
+     */
+    private void prepareMeterTargetFacility(FacilityContractDTO contract, boolean requiredMeterTyCd) {
+        // 검침 계약이 아니면 기존 시설 계약 흐름을 그대로 사용한다.
+        if (!"METER".equals(contract.getContTargetCd())) {
+            return;
+        }
+
+        // 화면에서 넘어온 검침 범위를 표준값으로 보정한다.
+        String meterScope = normalizeMeterScope(contract);
+        contract.setMeterScope(meterScope);
+
+        // 단지/세대 검침은 사용자가 시설을 고르지 않고, 검침유형별 MTR 대표 시설번호를 서버에서 연결한다.
+        if (METER_SCOPE_COMPLEX.equals(meterScope)) {
+            List<String> meterTyCdList = normalizeMeterTyCdList(contract);
+
+            // 신규 등록에서는 검침유형이 반드시 필요하다. 수정 화면에서는 기존 설정만 조회하고 저장할 수 있으므로 비어 있으면 대상시설을 건드리지 않는다.
+            if (meterTyCdList.isEmpty()) {
+                if (requiredMeterTyCd) {
+                    throw new RuntimeException("단지/세대 검침 계약은 검침 종류를 하나 이상 선택해야 합니다.");
+                }
+                contract.setTargetFacilityNoList(new ArrayList<>());
+                return;
+            }
+
+            // 검침유형별 MTR 대표 시설번호를 대상 시설 목록으로 세팅한다.
+            contract.setTargetFacilityNoList(makeComplexMeterTargetFacilityNoList(meterTyCdList));
+            return;
+        }
+
+        // 일반 시설/시설설비 검침은 대상 시설 1개를 명확히 선택해야 한다.
+        validateSingleMeterTargetFacility(contract);
+    }
+
+    /**
+     * 검침 범위 표준값 보정
+     */
+    private String normalizeMeterScope(FacilityContractDTO contract) {
+        String meterScope = contract.getMeterScope();
+
+        if (meterScope == null || meterScope.isBlank()) {
+            return METER_SCOPE_NORMAL_FACILITY;
+        }
+
+        meterScope = meterScope.trim().toUpperCase();
+
+        if (METER_SCOPE_EQUIPMENT.equals(meterScope) || METER_SCOPE_COMPLEX.equals(meterScope)) {
+            return meterScope;
+        }
+
+        return METER_SCOPE_NORMAL_FACILITY;
+    }
+
+    /**
+     * 단지/세대 검침 대표 시설번호 목록 생성
+     * - MTR 계열은 실제 시설자산이 아니라 단지/세대 검침 CSV 연결용 내부 대표 시설번호로 사용한다.
+     */
+    private List<String> makeComplexMeterTargetFacilityNoList(List<String> meterTyCdList) {
+        List<String> targetFacilityNoList = new ArrayList<>();
+
+        for (String meterTyCd : meterTyCdList) {
+            String representativeFacilityNo = getComplexMeterRepresentativeFacilityNo(meterTyCd);
+
+            if (!targetFacilityNoList.contains(representativeFacilityNo)) {
+                targetFacilityNoList.add(representativeFacilityNo);
+            }
+        }
+
+        return targetFacilityNoList;
+    }
+
+    /**
+     * 단지/세대 검침 대표 시설번호 매핑
+     */
+    private String getComplexMeterRepresentativeFacilityNo(String meterTyCd) {
+        if ("ELEC".equals(meterTyCd)) {
+            return "MTRELC001";
+        }
+
+        if ("WATER".equals(meterTyCd)) {
+            return "MTRWTR001";
+        }
+
+        if ("GAS".equals(meterTyCd)) {
+            return "MTRGAS001";
+        }
+
+        throw new RuntimeException("지원하지 않는 단지/세대 검침 종류입니다. meterTyCd=" + meterTyCd);
+    }
+
+    /**
+     * 일반 시설/시설설비 검침 대상 시설 검증
+     * - 여러 시설에 여러 검침유형을 동시에 묶지 않기 위해 대상 시설은 1개만 허용한다.
+     */
+    private void validateSingleMeterTargetFacility(FacilityContractDTO contract) {
+        int validTargetCount = countValidTargetFacilityNo(contract);
+
+        if (validTargetCount != 1) {
+            throw new RuntimeException("일반 시설/시설설비 검침 계약은 대상 시설을 1개만 선택해야 합니다.");
+        }
+    }
+
+    /**
+     * 대상 시설번호 유효 개수 계산
+     */
+    private int countValidTargetFacilityNo(FacilityContractDTO contract) {
+        if (contract.getTargetFacilityNoList() == null || contract.getTargetFacilityNoList().isEmpty()) {
+            return 0;
+        }
+
+        int count = 0;
+
+        for (String facilityNo : contract.getTargetFacilityNoList()) {
+            if (facilityNo != null && !facilityNo.isBlank()) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /**
      * 계약 대상 시설 연결 등록
      */
     private void insertContractTargets(FacilityContractDTO contract) {
@@ -318,36 +538,175 @@ public class FacilityContractServiceImpl implements IFacilityContractService {
     }
 
     /**
-     * 검침 설정 등록
+     * 검침 설정 목록 등록
+     * - 등록 화면에서는 선택한 검침 종류를 모두 등록한다.
+     * - 수정 화면에서는 선택한 검침 종류 중 아직 없는 것만 추가한다.
      */
-    private void insertUtilityProvider(FacilityContractDTO contract) {
-        // 검침 종류 필수 확인
-        // - UTILITY_PROVIDER.METER_TY_CD 저장값
-        // - 전기/수도/가스 구분이 없으면 검침 화면에서 데이터 분류가 어려워진다.
-        validateMeterTyCd(contract);
+    private void insertUtilityProviderList(FacilityContractDTO contract, boolean required) {
+        // 화면에서 넘어온 다중 검침 종류를 정리한다.
+        List<String> meterTyCdList = normalizeMeterTyCdList(contract);
 
-        // UTILITY_PROVIDER_NO 생성
-        contract.setUtilityProviderNo(facilityContractMapper.selectNextUtilityProviderNo());
+        // 신규 검침 계약은 검침 종류가 최소 1개 필요하다.
+        if (meterTyCdList.isEmpty()) {
+            if (required) {
+                throw new RuntimeException("검침 계약은 검침 종류를 하나 이상 선택해야 합니다.");
+            }
+            return;
+        }
 
-        // 검침 설정 비고는 DB에서 NOT NULL이므로 비어 있으면 기본값 세팅
+        // 검침 설정 비고는 DB에서 NOT NULL이므로 비어 있으면 기본값을 사용한다.
         if (contract.getUtilityRmrkCn() == null || contract.getUtilityRmrkCn().isBlank()) {
             contract.setUtilityRmrkCn("-");
         }
 
-        // 검침 설정 등록
-        facilityContractMapper.insertUtilityProvider(contract);
+        for (String meterTyCd : meterTyCdList) {
+            // 수정 화면에서 이미 등록된 검침 종류는 중복 생성하지 않는다.
+            int duplicateCount = facilityContractMapper.countUtilityProviderByContNoAndMeterTyCd(
+                    contract.getContNo(),
+                    meterTyCd
+            );
+
+            if (duplicateCount > 0) {
+                continue;
+            }
+
+            // 반복 insert 중 DTO에 현재 검침 종류와 자동 생성값을 세팅한다.
+            contract.setMeterTyCd(meterTyCd);
+            contract.setUtilityProviderNo(facilityContractMapper.selectNextUtilityProviderNo());
+
+            // 검침 설정번호까지 포함해 같은 계약/같은 검침유형에서도 키 중복 가능성을 낮춘다.
+            contract.setCsvIdntfKey(makeCsvIdntfKey(
+                    contract.getAptCmplexNo(),
+                    contract.getContNo(),
+                    contract.getUtilityProviderNo(),
+                    meterTyCd
+            ));
+            contract.setExtCustNo(makeExtCustNo(
+                    contract.getAptCmplexNo(),
+                    contract.getContNo(),
+                    contract.getUtilityProviderNo(),
+                    meterTyCd
+            ));
+
+            // 검침 설정 등록
+            facilityContractMapper.insertUtilityProvider(contract);
+        }
     }
 
     /**
-     * 검침 종류 필수 검증
-     * - 검침 계약은 전기/수도/가스 구분값이 반드시 필요하다.
-     * - 화면에서 검침 종류를 선택하지 않고 저장되는 것을 방지한다.
+     * 검침 종류 목록 정리
+     * - 신규 화면: meterTyCdList를 우선 사용한다.
+     * - 기존 단건 화면 호환: meterTyCd만 넘어온 경우에도 1건 등록 가능하게 둔다.
+     * - 중복/공백은 제거한다.
      */
-    private void validateMeterTyCd(FacilityContractDTO contract) {
-        // 검침 종류가 없으면 저장 중단
-        if (contract.getMeterTyCd() == null || contract.getMeterTyCd().isBlank()) {
-            throw new RuntimeException("검침 계약은 검침 종류를 선택해야 합니다.");
+    private List<String> normalizeMeterTyCdList(FacilityContractDTO contract) {
+        List<String> meterTyCdList = new ArrayList<>();
+
+        if (contract.getMeterTyCdList() != null) {
+            for (String meterTyCd : contract.getMeterTyCdList()) {
+                addMeterTyCdIfValid(meterTyCdList, meterTyCd);
+            }
         }
+
+        if (meterTyCdList.isEmpty()) {
+            addMeterTyCdIfValid(meterTyCdList, contract.getMeterTyCd());
+        }
+
+        return meterTyCdList;
+    }
+
+    /**
+     * 검침 종류 중복/공백 제거 후 추가
+     */
+    private void addMeterTyCdIfValid(List<String> meterTyCdList, String meterTyCd) {
+        if (meterTyCd == null || meterTyCd.isBlank()) {
+            return;
+        }
+
+        String normalizedMeterTyCd = meterTyCd.trim().toUpperCase();
+
+        if (!meterTyCdList.contains(normalizedMeterTyCd)) {
+            meterTyCdList.add(normalizedMeterTyCd);
+        }
+    }
+
+    /**
+     * CSV 식별키 자동 생성
+     * - 계약번호, 검침 설정번호, 검침 종류를 함께 넣어 같은 단지 안에서도 값이 겹치지 않게 한다.
+     */
+    private String makeCsvIdntfKey(String aptCmplexNo, String contNo, String utilityProviderNo, String meterTyCd) {
+        return "CSV_"
+                + safeKeyPart(aptCmplexNo)
+                + "_"
+                + safeKeyPart(contNo)
+                + "_"
+                + safeKeyPart(utilityProviderNo)
+                + "_"
+                + safeKeyPart(meterTyCd);
+    }
+
+    /**
+     * 외부 고객번호 자동 생성
+     * - UTILITY_PROVIDER.EXT_CUST_NO 컬럼 길이는 20자이므로 반드시 20자 이하로 생성한다.
+     * - 구분자(-)를 제거하고 단지/계약/설정/검침유형 일부만 조합한다.
+     * - 예: C2700331043105ELC (17자)
+     */
+    private String makeExtCustNo(String aptCmplexNo, String contNo, String utilityProviderNo, String meterTyCd) {
+        String extCustNo = "C"
+                + rightKeyPart(aptCmplexNo, 5)
+                + rightKeyPart(contNo, 4)
+                + rightKeyPart(utilityProviderNo, 4)
+                + meterTyAlias(meterTyCd);
+
+        // DB 컬럼 길이 방어. 향후 규칙이 바뀌어도 20자를 넘기지 않도록 마지막에 한 번 더 자른다.
+        return extCustNo.length() > 20 ? extCustNo.substring(0, 20) : extCustNo;
+    }
+
+    /**
+     * 키 조합용 문자열 보정
+     */
+    private String safeKeyPart(String value) {
+        if (value == null || value.isBlank()) {
+            return "NA";
+        }
+
+        return value.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
+    }
+
+    /**
+     * 오른쪽 일부 문자열 추출
+     */
+    private String rightKeyPart(String value, int length) {
+        String safeValue = safeKeyPart(value);
+
+        if (safeValue.length() <= length) {
+            return safeValue;
+        }
+
+        return safeValue.substring(safeValue.length() - length);
+    }
+
+    /**
+     * 검침 종류 외부 고객번호 축약값
+     */
+    private String meterTyAlias(String meterTyCd) {
+        if ("ELEC".equals(meterTyCd)) {
+            return "ELC";
+        }
+
+        if ("WATER".equals(meterTyCd)) {
+            return "WTR";
+        }
+
+        if ("GAS".equals(meterTyCd)) {
+            return "GAS";
+        }
+
+        if ("HEAT".equals(meterTyCd)) {
+            return "HEAT";
+        }
+
+        return safeKeyPart(meterTyCd);
     }
 
     /**

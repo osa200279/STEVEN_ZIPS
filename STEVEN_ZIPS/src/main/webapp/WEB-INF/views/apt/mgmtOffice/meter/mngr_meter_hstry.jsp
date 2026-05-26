@@ -4,11 +4,7 @@
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-<c:url var="meterResetUrl" value="/manager/meter/hstry/${mgmtOfcNo}">
-    <c:if test="${not empty search.partnerNo}">
-        <c:param name="partnerNo" value="${search.partnerNo}" />
-    </c:if>
-</c:url>
+<c:url var="meterResetUrl" value="/manager/meter/hstry/${mgmtOfcNo}" />
 
 <!DOCTYPE html>
 <html lang="ko">
@@ -235,8 +231,8 @@
 
                 <%-- 검침 탭 영역 --%>
                 <div class="meter-tab-wrap">
-                    <input type="radio" class="meter-tab-input" name="meterTab" id="meterTabComplex" checked>
-                    <input type="radio" class="meter-tab-input" name="meterTab" id="meterTabFacility">
+                    <input type="radio" class="meter-tab-input" name="meterTab" id="meterTabComplex" <c:if test="${param.meterScope ne 'FACILITY'}">checked</c:if>>
+                    <input type="radio" class="meter-tab-input" name="meterTab" id="meterTabFacility" <c:if test="${param.meterScope eq 'FACILITY'}">checked</c:if>>
 
                     <div class="meter-tab-labels" role="tablist" aria-label="검침 구분">
                         <label class="meter-tab-label" for="meterTabComplex" role="tab">
@@ -266,6 +262,8 @@
                                     <form method="get" action="${ctx}/manager/meter/hstry/${mgmtOfcNo}" id="complexSearchForm">
                                         <%-- 협력업체 상세에서 넘어온 partnerNo 필터를 검색 후에도 유지함 --%>
                                         <input type="hidden" name="partnerNo" value="${complexSearch.partnerNo}">
+                                        <%-- 검색 후에도 단지별 검침 탭을 유지함 --%>
+                                        <input type="hidden" name="meterScope" value="COMPLEX">
                                         <div class="filter-grid complex-filter-grid">
                                             <div class="form-field">
                                                 <label class="field-label" for="complexUtilityProviderNo">공급/검침 업체</label>
@@ -432,6 +430,8 @@
                                     <form method="get" action="${ctx}/manager/meter/hstry/${mgmtOfcNo}" id="facilitySearchForm">
                                         <%-- 협력업체 상세에서 넘어온 partnerNo 필터를 검색 후에도 유지함 --%>
                                         <input type="hidden" name="partnerNo" value="${search.partnerNo}">
+                                        <%-- 검색 후에도 시설 검침 탭을 유지함 --%>
+                                        <input type="hidden" name="meterScope" value="FACILITY">
                                         <div class="filter-grid">
                                             <div class="form-field">
                                                 <label class="field-label" for="filterUtilityProviderNo">공급/검침 업체</label>
@@ -1317,6 +1317,38 @@
             }
 
             render();
+        }
+
+
+        /* ============================================================
+           탭 직접 전환
+           - 협력업체 상세에서 넘어온 partnerNo 조건은 다른 탭 클릭 시 제거
+           - 선택한 탭만 유지하고 기본 목록으로 다시 조회
+        ============================================================ */
+        function moveMeterTab(scope) {
+            var url = ctx + '/manager/meter/hstry/' + mgmtOfcNo + '?meterScope=' + encodeURIComponent(scope);
+            location.href = url;
+        }
+
+        var complexTabLabel = document.querySelector('label[for="meterTabComplex"]');
+        var facilityTabLabel = document.querySelector('label[for="meterTabFacility"]');
+
+        if (complexTabLabel) {
+            complexTabLabel.addEventListener('click', function (e) {
+                if (new URLSearchParams(location.search).get('partnerNo')) {
+                    e.preventDefault();
+                    moveMeterTab('COMPLEX');
+                }
+            });
+        }
+
+        if (facilityTabLabel) {
+            facilityTabLabel.addEventListener('click', function (e) {
+                if (new URLSearchParams(location.search).get('partnerNo')) {
+                    e.preventDefault();
+                    moveMeterTab('FACILITY');
+                }
+            });
         }
 
         initMeterPagination('complex');

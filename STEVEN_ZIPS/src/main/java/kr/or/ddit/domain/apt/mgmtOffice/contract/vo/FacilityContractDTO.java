@@ -47,14 +47,26 @@ public class FacilityContractDTO extends FacilityContractVO {
     /** 상세/수정 화면 대상 시설 목록 */
     private List<FacilityContractTargetVO> targetFacilityList;
 
-    /** 검침 설정 UTILITY_PROVIDER */
+    /** 검침 설정 UTILITY_PROVIDER : 기존 단건 화면 호환용 */
     private String utilityProviderNo;
     private String csvIdntfKey;
     private String extCustNo;
     private String utilityRmrkCn;
 
-    /** 검침 설정용 검침종류 */
+    /** 검침 설정용 검침종류 : 기존 단건 화면 호환용 */
     private String meterTyCd;
+
+    /** 검침 계약 세부 범위 : NORMAL_FACILITY / EQUIPMENT / COMPLEX */
+    private String meterScope;
+
+    /** 검침 계약 등록/수정 화면에서 선택한 검침종류 목록 */
+    private List<String> meterTyCdList;
+
+    /** 검침 설정용 검침종류명 */
+    private String meterTyNm;
+
+    /** 계약 상세/수정 화면 검침 설정 목록 */
+    private List<FacilityContractDTO> utilityProviderList;
 
     /** 첨부파일 목록. ATTACH_FILE 조회 결과 Map 목록 */
     private List<Map<String, Object>> fileList;

@@ -195,6 +195,15 @@
         #contractPage .list-head-right { display:flex; align-items:center; justify-content:flex-end; gap:7px; flex-shrink:0; }
         #contractPage .result-desc { font-size:11px; color:#7a8a7d; margin-left:8px; font-weight:500; }
 
+        /* ── 페이지네이션 ── */
+        #contractPage .pagination-wrap { display:flex; justify-content:center; padding:14px 0 2px; }
+        #contractPage .pagination { display:flex; align-items:center; justify-content:center; gap:4px; margin:0; padding:0; list-style:none; }
+        #contractPage .page-item { list-style:none; }
+        #contractPage .page-link { display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:30px; padding:0 9px; border:1px solid var(--line); border-radius:4px; background:#fff; color:#39443d; font-size:12px; font-weight:700; text-decoration:none; box-sizing:border-box; }
+        #contractPage .page-link:hover { background:#f4f7f4; }
+        #contractPage .page-item.active .page-link { background:var(--accent); border-color:var(--accent); color:#fff; }
+        #contractPage .page-item.disabled .page-link { color:#a6b1aa; cursor:default; }
+
         /* ── 목록 테이블 ── */
         #contractPage .table-wrap {
             overflow-x:auto;
@@ -535,6 +544,8 @@
                         <form method="get" action="${ctx}/manager/facility/contract/list/${mgmtOfcNo}" id="searchForm">
                             <%-- 협력업체 상세에서 넘어온 업체 필터 유지 --%>
                             <input type="hidden" name="partnerNo" value="${fn:escapeXml(search.partnerNo)}">
+                            <%-- 페이지네이션 현재 페이지 유지용. 검색 버튼 클릭 시에는 JS에서 1페이지로 초기화한다. --%>
+                            <input type="hidden" name="page" value="${empty pagingVO.currentPage ? 1 : pagingVO.currentPage}">
                             <div class="filter-grid">
                                 <div class="form-field">
                                     <label class="field-label" for="filterContTyCd">계약유형</label>
@@ -601,7 +612,7 @@
                     <div class="panel-header">
                         <div class="list-head-left">
                             <h3 class="panel-title"><span class="material-symbols-rounded">contract</span>계약 목록</h3>
-                            <span class="list-count">총 <c:out value="${fn:length(contractList)}"/>건</span>
+                            <span class="list-count">총 <c:out value="${pagingVO.totalRecord}"/>건</span>
                             <span class="result-desc">시설 · 공사 · 용역 · 검침 계약</span>
                         </div>
 
@@ -674,7 +685,7 @@
                                         </c:choose>
 
                                         <tr>
-                                            <td class="mono">${fn:length(contractList) - st.index}</td>
+                                            <td class="mono">${pagingVO.totalRecord - ((pagingVO.currentPage - 1) * pagingVO.screenSize + st.index)}</td>
 
                                             <td class="mono"><c:out value="${contract.contNo}"/></td>
 
@@ -763,6 +774,13 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <%-- 계약 목록 페이지네이션 --%>
+                    <c:if test="${pagingVO.totalRecord gt 0}">
+                        <div class="pagination-wrap">
+                                ${pagingVO.pagingHTML}
+                        </div>
+                    </c:if>
                 </div>
 
                 <%-- 상세 모달 --%>
@@ -871,12 +889,33 @@
         ============================================================ */
         document.addEventListener('DOMContentLoaded', function () {
             var page = document.getElementById('contractPage');
+            var searchForm = document.getElementById('searchForm');
 
             if (!page) return;
 
+            /* 검색 실행 시에는 항상 1페이지부터 조회한다. */
+            if (searchForm) {
+                searchForm.addEventListener('submit', function () {
+                    setSearchPage(1);
+                });
+            }
+
             page.addEventListener('click', function (event) {
+                var pageLink = event.target.closest('.pagination a[data-page]');
                 var detailBtn = event.target.closest('[data-detail-cont-no]');
                 var fileViewBtn = event.target.closest('[data-file-view-no]');
+
+                /* 페이지 번호 클릭 */
+                if (pageLink) {
+                    event.preventDefault();
+                    setSearchPage(pageLink.dataset.page);
+
+                    if (searchForm) {
+                        searchForm.submit();
+                    }
+
+                    return;
+                }
 
                 /* 상세 버튼 */
                 if (detailBtn) {
@@ -896,6 +935,26 @@
                 }
             });
         });
+
+        /* ============================================================
+           페이지 번호 세팅
+        ============================================================ */
+        function setSearchPage(pageNo) {
+            var searchForm = document.getElementById('searchForm');
+
+            if (!searchForm) return;
+
+            var pageInput = searchForm.querySelector('input[name="page"]');
+
+            if (!pageInput) {
+                pageInput = document.createElement('input');
+                pageInput.type = 'hidden';
+                pageInput.name = 'page';
+                searchForm.appendChild(pageInput);
+            }
+
+            pageInput.value = pageNo || 1;
+        }
 
         /* ============================================================
            상세 모달 열기
@@ -929,7 +988,7 @@
                 setText('detailRmrkCn', contract.rmrkCn);
 
                 /* 상세 하위 정보 표시 */
-                renderDetailTargets(contract.targetFacilityList || [], contract.contTargetCd);
+                renderDetailTargets(contract.targetFacilityList || [], contract.contTargetCd, contract);
                 renderDetailFiles(contract.fileList || []);
 
                 /* 공통 모달 열기 */
@@ -971,20 +1030,26 @@
         /* ============================================================
            상세 대상 정보 렌더링
         ============================================================ */
-        function renderDetailTargets(targetList, contTargetCd) {
+        /* ============================================================
+           상세 대상 정보 렌더링
+           - 일반 시설 계약은 대상 시설 목록 표시
+           - 검침 계약은 계약에 연결된 CSV 업로드 설정 목록 표시
+        ============================================================ */
+        function renderDetailTargets(targetList, contTargetCd, contract) {
             var box = document.getElementById('detailTargetList');
 
             if (!box) return;
 
-            /* 단지공통/기타/검침처럼 시설 목록이 없는 계약 표시 */
+            /* 검침 계약은 시설 대상 목록이 아니라 CSV 업로드 설정을 표시한다. */
+            if (contTargetCd === 'METER') {
+                renderDetailMeterSettings(box, contract || {});
+                return;
+            }
+
+            /* 단지공통/기타처럼 시설 목록이 없는 계약 표시 */
             if (!targetList || targetList.length === 0) {
                 if (contTargetCd === 'COMMON') {
                     box.innerHTML = '<div class="empty-row">단지공통 계약입니다.</div>';
-                    return;
-                }
-
-                if (contTargetCd === 'METER') {
-                    box.innerHTML = '<div class="empty-row">검침 계약입니다. 검침 설정 정보는 검침 관리 화면에서 확인합니다.</div>';
                     return;
                 }
 
@@ -1023,6 +1088,84 @@
             html += '</table>';
 
             box.innerHTML = html;
+        }
+
+        /* ============================================================
+           상세 검침 설정 렌더링
+           - 상세 API에서 내려오는 검침 설정 배열명을 최대한 방어적으로 처리한다.
+           - 배열이 없고 계약 객체에 단일 설정 필드가 있으면 1건으로 표시한다.
+        ============================================================ */
+        function renderDetailMeterSettings(box, contract) {
+            var settingList = getMeterSettingList(contract);
+            var html = '';
+
+            if (!settingList || settingList.length === 0) {
+                box.innerHTML = '<div class="empty-row">등록된 검침 설정 정보가 없습니다.</div>';
+                return;
+            }
+
+            html += '<table class="target-table">';
+            html += '  <colgroup>';
+            html += '      <col style="width:90px;">';
+            html += '      <col style="width:130px;">';
+            html += '      <col style="width:360px;">';
+            html += '      <col>';
+            html += '  </colgroup>';
+            html += '  <thead>';
+            html += '      <tr>';
+            html += '          <th>검침유형</th>';
+            html += '          <th>설정번호</th>';
+            html += '          <th>CSV 식별키</th>';
+            html += '          <th>외부 고객번호</th>';
+            html += '      </tr>';
+            html += '  </thead>';
+            html += '  <tbody>';
+
+            settingList.forEach(function (setting) {
+                html += '      <tr>';
+                html += '          <td>' + escapeHtml(setting.meterTyNm || setting.meterTyCd || '-') + '</td>';
+                html += '          <td class="mono">' + escapeHtml(setting.utilityProviderNo || setting.providerNo || '-') + '</td>';
+                html += '          <td class="mono td-left">' + escapeHtml(setting.csvIdntfKey || '-') + '</td>';
+                html += '          <td class="mono td-left">' + escapeHtml(setting.extCustNo || '-') + '</td>';
+                html += '      </tr>';
+            });
+
+            html += '  </tbody>';
+            html += '</table>';
+
+            box.innerHTML = html;
+        }
+
+        /* ============================================================
+           검침 설정 목록 추출
+           - Controller/DTO 이름이 아직 확정되지 않았을 수 있어 가능한 이름을 모두 확인한다.
+        ============================================================ */
+        function getMeterSettingList(contract) {
+            var list = contract.meterSettingList
+                || contract.utilityProviderList
+                || contract.providerList
+                || contract.meterProviderList
+                || contract.meterTargetList
+                || contract.utilityList
+                || [];
+
+            if (Array.isArray(list) && list.length > 0) {
+                return list;
+            }
+
+            /* 상세 응답에 단일 설정 필드만 내려오는 경우도 화면 확인 가능하도록 1건으로 보정한다. */
+            if (contract.utilityProviderNo || contract.csvIdntfKey || contract.extCustNo || contract.meterTyCd || contract.meterTyNm) {
+                return [{
+                    meterTyCd: contract.meterTyCd,
+                    meterTyNm: contract.meterTyNm,
+                    utilityProviderNo: contract.utilityProviderNo,
+                    csvIdntfKey: contract.csvIdntfKey,
+                    extCustNo: contract.extCustNo,
+                    rmrkCn: contract.rmrkCn || contract.rmkCn
+                }];
+            }
+
+            return [];
         }
 
         /* ============================================================

@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.contract.mapper;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractSearchVO;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractSummaryVO;
@@ -25,8 +26,14 @@ public interface IFacilityContractMapper {
     /** 관리사무소 번호 기준 단지번호 조회 */
     String selectAptCmplexNoByMgmtOfcNo(String mgmtOfcNo);
 
+    /** 계약 목록 전체 건수 조회 */
+    int selectContractTotalCount(FacilityContractSearchVO search);
+
     /** 계약 목록 조회 */
-    List<FacilityContractDTO> selectContractList(FacilityContractSearchVO search);
+    List<FacilityContractDTO> selectContractList(
+            @Param("search") FacilityContractSearchVO search,
+            @Param("pagingVO") PaginationInfoVO<FacilityContractDTO> pagingVO
+    );
 
     /** 계약 현황 카드 조회 */
     FacilityContractSummaryVO selectContractSummary(FacilityContractSearchVO search);
@@ -82,11 +89,20 @@ public interface IFacilityContractMapper {
     /** 계약 대상 시설 전체 삭제 */
     int deleteContractTargets(String contNo);
 
-    /** 계약번호 기준 검침 설정 조회 */
+    /** 계약번호 기준 검침 설정 조회 : 기존 단건 화면 호환용 대표 1건 */
     FacilityContractDTO selectUtilityProviderByContNo(String contNo);
+
+    /** 계약번호 기준 검침 설정 목록 조회 */
+    List<FacilityContractDTO> selectUtilityProviderListByContNo(String contNo);
 
     /** 계약번호 기준 검침 설정 개수 조회 */
     int countUtilityProviderByContNo(String contNo);
+
+    /** 계약번호 + 검침종류 기준 검침 설정 개수 조회 */
+    int countUtilityProviderByContNoAndMeterTyCd(
+            @Param("contNo") String contNo,
+            @Param("meterTyCd") String meterTyCd
+    );
 
     /** 검침 설정 등록 */
     int insertUtilityProvider(FacilityContractDTO contract);

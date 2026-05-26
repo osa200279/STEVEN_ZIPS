@@ -182,27 +182,50 @@
         #contractFormPage .form-input[readonly] { background:#f8f9fb; color:#6b7280; }
 
 
-        /* ── 검침 설정 : 검침 종류 / CSV 식별키 / 외부 고객번호 한 줄 배치 ── */
-        #contractFormPage .meter-setting-grid {
-            display:grid;
-            grid-template-columns:160px minmax(360px,1fr) 320px;
-            gap:12px 14px;
-            align-items:start;
-        }
+        /* ── 검침 설정 : 단일 대상 시설 + 다중 CSV 유형 선택 ── */
+        #contractFormPage .meter-setting-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:12px; align-items:start; }
         #contractFormPage .meter-setting-grid .meter-kind-field,
-        #contractFormPage .meter-setting-grid .meter-csv-field,
-        #contractFormPage .meter-setting-grid .meter-ext-field {
-            min-width:0;
-        }
-        #contractFormPage .meter-setting-grid .meter-rmrk-field {
-            grid-column:1 / -1;
-        }
-        #contractFormPage .meter-csv-input-row {
-            display:grid;
-            grid-template-columns:minmax(0,1fr) auto;
-            gap:7px;
-            align-items:center;
-        }
+        #contractFormPage .meter-setting-grid .meter-preview-field,
+        #contractFormPage .meter-setting-grid .meter-rmrk-field { min-width:0; }
+        #contractFormPage .meter-scope-choice-list,
+        #contractFormPage .meter-kind-choice-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; max-height:none; overflow:visible; }
+        #contractFormPage .meter-scope-choice-card,
+        #contractFormPage .meter-kind-choice-card { display:flex; align-items:flex-start; gap:8px; min-height:58px; padding:10px 11px; border:1px solid var(--line); border-radius:5px; background:#fff; cursor:pointer; box-sizing:border-box; }
+        #contractFormPage .meter-scope-choice-card:hover,
+        #contractFormPage .meter-kind-choice-card:hover { background:#f8fbf8; border-color:#c7d6ca; }
+        #contractFormPage .meter-scope-choice-card input,
+        #contractFormPage .meter-kind-choice-card input { margin-top:3px; flex-shrink:0; }
+        #contractFormPage .meter-scope-choice-card .choice-title,
+        #contractFormPage .meter-kind-choice-card .choice-title { display:block; font-size:12px; font-weight:800; color:#1f2937; }
+        #contractFormPage .meter-scope-choice-card .choice-sub,
+        #contractFormPage .meter-kind-choice-card .choice-sub { display:block; margin-top:3px; font-size:11px; font-weight:500; color:#7a8a7d; white-space:normal; line-height:1.35; }
+        #contractFormPage .meter-preview-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:3px; }
+        #contractFormPage .meter-preview-guide { display:flex; align-items:flex-start; gap:7px; min-height:34px; padding:9px 10px; border:1px dashed #cfd8d1; border-radius:5px; background:#fafcfb; color:#627268; font-size:11px; line-height:1.45; }
+        #contractFormPage .meter-preview-guide .material-symbols-rounded { flex-shrink:0; font-size:16px; color:var(--accent); margin-top:1px; }
+        #contractFormPage .meter-preview-panel { display:block; margin-top:8px; }
+        #contractFormPage .meter-info-box { display:flex; align-items:flex-start; gap:7px; padding:10px 12px; margin-bottom:12px; border:1px solid #dbe6dd; border-radius:5px; background:#f7fbf8; color:#415246; font-size:12px; line-height:1.5; }
+        #contractFormPage .meter-info-box .material-symbols-rounded { flex-shrink:0; font-size:17px; color:var(--accent); margin-top:1px; }
+        #contractFormPage .meter-id-sample-box { margin:0 0 12px; padding:11px 12px; border:1px solid #e1e7e3; border-radius:5px; background:#fff; }
+        #contractFormPage .meter-id-sample-title { display:flex; align-items:center; gap:6px; margin-bottom:7px; font-size:12px; font-weight:800; color:#2f3d34; }
+        #contractFormPage .meter-id-sample-title .material-symbols-rounded { font-size:17px; color:var(--accent); }
+        #contractFormPage .meter-id-sample-desc { margin:0 0 8px; font-size:11px; line-height:1.5; color:#647267; }
+        #contractFormPage .meter-id-sample-table { width:100%; border-collapse:collapse; table-layout:fixed; font-size:11px; }
+        #contractFormPage .meter-id-sample-table th { width:120px; padding:7px 9px; border:1px solid #edf0f2; background:#f8faf8; color:#526158; font-weight:800; text-align:left; }
+        #contractFormPage .meter-id-sample-table td { padding:7px 9px; border:1px solid #edf0f2; color:#2f3d34; font-family:Consolas,'Noto Sans KR',sans-serif; word-break:break-all; }
+        #contractFormPage .target-facility-guide { display:flex; align-items:flex-start; gap:7px; padding:9px 11px; margin-bottom:10px; border:1px dashed #d6dfd8; border-radius:5px; background:#fbfdfb; color:#5d6d62; font-size:11px; line-height:1.45; }
+        #contractFormPage .target-facility-guide .material-symbols-rounded { flex-shrink:0; font-size:16px; color:var(--accent); margin-top:1px; }
+        #contractFormPage .meter-match-summary { display:inline-flex; align-items:center; min-height:22px; padding:2px 7px; border-radius:999px; background:#eef6f0; color:#2f5f39; font-size:11px; font-weight:700; white-space:nowrap; }
+        #contractFormPage .meter-match-summary.is-empty { background:#fff5f5; color:#9f3a38; }
+        #contractFormPage .meter-provider-table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:5px; }
+        #contractFormPage .meter-provider-table { width:100%; border-collapse:collapse; table-layout:fixed; font-size:12px; }
+        #contractFormPage .meter-provider-table th { height:34px; padding:7px 9px; background:var(--th-bg); border-bottom:1px solid var(--line); color:var(--text-head); font-weight:800; text-align:left; white-space:nowrap; }
+        #contractFormPage .meter-provider-table td { height:36px; padding:7px 9px; border-bottom:1px solid #edf0f2; color:#3f4d43; vertical-align:middle; word-break:break-all; }
+        #contractFormPage .meter-provider-table tr:last-child td { border-bottom:0; }
+        #contractFormPage .meter-provider-table .col-meter-kind { width:80px; }
+        #contractFormPage .meter-provider-table .col-meter-no { width:120px; }
+        #contractFormPage .meter-provider-table .col-meter-csv { width:390px; }
+        #contractFormPage .meter-provider-table .col-meter-ext { width:170px; }
+        @media (max-width:900px) { #contractFormPage .meter-scope-choice-list, #contractFormPage .meter-kind-choice-list { grid-template-columns:1fr; } }
 
         /* ── 계약내용/비고 비율 : 계약내용을 더 넓게 표시 ── */
         #contractFormPage .contract-content-grid {
@@ -326,6 +349,10 @@
             white-space:nowrap;
         }
         #contractFormPage .choice-head .form-input { flex:1; height:30px; }
+        #contractFormPage .choice-head .meter-scope-select { width:150px; height:30px; flex-shrink:0; }
+        #contractFormPage #targetFacilityPanel.is-complex-meter .choice-layout { grid-template-columns:1fr; }
+        #contractFormPage #targetFacilityPanel.is-complex-meter #facilityChoiceList { display:none; }
+        #contractFormPage #targetFacilityPanel.is-complex-meter #selectedFacilityBox { display:none; }
         #contractFormPage .choice-list { max-height:292px; overflow-y:auto; }
         #contractFormPage .choice-row {
             display:flex; align-items:flex-start; gap:8px;
@@ -717,17 +744,27 @@
                         </div>
                     </div>
 
-                    <%-- 대상 시설 : 대상구분이 시설일 때만 사용 --%>
+                    <%-- 대상 시설 : 시설 계약 및 시설 검침 계약에서 사용 --%>
                     <div class="panel" id="targetFacilityPanel">
                         <div class="panel-header">
-                            <h3 class="panel-title"><span class="material-symbols-rounded">apartment</span>대상 시설</h3>
+                            <h3 class="panel-title" id="targetFacilityPanelTitle"><span class="material-symbols-rounded">apartment</span>대상 시설</h3>
                         </div>
 
                         <div class="panel-body">
+                            <div class="target-facility-guide" id="targetFacilityGuide">
+                                <span class="material-symbols-rounded">info</span>
+                                <span>시설 계약은 여러 시설을 계약 대상에 연결할 수 있습니다. 검침 계약은 범위에 따라 대상 시설 선택 방식이 달라집니다.</span>
+                            </div>
+
                             <div class="choice-layout">
                                 <div class="choice-box">
                                     <div class="choice-head">
-                                        <span class="choice-title">시설 선택</span>
+                                        <span class="choice-title" id="facilityChoiceTitle">시설 선택</span>
+                                        <select class="form-select meter-scope-select is-hidden" id="meterScopeSelect" name="meterScope" title="검침 범위 선택">
+                                            <option value="NORMAL_FACILITY" <c:if test="${empty contract.meterScope or contract.meterScope eq 'NORMAL_FACILITY'}">selected</c:if>>일반 시설 검침</option>
+                                            <option value="EQUIPMENT" <c:if test="${contract.meterScope eq 'EQUIPMENT'}">selected</c:if>>시설설비 검침</option>
+                                            <option value="COMPLEX" <c:if test="${contract.meterScope eq 'COMPLEX'}">selected</c:if>>단지/세대 검침</option>
+                                        </select>
                                         <input type="text" class="form-input" id="facilitySearchInput" placeholder="시설명, 번호, 유형 검색">
                                     </div>
 
@@ -742,6 +779,11 @@
 
                                             <label class="choice-row"
                                                    data-facility-row
+                                                   data-facility-no="${facility.facilityNo}"
+                                                   data-facility-name="${fn:escapeXml(facility.facilityNm)}"
+                                                   data-facility-ty-cd="${facility.facilityTyCd}"
+                                                   data-facility-ty-nm="${fn:escapeXml(empty facility.facilityTyNm ? facility.facilityTyCd : facility.facilityTyNm)}"
+                                                   data-facility-location="${fn:escapeXml(facility.facilityLocationText)}"
                                                    data-search-text="${fn:toLowerCase(facility.facilityNo)} ${fn:toLowerCase(facility.facilityNm)} ${fn:toLowerCase(facility.facilityTyCd)} ${fn:toLowerCase(facility.facilityTyNm)} ${fn:toLowerCase(facility.facilityLocationText)}">
                                                 <input type="checkbox" name="targetFacilityNoList" value="${facility.facilityNo}" <c:if test="${checkedYn eq 'Y'}">checked</c:if>>
                                                 <span>
@@ -760,9 +802,9 @@
                                     </div>
                                 </div>
 
-                                <div class="choice-box">
+                                <div class="choice-box" id="selectedFacilityBox">
                                     <div class="choice-head">
-                                        <span class="choice-title">선택된 시설</span>
+                                        <span class="choice-title" id="selectedFacilityTitle">선택된 시설</span>
                                     </div>
 
                                     <div class="choice-list" id="selectedFacilityList">
@@ -790,47 +832,122 @@
                         </div>
                     </div>
 
-                    <%-- 검침 설정 : 대상구분이 검침일 때 UTILITY_PROVIDER 생성/수정용 --%>
+                    <%-- 검침 정보 : 검침 범위와 검침유형 선택 --%>
                     <div class="panel is-hidden" id="meterSettingPanel">
                         <div class="panel-header">
-                            <h3 class="panel-title"><span class="material-symbols-rounded">electric_meter</span>검침 설정</h3>
+                            <h3 class="panel-title"><span class="material-symbols-rounded">electric_meter</span>검침 정보</h3>
                         </div>
 
                         <div class="panel-body">
-                            <input type="hidden" name="utilityProviderNo" value="${contract.utilityProviderNo}">
+                            <c:if test="${not empty contract.utilityProviderList}">
+                                <div class="meter-info-box">
+                                    <span class="material-symbols-rounded">info</span>
+                                    <span>
+                                        이 계약에 연결된 CSV 업로드 정보입니다. 기존 정보는 계약 상세에서 확인할 수 있습니다.
+                                        추가로 필요한 검침유형이 있으면 아래에서 선택해 저장하세요.
+                                    </span>
+                                </div>
+
+                                <div class="meter-provider-table-wrap">
+                                    <table class="meter-provider-table">
+                                        <thead>
+                                        <tr>
+                                            <th class="col-meter-kind">검침유형</th>
+                                            <th class="col-meter-no">설정번호</th>
+                                            <th class="col-meter-csv">CSV 식별키</th>
+                                            <th class="col-meter-ext">외부 고객번호</th>
+                                            <th>비고</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <c:forEach var="provider" items="${contract.utilityProviderList}">
+                                            <tr>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${empty provider.meterTyCd}">공통</c:when>
+                                                        <c:otherwise><c:out value="${empty provider.meterTyNm ? provider.meterTyCd : provider.meterTyNm}"/></c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                                <td><c:out value="${provider.utilityProviderNo}"/></td>
+                                                <td><c:out value="${provider.csvIdntfKey}"/></td>
+                                                <td><c:out value="${provider.extCustNo}"/></td>
+                                                <td><c:out value="${provider.utilityRmrkCn}"/></td>
+                                            </tr>
+                                        </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </c:if>
+
+                            <c:if test="${empty contract.utilityProviderList}">
+                                <div class="meter-info-box">
+                                    <span class="material-symbols-rounded">info</span>
+                                    <span>
+                                        검침 계약은 일반 시설 검침, 시설설비 검침, 단지/세대 검침으로 구분합니다.
+                                        CSV 식별키와 외부 고객번호는 저장 후 계약 상세에서 확인할 수 있습니다.
+                                    </span>
+                                </div>
+                            </c:if>
+
+                            <div class="meter-id-sample-box">
+                                <div class="meter-id-sample-title">
+                                    <span class="material-symbols-rounded">fact_check</span>
+                                    <span>CSV 식별 정보 예시</span>
+                                </div>
+                                <p class="meter-id-sample-desc">
+                                    CSV 식별키와 외부 고객번호는 외부 검침 파일을 이 계약의 검침 정보와 구분하기 위한 값입니다.
+                                    실제 값은 저장 후 계약 상세 화면에서 확인할 수 있습니다.
+                                </p>
+                                <table class="meter-id-sample-table">
+                                    <tbody>
+                                    <tr>
+                                        <th>CSV 식별키</th>
+                                        <td>CSV_A12127003_CONT3104_UTP3105_ELEC</td>
+                                    </tr>
+                                    <tr>
+                                        <th>외부 고객번호</th>
+                                        <td>C2700331043105ELC</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
                             <div class="meter-setting-grid">
-                                <div class="form-field meter-kind-field">
-                                    <label class="field-label" for="meterTyCd">검침 종류<span class="required">*</span></label>
-                                    <select class="form-select" id="meterTyCd" name="meterTyCd">
-                                        <option value="">선택</option>
-                                        <option value="ELEC" <c:if test="${contract.meterTyCd eq 'ELEC'}">selected</c:if>>전기</option>
-                                        <option value="WATER" <c:if test="${contract.meterTyCd eq 'WATER'}">selected</c:if>>수도</option>
-                                        <option value="GAS" <c:if test="${contract.meterTyCd eq 'GAS'}">selected</c:if>>가스</option>
-                                    </select>
-                                    <div class="field-help">전기, 수도, 가스 중 선택합니다.</div>
-                                </div>
-
-                                <div class="form-field meter-csv-field">
-                                    <label class="field-label" for="csvIdntfKey">CSV 식별키</label>
-                                    <div class="meter-csv-input-row">
-                                        <input type="text" class="form-input" id="csvIdntfKey" name="csvIdntfKey"
-                                               value="${fn:escapeXml(contract.csvIdntfKey)}"
-                                               placeholder="예: CSV_A12185003_ELEC">
-                                        <button type="button" class="btn" id="makeCsvKeyBtn">자동생성</button>
+                                <div class="form-field meter-kind-field full">
+                                    <div class="meter-preview-head">
+                                        <label class="field-label">검침 종류<span class="required">${empty contract.utilityProviderList ? '*' : ''}</span></label>
                                     </div>
-                                    <div class="field-help">검침 CSV 업로드 시 공급/검침 설정을 식별하는 값입니다.</div>
+
+                                    <div class="choice-list meter-kind-choice-list">
+                                        <label class="choice-card meter-kind-choice-card">
+                                            <input type="checkbox" name="meterTyCdList" value="ELEC" data-meter-name="전기" data-meter-short="ELC">
+                                            <span class="choice-main">
+                                                <span class="choice-title">전기</span>
+                                                <span class="choice-sub">전기 검침</span>
+                                            </span>
+                                        </label>
+                                        <label class="choice-card meter-kind-choice-card">
+                                            <input type="checkbox" name="meterTyCdList" value="WATER" data-meter-name="수도" data-meter-short="WTR">
+                                            <span class="choice-main">
+                                                <span class="choice-title">수도</span>
+                                                <span class="choice-sub">수도 검침</span>
+                                            </span>
+                                        </label>
+                                        <label class="choice-card meter-kind-choice-card">
+                                            <input type="checkbox" name="meterTyCdList" value="GAS" data-meter-name="가스" data-meter-short="GAS">
+                                            <span class="choice-main">
+                                                <span class="choice-title">가스</span>
+                                                <span class="choice-sub">가스 검침</span>
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    <div class="field-help">
+                                        CSV 식별키와 외부 고객번호는 저장 후 계약 상세에서 확인하세요.
+                                    </div>
                                 </div>
 
-                                <div class="form-field meter-ext-field">
-                                    <label class="field-label" for="extCustNo">외부 고객번호</label>
-                                    <input type="text" class="form-input" id="extCustNo" name="extCustNo"
-                                           value="${fn:escapeXml(contract.extCustNo)}"
-                                           placeholder="예: CUST-A12185003-ELEC">
-                                    <div class="field-help">외부 기관에서 별도로 부여한 고객번호가 있을 때만 입력합니다.</div>
-                                </div>
-
-                                <div class="form-field meter-rmrk-field">
+                                <div class="form-field meter-rmrk-field full">
                                     <label class="field-label" for="utilityRmrkCn">검침 설정 비고</label>
                                     <textarea class="form-textarea" id="utilityRmrkCn" name="utilityRmrkCn"
                                               placeholder="검침 계약과 공급/검침 설정에 대한 참고사항을 입력하세요.">${fn:escapeXml(contract.utilityRmrkCn)}</textarea>
@@ -988,7 +1105,29 @@
         ============================================================ */
         var contractFormConfig = {
             aptCmplexNo: '${not empty office.aptCmplexNo ? office.aptCmplexNo : contract.aptCmplexNo}',
-            isTerminateMode: ${isTerminateMode ? 'true' : 'false'}
+            isTerminateMode: ${isTerminateMode ? 'true' : 'false'},
+            hasUtilityProviderList: ${not empty contract.utilityProviderList ? 'true' : 'false'}
+        };
+
+        /*
+         * 검침범위별 시설/검침종류 필터 기준
+         * - 일반 시설 검침: 설비성 시설과 MTR 대표 검침 시설을 제외한다.
+         * - 시설설비 검침: 전기/급수/가스 설비만 표시하고, 선택 설비에 맞는 검침종류를 자동 선택한다.
+         * - 단지/세대 검침: 시설을 직접 선택하지 않는다.
+         */
+        var meterEquipmentTypeMap = {
+            ELC: 'ELEC',
+            WTR: 'WATER',
+            GAS: 'GAS'
+        };
+
+        var normalFacilityExcludeTypeMap = {
+            ELC: true,
+            WTR: true,
+            GAS: true,
+            ELV: true,
+            FIRE: true,
+            SEC: true
         };
 
         /* ============================================================
@@ -1009,7 +1148,6 @@
             var partnerRegisterCloseBtn = document.getElementById('closePartnerRegisterModalBtn');
             var partnerRegisterCancelBtn = document.getElementById('cancelPartnerRegisterModalBtn');
             var partnerRegisterModal = document.getElementById('contractPartnerRegisterModal');
-            var makeCsvKeyBtn = document.getElementById('makeCsvKeyBtn');
             var contractFilesInput = document.getElementById('contractFiles');
 
             /* 대상구분 변경 이벤트 */
@@ -1051,20 +1189,30 @@
             /* 시설 선택 이벤트 */
             document.addEventListener('change', function (event) {
                 if (event.target && event.target.name === 'targetFacilityNoList') {
+                    // 검침 계약은 대상 시설을 1개만 선택할 수 있으므로 나머지 선택을 해제한다.
+                    enforceSingleMeterTargetFacility(event.target);
+
+                    // 시설설비 검침은 선택 설비 유형에 맞춰 검침종류를 자동 선택한다.
+                    syncMeterKindOptionsByScope();
+
                     renderSelectedFacilities();
                 }
             });
-
-            /* CSV 식별키 자동생성 버튼 */
-            if (makeCsvKeyBtn) {
-                makeCsvKeyBtn.addEventListener('click', makeCsvIdntfKey);
-            }
 
             /* 새 첨부파일 선택 목록 표시 */
             if (contractFilesInput) {
                 contractFilesInput.addEventListener('change', renderSelectedContractFiles);
                 renderSelectedContractFiles();
             }
+
+            /* 검침 범위 변경 이벤트 */
+            var meterScopeSelect = document.getElementById('meterScopeSelect');
+
+            if (meterScopeSelect) {
+                meterScopeSelect.addEventListener('change', updateMeterScopeView);
+            }
+
+            /* 검침유형은 선택한 검침 범위 기준으로 복수 선택 가능하다. */
 
             /* 저장 전 최소 검증 */
             if (contractForm) {
@@ -1094,11 +1242,45 @@
             }
 
             toggleTargetPanels();
+            updateTargetFacilityCopy();
+            filterFacilityChoices();
+            syncMeterKindOptionsByScope();
             syncPartnerSearchInput();
             updatePartnerSummary();
             renderSelectedFacilities();
+            enforceSingleMeterTargetFacility();
             applyTerminateMode();
         });
+
+        /**
+         * 검침 대상 시설 단일 선택 강제
+         * - 계약대상구분이 METER일 때만 적용한다.
+         * - 사용자가 새 시설을 체크하면 기존 체크를 해제한다.
+         * - 기존 더미처럼 여러 대상이 체크된 상태로 화면에 진입하면 첫 번째 1건만 남긴다.
+         */
+        function enforceSingleMeterTargetFacility(changedInput) {
+            var targetSelect = document.getElementById('contTargetCd');
+
+            if (!targetSelect || targetSelect.value !== 'METER' || getSelectedMeterScope() === 'COMPLEX') {
+                return;
+            }
+
+            var checkedList = Array.prototype.slice.call(document.querySelectorAll('input[name="targetFacilityNoList"]:checked'));
+
+            if (checkedList.length <= 1) {
+                return;
+            }
+
+            var keepInput = changedInput && changedInput.checked ? changedInput : checkedList[0];
+
+            checkedList.forEach(function (input) {
+                if (input !== keepInput) {
+                    input.checked = false;
+                }
+            });
+
+            renderSelectedFacilities();
+        }
 
         /* ============================================================
            해지 모드 화면 잠금
@@ -1111,9 +1293,9 @@
             var statusSelect = document.getElementById('contSttsCd');
             var readonlyInputIds = [
                 'contNm', 'contAmt', 'contDt', 'contBgngDt', 'contEndDt', 'pymtDt',
-                'partnerSearchInput', 'partnerSummary', 'csvIdntfKey', 'extCustNo', 'utilityRmrkCn'
+                'partnerSearchInput', 'partnerSummary', 'utilityRmrkCn'
             ];
-            var readonlySelectIds = ['contTyCd', 'contTargetCd', 'bidTyCd', 'contSttsCd', 'partnerNo', 'meterTyCd'];
+            var readonlySelectIds = ['contTyCd', 'contTargetCd', 'bidTyCd', 'contSttsCd', 'partnerNo'];
 
             if (statusSelect) {
                 statusSelect.value = 'TERM';
@@ -1141,6 +1323,11 @@
                 checkbox.addEventListener('click', preventReadonlyChange);
             });
 
+            document.querySelectorAll('input[name="meterTyCdList"]').forEach(function (checkbox) {
+                checkbox.classList.add('readonly-choice');
+                checkbox.addEventListener('click', preventReadonlyChange);
+            });
+
             document.querySelectorAll('input[name="deleteFileSaveUuidList"]').forEach(function (checkbox) {
                 checkbox.disabled = true;
             });
@@ -1149,11 +1336,6 @@
             if (contractFiles) {
                 contractFiles.disabled = true;
                 contractFiles.classList.add('readonly-control');
-            }
-
-            var makeCsvKeyBtn = document.getElementById('makeCsvKeyBtn');
-            if (makeCsvKeyBtn) {
-                makeCsvKeyBtn.disabled = true;
             }
 
             var partnerRegisterBtn = document.getElementById('openPartnerRegisterModalBtn');
@@ -1168,37 +1350,6 @@
 
             if (event.currentTarget && typeof event.currentTarget.blur === 'function') {
                 event.currentTarget.blur();
-            }
-        }
-
-        /* ============================================================
-           CSV 식별키 자동생성
-           - 검침 계약 저장 시 UTILITY_PROVIDER.CSV_IDNTF_KEY로 저장될 값
-           - 협력업체번호가 아니라 검침 종류(METER_TY_CD)를 기준으로 만든다.
-           - 규칙: CSV_단지번호_검침종류
-        ============================================================ */
-        function makeCsvIdntfKey() {
-            var meterTySelect = document.getElementById('meterTyCd');
-            var csvInput = document.getElementById('csvIdntfKey');
-            var extCustInput = document.getElementById('extCustNo');
-
-            if (!meterTySelect || !csvInput) return;
-
-            if (!meterTySelect.value) {
-                alertMessage('CSV 식별키를 만들려면 검침 종류를 먼저 선택하세요.');
-                meterTySelect.focus();
-                return;
-            }
-
-            var aptCmplexNo = contractFormConfig.aptCmplexNo || 'APT';
-            var meterTyCd = meterTySelect.value;
-
-            // 검침 종류 기준 CSV 식별키 생성
-            csvInput.value = 'CSV_' + aptCmplexNo + '_' + meterTyCd;
-
-            // 외부 고객번호가 비어 있으면 같은 기준으로 자동 보조값을 채운다.
-            if (extCustInput && !extCustInput.value.trim()) {
-                extCustInput.value = 'CUST-' + aptCmplexNo + '-' + meterTyCd;
             }
         }
 
@@ -1403,6 +1554,111 @@
             }
         }
 
+        /**
+         * 대상 시설 영역 문구 전환
+         * - 일반 시설 계약: 대상 시설 선택
+         * - 검침 계약: 검침 범위에 따라 대상 시설 선택 문구 전환
+         */
+        function updateTargetFacilityCopy() {
+            var targetSelect = document.getElementById('contTargetCd');
+            var panelTitle = document.getElementById('targetFacilityPanelTitle');
+            var choiceTitle = document.getElementById('facilityChoiceTitle');
+            var selectedTitle = document.getElementById('selectedFacilityTitle');
+            var guide = document.getElementById('targetFacilityGuide');
+            var targetFacilityPanel = document.getElementById('targetFacilityPanel');
+            var meterScopeSelect = document.getElementById('meterScopeSelect');
+            var facilitySearchInput = document.getElementById('facilitySearchInput');
+            var isMeterTarget = targetSelect && targetSelect.value === 'METER';
+            var meterScope = getSelectedMeterScope();
+            var isComplexMeterScope = isMeterTarget && meterScope === 'COMPLEX';
+
+            if (targetFacilityPanel) {
+                targetFacilityPanel.classList.toggle('is-complex-meter', isComplexMeterScope);
+            }
+
+            if (meterScopeSelect) {
+                meterScopeSelect.classList.toggle('is-hidden', !isMeterTarget);
+            }
+
+            if (facilitySearchInput) {
+                facilitySearchInput.disabled = isComplexMeterScope;
+                facilitySearchInput.placeholder = isMeterTarget
+                    ? (meterScope === 'EQUIPMENT' ? '전기/급수/가스 설비 검색' : '시설명, 번호, 유형 검색')
+                    : '시설명, 번호, 유형 검색';
+            }
+
+            if (panelTitle) {
+                panelTitle.innerHTML = isMeterTarget
+                    ? '<span class="material-symbols-rounded">apartment</span>' + (isComplexMeterScope ? '단지/세대 검침' : '검침 대상 시설')
+                    : '<span class="material-symbols-rounded">apartment</span>대상 시설';
+            }
+
+            if (choiceTitle) {
+                if (!isMeterTarget) {
+                    choiceTitle.textContent = '시설 선택';
+                } else if (isComplexMeterScope) {
+                    choiceTitle.textContent = '검침 범위';
+                } else if (meterScope === 'EQUIPMENT') {
+                    choiceTitle.textContent = '대상 설비 선택';
+                } else {
+                    choiceTitle.textContent = '대상 시설 선택';
+                }
+            }
+
+            if (selectedTitle) {
+                selectedTitle.textContent = isMeterTarget
+                    ? (meterScope === 'EQUIPMENT' ? '선택된 대상 설비' : '선택된 검침 대상 시설')
+                    : '선택된 시설';
+            }
+
+            if (guide) {
+                if (!isMeterTarget) {
+                    guide.innerHTML = '<span class="material-symbols-rounded">info</span><span>시설 계약은 선택한 시설을 계약 대상에 연결합니다. 여러 시설을 선택하면 하나의 계약 대상 묶음으로 저장됩니다.</span>';
+                } else if (meterScope === 'COMPLEX') {
+                    guide.innerHTML = '<span class="material-symbols-rounded">info</span><span>단지/세대 검침은 대상 시설을 직접 선택하지 않고, 필요한 검침 종류만 선택합니다. CSV 식별키와 외부 고객번호는 저장 후 계약 상세에서 확인합니다.</span>';
+                } else if (meterScope === 'EQUIPMENT') {
+                    guide.innerHTML = '<span class="material-symbols-rounded">info</span><span>시설설비 검침은 전기/급수/가스 설비 중 1개만 선택합니다. 설비를 선택하면 맞는 검침 종류가 자동으로 선택됩니다.</span>';
+                } else {
+                    guide.innerHTML = '<span class="material-symbols-rounded">info</span><span>일반 시설 검침은 헬스장, 회의실 같은 일반 시설 1개를 선택하고 필요한 검침 종류를 선택합니다.</span>';
+                }
+            }
+        }
+
+        /**
+         * 현재 선택된 검침 범위 조회
+         */
+        function getSelectedMeterScope() {
+            var meterScopeSelect = document.getElementById('meterScopeSelect');
+            return meterScopeSelect && meterScopeSelect.value ? meterScopeSelect.value : 'NORMAL_FACILITY';
+        }
+
+        /**
+         * 검침 범위별 화면 보정
+         * - 단지/세대 검침은 시설 선택 영역을 숨기고 기존 시설 선택을 해제한다.
+         * - 일반 시설/시설설비 검침은 시설 1개 선택 방식으로 유지한다.
+         * - 시설설비 검침은 설비 유형에 맞는 검침종류만 노출한다.
+         */
+        function updateMeterScopeView() {
+            var targetSelect = document.getElementById('contTargetCd');
+            var isMeterTarget = targetSelect && targetSelect.value === 'METER';
+            var meterScope = getSelectedMeterScope();
+
+            if (isMeterTarget && meterScope === 'COMPLEX') {
+                document.querySelectorAll('input[name="targetFacilityNoList"]').forEach(function (checkbox) {
+                    checkbox.checked = false;
+                });
+            }
+
+            if (isMeterTarget && meterScope !== 'COMPLEX') {
+                clearInvalidMeterFacilitySelections();
+            }
+
+            updateTargetFacilityCopy();
+            filterFacilityChoices();
+            syncMeterKindOptionsByScope();
+            renderSelectedFacilities();
+        }
+
         /* ============================================================
            대상구분별 패널 제어
         ============================================================ */
@@ -1418,6 +1674,8 @@
             var contTyCd = contTyCdSelect ? contTyCdSelect.value : '';
             var targetValue = targetSelect.value;
 
+            updateTargetFacilityCopy();
+
             /* 일단 전부 숨긴 뒤 필요한 영역만 다시 연다. */
             if (targetFacilityPanel) targetFacilityPanel.classList.add('is-hidden');
             if (meterSettingPanel) meterSettingPanel.classList.add('is-hidden');
@@ -1425,7 +1683,7 @@
 
             /* 해지 모드에서는 기존 계약의 대상구분을 변경하지 않는다. */
             if (contractFormConfig.isTerminateMode) {
-                if (targetValue === 'FACILITY' && targetFacilityPanel) {
+                if ((targetValue === 'FACILITY' || targetValue === 'METER') && targetFacilityPanel) {
                     targetFacilityPanel.classList.remove('is-hidden');
                 }
                 if (targetValue === 'METER' && meterSettingPanel) {
@@ -1445,7 +1703,7 @@
                 return;
             }
 
-            /* 검침: 검침 설정을 바로 입력할 수 있게 대상구분을 검침으로 맞춘다. */
+            /* 검침: 대상구분을 검침으로 맞추고 검침 범위/검침유형 영역을 표시한다. */
             if (contTyCd === 'METER') {
                 targetSelect.value = 'METER';
                 targetValue = 'METER';
@@ -1458,13 +1716,19 @@
             }
 
             /* 용역/기타는 강제로 숨기지 않고 대상구분 선택값을 그대로 따른다. */
-            if (targetValue === 'FACILITY' && targetFacilityPanel) {
+            if ((targetValue === 'FACILITY' || targetValue === 'METER') && targetFacilityPanel) {
                 targetFacilityPanel.classList.remove('is-hidden');
             }
 
             if (targetValue === 'METER' && meterSettingPanel) {
                 meterSettingPanel.classList.remove('is-hidden');
             }
+
+            updateTargetFacilityCopy();
+            filterFacilityChoices();
+            clearInvalidMeterFacilitySelections();
+            enforceSingleMeterTargetFacility();
+            syncMeterKindOptionsByScope();
         }
 
         /* ============================================================
@@ -1497,12 +1761,123 @@
         ============================================================ */
         function filterFacilityChoices() {
             var input = document.getElementById('facilitySearchInput');
-            var keyword = input ? String(input.value || '').toLowerCase() : '';
+            var keyword = input ? String(input.value || '').toLowerCase().trim() : '';
 
             document.querySelectorAll('[data-facility-row]').forEach(function (row) {
-                var text = row.dataset.searchText || '';
-                row.style.display = text.indexOf(keyword) > -1 ? '' : 'none';
+                var searchText = row.dataset.searchText || '';
+                var matchKeyword = searchText.indexOf(keyword) > -1;
+                var matchScope = isFacilityAllowedByMeterScope(row);
+
+                row.style.display = (matchKeyword && matchScope) ? '' : 'none';
             });
+        }
+
+        /**
+         * 검침 범위별 시설 표시 여부
+         * - 일반 시설 검침: 설비성 시설과 MTR 대표 검침 시설 제외
+         * - 시설설비 검침: 전기/급수/가스 설비만 표시
+         * - 단지/세대 검침: 시설 선택 없음
+         */
+        function isFacilityAllowedByMeterScope(row) {
+            var targetSelect = document.getElementById('contTargetCd');
+
+            if (!row || !targetSelect || targetSelect.value !== 'METER') {
+                return true;
+            }
+
+            var meterScope = getSelectedMeterScope();
+            var facilityNo = String(row.dataset.facilityNo || '');
+            var facilityTyCd = String(row.dataset.facilityTyCd || '').toUpperCase();
+
+            if (meterScope === 'COMPLEX') {
+                return false;
+            }
+
+            if (facilityNo.indexOf('MTR') === 0) {
+                return false;
+            }
+
+            if (meterScope === 'EQUIPMENT') {
+                return !!meterEquipmentTypeMap[facilityTyCd];
+            }
+
+            return !normalFacilityExcludeTypeMap[facilityTyCd];
+        }
+
+        /**
+         * 검침 범위 변경 시 현재 범위에 맞지 않는 시설 선택 해제
+         * - 검색어 때문에 숨겨진 항목은 해제하지 않고, 범위 기준으로만 판단한다.
+         */
+        function clearInvalidMeterFacilitySelections() {
+            var targetSelect = document.getElementById('contTargetCd');
+
+            if (!targetSelect || targetSelect.value !== 'METER') {
+                return;
+            }
+
+            document.querySelectorAll('[data-facility-row]').forEach(function (row) {
+                var checkbox = row.querySelector('input[name="targetFacilityNoList"]');
+
+                if (checkbox && checkbox.checked && !isFacilityAllowedByMeterScope(row)) {
+                    checkbox.checked = false;
+                }
+            });
+        }
+
+        /**
+         * 시설설비 검침 선택 시 설비 유형에 맞는 검침종류만 표시하고 자동 체크
+         */
+        function syncMeterKindOptionsByScope() {
+            var targetSelect = document.getElementById('contTargetCd');
+            var meterScope = getSelectedMeterScope();
+            var isEquipmentMeter = targetSelect && targetSelect.value === 'METER' && meterScope === 'EQUIPMENT';
+            var selectedFacilityTyCd = getSelectedMeterFacilityTypeCd();
+            var allowedMeterTyCd = isEquipmentMeter ? meterEquipmentTypeMap[selectedFacilityTyCd] : null;
+
+            document.querySelectorAll('.meter-kind-choice-card').forEach(function (card) {
+                var checkbox = card.querySelector('input[name="meterTyCdList"]');
+
+                if (!checkbox) {
+                    return;
+                }
+
+                if (!isEquipmentMeter) {
+                    card.classList.remove('is-hidden');
+                    checkbox.disabled = false;
+                    return;
+                }
+
+                if (!allowedMeterTyCd) {
+                    card.classList.add('is-hidden');
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                    return;
+                }
+
+                if (checkbox.value === allowedMeterTyCd) {
+                    card.classList.remove('is-hidden');
+                    checkbox.checked = true;
+                    checkbox.disabled = false;
+                } else {
+                    card.classList.add('is-hidden');
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                }
+            });
+        }
+
+        /**
+         * 선택된 검침 대상 시설의 시설유형 코드 조회
+         */
+        function getSelectedMeterFacilityTypeCd() {
+            var checkedInput = document.querySelector('input[name="targetFacilityNoList"]:checked');
+
+            if (!checkedInput) {
+                return '';
+            }
+
+            var row = checkedInput.closest('[data-facility-row]');
+            return row ? String(row.dataset.facilityTyCd || '').toUpperCase() : '';
         }
 
         /* ============================================================
@@ -1517,9 +1892,14 @@
 
             if (checkedList.length === 0) {
                 var contTyCdSelect = document.getElementById('contTyCd');
+                var targetSelect = document.getElementById('contTargetCd');
 
                 if (contTyCdSelect && contTyCdSelect.value === 'INSTALL') {
                     box.innerHTML = '<div class="empty-row">설치공사는 시설 등록 후 연결할 수 있습니다.</div>';
+                } else if (targetSelect && targetSelect.value === 'METER' && getSelectedMeterScope() === 'COMPLEX') {
+                    box.innerHTML = '<div class="empty-row">단지/세대 검침은 대상 시설을 직접 선택하지 않습니다.</div>';
+                } else if (targetSelect && targetSelect.value === 'METER') {
+                    box.innerHTML = '<div class="empty-row">선택된 검침 대상 시설이 없습니다.</div>';
                 } else {
                     box.innerHTML = '<div class="empty-row">선택된 시설이 없습니다.</div>';
                 }
@@ -1665,23 +2045,47 @@
             }
 
             if (targetSelect && targetSelect.value === 'METER') {
-                var meterTyCd = document.getElementById('meterTyCd');
-                var csvIdntfKey = document.getElementById('csvIdntfKey');
+                var meterScope = getSelectedMeterScope();
+                var meterTargetCheckedList = document.querySelectorAll('input[name="targetFacilityNoList"]:checked');
 
-                if (!meterTyCd || !meterTyCd.value) {
-                    alertMessage('검침 계약은 검침 종류를 선택해야 합니다.');
-                    if (meterTyCd) {
-                        meterTyCd.focus();
-                    }
+                if (meterScope !== 'COMPLEX' && meterTargetCheckedList.length !== 1) {
+                    alertMessage('일반 시설/시설설비 검침 계약은 대상 시설을 1개만 선택해야 합니다.');
                     event.preventDefault();
                     return;
                 }
 
-                if (!csvIdntfKey || !csvIdntfKey.value.trim()) {
-                    alertMessage('검침 계약은 CSV 식별키를 입력해야 합니다.');
-                    csvIdntfKey.focus();
-                    event.preventDefault();
-                    return;
+                if (!contractFormConfig.hasUtilityProviderList) {
+                    var meterTyCheckedList = document.querySelectorAll('input[name="meterTyCdList"]:checked');
+
+                    if (meterTyCheckedList.length === 0) {
+                        alertMessage('검침 계약은 검침 종류를 하나 이상 선택해야 합니다.');
+                        var firstMeterTyCheckbox = document.querySelector('input[name="meterTyCdList"]');
+
+                        if (firstMeterTyCheckbox) {
+                            firstMeterTyCheckbox.focus();
+                        }
+
+                        event.preventDefault();
+                        return;
+                    }
+                }
+
+                if (meterScope === 'EQUIPMENT') {
+                    var selectedFacilityTyCd = getSelectedMeterFacilityTypeCd();
+                    var allowedMeterTyCd = meterEquipmentTypeMap[selectedFacilityTyCd];
+                    var checkedMeterTyList = Array.prototype.slice.call(document.querySelectorAll('input[name="meterTyCdList"]:checked'));
+
+                    if (!allowedMeterTyCd) {
+                        alertMessage('시설설비 검침은 전기/급수/가스 설비 중 1개를 선택해야 합니다.');
+                        event.preventDefault();
+                        return;
+                    }
+
+                    if (checkedMeterTyList.length !== 1 || checkedMeterTyList[0].value !== allowedMeterTyCd) {
+                        alertMessage('시설설비 검침은 선택한 설비에 맞는 검침 종류만 저장할 수 있습니다.');
+                        event.preventDefault();
+                        return;
+                    }
                 }
             }
 

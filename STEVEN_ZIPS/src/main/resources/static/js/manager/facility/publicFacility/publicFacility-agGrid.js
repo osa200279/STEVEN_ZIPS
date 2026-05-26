@@ -74,7 +74,8 @@
 
     /**
      * 동 표시값
-     * - 조인 컬럼명 차이 보정
+     * - 동 정보가 있으면 동 표시
+     * - 동 정보가 없으면 공용 위치 시설로 판단하여 "공용" 표시
      */
     function getDongText(row) {
         var dongText = text(row.dongNm || row.dongName || row.dongNo || row.buildingNm || row.buildingNo).trim();
@@ -83,12 +84,15 @@
             dongText = dongText.substring(dongText.lastIndexOf("_") + 1);
         }
 
-        return displayText(dongText);
+        if (!dongText) return "공용";
+
+        return dongText;
     }
 
     /**
      * 위치 표시값
-     * - 상세 위치 컬럼 표시
+     * - 공용 여부와 상관없이 상세 위치는 그대로 표시
+     * - 상세 위치가 없을 때만 '-' 표시
      */
     function getLocationText(row) {
         return displayText(row.locCn || row.locationCn || row.facilityLocCn);
@@ -340,8 +344,9 @@
             {
                 headerName: "동",
                 field: "dongNm",
-                flex: .6,
-                minWidth: 75,
+                flex: .42,
+                minWidth: 55,
+                maxWidth: 75,
                 cellClass: "cell-center",
                 valueGetter: function (p) {
                     return getDongText(p.data || {});
@@ -350,8 +355,8 @@
             {
                 headerName: "위치",
                 field: "locCn",
-                flex: 1.05,
-                minWidth: 120,
+                flex: 1.35,
+                minWidth: 150,
                 cellClass: "cell-left",
                 cellRenderer: function (p) {
                     return renderEllipsis(getLocationText(p.data || {}));

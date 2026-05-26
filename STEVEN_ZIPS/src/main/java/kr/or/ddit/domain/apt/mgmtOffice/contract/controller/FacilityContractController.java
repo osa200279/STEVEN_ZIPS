@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.contract.controller;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.service.IFacilityContractService;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractDTO;
@@ -58,6 +59,7 @@ public class FacilityContractController {
     public String contractList(
             @PathVariable String mgmtOfcNo,
             @ModelAttribute("search") FacilityContractSearchVO search,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int currentPage,
             @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
@@ -67,9 +69,38 @@ public class FacilityContractController {
         // 검색 조건에 관리사무소 번호 세팅
         search.setMgmtOfcNo(mgmtOfcNo);
 
-        // 계약 목록, 현황 카드 조회
-        model.addAttribute("contractList", facilityContractService.selectContractList(search));
+        // 페이지 번호 보정
+        // - 잘못된 페이지 값이 들어오면 1페이지로 조회한다.
+        if (currentPage < 1) {
+            currentPage = 1;
+        }
+
+        // 계약 목록 페이징 정보 생성
+        // - PaginationInfoVO 기본값: 한 페이지 10건, 페이지 블록 5개
+        PaginationInfoVO<FacilityContractDTO> pagingVO = new PaginationInfoVO<>();
+
+        // 검색조건 전체 기준 계약 건수 조회
+        int totalRecord = facilityContractService.selectContractTotalCount(search);
+
+        // 전체 건수 세팅
+        // - totalPage 계산에 사용된다.
+        pagingVO.setTotalRecord(totalRecord);
+
+        // 현재 페이지 세팅
+        // - startRow/endRow/startPage/endPage가 자동 계산된다.
+        pagingVO.setCurrentPage(currentPage);
+
+        // 현재 페이지 계약 목록 조회
+        pagingVO.setDataList(facilityContractService.selectContractList(search, pagingVO));
+
+        // 계약 현황 카드 조회
+        // - 페이지 기준이 아니라 검색조건 전체 기준으로 유지한다.
         model.addAttribute("contractSummary", facilityContractService.selectContractSummary(search));
+
+        // JSP 출력용 model
+        // - contractList는 기존 JSP 구조를 최대한 유지하기 위해 함께 내려준다.
+        model.addAttribute("pagingVO", pagingVO);
+        model.addAttribute("contractList", pagingVO.getDataList());
         model.addAttribute("contractTypeList", facilityContractService.selectContractTypeList());
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
 

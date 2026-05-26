@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.contract.service;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractSearchVO;
 import kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractSummaryVO;
@@ -13,8 +14,14 @@ import java.util.Map;
  */
 public interface IFacilityContractService {
 
+    /** 계약 목록 전체 건수 조회 */
+    int selectContractTotalCount(FacilityContractSearchVO search);
+
     /** 계약 목록 조회 */
-    List<FacilityContractDTO> selectContractList(FacilityContractSearchVO search);
+    List<FacilityContractDTO> selectContractList(
+            FacilityContractSearchVO search,
+            PaginationInfoVO<FacilityContractDTO> pagingVO
+    );
 
     /** 계약 현황 카드 조회 */
     FacilityContractSummaryVO selectContractSummary(FacilityContractSearchVO search);

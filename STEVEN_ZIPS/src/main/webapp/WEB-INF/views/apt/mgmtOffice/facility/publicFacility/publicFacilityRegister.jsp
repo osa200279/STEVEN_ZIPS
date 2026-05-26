@@ -69,7 +69,11 @@
 
         /* ===================== 안내 박스 ===================== */
         #publicFacilityPage .form-guide-line {
-            margin-bottom:12px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+            margin-bottom:14px;
             padding:9px 11px;
             border:1px solid var(--line);
             border-left:3px solid var(--accent);
@@ -79,6 +83,8 @@
             font-size:12px;
             line-height:1.5;
         }
+        #publicFacilityPage .form-guide-text { min-width:0; }
+        #publicFacilityPage .form-guide-line .btn { flex-shrink:0; height:28px; min-height:28px; padding:0 10px; font-size:11px; }
         #publicFacilityPage .field-help {
             margin-top:5px;
             font-size:11px;
@@ -97,36 +103,6 @@
             margin-bottom:10px;
         }
         .form-section-title .material-symbols-rounded { font-size:15px; color:var(--accent,#2e5c38); }
-
-        /* ===================== 등록 방식 탭 ===================== */
-        #publicFacilityPage .mode-tabs {
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:6px;
-            margin-bottom:14px;
-        }
-        #publicFacilityPage .mode-tab {
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            gap:5px;
-            height:34px;
-            border:1px solid var(--line);
-            border-radius:4px;
-            background:var(--surface);
-            color:var(--text-sec);
-            font-size:12px;
-            font-weight:600;
-            cursor:pointer;
-        }
-        #publicFacilityPage .mode-tab .material-symbols-rounded { font-size:16px; }
-        #publicFacilityPage .mode-tab.is-active {
-            border-color:var(--accent);
-            background:var(--accent-light);
-            color:var(--accent);
-            font-weight:700;
-        }
-
         /* ===================== 2컬럼 레이아웃 ===================== */
         .facility-cols {
             display:grid;
@@ -146,11 +122,6 @@
             flex-direction:column;
             min-width:0;
         }
-
-        /* ===================== 탭 콘텐츠 패널 (좌측) ===================== */
-        #publicFacilityPage .mode-panel         { display:none; }
-        #publicFacilityPage .mode-panel.is-active { display:block; }
-
         /* ===================== 시설자산 연결 영역 ===================== */
         #publicFacilityPage .asset-link-box {
             padding:12px;
@@ -208,18 +179,6 @@
 
         /* 시설자산이 선택되면 박스에 배경/보더 추가 */
         #publicFacilityPage .asset-link-box.is-selected { background:#fff; }
-
-        /* ===================== 설치계약 섹션 (우측, NEW 모드) ===================== */
-        #publicFacilityPage .contract-section {
-            padding:12px;
-            border:1px solid var(--line);
-            border-radius:4px;
-            background:#f8f9fb;
-            margin-bottom:14px;
-        }
-        #publicFacilityPage .contract-section .form-input,
-        #publicFacilityPage .contract-section .form-select { background:#fff; }
-
         /* ===================== 사진 업로드 ===================== */
         #publicFacilityPage .photo-upload-box {
             border:1px dashed var(--line);
@@ -335,17 +294,6 @@
             color:#b45309;
         }
         #publicFacilityPage .opr-notice:empty { display:none; }
-
-        /* ===================== 위치 선택 (새 시설자산) ===================== */
-        #publicFacilityPage .location-row {
-            display:grid;
-            grid-template-columns:1.1fr .75fr .75fr .75fr;
-            gap:8px;
-            align-items:end;
-        }
-        #publicFacilityPage .location-help { margin-top:5px; font-size:11px; color:var(--text-ter); line-height:1.5; }
-        #publicFacilityPage .location-detail-row { margin-top:10px; }
-
         /* ===================== 자원 안내 ===================== */
         #publicFacilityPage .resource-guide-list { display:flex; flex-direction:column; gap:10px; margin-top:8px; }
         #publicFacilityPage .resource-guide-row  { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:11px 12px; border:1px solid var(--line); border-radius:4px; background:#fff; }
@@ -459,9 +407,6 @@
             #publicFacilityPage .opr-preview-row { grid-template-columns:64px minmax(0,1fr); }
             #publicFacilityPage .opr-notice      { padding-left:71px; }
         }
-        @media (max-width:900px) {
-            #publicFacilityPage .location-row { grid-template-columns:1fr 1fr; }
-        }
         @media (max-width:760px) {
             .facility-cols        { grid-template-columns:1fr; }
             .facility-col-left    { padding-right:0; border-right:none; border-bottom:1px solid var(--line,#d7dce2); padding-bottom:16px; margin-bottom:16px; }
@@ -492,7 +437,7 @@
                 <div class="page-header">
                     <div class="page-title-block">
                         <h2>편의시설 등록</h2>
-                        <p>기존 시설자산을 운영관리 대상으로 연결하거나, 새 시설자산과 편의시설 운영정보를 함께 등록합니다.</p>
+                        <p>등록된 시설자산을 선택해 편의시설 운영정보를 등록합니다.</p>
                     </div>
                 </div>
 
@@ -516,19 +461,13 @@
 
                         <div class="panel-body">
 
-                            <%-- ===== 안내문구 + 탭: 2컬럼 바깥에 위치 ===== --%>
+                            <%-- ===== 안내문구: 2컬럼 바깥에 위치 ===== --%>
                             <div class="form-guide-line">
-                                기존 시설자산에 연결하거나 새 시설자산을 함께 등록할 수 있습니다. 등록한 사진은 시설자산 관리에서도 함께 확인됩니다.
-                            </div>
-
-                            <div class="mode-tabs" role="tablist" aria-label="편의시설 등록 방식 선택">
-                                <button type="button" class="mode-tab is-active" data-mode="EXISTING"
-                                        role="tab" aria-selected="true">
-                                    <span class="material-symbols-rounded">link</span>기존 시설자산 연결
-                                </button>
-                                <button type="button" class="mode-tab" data-mode="NEW"
-                                        role="tab" aria-selected="false">
-                                    <span class="material-symbols-rounded">add_business</span>연결할 새 시설자산 등록
+                                <div class="form-guide-text">
+                                    편의시설로 등록하려면 먼저 시설자산으로 등록해주세요. 등록된 시설자산을 선택해 편의시설 운영정보를 입력할 수 있습니다.
+                                </div>
+                                <button type="button" class="btn btn-secondary" id="goFacilityRegisterBtn">
+                                    시설자산 등록하러 가기
                                 </button>
                             </div>
 
@@ -538,8 +477,8 @@
                                 <%-- ========== 좌측 컬럼 ========== --%>
                                 <div class="facility-col-left">
 
-                                    <%-- [탭] 기존 시설자산 연결 --%>
-                                    <div class="mode-panel is-active" id="existingFacilityPanel" data-mode-panel="EXISTING">
+                                    <%-- 기존 시설자산 연결 --%>
+                                    <div id="existingFacilityPanel">
                                         <div class="asset-link-box" id="assetLinkBox">
                                             <div class="form-section-title">
                                                 <span class="material-symbols-rounded">fact_check</span>기존 시설자산 연결
@@ -577,83 +516,6 @@
 
                                                 <div class="field-help">
                                                     등록한 사진은 연결된 시설자산의 사진으로 함께 관리됩니다.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <%-- [탭] 새 시설자산 등록 --%>
-                                    <div class="mode-panel" id="newFacilityPanel" data-mode-panel="NEW">
-                                        <div class="asset-link-box" style="margin-bottom:14px;">
-                                            <div class="form-section-title">
-                                                <span class="material-symbols-rounded">apartment</span>연결할 새 시설자산 정보
-                                            </div>
-
-                                            <div class="form-row cols-2">
-                                                <div class="form-field">
-                                                    <label class="field-label">시설명 <span class="req">*</span></label>
-                                                    <input type="text" class="form-input" id="regFacilityNm" name="facilityNm" placeholder="예) 헬스장">
-                                                </div>
-                                                <div class="form-field">
-                                                    <label class="field-label">시설유형</label>
-                                                    <select class="form-select" id="regFacilityTyCd" name="facilityTyCd">
-                                                        <c:forEach var="type" items="${publicFacilityTypeList}">
-                                                            <option value="${type.code}">${type.codeNm}</option>
-                                                        </c:forEach>
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="location-row">
-                                                <div class="form-field">
-                                                    <label class="field-label">위치 구분</label>
-                                                    <select class="form-select" id="regLocationType" name="locationType">
-                                                        <option value="COMMON">공용 위치</option>
-                                                        <option value="DONG">동 위치</option>
-                                                        <option value="HOUSEHOLD">세대 위치</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-field" id="regDongField">
-                                                    <label class="field-label">동</label>
-                                                    <select class="form-select" id="regDongNo" name="dongNo">
-                                                        <option value="">선택 안 함</option>
-                                                        <c:forEach var="dong" items="${dongList}">
-                                                            <option value="${dong.dongNo}">
-                                                                <c:choose>
-                                                                    <c:when test="${fn:contains(dong.dongNo, '_')}">${fn:substringAfter(dong.dongNo, '_')}</c:when>
-                                                                    <c:when test="${not empty dong.dongNm}">${dong.dongNm}</c:when>
-                                                                    <c:otherwise>${dong.dongNo}</c:otherwise>
-                                                                </c:choose>
-                                                            </option>
-                                                        </c:forEach>
-                                                    </select>
-                                                </div>
-                                                <div class="form-field">
-                                                    <label class="field-label">층</label>
-                                                    <select class="form-select" id="regFacilityFloor">
-                                                        <option value="">선택</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-field">
-                                                    <label class="field-label">호</label>
-                                                    <select class="form-select" id="regFacilityHo">
-                                                        <option value="">선택</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="location-help">위치 구분에 따라 동·층·호가 활성화됩니다.</div>
-
-                                            <div class="form-row cols-2 location-detail-row">
-                                                <div class="form-field">
-                                                    <label class="field-label">상세위치</label>
-                                                    <input type="text" class="form-input" id="regLocCn" name="locCn" placeholder="예) 커뮤니티센터 2층">
-                                                </div>
-                                                <div class="form-field">
-                                                    <label class="field-label">활성여부</label>
-                                                    <select class="form-select" id="regUseYn" name="useYn">
-                                                        <option value="Y">활성</option>
-                                                        <option value="N">비활성</option>
-                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
@@ -744,39 +606,6 @@
                                 <%-- ========== 우측 컬럼 ========== --%>
                                 <div class="facility-col-right">
 
-                                    <%-- 설치계약 섹션: NEW 모드일 때만 표시 --%>
-                                    <div class="contract-section" id="contractSection" style="display:none;">
-                                        <div class="form-section-title">
-                                            <span class="material-symbols-rounded">contract</span>설치계약
-                                        </div>
-                                        <div class="form-field">
-                                            <label class="field-label">설치계약 연결 여부 <span class="req">*</span></label>
-                                            <div class="form-row cols-2">
-                                                <label class="field-help" style="margin:0;">
-                                                    <input type="radio" name="installContractYn" value="Y">
-                                                    설치계약 있음
-                                                </label>
-                                                <label class="field-help" style="margin:0;">
-                                                    <input type="radio" name="installContractYn" value="N" checked>
-                                                    설치계약 없음
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-field" id="newInstallContractBox" style="display:none;margin-top:10px;">
-                                            <label class="field-label">설치계약 선택 <span class="req">*</span></label>
-                                            <select class="form-select" id="newInstallContractNo" name="installContractNo" disabled>
-                                                <option value="">설치계약 선택</option>
-                                                <c:forEach var="contract" items="${installContractList}">
-                                                    <%-- ***# 설치계약 조회 결과 alias 매핑 --%>
-                                                    <option value="${contract.contNo}">
-                                                            ${contract.contNm} / ${contract.partnerNm} / ${contract.contBgngDt} ~ ${contract.contEndDt}
-                                                    </option>
-                                                </c:forEach>
-                                            </select>
-                                            <div class="field-help">새 시설자산 등록 시 선택한 설치계약의 시설번호가 함께 연결됩니다.</div>
-                                        </div>
-                                    </div>
-
                                     <%-- 사진 영역 --%>
                                     <div class="form-section">
                                         <div class="form-section-title">
@@ -827,6 +656,7 @@
                                 <button type="button" class="btn btn-secondary" id="backToListBtn">취소</button>
                                 <button type="submit" class="btn btn-primary">저장</button>
                             </div>
+                        </div>
                     </form>
                 </div>
 
@@ -963,6 +793,11 @@
             return contextPath + "/manager/publicFacility/page/" + encodeURIComponent(mgmtOfcNo);
         }
 
+        function facilityRegisterUrl() {
+            // 편의시설 화면에서는 시설자산을 직접 만들지 않고 시설자산 등록 화면으로 이동합니다.
+            return contextPath + "/manager/facility/register/" + encodeURIComponent(mgmtOfcNo) + "?from=public";
+        }
+
         function showAlert(msg) {
             if (typeof window.showAlert === "function") window.showAlert(msg);
             else alert(msg);
@@ -1005,228 +840,6 @@
 
         function postForm(url, formData) {
             return fetchJson(url, { method: "POST", headers: getCsrfHeaders(), body: formData });
-        }
-
-        function getJson(url) {
-            return fetchJson(url, { method: "GET", headers: getCsrfHeaders() });
-        }
-
-        function resetSelect(selectEl, placeholder) {
-            if (selectEl) selectEl.innerHTML = '<option value="">' + placeholder + '</option>';
-        }
-
-        /* =====================================================
-           등록 모드 전환 (기존 연결 / 새 등록)
-        ===================================================== */
-        function setRegisterMode(mode) {
-            var isNewMode = (mode === "NEW");
-
-            // 히든 필드에 현재 모드 저장
-            getEl("registerMode").value = mode;
-
-            // 탭 버튼 활성화 표시
-            document.querySelectorAll(".mode-tab").forEach(function (tab) {
-                var isActive = (tab.dataset.mode === mode);
-                tab.classList.toggle("is-active", isActive);
-                tab.setAttribute("aria-selected", isActive ? "true" : "false");
-            });
-
-            // 탭 패널 전환
-            document.querySelectorAll(".mode-panel").forEach(function (panel) {
-                panel.classList.toggle("is-active", panel.dataset.modePanel === mode);
-            });
-
-            // NEW 모드일 때만 새 시설자산 입력 필드 활성화
-            var newModeFields = ["regFacilityNm", "regFacilityTyCd", "regLocationType",
-                "regDongNo", "regFacilityFloor", "regFacilityHo", "regLocCn", "regUseYn"];
-            newModeFields.forEach(function (fieldId) {
-                var el = getEl(fieldId);
-                if (el) el.disabled = !isNewMode;
-            });
-
-            // 설치계약 라디오 버튼 활성화
-            document.querySelectorAll('input[name="installContractYn"]').forEach(function (radio) {
-                radio.disabled = !isNewMode;
-            });
-
-            // 우측 설치계약 섹션 표시/숨김
-            getEl("contractSection").style.display = isNewMode ? "" : "none";
-
-            // EXISTING 모드에서는 facilityNo 히든 필드 활성화
-            getEl("selectedFacilityNo").disabled = isNewMode;
-
-            // NEW 모드에서는 시설명 필수
-            getEl("regFacilityNm").required = isNewMode;
-
-            toggleContractSelectBox();
-            updateLocationFields();
-        }
-
-        /* =====================================================
-           설치계약 선택 박스 표시/숨김
-        ===================================================== */
-        function toggleContractSelectBox() {
-            var checkedRadio  = document.querySelector('input[name="installContractYn"]:checked');
-            var contractBox   = getEl("newInstallContractBox");
-            var contractSelect = getEl("newInstallContractNo");
-            var isNewMode     = (getEl("registerMode").value === "NEW");
-
-            // NEW 모드이고 "있음" 선택 시 설치계약 선택 박스 표시
-            if (isNewMode && checkedRadio && checkedRadio.value === "Y") {
-                contractBox.style.display  = "block";
-                contractSelect.disabled    = false;
-                return;
-            }
-
-            contractBox.style.display = "none";
-            contractSelect.value      = "";
-            contractSelect.disabled   = true;
-        }
-
-        /* =====================================================
-           위치 구분에 따라 동/층/호 필드 활성화
-        ===================================================== */
-        function updateLocationFields() {
-            var locationType = getEl("regLocationType").value;
-            var isNewMode    = (getEl("registerMode").value === "NEW");
-            var dongEl       = getEl("regDongNo");
-            var floorEl      = getEl("regFacilityFloor");
-            var hoEl         = getEl("regFacilityHo");
-            var detailEl     = getEl("regLocCn");
-
-            if (locationType === "COMMON") {
-                // 공용 위치: 동/층/호 모두 비활성
-                dongEl.value = "";
-                dongEl.disabled  = true;
-                floorEl.disabled = true;
-                hoEl.disabled    = true;
-                resetSelect(floorEl, "선택");
-                resetSelect(hoEl, "선택");
-                detailEl.value       = removeHouseholdPrefix(detailEl.value);
-                detailEl.placeholder = "예) 중앙광장, 커뮤니티센터 2층";
-                return;
-            }
-
-            if (locationType === "DONG") {
-                // 동 위치: 동만 활성, 층/호 비활성
-                dongEl.disabled  = !isNewMode;
-                floorEl.disabled = true;
-                hoEl.disabled    = true;
-                resetSelect(floorEl, "선택");
-                resetSelect(hoEl, "선택");
-                detailEl.value       = removeHouseholdPrefix(detailEl.value);
-                detailEl.placeholder = "예) 101동 1층 로비, 옥상";
-                return;
-            }
-
-            // 세대 위치: 동/층/호 모두 활성
-            dongEl.disabled  = !isNewMode;
-            floorEl.disabled = !isNewMode;
-            hoEl.disabled    = !isNewMode;
-            detailEl.placeholder = "예) 세대 분전반, 수도계량기";
-            buildHouseholdLocationText();
-        }
-
-        // "층호" 앞부분 텍스트 제거
-        function removeHouseholdPrefix(text) {
-            return String(text || "")
-                .replace(/^\s*\d+\s*층\s*/g, "")
-                .replace(/^\s*\d+\s*호\s*/g, "")
-                .trim();
-        }
-
-        // 동번호 텍스트 포맷
-        function formatDongText(dongNo) {
-            var value = String(dongNo || "").trim();
-            if (!value) return "공용 위치";
-            if (value.indexOf("_") > -1) value = value.substring(value.lastIndexOf("_") + 1);
-            if (value.indexOf("동") > -1) return value;
-            return value + "동";
-        }
-
-        // 세대 위치일 때 상세위치 필드에 "층 호 ..." 형태로 조합
-        function buildHouseholdLocationText() {
-            if (getEl("regLocationType").value !== "HOUSEHOLD") return;
-            var floor      = getEl("regFacilityFloor").value;
-            var ho         = getEl("regFacilityHo").value;
-            var detailEl   = getEl("regLocCn");
-            var detailText = removeHouseholdPrefix(detailEl.value);
-            detailEl.value = [floor ? floor + "층" : "", ho ? ho + "호" : "", detailText]
-                .filter(Boolean)
-                .join(" ");
-        }
-
-        /* =====================================================
-           층/호 동적 로딩
-        ===================================================== */
-        async function loadFloorList() {
-            var dongEl  = getEl("regDongNo");
-            var floorEl = getEl("regFacilityFloor");
-            var hoEl    = getEl("regFacilityHo");
-
-            resetSelect(floorEl, "선택");
-            resetSelect(hoEl, "선택");
-            buildHouseholdLocationText();
-
-            if (!dongEl.value) return;
-
-            var result    = await getJson(
-                contextPath + "/manager/facility/location/floors/" + encodeURIComponent(mgmtOfcNo)
-                + "?dongNo=" + encodeURIComponent(dongEl.value)
-            );
-            var floorList = result.list || result.floorList || result || [];
-
-            floorList.forEach(function (row) {
-                var floor = row.floor || row.FLOOR;
-                if (!floor) return;
-                var option       = document.createElement("option");
-                option.value     = floor;
-                option.textContent = floor;
-                floorEl.appendChild(option);
-            });
-        }
-
-        async function loadHoList() {
-            var dongEl  = getEl("regDongNo");
-            var floorEl = getEl("regFacilityFloor");
-            var hoEl    = getEl("regFacilityHo");
-
-            resetSelect(hoEl, "선택");
-            buildHouseholdLocationText();
-
-            if (!dongEl.value || !floorEl.value) return;
-
-            var result = await getJson(
-                contextPath + "/manager/facility/location/rooms/" + encodeURIComponent(mgmtOfcNo)
-                + "?dongNo=" + encodeURIComponent(dongEl.value)
-                + "&floor=" + encodeURIComponent(floorEl.value)
-            );
-            var hoList = result.list || result.roomList || result || [];
-
-            hoList.forEach(function (row) {
-                var ho = row.ho || row.HO;
-                if (!ho) return;
-                var option       = document.createElement("option");
-                option.value     = ho;
-                option.textContent = ho;
-                hoEl.appendChild(option);
-            });
-        }
-
-        // 저장 전 locCn 값 최종 조합
-        function buildFinalLocationText() {
-            var locationType = getEl("regLocationType").value;
-            var detailEl     = getEl("regLocCn");
-
-            if (locationType === "COMMON") {
-                getEl("regDongNo").value = "";
-                return detailEl.value;
-            }
-            if (locationType === "DONG") {
-                return removeHouseholdPrefix(detailEl.value);
-            }
-            buildHouseholdLocationText();
-            return detailEl.value;
         }
 
         /* =====================================================
@@ -1324,20 +937,28 @@
             if (returnBtn && returnBtn.offsetParent !== null) returnBtn.focus();
         }
 
+        function formatDongText(dongNo) {
+            var value = String(dongNo || "").trim();
+            if (!value) return "공용 위치";
+            if (value.indexOf("_") > -1) value = value.substring(value.lastIndexOf("_") + 1);
+            if (value.indexOf("동") > -1) return value;
+            return value + "동";
+        }
+
         // 시설자산 행 선택
         function selectAsset(row) {
             if (!row) return;
 
-            var facilityNo  = row.dataset.facilityNo  || "";
-            var facilityNm  = row.dataset.facilityNm  || "";
+            var facilityNo   = row.dataset.facilityNo   || "";
+            var facilityNm   = row.dataset.facilityNm   || "";
             var facilityTyNm = row.dataset.facilityTyNm || row.dataset.facilityTyCd || "-";
-            var dongNo      = row.dataset.dongNo       || "";
-            var locCn       = row.dataset.locCn        || "";
-            var useYn       = row.dataset.useYn        || "Y";
+            var dongNo       = row.dataset.dongNo       || "";
+            var locCn        = row.dataset.locCn        || "";
+            var useYn        = row.dataset.useYn        || "Y";
             var locationText = formatDongText(dongNo) + (locCn ? " · " + locCn : "");
             var summaryText  = [facilityNo || "-", facilityNm || "-", locationText || "-"].join(" · ");
 
-            // 히든 필드에 값 저장
+            // 히든 필드에 선택한 시설번호 저장
             getEl("selectedFacilityNo").value = facilityNo;
 
             // 숨겨진 데이터 span 업데이트
@@ -1392,9 +1013,9 @@
         function lockAssetSelection() {
             var changeBtn = getEl("changeAssetBtn");
             if (changeBtn) {
-                changeBtn.disabled    = true;
-                changeBtn.innerText   = "연결 시설자산 고정";
-                changeBtn.title       = "시설자산 목록에서 선택되어 들어온 시설은 변경할 수 없습니다.";
+                changeBtn.disabled  = true;
+                changeBtn.innerText = "연결 시설자산 고정";
+                changeBtn.title     = "시설자산 목록에서 선택되어 들어온 시설은 변경할 수 없습니다.";
             }
         }
 
@@ -1402,12 +1023,12 @@
            모달 검색/필터
         ===================================================== */
         function filterAssetList() {
-            var keyword      = (getEl("assetKeyword").value || "").toLowerCase().trim();
-            var typeFilter   = getEl("assetTypeFilter").value  || "";
-            var dongFilter   = getEl("assetDongFilter").value  || "";
+            var keyword    = (getEl("assetKeyword").value || "").toLowerCase().trim();
+            var typeFilter = getEl("assetTypeFilter").value  || "";
+            var dongFilter = getEl("assetDongFilter").value  || "";
 
             document.querySelectorAll("#assetTableBody .asset-row").forEach(function (row) {
-                var rowText    = (row.innerText || "").toLowerCase();
+                var rowText      = (row.innerText || "").toLowerCase();
                 var matchKeyword = !keyword    || rowText.indexOf(keyword) > -1;
                 var matchType    = !typeFilter || row.dataset.facilityTyCd === typeFilter;
                 var matchDong    = !dongFilter || row.dataset.dongNo       === dongFilter;
@@ -1427,7 +1048,7 @@
         }
 
         function resetAssetFilter() {
-            getEl("assetKeyword").value   = "";
+            getEl("assetKeyword").value    = "";
             getEl("assetTypeFilter").value = "";
             getEl("assetDongFilter").value = "";
             filterAssetList();
@@ -1450,7 +1071,7 @@
             getEl("deleteFileUuids").value = "";
 
             try {
-                var result   = await fetchJson(
+                var result = await fetchJson(
                     contextPath + "/manager/facility/detail/"
                     + encodeURIComponent(mgmtOfcNo) + "/" + encodeURIComponent(facilityNo)
                 );
@@ -1544,41 +1165,19 @@
         async function saveRegister(event) {
             event.preventDefault();
 
-            var mode             = getEl("registerMode").value;
             var selectedFacilityNo = getEl("selectedFacilityNo").value;
 
-            // 유효성 검사
-            if (mode === "EXISTING" && !selectedFacilityNo) {
+            // 기존 시설자산 연결 필수 확인
+            if (!selectedFacilityNo) {
                 showAlert("연결할 기존 시설자산을 선택하세요.");
                 return;
-            }
-            if (mode === "NEW" && !getEl("regFacilityNm").value.trim()) {
-                showAlert("시설명을 입력하세요.");
-                return;
-            }
-            if (mode === "NEW" && getEl("regLocationType").value === "DONG" && !getEl("regDongNo").value) {
-                showAlert("동 기준 위치를 선택한 경우 동을 선택하세요.");
-                return;
-            }
-            if (mode === "NEW" && getEl("regLocationType").value === "HOUSEHOLD" && !getEl("regDongNo").value) {
-                showAlert("세대 위치를 선택한 경우 동을 선택하세요.");
-                return;
-            }
-            if (mode === "NEW") {
-                var checkedRadio = document.querySelector('input[name="installContractYn"]:checked');
-                if (checkedRadio && checkedRadio.value === "Y" && !getEl("newInstallContractNo").value) {
-                    showAlert("설치계약이 있는 경우 설치계약을 선택하세요.");
-                    getEl("newInstallContractNo").focus();
-                    return;
-                }
             }
             if (!getEl("regCmnNm").value.trim()) {
                 showAlert("편의시설명을 입력하세요.");
                 return;
             }
 
-            // 위치 텍스트 및 운영시간 최종 조합
-            if (mode === "NEW") getEl("regLocCn").value = buildFinalLocationText();
+            // 운영시간 및 삭제 파일값 최종 조합
             updateOperationPreview();
             if (!validateOperationTime()) return;
             updateDeleteFileUuids();
@@ -1602,11 +1201,9 @@
         ===================================================== */
         document.addEventListener("DOMContentLoaded", function () {
 
-            // 탭 전환
-            document.querySelectorAll(".mode-tab").forEach(function (tab) {
-                tab.addEventListener("click", function () {
-                    setRegisterMode(tab.dataset.mode || "EXISTING");
-                });
+            // 시설자산 등록 화면 이동
+            getEl("goFacilityRegisterBtn").addEventListener("click", function () {
+                location.href = facilityRegisterUrl();
             });
 
             // 시설자산 선택 모달
@@ -1633,22 +1230,6 @@
             getEl("assetDongFilter").addEventListener("change", filterAssetList);
             getEl("assetFilterResetBtn").addEventListener("click", resetAssetFilter);
 
-            // 위치 선택 (새 시설자산)
-            getEl("regLocationType").addEventListener("change", function () {
-                updateLocationFields();
-                if (this.value === "HOUSEHOLD" && getEl("regDongNo").value) loadFloorList();
-            });
-            getEl("regDongNo").addEventListener("change", function () {
-                if (getEl("regLocationType").value === "HOUSEHOLD") loadFloorList();
-            });
-            getEl("regFacilityFloor").addEventListener("change", loadHoList);
-            getEl("regFacilityHo").addEventListener("change", buildHouseholdLocationText);
-
-            // 설치계약 라디오
-            document.querySelectorAll('input[name="installContractYn"]').forEach(function (radio) {
-                radio.addEventListener("change", toggleContractSelectBox);
-            });
-
             // 운영시간 미리보기
             ["oprStartDay", "oprEndDay", "oprStartTime", "oprEndTime"].forEach(function (id) {
                 getEl(id).addEventListener("change", updateOperationPreview);
@@ -1666,7 +1247,6 @@
             getEl("backToListBtn").addEventListener("click", function () { history.back(); });
 
             // 초기화
-            setRegisterMode("EXISTING");
             updateAssetSearchCount();
             updateOperationPreview();
 
@@ -1679,8 +1259,6 @@
             if (preselectFacilityNo) {
                 applyPreselectFacility(preselectFacilityNo);
                 lockAssetSelection();
-                var modeTabsEl = document.querySelector(".mode-tabs");
-                if (modeTabsEl) modeTabsEl.style.display = "none";
             }
         });
 

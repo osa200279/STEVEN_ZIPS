@@ -24,10 +24,76 @@
         where mgmt_ofc_no = #{mgmtOfcNo}
     </select>
 
+    <!-- 계약 목록 전체 건수 조회 -->
+    <select id="selectContractTotalCount"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractSearchVO"
+            resultType="int">
+        select count(*)
+        from facility_contract fc
+        inner join partner p
+        on fc.partner_no = p.partner_no
+        inner join mgmt_office mo
+        on p.apt_cmplex_no = mo.apt_cmplex_no
+        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+
+        <if test="contTyCd != null and contTyCd != ''">
+            and fc.cont_ty_cd = #{contTyCd}
+        </if>
+
+        <if test="partnerNo != null and partnerNo != ''">
+            and fc.partner_no = #{partnerNo}
+        </if>
+
+        <if test="contTargetCd != null and contTargetCd != ''">
+            and fc.cont_target_cd = #{contTargetCd}
+        </if>
+
+        <if test="contSttsCd != null and contSttsCd != ''">
+            and fc.cont_stts_cd = #{contSttsCd}
+        </if>
+
+        <if test="periodStartDt != null and periodStartDt != ''">
+            and fc.cont_bgng_dt &gt;= to_date(#{periodStartDt}, 'yyyy-mm-dd')
+        </if>
+
+        <if test="periodEndDt != null and periodEndDt != ''">
+            and fc.cont_end_dt &lt; to_date(#{periodEndDt}, 'yyyy-mm-dd') + 1
+        </if>
+
+        <if test="minContAmt != null">
+            and fc.cont_amt &gt;= #{minContAmt}
+        </if>
+
+        <if test="maxContAmt != null">
+            and fc.cont_amt &lt;= #{maxContAmt}
+        </if>
+
+        <if test="keyword != null and keyword != ''">
+            and (
+            lower(fc.cont_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(fc.cont_no) like '%' || lower(#{keyword}) || '%'
+            or lower(p.partner_nm) like '%' || lower(#{keyword}) || '%'
+            or lower(p.partner_no) like '%' || lower(#{keyword}) || '%'
+            or exists (
+            select 1
+            from facility_contract_target fct2
+            inner join facility f2
+            on fct2.facility_no = f2.facility_no
+            where fct2.cont_no = fc.cont_no
+            and lower(f2.facility_nm) like '%' || lower(#{keyword}) || '%'
+            )
+            )
+        </if>
+    </select>
+
     <!-- 계약 목록 조회 -->
     <select id="selectContractList"
-            parameterType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractSearchVO"
             resultType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractDTO">
+        select *
+        from (
+        select rownum rn
+        , a.*
+        from (
         select fc.cont_no
         , fc.facility_no
         , fc.partner_no
@@ -85,58 +151,62 @@
         group by file_group_no
         ) af
         on fc.file_group_no = af.file_group_no
-        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+        where mo.mgmt_ofc_no = #{search.mgmtOfcNo}
 
-        <if test="contTyCd != null and contTyCd != ''">
-            and fc.cont_ty_cd = #{contTyCd}
+        <if test="search.contTyCd != null and search.contTyCd != ''">
+            and fc.cont_ty_cd = #{search.contTyCd}
         </if>
 
-        <if test="partnerNo != null and partnerNo != ''">
-            and fc.partner_no = #{partnerNo}
+        <if test="search.partnerNo != null and search.partnerNo != ''">
+            and fc.partner_no = #{search.partnerNo}
         </if>
 
-        <if test="contTargetCd != null and contTargetCd != ''">
-            and fc.cont_target_cd = #{contTargetCd}
+        <if test="search.contTargetCd != null and search.contTargetCd != ''">
+            and fc.cont_target_cd = #{search.contTargetCd}
         </if>
 
-        <if test="contSttsCd != null and contSttsCd != ''">
-            and fc.cont_stts_cd = #{contSttsCd}
+        <if test="search.contSttsCd != null and search.contSttsCd != ''">
+            and fc.cont_stts_cd = #{search.contSttsCd}
         </if>
 
-        <if test="periodStartDt != null and periodStartDt != ''">
-            and fc.cont_bgng_dt &gt;= to_date(#{periodStartDt}, 'yyyy-mm-dd')
+        <if test="search.periodStartDt != null and search.periodStartDt != ''">
+            and fc.cont_bgng_dt &gt;= to_date(#{search.periodStartDt}, 'yyyy-mm-dd')
         </if>
 
-        <if test="periodEndDt != null and periodEndDt != ''">
-            and fc.cont_end_dt &lt; to_date(#{periodEndDt}, 'yyyy-mm-dd') + 1
+        <if test="search.periodEndDt != null and search.periodEndDt != ''">
+            and fc.cont_end_dt &lt; to_date(#{search.periodEndDt}, 'yyyy-mm-dd') + 1
         </if>
 
-        <if test="minContAmt != null">
-            and fc.cont_amt &gt;= #{minContAmt}
+        <if test="search.minContAmt != null">
+            and fc.cont_amt &gt;= #{search.minContAmt}
         </if>
 
-        <if test="maxContAmt != null">
-            and fc.cont_amt &lt;= #{maxContAmt}
+        <if test="search.maxContAmt != null">
+            and fc.cont_amt &lt;= #{search.maxContAmt}
         </if>
 
-        <if test="keyword != null and keyword != ''">
+        <if test="search.keyword != null and search.keyword != ''">
             and (
-            lower(fc.cont_nm) like '%' || lower(#{keyword}) || '%'
-            or lower(fc.cont_no) like '%' || lower(#{keyword}) || '%'
-            or lower(p.partner_nm) like '%' || lower(#{keyword}) || '%'
-            or lower(p.partner_no) like '%' || lower(#{keyword}) || '%'
+            lower(fc.cont_nm) like '%' || lower(#{search.keyword}) || '%'
+            or lower(fc.cont_no) like '%' || lower(#{search.keyword}) || '%'
+            or lower(p.partner_nm) like '%' || lower(#{search.keyword}) || '%'
+            or lower(p.partner_no) like '%' || lower(#{search.keyword}) || '%'
             or exists (
             select 1
             from facility_contract_target fct2
             inner join facility f2
             on fct2.facility_no = f2.facility_no
             where fct2.cont_no = fc.cont_no
-            and lower(f2.facility_nm) like '%' || lower(#{keyword}) || '%'
+            and lower(f2.facility_nm) like '%' || lower(#{search.keyword}) || '%'
             )
             )
         </if>
 
         order by fc.reg_dt desc, fc.cont_no desc
+        ) a
+        where rownum &lt;= #{pagingVO.endRow}
+        )
+        where rn &gt;= #{pagingVO.startRow}
     </select>
 
     <!-- 계약 현황 카드 조회 -->
@@ -402,6 +472,7 @@
         and cc.code_no_cd = f.facility_ty_cd
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
         and f.use_yn = 'Y'
+        and f.facility_no not like 'MTR%'
         order by
         case when f.dong_no is null then 0 else 1 end
         , case
@@ -513,7 +584,7 @@
         where cont_no = #{contNo}
     </delete>
 
-    <!-- 계약번호 기준 검침 설정 조회 -->
+    <!-- 계약번호 기준 검침 설정 조회 : 기존 단건 화면 호환용 대표 1건 -->
     <select id="selectUtilityProviderByContNo"
             parameterType="string"
             resultType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractDTO">
@@ -522,8 +593,60 @@
         , ext_cust_no as ext_cust_no
         , rmrk_cn as utility_rmrk_cn
         , meter_ty_cd as meter_ty_cd
+        , case meter_ty_cd
+        when 'ELEC' then '전기'
+        when 'GAS' then '가스'
+        when 'WATER' then '수도'
+        when 'HEAT' then '난방'
+        else meter_ty_cd
+        end as meter_ty_nm
+        from (
+        select utility_provider_no
+        , csv_idntf_key
+        , ext_cust_no
+        , rmrk_cn
+        , meter_ty_cd
         from utility_provider
         where cont_no = #{contNo}
+        and meter_ty_cd is not null
+        order by case meter_ty_cd
+        when 'ELEC' then 1
+        when 'GAS' then 2
+        when 'WATER' then 3
+        when 'HEAT' then 4
+        else 9
+        end
+        )
+        where rownum = 1
+    </select>
+
+    <!-- 계약번호 기준 검침 설정 목록 조회 -->
+    <select id="selectUtilityProviderListByContNo"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.contract.vo.FacilityContractDTO">
+        select utility_provider_no as utility_provider_no
+        , csv_idntf_key as csv_idntf_key
+        , ext_cust_no as ext_cust_no
+        , rmrk_cn as utility_rmrk_cn
+        , meter_ty_cd as meter_ty_cd
+        , case meter_ty_cd
+        when 'ELEC' then '전기'
+        when 'GAS' then '가스'
+        when 'WATER' then '수도'
+        when 'HEAT' then '난방'
+        else meter_ty_cd
+        end as meter_ty_nm
+        from utility_provider
+        where cont_no = #{contNo}
+        order by case when meter_ty_cd is null then 2 else 1 end
+        , case meter_ty_cd
+        when 'ELEC' then 1
+        when 'GAS' then 2
+        when 'WATER' then 3
+        when 'HEAT' then 4
+        else 9
+        end
+        , utility_provider_no
     </select>
 
     <!-- 계약번호 기준 검침 설정 개수 -->
@@ -533,6 +656,14 @@
         select count(*)
         from utility_provider
         where cont_no = #{contNo}
+    </select>
+
+    <!-- 계약번호 + 검침종류 기준 검침 설정 개수 -->
+    <select id="countUtilityProviderByContNoAndMeterTyCd" resultType="int">
+        select count(*)
+        from utility_provider
+        where cont_no = #{contNo}
+        and meter_ty_cd = #{meterTyCd}
     </select>
 
     <!-- 검침 설정 등록 -->

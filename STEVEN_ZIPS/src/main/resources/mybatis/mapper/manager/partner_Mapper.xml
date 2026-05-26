@@ -23,7 +23,11 @@
         <result property="utilityProviderNo" column="utility_provider_no"/>
         <result property="meterLinkedYn" column="meter_linked_yn"/>
         <result property="meterCnt" column="meter_cnt"/>
+        <result property="complexMeterCnt" column="complex_meter_cnt"/>
+        <result property="facilityMeterCnt" column="facility_meter_cnt"/>
         <result property="recentMeterDt" column="recent_meter_dt"/>
+        <result property="recentComplexMeterDt" column="recent_complex_meter_dt"/>
+        <result property="recentFacilityMeterDt" column="recent_facility_meter_dt"/>
     </resultMap>
 
     <!-- 협력업체 현황 결과 매핑 -->
@@ -149,7 +153,11 @@
         ,utility_provider_no
         ,meter_linked_yn
         ,meter_cnt
+        ,complex_meter_cnt
+        ,facility_meter_cnt
         ,recent_meter_dt
+        ,recent_complex_meter_dt
+        ,recent_facility_meter_dt
         FROM (
         SELECT ROW_NUMBER() OVER(ORDER BY p.reg_dt DESC NULLS LAST, p.partner_no DESC) AS rn
         ,p.partner_no
@@ -206,12 +214,44 @@
         WHERE up.partner_no = p.partner_no
         ) AS meter_cnt
         ,(
+        SELECT COUNT(*)
+        FROM utility_provider up
+        JOIN meter_hstry mh
+        ON mh.utility_provider_no = up.utility_provider_no
+        WHERE up.partner_no = p.partner_no
+        AND mh.meter_scope = 'COMPLEX'
+        ) AS complex_meter_cnt
+        ,(
+        SELECT COUNT(*)
+        FROM utility_provider up
+        JOIN meter_hstry mh
+        ON mh.utility_provider_no = up.utility_provider_no
+        WHERE up.partner_no = p.partner_no
+        AND mh.meter_scope = 'FACILITY'
+        ) AS facility_meter_cnt
+        ,(
         SELECT TO_CHAR(MAX(mh.meter_dt), 'yyyy/mm/dd')
         FROM utility_provider up
         JOIN meter_hstry mh
         ON mh.utility_provider_no = up.utility_provider_no
         WHERE up.partner_no = p.partner_no
         ) AS recent_meter_dt
+        ,(
+        SELECT TO_CHAR(MAX(mh.meter_dt), 'yyyy/mm/dd')
+        FROM utility_provider up
+        JOIN meter_hstry mh
+        ON mh.utility_provider_no = up.utility_provider_no
+        WHERE up.partner_no = p.partner_no
+        AND mh.meter_scope = 'COMPLEX'
+        ) AS recent_complex_meter_dt
+        ,(
+        SELECT TO_CHAR(MAX(mh.meter_dt), 'yyyy/mm/dd')
+        FROM utility_provider up
+        JOIN meter_hstry mh
+        ON mh.utility_provider_no = up.utility_provider_no
+        WHERE up.partner_no = p.partner_no
+        AND mh.meter_scope = 'FACILITY'
+        ) AS recent_facility_meter_dt
         FROM partner p
         LEFT JOIN apt_complex ac
         ON ac.apt_cmplex_no = p.apt_cmplex_no
