@@ -21,7 +21,17 @@
     .pf-card{background:#fff;border:1px solid #dfe5df;border-radius:8px;margin-bottom:16px}
     .pf-card-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #e5e7eb;font-weight:700}
     .pf-card-bd{padding:16px 18px}
-    .pf-search-grid{display:grid;grid-template-columns:repeat(6,1fr) 1.5fr auto auto;gap:10px;align-items:end}
+    .pf-search-grid{
+      display:grid;
+      grid-template-columns:1.1fr 1.1fr .65fr .65fr .9fr .9fr .9fr .8fr 70px auto;
+      gap:10px;
+      align-items:end;
+    }
+
+    .pf-btn-reset{
+      width:70px;
+      padding:0;
+    }
     .pf-field label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:6px}
     .pf-field input,.pf-field select{width:100%;height:36px;border:1px solid #d7ded7;border-radius:5px;padding:0 10px;font-size:13px}
     .pf-btn{height:36px;border:1px solid #245b36;border-radius:5px;padding:0 14px;font-weight:700;cursor:pointer}
@@ -57,8 +67,56 @@
             <div class="pf-card">
               <div class="pf-card-hd">검색 조건</div>
               <div class="pf-card-bd pf-search-grid">
-                <div class="pf-field"><label>시설명</label><input name="searchWord" value="${searchVO.searchWord}" placeholder="시설명/예약대상"/></div>
-                <div class="pf-field"><label>동</label><input name="searchDongNo" value="${searchVO.searchDongNo}" placeholder="동"/></div>
+                <div class="pf-field">
+                  <label>시설명</label>
+                  <select name="searchCmnFacilityNo">
+                    <option value="">전체</option>
+                    <c:forEach items="${historyFacilityList}" var="facility">
+                      <option value="${facility.cmnFacilityNo}"
+                        ${searchVO.searchCmnFacilityNo eq facility.cmnFacilityNo ? 'selected' : ''}>
+                          ${facility.cmnFacilityNm}
+                      </option>
+                    </c:forEach>
+                  </select>
+                </div>
+
+                <div class="pf-field">
+                  <label>예약대상</label>
+                  <select name="searchItemNo">
+                    <option value="">전체</option>
+                    <c:forEach items="${historyItemList}" var="item">
+                      <option value="${item.cmnFacilityItemNo}"
+                        ${searchVO.searchItemNo eq item.cmnFacilityItemNo ? 'selected' : ''}>
+                          ${item.itemNm}
+                      </option>
+                    </c:forEach>
+                  </select>
+                </div>
+
+                <div class="pf-field">
+                  <label>동</label>
+                  <input name="searchDongNm" value="${searchVO.searchDongNm}" placeholder="예: 101"/>
+                </div>
+
+                <div class="pf-field">
+                  <label>호</label>
+                  <input name="searchHo" value="${searchVO.searchHo}" placeholder="예: 305"/>
+                </div>
+
+                <div class="pf-field">
+                  <label>입주민명</label>
+                  <input name="searchUserNm" value="${searchVO.searchUserNm}" placeholder="이름"/>
+                </div>
+
+                <div class="pf-field">
+                  <label>예약시작</label>
+                  <input type="date" name="searchStartDt" value="${searchVO.searchStartDt}"/>
+                </div>
+
+                <div class="pf-field">
+                  <label>예약종료</label>
+                  <input type="date" name="searchEndDt" value="${searchVO.searchEndDt}"/>
+                </div>
 
                 <div class="pf-field">
                   <label>상태</label>
@@ -71,14 +129,11 @@
                   </select>
                 </div>
 
-                <div class="pf-field"><label>이용시작</label><input type="date" name="searchStartDt" value="${searchVO.searchStartDt}"/></div>
-                <div class="pf-field"><label>이용종료</label><input type="date" name="searchEndDt" value="${searchVO.searchEndDt}"/></div>
-                <div class="pf-field"><label>입주민명</label><input name="searchUserNm" value="${searchVO.searchUserNm}" placeholder="이름"/></div>
-
-                <button type="button" class="pf-btn pf-btn-light"
+                <button type="button" class="pf-btn pf-btn-light pf-btn-reset"
                         onclick="location.href='${pageContext.request.contextPath}/manager/publicFacility/reservation/approval/${mgmtOfcNo}'">
                   초기화
                 </button>
+
                 <button class="pf-btn pf-btn-primary">검색</button>
               </div>
             </div>
@@ -96,7 +151,8 @@
                   <th>번호</th>
                   <th>시설명</th>
                   <th>예약대상</th>
-                  <th>입주민</th>
+                  <th>동/호</th>
+                  <th>입주민명</th>
                   <th>예약시간</th>
                   <th>상태</th>
                   <th>관리</th>
@@ -109,6 +165,7 @@
                     <td>${pagingVO.totalRecord - ((pagingVO.currentPage - 1) * pagingVO.screenSize) - st.index}</td>
                     <td>${row.cmnFacilityNm}</td>
                     <td>${row.itemNm}</td>
+                    <td>${row.dongNm} / ${row.ho}</td>
                     <td>${row.userNm}</td>
                     <td>${row.rsvtBgngDttm} ~ ${row.rsvtEndDttm}</td>
                     <td><span class="pf-badge pf-badge-wait">${row.rsvtSttsNm}</span></td>
@@ -121,7 +178,7 @@
 
                 <c:if test="${empty pagingVO.dataList}">
                   <tr>
-                    <td colspan="7">조회된 데이터가 없습니다.</td>
+                    <td colspan="8">조회된 데이터가 없습니다.</td>
                   </tr>
                 </c:if>
                 </tbody>

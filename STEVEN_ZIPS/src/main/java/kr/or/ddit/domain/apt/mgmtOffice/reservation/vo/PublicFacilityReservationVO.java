@@ -82,6 +82,19 @@ public class PublicFacilityReservationVO {
      */
     private String autoApproveYn;
 
+    /*
+     * 동 검색어
+     * 예: 101
+     */
+    private String searchDongNm;
+
+    /*
+     * 호 검색어
+     * 예: 305
+     */
+    private String searchHo;
+
+
 }
 
 

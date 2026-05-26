@@ -426,7 +426,9 @@
                 <span>›</span>
                 <a href="javascript:void(0);">생활지원서비스</a>
                 <span>›</span>
-                <a href="${pageContext.request.contextPath}/resident/publicFacility/reservation">편의시설예약</a>
+                <a href="${pageContext.request.contextPath}/resident/publicFacility/reservation/${aptCmplexNo}">
+                    편의시설예약
+                </a>
                 <span>›</span>
                 <span class="cur">${facility.cmnFacilityNm} 예약</span>
             </div>
@@ -459,7 +461,7 @@
                 <!-- 오른쪽: 좌석 선택 -->
                 <div class="seat-panel">
 
-                    <h3>좌석 선택</h3>
+                    <h3>예약대상 선택</h3>
 
                     <div id="selectedTimeInfo" class="selected-box">
                         선택된 시간대가 없습니다.
@@ -549,18 +551,22 @@
 
         document.querySelectorAll('.seat-btn').forEach(btn => {
             btn.classList.remove('selected', 'reserved');
-            btn.disabled = false;
+                if (btn.classList.contains('disabled')) {
+                    btn.disabled = true;
+                } else {
+                    btn.disabled = false;
+                }
         });
 
-        if (!rsvtDt) {
-            timeSlotList.innerHTML = '<p class="empty-text">예약일을 선택하면 시간대가 표시됩니다.</p>';
-            return;
-        }
+            if (!rsvtDt) {
+                timeSlotList.innerHTML = '<p class="empty-text">예약일을 선택하면 시간대가 표시됩니다.</p>';
+                return;
+            }
 
-        if (!cmnFacilityNo || cmnFacilityNo.trim() === '') {
-            timeSlotList.innerHTML = '<p class="empty-text">시설번호가 없어 시간대를 조회할 수 없습니다.</p>';
-            return;
-        }
+            if (!cmnFacilityNo || cmnFacilityNo.trim() === '') {
+                timeSlotList.innerHTML = '<p class="empty-text">시설번호가 없어 시간대를 조회할 수 없습니다.</p>';
+                return;
+            }
 
         fetch(contextPath + '/resident/publicFacility/reservation/' + cmnFacilityNo
             + '/time-slots?searchStartDt=' + encodeURIComponent(rsvtDt))
@@ -627,9 +633,9 @@
                     if (btn.classList.contains('disabled')) {
                         btn.disabled = true;
                         return;
+                    } else {
+                        btn.disabled = false;
                     }
-
-                    btn.disabled = false;
 
                     if (reservedList.includes(String(btn.dataset.itemNo))) {
                         btn.classList.add('reserved');
@@ -734,7 +740,7 @@
                  * 예약 후 입주민은 본인 예약내역으로 이동.
                  * 관리자는 예약승인관리 화면에서 PENDING 예약을 확인합니다.
                  */
-                location.href = contextPath + '/resident/publicFacility/myReservation';
+                location.href = contextPath + '/resident/publicFacility/myReservation/${aptCmplexNo}';
             })
             .catch(error => {
                 console.error(error);

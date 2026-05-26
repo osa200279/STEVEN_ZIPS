@@ -57,6 +57,10 @@ public class PublicFacilityReservationController {
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+
+        model.addAttribute("historyFacilityList", service.getHistoryFacilityFilterList(searchVO));
+        model.addAttribute("historyItemList", service.getHistoryItemFilterList(searchVO));
+
         return "apt/mgmtOffice/facility/reservation/managerReservationApproval";
     }
 
@@ -90,12 +94,22 @@ public class PublicFacilityReservationController {
                              PublicFacilityReservationVO searchVO,
                              @AuthenticationPrincipal CustomUser customUser,
                              Model model) {
+
         managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
         searchVO.setAptCmplexNo(service.getManagerAptCmplexNo(mgmtOfcNo));
-        PaginationInfoVO<PublicFacilityReservationVO> pagingVO = service.getUseHistoryPaging(searchVO, currentPage);
+
+        PaginationInfoVO<PublicFacilityReservationVO> pagingVO =
+                service.getUseHistoryPaging(searchVO, currentPage);
+
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);
         model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+
+        // 셀렉트박스용 목록
+        model.addAttribute("historyFacilityList", service.getHistoryFacilityFilterList(searchVO));
+        model.addAttribute("historyItemList", service.getHistoryItemFilterList(searchVO));
+
         return "apt/mgmtOffice/facility/reservation/managerUseHistory";
     }
 
@@ -212,26 +226,43 @@ public class PublicFacilityReservationController {
             Model model
     ) {
         /*
-         * 실제 조회는 로그인 사용자 기준 단지 사용
+         * 로그인 입주민 단지 조회
          */
         String loginUserAptCmplexNo =
-                service.getResidentAptCmplexNo(
-                        customUser.getMember().getUserNo()
-                );
+                service.getResidentAptCmplexNo(customUser.getMember().getUserNo());
 
-        searchVO.setUserNo(
-                customUser.getMember().getUserNo()
-        );
+        searchVO.setAptCmplexNo(loginUserAptCmplexNo);
+        searchVO.setUserNo(customUser.getMember().getUserNo());
 
-        searchVO.setAptCmplexNo(
-                loginUserAptCmplexNo
-        );
-
+        /*
+         * 예약내역 페이징 조회
+         */
         PaginationInfoVO<PublicFacilityReservationVO> pagingVO =
-                service.getMyReservationPaging(
-                        searchVO,
-                        currentPage
-                );
+                service.getMyReservationPaging(searchVO, currentPage);
+
+        /*
+         * 시설명 필터 목록
+         *
+         * 왜 사용?
+         * 검색조건의 시설명 select box 데이터를 만들기 위해 사용.
+         */
+        model.addAttribute(
+                "facilityFilterList",
+                service.getHistoryFacilityFilterList(searchVO)
+        );
+
+        /*
+         * 예약대상 필터 목록
+         *
+         * 예:
+         * 독서실 의자1
+         * 러닝머신1
+         * 회의실 테이블A
+         */
+        model.addAttribute(
+                "itemFilterList",
+                service.getHistoryItemFilterList(searchVO)
+        );
 
         model.addAttribute("pagingVO", pagingVO);
         model.addAttribute("searchVO", searchVO);

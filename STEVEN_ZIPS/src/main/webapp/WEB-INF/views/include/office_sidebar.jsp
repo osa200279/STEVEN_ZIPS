@@ -528,7 +528,7 @@
                         <a href="${ctx}/manager/publicFacility/reservation/history${mgmtPath}"
                            class="nav-item child-nav-item ${fn:contains(uri, '/manager/publicFacility/reservation/history') ? 'active' : ''}">
                             <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                            <span class="nav-text">예약 이용이력</span>
+                            <span class="nav-text">예약시설 이용이력</span>
                         </a>
 
                     </div>

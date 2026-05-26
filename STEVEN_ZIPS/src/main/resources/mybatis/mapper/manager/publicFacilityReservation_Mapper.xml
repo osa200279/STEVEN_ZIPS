@@ -87,7 +87,7 @@
     </select>
 
     <select id="selectNextRsvtNo" resultType="string">
-        SELECT 'RSV' || LPAD(SEQ_FACILITY_HSTRY.NEXTVAL, 12, '0') FROM DUAL
+        SELECT 'RSV' || LPAD(SEQ_FACILITY_HSTRY.NEXTVAL, 6, '0') FROM DUAL
     </select>
 
     <sql id="facilityWhere">
@@ -180,17 +180,38 @@
 
     <sql id="reservationWhere">
         WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
-        <if test="searchCmnFacilityNo != null and searchCmnFacilityNo != ''">AND PF.CMN_FACILITY_NO = #{searchCmnFacilityNo}</if>
-        <if test="searchItemNo != null and searchItemNo != ''">AND PI.CMN_FACILITY_ITEM_NO = #{searchItemNo}</if>
-        <if test="searchUserNm != null and searchUserNm != ''">AND M.USER_NM LIKE '%' || #{searchUserNm} || '%'</if>
-        <if test="searchRsvtSttsCd != null and searchRsvtSttsCd != ''">AND FH.RSVT_STTS_CD = #{searchRsvtSttsCd}</if>
-        <if test="searchDongNo != null and searchDongNo != ''">AND RHH.DONG_NO = #{searchDongNo}</if>
-        <if test="searchWord != null and searchWord != ''">AND (PF.CMN_FACILITY_NM LIKE '%' || #{searchWord} || '%' OR PI.ITEM_NM LIKE '%' || #{searchWord} || '%')</if>
-        <if test="searchAutoApproveYn != null and searchAutoApproveYn != ''">
-            AND (CASE WHEN FH.RSVT_STTS_CD = 'APPROVED' AND FH.REG_DT = FH.MDF_DT THEN 'Y' ELSE 'N' END) = #{searchAutoApproveYn}
+
+        <if test="searchCmnFacilityNo != null and searchCmnFacilityNo != ''">
+            AND PF.CMN_FACILITY_NO = #{searchCmnFacilityNo}
         </if>
-        <if test="searchStartDt != null and searchStartDt != ''">AND FH.RSVT_DT &gt;= TO_DATE(#{searchStartDt}, 'YYYY-MM-DD')</if>
-        <if test="searchEndDt != null and searchEndDt != ''">AND FH.RSVT_DT &lt; TO_DATE(#{searchEndDt}, 'YYYY-MM-DD') + 1</if>
+
+        <if test="searchItemNo != null and searchItemNo != ''">
+            AND PI.CMN_FACILITY_ITEM_NO = #{searchItemNo}
+        </if>
+
+        <if test="searchDongNm != null and searchDongNm != ''">
+            AND RHH.DONG_NM LIKE '%' || #{searchDongNm} || '%'
+        </if>
+
+        <if test="searchHo != null and searchHo != ''">
+            AND RHH.HO LIKE '%' || #{searchHo} || '%'
+        </if>
+
+        <if test="searchUserNm != null and searchUserNm != ''">
+            AND M.USER_NM LIKE '%' || #{searchUserNm} || '%'
+        </if>
+
+        <if test="searchStartDt != null and searchStartDt != ''">
+            AND FH.RSVT_BGNG_DTTM &gt;= TO_DATE(#{searchStartDt}, 'YYYY-MM-DD')
+        </if>
+
+        <if test="searchEndDt != null and searchEndDt != ''">
+            AND FH.RSVT_END_DTTM &lt; TO_DATE(#{searchEndDt}, 'YYYY-MM-DD') + 1
+        </if>
+
+        <if test="searchRsvtSttsCd != null and searchRsvtSttsCd != ''">
+            AND FH.RSVT_STTS_CD = #{searchRsvtSttsCd}
+        </if>
     </sql>
 
     <select id="selectApprovalListCount" resultType="int">
@@ -327,22 +348,22 @@
     -->
     <select id="selectResidentFacilityItemList" resultMap="reservationMap">
         SELECT
-        PF.CMN_FACILITY_NO,
-        PF.APT_CMPLEX_NO,
-        PF.FACILITY_NO,
-        PF.CMN_FACILITY_NM,
-        PF.CMN_FACILITY_CN,
-        PF.CMN_FACILITY_AMT,
-        PF.CMN_FACILITY_RSV_YN,
-        PF.CMN_FACILITY_OPR_HR,
-        F.FACILITY_TY_CD,
-        F.DONG_NO,
-        AU.DONG_NM,
-        F.LOC_CN,
-        PI.CMN_FACILITY_ITEM_NO,
-        PI.ITEM_NM,
-        PI.CMN_FACILITY_STTS_CD,
-        'N' AS RESERVED_YN
+        PF.CMN_FACILITY_NO
+        , PF.APT_CMPLEX_NO
+        , PF.FACILITY_NO
+        , PF.CMN_FACILITY_NM
+        , PF.CMN_FACILITY_CN
+        , PF.CMN_FACILITY_AMT
+        , PF.CMN_FACILITY_RSV_YN
+        , PF.CMN_FACILITY_OPR_HR
+        , F.FACILITY_TY_CD
+        , F.DONG_NO
+        , AU.DONG_NM
+        , F.LOC_CN
+        , PI.CMN_FACILITY_ITEM_NO
+        , PI.ITEM_NM
+        , NVL(PI.CMN_FACILITY_STTS_CD, 'OPEN') AS CMN_FACILITY_STTS_CD
+        , 'N' AS RESERVED_YN
         FROM PUBLIC_FACILITY PF
         JOIN FACILITY F
         ON F.FACILITY_NO = PF.FACILITY_NO
@@ -355,13 +376,10 @@
         AND PF.CMN_FACILITY_NO = #{searchCmnFacilityNo}
         AND PF.CMN_FACILITY_RSV_YN = 'Y'
         AND F.USE_YN = 'Y'
-        AND NVL(PI.CMN_FACILITY_STTS_CD, 'OPEN') = 'OPEN'
-        AND (
-        PI.ITEM_NM LIKE '%러닝머신%'
-        OR PI.ITEM_NM LIKE '%의자%'
-        OR PI.ITEM_NM LIKE '%회의실%'
-        )
-        AND NVL(PI.CMN_FACILITY_STTS_CD, 'OPEN') IN ('OPEN', 'REPAIR', 'USE')
+        /*
+        * OPEN, USE, REPAIR 모두 조회해야 화면에서 비활성화 처리가 가능함.
+        */
+        AND NVL(PI.CMN_FACILITY_STTS_CD, 'OPEN') IN ('OPEN', 'USE', 'REPAIR')
         ORDER BY PI.ITEM_NM
     </select>
 
@@ -504,5 +522,25 @@
         AND FH.RSVT_END_DTTM > SYSDATE
         )
     </update>
+
+    <select id="selectHistoryFacilityFilterList" resultMap="reservationMap">
+        SELECT DISTINCT
+        PF.CMN_FACILITY_NO,
+        PF.CMN_FACILITY_NM
+        FROM PUBLIC_FACILITY PF
+        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        ORDER BY PF.CMN_FACILITY_NM
+    </select>
+
+    <select id="selectHistoryItemFilterList" resultMap="reservationMap">
+        SELECT DISTINCT
+        PI.CMN_FACILITY_ITEM_NO,
+        PI.ITEM_NM
+        FROM PUBLIC_ITEM PI
+        JOIN PUBLIC_FACILITY PF
+        ON PF.CMN_FACILITY_NO = PI.CMN_FACILITY_NO
+        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        ORDER BY PI.ITEM_NM
+    </select>
 
 </mapper>

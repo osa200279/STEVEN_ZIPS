@@ -301,53 +301,66 @@
             action="${pageContext.request.contextPath}/resident/publicFacility/myReservation/${aptCmplexNo}"> <div class="pf-card">
           <div class="pf-card-hd">검색 조건</div>
 
-          <div class="pf-card-bd pf-search-grid">
-            <div class="pf-field">
-              <label>시설명</label>
-              <input name="searchWord" value="${searchVO.searchWord}" placeholder="시설명/예약대상"/>
+            <div class="pf-card-bd pf-search-grid">
+
+              <div class="pf-field">
+                <label>시설명</label>
+                <select name="searchCmnFacilityNo">
+                  <option value="">전체</option>
+                  <c:forEach var="facility" items="${facilityFilterList}">
+                    <option value="${facility.cmnFacilityNo}"
+                      ${searchVO.searchCmnFacilityNo eq facility.cmnFacilityNo ? 'selected' : ''}>
+                        ${facility.cmnFacilityNm}
+                    </option>
+                  </c:forEach>
+                </select>
+              </div>
+
+              <div class="pf-field">
+                <label>예약대상</label>
+                <select name="searchItemNo">
+                  <option value="">전체</option>
+                  <c:forEach var="item" items="${itemFilterList}">
+                    <option value="${item.cmnFacilityItemNo}"
+                      ${searchVO.searchItemNo eq item.cmnFacilityItemNo ? 'selected' : ''}>
+                        ${item.itemNm}
+                    </option>
+                  </c:forEach>
+                </select>
+              </div>
+
+              <div class="pf-field">
+                <label>시작일</label>
+                <input type="date" name="searchStartDt" value="${searchVO.searchStartDt}">
+              </div>
+
+              <div class="pf-field">
+                <label>종료일</label>
+                <input type="date" name="searchEndDt" value="${searchVO.searchEndDt}">
+              </div>
+
+              <div class="pf-field">
+                <label>상태</label>
+                <select name="searchRsvtSttsCd">
+                  <option value="">전체</option>
+                  <option value="PENDING" ${searchVO.searchRsvtSttsCd eq 'PENDING' ? 'selected' : ''}>승인대기</option>
+                  <option value="APPROVED" ${searchVO.searchRsvtSttsCd eq 'APPROVED' ? 'selected' : ''}>승인완료</option>
+                  <option value="REJECTED" ${searchVO.searchRsvtSttsCd eq 'REJECTED' ? 'selected' : ''}>거절</option>
+                  <option value="CANCELLED" ${searchVO.searchRsvtSttsCd eq 'CANCELLED' ? 'selected' : ''}>취소</option>
+                </select>
+              </div>
+
+              <button type="button"
+                      class="pf-btn pf-btn-light"
+                      onclick="location.href='${pageContext.request.contextPath}/resident/publicFacility/myReservation/${aptCmplexNo}'">
+                초기화
+              </button>
+
+              <button type="submit" class="pf-btn pf-btn-primary">
+                검색
+              </button>
+
             </div>
-
-            <div class="pf-field">
-              <label>동</label>
-              <input name="searchDongNo" value="${searchVO.searchDongNo}" placeholder="동"/>
-            </div>
-
-            <div class="pf-field">
-              <label>상태</label>
-              <select name="searchRsvtSttsCd">
-                <option value="">전체</option>
-                <option value="PENDING" ${searchVO.searchRsvtSttsCd eq 'PENDING' ? 'selected' : ''}>승인대기</option>
-                <option value="APPROVED" ${searchVO.searchRsvtSttsCd eq 'APPROVED' ? 'selected' : ''}>승인완료</option>
-                <option value="REJECTED" ${searchVO.searchRsvtSttsCd eq 'REJECTED' ? 'selected' : ''}>거절</option>
-                <option value="CANCELLED" ${searchVO.searchRsvtSttsCd eq 'CANCELLED' ? 'selected' : ''}>취소</option>
-              </select>
-            </div>
-
-            <div class="pf-field">
-              <label>시작일</label>
-              <input type="date" name="searchStartDt" value="${searchVO.searchStartDt}"/>
-            </div>
-
-            <div class="pf-field">
-              <label>종료일</label>
-              <input type="date" name="searchEndDt" value="${searchVO.searchEndDt}"/>
-            </div>
-
-            <div class="pf-field">
-              <label>입주민명</label>
-              <input name="searchUserNm" value="${searchVO.searchUserNm}" placeholder="이름"/>
-            </div>
-
-            <button type="button"
-                    class="pf-btn pf-btn-light"
-                    onclick="location.href='${pageContext.request.contextPath}/resident/publicFacility/myReservation/${aptCmplexNo}'">
-              초기화
-            </button>
-
-            <button class="pf-btn pf-btn-primary">
-              검색
-            </button>
-          </div>
         </div>
       </form>
 
@@ -392,7 +405,7 @@
                       REJECTED : 거절 → 이미 종료된 상태라 취소 불필요
                       CANCELLED: 취소 → 이미 취소된 상태라 취소 불필요
                     --%>
-                  <c:if test="${row.rsvtSttsCd eq 'PENDING' or row.rsvtSttsCd eq 'APPROVED'}">
+                  <c:if test="${row.rsvtSttsCd eq 'PENDING'}">
                     <button type="button"
                             class="pf-btn pf-btn-light"
                             onclick="cancelRsvt('${row.rsvtNo}')">
@@ -463,10 +476,12 @@
             })
             .then(function(d) {
               document.getElementById('detailBody').innerHTML =
-                      '<p>시설명: ' + d.cmnFacilityNm + '</p>' +
-                      '<p>예약대상: ' + d.itemNm + '</p>' +
-                      '<p>예약시간: ' + d.rsvtBgngDttm + ' ~ ' + d.rsvtEndDttm + '</p>' +
-                      '<p>상태: ' + d.rsvtSttsNm + '</p>';
+                      '<p><b>시설명:</b> ' + d.cmnFacilityNm + '</p>' +
+                      '<p><b>예약대상:</b> ' + d.itemNm + '</p>' +
+                      '<p><b>예약시간:</b> ' + d.rsvtBgngDttm + ' ~ ' + d.rsvtEndDttm + '</p>' +
+                      '<p><b>동/호:</b> ' + (d.dongNm || d.dongNo || '') + ' / ' + (d.ho || '') + '</p>' +
+                      '<p><b>입주민명:</b> ' + (d.userNm || '') + '</p>' +
+                      '<p><b>상태:</b> ' + d.rsvtSttsNm + '</p>';
 
               document.getElementById('detailModal').classList.add('is-open');
             });
