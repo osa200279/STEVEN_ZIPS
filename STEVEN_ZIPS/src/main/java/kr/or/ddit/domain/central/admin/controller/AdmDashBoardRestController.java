@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@CrossOrigin(origins = "http://localhost:7777")
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/api/react/adm")
