@@ -123,7 +123,7 @@ const AptRegisterPage = () => {
       const res = await getApartmentList({
         sido: selectedSido,
         sigungu: selectedSigungu,
-        dong: selectedDong
+        emd: selectedDong
       });
 
       setAptList(res.data || []);
@@ -241,12 +241,12 @@ const AptRegisterPage = () => {
             >
               <option value="">법정동 선택</option>
 
-              {dongList.map(dong => (
+              {dongList.map(emd => (
                 <option
-                  key={dong}
-                  value={dong}
+                  key={emd}
+                  value={emd}
                 >
-                  {dong}
+                  {emd}
                 </option>
               ))}
             </select>

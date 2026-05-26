@@ -87,6 +87,16 @@ const ResidentAssignPage = () => {
             );
 
             formData.append(
+                'dpstAmt',
+                selectedInfo.rentInfo.DPST_AMT
+            );
+
+            formData.append(
+                'mthlyRentAmt',
+                selectedInfo.rentInfo.MTHLY_RENT_AMT
+            );
+
+            formData.append(
                 'rentorNm',
                 form.rentorNm
             );
@@ -110,6 +120,8 @@ const ResidentAssignPage = () => {
                 'spclStpltnCn',
                 form.spclStpltnCn
             );
+
+
 
             // 제출서류 파일들
             Object.entries(form.requiredFiles)
