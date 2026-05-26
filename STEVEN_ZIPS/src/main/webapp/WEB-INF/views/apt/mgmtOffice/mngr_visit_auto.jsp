@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
@@ -307,7 +308,7 @@
               vstVhclTyCd   : "${vehicle.vstVhclTyCd}",
               vstVhclNo     : "${vehicle.vstVhclNo}",
               vstrNm        : "${vehicle.vstrNm}",
-              vstYmd        : "${vehicle.vstYmd}",
+              vstYmd        : "<fmt:formatDate value='${vehicle.vstYmd}' pattern='yyyy-MM-dd' />",
               stayHr        : "${vehicle.stayHr}"
             }<c:if test="${!st.last}">,</c:if>
             </c:forEach>
@@ -377,17 +378,12 @@
                       + '<td class="td-car-name">' + (row.vstrNm || "-") + '</td>'
                       + '<td class="td-car-no">' + row.vstVhclNo + '</td>'
                       + '<td class="td-date">'
-                      + (
-                              row.vstYmd
-                                      ? "20" + row.vstYmd.substring(0, 8).replaceAll("/", "-")
-                                      : '-'
-                      )
+                      + (row.vstYmd || '-')
                       + '</td>'
                       + '<td>' + (row.stayHr || "-") + '시간</td>'
 
                       + '<td>'
                       + '<div class="grid-actions">'
-                      + '<button type="button" class="btn btn-xs btn-edit" data-action="edit" data-idx="' + idx + '">수정</button>'
                       + '<button type="button" class="btn btn-xs btn-delete" data-action="delete" data-idx="' + idx + '">삭제</button>'
                       + '</div>'
                       + '</td>'
@@ -535,9 +531,6 @@
             var action = btn.dataset.action;
             var idx = btn.dataset.idx !== undefined ? Number(btn.dataset.idx) : undefined;
 
-            if (action === "openRegister") openModal("register");
-            if (action === "edit") openModal("edit", idx);
-            if (action === "changeToEdit") openModal("edit", Number(editBtn.dataset.idx));
             if (action === "closeModal") closeModal();
             if (action === "delete") openDeleteModal(idx);
             if (action === "closeDeleteModal") closeDeleteModal();
