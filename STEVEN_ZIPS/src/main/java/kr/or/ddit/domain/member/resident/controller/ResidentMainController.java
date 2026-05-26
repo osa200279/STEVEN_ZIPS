@@ -3,7 +3,9 @@ package kr.or.ddit.domain.member.resident.controller;
 import kr.or.ddit.common.config.AuthService;
 import kr.or.ddit.domain.apt.main.dto.AptMainPageDTO;
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
+import kr.or.ddit.domain.apt.mgmtOffice.main.service.IAptScheduleCalendarService;
 import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtOfficeService;
+import kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO;
 import kr.or.ddit.domain.apt.mgmtOffice.survey.service.IMngSurveyService;
 import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO;
 import tools.jackson.databind.ObjectMapper;
+import kr.or.ddit.domain.apt.mgmtOffice.main.service.IAptScheduleCalendarService;
 
 import java.util.HashMap;
 
@@ -57,6 +60,9 @@ public class ResidentMainController {
     @Autowired
     private AuthService authService;
 
+    @Autowired
+    private IAptScheduleCalendarService aptScheduleCalendarService;
+
     /**
      * 내 아파트 목록 조회 컨트롤러
      *
@@ -87,6 +93,128 @@ public class ResidentMainController {
         return "member/resident/manage_operation";
     }
 
+
+    /**
+     * 입주민 우리 단지 일정 캘린더 화면 조회
+     *
+     * 왜 사용?
+     * → 입주민이 단지의 공지, 행사, 공사, 검침, 점검,
+     *   직원 휴가 일정을 캘린더 형태로 확인할 때 사용한다.
+     *
+     * @param aptCmplexNo 아파트 단지 번호
+     * @param model JSP 화면 전달 객체
+     * @return residentScheduleCalendar.jsp
+     * 입주민 단지 일정 캘린더 화면 반환
+     * @author 김보라
+     */
+    @GetMapping("/calendar/{aptCmplexNo}")
+    public String residentScheduleCalendar(
+            @PathVariable String aptCmplexNo,
+            Model model
+    ) {
+
+        /*
+         * @PathVariable 이란?
+         * → URL 경로에 있는 값을 Java 변수로 받는 방식.
+         *
+         * 예:
+         * /calendar/A10023118
+         * → aptCmplexNo = A10023118
+         */
+
+        /*
+         * model.addAttribute란?
+         * → Controller 데이터를 JSP로 전달하는 방식.
+         *
+         * 왜 사용?
+         * → JSP에서 단지번호를 사용하기 위해 전달한다.
+         */
+        model.addAttribute("aptCmplexNo", aptCmplexNo);
+
+        /*
+         * 현재 활성화 메뉴명 전달
+         *
+         * 왜 사용?
+         * → 사이드바에서 현재 메뉴를 강조(active) 처리하기 위해.
+         */
+        model.addAttribute("activeMenu", "residentCalendar");
+
+        /*
+         * 이동할 JSP 경로 반환
+         */
+        return "member/resident/calendar/residentScheduleCalendar";
+    }
+
+    /**
+     * 입주민 우리 단지 일정 목록 AJAX 조회
+     *
+     * AJAX란?
+     * → 화면 전체를 새로고침하지 않고
+     *   필요한 데이터만 서버에서 받아오는 방식.
+     *
+     * 왜 사용?
+     * → 달력 월 이동, 검색 시 화면 전체를 새로고침하지 않고
+     *   일정 목록만 비동기로 조회하기 위해 사용한다.
+     *
+     * @param aptCmplexNo 아파트 단지 번호
+     * @param searchVO 일정 검색조건 DTO
+     * @return 일정 목록 JSON 반환
+     * @author 김보라
+     */
+    @GetMapping("/calendar/{aptCmplexNo}/list")
+    @ResponseBody
+    public List<AptScheduleCalendarDTO> residentScheduleCalendarList(
+            @PathVariable String aptCmplexNo,
+            AptScheduleCalendarDTO searchVO
+    ) {
+
+        /*
+         * 검색 DTO에 단지번호 설정
+         *
+         * 왜 사용?
+         * → 해당 단지의 일정만 조회하기 위해.
+         */
+        searchVO.setAptCmplexNo(aptCmplexNo);
+
+        /*
+         * @ResponseBody란?
+         * → return 데이터를 JSP가 아니라 JSON 형태로 반환하는 방식.
+         *
+         * 왜 사용?
+         * → JavaScript fetch/AJAX에서 일정 데이터를 받아오기 위해.
+         */
+        return aptScheduleCalendarService.selectScheduleCalendarList(searchVO);
+    }
+
+    /**
+     * 입주민 우리 단지 일정 통계 AJAX 조회
+     *
+     * 왜 사용?
+     * → 화면 상단의
+     *   전체 일정 수, 오늘 일정 수, 월간 일정 수,
+     *   직원 휴가 수 통계를 비동기로 조회하기 위해 사용한다.
+     *
+     * @param aptCmplexNo 아파트 단지 번호
+     * @param searchVO 일정 검색조건 DTO
+     * @return 일정 통계 JSON 반환
+     * @author 김보라
+     */
+    @GetMapping("/calendar/{aptCmplexNo}/stat")
+    @ResponseBody
+    public AptScheduleCalendarDTO residentScheduleCalendarStat(
+            @PathVariable String aptCmplexNo,
+            AptScheduleCalendarDTO searchVO
+    ) {
+        /*
+         * 단지번호 설정
+         * → 해당 단지 기준 통계 조회.
+         */
+        searchVO.setAptCmplexNo(aptCmplexNo);
+        /*
+         * 일정 통계 조회 후 JSON 반환
+         */
+        return aptScheduleCalendarService.selectScheduleCalendarStat(searchVO);
+    }
 
     /**
      * 입주민 시설관리이력 조회

@@ -57,6 +57,7 @@
             </span>
             <div class="slim-drop">
                 <a href="${pageContext.request.contextPath}/apt/main/aptInfo/${apt.aptCmplexNo}">우리아파트</a>
+                <a href="${pageContext.request.contextPath}/resident/calendar/${apt.aptCmplexNo}">우리단지일정</a>
                 <a href="${pageContext.request.contextPath}/apt/main/mgmtInfo/${apt.aptCmplexNo}">관리사무소 소개</a>
                 <a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>
                 <a href="${pageContext.request.contextPath}/resident/manage/facility/${apt.aptCmplexNo}">시설관리이력</a>
@@ -152,6 +153,7 @@
                 <div class="all-menu-section-title">관리사무소</div>
                 <ul>
                     <li><a href="${pageContext.request.contextPath}/apt/main/aptInfo/${apt.aptCmplexNo}">우리아파트</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/calendar/${apt.aptCmplexNo}">우리단지일정</a></li>
                     <li><a href="${pageContext.request.contextPath}/apt/main/mgmtInfo/${apt.aptCmplexNo}">관리사무소 소개</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a></li>
                     <li><a href="${pageContext.request.contextPath}/resident/manage/facility/${apt.aptCmplexNo}">시설관리이력</a></li>
