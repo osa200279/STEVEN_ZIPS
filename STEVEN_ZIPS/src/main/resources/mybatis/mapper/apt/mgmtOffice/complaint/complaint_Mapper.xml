@@ -134,9 +134,12 @@
 
     <!-- 민원 상태 업데이트 -->
     <update id="updateCvplStts" parameterType="kr.or.ddit.domain.apt.mgmtOffice.complaint.dto.ManagerComplaintDTO">
-        UPDATE cvpl                 /*kr.or.ddit.domain.apt.mgmtOffice.complaint.mapper.ManagerComplaintMapper.updateCvplStts*/
+        UPDATE cvpl
         SET cvpl_stts_cd = #{cvplSttsCd}
-          ,cvpl_mdf_dt  = SYSDATE
+        ,cvpl_mdf_dt  = SYSDATE
+        <if test="cvplEndDt != null and cvplEndDt != ''">
+            ,cvpl_end_dt  = TO_DATE(#{cvplEndDt}, 'YYYY.MM.DD')
+        </if>
         WHERE cvpl_no = #{cvplNo}
     </update>
 </mapper>

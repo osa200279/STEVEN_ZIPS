@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +30,10 @@ public class ManagerComplaintServiceImpl implements ManagerComplaintService{
 
     @Transactional
     public void updateComplaint(ManagerComplaintDTO dto) {
+        if (List.of("COMP", "RJCT", "END").contains(dto.getCvplSttsCd())) {
+            String today = new SimpleDateFormat("yyyy.MM.dd").format(new Date());
+            dto.setCvplEndDt(today);
+        }
         managerComplaintMapper.updateCvplStts(dto);
         managerComplaintMapper.insertCvplHstry(dto);
     }

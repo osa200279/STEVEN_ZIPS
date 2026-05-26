@@ -7,15 +7,7 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import kr.or.ddit.domain.central.admin.service.IMngrRqstAprvService;
 import kr.or.ddit.domain.central.admin.dto.MngrRqstAprvDTO;
@@ -24,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * 중앙관리자의 단지관리자 직원계정 승인 Controller
  */
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/centralAdmin/mngrRqstAprv")
 @PreAuthorize("hasRole('ADMIN')")  /* 중앙관리자만 허용 */
@@ -36,7 +28,7 @@ public class MngrRqstAprvController {
     /*
      * 주의:
      * @GetMapping
-     * public String page(...)
+     * public String page(...)ㅋ
      * 이 메서드는 만들면 안 된다.
      *
      * 이유:
@@ -45,11 +37,11 @@ public class MngrRqstAprvController {
      */
 
     /** 신청 계정 목록 조회 */
-    @GetMapping("/requests")
+    /*@GetMapping("/requests")
     @ResponseBody
     public List<MngrRqstAprvDTO> requestList(@ModelAttribute MngrRqstAprvDTO aprvDTO) {
         return service.getRequestList(aprvDTO);
-    }
+    }*/
 
     /** 승인 완료 후 실제 계정 목록 조회 */
     @GetMapping("/accounts")

@@ -80,6 +80,9 @@ public class ManagerComplaintController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 민원 처리 상태 update
+     */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @PostMapping("/updateComplaint/{mgmtOfcNo}")
     public ResponseEntity<Map<String, Object>> updateComplaint(
@@ -98,6 +101,9 @@ public class ManagerComplaintController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 민원 상세 조회
+     */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/mngrList/{mgmtOfcNo}")
     public ResponseEntity<List<ManagerComplaintDTO>> selectMngrList(
@@ -106,6 +112,9 @@ public class ManagerComplaintController {
         return ResponseEntity.ok(managerComplaintService.selectMngrList(mgmtOfcNo));
     }
 
+    /**
+     * 증빙서류 조회
+     */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/cvplFileList/{mgmtOfcNo}")
     public ResponseEntity<List<Map<String, Object>>> selectCvplFileList(@PathVariable String mgmtOfcNo,
