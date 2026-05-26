@@ -725,25 +725,25 @@
             }).length;
 
             /* 평균 응답률 */
-            let totalRate = 0;
+            /* 전체 응답률 */
+
+            let totalParticipant = 0;
 
             data.forEach(item => {
 
-                const participant =
+                totalParticipant +=
                     Number(item.participantCount || 0);
-
-
-                const rate =
-                    Number(item.answerRate || 0);
-
-                totalRate += rate;
 
             });
 
+            /* 전체 세대 수 */
+            const totalResident = 360;
+
+            /* 전체 참여율 */
             const avgRate =
-                data.length === 0
+                totalResident === 0
                     ? 0
-                    : Math.round(totalRate / data.length);
+                    : (totalParticipant / totalResident) * 100;
 
             /* 화면 출력 */
             document.getElementById("kpiRunning").textContent =
@@ -756,7 +756,7 @@
                 closed;
 
             document.getElementById("kpiAnswers").textContent =
-                Math.round(avgRate) + "%";
+                avgRate.toFixed(1) + "%"
 
 
             document.getElementById("sideMonthly").textContent =
@@ -767,7 +767,7 @@
 
 
             document.getElementById("sideRate").textContent =
-                Math.round(avgRate) + "%";
+                avgRate.toFixed(1) + "%";
 
 
             document.getElementById("surveyCount").textContent =

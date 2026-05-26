@@ -22,4 +22,7 @@ public class MngSurveyDTO {
     private String aptCd;
     private int participantCount;
     private int residentCount;
+
+
+    private double answerRate;
 }
