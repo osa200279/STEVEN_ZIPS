@@ -193,6 +193,17 @@
           AND PAY_STTS_CD = 'UNPAID'
     </update>
 
+    <!-- 결제창 취소 또는 결제 실패 처리 -->
+    <update id="updatePaymentCancel"
+            parameterType="kr.or.ddit.domain.member.resident.vo.PaymentVO">
+        UPDATE PAYMENT
+        SET PAY_STTS_CD = 'CANCEL',
+            FAIL_RSN_CN = #{failRsnCn}
+        WHERE PYMT_NO = #{pymtNo}
+          AND ORD_ID = #{ordId}
+          AND PAY_STTS_CD = 'UNPAID'
+    </update>
+
     <!--
         고지서 납부완료 처리
         PAYMENT 결제 검증 성공 후 함께 실행

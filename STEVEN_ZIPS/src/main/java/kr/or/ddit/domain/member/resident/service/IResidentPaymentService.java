@@ -41,4 +41,6 @@ public interface IResidentPaymentService {
      * @return 결제 완료 결과
      */
     Map<String, Object> completePayment(String impUid, String ordId, String userNo);
+
+    Map<String, Object> cancelPayment(String pymtNo, String ordId, String failRsnCn, String userNo);
 }

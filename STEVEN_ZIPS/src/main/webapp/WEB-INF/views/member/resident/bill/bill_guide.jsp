@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <meta name="_csrf" content="${_csrf.token}">
   <meta name="_csrf_header" content="${_csrf.headerName}">
   <title>납부안내 – 대덕아파트</title>
@@ -81,6 +82,72 @@
     .process-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:14px;} .process-step {padding:18px 14px;border-radius:14px;border:1px solid var(--border);background:#fff;text-align:center;} .process-step.active {background:#eef8f0;border-color:#b8d9c0;}
     @media (max-width:1200px){.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid{grid-template-columns:repeat(2,1fr)} .grid-2,.grid-2.equal,.chat-layout{grid-template-columns:1fr} .label-grid{grid-template-columns:140px 1fr}}
     @media (max-width:900px){.main-shell{flex-direction:column}.content-area{padding:24px 18px 48px}.page-content-wrap{max-width:100%}.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid,.seat-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:120px 1fr}.label-grid{grid-template-columns:120px 1fr}}
+    /* =========================
+   SweetAlert 결제수단 선택
+   ========================= */
+    .payment-method-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+      text-align: left;
+    }
+
+    .payment-method-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 16px;
+      border: 1px solid #dbe5dd;
+      border-radius: 12px;
+      background: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .payment-method-item:hover {
+      border-color: #256142;
+      background: #f4f8f5;
+    }
+
+    .payment-method-item:has(input:checked) {
+      border-color: #256142;
+      background: #f1f7f3;
+      box-shadow: inset 0 0 0 1px #256142;
+    }
+
+    .payment-method-item input[type="radio"] {
+      accent-color: #256142;
+      width: 17px;
+      height: 17px;
+    }
+
+    .payment-method-title {
+      display: block;
+      color: #173b2c;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .payment-method-desc {
+      display: block;
+      margin-top: 3px;
+      color: #7b877f;
+      font-size: 12px;
+    }
+
+    .payment-complete-amount {
+      margin: 14px 0 4px;
+      color: #173b2c;
+      font-size: 27px;
+      font-weight: 800;
+    }
+
+    .payment-complete-desc {
+      color: #6b756e;
+      font-size: 13px;
+      line-height: 1.6;
+    }
   </style>
 
 </head>
@@ -565,122 +632,402 @@
     const portOneImpCode = '${portOneImpCode}';
     const portOneChannelKey = '${portOneChannelKey}';
 
-    function goPayment() {
+    /**
+     * 즉시 납부하기
+     * - SweetAlert2에서 카드결제 / 계좌이체를 선택한다.
+     */
+    async function goPayment() {
+
       if (!currentBill || !currentBill.billNo) {
-        showMessage('납부할 고지서를 먼저 조회해 주세요.');
+        await Swal.fire({
+          icon: 'warning',
+          title: '고지서를 선택해 주세요',
+          text: '납부할 관리비 고지서를 먼저 조회해 주세요.',
+          confirmButtonText: '확인',
+          confirmButtonColor: '#256142'
+        });
         return;
       }
 
       if (currentBill.pymtSttsCd === 'PAID') {
-        showMessage('이미 납부 완료된 관리비입니다.');
+        await Swal.fire({
+          icon: 'info',
+          title: '납부 완료된 관리비입니다',
+          text: '이미 결제가 완료된 고지서입니다.',
+          confirmButtonText: '확인',
+          confirmButtonColor: '#256142'
+        });
         return;
       }
 
-      /*
-       * 첫 테스트는 카드결제(CRD)로 진행한다.
-       * 카드 성공 후 계좌이체(TRN) 선택 모달을 붙이면 된다.
-       */
-      requestResidentPayment('CRD');
+      const result = await Swal.fire({
+        title: '결제수단 선택',
+        html:
+                '<div class="payment-method-wrap">' +
+                '  <label class="payment-method-item">' +
+                '    <input type="radio" name="paymentMethod" value="CRD" checked>' +
+                '    <span>' +
+                '      <span class="payment-method-title">신용카드 결제</span>' +
+                '      <span class="payment-method-desc">신용카드 또는 체크카드로 바로 납부합니다.</span>' +
+                '    </span>' +
+                '  </label>' +
+                '  <label class="payment-method-item">' +
+                '    <input type="radio" name="paymentMethod" value="TRN">' +
+                '    <span>' +
+                '      <span class="payment-method-title">실시간 계좌이체</span>' +
+                '      <span class="payment-method-desc">은행 계좌에서 관리비를 즉시 이체합니다.</span>' +
+                '    </span>' +
+                '  </label>' +
+                '</div>',
+        showCancelButton: true,
+        confirmButtonText: '결제 진행',
+        cancelButtonText: '취소',
+        confirmButtonColor: '#256142',
+        cancelButtonColor: '#8d9690',
+        reverseButtons: true,
+        focusConfirm: false,
+        preConfirm: function () {
+          const checked =
+                  document.querySelector('input[name="paymentMethod"]:checked');
+
+          if (!checked) {
+            Swal.showValidationMessage('결제수단을 선택해 주세요.');
+            return false;
+          }
+
+          return checked.value;
+        }
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      await requestResidentPayment(result.value);
     }
 
     /**
-     * 결제요청 생성 → PortOne 결제창 호출 → 서버 검증 완료 처리
+     * 결제 요청 생성 → PortOne 결제창 호출 → 서버 검증 → 완료 알림
+     *
+     * @param payMthdCd CRD: 카드결제, TRN: 실시간 계좌이체
      */
     async function requestResidentPayment(payMthdCd) {
-      hideMessage();
 
-      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+      const csrfToken =
+              document.querySelector('meta[name="_csrf"]').getAttribute('content');
+
+      const csrfHeader =
+              document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+      let prepareResult = null;
 
       try {
-        /*
-         * 1. 우리 서버에서 PAYMENT.UNPAID 생성
-         */
-        const prepareResponse = await fetch(contextPath + '/resident/payment/prepare', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            [csrfHeader]: csrfToken
-          },
-          body: JSON.stringify({
-            billNo: currentBill.billNo,
-            payMthdCd: payMthdCd
-          })
+        /* =========================
+           1. 결제 요청 생성
+           ========================= */
+        Swal.fire({
+          title: '결제 준비 중입니다',
+          text: '잠시만 기다려 주세요.',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: function () {
+            Swal.showLoading();
+          }
         });
 
-        const prepareResult = await prepareResponse.json();
+        const prepareResponse = await fetch(
+                contextPath + '/resident/payment/prepare',
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                  },
+                  body: JSON.stringify({
+                    billNo: currentBill.billNo,
+                    payMthdCd: payMthdCd
+                  })
+                }
+        );
+
+        prepareResult = await prepareResponse.json();
 
         if (!prepareResult.success) {
-          showMessage(prepareResult.message || '결제 요청 생성에 실패했습니다.');
+          await Swal.fire({
+            icon: 'error',
+            title: '결제 요청 실패',
+            text: prepareResult.message || '결제 요청 생성에 실패했습니다.',
+            confirmButtonText: '확인',
+            confirmButtonColor: '#256142'
+          });
           return;
         }
 
         console.log('prepareResult =', prepareResult);
 
-        /*
-         * 2. PortOne 결제창 호출
-         */
+        const IMP = window.IMP;
+
+        if (!IMP) {
+          await cancelPaymentRequest(
+                  prepareResult,
+                  'PortOne 결제 모듈을 불러오지 못했습니다.'
+          );
+
+          await Swal.fire({
+            icon: 'error',
+            title: '결제 모듈 오류',
+            text: 'PortOne 결제 모듈을 불러오지 못했습니다.',
+            confirmButtonText: '확인',
+            confirmButtonColor: '#256142'
+          });
+          return;
+        }
+
+        if (!portOneImpCode || !portOneChannelKey) {
+          await cancelPaymentRequest(
+                  prepareResult,
+                  'PortOne 결제 설정값이 없습니다.'
+          );
+
+          await Swal.fire({
+            icon: 'error',
+            title: '결제 설정 오류',
+            text: 'PortOne 결제 설정값을 확인할 수 없습니다.',
+            confirmButtonText: '확인',
+            confirmButtonColor: '#256142'
+          });
+          return;
+        }
+
+        Swal.close();
+
+        /* =========================
+           2. PortOne 결제창 호출
+           ========================= */
         IMP.init(portOneImpCode);
 
         IMP.request_pay({
           channelKey: portOneChannelKey,
-          pay_method: prepareResult.portOnePayMethod,   // CRD → card
+          pay_method: prepareResult.portOnePayMethod,
           merchant_uid: prepareResult.ordId,
           name: formatBillYm(prepareResult.billYm) + ' 아파트 관리비',
           amount: Number(prepareResult.payAmt),
+
+          /*
+           * 추후 로그인 사용자 정보로 변경 가능
+           */
           buyer_name: '입주민',
           buyer_tel: '010-0000-0000',
+
           company: '우리집맵핑',
           language: 'ko'
         }, async function (rsp) {
 
           console.log('PortOne response =', rsp);
 
-          /*
-           * 결제창에서 취소 또는 실패한 경우
-           */
-          if (rsp.error_code != null) {
-            showMessage(rsp.error_msg || '결제가 취소되었거나 실패했습니다.');
+          /* =========================
+             3. 결제창 취소 또는 결제 실패
+             ========================= */
+          if (!rsp.success) {
+
+            await cancelPaymentRequest(
+                    prepareResult,
+                    rsp.error_msg || '결제가 취소되었거나 실패했습니다.'
+            );
+
+            await Swal.fire({
+              icon: 'warning',
+              title: '결제가 완료되지 않았습니다',
+              text: rsp.error_msg || '결제가 취소되었거나 실패했습니다.',
+              confirmButtonText: '확인',
+              confirmButtonColor: '#256142'
+            });
+
             return;
           }
 
-          /*
-           * 3. 결제 성공 응답값을 서버로 보내 실제 결제내역 검증
-           */
-          const completeResponse = await fetch(contextPath + '/resident/payment/complete', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              [csrfHeader]: csrfToken
-            },
-            body: JSON.stringify({
-              impUid: rsp.imp_uid,
-              ordId: rsp.merchant_uid
-            })
+          /* =========================
+             4. 결제 성공 후 서버 검증
+             ========================= */
+          Swal.fire({
+            title: '결제 확인 중입니다',
+            text: '결제 결과를 확인하고 있습니다.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: function () {
+              Swal.showLoading();
+            }
           });
+
+          const completeResponse = await fetch(
+                  contextPath + '/resident/payment/complete',
+                  {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      [csrfHeader]: csrfToken
+                    },
+                    body: JSON.stringify({
+                      impUid: rsp.imp_uid,
+                      ordId: rsp.merchant_uid
+                    })
+                  }
+          );
 
           const completeResult = await completeResponse.json();
 
           console.log('completeResult =', completeResult);
 
           if (!completeResult.success) {
-            showMessage(completeResult.message || '결제 검증 처리에 실패했습니다.');
+            /*
+             * 주의:
+             * PortOne 결제 자체는 이미 성공했을 수 있으므로
+             * 여기서는 PAYMENT를 CANCEL로 변경하면 안 된다.
+             * complete API 재처리로 복구해야 한다.
+             */
+            await Swal.fire({
+              icon: 'warning',
+              title: '결제 확인이 필요합니다',
+              html:
+                      '결제는 승인되었으나 시스템 반영 중 문제가 발생했습니다.<br>' +
+                      '관리자에게 문의하거나 결제내역을 다시 확인해 주세요.<br><br>' +
+                      '<small>' +
+                      escapeHtml(completeResult.message || '') +
+                      '</small>',
+              confirmButtonText: '확인',
+              confirmButtonColor: '#256142'
+            });
+
             return;
           }
 
-          showMessage('관리비 납부가 완료되었습니다.');
+          /* =========================
+             5. 결제 완료 SweetAlert
+             ========================= */
+          await Swal.fire({
+            icon: 'success',
+            title: '관리비 납부가 완료되었습니다',
+            html:
+                    '<div class="payment-complete-amount">' +
+                    formatNumber(completeResult.payAmt) + '원' +
+                    '</div>' +
+                    '<div class="payment-complete-desc">' +
+                    formatBillYm(currentBill.billYm) + ' 관리비 납부가 정상적으로 처리되었습니다.<br>' +
+                    '결제수단 : ' + getPaymentMethodName(payMthdCd) +
+                    '</div>',
+            confirmButtonText: '확인',
+            confirmButtonColor: '#256142',
+            allowOutsideClick: false
+          });
 
           /*
-           * 4. 납부안내 화면 다시 조회
-           * PAYMENT/BILL이 PAID로 바뀐 결과를 화면에 반영한다.
+           * 결제 완료 후 현재 고지서 정보 다시 조회
+           * 기존 JSP에 사용 중인 조회 함수명에 맞춰 사용한다.
            */
-          await loadPaymentGuide();
+          await reloadCurrentPaymentGuide();
+
         });
 
-      } catch (e) {
-        console.error(e);
-        showMessage('결제 처리 중 오류가 발생했습니다.');
+      } catch (error) {
+        console.error('결제 처리 오류 =', error);
+
+        /*
+         * PortOne 결제창이 열리기 전에 발생한 예외이고
+         * prepareResult가 있다면 결제요청을 취소 처리한다.
+         */
+        if (prepareResult && prepareResult.ordId) {
+          await cancelPaymentRequest(
+                  prepareResult,
+                  '결제 처리 중 오류가 발생했습니다.'
+          );
+        }
+
+        await Swal.fire({
+          icon: 'error',
+          title: '결제 처리 오류',
+          text: '결제 처리 중 오류가 발생했습니다.',
+          confirmButtonText: '확인',
+          confirmButtonColor: '#256142'
+        });
       }
+    }
+
+    /**
+     * 결제수단 화면 표시명
+     */
+    function getPaymentMethodName(payMthdCd) {
+      if (payMthdCd === 'CRD') {
+        return '신용카드';
+      }
+
+      if (payMthdCd === 'TRN') {
+        return '실시간 계좌이체';
+      }
+
+      return '-';
+    }
+
+
+    /**
+     * 결제창 취소 또는 실패 시 PAYMENT 요청 상태를 CANCEL로 변경
+     */
+    async function cancelPaymentRequest(prepareResult, reason) {
+
+      const csrfToken =
+              document.querySelector('meta[name="_csrf"]').getAttribute('content');
+
+      const csrfHeader =
+              document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+      try {
+        const response = await fetch(
+                contextPath + '/resident/payment/cancel',
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                  },
+                  body: JSON.stringify({
+                    pymtNo: prepareResult.pymtNo,
+                    ordId: prepareResult.ordId,
+                    failRsnCn: reason
+                  })
+                }
+        );
+
+        const result = await response.json();
+        console.log('cancelPaymentResult =', result);
+
+      } catch (error) {
+        console.error('결제 취소 상태 반영 실패 =', error);
+      }
+    }
+
+
+    /**
+     * 결제완료 후 납부안내를 다시 조회한다.
+     *
+     * 기존 화면 함수명이 loadPaymentGuide()라면 그대로 사용한다.
+     * 다른 함수명을 사용하고 있다면 해당 함수 호출로 바꿔준다.
+     */
+    async function reloadCurrentPaymentGuide() {
+
+      if (typeof loadPaymentGuide === 'function') {
+        await loadPaymentGuide();
+        return;
+      }
+
+      /*
+       * 상세조회 함수명이 다른 경우를 대비한 보조 처리
+       */
+      if (currentBill && currentBill.billNo
+              && typeof loadPaymentGuideByBillNo === 'function') {
+        await loadPaymentGuideByBillNo(currentBill.billNo);
+        return;
+      }
+
+      location.reload();
     }
 
     function downloadStatement() {
@@ -829,6 +1176,8 @@
       }
     }
   </script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- PortOne V1 JavaScript SDK -->
   <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 </body>

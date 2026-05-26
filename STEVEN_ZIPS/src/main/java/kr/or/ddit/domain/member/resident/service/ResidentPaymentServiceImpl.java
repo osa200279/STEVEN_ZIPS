@@ -173,10 +173,41 @@ public class ResidentPaymentServiceImpl implements IResidentPaymentService{
         }
 
         /*
-         * 3. 이미 처리된 결제인지 확인
+         * 3. 이미 결제완료된 결제 요청이면 중복 결제로 처리하지 않고
+         *    BILL 상태를 한 번 더 동기화한 뒤 성공 응답을 반환한다.
+         *
+         *    - 결제 성공 후 화면 재호출
+         *    - 네트워크 재전송
+         *    - PAYMENT만 PAID이고 BILL 갱신이 누락된 경우
+         *      를 안전하게 처리하기 위한 로직이다.
          */
         if ("PAID".equals(paymentVO.getPaySttsCd())) {
-            throw new IllegalStateException("이미 결제 완료된 요청입니다.");
+
+            int paidAmount = paymentVO.getPayAmt();
+
+            /*
+             * XML의 UPDATE 조건이
+             * AND PYMT_STTS_CD != 'PAID'
+             * 이므로 BILL이 이미 PAID면 0건,
+             * 아직 READY면 1건 수정된다.
+             */
+            int billUpdateCount = residentPaymentMapper.updateBillPaid(
+                    paymentVO.getBillNo(),
+                    paidAmount
+            );
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("pymtNo", paymentVO.getPymtNo());
+            result.put("billNo", paymentVO.getBillNo());
+            result.put("impUid", paymentVO.getImpUid());
+            result.put("ordId", paymentVO.getOrdId());
+            result.put("payAmt", paidAmount);
+            result.put("paySttsCd", "PAID");
+            result.put("billPymtSttsCd", "PAID");
+            result.put("alreadyCompleted", true);
+            result.put("billUpdatedCount", billUpdateCount);
+
+            return result;
         }
 
         /*
@@ -250,6 +281,61 @@ public class ResidentPaymentServiceImpl implements IResidentPaymentService{
         return result;
     }
 
+    /**
+     * 결제창 취소 또는 결제 실패 처리
+     *
+     * PortOne 결제 callback에서 rsp.success = false 인 경우에만 호출한다.
+     * 결제가 이미 승인된 이후 complete 검증만 실패한 경우에는 호출하면 안 된다.
+     */
+    @Transactional
+    @Override
+    public Map<String, Object> cancelPayment(String pymtNo, String ordId, String failRsnCn, String userNo) {
+        if (pymtNo == null || pymtNo.isBlank()) {
+            throw new IllegalArgumentException("결제번호가 없습니다.");
+        }
+
+        if (ordId == null || ordId.isBlank()) {
+            throw new IllegalArgumentException("주문번호가 없습니다.");
+        }
+
+        if (userNo == null || userNo.isBlank()) {
+            throw new IllegalArgumentException("로그인 사용자 정보를 확인할 수 없습니다.");
+        }
+
+        PaymentVO paymentVO = residentPaymentMapper.selectPaymentByOrdId(ordId);
+
+        if (paymentVO == null) {
+            throw new IllegalArgumentException("결제 요청 정보를 찾을 수 없습니다.");
+        }
+
+        if (!pymtNo.equals(paymentVO.getPymtNo())) {
+            throw new IllegalStateException("결제번호가 일치하지 않습니다.");
+        }
+
+        if (!userNo.equals(paymentVO.getUserNo())) {
+            throw new IllegalStateException("본인의 결제 요청만 취소할 수 있습니다.");
+        }
+
+        if ("PAID".equals(paymentVO.getPaySttsCd())) {
+            throw new IllegalStateException("이미 납부 완료된 결제입니다.");
+        }
+
+        paymentVO.setFailRsnCn(failRsnCn);
+
+        int updateCount = residentPaymentMapper.updatePaymentCancel(paymentVO);
+
+        if (updateCount != 1) {
+            throw new IllegalStateException("결제 취소 상태 변경에 실패했습니다.");
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("pymtNo", paymentVO.getPymtNo());
+        result.put("ordId", paymentVO.getOrdId());
+        result.put("paySttsCd", "CANCEL");
+
+        return result;
+    }
+
     /* 결제 요청 파라미터 검증 */
     private void validatePrepareParameter(String billNo, String payMthdCd, String userNo) {
 
@@ -309,7 +395,10 @@ public class ResidentPaymentServiceImpl implements IResidentPaymentService{
         String accessToken = requestPortOneAccessToken();
 
         Map<String, Object> paymentResponse = portOneRestClient.get()
-                .uri("/payments/{impUid}", impUid)
+                .uri(uriBuilder -> uriBuilder
+                        .path("/payments/{impUid}")
+                        .queryParam("include_sandbox", true)
+                        .build(impUid))
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .retrieve()
                 .body(Map.class);

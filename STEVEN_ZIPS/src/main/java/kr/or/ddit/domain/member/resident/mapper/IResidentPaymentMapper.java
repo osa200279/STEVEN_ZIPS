@@ -32,5 +32,7 @@ public interface IResidentPaymentMapper {
     int updatePaymentPaid(PaymentVO paymentVO);
 
     // 고지서 납부완료 처리
-    int updateBillPaid(String billNo, int paidAmount);
+    int updateBillPaid(String billNo, int payAmt);
+
+    int updatePaymentCancel(PaymentVO paymentVO);
 }

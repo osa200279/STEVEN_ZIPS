@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.member.resident.controller;
 
 import kr.or.ddit.domain.member.resident.service.IResidentPaymentService;
+import kr.or.ddit.domain.member.resident.vo.PaymentCancelRequestVO;
 import kr.or.ddit.domain.member.resident.vo.PaymentCompleteRequestVO;
 import kr.or.ddit.domain.member.resident.vo.PaymentVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -132,6 +133,41 @@ public class ResidentPaymentController {
 
         } catch (Exception e) {
             log.error("관리비 결제 완료 검증 실패", e);
+
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * 결제창 취소 또는 결제 실패 처리
+     * POST /resident/payment/cancel
+     */
+    @PostMapping("/cancel")
+    public ResponseEntity<Map<String, Object>> cancelPayment(
+            @RequestBody PaymentCancelRequestVO requestVO,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            String userNo = customUser.getMember().getUserNo();
+
+            Map<String, Object> cancelData =
+                    residentPaymentService.cancelPayment(
+                            requestVO.getPymtNo(),
+                            requestVO.getOrdId(),
+                            requestVO.getFailRsnCn(),
+                            userNo
+                    );
+
+            result.put("success", true);
+            result.putAll(cancelData);
+
+        } catch (Exception e) {
+            log.error("관리비 결제 취소 처리 실패", e);
 
             result.put("success", false);
             result.put("message", e.getMessage());
