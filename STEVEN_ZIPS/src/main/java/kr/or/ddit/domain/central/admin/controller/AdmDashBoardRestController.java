@@ -89,35 +89,35 @@ public class AdmDashBoardRestController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/ctrt")
-    public ResponseEntity<Map<String, Object>> getCtrtList(
-            @AuthenticationPrincipal CustomUser customUser,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int curPage
-    ) {
-        log.info("getCtrtList() 실행");
-        String userNo = customUser.getMember().getUserNo();
-
-        // 리액트용 페이징
-        int screenSize = 12;
-        int startRow = (curPage - 1) * screenSize + 1;
-        int endRow = curPage * screenSize;
-
-        // 서비스에 startRow, endRow를 넘겨서 한페이지만큼만 리스트 가져오기
-        List<Map<String, Object>> ctrtList = rentCtrtService.selectCtrt(startRow, endRow);
-
-        int totalRecord = rentCtrtService.selectCtrtCount(userNo);
-        int totalPage = (int) Math.ceil((double) totalRecord / (double) screenSize);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("ctrtList", ctrtList);
-        response.put("curPage", curPage);
-        response.put("totalPage", totalPage);
-        response.put("totalRecord", totalRecord);
-        log.info("### ctrtList : {}", response.get("ctrtList"));
-
-        return ResponseEntity.ok(response);
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @GetMapping("/ctrt")
+//    public ResponseEntity<Map<String, Object>> getCtrtList(
+//            @AuthenticationPrincipal CustomUser customUser,
+//            @RequestParam(value = "page", required = false, defaultValue = "1") int curPage
+//    ) {
+//        log.info("getCtrtList() 실행");
+//        String userNo = customUser.getMember().getUserNo();
+//
+//        // 리액트용 페이징
+//        int screenSize = 12;
+//        int startRow = (curPage - 1) * screenSize + 1;
+//        int endRow = curPage * screenSize;
+//
+//        // 서비스에 startRow, endRow를 넘겨서 한페이지만큼만 리스트 가져오기
+//        List<Map<String, Object>> ctrtList = rentCtrtService.selectCtrt(startRow, endRow);
+//
+//        int totalRecord = rentCtrtService.selectCtrtCount(userNo);
+//        int totalPage = (int) Math.ceil((double) totalRecord / (double) screenSize);
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("ctrtList", ctrtList);
+//        response.put("curPage", curPage);
+//        response.put("totalPage", totalPage);
+//        response.put("totalRecord", totalRecord);
+//        log.info("### ctrtList : {}", response.get("ctrtList"));
+//
+//        return ResponseEntity.ok(response);
+//    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/ctrt/dashboard")
@@ -152,13 +152,53 @@ public class AdmDashBoardRestController {
     public ResponseEntity<?> updateCtrt(
             @PathVariable("RENT_CTRT_NO") String rentCtrtNo, @RequestBody Map<String, Object> detail) {
         log.info("계약 업데이트 컨트롤러 진입");
-
         int res = rentCtrtService.updateCtrt(rentCtrtNo, detail);
-
         if(res == 0){
             return ResponseEntity.badRequest().body("계약 정보 수정 실패");
         }
-
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 계약 목록 필터 조회
+     * @param customUser
+     * @param curPage
+     * @param params
+     * @return
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/ctrt")
+    public ResponseEntity<Map<String, Object>> getCtrtList(
+            @AuthenticationPrincipal CustomUser customUser,
+            @RequestParam(value = "page", defaultValue = "1") int curPage,
+            @RequestParam Map<String, Object> params // 필터 검색어 포함
+    ) {
+        log.info("getCtrtList() 실행 - 페이지: {}, 검색조건: {}", curPage, params);
+        String userNo = customUser.getMember().getUserNo();
+
+        // 1. 페이징 계산
+        int screenSize = 12;
+        int startRow = (curPage - 1) * screenSize + 1;
+        int endRow = curPage * screenSize;
+
+        // 2. 검색 조건과 페이징 정보를 하나의 맵으로 통합
+        params.put("startRow", startRow);
+        params.put("endRow", endRow);
+        params.put("userNo", userNo); // 권한 체크용
+
+        // 3. 서비스 호출 (검색과 페이징을 통합한 서비스 메서드)
+        List<Map<String, Object>> ctrtList = rentCtrtService.selectCtrt(params);
+        int totalRecord = rentCtrtService.selectCtrtCount(params);
+        int totalPage = (int) Math.ceil((double) totalRecord / (double) screenSize);
+
+        // 4. 응답 구성
+        Map<String, Object> response = new HashMap<>();
+        response.put("ctrtList", ctrtList);
+        response.put("curPage", curPage);
+        response.put("totalPage", totalPage);
+        response.put("totalRecord", totalRecord);
+
+        log.info("결과 : {}", response.get("ctrtList") );
+        return ResponseEntity.ok(response);
     }
 }

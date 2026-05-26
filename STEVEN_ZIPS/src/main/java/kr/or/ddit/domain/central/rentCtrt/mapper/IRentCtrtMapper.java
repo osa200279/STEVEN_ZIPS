@@ -30,4 +30,8 @@ public interface IRentCtrtMapper {
     List<AttachFileVO> selectSbmsnDocList(@Param("atchFileNo") long fileNo);
 
     int updateCtrt(@Param("rentCtrtNo") String rentCtrtNo, @Param("detail") Map<String, Object> detail);
+
+    int selectContractsCount(Map<String, Object> params);
+
+    List<Map<String, Object>> selectContracts(Map<String, Object> params);
 }

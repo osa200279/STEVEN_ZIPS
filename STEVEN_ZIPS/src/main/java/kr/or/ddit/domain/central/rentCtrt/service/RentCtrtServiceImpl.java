@@ -28,8 +28,18 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
     }
 
     @Override
+    public List<Map<String, Object>> selectCtrt(Map<String, Object> params) {
+        return rentCtrtMapper.selectContracts(params);
+    }
+
+    @Override
     public int selectCtrtCount(String userNo) {
         return rentCtrtMapper.selectCtrtCount(userNo);
+    }
+
+    @Override
+    public int selectCtrtCount(Map<String, Object> params) {
+        return rentCtrtMapper.selectContractsCount(params);
     }
 
     @Override
@@ -58,4 +68,5 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
     public int updateCtrt(String rentCtrtNo, Map<String, Object> detail) {
         return rentCtrtMapper.updateCtrt(rentCtrtNo, detail);
     }
+
 }
