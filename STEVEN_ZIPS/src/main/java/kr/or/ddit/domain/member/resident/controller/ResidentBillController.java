@@ -7,6 +7,7 @@ import kr.or.ddit.domain.member.resident.service.IResidentBillService;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +30,12 @@ public class ResidentBillController {
 
     @Autowired
     private IAptComplexService aptComplexService;
+
+    @Value("${portone.imp-code}")
+    private String portOneImpCode;
+
+    @Value("${portone.channel-key}")
+    private String portOneChannelKey;
 
     // 관리비 조회 화면
     @GetMapping("/inquiry/{aptCmplexNo}")
@@ -163,7 +170,9 @@ public class ResidentBillController {
 
     // 납부안내
     @GetMapping("/guide")
-    public String billGuide() {
+    public String billGuide(Model model) {
+        model.addAttribute("portOneImpCode", portOneImpCode);
+        model.addAttribute("portOneChannelKey", portOneChannelKey);
         return "member/resident/bill/bill_guide";
     }
 

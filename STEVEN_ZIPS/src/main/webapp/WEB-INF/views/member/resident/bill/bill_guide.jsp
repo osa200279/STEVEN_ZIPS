@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="_csrf" content="${_csrf.token}">
+  <meta name="_csrf_header" content="${_csrf.headerName}">
   <title>납부안내 – 대덕아파트</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
@@ -28,8 +30,44 @@
     .grid-2 {display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-bottom:22px;} .grid-2.equal {grid-template-columns:1fr 1fr;} .grid-3 {display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;}
     .section-hd {display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);} .section-hd h3 {margin:0;font-size:15px;font-weight:800;color:var(--text-dark);} .section-hd span {font-size:12px;color:var(--text-light);} .card,.panel {padding:20px;margin-bottom:20px;}
     .bullet-list {margin:0;padding-left:18px;color:var(--text-mid);line-height:1.8;font-size:13px;} .bullet-list li + li {margin-top:6px;}
-    .data-table {width:100%;border-collapse:collapse;font-size:13px;background:#fff;overflow:hidden;border-radius:12px;} .data-table thead th {background:var(--green-pale);color:var(--text-mid);padding:12px 14px;text-align:left;font-weight:700;border-bottom:1px solid var(--border);} .data-table tbody td {padding:13px 14px;border-bottom:1px solid #edf0eb;color:var(--text-dark);vertical-align:top;} .data-table tbody tr:last-child td {border-bottom:none;} .mini-table td,.mini-table th {padding:10px 12px !important;}
-    .label-grid {display:grid;grid-template-columns:160px 1fr 160px 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);overflow:hidden;border-radius:12px;margin-bottom:18px;} .label-grid div {padding:13px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:13px;} .label-grid .th {background:var(--green-pale);color:var(--text-mid);font-weight:700;}
+    .data-table {width:100%;border-collapse:collapse;font-size:13px;background:#fff;overflow:hidden;border-radius:12px;table-layout: fixed;} .data-table thead th {background:var(--green-pale);color:var(--text-mid);padding:12px 14px;text-align:center;font-weight:700;border-bottom:1px solid var(--border);} .data-table tbody td {padding:13px 14px;border-bottom:1px solid #edf0eb;color:var(--text-dark);vertical-align:middle;text-align: center;white-space: nowrap;} .data-table tbody tr:last-child td {border-bottom:none;} .mini-table td,.mini-table th {padding:10px 12px !important;}
+    /* 납부 정보 상단 표 */
+    .label-grid {
+      display: grid;
+      grid-template-columns: 105px minmax(150px, 1fr) 105px minmax(150px, 1fr);
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 18px;
+      background: #fff;
+    }
+    .label-grid .th {
+      display: flex;
+      align-items: center;
+      justify-content: center;   /* 제목 가운데 정렬 */
+      padding: 12px 8px;
+      background: var(--green-pale);
+      color: var(--text-mid);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      white-space: nowrap;       /* 제목 줄바꿈 방지 */
+      border-bottom: 1px solid var(--border);
+    }
+    .label-grid > div:not(.th) {
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      color: var(--text-dark);
+      font-size: 13px;
+      white-space: nowrap;       /* 104동 201호, 날짜 줄바꿈 방지 */
+      border-bottom: 1px solid var(--border);
+      min-width: 0;
+    }
+    .label-grid > div:nth-last-child(-n+4) {
+      border-bottom: none;
+    }
     .form-grid {display:grid;grid-template-columns:160px 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);overflow:hidden;border-radius:12px;} .form-grid .th,.form-grid .td {padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);} .form-grid .th {background:var(--green-pale);color:var(--text-mid);font-size:13px;font-weight:700;}
     .fake-input,.fake-select,.fake-textarea {width:100%;border:1px solid #d8ddd4;background:#fff;border-radius:10px;padding:11px 13px;font-size:13px;color:var(--text-dark);box-sizing:border-box;} .fake-textarea {min-height:110px;resize:vertical;}
     .inline-fields {display:flex;gap:10px;flex-wrap:wrap;} .btn-row {display:flex;justify-content:center;gap:10px;margin-top:22px;flex-wrap:wrap;}
@@ -133,13 +171,12 @@
               <thead>
               <tr>
                 <th>항목</th>
-                <th>구분</th>
                 <th>금액</th>
               </tr>
               </thead>
               <tbody id="detailTbody">
               <tr>
-                <td colspan="3">조회된 납부안내가 없습니다.</td>
+                <td colspan="2">조회된 납부안내가 없습니다.</td>
               </tr>
               </tbody>
             </table>
@@ -433,7 +470,7 @@
       tbody.innerHTML = '';
 
       if (!detailList || detailList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3">상세 납부 내역이 없습니다.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="2">상세 납부 내역이 없습니다.</td></tr>';
         return;
       }
 
@@ -442,7 +479,6 @@
 
         tr.innerHTML =
                 '<td>' + escapeHtml(item.billItemNm || '-') + '</td>' +
-                '<td>' + escapeHtml(item.billItemCd || '-') + '</td>' +
                 '<td>' + formatNumber(item.billItemAmt) + '원</td>';
 
         tbody.appendChild(tr);
@@ -479,7 +515,7 @@
       document.getElementById('payStatusBadge').className = 'badge info';
 
       document.getElementById('detailTbody').innerHTML =
-              '<tr><td colspan="3">조회된 납부안내가 없습니다.</td></tr>';
+              '<tr><td colspan="2">조회된 납부안내가 없습니다.</td></tr>';
     }
 
     function getDueText(bill) {
@@ -526,13 +562,125 @@
       return 'badge info';
     }
 
+    const portOneImpCode = '${portOneImpCode}';
+    const portOneChannelKey = '${portOneChannelKey}';
+
     function goPayment() {
-      if (!currentBill) {
+      if (!currentBill || !currentBill.billNo) {
         showMessage('납부할 고지서를 먼저 조회해 주세요.');
         return;
       }
 
-      alert('결제 기능은 결제 모듈 연결 후 처리하면 됩니다. 고지서 번호: ' + currentBill.billNo);
+      if (currentBill.pymtSttsCd === 'PAID') {
+        showMessage('이미 납부 완료된 관리비입니다.');
+        return;
+      }
+
+      /*
+       * 첫 테스트는 카드결제(CRD)로 진행한다.
+       * 카드 성공 후 계좌이체(TRN) 선택 모달을 붙이면 된다.
+       */
+      requestResidentPayment('CRD');
+    }
+
+    /**
+     * 결제요청 생성 → PortOne 결제창 호출 → 서버 검증 완료 처리
+     */
+    async function requestResidentPayment(payMthdCd) {
+      hideMessage();
+
+      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+      try {
+        /*
+         * 1. 우리 서버에서 PAYMENT.UNPAID 생성
+         */
+        const prepareResponse = await fetch(contextPath + '/resident/payment/prepare', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({
+            billNo: currentBill.billNo,
+            payMthdCd: payMthdCd
+          })
+        });
+
+        const prepareResult = await prepareResponse.json();
+
+        if (!prepareResult.success) {
+          showMessage(prepareResult.message || '결제 요청 생성에 실패했습니다.');
+          return;
+        }
+
+        console.log('prepareResult =', prepareResult);
+
+        /*
+         * 2. PortOne 결제창 호출
+         */
+        IMP.init(portOneImpCode);
+
+        IMP.request_pay({
+          channelKey: portOneChannelKey,
+          pay_method: prepareResult.portOnePayMethod,   // CRD → card
+          merchant_uid: prepareResult.ordId,
+          name: formatBillYm(prepareResult.billYm) + ' 아파트 관리비',
+          amount: Number(prepareResult.payAmt),
+          buyer_name: '입주민',
+          buyer_tel: '010-0000-0000',
+          company: '우리집맵핑',
+          language: 'ko'
+        }, async function (rsp) {
+
+          console.log('PortOne response =', rsp);
+
+          /*
+           * 결제창에서 취소 또는 실패한 경우
+           */
+          if (rsp.error_code != null) {
+            showMessage(rsp.error_msg || '결제가 취소되었거나 실패했습니다.');
+            return;
+          }
+
+          /*
+           * 3. 결제 성공 응답값을 서버로 보내 실제 결제내역 검증
+           */
+          const completeResponse = await fetch(contextPath + '/resident/payment/complete', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({
+              impUid: rsp.imp_uid,
+              ordId: rsp.merchant_uid
+            })
+          });
+
+          const completeResult = await completeResponse.json();
+
+          console.log('completeResult =', completeResult);
+
+          if (!completeResult.success) {
+            showMessage(completeResult.message || '결제 검증 처리에 실패했습니다.');
+            return;
+          }
+
+          showMessage('관리비 납부가 완료되었습니다.');
+
+          /*
+           * 4. 납부안내 화면 다시 조회
+           * PAYMENT/BILL이 PAID로 바뀐 결과를 화면에 반영한다.
+           */
+          await loadPaymentGuide();
+        });
+
+      } catch (e) {
+        console.error(e);
+        showMessage('결제 처리 중 오류가 발생했습니다.');
+      }
     }
 
     function downloadStatement() {
@@ -681,5 +829,7 @@
       }
     }
   </script>
+  <!-- PortOne V1 JavaScript SDK -->
+  <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 </body>
 </html>

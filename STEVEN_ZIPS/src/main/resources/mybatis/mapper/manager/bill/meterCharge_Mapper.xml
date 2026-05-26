@@ -53,7 +53,7 @@
                      U.DONG_NO,
                      U.DONG_NM,
                      H.HO,
-                     U.DONG_NM || ' ' || H.HO || '호' AS DISPLAY_DONG_HO,
+                     U.DONG_NM || '동 ' || H.HO || '호' AS DISPLAY_DONG_HO,
 
                      M.METER_HSTRY_NO,
                      M.FACILITY_NO,

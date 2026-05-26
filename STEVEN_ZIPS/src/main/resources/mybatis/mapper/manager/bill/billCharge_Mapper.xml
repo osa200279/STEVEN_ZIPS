@@ -57,7 +57,7 @@
             U.DONG_NM,
             H.HO,
             H.HO_STTS_CD,
-            U.DONG_NM || ' ' || H.HO || '호' AS DISPLAY_DONG_HO
+            U.DONG_NM || '동 ' || H.HO || '호' AS DISPLAY_DONG_HO
         FROM APT_DETAIL H
                  JOIN APT_UNIT U
                       ON H.DONG_NO = U.DONG_NO
