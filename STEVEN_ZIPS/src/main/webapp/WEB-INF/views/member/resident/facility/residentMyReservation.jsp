@@ -304,7 +304,7 @@
           <div class="pf-card-bd pf-search-grid">
             <div class="pf-field">
               <label>시설명</label>
-              <input name="searchWord" value="${searchVO.searchWord}" placeholder="시설명/좌석명"/>
+              <input name="searchWord" value="${searchVO.searchWord}" placeholder="시설명/예약대상"/>
             </div>
 
             <div class="pf-field">
@@ -362,7 +362,7 @@
             <tr>
               <th>번호</th>
               <th>시설명</th>
-              <th>세부시설</th>
+              <th>예약대상</th>
               <th>예약시간</th>
               <th>상태</th>
               <th>관리</th>
@@ -464,7 +464,7 @@
             .then(function(d) {
               document.getElementById('detailBody').innerHTML =
                       '<p>시설명: ' + d.cmnFacilityNm + '</p>' +
-                      '<p>세부시설: ' + d.itemNm + '</p>' +
+                      '<p>예약대상: ' + d.itemNm + '</p>' +
                       '<p>예약시간: ' + d.rsvtBgngDttm + ' ~ ' + d.rsvtEndDttm + '</p>' +
                       '<p>상태: ' + d.rsvtSttsNm + '</p>';
 

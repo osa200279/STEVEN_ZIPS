@@ -62,7 +62,7 @@ public interface IPublicFacilityReservationMapper {
     List<String> selectReservedItemNoList(PublicFacilityReservationVO searchVO);
 
     /*
-     * 선택한 세부시설의 날짜별 시간표 조회
+     * 선택한 예약대상의 날짜별 시간표 조회
      * 예: 헬스장 러닝머신1번의 08:00~21:00 예약현황
      */
     List<PublicFacilityReservationVO> selectReservationTimeSlotList(PublicFacilityReservationVO searchVO);
@@ -137,7 +137,7 @@ public interface IPublicFacilityReservationMapper {
 //    List<String> selectReservedItemNoList(PublicFacilityReservationVO searchVO);
 //
 //    /*
-//     * 선택한 세부시설의 날짜별 시간표 조회
+//     * 선택한 예약대상의 날짜별 시간표 조회
 //     * 예: 헬스장 러닝머신1번의 08:00~21:00 예약현황
 //     */
 //    List<PublicFacilityReservationVO> selectReservationTimeSlotList(PublicFacilityReservationVO searchVO);

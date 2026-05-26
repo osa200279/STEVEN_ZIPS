@@ -56,7 +56,7 @@
             <div class="pf-card">
               <div class="pf-card-hd">검색 조건</div>
               <div class="pf-card-bd pf-search-grid">
-                <div class="pf-field"><label>시설명</label><input name="searchWord" value="${searchVO.searchWord}" placeholder="시설명/좌석명"/></div>
+                <div class="pf-field"><label>시설명</label><input name="searchWord" value="${searchVO.searchWord}" placeholder="시설명/예약대상"/></div>
                 <div class="pf-field"><label>동</label><input name="searchDongNo" value="${searchVO.searchDongNo}" placeholder="동"/></div>
                 <div class="pf-field">
                   <label>상태</label>
@@ -68,8 +68,8 @@
                     <option value="CANCELLED" ${searchVO.searchRsvtSttsCd eq 'CANCELLED' ? 'selected' : ''}>취소</option>
                   </select>
                 </div>
-                <div class="pf-field"><label>시작일</label><input type="date" name="searchStartDt" value="${searchVO.searchStartDt}"/></div>
-                <div class="pf-field"><label>종료일</label><input type="date" name="searchEndDt" value="${searchVO.searchEndDt}"/></div>
+                <div class="pf-field"><label>이용시작</label><input type="date" name="searchStartDt" value="${searchVO.searchStartDt}"/></div>
+                <div class="pf-field"><label>이용종료</label><input type="date" name="searchEndDt" value="${searchVO.searchEndDt}"/></div>
                 <div class="pf-field"><label>입주민명</label><input name="searchUserNm" value="${searchVO.searchUserNm}" placeholder="이름"/></div>
 
                 <button type="button" class="pf-btn pf-btn-light"
@@ -85,7 +85,7 @@
               <table class="pf-table">
                 <thead>
                 <tr>
-                  <th>번호</th><th>시설명</th><th>세부시설</th><th>동</th><th>위치</th><th>예약</th><th>운영상태</th><th>운영시간</th>
+                  <th>번호</th><th>시설명</th><th>예약대상</th><th>동</th><th>위치</th><th>예약</th><th>운영상태</th><th>운영시간</th>
                 </tr>
                 </thead>
                 <tbody>
