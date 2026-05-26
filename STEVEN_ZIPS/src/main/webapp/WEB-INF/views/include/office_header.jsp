@@ -119,7 +119,7 @@
             </a>
         </c:if>
 
-        <a href="${ctx}/member/myPage.do" class="topbar-user" title="마이페이지">
+        <a href="${ctx}/member/myPageAuth.do" class="topbar-user" title="마이페이지">
             <div class="topbar-user-avatar">
                 <span class="material-symbols-rounded">person</span>
             </div>

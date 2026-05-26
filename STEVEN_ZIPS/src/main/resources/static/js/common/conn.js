@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const myPageBtn = document.querySelector("#myPageBtn");
     if(myPageBtn) {
         myPageBtn.addEventListener("click", (e) => {
-            location.href="/member/myPage.do";
+            location.href="/member/myPageAuth.do";
         });
     }
 

@@ -33,7 +33,7 @@
             <span style="font-size:1.2em; color:blue; font-weight:bold;">
             <sec:authentication property="principal.member.userNm"/>
             </span>님
-                <a href="/member/myPage.do" class="btn-filled">마이페이지</a>
+                <a href="/member/myPageAuth.do" class="btn-filled">마이페이지</a>
                 <button type="button" id="logoutBtn" class="btn-outline">로그아웃</button>
                 <%-- 로그아웃을 위한 히든 폼 --%>
                 <form id="logoutForm" action="/logout" method="post" style="display: none;">

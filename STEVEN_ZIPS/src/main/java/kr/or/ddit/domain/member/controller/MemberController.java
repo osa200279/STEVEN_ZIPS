@@ -12,12 +12,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,21 +39,21 @@ public class MemberController {
     @Autowired
     private IAttachFileService attachFileService;
 
-    // 회원가입 폼
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("/join.do")
     public String joinPage() {
         return "member/join";
     }
 
-    // 비동기 회원가입 처리
     @ResponseBody
-    @PostMapping(value = "/join")
+    @PostMapping("/join")
     public ResponseEntity<Map<String, String>> joinMember(
-            MemberVO member, @RequestParam(value = "profFile", required = false) MultipartFile profFile) {
+            MemberVO member,
+            @RequestParam(value = "profFile", required = false) MultipartFile profFile) {
 
-        log.info("joinMember() 실행");
-        log.info("입력된 회원 정보 : {}", member);
-
+        log.info("joinMember() executed");
         Map<String, String> resp = new HashMap<>();
 
         try {
@@ -55,21 +62,20 @@ public class MemberController {
             if (ServiceResult.OK.equals(result)) {
                 resp.put("message", "회원가입 완료!");
                 return new ResponseEntity<>(resp, HttpStatus.OK);
-            } else {
-                resp.put("message", "가입 실패!");
-                return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
             }
+
+            resp.put("message", "가입 실패!");
+            return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             resp.put("message", "서버에러");
             return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // 아이디 중복 체크 컨트롤러
     @ResponseBody
     @GetMapping("/idCheck")
     public ResponseEntity<Map<String, String>> idCheck(@RequestParam String userId) {
-        log.info("idCheck() 실행");
+        log.info("idCheck() executed");
         Map<String, String> resp = new HashMap<>();
 
         try {
@@ -82,6 +88,7 @@ public class MemberController {
                 resp.put("res", "NOTEXIST");
                 resp.put("message", "사용 가능한 아이디입니다!");
             }
+
             return new ResponseEntity<>(resp, HttpStatus.OK);
         } catch (Exception e) {
             resp.put("message", "서버 에러로 인해 중복확인에 실패하였습니다.");
@@ -89,41 +96,69 @@ public class MemberController {
         }
     }
 
-    // 마이페이지 컨트롤러
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/myPage.do")
     public String myPage(@AuthenticationPrincipal CustomUser customUser,
-                         Model model) {
-        log.info("myPage() 실행");
-        // 인증 객체에서 멤버 정보 가져오기
+                         Model model,
+                         HttpSession session) {
+        log.info("myPage() executed");
+
+        Boolean myPageAuth = (Boolean) session.getAttribute("MY_PAGE_AUTH");
+        if (myPageAuth == null || !myPageAuth) {
+            return "redirect:/member/myPageAuth.do";
+        }
+        session.removeAttribute("MY_PAGE_AUTH");
+
         MemberVO member = customUser.getMember();
         String profFileId = member.getProfFileId();
 
-        if(profFileId != null && !profFileId.isBlank()){
-            // 파일 데이터 세팅
+        if (profFileId != null && !profFileId.isBlank()) {
             AttachFileVO file = attachFileService.setOnlyOneFileMetaData(profFileId);
-
-            if(file != null){
-                model.addAttribute("file", file);   // 파일 정보 전체
+            if (file != null) {
+                model.addAttribute("file", file);
             }
         }
-        model.addAttribute("member", member);
 
+        model.addAttribute("member", member);
         return "member/mypage";
     }
 
-    /**
-     * 회원정보 수정 컨트롤러
-     * @author 박진아
-     * @param member
-     * @param profileImagedlrj
-     * @param customUser
-     * @return
-     */
+    @PreAuthorize("hasRole('MEMBER')")
+    @GetMapping("/myPageAuth.do")
+    public String myPageAuthPage() {
+        return "member/mypageAuth";
+    }
+
+    @PreAuthorize("hasRole('MEMBER')")
+    @PostMapping("/myPageAuth.do")
+    public String myPageAuth(@RequestParam String userPw,
+                             @AuthenticationPrincipal CustomUser customUser,
+                             RedirectAttributes ra,
+                             HttpSession session) {
+        if (customUser == null) {
+            return "redirect:/login.do";
+        }
+
+        String rawPw = userPw == null ? "" : userPw.trim();
+        MemberVO currentMember = service.getMemberByUserNo(customUser.getMember().getUserNo());
+        String encodedPw = currentMember != null ? currentMember.getUserPw() : customUser.getPassword();
+
+        log.info("myPageAuth() userNo={}, rawLen={}, encodedExists={}",
+                customUser.getMember().getUserNo(), rawPw.length(), encodedPw != null);
+
+        if (encodedPw != null && passwordEncoder.matches(rawPw, encodedPw)) {
+            session.setAttribute("MY_PAGE_AUTH", Boolean.TRUE);
+            return "redirect:/member/myPage.do";
+        }
+
+        ra.addFlashAttribute("error", "비밀번호가 일치하지 않습니다.");
+        return "redirect:/member/myPageAuth.do";
+    }
+
     @PreAuthorize("hasAnyRole('MEMBER', 'RESIDENT')")
     @PostMapping("/updateSimple")
     public String updateMember(MemberVO member,
-                               @RequestParam(value="profileImage", required=false) MultipartFile profileImage,
+                               @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
                                @AuthenticationPrincipal CustomUser customUser,
                                RedirectAttributes ra) {
 
@@ -132,9 +167,8 @@ public class MemberController {
             member.setUserNo(userNo.trim());
         }
 
-
-        if(member.getUserPw() == null || member.getUserPw().isEmpty()){
-            member.setUserPw(null);  // 🔥 그냥 null 넘겨
+        if (member.getUserPw() == null || member.getUserPw().isEmpty()) {
+            member.setUserPw(null);
         }
 
         ServiceResult result = service.updateMember(member);
@@ -144,26 +178,23 @@ public class MemberController {
             customUser.setMember(updated);
             ra.addFlashAttribute("msg", "success");
         } else {
-            log.error("❌ 회원 수정 실패");
+            log.error("회원 수정 실패");
         }
 
-        // 🔥 무조건 마이페이지로 보냄
         return "redirect:/member/myPage.do";
     }
 
     @PreAuthorize("hasRole('MEMBER')")
     @PostMapping("/alarm/update")
     @ResponseBody
-    public String updateAlarm(
-            @RequestBody Map<String, Object> param,
-            @AuthenticationPrincipal CustomUser customUser) {
+    public String updateAlarm(@RequestBody Map<String, Object> param,
+                              @AuthenticationPrincipal CustomUser customUser) {
 
         if (customUser != null && customUser.getMember() != null) {
             String userNo = customUser.getMember().getUserNo();
             param.put("userNo", userNo);
         }
 
-        // 🔥 부모 OFF면 자식 강제 OFF
         if ("N".equals(param.get("emlRcvYn"))) {
             param.put("emlNtcRcvYn", "N");
             param.put("emlCtrtRcvYn", "N");
@@ -175,7 +206,6 @@ public class MemberController {
         }
 
         service.updateAlarm(param);
-
         return "OK";
     }
 }
