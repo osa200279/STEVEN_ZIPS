@@ -589,7 +589,8 @@ public class ResidentMainController {
      * 생활지원서비스
      * ========================= */
 
-    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
+/*    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")*/
+    @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/service/moving/{aptCmplexNo}")
     public String serviceMoving(
             @PathVariable String aptCmplexNo,
