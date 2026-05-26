@@ -226,15 +226,19 @@
         AND atch_file_id IS NOT NULL
     </select>
 
-    <!-- 남은 제출 서류 조회 -->
+    <!-- 필요 서류 수: 공고 center_ann_board_post.sbmsn_doc 기준 (업로드 화면과 동일) -->
     <select id="selectRequiredDocCount" resultType="int">
-        SELECT COUNT(DISTINCT rcd.sbmsn_doc_ty_cd)
-        FROM rent_ctrt_doc rcd
-                 INNER JOIN rent_listing rl ON rcd.rent_lstg_no = rl.rent_lstg_no
-                 INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
-                 INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
-                 INNER JOIN aplct a ON a.ho_ty_no = aht.ho_ty_no
-        WHERE a.aplct_no = #{aplctNo}
+        SELECT COUNT(*)
+        FROM (
+                 SELECT DISTINCT TRIM(REGEXP_SUBSTR(cap.sbmsn_doc, '[^,]+', 1, lv.lvl)) AS sbmsn_doc_ty_cd
+                 FROM aplct a
+                          INNER JOIN center_ann_board_post cap ON cap.ann_no = a.ann_no
+                          INNER JOIN (
+                     SELECT LEVEL AS lvl FROM dual CONNECT BY LEVEL &lt;= 20
+                 ) lv ON lv.lvl &lt;= REGEXP_COUNT(cap.sbmsn_doc, ',') + 1
+                 WHERE a.aplct_no = #{aplctNo}
+             ) doc_ty
+        WHERE doc_ty.sbmsn_doc_ty_cd IS NOT NULL
     </select>
 
     <!--공고 조회수 증가-->

@@ -156,42 +156,54 @@ public class ContractUserServiceImpl implements IContractUserService {
     @Override
     public void insertContractDoc(List<MultipartFile> files, List<String> cat, String aplctNo, String userNo) throws IOException {
 
-        // FILE_GROUP_NO를 한번만 채번(전체 파일을 같은 그룹으로 묶음)
-        long fileGroupSeq = iAttachFileMapper.getSeqFileGroupNo();
-
-        for (int i = 0; i < files.size(); i++) {
-            MultipartFile file = files.get(i);
-
-            // EMPLOY, FAMILY, ID 등 공통코드
-            String category = cat.get(i); // 파라미터 cat과 구분하기 위해 category로 명명
-
-            if (file == null || file.isEmpty()) continue;
-
-            // 2. UUID 기반 고유 파일명 생성
-            String uuid = UUID.randomUUID().toString().replace("-", "");
-            String savedFileName = uuid + "_" + file.getOriginalFilename();
-
-            // 3. 구글드라이브에 저장할 폴더 경로
-            String folderPath = "contract/doc/" + aplctNo;
-
-            // 4. 구글드라이브에 저장할 파일 경로
-            String fullPath = folderPath + "/" + savedFileName;
-
-            // 5. 구글드라이브 업로드
-            String googleId = googleDriveService.uploadFile(file, folderPath, savedFileName);
-
-            // 6. ATTACH_FILE INSERT
-            //    FILE_GROUP_NO: 한 번 채번한 seq (전체 공유)
-            //    CAT: 공통코드 그대로 저장 (EMPLOY, FAMILY 등)
-            //    FILE_SORT_ORDER: 파일 순서 (i+1)
-            AttachFileVO attachFileVO = AttachFileVO.fileSettings(
-                    file, fileGroupSeq, category,
-                    savedFileName, googleId, fullPath, i + 1
-            );
-            iAttachFileMapper.insertAttachFile(attachFileVO);
+        if (files == null || cat == null || files.size() != cat.size()) {
+            throw new IllegalArgumentException("파일과 서류 종류 정보가 일치하지 않습니다.");
         }
 
-        contractUserMapper.isAllSubmitted(aplctNo);
+        String folderPath = "contract/doc/" + aplctNo;
+
+        // files[i] 와 cat[i] 는 1:1 (contractADetail.jsp 와 동일)
+        for (int i = 0; i < files.size(); i++) {
+            MultipartFile file = files.get(i);
+            String sbmsnDocTyCd = cat.get(i);
+
+            if (file == null || file.isEmpty()) {
+                continue;
+            }
+            if (sbmsnDocTyCd == null || sbmsnDocTyCd.trim().isEmpty()) {
+                continue;
+            }
+            sbmsnDocTyCd = sbmsnDocTyCd.trim();
+
+            // 동일 서류 종류 기존 데이터 삭제 (덮어쓰기)
+            contractUserMapper.deleteContractDoc(aplctNo, sbmsnDocTyCd);
+
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            String savedFileName = uuid + "_" + file.getOriginalFilename();
+            String fullPath = folderPath + "/" + savedFileName;
+
+            String googleId = googleDriveService.uploadFile(file, folderPath, savedFileName);
+
+            long fileGroupNo = iAttachFileMapper.getSeqFileGroupNo();
+
+            AttachFileVO attachFileVO = AttachFileVO.fileSettings(
+                    file, fileGroupNo, sbmsnDocTyCd,
+                    savedFileName, googleId, fullPath, 1
+            );
+            iAttachFileMapper.insertAttachFile(attachFileVO);
+
+            ContractUserVO contractUserVO = new ContractUserVO();
+            contractUserVO.setSbmsnDocTyCd(sbmsnDocTyCd);
+            contractUserVO.setAtchFileId(String.valueOf(fileGroupNo));
+            contractUserVO.setAplctNo(aplctNo);
+            contractUserMapper.insertContractDoc(contractUserVO);
+        }
+
+        int submitted = contractUserMapper.selectSubmittedDocCount(aplctNo);
+        int required = contractUserMapper.selectRequiredDocCount(aplctNo);
+        if (submitted > 0 && (required <= 0 || submitted >= required)) {
+            contractUserMapper.isAllSubmitted(aplctNo);
+        }
     }
 
 
