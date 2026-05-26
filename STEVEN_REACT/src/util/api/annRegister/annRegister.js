@@ -1,5 +1,7 @@
 import requestApi from '../requestApi';
 
+const API_URL = '/api/react/adm/annRegister';
+
 /** API 응답 → select용 { value, label }[] (문자열 배열·단지 객체 모두 처리) */
 export function toSelectOptions(data) {
   const list = Array.isArray(data) ? data : [];
@@ -24,7 +26,7 @@ export function toSelectOptions(data) {
  * 시/도 리스트 조회
  */
 export const getSido = async () => {
-  const res = await requestApi.get('/api/annRegister/sido');
+  const res = await requestApi.get(`${API_URL}/sido`);
   return res.data;
 };
 
@@ -32,7 +34,7 @@ export const getSido = async () => {
  * 시/군/구 리스트 조회
  */
 export const getSigungu = async (sidoNm) => {
-  const res = await requestApi.get('/api/annRegister/sigungu', {
+  const res = await requestApi.get(`${API_URL}/sigungu`, {
     params: {sidoNm},
   });
   return res.data;
@@ -42,7 +44,7 @@ export const getSigungu = async (sidoNm) => {
  * 읍/면/동 리스트 조회
  */
 export const getEmd = async (sidoNm, sigunguNm) => {
-  const res = await requestApi.get('/api/annRegister/emd', {
+  const res = await requestApi.get(`${API_URL}/emd`, {
     params: {sidoNm, sigunguNm},
   });
   return res.data;
@@ -52,7 +54,7 @@ export const getEmd = async (sidoNm, sigunguNm) => {
  * 아파트 단지 리스트 조회
  */
 export const getAptList = async (sidoNm, sigunguNm, emdNm) => {
-  const res = await requestApi.get('/api/annRegister/aptList', {
+  const res = await requestApi.get(`${API_URL}/aptList`, {
     params: {sidoNm, sigunguNm, emdNm},
   });
   return res.data;
@@ -62,7 +64,7 @@ export const getAptList = async (sidoNm, sigunguNm, emdNm) => {
  * 매물 조회
  */
 export const getRentList = async (aptCmplexNo)=>{
-  const res = await requestApi.get('/api/annRegister/rentList', {
+  const res = await requestApi.get(`${API_URL}/rentList`, {
   params: {aptCmplexNo},
 });
 return res.data;
@@ -72,7 +74,7 @@ return res.data;
  * 아파트 단지 상세 조회 (주소, 호 타입 목록)
  */
 export const getAptDetail = async (aptCmplexNo) => {
-  const res = await requestApi.get('/api/annRegister/aptDetail', {
+  const res = await requestApi.get(`${API_URL}/aptDetail`, {
     params: {aptCmplexNo},
   });
   return res.data;
@@ -82,7 +84,7 @@ export const getAptDetail = async (aptCmplexNo) => {
  * 제출서류 목록 조회
  */
 export const getSubmitDocTypes = async (rentLstgNoList) => {
-  const res = await requestApi.get('/api/annRegister/sbmsnDocList', {
+  const res = await requestApi.get(`${API_URL}/sbmsnDocList`, {
       params: { rentLstgNoList },
       paramsSerializer: params => {
           return params.rentLstgNoList
@@ -97,6 +99,6 @@ export const getSubmitDocTypes = async (rentLstgNoList) => {
  * 공고 등록
  */
 export const insertAnn = async (formData) => {
-  const res = await requestApi.post('/api/annRegister/insertAnn', formData);
+  const res = await requestApi.post(`${API_URL}/insertAnn`, formData);
   return res.data;
 };
