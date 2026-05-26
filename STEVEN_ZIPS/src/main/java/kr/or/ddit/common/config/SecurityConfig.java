@@ -14,6 +14,7 @@ import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -123,6 +124,7 @@ public class SecurityConfig {
         http.securityMatcher("/api/react/**")
                 .authorizeHttpRequests(
                         authorize -> authorize
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/api/react/adm/**").hasRole("ADMIN")  // 중앙관리자만 접근 가능한 URL
                                 .requestMatchers("/api/react/public/**").permitAll() // 권한 상관없이 접근 가능
                                 .anyRequest().authenticated()
@@ -194,9 +196,10 @@ public class SecurityConfig {
         org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
 
         // 1. 리액트 서버의 로컬 및 외부 IP 주소를 모두 허용
-        config.setAllowedOrigins(java.util.List.of(
+        config.setAllowedOriginPatterns(java.util.List.of(
                 "http://localhost:7777",
-                "http://183.107.218.47:7777"
+                "http://183.107.218.47:7777",
+                "http://192.168.*:7777"
         ));
 
         // 2. 허용할 HTTP 메서드 설정
