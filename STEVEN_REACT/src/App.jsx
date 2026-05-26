@@ -10,6 +10,7 @@ import Ctrt from "./pages/ctrt/Ctrt";
 import Home from "./pages/Home";
 import SalesList from './pages/sales/SalesList';
 import Member from './pages/member/member';
+import MngrRqstAprv from './pages/MngrRqstAprv/MngrRqstAprv';
 import ResidentAssignPage from './components/ctrt/ResidentAssignPage';
 import './styles/common.css';
 import './styles/header.css';
@@ -57,6 +58,8 @@ function App() {
             {/* 계약 서식 관리 */}
             {/* 회원 관리 */}
             <Route path="/adm/member" element={<Member />} />
+            {/* 하위 관리자 계정 관리 */}
+            <Route path="/adm/mgmtOfc/account" element={<MngrRqstAprv />} />
             {/* 입주민 관리 메뉴 */}
             {/* 공고 등록 */}
             <Route path="/adm/ann" element={<AnnRegister />} />
