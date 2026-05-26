@@ -26,8 +26,8 @@ const MENU_DATA = [
     id: 'member',
     label: '회원',
     items: [
-      { to: '/adm/member', label: '일반 회원 관리', icon: <Users className='luci-icon' /> },
-      { to: '/adm/resident', label: '입주민 관리', icon: <SquareUserRound className='luci-icon' /> },
+      { to: '/adm/member', label: '회원 관리', icon: <Users className='luci-icon' /> },
+      // { to: '/adm/resident', label: '입주민 관리', icon: <SquareUserRound className='luci-icon' /> },
     ]
   },
   {
@@ -36,7 +36,7 @@ const MENU_DATA = [
     items: [
       { to: '/adm/ann', label: '공고 관리', icon: <Megaphone className='luci-icon' /> },
       // { to: '/adm/ann/register', label: '공고 등록', icon: <PenIcon className='luci-icon' /> },
-      { to: '/adm/inqry', label: '문의 관리', icon: <MessageCircleQuestionMark className='luci-icon' /> },
+      // { to: '/adm/inqry', label: '문의 관리', icon: <MessageCircleQuestionMark className='luci-icon' /> },
     ]
   },
   {
