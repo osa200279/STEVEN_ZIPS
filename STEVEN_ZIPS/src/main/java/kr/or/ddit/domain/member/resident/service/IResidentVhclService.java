@@ -9,7 +9,7 @@ import java.util.List;
 public interface IResidentVhclService {
     List<RsidVhclVO> selectMyVhclList(String userNo, String aptCmplexNo);
 
-    void registerVhcl(String userNo, String aptCmplexNo, String vhclNm, String vhclNo, String dong, String ho, MultipartFile file) throws IOException;
+    void registerVhcl(String userNo, String aptCmplexNo, String vhclNm, String vhclNo, String hoNo, MultipartFile file) throws IOException;
 
     boolean isExtraRequired(String userNo, String aptCmplexNo, String hoNo);
 

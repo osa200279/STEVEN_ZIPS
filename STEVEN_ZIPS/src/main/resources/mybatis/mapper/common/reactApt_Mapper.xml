@@ -184,7 +184,7 @@
         WHERE RL.RCRT_LSTG_STTS_CD = 'GENERAL'
           AND AU.APT_CMPLEX_NO = #{aptCmplexNo}
           AND AU.DONG_NO = #{dongNo}
-
+          AND RL.DEAL_STTS_CD = 'AVL'
         ORDER BY AD.HO_NO
 
     </select>

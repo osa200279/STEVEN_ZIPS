@@ -61,13 +61,10 @@ public class ResidentVhclController {
     public String checkVhcl(
             @AuthenticationPrincipal CustomUser principal,
             @PathVariable String aptCmplexNo,
-            @RequestParam String dong,
-            @RequestParam String ho
+            @RequestParam String hoNo
     ) {
 
         MemberVO member = principal.getMember();
-
-        String hoNo = aptCmplexNo + "_" + dong + "_" + ho;
 
         boolean isExtra =
                 residentVhclService.isExtraRequired(
@@ -93,8 +90,7 @@ public class ResidentVhclController {
             @PathVariable String aptCmplexNo,
             @RequestParam String vhclNm,
             @RequestParam String vhclNo,
-            @RequestParam String dong,
-            @RequestParam String ho,
+            @RequestParam String hoNo,
             @RequestParam boolean isExtra,
             @RequestPart(required = false) MultipartFile file
     ) throws IOException {
@@ -106,8 +102,7 @@ public class ResidentVhclController {
                 aptCmplexNo,
                 vhclNm,
                 vhclNo,
-                dong,
-                ho,
+                hoNo,
                 file
         );
 

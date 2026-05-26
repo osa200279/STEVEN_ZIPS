@@ -158,13 +158,14 @@ public class AptComplexServiceImpl implements IAptComplexService {
 
         for (AptHoTyDTO dto : list) {
 
-            String imageFileNo = String.valueOf(dto.getImageFileNo());
+            Long imageFileNo = dto.getImageFileNo();
 
             if(imageFileNo == null){
                 continue;
             }
 
-            List<AttachFileVO> fileList = attachFileService.setFileMetaData(imageFileNo);
+            List<AttachFileVO> fileList =
+                    attachFileService.setFileMetaData(String.valueOf(imageFileNo));
 
             if(fileList == null || fileList.isEmpty()){
                 continue;

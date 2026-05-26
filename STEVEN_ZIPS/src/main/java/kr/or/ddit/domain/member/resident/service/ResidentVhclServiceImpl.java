@@ -98,13 +98,9 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
             String aptCmplexNo,
             String vhclNm,
             String vhclNo,
-            String dong,
-            String ho,
+            String hoNo,
             MultipartFile file
     ) throws IOException {
-
-        //HO_NO 조합
-        String hoNo = aptCmplexNo + "_" + dong + "_" + ho;
 
         //차량번호 중복 체크
         if (vhclMapper.existsVhclNo(vhclNo)>0) {
@@ -170,6 +166,11 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
         if (hoList == null || hoList.isEmpty()) {
             return Collections.emptyList();
         }
+
+        log.info("userNo={}", userNo);
+        log.info("aptCmplexNo={}", aptCmplexNo);
+
+        log.info("hoList={}", hoList);
 
         return vhclMapper.selectMyVhclList(hoList);
     }

@@ -235,12 +235,7 @@ function initRegister(){
 
         const formData = new FormData();
 
-        formData.append("ho", hoSelect.value);
-
-        formData.append(
-            "dong",
-            selectedOption.dataset.dong
-        );
+        formData.append("hoNo", hoSelect.value);
 
         fetch("/vhcl/check/" + aptCmplexNo, {
             method: "POST",
@@ -336,12 +331,7 @@ function submitVhcl(isExtra) {
     const selectedOption =
         hoSelect.options[hoSelect.selectedIndex];
 
-    formData.append(
-        "dong",
-        selectedOption.dataset.dong
-    );
-
-    formData.append("ho", hoSelect.value);
+    formData.append("hoNo", hoSelect.value);
 
     formData.append("isExtra", isExtra);
 
@@ -369,7 +359,6 @@ function submitVhcl(isExtra) {
             vhclModal.classList.remove("active");
 
             resetForm();
-
             loadMyVhcl();
         })
         .catch(err => {
@@ -403,6 +392,8 @@ function loadMyVhcl() {
             return res.json();
         })
         .then(list => {
+
+            console.log(list);
 
             let html = "";
 

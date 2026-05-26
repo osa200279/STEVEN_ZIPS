@@ -1,8 +1,6 @@
 package kr.or.ddit.domain.apt.apiApartment.service;
 
 import kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper;
-import kr.or.ddit.domain.apt.apiApartment.service.IAptApiService;
-import kr.or.ddit.domain.apt.apiApartment.service.ISeqService;
 import kr.or.ddit.domain.apt.apiApartment.vo.*;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.main.vo.AptUnitVO;
@@ -114,6 +112,8 @@ public class AptApiServiceImpl implements IAptApiService {
                         emd
                 );
 
+        log.info("LAWD_CD 조회 결과 : {}", lawdCdList);
+
         for (String bjdCode : lawdCdList) {
 
             int pageNo = 1;
@@ -182,6 +182,9 @@ public class AptApiServiceImpl implements IAptApiService {
                 }
             }
         }
+
+
+
 
         return result;
     }

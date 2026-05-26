@@ -43,16 +43,16 @@
                     <div class="section-hd"><h3>등록한 차량 목록</h3><span>최근 등록</span></div>
                     <table class="data-table">
                         <thead>
-                            <tr>
-                                <th>번호</th>
-                                <th>동</th>
-                                <th>호</th>
-                                <th>차량번호</th>
-                                <th>차종</th>
-                                <th>등록일</th>
-                                <th>상태</th>
-                                <th>관리</th>
-                            </tr>
+                        <tr>
+                            <th>번호</th>
+                            <th>동</th>
+                            <th>호</th>
+                            <th>차량번호</th>
+                            <th>차종</th>
+                            <th>등록일</th>
+                            <th>상태</th>
+                            <th>관리</th>
+                        </tr>
                         </thead>
                         <tbody>
                         </tbody>
@@ -72,104 +72,102 @@
             <button class="close-btn" id="closeModalBtn">×</button>
         </div>
 
-<div class="form-grid">
+        <div class="form-grid">
 
-    <div class="th">차종</div>
-    <div class="td">
-        <input
-                id="vhclNmData"
-                class="fake-input"
-                placeholder="ex) 현대 아반떼"
-        />
-    </div>
+            <div class="th">차종</div>
+            <div class="td">
+                <input
+                        id="vhclNmData"
+                        class="fake-input"
+                        placeholder="ex) 현대 아반떼"
+                />
+            </div>
 
-    <div class="th">차량번호</div>
-    <div class="td">
-        <div style="display:flex; gap:8px;">
-            <input
-                    id="vhclNoFront"
-                    class="fake-input"
-                    style="width:120px;"
-                    maxlength="4"
-                    placeholder="ex) 12가"
-            />
-            <input
-                    id="vhclNoBack"
-                    class="fake-input"
-                    style="width:140px;"
-                    maxlength="4"
-                    placeholder="ex) 1234"
-                    oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-            />
-        </div>
+            <div class="th">차량번호</div>
+            <div class="td">
+                <div style="display:flex; gap:8px;">
+                    <input
+                            id="vhclNoFront"
+                            class="fake-input"
+                            style="width:120px;"
+                            maxlength="4"
+                            placeholder="ex) 12가"
+                    />
+                    <input
+                            id="vhclNoBack"
+                            class="fake-input"
+                            style="width:140px;"
+                            maxlength="4"
+                            placeholder="ex) 1234"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                    />
+                </div>
 
-        <div class="field-guide">
-            차량번호 형식 : 12가 1234
-        </div>
-    </div>
-
-    <div class="th">동 / 호수</div>
-    <div class="td">
-
-        <select id="hoSelect" class="fake-input">
-            <c:forEach var="apt" items="${aptList}">
-                <option
-                        value="${apt.ho}"
-                        data-dong="${apt.dongNm}">
-                    ${apt.dongNm}동 ${apt.ho}호
-                </option>
-            </c:forEach>
-        </select>
-
-    </div>
-
-    <div class="th th-column">
-        차량등록증
-        <small>이미지 파일만 업로드 가능합니다</small>
-    </div>
-
-    <div class="td">
-
-        <div id="uploadBox" class="upload-box">
-
-            <input
-                    type="file"
-                    id="fileInput"
-                    hidden
-                    accept="image/*"
-            >
-
-            <!-- 기본 상태 -->
-            <div class="upload-content">
-                <div class="plus">+</div>
-
-                <div class="text">
-                    파일을 드래그하거나 클릭하여 업로드
+                <div class="field-guide">
+                    차량번호 형식 : 12가 1234
                 </div>
             </div>
 
-            <!-- 썸네일 -->
-            <div id="previewCard" class="preview-card">
+            <div class="th">동 / 호수</div>
+            <div class="td">
 
-                <img
-                        id="previewImg"
-                        class="preview-img"
-                >
+                <select id="hoSelect" class="fake-input">
+                    <c:forEach var="apt" items="${aptList}">
+                        <option value="${apt.hoNo}">
+                                ${apt.dongNm}동 ${apt.ho}호
+                        </option>
+                    </c:forEach>
+                </select>
 
-                <button
-                        type="button"
-                        id="removeBtn"
-                        class="remove-btn">
-                    ×
-                </button>
+            </div>
+
+            <div class="th th-column">
+                차량등록증
+                <small>이미지 파일만 업로드 가능합니다</small>
+            </div>
+
+            <div class="td">
+
+                <div id="uploadBox" class="upload-box">
+
+                    <input
+                            type="file"
+                            id="fileInput"
+                            hidden
+                            accept="image/*"
+                    >
+
+                    <!-- 기본 상태 -->
+                    <div class="upload-content">
+                        <div class="plus">+</div>
+
+                        <div class="text">
+                            파일을 드래그하거나 클릭하여 업로드
+                        </div>
+                    </div>
+
+                    <!-- 썸네일 -->
+                    <div id="previewCard" class="preview-card">
+
+                        <img
+                                id="previewImg"
+                                class="preview-img"
+                        >
+
+                        <button
+                                type="button"
+                                id="removeBtn"
+                                class="remove-btn">
+                            ×
+                        </button>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
-
-    </div>
-
-</div>
 
         <div class="btn-row">
             <button class="btn-main" id="registerBtn">

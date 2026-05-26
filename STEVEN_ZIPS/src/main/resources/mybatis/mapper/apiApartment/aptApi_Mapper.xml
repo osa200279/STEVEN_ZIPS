@@ -334,9 +334,6 @@
             APT_CMPLEX_NO,
             MGMT_OFC_NM,
             MGMT_OFC_TELNO,
-            MGMT_OFC_BANK_CD,
-            MGMT_OFC_ACNT_HLDR_NM,
-            MGMT_OFC_ACNT_NO,
             REG_DT
 
         ) VALUES (
@@ -345,9 +342,6 @@
                      #{aptCmplexNo},
                      #{mgmtOfcNm},
                      #{mgmtOfcTelno},
-                     #{mgmtOfcBankCd},
-                     #{mgmtOfcAcntHldrNm},
-                     #{mgmtOfcAcntNo},
                      SYSDATE
 
                  )
