@@ -69,8 +69,8 @@
             <div class="slim-drop">
                 <a href="${pageContext.request.contextPath}/resident/bill/inquiry/${apt.aptCmplexNo}">관리비조회</a>
                 <a href="${pageContext.request.contextPath}/resident/bill/guide">납부안내</a>
-                <a href="${pageContext.request.contextPath}/resident/bill/auto">자동이체신청</a>
-                <a href="${pageContext.request.contextPath}/resident/bill/receipt">납부영수증</a>
+                <%--<a href="${pageContext.request.contextPath}/resident/bill/auto">자동이체신청</a>--%>
+                <%--<a href="${pageContext.request.contextPath}/resident/bill/receipt">납부영수증</a>--%>
             </div>
         </div>
 

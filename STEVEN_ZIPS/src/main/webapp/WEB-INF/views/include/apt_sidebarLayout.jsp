@@ -176,8 +176,8 @@
       <div class="block w-full flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/bill/inquiry') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/bill/inquiry/${apt.aptCmplexNo}">관리비조회</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/bill/guide') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/bill/guide">납부안내</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/bill/auto') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/bill/auto">자동이체신청</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/bill/receipt') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/bill/receipt">납부영수증</a>
+        <%--<a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/bill/auto') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/bill/auto">자동이체신청</a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/bill/receipt') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/bill/receipt">납부영수증</a>--%>
       </div>
     </details>
 

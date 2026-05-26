@@ -310,7 +310,7 @@ public class ResidentPaymentServiceImpl implements IResidentPaymentService{
 
         Map<String, Object> paymentResponse = portOneRestClient.get()
                 .uri("/payments/{impUid}", impUid)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .retrieve()
                 .body(Map.class);
 
