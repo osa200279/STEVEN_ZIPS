@@ -5,16 +5,10 @@
     <select id="selectLawdCdList" resultType="string">
         SELECT LAWD_CD
         FROM LAW_DONG
-        WHERE 1=1
-        <if test="sido != null and sido != ''">
-            AND SIDO_NM = #{sido}
-        </if>
-        <if test="sigungu != null and sigungu != ''">
-            AND SIGUNGU_NM = #{sigungu}
-        </if>
-        <if test="emd != null and emd != ''">
-            AND DONG_NM = #{emd}
-        </if>
+        WHERE SIDO_NM = #{sido}
+          AND SIGUNGU_NM = #{sigungu}
+          AND DONG_NM = #{emd}
+          AND RI_NM IS NULL
     </select>
 
     <insert id="insertAptBatch">
