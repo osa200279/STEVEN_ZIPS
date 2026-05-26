@@ -184,7 +184,7 @@ const CtrtDetail = () => {
                   </div>
                   <div className="compact-input-group" style={{ gridColumn: '2 / -1' }}>
                     <label>타입</label>
-                    <input type="text" value={`${detail.TY_NM} ${detail.EXCLUSIVE_SIZE}㎡`} className="bg-gray-disabled" readOnly />
+                    <input type="text" value={detail.TY_NM ? `${detail.TY_NM} ${detail.EXCLUSIVE_SIZE}㎡` : ''} className="bg-gray-disabled" readOnly />
                   </div>
                   <div className="compact-input-group">
                     <label>임차인 이름</label>
@@ -192,7 +192,7 @@ const CtrtDetail = () => {
                   </div>
                   <div className="compact-input-group">
                     <label>임차인 ID (번호)</label>
-                    <input type="text" value={`${detail.USER_ID} (${detail.USER_NO})`} className="bg-gray-disabled" readOnly />
+                    <input type="text" value={detail.USER_ID ? `${detail.USER_ID} (${detail.USER_NO})` : ''} className="bg-gray-disabled" readOnly />
                   </div>
                 </div>
               </div>
@@ -215,7 +215,7 @@ const CtrtDetail = () => {
                   <div className="compact-input-group">
                     <p className="upload-main-text" style={{ fontSize: '13px', margin: '0 0 2px 0' }}>첨부 서류 {docs?.length || 0}건</p>
                     {
-                      docs.map((doc, idx) => {
+                      docs?.map((doc, idx) => {
                         return (
                           <div key={idx}>
                             <span className='text-small'>{idx + 1}.&nbsp;</span>
