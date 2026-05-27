@@ -25,8 +25,8 @@
                     <path d="M9 21V12h6v9"/>
                 </svg>
                 <div class="logo-text">
-                    <span class="ko">대덕아파트</span>
-                    <span class="en">DAEDEOK APARTMENT</span>
+                    <span class="ko">우리집맵핑</span>
+                    <span class="en">MY HOME MAPPING</span>
                 </div>
             </a>
 
@@ -102,7 +102,7 @@
                                 아직 회원이 아니신가요?<br>
                                 회원가입 후 더 다양한 서비스를 이용할 수 있습니다.
                             </p>
-                            <a href="${pageContext.request.contextPath}/join" class="join-link">회원가입</a>
+                            <a href="${pageContext.request.contextPath}/member/join.do" class="join-link">회원가입</a>
                         </div>
                     </div>
                 </section>
