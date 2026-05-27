@@ -96,7 +96,7 @@ function SalesGrid({
 
         EMPTY: '공실',
 
-        LIVE: '입주중',
+        LIVE: '거주중',
 
         DISABLED: '비활성'
 
@@ -106,9 +106,10 @@ function SalesGrid({
     const columnDefs = useMemo(() => [
 
         {
-            headerCheckboxSelection: true,
+            headerCheckboxSelection: false,
 
-            checkboxSelection: true,
+            checkboxSelection: (params) =>
+                params.data?.hoSttsCd !== 'DISABLED',
 
             width: 55,
 
@@ -309,10 +310,6 @@ function SalesGrid({
                 if (value === 'LIVE') {
                     bg = '#fee2e2';
                     color = '#991b1b';
-                }
-                if (value === 'HOLD') {
-                    bg = '#fef9c3';
-                    color = '#854d0e';
                 }
 
 

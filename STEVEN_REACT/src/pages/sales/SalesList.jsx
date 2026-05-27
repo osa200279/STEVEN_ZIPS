@@ -72,8 +72,10 @@ function SalesList() {
 
     }
 
-    groupedMap[floorKey]
-      .push(item.ho);
+    groupedMap[floorKey].push({
+      ho: item.ho,
+      status: item.hoSttsCd
+    });
 
   });
 
@@ -85,7 +87,7 @@ function SalesList() {
       floor,
 
       rooms: rooms.sort(
-        (a, b) => Number(a) - Number(b)
+        (a, b) => Number(a.ho) - Number(b.ho)
       )
 
     }))

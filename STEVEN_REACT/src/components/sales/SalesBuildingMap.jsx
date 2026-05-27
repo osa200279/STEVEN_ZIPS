@@ -36,12 +36,16 @@ function SalesBuildingMap({
   }
 
   const handleRoomClick = (
-    roomNo
+    room
   ) => {
+
+    if (room.status === 'DISABLED') {
+      return;
+    }
 
     const exists =
       selectedRooms.some(
-        item => item.ho === roomNo
+        item => item.ho === room.ho
       );
 
     if (exists) {
@@ -49,7 +53,7 @@ function SalesBuildingMap({
       setSelectedRooms(
 
         selectedRooms.filter(
-          item => item.ho !== roomNo
+          item => item.ho !== room.ho
         )
 
       );
@@ -60,7 +64,7 @@ function SalesBuildingMap({
         ...selectedRooms,
 
         {
-          ho: roomNo
+          ho: room.ho
         }
       ]);
     }
@@ -82,12 +86,75 @@ function SalesBuildingMap({
       {/* 상단 */}
       <div
         style={{
-          padding: '20px',
-          borderBottom: '1px solid #eee'
+          padding: '14px 20px',
+          borderBottom: '1px solid #eee',
+          display: 'flex',
+          gap: '14px',
+          flexWrap: 'wrap'
         }}
       >
-      </div>
 
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '12px'
+          }}
+        >
+          <div
+            style={{
+              width: '12px',
+              height: '12px',
+              borderRadius: '4px',
+              background: '#ecfdf5',
+              border: '1px solid #86efac'
+            }}
+          />
+          공실
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '12px'
+          }}
+        >
+          <div
+            style={{
+              width: '12px',
+              height: '12px',
+              borderRadius: '4px',
+              background: '#fef2f2',
+              border: '1px solid #fca5a5'
+            }}
+          />
+          거주중
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '12px'
+          }}
+        >
+          <div
+            style={{
+              width: '12px',
+              height: '12px',
+              borderRadius: '4px',
+              background: '#f3f4f6',
+              border: '1px solid #d1d5db'
+            }}
+          />
+          사용불가
+        </div>
+
+      </div>
       {/* 배치도 */}
       <div
         style={{
@@ -139,12 +206,12 @@ function SalesBuildingMap({
 
                 const isSelected =
                   selectedRooms.some(
-                    item => item.ho === room
+                    item => item.ho === room.ho
                   );
 
                 return (
                   <button
-                    key={room}
+                    key={room.ho}
                     onClick={() => handleRoomClick(room)}
                     style={{
                       height: '28px',
@@ -154,23 +221,38 @@ function SalesBuildingMap({
                       borderRadius: '8px',
                       border: isSelected
                         ? '1px solid #2563eb'
-                        : '1px solid #86efac',
+                        : room.status === 'LIVE'
+                          ? '1px solid #fca5a5'
+                          : room.status === 'DISABLED'
+                            ? '1px solid #d1d5db'
+                            : '1px solid #86efac',
 
                       background: isSelected
                         ? '#dbeafe'
-                        : '#ecfdf5',
+                        : room.status === 'LIVE'
+                          ? '#fef2f2'
+                          : room.status === 'DISABLED'
+                            ? '#f3f4f6'
+                            : '#ecfdf5',
 
                       color: isSelected
                         ? '#1d4ed8'
-                        : '#15803d',
+                        : room.status === 'LIVE'
+                          ? '#dc2626'
+                          : room.status === 'DISABLED'
+                            ? '#6b7280'
+                            : '#15803d',
 
                       fontWeight: '600',
                       fontSize: '11px',
 
-                      cursor: 'pointer'
+                      cursor:
+                        room.status === 'DISABLED'
+                          ? 'not-allowed'
+                          : 'pointer'
                     }}
                   >
-                    {room}
+                    {room.ho}
                   </button>
                 );
               })}
