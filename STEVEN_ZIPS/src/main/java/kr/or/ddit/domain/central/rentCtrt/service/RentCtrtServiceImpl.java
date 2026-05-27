@@ -65,8 +65,19 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
     }
 
     @Override
+    @Transactional
     public int updateCtrt(String rentCtrtNo, Map<String, Object> detail) {
-        return rentCtrtMapper.updateCtrt(rentCtrtNo, detail);
+
+        int res = rentCtrtMapper.updateCtrt(rentCtrtNo,detail);
+
+        String ctrtSttsCd = (String) detail.get("CTRT_STTS_CD");
+
+
+        if ("APPROVED".equals(ctrtSttsCd)) {
+
+        }
+
+        return res;
     }
 
 }
