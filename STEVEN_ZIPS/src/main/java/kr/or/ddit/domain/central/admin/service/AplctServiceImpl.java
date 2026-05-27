@@ -37,10 +37,11 @@ public class AplctServiceImpl implements IAplctService {
 
     /**
      * 신청 승인, 거절
-     * @author 이용로
+     *
      * @param updateList
      * @param manager
      * @return
+     * @author 이용로
      */
     @Override
     public int approveAplct(List<Map<String, Object>> updateList, String manager) {
@@ -64,7 +65,7 @@ public class AplctServiceImpl implements IAplctService {
                         NotificationDTO.success(
                                 "청약 신청 승인",
                                 "청약 신청이 접수되었습니다. 제출 서류를 확인해주세요.",
-                                "/contract/historyDetail.do?aplctNo="+aplctNo
+                                "/contract/historyDetail.do?aplctNo=" + aplctNo
                         )
                 );
             }
@@ -73,7 +74,6 @@ public class AplctServiceImpl implements IAplctService {
         List<Map<String, Object>> qualifiedList = updateList.stream()
                 .filter(map -> "QUALIFIED".equals(map.get("aplctSttsCd")))
                 .collect(Collectors.toList());
-
 
 
         if (!qualifiedList.isEmpty()) {
@@ -85,8 +85,6 @@ public class AplctServiceImpl implements IAplctService {
                 String aplctNo = (String) map.get("aplctNo");
                 String rentCtrtNo = aplctNo + "_" + seq;
                 map.put("rentCtrtNo", rentCtrtNo);
-
-
 
                 // 신청한 공고의 매물 리스트 조회
                 List<String> rentLstgNo = aplctMapper.getRentLstgNoByAplctNo(aplctNo);
