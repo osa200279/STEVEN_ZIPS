@@ -110,6 +110,15 @@ public class ResidentBoardServiceImpl implements IResidentBoardService {
     @Override
     public void insertBoardFree(RsidBoardVO rsidBoardVO, MultipartFile attachFile) throws IOException {
 
+        System.out.println("aptCmplexNo: " + rsidBoardVO.getAptCmplexNo());
+        System.out.println("boardNo: " + rsidBoardVO.getBoardNo());
+
+        // ① 게시판 인스턴스 없으면 자동 생성 (추가!)
+        mapper.mergeFreeBoardInstance(rsidBoardVO.getAptCmplexNo());
+
+        // ② board_no 세팅 (추가!)
+        rsidBoardVO.setBoardNo(rsidBoardVO.getAptCmplexNo() + "_free");
+
         // ① 첨부파일 확인
         if (attachFile != null && !attachFile.isEmpty()) {
             String originalFilename = attachFile.getOriginalFilename();
@@ -150,5 +159,7 @@ public class ResidentBoardServiceImpl implements IResidentBoardService {
     public int selectBoardFreeCount(PaginationInfoVO<RsidBoardVO> pagingVO) {
         return mapper.selectBoardFreeCount(pagingVO);
     }
+
+    //
 
 }

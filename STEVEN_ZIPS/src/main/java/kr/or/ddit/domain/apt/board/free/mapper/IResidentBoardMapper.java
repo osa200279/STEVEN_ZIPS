@@ -13,8 +13,6 @@ import java.util.List;
 public interface IResidentBoardMapper {
     void insertBoardFree(RsidBoardVO rsidBoardVO);
 
-
-
     int selectBoardFreeCount(PaginationInfoVO<RsidBoardVO> pagingVO);
 
     List<RsidBoardVO> boardFreeList(PaginationInfoVO<RsidBoardVO> pagingVO);
@@ -38,4 +36,6 @@ public interface IResidentBoardMapper {
     int insertSubComment(RsidBoardCommentVO rsidBoardCommentVO);
 
     AttachFileVO selectAttachFile(String fileGroupNo);
+
+    void mergeFreeBoardInstance(String aptCmplexNo);
 }
