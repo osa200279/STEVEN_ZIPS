@@ -276,7 +276,6 @@
                                 <%-- 파일 한번에 여러개 선택 --%>
                             <input type="file" id="multiFileInput"
                                    style="display:none"
-                                   accept=".pdf,.jpg,.jpeg,.png"
                                    multiple
                                    onchange="handleFileSelect(this)"/>
                             <label for="multiFileInput"
