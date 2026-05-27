@@ -148,6 +148,7 @@
     <!--매물조회-->
     <select id="selectRentList" resultType="map" parameterType="string">    /*kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper.selectRentList*/
         SELECT rl.rent_lstg_no
+              ,au.dong_nm
               ,ad.ho
               ,aht.ho_ty_no
               ,aht.ty_nm
@@ -158,6 +159,7 @@
               ,rl.mthly_rent_amt
         FROM rent_listing rl
         INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
         INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
         WHERE aht.apt_cmplex_no = #{aptCmplexNo}
         AND rl.rcrt_lstg_stts_cd = 'GENERAL'
