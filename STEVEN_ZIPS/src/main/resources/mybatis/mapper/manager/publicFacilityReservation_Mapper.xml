@@ -575,4 +575,12 @@
         )
     </update>
 
+    <!-- 단지관리자 - 예약승인 상세 조회 -->
+    <select id="selectManagerReservationDetail" resultMap="reservationMap">
+        SELECT <include refid="reservationColumns"/>
+        <include refid="reservationJoin"/>
+        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND FH.RSVT_NO = #{rsvtNo}
+    </select>
+
 </mapper>
