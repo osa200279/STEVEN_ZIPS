@@ -256,8 +256,8 @@
                 <div class="px-7 py-5 border-t border-[#eef2eb] bg-[#f4f7f4]">
 
                         <%-- 안내 문구: 서류 순서 표시 --%>
-                    <p class="text-xs text-slate-400 mb-3">
-                        ※ 아래 순서대로 파일을 선택해주세요 :
+                    <p class="text-xs text-slate-400 mb-3" style="font-size: 14px;">
+                        ※ 다음 서류를 제출해주세요 :
                         <c:forEach var="doc" items="${docList}" varStatus="vs">
                             <c:choose>
                                 <c:when test="${doc.SBMSN_DOC_TY_CD == 'ID'}">신분증</c:when>
