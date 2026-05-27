@@ -26,7 +26,7 @@
             , A.USER_NO
             , sysdate
             , 'PENDING'
-            , R.RENT_LSTG_NO
+            , #{map.rentLstgNo}
             , R.DPST_AMT
             , R.MTHLY_RENT_AMT
             , DOC.SBMSN_DOC_NO
