@@ -6,6 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface IAnnRegisterService {
+
+    List<String> selectSidoList();
+
+    List<String> selectSigunguList(String sidoNm);
+
+    List<String> selectEmdList(String sidoNm, String sigunguNm);
+
     List<AptComplexVO> selectAptList(String sidoNm, String sigunguNm, String emdNm);
 
     Map<String, Object> selectOneAptDetail(String aptCmplexNo);

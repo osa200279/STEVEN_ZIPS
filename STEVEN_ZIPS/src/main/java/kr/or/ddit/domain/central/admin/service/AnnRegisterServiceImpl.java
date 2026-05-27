@@ -45,6 +45,21 @@ public class AnnRegisterServiceImpl implements IAnnRegisterService{
 
 
     @Override
+    public List<String> selectSidoList() {
+        return annRegisterMapper.selectSidoList();
+    }
+
+    @Override
+    public List<String> selectSigunguList(String sidoNm) {
+        return annRegisterMapper.selectSigunguList(sidoNm);
+    }
+
+    @Override
+    public List<String> selectEmdList(String sidoNm, String sigunguNm) {
+        return annRegisterMapper.selectEmdList(sidoNm, sigunguNm);
+    }
+
+    @Override
     public List<AptComplexVO> selectAptList(String sidoNm, String sigunguNm, String emdNm) {
         return annRegisterMapper.selectAptList(sidoNm, sigunguNm, emdNm);
     }

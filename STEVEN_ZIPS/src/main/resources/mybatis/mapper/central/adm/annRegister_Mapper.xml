@@ -8,7 +8,7 @@
             , 4, '0')
             FROM center_ann_board_post
         </selectKey>
-        INSERT INTO center_ann_board_post (
+        INSERT INTO center_ann_board_post (             /*kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper.insertAnn*/
         ann_no
         , board_no
         , ttl
@@ -46,29 +46,65 @@
         )
     </insert>
 
+    <!-- 공고등록시 임대모집 유형 코드 변경 -->
     <update id="updateRentListStts" parameterType="map">
-        UPDATE rent_listing
+        UPDATE rent_listing             /*kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper.updateRentListStts*/
         SET rcrt_lstg_stts_cd = 'SUBSCRIBE'
            ,ann_no = #{annNo}
         WHERE rent_lstg_no = #{rentLstgNo}
     </update>
 
-    <!-- 아파트 목록 조회하기 -->
+    <!-- GENERAL 매물이 있는 단지 기준 지역·단지 조회 (rent_listing과 동일 조건) -->
+    <sql id="rentListingAptJoin">
+        FROM apt_complex ac
+        INNER JOIN apt_ho_ty aht ON ac.apt_cmplex_no = aht.apt_cmplex_no
+        INNER JOIN apt_detail ad ON ad.ho_ty_no = aht.ho_ty_no
+        INNER JOIN rent_listing rl ON rl.ho_no = ad.ho_no
+        WHERE rl.rcrt_lstg_stts_cd = 'GENERAL'
+    </sql>
+
+    <!-- 시/도 조회 -->
+    <select id="selectSidoList" resultType="string">
+        SELECT DISTINCT ac.sido_nm
+        <include refid="rentListingAptJoin"/>
+          AND ac.sido_nm IS NOT NULL
+        ORDER BY ac.sido_nm
+    </select>
+
+    <!-- 시/군/구 조회 -->
+    <select id="selectSigunguList" resultType="string">
+        SELECT DISTINCT ac.sigungu_nm
+        <include refid="rentListingAptJoin"/>
+          AND ac.sido_nm = #{sidoNm}
+          AND ac.sigungu_nm IS NOT NULL
+        ORDER BY ac.sigungu_nm
+    </select>
+
+    <!-- 읍/면/동 조회 -->
+    <select id="selectEmdList" resultType="string">
+        SELECT DISTINCT ac.emd_nm
+        <include refid="rentListingAptJoin"/>
+          AND ac.sido_nm = #{sidoNm}
+          AND ac.sigungu_nm = #{sigunguNm}
+          AND ac.emd_nm IS NOT NULL
+        ORDER BY ac.emd_nm
+    </select>
+
+    <!-- 아파트 목록 조회하기 (GENERAL 매물이 있는 단지만) -->
     <select id="selectAptList" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
-        SELECT apt_cmplex_no
-              ,apt_cmplex_nm
-        FROM apt_complex
-        WHERE 1=1
+        SELECT DISTINCT ac.apt_cmplex_no
+              ,ac.apt_cmplex_nm
+        <include refid="rentListingAptJoin"/>
         <if test="sidoNm != null and sidoNm != ''">
-            AND sido_nm = #{sidoNm}
+            AND ac.sido_nm = #{sidoNm}
         </if>
         <if test="sigunguNm != null and sigunguNm != ''">
-            AND sigungu_nm = #{sigunguNm}
+            AND ac.sigungu_nm = #{sigunguNm}
         </if>
         <if test="emdNm != null and emdNm != ''">
-            AND emd_nm = #{emdNm}
+            AND ac.emd_nm = #{emdNm}
         </if>
-        ORDER BY apt_cmplex_nm asc
+        ORDER BY ac.apt_cmplex_nm ASC
     </select>
 
     <!-- 도로명주소 조회하기 -->

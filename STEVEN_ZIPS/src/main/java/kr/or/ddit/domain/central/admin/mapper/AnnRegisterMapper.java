@@ -9,6 +9,16 @@ import java.util.Map;
 
 @Mapper
 public interface AnnRegisterMapper {
+
+    /** GENERAL 상태 매물이 있는 시·도 */
+    List<String> selectSidoList();
+
+    /** GENERAL 상태 매물이 있는 시·군·구 */
+    List<String> selectSigunguList(@Param("sidoNm") String sidoNm);
+
+    /** GENERAL 상태 매물이 있는 읍·면·동 */
+    List<String> selectEmdList(@Param("sidoNm") String sidoNm, @Param("sigunguNm") String sigunguNm);
+
     List<AptComplexVO> selectAptList(String sidoNm, String sigunguNm, String emdNm);
 
     String selectDorojuso(String aptCmplexNo);

@@ -2,7 +2,6 @@ package kr.or.ddit.domain.central.admin.controller;
 
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.central.admin.service.IAnnRegisterService;
-import kr.or.ddit.domain.central.service.ICentralAptComplexService;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +19,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AnnRegisterController {
 
-    private final ICentralAptComplexService centralAptComplexService;
-
     private final IAnnRegisterService annRegisterService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/sido")
     public List<String> getSido() {
-        return centralAptComplexService.selectSidoList();
+        return annRegisterService.selectSidoList();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -35,8 +32,7 @@ public class AnnRegisterController {
     public List<String> getSigunguList(
             @RequestParam String sidoNm
     ) {
-
-        return centralAptComplexService.selectSigunguList(sidoNm);
+        return annRegisterService.selectSigunguList(sidoNm);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -45,10 +41,7 @@ public class AnnRegisterController {
             @RequestParam String sidoNm,
             @RequestParam String sigunguNm
     ) {
-        return centralAptComplexService.selectDongList(
-                sidoNm,
-                sigunguNm
-        );
+        return annRegisterService.selectEmdList(sidoNm, sigunguNm);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
