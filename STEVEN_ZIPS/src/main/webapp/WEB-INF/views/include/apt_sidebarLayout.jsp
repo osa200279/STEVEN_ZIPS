@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -226,7 +226,8 @@
       </div>
     </details>
 
-    <details class="side-nav-item group" ${fn:contains(pageContext.request.requestURI, '/resident/vote') ? 'open="open"' : ''}>
+    <%-- 설문 목록은 실제 주민 설문 경로로 연결한다. --%>
+    <details class="side-nav-item group" ${fn:contains(pageContext.request.requestURI, '/resident/survey') or fn:contains(pageContext.request.requestURI, '/resident/vote') ? 'open="open"' : ''}>
       <summary class="flex items-center justify-between px-4 py-3 rounded-full cursor-pointer hover:bg-primary/5 transition-colors text-on-surface">
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">how_to_vote</span>
@@ -235,7 +236,7 @@
         <span class="material-symbols-outlined text-sm expand-icon transition-transform">expand_more</span>
       </summary>
       <div class="block w-full flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/vote/survey') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/vote/survey">투표 및 설문조사</a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/survey/list') or fn:contains(pageContext.request.requestURI, '/resident/survey/result') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/survey/list/${apt.aptCmplexNo}">투표 및 설문조사</a>
       </div>
     </details>
 
