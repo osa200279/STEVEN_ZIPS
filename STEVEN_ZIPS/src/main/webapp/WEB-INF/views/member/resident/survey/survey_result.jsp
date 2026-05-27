@@ -96,6 +96,32 @@
 
   <script>
 
+    <%-- 전체 참여자 수는 현재 사용자 응답(myResponse)이 아니라 설문 결과 기준으로 가져온다. --%>
+    <%
+      kr.or.ddit.domain.apt.mgmtOffice.survey.service.IMngSurveyService surveyServiceBean =
+          org.springframework.web.context.support.WebApplicationContextUtils
+              .getWebApplicationContext(pageContext.getServletContext())
+              .getBean(kr.or.ddit.domain.apt.mgmtOffice.survey.service.IMngSurveyService.class);
+
+      java.util.Map<String, Object> surveyResultData =
+          surveyServiceBean.selectSurveyResult(
+              ((kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO) request.getAttribute("survey"))
+                  .getSurveyNo()
+          );
+
+      int totalParticipantCount = 0;
+      Object participantCountValue = surveyResultData.get("participantCount");
+      if (participantCountValue instanceof Number) {
+        totalParticipantCount = ((Number) participantCountValue).intValue();
+      } else if (participantCountValue != null) {
+        try {
+          totalParticipantCount = Integer.parseInt(participantCountValue.toString());
+        } catch (NumberFormatException ignore) {
+          totalParticipantCount = 0;
+        }
+      }
+    %>
+
     const rawJson =
             '<%= org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript(
 ((kr.or.ddit.domain.apt.mgmtOffice.survey.dto.MngSurveyDTO)
@@ -122,6 +148,9 @@ request.getAttribute("survey")).getSurveyQitemCn()
             );
 
     console.log(statistics);
+
+    const participantCount =
+            <%= totalParticipantCount %>;
 
 
 
@@ -165,7 +194,11 @@ request.getAttribute("survey")).getSurveyQitemCn()
 
       let totalCount = 0;
 
-      if(q.type === "SHORT" || q.type === "LONG"){
+      if(participantCount > 0){
+
+        totalCount = participantCount;
+
+      }else if(q.type === "SHORT" || q.type === "LONG"){
 
         const myResponse =
                 JSON.parse(
