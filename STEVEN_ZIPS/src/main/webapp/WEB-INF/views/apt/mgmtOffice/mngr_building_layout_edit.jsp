@@ -174,6 +174,24 @@
                                         <div class="layout-sub-title">
                                             동별 세대 구조를 확인할 수 있습니다.
                                         </div>
+                                        <div class="layout-legend">
+
+                                            <div class="legend-item">
+                                                <span class="legend-color empty"></span>
+                                                공실
+                                            </div>
+
+                                            <div class="legend-item">
+                                                <span class="legend-color live"></span>
+                                                거주중
+                                            </div>
+
+                                            <div class="legend-item">
+                                                <span class="legend-color disabled"></span>
+                                                비활성
+                                            </div>
+
+                                        </div>
 
                                     </div>
 
@@ -521,7 +539,6 @@
 <div class="ho-type-modal-backdrop"
      id="hoTypeModalBackdrop">
 </div>
-
 
 
 <script src="${pageContext.request.contextPath}/js/mgmtOfc/mngr_ho_ty_edit.js"></script>
