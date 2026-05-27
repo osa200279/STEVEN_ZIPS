@@ -253,11 +253,13 @@
         }
 
         .sender-name{
-            margin-bottom:1px;
+            margin-bottom:2px;
             padding-left:4px;
 
-            font-size:11px;
-            color:#888;
+            font-size:13px;
+            font-weight:600;
+
+            color:#374151;
         }
 
         .system-message{
