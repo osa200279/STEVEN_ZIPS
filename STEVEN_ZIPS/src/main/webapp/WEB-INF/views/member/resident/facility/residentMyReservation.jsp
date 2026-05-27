@@ -128,61 +128,142 @@
       outline: none;
     }
 
+    /* 공통 버튼 */
     .pf-btn {
-      height: 38px;
+      height: 34px;
       border: none;
-      border-radius: 999px;
-      padding: 0 18px;
+      border-radius: 10px;
+      padding: 0 16px;
+      font-size: 13px;
       font-weight: 800;
       cursor: pointer;
       white-space: nowrap;
+      transition: 0.15s ease;
     }
 
+    .pf-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    /* 검색 버튼 */
     .pf-btn-primary {
       background: #006b4f;
       color: #fff;
     }
 
+    /* 초기화/닫기 버튼 */
     .pf-btn-light {
-      background: #66758d;
+      background: #64748b;
       color: #fff;
     }
 
+    /* 상세 버튼 */
+    .pf-btn-detail {
+      background: #14532d;
+      color: #fff;
+      box-shadow: 0 3px 8px rgba(20, 83, 45, 0.22);
+    }
+
+    /* 취소 버튼 */
+    .pf-btn-cancel {
+      background: #ef4444;
+      color: #fff;
+      box-shadow: 0 3px 8px rgba(239, 68, 68, 0.22);
+    }
+
+    /* 예약내역 테이블 */
     .pf-table {
       width: 100%;
       border-collapse: collapse;
+      table-layout: fixed;
       font-size: 13px;
       background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
     }
 
     .pf-table th {
-      background: #f3f3f3;
-      border-top: 2px solid #333;
-      border-bottom: 1px solid var(--border);
-      padding: 12px;
+      background: #f8faf9;
+      border-top: 2px solid #222;
+      border-bottom: 1px solid #dfe5e1;
+      padding: 14px 10px;
       text-align: center;
       color: #111827;
-      font-weight: 800;
+      font-weight: 900;
     }
 
     .pf-table td {
       border-bottom: 1px solid #edf0ed;
-      padding: 12px;
+      padding: 14px 10px;
       text-align: center;
-      color: var(--text-dark);
+      color: #111827;
+      vertical-align: middle;
+      white-space: nowrap;
     }
 
+    .pf-table th:nth-child(1),
+    .pf-table td:nth-child(1) {
+      width: 70px;
+    }
+
+    .pf-table th:nth-child(2),
+    .pf-table td:nth-child(2) {
+      width: 170px;
+    }
+
+    .pf-table th:nth-child(3),
+    .pf-table td:nth-child(3) {
+      width: 170px;
+    }
+
+    .pf-table th:nth-child(4),
+    .pf-table td:nth-child(4) {
+      width: 280px;
+    }
+
+    .pf-table th:nth-child(5),
+    .pf-table td:nth-child(5) {
+      width: 110px;
+    }
+
+    .pf-table th:nth-child(6),
+    .pf-table td:nth-child(6) {
+      width: 150px;
+    }
+
+    /* 상태 뱃지 공통 */
     .pf-badge {
-      display: inline-block;
-      min-width: 66px;
-      padding: 4px 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 74px;
+      height: 28px;
+      padding: 0 10px;
       border-radius: 999px;
       font-size: 12px;
-      font-weight: 800;
-      background: #edf4fb;
-      color: #2d6688;
+      font-weight: 900;
+    }
+
+    /* 승인대기 */
+    .pf-badge-pending {
+      background: #fff3d6;
+      color: #b77900;
+    }
+
+    /* 승인완료 */
+    .pf-badge-approved {
+      background: #e3f2ff;
+      color: #0969da;
+    }
+
+    /* 승인거절 */
+    .pf-badge-rejected {
+      background: #ffe4e6;
+      color: #dc2626;
+    }
+
+    /* 승인취소 */
+    .pf-badge-cancelled {
+      background: #e5e7eb;
+      color: #4b5563;
     }
 
     .pf-paging {
@@ -217,8 +298,10 @@
 
     .pf-actions {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       justify-content: center;
+      align-items: center;
+      flex-wrap: nowrap;
     }
 
     .pf-modal {
@@ -270,6 +353,68 @@
       .pf-search-grid {
         grid-template-columns: 1fr;
       }
+    }
+
+    .pf-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.45);
+      z-index: 9999;
+    }
+
+    .pf-modal.is-open {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pf-modal-box {
+      width: 560px;
+      max-width: calc(100% - 32px);
+      background: #fff;
+      border-radius: 18px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+    }
+
+    .pf-modal-title {
+      padding: 18px 22px;
+      font-size: 18px;
+      font-weight: 900;
+      color: #111827;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f8faf9;
+    }
+
+    .pf-detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .pf-detail-table th {
+      width: 130px;
+      padding: 13px 16px;
+      text-align: left;
+      background: #f3f6f4;
+      color: #374151;
+      font-weight: 800;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .pf-detail-table td {
+      padding: 13px 16px;
+      color: #111827;
+      border-bottom: 1px solid #e5e7eb;
+      word-break: keep-all;
+    }
+
+    .pf-modal-footer {
+      display: flex;
+      justify-content: center;
+      padding: 16px 20px 20px;
     }
   </style>
 </head>
@@ -345,8 +490,8 @@
                   <option value="">전체</option>
                   <option value="PENDING" ${searchVO.searchRsvtSttsCd eq 'PENDING' ? 'selected' : ''}>승인대기</option>
                   <option value="APPROVED" ${searchVO.searchRsvtSttsCd eq 'APPROVED' ? 'selected' : ''}>승인완료</option>
-                  <option value="REJECTED" ${searchVO.searchRsvtSttsCd eq 'REJECTED' ? 'selected' : ''}>거절</option>
-                  <option value="CANCELLED" ${searchVO.searchRsvtSttsCd eq 'CANCELLED' ? 'selected' : ''}>취소</option>
+                  <option value="REJECTED" ${searchVO.searchRsvtSttsCd eq 'REJECTED' ? 'selected' : ''}>승인거절</option>
+                  <option value="CANCELLED" ${searchVO.searchRsvtSttsCd eq 'CANCELLED' ? 'selected' : ''}>승인취소</option>
                 </select>
               </div>
 
@@ -389,10 +534,18 @@
                 <td>${row.cmnFacilityNm}</td>
                 <td>${row.itemNm}</td>
                 <td>${row.rsvtBgngDttm} ~ ${row.rsvtEndDttm}</td>
-                <td><span class="pf-badge">${row.rsvtSttsNm}</span></td>
+                <td>
+                  <span class="pf-badge
+                    ${row.rsvtSttsCd eq 'PENDING' ? 'pf-badge-pending' : ''}
+                    ${row.rsvtSttsCd eq 'APPROVED' ? 'pf-badge-approved' : ''}
+                    ${row.rsvtSttsCd eq 'REJECTED' ? 'pf-badge-rejected' : ''}
+                    ${row.rsvtSttsCd eq 'CANCELLED' ? 'pf-badge-cancelled' : ''}">
+                      ${row.rsvtSttsNm}
+                  </span>
+                </td>
                 <td class="pf-actions">
                   <button type="button"
-                          class="pf-btn pf-btn-light"
+                          class="pf-btn pf-btn-detail"
                           onclick="detailRsvt('${row.rsvtNo}')">
                     상세
                   </button>
@@ -402,12 +555,12 @@
 
                       PENDING  : 승인대기 → 취소 가능
                       APPROVED : 승인완료 → 예약 시작 전이면 서버에서 취소 가능 여부 판단
-                      REJECTED : 거절 → 이미 종료된 상태라 취소 불필요
-                      CANCELLED: 취소 → 이미 취소된 상태라 취소 불필요
+                      REJECTED : 승인거절 → 이미 종료된 상태라 취소 불필요
+                      CANCELLED: 승인취소 → 이미 취소된 상태라 취소 불필요
                     --%>
                   <c:if test="${row.rsvtSttsCd eq 'PENDING'}">
                     <button type="button"
-                            class="pf-btn pf-btn-light"
+                            class="pf-btn pf-btn-cancel"
                             onclick="cancelRsvt('${row.rsvtNo}')">
                       취소
                     </button>
@@ -431,10 +584,12 @@
       <div id="detailModal" class="pf-modal">
         <div class="pf-modal-box">
           <div class="pf-modal-title">예약 상세</div>
+
           <div id="detailBody"></div>
 
-          <div class="pf-actions" style="margin-top:16px;">
-            <button class="pf-btn pf-btn-light"
+          <div class="pf-modal-footer">
+            <button type="button"
+                    class="pf-btn pf-btn-light"
                     onclick="document.getElementById('detailModal').classList.remove('is-open')">
               닫기
             </button>
@@ -475,13 +630,76 @@
               return response.json();
             })
             .then(function(d) {
+
+              /*
+               * nvl 함수 역할
+               * 값이 null, undefined, 빈 문자열이면 '-'로 보여주기 위한 화면용 함수입니다.
+               */
+              function nvl(value) {
+                if(value === null || value === undefined || value === '') {
+                  return '-';
+                }
+                return value;
+              }
+
+              function getBadgeClass(statusCd) {
+                if(statusCd === 'PENDING') {
+                  return 'pf-badge-pending';
+                }
+
+                if(statusCd === 'APPROVED') {
+                  return 'pf-badge-approved';
+                }
+
+                if(statusCd === 'REJECTED') {
+                  return 'pf-badge-rejected';
+                }
+
+                if(statusCd === 'CANCELLED') {
+                  return 'pf-badge-cancelled';
+                }
+
+                return '';
+              }
+
+              /*
+               * 이용목적 필드명
+               * DB 컬럼명: USE_PRPS_CN
+               * Java VO 예상 필드명: usePrpsCn
+               */
               document.getElementById('detailBody').innerHTML =
-                      '<p><b>시설명:</b> ' + d.cmnFacilityNm + '</p>' +
-                      '<p><b>예약대상:</b> ' + d.itemNm + '</p>' +
-                      '<p><b>예약시간:</b> ' + d.rsvtBgngDttm + ' ~ ' + d.rsvtEndDttm + '</p>' +
-                      '<p><b>동/호:</b> ' + (d.dongNm || d.dongNo || '') + ' / ' + (d.ho || '') + '</p>' +
-                      '<p><b>입주민명:</b> ' + (d.userNm || '') + '</p>' +
-                      '<p><b>상태:</b> ' + d.rsvtSttsNm + '</p>';
+                      '<table class="pf-detail-table">' +
+                      '<tbody>' +
+                      '<tr>' +
+                      '<th>예약시간</th>' +
+                      '<td>' + nvl(d.rsvtBgngDttm) + ' ~ ' + nvl(d.rsvtEndDttm) + '</td>' +
+                      '</tr>' +
+                      '<tr>' +
+                      '<th>시설명</th>' +
+                      '<td>' + nvl(d.cmnFacilityNm) + '</td>' +
+                      '</tr>' +
+                      '<tr>' +
+                      '<th>예약대상</th>' +
+                      '<td>' + nvl(d.itemNm) + '</td>' +
+                      '</tr>' +
+                      '<tr>' +
+                      '<th>이용목적</th>' +
+                      '<td>' + nvl(d.purposeCn) + '</td>' +
+                      '</tr>' +
+                      '<tr>' +
+                      '<th>동/호</th>' +
+                      '<td>' + nvl(d.dongNm || d.dongNo) + ' / ' + nvl(d.ho) + '</td>' +
+                      '</tr>' +
+                      '<tr>' +
+                      '<th>입주민명</th>' +
+                      '<td>' + nvl(d.userNm) + '</td>' +
+                      '</tr>' +
+                      '<tr>' +
+                      '<th>상태</th>' +
+                      '<td><span class="pf-badge ' + getBadgeClass(d.rsvtSttsCd) + '">' + nvl(d.rsvtSttsNm) + '</span></td>' +
+                      '</tr>' +
+                      '</tbody>' +
+                      '</table>';
 
               document.getElementById('detailModal').classList.add('is-open');
             });
