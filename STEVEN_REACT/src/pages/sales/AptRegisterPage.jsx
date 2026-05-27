@@ -3,11 +3,11 @@ import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
 
 import {
-    getApartmentList,
-    getDongList,
-    getSidoList,
-    getSigunguList,
-    registerApartment
+  getApartmentList,
+  getDongList,
+  getSidoList,
+  getSigunguList,
+  registerApartment
 } from '../../util/api/sales/aptRegisterApi';
 
 const AptRegisterPage = () => {
@@ -146,7 +146,7 @@ const AptRegisterPage = () => {
     }
 
     return aptList.filter(item =>
-      item.aptName?.includes(keyword)
+      item.kaptName?.includes(keyword)
     );
 
   }, [keyword, aptList]);
@@ -276,51 +276,53 @@ const AptRegisterPage = () => {
           </Card>
         )}
 
-        {!loading && filteredList.map((apt) => (
+        {!loading && filteredList.length > 0 && (
 
-          <Card
-            key={apt.kaptCode}
-            divide
-            title={apt.aptName}
-            subtitle={apt.roadAddr}
-            actions={
-              <Button
-                onClick={() => handleRegister(apt)}
-                disabled={registeringCode === apt.kaptCode}
-              >
-                {registeringCode === apt.kaptCode
-                  ? '등록중...'
-                  : '등록'}
-              </Button>
-            }
-          >
+          <div className="apt-table">
 
-            <div className="apt-info-grid">
-
-              <div>
-                <strong>단지코드</strong>
-                <div>{apt.kaptCode}</div>
-              </div>
-
-              <div>
-                <strong>세대수</strong>
-                <div>{apt.householdCount || '-'}</div>
-              </div>
-
-              <div>
-                <strong>준공년도</strong>
-                <div>{apt.buildYear || '-'}</div>
-              </div>
-
+            <div className="apt-table-header">
+              <div>아파트명</div>
+              <div>도로명 주소</div>
+              <div>관리</div>
             </div>
 
-          </Card>
+            {filteredList.map((apt) => (
 
-        ))}
+              <div
+                key={apt.kaptCode}
+                className="apt-table-row"
+              >
+
+                <div className="apt-name">
+                  {apt.kaptName}
+                </div>
+
+                <div className="apt-address">
+                  {apt.doroJuso}
+                </div>
+
+                <div>
+                  <Button
+                    onClick={() => handleRegister(apt)}
+                    disabled={registeringCode === apt.kaptCode}
+                  >
+                    {registeringCode === apt.kaptCode
+                      ? '등록중...'
+                      : '등록'}
+                  </Button>
+                </div>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
 
       </div>
 
-    </div>
+    </div >
   );
 };
 
