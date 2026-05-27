@@ -1,0 +1,53 @@
+.apt-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.apt-list-item{
+  padding:14px 16px;
+
+  border:1px solid var(--outline-variant);
+  border-radius:12px;
+
+  background:#fff;
+
+  cursor:pointer;
+
+  transition:all .15s ease;
+}
+
+.apt-list-item:hover{
+  background:var(--surface-container-low);
+  border-color:var(--primary-fixed);
+}
+
+.apt-list-item.selected{
+  border-color:var(--primary);
+  background:var(--surface-container-high);
+}
+
+.apt-list-name{
+  font-size:14px;
+  font-weight:700;
+
+  color:var(--primary);
+}
+
+.apt-list-address{
+  margin-top:4px;
+
+  font-size:13px;
+  line-height:1.5;
+
+  color:var(--on-surface-variant);
+}
+
+.apt-list-empty{
+  padding:40px 0;
+
+  text-align:center;
+
+  font-size:14px;
+  color:var(--on-surface-variant);
+}

@@ -2,22 +2,21 @@ import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import ResidentAssignPage from './components/ctrt/ResidentAssignPage';
 import MainLayout from "./components/layout/MainLayout";
 import AnnRegister from './pages/annRegister/components/AnnRegister';
 import Applicant from "./pages/Applicant";
-import AptRegister from "./pages/AptRegister";
 import Ctrt from "./pages/ctrt/Ctrt";
+import CtrtDetail from './pages/ctrt/CtrtDetail';
 import Home from "./pages/Home";
-import SalesList from './pages/sales/SalesList';
 import Member from './pages/member/member';
 import MngrRqstAprv from './pages/MngrRqstAprv/MngrRqstAprv';
-import ResidentAssignPage from './components/ctrt/ResidentAssignPage';
+import AptManagePage from './pages/sales/AptManagePage';
+import SalesList from './pages/sales/SalesList';
 import './styles/common.css';
 import './styles/header.css';
 import './styles/sidebar.css';
 import { getCookie } from './util/api/requestApi';
-import CtrtDetail from './pages/ctrt/CtrtDetail';
-import AptRegisterPage from './pages/sales/AptRegisterPage';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 function App() {
@@ -41,7 +40,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             {/* 아파트 등록 메뉴 */}
-            <Route path="/adm/apt/register" element={<AptRegisterPage />} />
+            <Route path="/adm/apt/register" element={<AptManagePage />} />
             {/* 아파트 통합 검색 메뉴 */}
             {/* 임대 매물 관리 */}
             <Route path="/adm/sales" element={<SalesList />} />
