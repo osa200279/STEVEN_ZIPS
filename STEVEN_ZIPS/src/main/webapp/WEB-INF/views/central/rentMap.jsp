@@ -91,6 +91,6 @@
 </script>
 
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=46f7d3996e1205738757a1e4f1ed1f04&libraries=services"></script>
-<script src="${pageContext.request.contextPath}/js/central/rentMap.js?v=20260519_1"></script>
+<script src="${pageContext.request.contextPath}/js/central/rentMap.js?v=20260527_restore_1"></script>
 </body>
 </html>

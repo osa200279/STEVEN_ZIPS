@@ -1,4 +1,3 @@
-// rentMap.js
 // 임대 매물 지도 화면 JS
 // DB 데이터: /rent/list-data
 
@@ -9,11 +8,26 @@ let markers = [];
 let selectedRentNo = null;
 let selectedAptCmplexNo = null;
 let currentType = "ALL";
+/*
+ * 공고 상세페이지 또는 매물 상세페이지에서 뒤로가기 했을 때
+ * 사용자가 보고 있던 단지/매물을 다시 열기 위한 sessionStorage key
+ */
+const RENT_MAP_RESTORE_KEY = "rentMapRestoreState";
 
 document.addEventListener("DOMContentLoaded", function () {
     initMap();
     bindEvents();
     loadRentListings();
+});
+
+/*
+ * 브라우저 뒤로가기로 페이지가 복원되는 경우
+ * 이전에 선택했던 단지와 매물을 다시 표시한다.
+ */
+window.addEventListener("pageshow", function () {
+    if (rentListingList.length > 0) {
+        restoreRentMapSelection();
+    }
 });
 
 /**
@@ -71,6 +85,11 @@ function loadRentListings() {
             }
 
             renderMarkers();
+            /*
+             * 공고 상세페이지에서 뒤로 돌아온 경우
+             * 저장해 둔 단지와 매물을 다시 선택한다.
+             */
+            restoreRentMapSelection();
         })
         .catch(function (error) {
             console.error("매물 목록 조회 오류:", error);
@@ -525,7 +544,13 @@ function renderComplexRentList(complexInfo, complexRentList) {
             ? ''
             + '<a href="' + escapeHtml(getAnnouncementDetailUrl(group.annNo)) + '"'
             + ' class="complex-ann-link-btn"'
-            + ' onclick="event.stopPropagation();">'
+            + ' onclick="rememberAnnouncementReturn(event, \''
+            + escapeJs(item.aptCmplexNo)
+            + '\', \''
+            + escapeJs(item.rentLstgNo)
+            + '\', \''
+            + escapeJs(group.annNo)
+            + '\');">'
             + '  공고확인하기'
             + '  <span class="material-symbols-outlined">arrow_forward</span>'
             + '</a>'
@@ -896,11 +921,120 @@ function escapeJs(value) {
 }
 
 /**
- * 상세 페이지 이동
+ * 매물 상세 페이지 이동
+ * 상세페이지에서 뒤로가기 했을 때도 현재 선택 상태를 복원할 수 있도록 저장한다.
  */
 function goRentDetail(rentLstgNo) {
     const contextPath = typeof CONTEXT_PATH !== "undefined" ? CONTEXT_PATH : "";
+
+    const selectedItem = rentListingList.find(function (item) {
+        return item.rentLstgNo === rentLstgNo;
+    });
+
+    if (selectedItem) {
+        saveRentMapSelection(
+            selectedItem.aptCmplexNo,
+            selectedItem.rentLstgNo,
+            selectedItem.annNo
+        );
+    }
+
     location.href = contextPath + "/rent/detail/" + encodeURIComponent(rentLstgNo);
+}
+
+/**
+ * 공고확인하기 버튼 클릭 시 현재 선택 상태를 저장한다.
+ * 실제 페이지 이동은 a 태그의 href가 그대로 처리한다.
+ */
+function rememberAnnouncementReturn(event, aptCmplexNo, rentLstgNo, annNo) {
+    if (event) {
+        event.stopPropagation();
+    }
+
+    saveRentMapSelection(aptCmplexNo, rentLstgNo, annNo);
+}
+
+/**
+ * 현재 선택 중인 단지와 매물을 현재 브라우저 탭에 임시 저장한다.
+ */
+function saveRentMapSelection(aptCmplexNo, rentLstgNo, annNo) {
+    if (!aptCmplexNo) {
+        return;
+    }
+
+    const restoreState = {
+        aptCmplexNo: aptCmplexNo,
+        rentLstgNo: rentLstgNo || "",
+        annNo: annNo || "",
+        savedAt: new Date().getTime()
+    };
+
+    try {
+        sessionStorage.setItem(
+            RENT_MAP_RESTORE_KEY,
+            JSON.stringify(restoreState)
+        );
+    } catch (error) {
+        console.warn("매물 지도 선택 상태 저장 실패:", error);
+    }
+}
+
+/**
+ * 공고 상세페이지 또는 매물 상세페이지에서 뒤로 돌아왔을 때
+ * 이전에 선택했던 단지와 매물을 다시 연다.
+ */
+function restoreRentMapSelection() {
+    let savedStateText = "";
+
+    try {
+        savedStateText = sessionStorage.getItem(RENT_MAP_RESTORE_KEY);
+
+        if (!savedStateText) {
+            return;
+        }
+
+        /*
+         * 한 번 복원한 뒤에는 제거한다.
+         * 이후 지도 화면에 새로 접속했을 때까지 자동으로 열리는 것을 방지한다.
+         */
+        sessionStorage.removeItem(RENT_MAP_RESTORE_KEY);
+    } catch (error) {
+        console.warn("매물 지도 선택 상태 읽기 실패:", error);
+        return;
+    }
+
+    let savedState;
+
+    try {
+        savedState = JSON.parse(savedStateText);
+    } catch (error) {
+        console.warn("매물 지도 선택 상태 변환 실패:", error);
+        return;
+    }
+
+    if (!savedState || !savedState.aptCmplexNo) {
+        return;
+    }
+
+    /*
+     * 이전에 선택했던 대표 매물이 있으면
+     * 단지 패널과 가운데 상세 패널까지 동일하게 복원한다.
+     */
+    const savedRent = rentListingList.find(function (item) {
+        return item.rentLstgNo === savedState.rentLstgNo
+            && item.aptCmplexNo === savedState.aptCmplexNo;
+    });
+
+    if (savedRent) {
+        selectComplex(savedRent.aptCmplexNo);
+        selectRent(savedRent.rentLstgNo);
+        return;
+    }
+
+    /*
+     * 대표 매물을 찾지 못한 경우에는 단지 패널까지만 다시 연다.
+     */
+    selectComplex(savedState.aptCmplexNo);
 }
 
 /**
@@ -930,3 +1064,4 @@ function showEmptyMapMessage() {
             '<div class="rent-empty-message">등록된 매물이 없습니다.</div>';
     }
 }
+
