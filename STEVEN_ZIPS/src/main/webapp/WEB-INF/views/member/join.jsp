@@ -2,625 +2,927 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf_header" content="${_csrf.headerName}"/>
-    <%-- 서버가 정해준 이름(편지봉투) --%>
     <meta name="_csrf" content="${_csrf.token}"/>
-    <%-- 실제 1회용 암호 값(편지) --%>
-    <script src="/js/common/file-util.js"></script>
 
-    <title>회원가입 팝업</title>
+    <title>회원가입 | 우리집맵핑</title>
+
+    <script src="${pageContext.request.contextPath}/js/common/file-util.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        /* 전체 배경 및 폰트 설정 */
-        body {
-            background-color: #F7F5EE;
-            font-family: 'Malgun Gothic', sans-serif;
-            padding: 40px;
-            color: #333;
+        /* ============================================================
+           우리집맵핑 회원가입 팝업
+           - 공공 사용자 화면의 아이보리 배경 + 올리브 포인트 톤 적용
+           - 기존 name/id 및 회원가입 JS 로직 유지
+        ============================================================ */
+        :root {
+            --primary: #226046;
+            --primary-dark: #226046;
+            --primary-soft: #eef1e4;
+            --primary-line: #d9dfc6;
+            --bg: #f7f5f1;
+            --card: #ffffff;
+            --line: #e6e0d6;
+            --line-strong: #d8d2c8;
+            --text: #1f1f1f;
+            --sub-text: #687079;
+            --muted: #92969b;
+            --danger: #c24136;
+            --shadow: 0 22px 65px rgba(31, 31, 31, 0.07);
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+            font-family: "Noto Sans KR", "Pretendard", "Malgun Gothic", sans-serif;
         }
 
-        /* 상단 헤더 영역 */
-        .header {
-            margin-bottom: 30px;
-        }
-
-        .badge {
-            background: #E9E6D7;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            color: #7A745C;
-            font-weight: bold;
-        }
-
-        h2 {
-            font-size: 32px;
-            margin: 15px 0;
-            letter-spacing: -1px;
-        }
-
-        .desc {
-            color: #888;
+        body {
+            min-width: 360px;
+            background: var(--bg);
+            color: var(--text);
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.55;
+            letter-spacing: -0.02em;
         }
 
-        /* 안내 박스 */
-        .info-box {
-            background: #FCF9F0;
-            border: 1px solid #EAE2C8;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #8B8365;
-            margin: 25px 0;
+        button, input, select {
+            font: inherit;
         }
 
-        /* 입력 폼 구조 */
-        .form-group {
+        button {
+            cursor: pointer;
+        }
+
+        .join-page {
+            min-height: 100vh;
+            padding: 28px 32px 38px;
+        }
+
+        .brand-area {
+            max-width: 1100px;
+            margin: 0 auto 22px;
             display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.06em;
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 11px;
+            background: var(--primary);
+            position: relative;
+        }
+
+        .brand-mark::before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: 11px;
+            width: 18px;
+            height: 14px;
+            background: #fff;
+            clip-path: polygon(50% 0, 100% 40%, 100% 100%, 0 100%, 0 40%);
+        }
+
+        .brand-guide {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .join-card {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 315px minmax(0, 1fr);
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        /* ===================== 왼쪽 안내/프로필 영역 ===================== */
+        .join-aside {
+            position: relative;
+            padding: 42px 32px;
+            background:
+                    radial-gradient(circle at 18% 10%, rgba(255,255,255,.55), transparent 34%),
+                    linear-gradient(150deg, #eef1e5 0%, #e5ead7 100%);
+            border-right: 1px solid var(--primary-line);
+        }
+
+        .join-aside::after {
+            content: "";
+            position: absolute;
+            left: -65px;
+            bottom: -78px;
+            width: 210px;
+            height: 210px;
+            border-radius: 50%;
+            border: 40px solid rgba(93, 111, 31, 0.055);
+        }
+
+        .page-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 13px;
+            border: 1px solid var(--primary-line);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .62);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .join-aside h1 {
+            margin-top: 18px;
+            font-size: 32px;
+            line-height: 1.25;
+            letter-spacing: -0.07em;
+        }
+
+        .join-aside .intro {
+            margin-top: 13px;
+            color: #66704d;
+            font-size: 13px;
+            line-height: 1.75;
+            word-break: keep-all;
+        }
+
+        .profile-card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 240px;
+            margin: 34px auto 0;
+            padding: 20px;
+            border: 1px solid rgba(208, 215, 186, .9);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .72);
+        }
+
+        .profile-title {
+            color: #3b432a;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .photo-preview {
+            width: 112px;
+            height: 132px;
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px dashed #c9d1ad;
+            border-radius: 14px;
+            background: #fff;
+            color: #a0a58d;
+            font-size: 12px;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-btn {
+            width: 100%;
+            height: 42px;
+            border: 1px solid var(--primary-line);
+            border-radius: 10px;
+            background: #fff;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            transition: .18s;
+        }
+
+        .photo-btn:hover {
+            background: var(--primary-soft);
+        }
+
+        #fileName {
+            overflow: hidden;
+            margin-top: 9px;
+            color: #8c927d;
+            font-size: 12px;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .aside-notice {
+            position: relative;
+            z-index: 1;
+            margin-top: 22px;
+            padding: 13px 14px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.48);
+            color: #66704d;
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        /* ===================== 오른쪽 입력 폼 영역 ===================== */
+        .join-form-panel {
+            padding: 40px 46px 36px;
+        }
+
+        .panel-header {
+            margin-bottom: 29px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .panel-header h2 {
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -0.055em;
+        }
+
+        .panel-header p {
+            margin-top: 7px;
+            color: var(--sub-text);
+            font-size: 13px;
+        }
+
+        .form-section {
+            margin-bottom: 29px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 17px;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 15px;
+            border-radius: 4px;
+            background: var(--primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px 16px;
+        }
+
+        .form-group {
+            min-width: 0;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
         }
 
         .form-label {
-            font-weight: bold;
-            font-size: 15px;
+            display: block;
             margin-bottom: 8px;
+            color: #35383b;
+            font-size: 13px;
+            font-weight: 600;
         }
 
-        .form-label span {
-            color: #C0392B;
+        .required {
             margin-left: 3px;
+            color: var(--danger);
+        }
+
+        .optional-text {
+            margin-left: 5px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 400;
         }
 
         .input-control {
             width: 100%;
-            box-sizing: border-box;
-            padding: 15px;
-            border: 1px solid #DDD;
+            height: 49px;
+            padding: 0 15px;
+            border: 1px solid var(--line-strong);
             border-radius: 10px;
-            font-size: 14px;
             outline: none;
-            background-color: #FFF;
+            background: #fff;
+            color: var(--text);
+            font-size: 14px;
+            transition: border-color .16s, box-shadow .16s, background .16s;
+        }
+
+        .input-control::placeholder {
+            color: #afb1b2;
         }
 
         .input-control:focus {
-            border-color: #7BA131;
-        }
-
-        /* 힌트와 버튼을 양 끝으로 배치 */
-        .id-check-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 5px;
-        }
-
-        /* 힌트 메시지 기본 여백 제거 */
-        .id-check-row .input-hint {
-            margin-top: 0;
-        }
-
-        .id-btn-small {
-            background: #E9E6D7;
-            border: 1px solid #D1CDBA;
-            color: #7A745C;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .id-btn-small:hover {
-            background: #DEDAC6;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(93, 111, 31, .1);
         }
 
         .input-control:read-only {
-            background-color: #F9F9F9;
-            color: #888;
+            background: #faf9f7;
+            color: #80858c;
+        }
+
+        .with-action {
+            display: flex;
+            gap: 8px;
+        }
+
+        .with-action .input-control {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .btn-check {
+            flex-shrink: 0;
+            min-width: 92px;
+            height: 49px;
+            border: 1px solid var(--primary-line);
+            border-radius: 10px;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            font-size: 13px;
+            font-weight: 700;
+            transition: .18s;
+        }
+
+        .btn-check:hover {
+            border-color: var(--primary);
+            background: #e6ebd6;
         }
 
         .input-hint {
-            font-size: 12px;
-            color: #AAA;
-            margin-top: 5px;
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 11px;
         }
 
-        /* 프로필 사진 섹션 */
-        .profile-section {
-            margin-bottom: 30px;
-        }
-
-        .profile-flex {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-        }
-
-        .photo-preview {
-            width: 100px;
-            height: 120px;
-            background: #FFF;
-            border: 1px solid #EAE2C8;
-            border-radius: 10px;
+        .split-input {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #AAA;
+            gap: 8px;
         }
 
-        .photo-btn {
-            background: #ffaa76;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            color: #7A745C;
-            font-weight: bold;
+        .split-input .input-control {
+            min-width: 0;
+        }
+
+        .dash {
+            flex-shrink: 0;
+            color: #a2a69e;
             font-size: 14px;
         }
 
-        .tel-area {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 0px;
-            padding-bottom: 8px;
+        /* ===================== 수신 동의 영역 ===================== */
+        .receive-box {
+            grid-column: 1 / -1;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+            background: #fdfcfb;
         }
 
-        .tel-area span {
-            display: inline-block;
-            transform: translateY(8px);
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        /* 하단 버튼 영역 */
-        .btn-area {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 40px;
-            padding-bottom: 20px;
-        }
-
-        .btn-submit {
-            background: #7BA131;
-            color: white;
-            border: none;
-            padding: 15px 60px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .btn-cancel {
-            background: white;
-            border: 1px solid #DDD;
-            padding: 15px 60px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        /* 스위치 컨테이너 */
         .toggle-group {
+            min-height: 56px;
+            padding: 0 17px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 5px;
-            border-bottom: 1px solid #F0EDE4;
+            gap: 12px;
         }
 
-        .toggle-label {
-            font-size: 14px;
-            color: #555;
+        .toggle-group + .toggle-group {
+            border-top: 1px solid #efebe3;
+        }
+
+        .toggle-title {
+            color: #363b3e;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .sub-toggle-area {
+            display: none;
+            padding: 0 13px 9px;
+            background: #f9f8f4;
+            border-top: 1px solid #efebe3;
+        }
+
+        .sub-toggle-area .toggle-group {
+            min-height: 47px;
+            padding: 0 7px;
+        }
+
+        .sub-toggle-area .toggle-title {
+            color: var(--sub-text);
+            font-size: 12px;
             font-weight: 500;
         }
 
-        /* 스위치 본체 */
         .switch {
             position: relative;
             display: inline-block;
-            width: 44px;
-            height: 22px;
+            flex-shrink: 0;
+            width: 45px;
+            height: 25px;
         }
 
         .switch input {
-            opacity: 0;
             width: 0;
             height: 0;
+            opacity: 0;
         }
 
         .slider {
             position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #E9E6D7;
-            transition: .4s;
-            border-radius: 34px;
+            inset: 0;
+            border-radius: 20px;
+            background: #d7d4ce;
+            transition: .2s;
         }
 
-        .slider:before {
-            position: absolute;
+        .slider::before {
             content: "";
-            height: 16px;
-            width: 16px;
+            position: absolute;
             left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
+            top: 3px;
+            width: 19px;
+            height: 19px;
             border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,.12);
+            transition: .2s;
         }
 
-        input:checked + .slider {
-            background-color: #7BA131;
+        .switch input:checked + .slider {
+            background: var(--primary);
         }
 
-        input:checked + .slider:before {
-            transform: translateX(22px);
+        .switch input:checked + .slider::before {
+            transform: translateX(20px);
         }
 
-        /* 자식 스위치 영역 (애니메이션) */
-        .sub-toggle-area {
-            background: #FCF9F0;
-            border-radius: 8px;
-            padding: 5px 15px;
-            margin-top: 5px;
-            display: none; /* 기본 숨김 */
+        /* ===================== 버튼 ===================== */
+        .btn-area {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 33px;
+            padding-top: 25px;
+            border-top: 1px solid var(--line);
         }
 
-        /* (선택) 문구 스타일 */
-        .optional-text {
-            font-size: 12px; /* 작게 */
-            color: rgba(97, 45, 7, 0.53) !important;
-            font-weight: normal; /* 굵지 않게 */
-            margin-left: 5px; /* 레이블과 약간의 간격 */
+        .btn-submit,
+        .btn-cancel {
+            height: 51px;
+            padding: 0 34px;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: .18s;
         }
 
-        .sub-toggle-area .toggle-label {
-            font-size: 13px;
-            color: #8B8365;
+        .btn-submit {
+            min-width: 148px;
+            border: 1px solid var(--primary);
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-submit:hover {
+            border-color: var(--primary-dark);
+            background: var(--primary-dark);
+        }
+
+        .btn-cancel {
+            min-width: 110px;
+            border: 1px solid var(--line-strong);
+            background: #fff;
+            color: #5d6166;
+        }
+
+        .btn-cancel:hover {
+            background: #f5f3ee;
+        }
+
+        @media (max-width: 920px) {
+            .join-page {
+                padding: 20px 16px 28px;
+            }
+
+            .brand-area {
+                margin-bottom: 17px;
+            }
+
+            .brand-guide {
+                display: none;
+            }
+
+            .join-card {
+                display: block;
+                border-radius: 18px;
+            }
+
+            .join-aside {
+                border-right: none;
+                border-bottom: 1px solid var(--primary-line);
+                padding: 27px 25px;
+            }
+
+            .join-aside h1 {
+                font-size: 27px;
+            }
+
+            .profile-card {
+                max-width: 255px;
+            }
+
+            .join-form-panel {
+                padding: 28px 23px 25px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-area {
+                flex-direction: column-reverse;
+            }
+
+            .btn-submit,
+            .btn-cancel {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-<div class="header">
-    <span class="badge">일반사용자</span>
-    <h2>회원가입</h2>
-    <p class="desc">기본 서비스 이용을 위한 일반 사용자 회원가입 화면입니다.<br>
-        이후 입주 신고를 통해 입주민 권한으로 변경할 수 있습니다.</p>
+<div class="join-page">
+    <div class="brand-area">
+        <div class="brand">
+            <span class="brand-mark" aria-hidden="true"></span>
+            우리집맵핑
+        </div>
+        <span class="brand-guide">안전하고 편리한 공동주택 서비스</span>
+    </div>
+
+    <main class="join-card">
+        <aside class="join-aside">
+            <h1>회원가입</h1>
+
+            <div class="profile-card">
+                <div class="profile-title">프로필 사진 <span class="optional-text">(선택)</span></div>
+                <div class="photo-preview" id="preview">미리보기</div>
+                <button type="button" class="photo-btn" onclick="document.querySelector('#img').click();">사진 선택</button>
+                <input type="file" id="img" name="profFile" form="joinForm" accept="image/*" style="display:none;">
+                <div id="fileName">선택된 파일 없음</div>
+            </div>
+
+            <div class="aside-notice">
+                입력하신 개인정보는 회원 서비스 이용 및 본인 확인 목적으로만 사용됩니다.
+            </div>
+        </aside>
+
+        <section class="join-form-panel">
+            <div class="panel-header">
+                <h2>가입 정보 입력</h2>
+                <p><span class="required">*</span> 표시는 필수 입력 항목입니다.</p>
+            </div>
+
+            <form action="${pageContext.request.contextPath}/member/join"
+                  id="joinForm" method="post" enctype="multipart/form-data">
+
+                <section class="form-section">
+                    <h3 class="section-title">계정 정보</h3>
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label class="form-label" for="userId">아이디 <span class="required">*</span></label>
+                            <div class="with-action">
+                                <input type="text" name="userId" id="userId" class="input-control"
+                                       placeholder="영문, 숫자 조합 4~20자" autocomplete="username">
+                                <button type="button" id="idCheckBtn" class="btn-check">중복확인</button>
+                            </div>
+                            <div class="input-hint">아이디를 입력한 후 중복확인을 진행해주세요.</div>
+                            <input type="hidden" id="isIdChecked" value="N">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="userPw">비밀번호 <span class="required">*</span></label>
+                            <input type="password" name="userPw" id="userPw" class="input-control"
+                                   placeholder="비밀번호 입력" autocomplete="new-password">
+                            <div class="input-hint">영문, 숫자, 특수문자 조합 8~20자</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="userPwConfirm">비밀번호 확인 <span class="required">*</span></label>
+                            <input type="password" name="userPwConfirm" id="userPwConfirm" class="input-control"
+                                   placeholder="비밀번호 다시 입력" autocomplete="new-password">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h3 class="section-title">기본 정보</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="userNm">이름 <span class="required">*</span></label>
+                            <input type="text" name="userNm" id="userNm" class="input-control"
+                                   placeholder="이름을 입력하세요">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="userEml">이메일 <span class="required">*</span></label>
+                            <input type="email" name="userEml" id="userEml" class="input-control"
+                                   placeholder="example@email.com">
+                        </div>
+
+                        <div class="form-group full">
+                            <label class="form-label" for="rrno1">주민등록번호 <span class="required">*</span></label>
+                            <input type="hidden" name="userRrno" id="userRrno">
+                            <div class="split-input">
+                                <input type="text" class="input-control" id="rrno1" name="rrno1"
+                                       maxlength="6" inputmode="numeric" placeholder="앞자리 6자">
+                                <span class="dash">-</span>
+                                <input type="password" class="input-control" id="rrno2" name="rrno2"
+                                       maxlength="7" inputmode="numeric" placeholder="뒷자리 7자">
+                            </div>
+                        </div>
+
+                        <div class="form-group full">
+                            <label class="form-label" for="tel1">연락처 <span class="required">*</span></label>
+                            <div class="split-input">
+                                <select id="tel1" class="input-control" aria-label="휴대전화 앞자리">
+                                    <option value="010" selected>010</option>
+                                    <option value="011">011</option>
+                                    <option value="016">016</option>
+                                    <option value="017">017</option>
+                                    <option value="018">018</option>
+                                    <option value="019">019</option>
+                                </select>
+                                <span class="dash">-</span>
+                                <input type="text" class="input-control" id="tel2" maxlength="4"
+                                       inputmode="numeric" aria-label="휴대전화 중간자리" placeholder="0000">
+                                <span class="dash">-</span>
+                                <input type="text" class="input-control" id="tel3" maxlength="4"
+                                       inputmode="numeric" aria-label="휴대전화 끝자리" placeholder="0000">
+                            </div>
+                            <input type="hidden" name="userTelno" id="userTelno">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h3 class="section-title">알림 수신 설정</h3>
+                    <div class="form-grid">
+                        <div class="receive-box">
+                            <div class="toggle-group">
+                                <span class="toggle-title">SMS 수신여부 <span class="optional-text">(선택)</span></span>
+                                <label class="switch">
+                                    <input type="checkbox" id="smsRcvYn" name="smsRcvYn">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div id="subSmsArea" class="sub-toggle-area">
+                                <div class="toggle-group">
+                                    <span class="toggle-title">공지사항 알림</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="smsNtcRcvYn" name="smsNtcRcvYn">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-group">
+                                    <span class="toggle-title">계약관련 알림</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="smsCtrtRcvYn" name="smsCtrtRcvYn">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="receive-box">
+                            <div class="toggle-group">
+                                <span class="toggle-title">e-mail 수신여부 <span class="optional-text">(선택)</span></span>
+                                <label class="switch">
+                                    <input type="checkbox" id="emlRcvYn" name="emlRcvYn">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div id="subEmlArea" class="sub-toggle-area">
+                                <div class="toggle-group">
+                                    <span class="toggle-title">공지사항 알림</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="emlNtcRcvYn" name="emlNtcRcvYn">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-group">
+                                    <span class="toggle-title">계약관련 알림</span>
+                                    <label class="switch">
+                                        <input type="checkbox" id="emlCtrtRcvYn" name="emlCtrtRcvYn">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <%-- 동기 방식 submit으로 변경할 경우 사용: <sec:csrfInput/> --%>
+                <div class="btn-area">
+                    <button type="button" class="btn-cancel" onclick="window.close()">취소</button>
+                    <button type="submit" class="btn-submit" id="memRegBtn">회원가입 완료</button>
+                </div>
+            </form>
+        </section>
+    </main>
 </div>
-
-<form action="/member/join" id="joinForm" method="post" enctype="multipart/form-data">
-
-    <div class="profile-section">
-        <div class="form-label">프로필 사진</div>
-        <div class="profile-flex">
-            <div class="photo-preview" id="preview">
-                미리보기
-            </div>
-            <div>
-                <button type="button" class="photo-btn" onclick="document.querySelector('#img').click();">
-                    사진 선택
-                </button>
-                <input type="file" id="img" name="profFile" style="display:none;">
-                <div id="fileName" class="input-hint">선택된 파일 없음</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="form-label">아이디 <span>*</span></div>
-        <input type="text" name="userId" id="userId" class="input-control" placeholder="아이디를 입력하세요">
-        <div class="id-check-row">
-            <div class="input-hint">영문, 숫자 조합 4~20자 권장</div>
-            <button type="button" id="idCheckBtn" class="id-btn-small">
-                중복확인
-            </button>
-        </div>
-
-        <input type="hidden" id="isIdChecked" value="N">
-    </div>
-
-    <div class="form-group">
-        <div class="form-label">비밀번호 <span>*</span></div>
-        <input type="password" name="userPw" class="input-control" placeholder="비밀번호를 입력하세요">
-        <div class="input-hint">비밀번호는 영문, 숫자, 특수문자 조합 8~20자로 입력해주세요</div>
-    </div>
-
-    <div class="form-group">
-        <div class="form-label">비밀번호 확인 <span>*</span></div>
-        <input type="password" name="userPwConfirm" class="input-control" placeholder="비밀번호를 다시 입력하세요">
-    </div>
-
-    <div class="form-group">
-        <div class="form-label">이름 <span>*</span></div>
-        <input type="text" name="userNm" class="input-control" placeholder="이름을 입력하세요">
-    </div>
-
-    <div class="form-group">
-        <div class="form-label">주민등록번호 <span>*</span></div>
-        <input type="text" name="userRrno" id="userRrno" class="input-control" hidden="hidden">
-        <div class="tel-area">
-            <input type="text" class="input-control" id="rrno1" name="rrno1" placeholder="주민번호 앞자리 6자">
-            <span>-</span>
-            <input type="text" class="input-control" id="rrno2" name="rrno2" placeholder="주민번호 뒷자리 7자">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="form-label">연락처 <span>*</span></div>
-        <div class="tel-area">
-            <select id="tel1" class="input-control">
-                <option value="010" selected>010</option>
-                <option value="011">011</option>
-                <option value="016">016</option>
-                <option value="017">017</option>
-                <option value="018">018</option>
-                <option value="019">019</option>
-            </select>
-            <span>-</span>
-            <input type="text" class="input-control" id="tel2"/>
-            <span>-</span>
-            <input type="text" class="input-control" id="tel3"/>
-        </div>
-        <input type="text" name="userTelno" id="userTelno" hidden="hidden">
-    </div>
-
-    <div class="form-group">
-
-        <div class="toggle-group">
-            <div class="form-label">SMS 수신여부<span class="optional-text">(선택)</span></div>
-            <label class="switch">
-                <input type="checkbox" id="smsRcvYn" name="smsRcvYn">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div id="subSmsArea" class="sub-toggle-area">
-            <div class="toggle-group">
-                <span class="toggle-label">공지사항 알림</span>
-                <label class="switch">
-                    <input type="checkbox" id="smsNtcRcvYn" name="smsNtcRcvYn">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="toggle-group" style="border:none;">
-                <span class="toggle-label">계약관련 알림</span>
-                <label class="switch">
-                    <input type="checkbox" id="smsCtrtRcvYn" name="smsCtrtRcvYn">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="form-label">이메일 <span>*</span></div>
-        <input type="email" name="userEml" class="input-control" placeholder="이메일을 입력하세요">
-    </div>
-
-    <div class="form-group">
-        <div class="toggle-group">
-            <div class="form-label">e-mail 수신여부<span class="optional-text">(선택)</span></div>
-            <label class="switch">
-                <input type="checkbox" id="emlRcvYn" name="emlRcvYn">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <div id="subEmlArea" class="sub-toggle-area">
-            <div class="toggle-group">
-                <span class="toggle-label">공지사항 알림</span>
-                <label class="switch">
-                    <input type="checkbox" id="emlNtcRcvYn" name="emlNtcRcvYn">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="toggle-group" style="border:none;">
-                <span class="toggle-label">계약관련 알림</span>
-                <label class="switch">
-                    <input type="checkbox" id="emlCtrtRcvYn" name="emlCtrtRcvYn">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-    </div>
-
-
-    <%-- 토큰 추가 (동기방식 이용시)
-        <sec:csrfInput/>
-        --%>
-    <div class="btn-area">
-        <button type="submit" class="btn-submit" id="memRegBtn">회원등록</button>
-        <button type="button" class="btn-cancel" onclick="window.close()">취소</button>
-    </div>
-</form>
 
 <script type="module">
     document.addEventListener('DOMContentLoaded', function () {
+        const contextPath = '${pageContext.request.contextPath}';
 
-        // SMS 수신여부 스위치 토글 제어
-        const smsYnSwitch = document.querySelector('#smsRcvYn');
-        const subSmsArea = document.querySelector('#subSmsArea');
+        /**
+         * 부모 알림 동의 스위치를 켜면 상세 동의를 노출하고 모두 체크한다.
+         * 부모 스위치를 끄면 상세 동의를 숨기고 모두 해제한다.
+         */
+        function bindReceiveToggle(parentId, detailId) {
+            const parentSwitch = document.querySelector(parentId);
+            const detailArea = document.querySelector(detailId);
 
-        smsYnSwitch.addEventListener('change', function () {
-            if (this.checked) {
-                subSmsArea.style.display = 'block';
-                subSmsArea.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-            } else {
-                subSmsArea.style.display = 'none';
-                // 부모가 꺼지면 자식 체크도 모두 해제
-                subSmsArea.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            }
-        });
+            parentSwitch.addEventListener('change', function () {
+                detailArea.style.display = this.checked ? 'block' : 'none';
+                detailArea.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+                    checkbox.checked = parentSwitch.checked;
+                });
+            });
+        }
 
-        // e-mail 수신여부 스위치 토글 제어
-        const emlYnSwitch = document.querySelector('#emlRcvYn');
-        const subEmlArea = document.querySelector('#subEmlArea');
+        bindReceiveToggle('#smsRcvYn', '#subSmsArea');
+        bindReceiveToggle('#emlRcvYn', '#subEmlArea');
 
-        emlYnSwitch.addEventListener('change', function () {
-            if (this.checked) {
-                subEmlArea.style.display = 'block';
-                subEmlArea.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-            } else {
-                subEmlArea.style.display = 'none';
-                // 부모가 꺼지면 자식 체크도 모두 해제
-                subEmlArea.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            }
-        });
-
-        // 아이디 중복확인 기능
+        // 아이디 중복확인
         const idCheckBtn = document.querySelector('#idCheckBtn');
-        idCheckBtn.addEventListener('click', async e => {
+        idCheckBtn.addEventListener('click', async function (e) {
             e.preventDefault();
-            const form = document.querySelector("#joinForm");
+
+            const form = document.querySelector('#joinForm');
             const userId = document.querySelector('#userId').value.trim();
+            const regex = /^[a-zA-Z0-9]{4,20}$/;
 
             if (!userId) {
-                alert("아이디를 입력해주세요.");
+                alert('아이디를 입력해주세요.');
                 form.elements['userId'].focus();
                 return;
             }
 
-            const regex = /^[a-zA-Z0-9]{4,20}$/;
-
-            if (regex && !regex.test(userId)) {
-                alert("아이디는 영문, 숫자 조합 4~20자로 입력해주세요.");
+            if (!regex.test(userId)) {
+                alert('아이디는 영문, 숫자 조합 4~20자로 입력해주세요.');
                 form.elements['userId'].focus();
                 return;
             }
 
             try {
-                const resp = await fetch(`/member/idCheck?userId=\${userId}`);
-
+                // JSP EL과 JavaScript template literal 충돌을 피하기 위해 문자열 연결 방식 사용
+                const resp = await fetch(contextPath + '/member/idCheck?userId=' + encodeURIComponent(userId));
                 const result = await resp.json();
-                if (result.res === "NOTEXIST") {
-                    document.querySelector('#isIdChecked').value = "Y";
+
+                if (result.res === 'NOTEXIST') {
+                    document.querySelector('#isIdChecked').value = 'Y';
                     alert(result.message);
                 } else {
-                    document.querySelector('#isIdChecked').value = "N";
+                    document.querySelector('#isIdChecked').value = 'N';
                     alert(result.message);
                 }
-
             } catch (error) {
-                console.log("Fetch 에러발생 : ", error);
+                console.error('아이디 중복확인 통신 에러: ', error);
+                alert('아이디 중복확인 중 문제가 발생했습니다.');
             }
         });
 
-        // 아이디 입력란 값이 바뀌면 아이디 중복체크 상태 초기화
-        document.querySelector('#userId').addEventListener('input', () => {
-            document.querySelector('#isIdChecked').value = "N";
+        // 아이디 변경 시 중복확인 결과 초기화
+        document.querySelector('#userId').addEventListener('input', function () {
+            document.querySelector('#isIdChecked').value = 'N';
         });
 
-        // 회원등록 버튼 클릭 이벤트
-        const memRegBtn = document.querySelector("#memRegBtn");
-        memRegBtn.addEventListener("click", async (e) => {
+        // 회원가입 전송
+        const memRegBtn = document.querySelector('#memRegBtn');
+        memRegBtn.addEventListener('click', async function (e) {
             e.preventDefault();
-            const form = document.querySelector("#joinForm");
 
-            const rrno1 = form.elements['rrno1'].value;
-            const rrno2 = form.elements['rrno2'].value;
+            const form = document.querySelector('#joinForm');
+            const rrno1 = form.elements['rrno1'].value.trim();
+            const rrno2 = form.elements['rrno2'].value.trim();
 
-            let userRrno = document.querySelector("#userRrno");
-            userRrno.value = rrno1 + rrno2;
+            document.querySelector('#userRrno').value = rrno1 + rrno2;
 
+            const tel1 = document.querySelector('#tel1').value;
+            const tel2 = document.querySelector('#tel2').value.trim();
+            const tel3 = document.querySelector('#tel3').value.trim();
+            document.querySelector('#userTelno').value = tel1 + tel2 + tel3;
 
-            const tel1box = document.querySelector('#tel1');
-            const tel1 = tel1box.options[tel1box.selectedIndex].value;
-            const tel2 = document.querySelector('#tel2').value;
-            const tel3 = document.querySelector('#tel3').value;
-            let userTelno = document.querySelector('#userTelno');
-            userTelno.value = tel1 + tel2 + tel3;
-
-            // 인풋 별 정규식 및 안내문구 설정
             const validationRules = {
                 userId: {
-                    label: "아이디",
+                    label: '아이디',
                     regex: /^[a-zA-Z0-9]{4,20}$/,
-                    invalidMsg: "아이디는 영문, 숫자 조합 4~20자로 입력해주세요."
+                    invalidMsg: '아이디는 영문, 숫자 조합 4~20자로 입력해주세요.'
                 },
                 userPw: {
-                    label: "비밀번호",
-                    regex: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9가-힣\s])[^가-힣\s]{8,20}$/,  // ( ?= )전방 탐색, 공백, 한글 검사
-                    invalidMsg: "비밀번호는 영문, 숫자, 특수문자 조합 8~20자로 입력해주세요."
+                    label: '비밀번호',
+                    regex: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9가-힣\s])[^가-힣\s]{8,20}$/,
+                    invalidMsg: '비밀번호는 영문, 숫자, 특수문자 조합 8~20자로 입력해주세요.'
                 },
                 userNm: {
-                    label: "이름",
+                    label: '이름',
                     regex: /^[가-힣]{2,10}$/,
-                    invalidMsg: "이름은 한글로 작성해주세요"
+                    invalidMsg: '이름은 한글 2~10자로 입력해주세요.'
                 },
                 rrno1: {
-                    label: "주민등록번호 앞자리",
-                    regex: /^[0-9]{6}$/,  // 형식 000000-0000000
-                    invalidMsg: "주민등록번호 형식이 올바르지 않습니다."
+                    label: '주민등록번호 앞자리',
+                    regex: /^[0-9]{6}$/,
+                    invalidMsg: '주민등록번호 형식이 올바르지 않습니다.'
                 },
                 rrno2: {
-                    label: "주민등록번호 뒷자리",
-                    regex: /^[0-9]{7}$/,  // 형식 000000-0000000
-                    invalidMsg: "주민등록번호 형식이 올바르지 않습니다."
+                    label: '주민등록번호 뒷자리',
+                    regex: /^[0-9]{7}$/,
+                    invalidMsg: '주민등록번호 형식이 올바르지 않습니다.'
                 },
                 userTelno: {
-                    label: "전화번호",
+                    label: '전화번호',
                     regex: /^[0-9]{10,11}$/,
-                    invalidMsg: "전화번호는 10~11자리 숫자입니다."
+                    invalidMsg: '전화번호는 10~11자리 숫자로 입력해주세요.'
                 },
                 userEml: {
-                    label: "이메일",
+                    label: '이메일',
                     regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    invalidMsg: "올바른 이메일 형식이 아닙니다."
+                    invalidMsg: '올바른 이메일 형식이 아닙니다.'
                 }
             };
 
-            // id중복체크 여부 확인
-            if (document.querySelector('#isIdChecked').value === "N") {
-                alert("아이디 중복체크를 해주세요!");
+            if (document.querySelector('#isIdChecked').value === 'N') {
+                alert('아이디 중복확인을 해주세요.');
+                form.elements['userId'].focus();
                 return;
             }
 
-            // 유효성 체크
             for (const [inputName, rule] of Object.entries(validationRules)) {
                 const input = form.elements[inputName];
                 if (!input) continue;
 
                 const value = input.value.trim();
-
-                // 미입력 체크
                 if (!value) {
-                    alert(`\${rule.label}을(를) 입력해주세요.`);
-                    console.log(rule.label);
+                    alert(rule.label + '을(를) 입력해주세요.');
                     input.focus();
                     return;
                 }
 
-                // 정규식 체크 :: 일치 true, 불일치 false
-                if (rule.regex && !rule.regex.test(value)) {
+                if (!rule.regex.test(value)) {
                     alert(rule.invalidMsg);
                     input.focus();
                     return;
                 }
-
             }
-            // 비밀번호 확인 일치여부
+
             if (form.userPw.value !== form.userPwConfirm.value) {
-                alert("비밀번호가 일치하지 않습니다.");
+                alert('비밀번호가 일치하지 않습니다.');
                 form.userPwConfirm.focus();
                 return;
             }
 
-            // 비동기 통신 회원가입
             const formData = new FormData(form);
             const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
             const csrfToken = document.querySelector('meta[name="_csrf"]').content;
@@ -628,23 +930,18 @@
             formData.set('smsRcvYn', document.querySelector('#smsRcvYn').checked ? 'Y' : 'N');
             formData.set('emlRcvYn', document.querySelector('#emlRcvYn').checked ? 'Y' : 'N');
 
-            const subAreas = ['#subSmsArea', '#subEmlArea'];
-
-            subAreas.forEach(area => {
+            ['#subSmsArea', '#subEmlArea'].forEach(function (area) {
                 const container = document.querySelector(area);
-                if (container) {
-                    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-                    checkboxes.forEach(cb => {
-                        formData.set(cb.id, cb.checked ? 'Y' : 'N');
-                    });
-                }
+                container.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+                    formData.set(checkbox.id, checkbox.checked ? 'Y' : 'N');
+                });
             });
 
             try {
-                const resp = await fetch('/member/join', {
+                const resp = await fetch(contextPath + '/member/join', {
                     method: 'POST',
                     headers: {
-                        [csrfHeader]: csrfToken,
+                        [csrfHeader]: csrfToken
                     },
                     body: formData
                 });
@@ -652,29 +949,33 @@
                 const result = await resp.json();
                 if (resp.ok) {
                     alert(result.message);
-                    window.close(); // 성공시 팝업 닫기
+                    window.close();
                 } else {
-                    alert("가입 실패: " + result.message);
+                    alert('가입 실패: ' + result.message);
                 }
             } catch (error) {
-                console.error("통신 에러 발생 : ", error);
-                alert("서버와 통신 중 문제가 발생했습니다.")
+                console.error('회원가입 통신 에러: ', error);
+                alert('서버와 통신 중 문제가 발생했습니다.');
+            }
+        });
+
+        // 이미지 썸네일 미리보기
+        const preview = document.querySelector('#preview');
+        const img = document.querySelector('#img');
+
+        img.addEventListener('change', function () {
+            if (typeof imgPreview === 'function') {
+                imgPreview(img, preview);
+            }
+
+            if (img.files.length > 0) {
+                document.querySelector('#fileName').textContent = img.files[0].name;
+            } else {
+                document.querySelector('#fileName').textContent = '선택된 파일 없음';
+                preview.textContent = '미리보기';
             }
         });
     });
-
-    // 이미지 썸네일 미리보기
-    let preview = document.querySelector("#preview");   // 미리보기 div
-    let img = document.querySelector("#img");           // input
-    if (img) {
-        img.addEventListener('change', function () {
-            imgPreview(img, preview);
-
-            if (img.files.length > 0) {
-                document.querySelector("#fileName").textContent = img.files[0].name;
-            }
-        });
-    }
 </script>
 </body>
 </html>
