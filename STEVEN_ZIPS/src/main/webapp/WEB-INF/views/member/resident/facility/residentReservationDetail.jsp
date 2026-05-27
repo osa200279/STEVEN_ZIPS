@@ -407,6 +407,17 @@
             overflow-y:auto;
             padding-right:6px;
         }
+
+        .time-slot-btn.past,
+        .time-slot-btn:disabled {
+            background: #e5e7eb !important;
+            color: #9ca3af !important;
+            cursor: not-allowed !important;
+        }
+
+        .time-slot-btn.past:hover {
+            transform: none;
+        }
     </style>
 </head>
 
@@ -507,6 +518,17 @@
 
 <script>
     const contextPath = '${pageContext.request.contextPath}';
+
+    const rsvtDtInput = document.getElementById('rsvtDt');
+
+    /*
+     * 오늘 이전 날짜 선택 방지
+     * min이란? input date에서 선택 가능한 최소 날짜입니다.
+     */
+    const today = new Date();
+    const todayText = today.toISOString().slice(0, 10);
+    rsvtDtInput.min = todayText;
+
     /*
      * cmnFacilityNo란?
      * 공용시설 번호입니다.
@@ -581,26 +603,36 @@
 
                 list.forEach(row => {
                     const btn = document.createElement('button');
+
                     btn.type = 'button';
                     btn.className = 'time-slot-btn';
-                    btn.innerText = row.timeLabel;
+                    btn.innerText = slot.timeLabel;
 
-                    btn.addEventListener('click', function () {
-                        document.querySelectorAll('.time-slot-btn').forEach(other => {
-                            other.classList.remove('selected');
+                    const now = new Date();
+                    const slotEndDate = new Date(slot.rsvtEndDttm.replace(' ', 'T'));
+
+                    if (slotEndDate <= now) {
+                        btn.classList.add('past');
+                        btn.disabled = true;
+                        btn.innerText = slot.timeLabel + ' / 지난 시간';
+                    } else {
+                        btn.addEventListener('click', function () {
+                            document.querySelectorAll('.time-slot-btn').forEach(other => {
+                                other.classList.remove('selected');
+                            });
+
+                            btn.classList.add('selected');
+
+                            selectedStartDttm = slot.rsvtBgngDttm;
+                            selectedEndDttm = slot.rsvtEndDttm;
+                            selectedItemNo = null;
+
+                            selectedTimeInfo.innerText = '선택 시간: ' + slot.timeLabel;
+
+                            loadReservedSeats();
+                            checkReserveButton();
                         });
-
-                        btn.classList.add('selected');
-
-                        selectedStartDttm = row.rsvtBgngDttm;
-                        selectedEndDttm = row.rsvtEndDttm;
-                        selectedItemNo = '';
-
-                        selectedTimeInfo.innerText = '선택 시간: ' + row.timeLabel;
-
-                        loadReservedSeats();
-                        checkReserveButton();
-                    });
+                    }
 
                     timeSlotList.appendChild(btn);
                 });

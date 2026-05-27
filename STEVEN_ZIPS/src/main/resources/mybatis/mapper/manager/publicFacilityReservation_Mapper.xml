@@ -529,6 +529,7 @@
         PF.CMN_FACILITY_NM
         FROM PUBLIC_FACILITY PF
         WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND PF.CMN_FACILITY_RSV_YN = 'Y'
         ORDER BY PF.CMN_FACILITY_NM
     </select>
 
