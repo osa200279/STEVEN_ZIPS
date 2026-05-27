@@ -11,7 +11,8 @@ public class RsidBoardVO {
     private String boardNo;     // 게시판 번호 (FK)
     private String ttl;         // 제목
     private String cn;          // 내용
-    private String wrtrId;      // 작성자
+    private String wrtrId;      // 작성자 ID (저장·권한 확인용)
+    private String wrtrNm;      // 작성자 이름 (화면 표시용)
     private String prrtCd;      // 우선순위 코드
     private Date regDttm;       // 등록일시
     private Date mdfDttm;       // 수정일시

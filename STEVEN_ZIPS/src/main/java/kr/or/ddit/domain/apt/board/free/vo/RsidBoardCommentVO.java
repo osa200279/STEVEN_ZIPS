@@ -16,5 +16,6 @@ public class RsidBoardCommentVO {
     private String delYn;       // 삭제여부
     private Date mdfDttm;       // 수정일시
     private String userNo;      // 사용자번호
-    private String userId;      // 사용자 아이디
+    private String userId;      // 사용자 아이디 (권한 확인용)
+    private String userNm;      // 사용자 이름 (화면 표시용)
 }

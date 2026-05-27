@@ -57,38 +57,41 @@
             FROM (
         SELECT ROWNUM rn, a.*
             FROM (
-        SELECT post_no
-               ,board_no
-               ,ttl
-               ,cn
-               ,wrtr_id
-               ,prrt_cd
-               ,reg_dttm
-               ,mdf_dttm
-               ,inq_cnt
-               ,del_yn
-               ,atch_file_id
-               ,opn_yn
-        FROM apt_board_post
-        WHERE board_no = #{aptCmplexNo}
-        AND del_yn = 'N'
+        SELECT p.post_no
+               ,p.board_no
+               ,p.ttl
+               ,p.cn
+               ,p.wrtr_id
+               ,m.user_nm AS wrtr_nm
+               ,p.prrt_cd
+               ,p.reg_dttm
+               ,p.mdf_dttm
+               ,p.inq_cnt
+               ,p.del_yn
+               ,p.atch_file_id
+               ,p.opn_yn
+        FROM apt_board_post p
+        LEFT JOIN member m ON p.wrtr_id = m.user_id
+        WHERE p.board_no = #{aptCmplexNo}
+        AND p.del_yn = 'N'
         <if test="searchWord != null and searchWord != ''">
             <choose>
                 <when test="searchType == 'ttl'">
-                AND ttl LIKE '%' || #{searchWord} || '%'
+                AND p.ttl LIKE '%' || #{searchWord} || '%'
                 </when>
                 <when test="searchType == 'wrtrId'">
-                AND wrtr_id LIKE '%' || #{searchWord} || '%'
+                AND (p.wrtr_id LIKE '%' || #{searchWord} || '%'
+                     OR m.user_nm LIKE '%' || #{searchWord} || '%')
                 </when>
                 <when test="searchType == 'cn'">
-                AND cn LIKE '%' || #{searchWord} || '%'
+                AND p.cn LIKE '%' || #{searchWord} || '%'
                 </when>
                 <otherwise>
-                AND ttl LIKE '%' || #{searchWord} || '%'
+                AND p.ttl LIKE '%' || #{searchWord} || '%'
                 </otherwise>
             </choose>
         </if>
-        ORDER BY TO_NUMBER(post_no) DESC
+        ORDER BY p.reg_dttm DESC, p.post_no DESC
         ) a WHERE ROWNUM &lt;= #{endRow}
         ) WHERE rn >= #{startRow}
     </select>
@@ -96,22 +99,24 @@
     <!-- 게시글 전체 조회(총 몇개의 글이 있는지 조회, 페이지 수 계산) -->
     <select id="selectBoardFreeCount" resultType="int" parameterType="kr.or.ddit.common.model.PaginationInfoVO">
         SELECT COUNT(*)     /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.selectBoardFreeCount*/
-        FROM apt_board_post
-        WHERE board_no = #{aptCmplexNo}
-        AND del_yn = 'N'
+        FROM apt_board_post p
+        LEFT JOIN member m ON p.wrtr_id = m.user_id
+        WHERE p.board_no = #{aptCmplexNo}
+        AND p.del_yn = 'N'
         <if test="searchWord != null and searchWord != ''">
             <choose>
                 <when test="searchType == 'ttl'">
-                AND ttl LIKE '%' || #{searchWord} || '%'
+                AND p.ttl LIKE '%' || #{searchWord} || '%'
                 </when>
                 <when test="searchType == 'wrtrId'">
-                AND wrtr_id LIKE '%' || #{searchWord} || '%'
+                AND (p.wrtr_id LIKE '%' || #{searchWord} || '%'
+                     OR m.user_nm LIKE '%' || #{searchWord} || '%')
                 </when>
                 <when test="searchType == 'cn'">
-                AND cn LIKE '%' || #{searchWord} || '%'
+                AND p.cn LIKE '%' || #{searchWord} || '%'
                 </when>
                 <otherwise>
-                AND ttl LIKE '%' || #{searchWord} || '%'</otherwise>
+                AND p.ttl LIKE '%' || #{searchWord} || '%'</otherwise>
             </choose>
         </if>
     </select>
@@ -119,19 +124,22 @@
     <!-- 게시글 단건 조회 -->
     <select id="selectOneBoardFree" resultType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO" parameterType="kr.or.ddit.domain.apt.board.free.vo.RsidBoardVO">
         SELECT      /*kr.or.ddit.domain.apt.board.free.mapper.IResidentBoardMapper.selectOneBoardFree*/
-            post_no
-            ,board_no
-            ,ttl, cn
-            ,wrtr_id
-            ,prrt_cd
-            ,reg_dttm
-            ,mdf_dttm
-            ,inq_cnt
-            ,del_yn
-            ,atch_file_id
-            ,opn_yn
-        FROM apt_board_post
-        WHERE post_no = #{postNo}
+            p.post_no
+            ,p.board_no
+            ,p.ttl
+            ,p.cn
+            ,p.wrtr_id
+            ,m.user_nm AS wrtr_nm
+            ,p.prrt_cd
+            ,p.reg_dttm
+            ,p.mdf_dttm
+            ,p.inq_cnt
+            ,p.del_yn
+            ,p.atch_file_id
+            ,p.opn_yn
+        FROM apt_board_post p
+        LEFT JOIN member m ON p.wrtr_id = m.user_id
+        WHERE p.post_no = #{postNo}
 
     </select>
 
@@ -235,6 +243,7 @@
              ,c.mdf_dttm
              ,m.user_no
              ,m.user_id
+             ,m.user_nm
         FROM apt_board_comment c
         LEFT JOIN member m on c.user_no = m.user_no
         WHERE c.post_no = #{postNo}

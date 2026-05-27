@@ -372,7 +372,7 @@
                     <div class="post-author-left">
                         <div class="post-avatar" id="authorAvatar"></div>
                         <div class="post-author-info">
-                            <span class="post-author-name">${freeBoard.wrtrId}</span>
+                            <span class="post-author-name">${empty freeBoard.wrtrNm ? freeBoard.wrtrId : freeBoard.wrtrNm}</span>
                             <div class="post-author-sub">
                                 <span><fmt:formatDate value="${freeBoard.regDttm}" pattern="yy.MM.dd HH:mm"/></span>
                                 <span>조회 ${freeBoard.inqCnt}</span>
@@ -448,7 +448,7 @@
     /* ── 아바타 첫 글자 채우기 ── */
     (function() {
         var el   = document.querySelector('#authorAvatar');
-        var name = '${freeBoard.wrtrId}';
+        var name = '${empty freeBoard.wrtrNm ? freeBoard.wrtrId : freeBoard.wrtrNm}';
         if (el && name) el.textContent = name.charAt(0).toUpperCase();
     })();
 
@@ -678,7 +678,7 @@
             html += '<div class="cmt-item' + replyClass + '">'
                 +   '<div class="cmt-sub-area" data-cmt-no="' + v.cmtNo + '">'
                 +     '<div class="cmt-meta">'
-                +       '<span class="cmt-author">' + v.userId + '</span>'
+                +       '<span class="cmt-author">' + (v.userNm || v.userId) + '</span>'
                 +       '<span class="cmt-date">' + fmtDate(v.regDttm) + '</span>'
                 +       '<div class="cmt-actions">' + replyBtn + editBtns + '</div>'
                 +     '</div>'

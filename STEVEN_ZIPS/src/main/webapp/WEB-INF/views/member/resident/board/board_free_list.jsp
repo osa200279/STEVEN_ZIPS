@@ -103,9 +103,9 @@
                             <c:forEach var="board" items="${pagingVO.dataList}" varStatus="status">
                                 <tr style="cursor:pointer;"
                                     onclick="location.href='/resident/boardFreeDetail/${board.postNo}/${aptCmplexNo}'">
-                                    <td class="col-no">${pagingVO.totalRecord - (pagingVO.currentPage - 1) * pagingVO.screenSize - status.index}</td>
+                                    <td class="col-no">${(pagingVO.currentPage - 1) * pagingVO.screenSize + status.index + 1}</td>
                                     <td class="col-ttl">${board.ttl}</td>
-                                    <td class="col-wrt">${board.wrtrId}</td>
+                                    <td class="col-wrt">${empty board.wrtrNm ? board.wrtrId : board.wrtrNm}</td>
                                     <td class="col-dt"><fmt:formatDate value="${board.regDttm}" pattern="yyyy-MM-dd HH:mm"/></td>
                                     <td class="col-inq">${board.inqCnt}</td>
                                 </tr>
