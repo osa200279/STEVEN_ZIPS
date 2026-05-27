@@ -81,5 +81,10 @@ public interface IPublicFacilityReservationMapper {
      */
     List<PublicFacilityReservationVO> selectHistoryItemFilterList(PublicFacilityReservationVO searchVO);
 
+    /*
+     * 승인대기 예약 자동 만료 처리
+     */
+    int expirePendingReservations(String aptCmplexNo);
+
 }
 

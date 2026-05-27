@@ -74,15 +74,49 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     }
 
     @Override
-    public PaginationInfoVO<PublicFacilityReservationVO> getMyReservationPaging(PublicFacilityReservationVO searchVO, int currentPage) {
+    public PaginationInfoVO<PublicFacilityReservationVO> getMyReservationPaging(
+            PublicFacilityReservationVO searchVO, int currentPage
+    ) {
+        /*
+         * 승인대기 만료 처리
+         *
+         * 예약 시작 시간이 지났는데도 관리자가 승인하지 않은 예약을
+         * EXPIRED 상태로 자동 변경합니다.
+         *
+         * 왜 조회 전에 실행?
+         * 목록을 조회하기 전에 DB 상태를 먼저 정리해야
+         * 화면에 PENDING이 아니라 EXPIRED로 보이기 때문입니다.
+         */
+        mapper.expirePendingReservations(searchVO.getAptCmplexNo());
+
         int total = mapper.selectMyReservationCount(searchVO);
+
         PaginationInfoVO<PublicFacilityReservationVO> paging = new PaginationInfoVO<>(10, 5);
-        paging.setTotalRecord(total); paging.setCurrentPage(currentPage); applyPaging(searchVO, paging);
-        paging.setDataList(mapper.selectMyReservationList(searchVO)); paging.setSearchVO(searchVO);
+        paging.setTotalRecord(total);
+        paging.setCurrentPage(currentPage);
+
+        applyPaging(searchVO, paging);
+
+        paging.setDataList(mapper.selectMyReservationList(searchVO));
+        paging.setSearchVO(searchVO);
+
         return paging;
     }
 
-    @Override public PublicFacilityReservationVO getMyReservationDetail(PublicFacilityReservationVO searchVO) { return mapper.selectMyReservationDetail(searchVO); }
+    @Override
+    public PublicFacilityReservationVO getMyReservationDetail(
+            PublicFacilityReservationVO searchVO
+    ) {
+        /*
+         * 승인대기 만료 처리
+         *
+         * 상세 모달을 열기 전에 예약 상태를 먼저 갱신합니다.
+         * 그래야 상세 화면에서도 상태가 EXPIRED로 보입니다.
+         */
+        mapper.expirePendingReservations(searchVO.getAptCmplexNo());
+
+        return mapper.selectMyReservationDetail(searchVO);
+    }
 
     @Override
     @Transactional

@@ -169,7 +169,15 @@
         TO_CHAR(FH.RSVT_BGNG_DTTM, 'YYYY.MM.DD HH24:MI') RSVT_BGNG_DTTM,
         TO_CHAR(FH.RSVT_END_DTTM, 'YYYY.MM.DD HH24:MI') RSVT_END_DTTM,
         FH.RSVT_STTS_CD,
-        DECODE(FH.RSVT_STTS_CD, 'PENDING','승인대기','APPROVED','승인완료','REJECTED','거절','CANCELLED','취소', FH.RSVT_STTS_CD) RSVT_STTS_NM,
+        DECODE(
+                FH.RSVT_STTS_CD,
+                'PENDING','승인대기',
+                'APPROVED','승인완료',
+                'REJECTED','승인거절',
+                'CANCELLED','승인취소',
+                'EXPIRED','승인만료',
+                FH.RSVT_STTS_CD
+               ) RSVT_STTS_NM,
         FH.USE_PRPS_CN,
         FH.USE_PRSN_CNT,
         FH.RJCT_RSN_CN,
@@ -523,6 +531,7 @@
         )
     </update>
 
+    <!-- 예약내역 - 시설명 검색 셀렉트박스 쿼리   -->
     <select id="selectHistoryFacilityFilterList" resultMap="reservationMap">
         SELECT DISTINCT
         PF.CMN_FACILITY_NO,
@@ -533,6 +542,7 @@
         ORDER BY PF.CMN_FACILITY_NM
     </select>
 
+    <!-- 예약내역 - 예약대상 검색 셀렉트박스 쿼리   -->
     <select id="selectHistoryItemFilterList" resultMap="reservationMap">
         SELECT DISTINCT
         PI.CMN_FACILITY_ITEM_NO,
@@ -541,7 +551,28 @@
         JOIN PUBLIC_FACILITY PF
         ON PF.CMN_FACILITY_NO = PI.CMN_FACILITY_NO
         WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND PF.CMN_FACILITY_RSV_YN = 'Y'
         ORDER BY PI.ITEM_NM
     </select>
+
+    <!--
+    승인대기 예약 자동 만료 처리
+    예약 시작 시간이 지났는데 아직 PENDING이면 EXPIRED로 변경
+-->
+    <update id="expirePendingReservations">
+        UPDATE FACILITY_HSTRY
+        SET RSVT_STTS_CD = 'EXPIRED',
+        RJCT_RSN_CN = '관리자 승인 가능 시간이 초과되어 자동 취소되었습니다',
+        MDF_DT = SYSDATE
+        WHERE RSVT_STTS_CD = 'PENDING'
+        AND RSVT_BGNG_DTTM &lt;= SYSDATE
+        AND CMN_FACILITY_ITEM_NO IN (
+        SELECT PI.CMN_FACILITY_ITEM_NO
+        FROM PUBLIC_ITEM PI
+        JOIN PUBLIC_FACILITY PF
+        ON PF.CMN_FACILITY_NO = PI.CMN_FACILITY_NO
+        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        )
+    </update>
 
 </mapper>

@@ -546,7 +546,6 @@
     }
     const cmnFacilityNm = '${facility.cmnFacilityNm}';
 
-    const rsvtDtInput = document.getElementById('rsvtDt');
     const timeSlotList = document.getElementById('timeSlotList');
     const selectedTimeInfo = document.getElementById('selectedTimeInfo');
     const purposeCn = document.getElementById('purposeCn');
@@ -573,22 +572,23 @@
 
         document.querySelectorAll('.seat-btn').forEach(btn => {
             btn.classList.remove('selected', 'reserved');
-                if (btn.classList.contains('disabled')) {
-                    btn.disabled = true;
-                } else {
-                    btn.disabled = false;
-                }
+
+            if (btn.classList.contains('disabled')) {
+                btn.disabled = true;
+            } else {
+                btn.disabled = false;
+            }
         });
 
-            if (!rsvtDt) {
-                timeSlotList.innerHTML = '<p class="empty-text">예약일을 선택하면 시간대가 표시됩니다.</p>';
-                return;
-            }
+        if (!rsvtDt) {
+            timeSlotList.innerHTML = '<p class="empty-text">예약일을 선택하면 시간대가 표시됩니다.</p>';
+            return;
+        }
 
-            if (!cmnFacilityNo || cmnFacilityNo.trim() === '') {
-                timeSlotList.innerHTML = '<p class="empty-text">시설번호가 없어 시간대를 조회할 수 없습니다.</p>';
-                return;
-            }
+        if (!cmnFacilityNo || cmnFacilityNo.trim() === '') {
+            timeSlotList.innerHTML = '<p class="empty-text">시설번호가 없어 시간대를 조회할 수 없습니다.</p>';
+            return;
+        }
 
         fetch(contextPath + '/resident/publicFacility/reservation/' + cmnFacilityNo
             + '/time-slots?searchStartDt=' + encodeURIComponent(rsvtDt))
@@ -601,17 +601,21 @@
                     return;
                 }
 
-                list.forEach(row => {
+                list.forEach(slot => {
                     const btn = document.createElement('button');
 
                     btn.type = 'button';
                     btn.className = 'time-slot-btn';
                     btn.innerText = slot.timeLabel;
 
+                    /*
+                     * 지나간 시간대 비활성화 기준
+                     * 예약 시작 시간이 현재 시간보다 같거나 이전이면 선택 불가
+                     */
                     const now = new Date();
-                    const slotEndDate = new Date(slot.rsvtEndDttm.replace(' ', 'T'));
+                    const slotStartDate = new Date(slot.rsvtBgngDttm.replace(' ', 'T'));
 
-                    if (slotEndDate <= now) {
+                    if (slotStartDate <= now) {
                         btn.classList.add('past');
                         btn.disabled = true;
                         btn.innerText = slot.timeLabel + ' / 지난 시간';
@@ -625,7 +629,7 @@
 
                             selectedStartDttm = slot.rsvtBgngDttm;
                             selectedEndDttm = slot.rsvtEndDttm;
-                            selectedItemNo = null;
+                            selectedItemNo = '';
 
                             selectedTimeInfo.innerText = '선택 시간: ' + slot.timeLabel;
 

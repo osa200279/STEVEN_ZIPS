@@ -102,7 +102,26 @@
 
     .pf-search-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr) auto auto;
+
+      /*
+       * 시설명, 예약대상 너비 확대
+       *
+       * 1.35fr
+       * -> 기본 1칸보다 35% 더 넓게 사용
+       *
+       * fr 이란?
+       * CSS Grid의 비율 단위입니다.
+       * 화면 남는 공간을 비율로 나눠서 사용합니다.
+       */
+      grid-template-columns:
+          1.35fr   /* 시설명 */
+          1.35fr   /* 예약대상 */
+          1fr      /* 시작일 */
+          1fr      /* 종료일 */
+          1fr      /* 상태 */
+          auto     /* 초기화 */
+          auto;    /* 검색 */
+
       gap: 10px;
       align-items: end;
     }
@@ -169,6 +188,20 @@
       background: #ef4444;
       color: #fff;
       box-shadow: 0 3px 8px rgba(239, 68, 68, 0.22);
+    }
+
+    /* 초기화 버튼 */
+    .pf-btn-light {
+      background: #64748b;
+      color: #fff;
+      width: 100px;
+    }
+
+    /* 검색 버튼 */
+    .pf-btn-primary {
+      background: #006b4f;
+      color: #fff;
+      width: 100px;
     }
 
     /* 예약내역 테이블 */
@@ -264,6 +297,12 @@
     .pf-badge-cancelled {
       background: #e5e7eb;
       color: #4b5563;
+    }
+
+    /* 승인만료 */
+    .pf-badge-expired {
+      background: #ede9fe;
+      color: #6d28d9;
     }
 
     .pf-paging {
@@ -492,6 +531,7 @@
                   <option value="APPROVED" ${searchVO.searchRsvtSttsCd eq 'APPROVED' ? 'selected' : ''}>승인완료</option>
                   <option value="REJECTED" ${searchVO.searchRsvtSttsCd eq 'REJECTED' ? 'selected' : ''}>승인거절</option>
                   <option value="CANCELLED" ${searchVO.searchRsvtSttsCd eq 'CANCELLED' ? 'selected' : ''}>승인취소</option>
+                  <option value="EXPIRED" ${searchVO.searchRsvtSttsCd eq 'EXPIRED' ? 'selected' : ''}>승인만료</option>
                 </select>
               </div>
 
@@ -536,11 +576,12 @@
                 <td>${row.rsvtBgngDttm} ~ ${row.rsvtEndDttm}</td>
                 <td>
                   <span class="pf-badge
-                    ${row.rsvtSttsCd eq 'PENDING' ? 'pf-badge-pending' : ''}
-                    ${row.rsvtSttsCd eq 'APPROVED' ? 'pf-badge-approved' : ''}
-                    ${row.rsvtSttsCd eq 'REJECTED' ? 'pf-badge-rejected' : ''}
-                    ${row.rsvtSttsCd eq 'CANCELLED' ? 'pf-badge-cancelled' : ''}">
-                      ${row.rsvtSttsNm}
+                      ${row.rsvtSttsCd eq 'PENDING' ? 'pf-badge-pending' : ''}
+                      ${row.rsvtSttsCd eq 'APPROVED' ? 'pf-badge-approved' : ''}
+                      ${row.rsvtSttsCd eq 'REJECTED' ? 'pf-badge-rejected' : ''}
+                      ${row.rsvtSttsCd eq 'CANCELLED' ? 'pf-badge-cancelled' : ''}
+                      ${row.rsvtSttsCd eq 'EXPIRED' ? 'pf-badge-expired' : ''}">
+                       ${row.rsvtSttsNm}
                   </span>
                 </td>
                 <td class="pf-actions">
@@ -659,6 +700,10 @@
                   return 'pf-badge-cancelled';
                 }
 
+                if(statusCd === 'EXPIRED') {
+                  return 'pf-badge-expired';
+                }
+
                 return '';
               }
 
@@ -698,6 +743,12 @@
                       '<th>상태</th>' +
                       '<td><span class="pf-badge ' + getBadgeClass(d.rsvtSttsCd) + '">' + nvl(d.rsvtSttsNm) + '</span></td>' +
                       '</tr>' +
+                      (d.rsvtSttsCd === 'REJECTED' || d.rsvtSttsCd === 'EXPIRED'
+                              ? '<tr>' +
+                              '<th>사유</th>' +
+                              '<td>' + nvl(d.rejectReason) + '</td>' +
+                              '</tr>'
+                              : '') +
                       '</tbody>' +
                       '</table>';
 
