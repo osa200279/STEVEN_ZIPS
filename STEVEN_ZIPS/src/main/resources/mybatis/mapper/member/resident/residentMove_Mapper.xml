@@ -11,6 +11,7 @@
                  INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
         WHERE hh.user_no = #{userNo}
           AND au.apt_cmplex_no = #{aptCmplexNo}
+          AND hh.INOUT_CD = 'WAIT'
     </select>
 
     <!-- aptCmplexNo로 MNG_NO 조회 -->

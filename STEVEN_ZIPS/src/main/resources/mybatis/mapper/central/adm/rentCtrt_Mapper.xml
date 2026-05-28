@@ -68,7 +68,7 @@
         INSERT INTO HSHLD_HEAD (
             USER_NO, HO_NO, INOUT_CD
         ) VALUES (
-            #{detail.USER_NO},#{detail.HO_NO},'WAIT'
+            #{USER_NO},#{HO_NO},'WAIT'
         )
     </insert>
 

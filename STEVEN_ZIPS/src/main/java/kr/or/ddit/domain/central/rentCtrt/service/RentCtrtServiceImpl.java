@@ -67,12 +67,18 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
     @Override
     @Transactional
     public int updateCtrt(String rentCtrtNo, Map<String, Object> detail) {
+        Map<String, Object> before = rentCtrtMapper.selectOneCtrtDetail(rentCtrtNo);
 
-        int res = rentCtrtMapper.updateCtrt(rentCtrtNo,detail);
+        String beforeStatus = (String) before.get("CTRT_STTS_CD");
+        String afterStatus = (String) detail.get("CTRT_STTS_CD");
 
-        String ctrtSttsCd = (String) detail.get("CTRT_STTS_CD");
+        // 실제 업데이트
+        int res = rentCtrtMapper.updateCtrt(rentCtrtNo, detail);
 
-        if ("APPROVED".equals(ctrtSttsCd)) {
+        // 최초 승인 시만 insert
+        if (!"APPROVED".equals(beforeStatus)
+                && "APPROVED".equals(afterStatus)) {
+
             rentCtrtMapper.insertHshldHead(detail);
         }
 

@@ -387,15 +387,11 @@
     <insert id="insertAuth">
 
         INSERT INTO AUTH(
-
             USER_NO,
             USER_ROLE_CD
-
         ) VALUES (
-
                      #{userNo},
                      #{auth}
-
                  )
 
     </insert>
