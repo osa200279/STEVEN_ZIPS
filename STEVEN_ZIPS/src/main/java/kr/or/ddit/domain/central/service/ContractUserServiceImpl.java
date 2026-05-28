@@ -182,7 +182,11 @@ public class ContractUserServiceImpl implements IContractUserService {
             String savedFileName = uuid + "_" + file.getOriginalFilename();
             String fullPath = folderPath + "/" + savedFileName;
 
+            log.info("파일 업로드 시도: {}, MIME: {}", savedFileName, file.getContentType());
+
             String googleId = googleDriveService.uploadFile(file, folderPath, savedFileName);
+
+            log.info("구글 드라이브 업로드 성공: googleId={}", googleId);
 
             long fileGroupNo = iAttachFileMapper.getSeqFileGroupNo();
 
@@ -201,8 +205,13 @@ public class ContractUserServiceImpl implements IContractUserService {
 
         int submitted = contractUserMapper.selectSubmittedDocCount(aplctNo);
         int required = contractUserMapper.selectRequiredDocCount(aplctNo);
+        log.info("[서류제출 상태체크] aplctNo={}, submitted={}, required={}", aplctNo, submitted, required);
+
         if (submitted > 0 && (required <= 0 || submitted >= required)) {
+            log.info("[서류제출 상태변경] aplctNo={} → INSPECTION", aplctNo);
             contractUserMapper.isAllSubmitted(aplctNo);
+        } else {
+            log.warn("[서류제출 상태미변경] 아직 미제출 서류 있음: submitted={}, required={}", submitted, required);
         }
     }
 
