@@ -16,7 +16,7 @@ public interface IContractUserService {
     void updateInqCnt(String annNo);
 
 
-    List<Map<String, Object>> selectExcluseAreaDetail(String aptCmplexNo);
+    List<Map<String, Object>> selectExcluseAreaDetail(String annNo, String aptCmplexNo);
 
     void insertAplct(Map<String, Object> params);
 

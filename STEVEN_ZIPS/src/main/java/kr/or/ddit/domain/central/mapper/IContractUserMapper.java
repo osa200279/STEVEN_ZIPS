@@ -18,7 +18,8 @@ public interface IContractUserMapper {
     void updateInqCnt(String annNo);
 
     // 경고임 무시해도됨
-    List<Map<String, Object>> selectExcluseAreaDetail(String aptCmplexNo);
+    List<Map<String, Object>> selectExcluseAreaDetail(@Param("annNo") String annNo,
+                                                      @Param("aptCmplexNo") String aptCmplexNo);
 
     void insertAplct(Map<String, Object> params);
 

@@ -78,7 +78,8 @@
                     <label class="text-xs font-bold text-slate-500 ml-1">상태</label>
                     <select id="searchStatus" class="w-full bg-[#f1f3ef] border-none rounded-lg py-3 px-4 text-sm">
                         <option value="">전체</option>
-                        <option value="공고중">공고중</option>
+                        <option value="진행중">공고중</option>
+                        <option value="예정">예정</option>
                         <option value="마감">마감</option>
                     </select>
                 </div>
@@ -98,6 +99,10 @@
                         class="bg-[#6F7F3F] text-white px-10 py-4 rounded-lg font-bold hover:bg-[#5f6e35] transition-all">
                     검색
                 </button>
+                <button type="button" onclick="resetSearch()"
+                        class="bg-white border border-[#d9ded4] text-slate-600 px-8 py-4 rounded-lg font-bold hover:bg-[#f8faf6] transition-all">
+                    초기화
+                </button>
             </div>
         </section>
 
@@ -106,9 +111,8 @@
             <table class="w-full text-left border-collapse">
                 <colgroup>
                     <col style="width: 5%"/>  <!-- 번호 -->
-                    <col style="width: 25%"/>  <!-- 공고명 -->
-                    <col style="width: 10%"/>  <!-- 단지 -->
-                    <col style="width: 5%"/>   <!-- 첨부 -->
+                    <col style="width: 30%"/>  <!-- 공고명 -->
+                    <col style="width: 15%"/>  <!-- 단지 -->
                     <col style="width: 10%"/>  <!-- 게시일 -->
                     <col style="width: 10%"/>  <!-- 마감일 -->
                     <col style="width: 10%"/>  <!-- 상태 -->
@@ -119,7 +123,6 @@
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">번호</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-left">공고명</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">아파트 단지</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">첨부</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">게시일</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">마감일</th>
                     <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase text-center">상태</th>
@@ -188,7 +191,6 @@
                         '<td class="px-6 py-5 text-sm text-slate-400 text-center">' + ann.annNo + '</td>' +
                         '<td class="px-6 py-5 text-sm text-slate-800 text-left">' + ann.ttl + '</td>' +
                         '<td class="px-6 py-5 text-sm text-slate-600 text-center">' + (ann.aptCmplexNm || '') + '</td>' +
-                        '<td class="px-6 py-5 text-center">' + (ann.hasFileYn === 'Y' ? '<span class="material-symbols-outlined text-slate-400 text-[20px]">attachment</span>' : '') + '</td>' +
                         '<td class="px-6 py-5 text-sm text-slate-500 text-center">' + (ann.rcrtBgngDt ? ann.rcrtBgngDt.replace(/-/g, '.') : '') + '</td>' +
                         '<td class="px-6 py-5 text-sm text-slate-500 text-center">' + (ann.rcrtEndDt ? ann.rcrtEndDt.replace(/-/g, '.') : '') + '</td>' +
                         '<td class="px-6 py-5 text-center">' + statusBadge + '</td>' +
@@ -258,6 +260,14 @@
         };
         allList = await fetchList(params);
         goPage(1);
+    }
+
+    function resetSearch() {
+        document.querySelector('#searchStatus').value = '';
+        document.querySelector('#searchFrom').value = '';
+        document.querySelector('#searchTo').value = '';
+        document.querySelector('#searchTtl').value = '';
+        searchList();
     }
 
     // 엔터 검색

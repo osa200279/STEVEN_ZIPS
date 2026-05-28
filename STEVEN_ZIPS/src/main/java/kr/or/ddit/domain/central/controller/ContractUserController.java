@@ -139,8 +139,11 @@ public class ContractUserController {
         // 공고번호로 공고 상세 조회
         AnnouncementDTO announcement = announcementService.selectAnnouncement(annNo);
 
-        // 아파트 단지 번호로 전용면적 상세 조회
-        List<Map<String, Object>> exclusiveSize = contractUserService.selectExcluseAreaDetail(announcement.getAptCmplexNo());
+        // 해당 공고에 포함된 매물 기준으로 전용면적 상세 조회
+        List<Map<String, Object>> exclusiveSize = contractUserService.selectExcluseAreaDetail(
+                annNo,
+                announcement.getAptCmplexNo()
+        );
 
         // 첨부파일 아이디가 존재할 경우 파일 목록 조회 후 모델에 담기
         if (announcement.getAtchFileId() != null) {

@@ -7,7 +7,8 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -25,24 +26,120 @@
         }
     </script>
     <style>
-        body { font-family: 'Manrope', sans-serif; background-color: #f8faf6; color: #191c1a; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .tab-btn { color: #9ca3af; border-bottom: 2px solid transparent; transition: all 0.18s; padding: 14px 24px; font-size: 14px; font-weight: 500; }
-        .tab-btn.active { color: #004830; border-bottom: 2px solid #004830; font-weight: 700; }
-        .tab-btn:hover { color: #226046; }
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; animation: fadeIn .2s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; align-items: center; justify-content: center; }
-        .modal-overlay.open { display: flex; }
-        .info-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .info-table th { background: #f8faf6; padding: 12px 20px; text-align: left; font-weight: 600; color: #555; border: 1px solid #e2e8e0; }
-        .info-table td { padding: 12px 20px; color: #333; border: 1px solid #e2e8e0; }
-        .supply-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .supply-table th { background: #1a3a2a; color: white; padding: 12px 16px; text-align: center; font-weight: 600; border: 1px solid #2d5a3d; }
-        .supply-table td { padding: 12px 16px; text-align: center; border: 1px solid #e2e8e0; color: #444; }
-        .supply-table tbody tr:hover { background: #f8faf6; }
-        .supply-table .type-cell { color: #004830; font-weight: 700; }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #f8faf6;
+            color: #191c1a;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .tab-btn {
+            color: #9ca3af;
+            border-bottom: 2px solid transparent;
+            transition: all 0.18s;
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            color: #004830;
+            border-bottom: 2px solid #004830;
+            font-weight: 700;
+        }
+
+        .tab-btn:hover {
+            color: #226046;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn .2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .info-table th {
+            background: #f8faf6;
+            padding: 12px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            border: 1px solid #e2e8e0;
+        }
+
+        .info-table td {
+            padding: 12px 20px;
+            color: #333;
+            border: 1px solid #e2e8e0;
+        }
+
+        .supply-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .supply-table th {
+            background: #1a3a2a;
+            color: white;
+            padding: 12px 16px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #2d5a3d;
+        }
+
+        .supply-table td {
+            padding: 12px 16px;
+            text-align: center;
+            border: 1px solid #e2e8e0;
+            color: #444;
+        }
+
+        .supply-table tbody tr:hover {
+            background: #f8faf6;
+        }
+
+        .supply-table .type-cell {
+            color: #004830;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body class="bg-[#f8faf6] text-on-surface overflow-x-hidden">
@@ -94,7 +191,8 @@
             </div>
             <div class="px-8 py-3 bg-[#f8faf6] flex items-center gap-8 text-sm text-slate-500 border-b border-slate-200">
                 <span>공고번호 : <strong class="text-slate-700">${announcement.annNo}</strong></span>
-                <span>공고일 : <strong class="text-slate-700">${fn:replace(announcement.pblancBgngDt, '-', '.')}</strong></span>
+                <span>공고일 : <strong
+                        class="text-slate-700">${fn:replace(announcement.pblancBgngDt, '-', '.')}</strong></span>
                 <span>아파트 단지 : <strong class="text-slate-700">${announcement.aptCmplexNm}</strong></span>
                 <span class="ml-auto flex items-center gap-1 text-xs text-slate-400">
                     <span class="material-symbols-outlined text-[14px]">visibility</span> ${announcement.inqCnt}
@@ -112,7 +210,8 @@
                 <table class="info-table">
                     <tr>
                         <th style="width:120px">모집기간</th>
-                        <td>${fn:replace(announcement.rcrtBgngDt, '-', '.')} ~ ${fn:replace(announcement.rcrtEndDt, '-', '.')}</td>
+                        <td>${fn:replace(announcement.rcrtBgngDt, '-', '.')}
+                            ~ ${fn:replace(announcement.rcrtEndDt, '-', '.')}</td>
                         <th style="width:120px">공급세대수</th>
                         <td style="width:120px">${announcement.supplyDisplay}</td>
                     </tr>
@@ -196,9 +295,20 @@
                     <c:when test="${not empty announcement.sbmsnDoc}">
                         <div class="space-y-2">
                             <c:forEach var="doc" items="${fn:split(announcement.sbmsnDoc, ',')}">
+                                <c:set var="docTrimmed" value="${fn:trim(doc)}"/>
                                 <div class="flex items-center gap-3 p-3 bg-[#f8faf6] rounded border border-slate-200">
                                     <span class="material-symbols-outlined text-[#226046] text-[18px]">description</span>
-                                    <span class="text-sm text-slate-700">${fn:trim(doc)}</span>
+                                    <span class="text-sm text-slate-700">
+                                        <c:choose>
+                                            <c:when test="${docTrimmed == 'ID'}">신분증</c:when>
+                                            <c:when test="${docTrimmed == 'FAMILY'}">가족관계서류</c:when>
+                                            <c:when test="${docTrimmed == 'RESIDENCE'}">주민등록서류</c:when>
+                                            <c:when test="${docTrimmed == 'CONTRACT'}">계약서류</c:when>
+                                            <c:when test="${docTrimmed == 'INCOME'}">소득증빙서류</c:when>
+                                            <c:when test="${docTrimmed == 'EMPLOY'}">재직증명서</c:when>
+                                            <c:otherwise>${docTrimmed}</c:otherwise>
+                                        </c:choose>
+                                    </span>
                                 </div>
                             </c:forEach>
                         </div>
@@ -242,7 +352,8 @@
             <div class="bg-[#f8faf6] border border-slate-200 rounded p-4">
                 <p class="text-xs text-slate-500 mb-1">신청 공고</p>
                 <p class="text-sm font-bold text-[#004830] mb-0.5">${announcement.ttl}</p>
-                <p class="text-xs text-slate-500">${announcement.aptCmplexNm} | 모집마감 : ${fn:replace(announcement.rcrtEndDt, '-', '.')}</p>
+                <p class="text-xs text-slate-500">${announcement.aptCmplexNm} | 모집마감
+                    : ${fn:replace(announcement.rcrtEndDt, '-', '.')}</p>
             </div>
 
             <!-- 신청자 정보 -->
@@ -260,7 +371,8 @@
             </div>
             <div class="w-1/2">
                 <label class="block text-xs text-slate-500 mb-1">타입</label>
-                <select id="exclusiveSizeSelect" class="w-full px-3 py-2 border border-slate-200 text-sm rounded focus:outline-none focus:border-[#004830]">
+                <select id="exclusiveSizeSelect"
+                        class="w-full px-3 py-2 border border-slate-200 text-sm rounded focus:outline-none focus:border-[#004830]">
                     <c:forEach var="apt" items="${exclusiveSize}">
                         <option value="${apt.TY_NM}" data-exclusive="${apt.EXCLUSIVE_SIZE}">${apt.TY_NM}</option>
                     </c:forEach>
@@ -269,8 +381,14 @@
         </div>
 
         <div class="flex justify-end gap-2 px-6 py-4 border-t border-slate-200 bg-slate-50 rounded-b-xl">
-            <button onclick="closeApplyModal()" class="px-5 py-2 bg-white border border-slate-300 text-sm text-slate-600 rounded hover:bg-slate-50 transition-colors">취소</button>
-            <button onclick="submitApply()" class="px-6 py-2 bg-[#004830] text-white text-sm font-bold rounded hover:bg-[#226046] transition-all">공고 신청</button>
+            <button onclick="closeApplyModal()"
+                    class="px-5 py-2 bg-white border border-slate-300 text-sm text-slate-600 rounded hover:bg-slate-50 transition-colors">
+                취소
+            </button>
+            <button onclick="submitApply()"
+                    class="px-6 py-2 bg-[#004830] text-white text-sm font-bold rounded hover:bg-[#226046] transition-all">
+                공고 신청
+            </button>
         </div>
     </div>
 </div>
@@ -320,17 +438,27 @@
                     body: JSON.stringify(data)
                 }).then(res => res.json()).then(result => {
                     if (result.success) {
-                        Swal.fire({icon: 'success', title: '공고 신청 완료', text: '심사 결과를 기다려주세요.', confirmButtonColor: '#004830'})
+                        Swal.fire({
+                            icon: 'success',
+                            title: '공고 신청 완료',
+                            text: '심사 결과를 기다려주세요.',
+                            confirmButtonColor: '#004830'
+                        })
                             .then(() => window.location.href = '/contract/history.do');
                     } else {
-                        Swal.fire({icon: 'error', title: '오류', text: '신청 중 오류가 발생했습니다.', confirmButtonColor: '#004830'});
+                        Swal.fire({
+                            icon: 'error',
+                            title: '오류',
+                            text: '신청 중 오류가 발생했습니다.',
+                            confirmButtonColor: '#004830'
+                        });
                     }
                 });
             }
         });
     }
 
-    document.querySelector('#applyModal').addEventListener('click', function(e) {
+    document.querySelector('#applyModal').addEventListener('click', function (e) {
         if (e.target === this) closeApplyModal();
     });
 </script>

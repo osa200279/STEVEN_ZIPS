@@ -234,12 +234,13 @@ public class ContractUserServiceImpl implements IContractUserService {
      * 특정 아파트 단지의 전용면적 상세 정보 목록을 조회하는 메소드
      * 공고 상세 페이지에서 면적별 세대 정보를 표시할 때 사용
      *
+     * annNo 조회할 공고 번호
      * aptCmplexNo 조회할 아파트 단지 번호
      * 전용면적 상세 정보 목록 (면적, 세대수 등)
      */
     @Override
-    public List<Map<String, Object>> selectExcluseAreaDetail(String aptCmplexNo) {
-        return contractUserMapper.selectExcluseAreaDetail(aptCmplexNo);
+    public List<Map<String, Object>> selectExcluseAreaDetail(String annNo, String aptCmplexNo) {
+        return contractUserMapper.selectExcluseAreaDetail(annNo, aptCmplexNo);
     }
 
     /**
