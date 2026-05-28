@@ -57,6 +57,27 @@
     #aptScheduleCalendarPage .schedule-list-table th, #aptScheduleCalendarPage .schedule-list-table td { text-align:center; vertical-align:middle; white-space:nowrap; }
     #aptScheduleCalendarPage .schedule-list-table .td-title { text-align:left; overflow:hidden; text-overflow:ellipsis; }
 
+    #aptScheduleCalendarPage .schedule-list-detail {
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      color: #111827;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #aptScheduleCalendarPage .schedule-list-detail:hover {
+      color: #006b4f;
+      text-decoration: underline;
+    }
     #aptScheduleCalendarPage .modal-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:center; justify-content:center; z-index:1000; }
     #aptScheduleCalendarPage .modal-backdrop.active { display:flex; }
     #aptScheduleCalendarPage .modal-card { width:460px; max-width:calc(100vw - 32px); background:#fff; border-radius:16px; box-shadow:0 20px 60px rgba(15,23,42,.25); overflow:hidden; }
@@ -67,6 +88,21 @@
     #aptScheduleCalendarPage .form-row label { display:block; font-size:12px; font-weight:800; margin-bottom:5px; color:#334155; }
     #aptScheduleCalendarPage .form-row input, #aptScheduleCalendarPage .form-row select, #aptScheduleCalendarPage .form-row textarea { width:100%; }
     #aptScheduleCalendarPage .modal-foot { display:flex; justify-content:flex-end; gap:8px; padding:14px 18px; border-top:1px solid #e5e7eb; }
+
+    #aptScheduleCalendarPage .detail-row {
+      margin-bottom:12px;
+      font-size:14px;
+      color:#334155;
+    }
+
+    #aptScheduleCalendarPage .detail-label {
+      display:block;
+      font-size:12px;
+      font-weight:800;
+      margin-bottom:5px;
+      color:#64748b;
+    }
+
   </style>
 
   <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
@@ -117,7 +153,16 @@
             <option value="CHECK">점검</option>
           </select>
           <input type="text" id="keyword" class="form-control" placeholder="일정명, 내용, 위치, 직원명 검색">
-          <button type="button" class="btn btn-primary" id="searchBtn"><span class="material-symbols-rounded">search</span>검색</button>
+          <button type="button" class="btn btn-primary" id="searchBtn">
+            <span class="material-symbols-rounded">search</span>
+            검색
+          </button>
+
+          <!-- 검색조건 초기화 버튼 -->
+          <button type="button" class="btn btn-secondary" id="resetBtn">
+            <span class="material-symbols-rounded">refresh</span>
+            초기화
+          </button>
         </div>
 
         <div class="tab-panel active" id="calendarPanel">
@@ -190,6 +235,47 @@
             <div class="modal-foot">
               <button type="button" class="btn btn-secondary" id="cancelVacationBtn">취소</button>
               <button type="button" class="btn btn-primary" id="saveVacationBtn">등록</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-backdrop" id="detailModal">
+          <div class="modal-card">
+            <div class="modal-head">
+              <div class="modal-title" id="detailTitle">일정 상세</div>
+            </div>
+
+            <div class="modal-body">
+              <div class="detail-row">
+                <span class="detail-label">유형</span>
+                <span id="detailType">-</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">기간</span>
+                <span id="detailPeriod">-</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">위치</span>
+                <span id="detailLoc">-</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">등록자/직원</span>
+                <span id="detailPerson">-</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">내용</span>
+                <span id="detailCn">-</span>
+              </div>
+            </div>
+
+            <div class="modal-foot">
+              <button type="button" class="btn btn-secondary" id="closeDetailFootBtn">
+                닫기
+              </button>
             </div>
           </div>
         </div>
@@ -279,7 +365,10 @@
         html += '<div class="day-num">' + cellDate.getDate() + '</div>';
 
         items.slice(0, 5).forEach(function (item) {
-          html += '<button type="button" class="schedule-chip ' + item.scheduleTy + '" title="' + escapeHtml(item.scheduleTtl) + '">';
+          html += '<button type="button"'
+                  + ' class="schedule-chip ' + escapeHtml(item.scheduleTy) + '"'
+                  + ' title="' + escapeHtml(item.scheduleTtl) + '"'
+                  + ' data-schedule-no="' + escapeHtml(item.scheduleNo) + '">';
           html += escapeHtml(item.scheduleTtl);
           html += '</button>';
         });
@@ -290,6 +379,20 @@
       html += '</tr>';
     }
     calendarBody.innerHTML = html;
+
+    document.querySelectorAll('.schedule-chip').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const scheduleNo = btn.dataset.scheduleNo;
+
+        const selected = scheduleList.find(function (item) {
+          return String(item.scheduleNo) === String(scheduleNo);
+        });
+
+        if (selected) {
+          openDetailModal(selected);
+        }
+      });
+    });
   }
 
   function getSchedulesByDate(dateStr) {
@@ -305,16 +408,41 @@
     }
 
     scheduleListBody.innerHTML = scheduleList.map(function (item) {
-      const period = item.startDt === item.endDt ? item.startDt : item.startDt + ' ~ ' + item.endDt;
+      const period = item.startDt === item.endDt
+              ? item.startDt
+              : item.startDt + ' ~ ' + item.endDt;
+
       const person = item.userNm || item.rgtrId || '-';
+
       return '<tr>'
-        + '<td>' + escapeHtml(item.scheduleTyNm) + '</td>'
-        + '<td class="td-title">' + escapeHtml(item.scheduleTtl) + '</td>'
-        + '<td>' + escapeHtml(period) + '</td>'
-        + '<td>' + escapeHtml(item.locCn || '-') + '</td>'
-        + '<td>' + escapeHtml(person) + '</td>'
-        + '</tr>';
+              + '<td>' + escapeHtml(item.scheduleTyNm) + '</td>'
+              + '<td class="td-title">'
+              + '<button type="button" class="schedule-list-detail" data-schedule-no="' + escapeHtml(item.scheduleNo) + '">'
+              + escapeHtml(item.scheduleTtl)
+              + '</button>'
+              + '</td>'
+              + '<td>' + escapeHtml(period) + '</td>'
+              + '<td>' + escapeHtml(item.locCn || '-') + '</td>'
+              + '<td>' + escapeHtml(person) + '</td>'
+              + '</tr>';
     }).join('');
+
+    /*
+     * 목록 일정 클릭 시 상세 모달 열기
+     */
+    document.querySelectorAll('.schedule-list-detail').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const scheduleNo = btn.dataset.scheduleNo;
+
+        const selected = scheduleList.find(function (item) {
+          return String(item.scheduleNo) === String(scheduleNo);
+        });
+
+        if (selected) {
+          openDetailModal(selected);
+        }
+      });
+    });
   }
 
   function saveVacation() {
@@ -353,10 +481,63 @@
     document.getElementById('vacEndDt').value = '';
   }
 
+  /*
+ * 일정 상세 모달 열기
+ */
+  function openDetailModal(item) {
+    const period = item.startDt === item.endDt
+            ? item.startDt
+            : item.startDt + ' ~ ' + item.endDt;
+
+    const person = item.userNm || item.rgtrId || '-';
+
+    document.getElementById('detailTitle').textContent = item.scheduleTtl || '일정 상세';
+    document.getElementById('detailType').textContent = item.scheduleTyNm || '-';
+    document.getElementById('detailPeriod').textContent = period || '-';
+    document.getElementById('detailLoc').textContent = item.locCn || '-';
+    document.getElementById('detailPerson').textContent = person;
+    document.getElementById('detailCn').textContent = item.scheduleCn || '-';
+
+    document.getElementById('detailModal').classList.add('active');
+  }
+
+  /*
+   * 일정 상세 모달 닫기
+   */
+  function closeDetailModal() {
+    document.getElementById('detailModal').classList.remove('active');
+  }
+
   document.getElementById('prevMonthBtn').addEventListener('click', function () { currentDate.setMonth(currentDate.getMonth() - 1); loadSchedule(); });
   document.getElementById('nextMonthBtn').addEventListener('click', function () { currentDate.setMonth(currentDate.getMonth() + 1); loadSchedule(); });
   document.getElementById('todayBtn').addEventListener('click', function () { currentDate = new Date(); loadSchedule(); });
   document.getElementById('searchBtn').addEventListener('click', loadSchedule);
+
+  /*
+ * 검색조건 초기화
+ *
+ * 왜 사용?
+ * 검색조건을 기본값으로 되돌리고
+ * 전체 목록을 다시 조회하기 위해 사용.
+ */
+  document.getElementById('resetBtn').addEventListener('click', function () {
+
+    /*
+     * select 기본값 복구
+     */
+    document.getElementById('scheduleTy').value = 'ALL';
+
+    /*
+     * 검색어 초기화
+     */
+    document.getElementById('keyword').value = '';
+
+    /*
+     * 전체 재조회
+     */
+    loadSchedule();
+  });
+
   document.getElementById('keyword').addEventListener('keydown', function (e) { if (e.key === 'Enter') loadSchedule(); });
 
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
@@ -375,6 +556,14 @@
   document.getElementById('closeVacationBtn').addEventListener('click', closeVacationModal);
   document.getElementById('cancelVacationBtn').addEventListener('click', closeVacationModal);
   document.getElementById('saveVacationBtn').addEventListener('click', saveVacation);
+
+  document.getElementById('closeDetailFootBtn').addEventListener('click', closeDetailModal);
+
+  document.getElementById('detailModal').addEventListener('click', function (e) {
+    if (e.target.id === 'detailModal') {
+      closeDetailModal();
+    }
+  });
 
   loadSchedule();
 })();

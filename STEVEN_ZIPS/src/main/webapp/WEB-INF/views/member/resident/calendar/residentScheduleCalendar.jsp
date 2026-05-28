@@ -246,40 +246,76 @@
 
         .calendar-search-input {
             height: 38px;
-            border: 1px solid #d6dde2;
-            border-radius: 6px;
-            padding: 0 12px;
+            border: 1px solid #d7dce1;
+            border-radius: 8px;
+            padding: 0 14px;
             background: #fff;
-            color: #1f2933;
+            color: #374151;
             font-size: 13px;
+            font-weight: 500;
             box-sizing: border-box;
             outline: none;
+            transition: border-color 0.2s ease;
         }
 
         select.calendar-search-input {
             width: 150px;
-            appearance: auto;
             cursor: pointer;
+
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            padding-right: 38px;
+
+            background-color: #fff;
+
+            /*
+             * select 화살표 직접 추가
+             */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%236b7280' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
         }
 
-        input.calendar-search-input {
-            width: 280px;
+        .calendar-search-input::placeholder {
+            color: #9ca3af;
+            font-size: 13px;
         }
 
         .calendar-search-input:focus {
-            border-color: var(--green-dark);
-            box-shadow: 0 0 0 2px rgba(31, 92, 66, 0.12);
+            border-color: #b8c0c8;
+            box-shadow: none;
+        }
+        input.calendar-search-input,
+        select.calendar-search-input {
+            border: 1px solid #d7dce1 !important;
+            box-shadow: none !important;
+            border-radius: 8px;
         }
 
         .btn-main {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             min-width: 72px;
-            height: 38px;
-            border-radius: 6px;
-            padding: 0 18px;
-            font-size: 13px;
+            height: 36px;
+            border: none;
+            border-radius: 5px;
+            padding: 0 16px;
             background: #006b4f;
             color: #fff;
-            gap: 4px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .btn-main .material-symbols-rounded {
+            font-size: 18px;
+            font-weight: 700;
         }
 
         .btn-ghost {
@@ -600,6 +636,35 @@
                 flex-wrap: wrap;
             }
         }
+
+        /*
+     * 초기화 버튼
+     * 검색버튼보다 연한 회색 스타일로 처리.
+     */
+        .btn-reset {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-width: 86px;
+            height: 38px;
+            border-radius: 8px;
+            border: 1px solid #d7dce1;
+            background: #fff;
+            color: #4b5563;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-reset:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-reset .material-symbols-rounded {
+            font-size: 18px;
+        }
     </style>
 </head>
 
@@ -686,6 +751,7 @@
 
             <section class="search-card">
                 <div class="filter-row">
+
                     <select id="scheduleTy" class="calendar-search-input">
                         <option value="ALL">전체 유형</option>
                         <option value="NOTICE">공지</option>
@@ -705,6 +771,13 @@
                         <span class="material-symbols-rounded">search</span>
                         검색
                     </button>
+
+                    <!-- 초기화 버튼 추가 -->
+                    <button type="button" class="btn-reset" id="resetBtn">
+                        <span class="material-symbols-rounded">refresh</span>
+                        초기화
+                    </button>
+
                 </div>
             </section>
 
@@ -1140,8 +1213,23 @@
             }
         });
 
+        /*
+         * 검색조건 초기화
+         */
+        const resetBtn = document.getElementById('resetBtn');
+
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function () {
+                document.getElementById('scheduleTy').value = 'ALL';
+                document.getElementById('keyword').value = '';
+
+                loadSchedule();
+            });
+        }
+
         loadSchedule();
     })();
+
 </script>
 </body>
 </html>
