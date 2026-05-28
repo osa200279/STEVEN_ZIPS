@@ -139,6 +139,18 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
             throw new IllegalStateException("이미 예약된 시간입니다.");
         }
 
+        /*
+         * [추가] 시설 점검 이용제한 예약 차단
+         * 왜 추가? 점검으로 이용 제한된 시간에는 입주민 예약을 막기 위해 사용합니다.
+         *
+         * 주의:
+         * PUBLIC_ITEM 상태를 직접 바꾸지 않고, 예약하려는 시간과
+         * FACILITY_CHECK_HSTRY의 이용제한 시간을 비교해서 저장 직전에만 차단합니다.
+         */
+        if (mapper.selectFacilityCheckRestrictCount(vo) > 0) {
+            throw new IllegalStateException("시설 점검으로 예약할 수 없는 시간입니다.");
+        }
+
         vo.setRsvtNo(mapper.selectNextRsvtNo());
         vo.setCmnFacilityNo(facilityInfo.getCmnFacilityNo());
         vo.setCmnFacilityNm(facilityInfo.getCmnFacilityNm());

@@ -151,6 +151,7 @@
         #meterPage .badge-normal { background:#e8f1eb; color:#1f5a35; border-color:#bdd7c5; }
         #meterPage .badge-error { background:#fee2e2; color:#7f1d1d; border-color:#fecaca; }
         #meterPage .badge-miss { background:#fef3c7; color:#713f12; border-color:#fde68a; }
+        #meterPage .badge-check { background:#ffedd5; color:#9a3412; border-color:#fed7aa; }
         #meterPage .badge-gray { background:#f3f4f6; color:#4b5563; border-color:#d1d5db; }
         #meterPage .need-check { display:block; margin-top:3px; font-size:10px; color:#b45309; font-weight:800; }
 
@@ -389,6 +390,7 @@
                                                                 <c:when test="${row.meterRsltCd eq 'NORMAL'}"><span class="badge badge-normal">${row.meterRsltNm}</span></c:when>
                                                                 <c:when test="${row.meterRsltCd eq 'ERROR'}"><span class="badge badge-error">${row.meterRsltNm}</span><span class="need-check">확인 필요</span></c:when>
                                                                 <c:when test="${row.meterRsltCd eq 'MISS'}"><span class="badge badge-miss">${row.meterRsltNm}</span><span class="need-check">확인 필요</span></c:when>
+                                                                <c:when test="${row.meterRsltCd eq 'CHECK'}"><span class="badge badge-check">${row.meterRsltNm}</span><span class="need-check">확인 필요</span></c:when>
                                                                 <c:otherwise><span class="badge badge-gray">${empty row.meterRsltCd ? '-' : row.meterRsltCd}</span></c:otherwise>
                                                             </c:choose>
                                                         </td>
@@ -550,6 +552,7 @@
                                                                 <c:when test="${row.meterRsltCd eq 'NORMAL'}"><span class="badge badge-normal">${row.meterRsltNm}</span></c:when>
                                                                 <c:when test="${row.meterRsltCd eq 'ERROR'}"><span class="badge badge-error">${row.meterRsltNm}</span><span class="need-check">확인 필요</span></c:when>
                                                                 <c:when test="${row.meterRsltCd eq 'MISS'}"><span class="badge badge-miss">${row.meterRsltNm}</span><span class="need-check">확인 필요</span></c:when>
+                                                                <c:when test="${row.meterRsltCd eq 'CHECK'}"><span class="badge badge-check">${row.meterRsltNm}</span><span class="need-check">확인 필요</span></c:when>
                                                                 <c:otherwise><span class="badge badge-gray">${empty row.meterRsltCd ? '-' : row.meterRsltCd}</span></c:otherwise>
                                                             </c:choose>
                                                         </td>

@@ -61,7 +61,9 @@ var FacilityGrid = (function () {
     }
 
     /**
-     * 사용여부 표시 렌더러
+     * 활성여부 표시 렌더러
+     * - FACILITY.USE_YN 원본값만 표시
+     * - 점검 이용제한 상태와 섞지 않음
      */
     function useYnRenderer(params) {
         /* 비활성 여부 */
@@ -73,8 +75,32 @@ var FacilityGrid = (function () {
         /* 상태 문구 */
         var text = isDisabled ? "비활성" : "활성";
 
-        /* 상태 표시 */
+        /* 활성여부 표시 */
         return '<span class="' + cls + '">' + escapeHtml(text) + '</span>';
+    }
+
+    /**
+     * 이용제한 표시 렌더러
+     * - FACILITY_CHECK_HSTRY 이용제한 시간 기준
+     * - 현재 시간이 제한 시작~종료 사이이면 제한중
+     */
+    function restrictRenderer(params) {
+        /* 행 데이터 */
+        var row = params.data || {};
+        var statusCd = row.currentRestrictStatusCd || "";
+        var statusNm = row.currentRestrictStatusNm || "";
+
+        if (statusCd === "ONGOING" || row.currentRestrictYn === "Y") {
+            return '<span class="status-text is-restricted">' + escapeHtml(statusNm || "제한중") + '</span>';
+        }
+        if (statusCd === "UPCOMING") {
+            return '<span class="status-text is-wait">' + escapeHtml(statusNm || "제한예정") + '</span>';
+        }
+        if (statusCd === "ENDED") {
+            return '<span class="status-text is-disabled">' + escapeHtml(statusNm || "제한종료") + '</span>';
+        }
+
+        return '<span class="status-text is-none">' + escapeHtml(statusNm || "제한없음") + '</span>';
     }
 
     /**
@@ -196,27 +222,27 @@ var FacilityGrid = (function () {
     /**
      * 활성상태 버튼 스타일 생성
      *
-     * 기준
-     * - 활성  : 빨간색
-     * - 비활성: 회색
+     * 기준 (협력업체 관리 버튼 스타일과 동일)
+     * - 현재 활성  → "비활성" 버튼 (흰색 바탕)
+     * - 현재 비활성 → "활성" 버튼 (녹색 바탕)
      *
      * CSS 파일 수정 없이 바로 적용되도록 inline style 사용
      */
     function getUseButtonStyle(useYn) {
-        /* 비활성 버튼 */
+        /* 현재 비활성 → 활성 전환 버튼 (녹색) */
         if (useYn === "N") {
-            return "background:#6b7280;border-color:#6b7280;color:#fff;";
+            return "background:#2e5c38;border:1px solid #2e5c38;color:#fff;";
         }
 
-        /* 활성 버튼 */
-        return "background:#245c32;border-color:#245c32;color:#fff;";
+        /* 현재 활성 → 비활성 전환 버튼 (흰색, 상세 버튼과 동일 테두리) */
+        return "background:#fff;border:1px solid #d7dce2;color:#39443d;";
     }
     /**
      * 관리 버튼 렌더러
      *
      * 버튼 문구 기준
-     * - 현재 활성 시설  : "활성"
-     * - 현재 비활성 시설: "비활성"
+     * - 현재 활성 시설  : "비활성" (클릭 시 비활성 처리)
+     * - 현재 비활성 시설: "활성"   (클릭 시 활성 처리)
      *
      * 클릭 동작 기준
      * - data-use-yn에는 현재 상태를 담음
@@ -232,8 +258,8 @@ var FacilityGrid = (function () {
         /* 현재 활성여부 */
         var useYn = row.useYn === "N" ? "N" : "Y";
 
-        /* 현재 상태 문구 */
-        var toggleText = useYn === "N" ? "비활성" : "활성";
+        /* 클릭 시 전환될 상태 문구 */
+        var toggleText = useYn === "N" ? "활성" : "비활성";
 
         /* 현재 상태 버튼 색상 */
         var toggleStyle = getUseButtonStyle(useYn);
@@ -324,10 +350,18 @@ var FacilityGrid = (function () {
             {
                 headerName: "활성여부",
                 field: "useYn",
-                width: 95,
-                minWidth: 75,
+                width: 90,
+                minWidth: 70,
                 cellClass: "cell-center",
                 cellRenderer: useYnRenderer
+            },
+            {
+                headerName: "이용제한",
+                field: "currentRestrictYn",
+                width: 90,
+                minWidth: 75,
+                cellClass: "cell-center",
+                cellRenderer: restrictRenderer
             },
             {
                 headerName: "동",
@@ -464,6 +498,7 @@ var FacilityGrid = (function () {
                 "facilityTyCd",
                 "publicOperRegisteredYn",
                 "useYn",
+                "currentRestrictYn",
                 "dongNo",
                 "locCn",
                 "instlDt"

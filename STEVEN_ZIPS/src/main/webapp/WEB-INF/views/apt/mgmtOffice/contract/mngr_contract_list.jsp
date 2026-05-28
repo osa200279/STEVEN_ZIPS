@@ -858,6 +858,14 @@
             detailUrl: '${ctx}/manager/facility/contract/detail/${mgmtOfcNo}/'
         };
 
+        <c:if test="${param.msg eq 'insert'}">
+        window.alert('계약 등록을 완료했습니다.');
+        </c:if>
+
+        <c:if test="${param.msg eq 'update'}">
+        window.alert('계약 수정을 완료했습니다.');
+        </c:if>
+
         /* 계약유형 표시명 */
         var contTyMap = {
             MAINT: '유지보수',

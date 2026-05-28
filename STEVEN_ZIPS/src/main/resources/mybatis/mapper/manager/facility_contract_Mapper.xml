@@ -202,7 +202,7 @@
             )
         </if>
 
-        order by fc.reg_dt desc, fc.cont_no desc
+        order by to_number(regexp_substr(fc.cont_no, '[0-9]+')) desc, fc.cont_no desc
         ) a
         where rownum &lt;= #{pagingVO.endRow}
         )
@@ -424,7 +424,7 @@
         where fct.cont_no = fc.cont_no
         )
         and fc.facility_no is null
-        order by nvl(fc.cont_dt, fc.cont_bgng_dt) desc, fc.cont_no desc
+        order by to_number(regexp_substr(fc.cont_no, '[0-9]+')) desc, fc.cont_no desc
     </select>
 
     <!-- 계약 등록/수정 폼용 협력업체 목록 -->

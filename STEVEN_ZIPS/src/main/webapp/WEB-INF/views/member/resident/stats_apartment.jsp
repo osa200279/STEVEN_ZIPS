@@ -68,5 +68,10 @@
     </main>
   </div>
   <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
+
+  <script>
+    window.aptStatsContextPath = '${pageContext.request.contextPath}';
+    window.aptStatsAptCmplexNo = '${aptCmplexNo}';
+  </script>
 </body>
 </html>

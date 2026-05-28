@@ -45,6 +45,12 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
         return facilityCheckHstryMapper.selectFacilityCheckDetail(mgmtOfcNo, facChkHstryNo);
     }
 
+    /** 오늘의 이용제한 점검 이력 목록 조회 */
+    @Override
+    public List<FacilityCheckHstryVO> selectTodayUseRestrictList(String mgmtOfcNo) {
+        return facilityCheckHstryMapper.selectTodayUseRestrictList(mgmtOfcNo);
+    }
+
     /** 시설 선택 모달 기본 목록 조회 */
     @Override
     public List<FacilityCheckHstryVO> selectFacilitySelectList(String mgmtOfcNo) {
@@ -104,6 +110,9 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
         // 등록 시 처리과정번호 기준값 보정
         normalizeCheckFlowNoForInsert(facilityCheckHstryVO);
 
+        // 이용제한 기준값 보정
+        normalizeUseRestriction(facilityCheckHstryVO);
+
         // 점검 이력 등록 전 필수값 검증
         validateCheckRequired(facilityCheckHstryVO);
 
@@ -129,6 +138,9 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
 
         // 수정 시 처리과정번호 기준값 보정
         normalizeCheckFlowNoForUpdate(facilityCheckHstryVO);
+
+        // 이용제한 기준값 보정
+        normalizeUseRestriction(facilityCheckHstryVO);
 
         // 점검 이력 수정 전 필수값 검증
         validateCheckRequired(facilityCheckHstryVO);
@@ -249,6 +261,27 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
     }
 
     /**
+     * 이용제한 기준값 보정
+     * - 미선택 시 N으로 저장
+     * - 제한 없음이면 시작/종료일시를 저장하지 않음
+     */
+    private void normalizeUseRestriction(FacilityCheckHstryVO checkVO) {
+        if (checkVO == null) {
+            return;
+        }
+
+        if (isBlank(checkVO.getUseRestrictYn())) {
+            checkVO.setUseRestrictYn("N");
+        }
+
+        if (!"Y".equals(checkVO.getUseRestrictYn())) {
+            checkVO.setUseRestrictYn("N");
+            checkVO.setUseRestrictBgngDt(null);
+            checkVO.setUseRestrictEndDt(null);
+        }
+    }
+
+    /**
      * 시설 점검 이력 필수값 검증
      * - 화면 JS 검증을 우회해도 서버에서 빈 값 저장을 막기 위한 검증
      * - 자체점검은 partnerNo 없이 등록 가능
@@ -296,6 +329,12 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
         // 점검내용 필수 검증
         if (isBlank(checkVO.getChkCn())) {
             throw new IllegalArgumentException("점검내용을 입력해 주세요.");
+        }
+
+        // 이용제한 일시 필수 검증
+        if ("Y".equals(checkVO.getUseRestrictYn())
+                && (isBlank(checkVO.getUseRestrictBgngDt()) || isBlank(checkVO.getUseRestrictEndDt()))) {
+            throw new IllegalArgumentException("이용제한 시작일시와 종료일시를 입력해 주세요.");
         }
     }
 

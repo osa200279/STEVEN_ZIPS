@@ -53,6 +53,26 @@ public class FacilityCheckHstryVO {
     /** 점검유형코드 */
     private String chkTyCd;
 
+    /** 이용제한 여부 */
+    private String useRestrictYn;
+
+    /** 이용제한 시작일시 */
+    private String useRestrictBgngDt;
+
+    /** 이용제한 종료일시 */
+    private String useRestrictEndDt;
+
+    /** 이용제한 화면상태코드
+     * - ONGOING : 제한중
+     * - UPCOMING : 예정
+     * - ENDED : 종료
+     * - DB 저장 컬럼 아님
+     */
+    private String useRestrictStatusCd;
+
+    /** 이용제한 화면상태명 */
+    private String useRestrictStatusNm;
+
 
     /* =========================================================
      * 2. FACILITY 조인 표시값

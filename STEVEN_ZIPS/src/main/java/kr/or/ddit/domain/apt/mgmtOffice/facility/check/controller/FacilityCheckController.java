@@ -58,6 +58,8 @@ public class FacilityCheckController {
             @RequestParam(required = false, defaultValue = "") String partnerNo,
             @RequestParam(required = false, defaultValue = "") String chkTyCd,
             @RequestParam(required = false, defaultValue = "") String chkSttsCd,
+            @RequestParam(required = false, defaultValue = "") String useRestrictYn,
+            @RequestParam(required = false, defaultValue = "") String useRestrictStatusCd,
             @RequestParam(required = false, defaultValue = "") String chkStartDt,
             @RequestParam(required = false, defaultValue = "") String chkEndDt,
             @AuthenticationPrincipal CustomUser customUser,
@@ -75,6 +77,9 @@ public class FacilityCheckController {
         searchVO.setPartnerNo(partnerNo);
         searchVO.setChkTyCd(chkTyCd);
         searchVO.setChkSttsCd(chkSttsCd);
+        /* 이용제한 여부 검색 조건 */
+        searchVO.setUseRestrictYn(useRestrictYn);
+        searchVO.setUseRestrictStatusCd(useRestrictStatusCd);
         searchVO.setChkStartDt(chkStartDt);
         searchVO.setChkEndDt(chkEndDt);
 
@@ -105,6 +110,9 @@ public class FacilityCheckController {
         /* 현황 카드 건수 */
         FacilityCheckHstryVO summary = facilityCheckService.selectFacilityCheckSummary(mgmtOfcNo);
         model.addAttribute("summary", summary == null ? new FacilityCheckHstryVO() : summary);
+
+        /* 오늘 날짜와 겹치는 이용제한 이력 */
+        model.addAttribute("todayUseRestrictList", facilityCheckService.selectTodayUseRestrictList(mgmtOfcNo));
 
         /* 필터용 공통코드 목록 */
         model.addAttribute("checkTypeList", facilityCheckService.selectCheckTypeList());

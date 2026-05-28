@@ -242,7 +242,7 @@ public class FacilityContractController {
         // - 계약서 첨부파일 업로드
         facilityContractService.insertContract(contract, contractFiles, userNo);
 
-        return "redirect:/manager/facility/contract/list/" + mgmtOfcNo;
+        return "redirect:/manager/facility/contract/list/" + mgmtOfcNo + "?msg=insert";
     }
 
     /**
@@ -280,6 +280,6 @@ public class FacilityContractController {
         // - 계약서 파일 추가/삭제
         facilityContractService.updateContract(contract, contractFiles, deleteFileSaveUuidList, userNo);
 
-        return "redirect:/manager/facility/contract/list/" + mgmtOfcNo;
+        return "redirect:/manager/facility/contract/list/" + mgmtOfcNo + "?msg=update";
     }
 }

@@ -45,10 +45,14 @@
         #facilityPage .detail-empty { color:#9ca3af; font-weight:400; }
         #facilityPage .badge { display:inline-flex; align-items:center; justify-content:center; min-height:22px; padding:0 8px; border-radius:4px; font-size:11px; font-weight:600; line-height:1; border:1px solid transparent; }
         #facilityPage .badge-blue { background:#dbeafe; color:#1e3a5f; border-color:#bfdbfe; }
+        #facilityPage .badge-contract-active { background:#dceee0; color:#1f7a3f; border-color:#c7e4cf; }
+        #facilityPage .badge-contract-end { background:#f3f4f6; color:#4b5563; border-color:#d1d5db; }
         #facilityPage .badge-use-y { background:#dceee0; color:#1f7a3f; border-color:#c7e4cf; }
         #facilityPage .badge-use-y::before { content:""; width:7px; height:7px; margin-right:6px; border-radius:50%; background:#22c55e; }
         #facilityPage .badge-use-n { background:#fee2e2; color:#b42318; border-color:#fecaca; }
         #facilityPage .badge-use-n::before { content:""; width:7px; height:7px; margin-right:6px; border-radius:50%; background:#ef4444; }
+        #facilityPage .badge-restrict { background:#fff7ed; color:#c2410c; border-color:#fed7aa; }
+        #facilityPage .badge-restrict::before { content:""; width:7px; height:7px; margin-right:6px; border-radius:50%; background:#f97316; }
         #facilityPage .file-preview-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
         #facilityPage .file-preview-item { border:1px solid var(--line); border-radius:6px; background:#fafcfb; overflow:hidden; }
         #facilityPage .file-preview-item img { display:block; width:100%; height:110px; object-fit:cover; border-bottom:1px solid var(--line); }
@@ -56,7 +60,17 @@
         #facilityPage .file-preview-empty { grid-column:1 / -1; padding:14px 16px; border:1px solid var(--line); border-radius:6px; background:#fff; font-size:12px; color:#9caa9e; }
         #facilityPage .disabled-notice { display:none; align-items:flex-start; gap:10px; margin-bottom:20px; padding:13px 15px; border:1px solid #fed7aa; border-left:3px solid #f59e0b; border-radius:0 4px 4px 0; background:#fff7ed; color:#7c2d12; font-size:12px; line-height:1.6; }
         #facilityPage .disabled-notice .material-symbols-rounded { color:#f59e0b; font-size:18px; flex-shrink:0; margin-top:1px; }
-        #facilityPage .detail-info-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+        #facilityPage .detail-info-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+        #facilityPage .check-status-section { margin-bottom:24px; }
+        #facilityPage .check-status-box { display:flex; align-items:flex-start; gap:12px; min-height:48px; padding:13px 15px; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; background:#f7faf7; }
+        #facilityPage .check-status-icon { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); flex-shrink:0; }
+        #facilityPage .check-status-icon .material-symbols-rounded { font-size:16px; }
+        #facilityPage .check-status-main { min-width:0; flex:1; }
+        #facilityPage .check-status-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-height:22px; }
+        #facilityPage .check-status-period { color:#4b5563; font-size:12px; font-weight:600; }
+        #facilityPage .check-status-desc { margin-top:6px; color:#6b7280; font-size:12px; font-weight:400; line-height:1.45; }
+        #facilityPage .check-status-box.is-restricted { border-color:#fed7aa; border-left-color:#f97316; background:#fff7ed; }
+        #facilityPage .check-status-box.is-restricted .check-status-icon { background:#ffedd5; color:#c2410c; }
         #facilityPage .install-section { margin-bottom:16px; }
         #facilityPage .install-line { display:flex; align-items:center; gap:10px; min-height:38px; padding:9px 12px; border:1px solid var(--line); border-radius:6px; background:#fbfcfb; }
         #facilityPage .install-line-label { flex:0 0 auto; color:#27382b; font-size:12px; font-weight:600; }
@@ -86,6 +100,8 @@
         #facilityPage .ds-status { display:inline-flex; align-items:center; min-height:20px; padding:0 7px; border-radius:4px; background:#eef7f0; color:#2e5c38; font-size:11px; font-weight:700; white-space:nowrap; }
         #facilityPage .ds-dt { margin-left:auto; color:#9ca3af; font-family:'SF Mono','Consolas',monospace; font-size:11px; white-space:nowrap; }
         #facilityPage .ds-nm { display:block; color:#111827; font-size:12px; font-weight:600; line-height:1.45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #facilityPage .ds-restrict { display:flex; align-items:center; gap:6px; margin-top:7px; color:#c2410c; font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #facilityPage .ds-restrict .material-symbols-rounded { font-size:14px; color:#f97316; }
         #facilityPage .ds-empty { display:flex; align-items:center; min-height:48px; padding:0 14px; color:#9ca3af; font-size:12px; }
 
         #facilityPage .detail-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
@@ -164,6 +180,38 @@
                                     </div>
                                 </div>
 
+                                <%--
+                                    시설 사진 영역
+                                    - 상세 화면 전용 배치 변경 영역
+                                    - 등록/수정 화면과 다르게 시설 기본정보 흐름 아래에 배치
+                                    - 기존 렌더링 id(detailFileList, detailPhotoSectionTitle) 유지로 JS 수정 최소화
+                                --%>
+                                <div class="detail-section" id="detailFileSection">
+                                    <h3 class="detail-section-title"><span class="material-symbols-rounded">image</span><span id="detailPhotoSectionTitle">시설 사진</span></h3>
+                                    <div class="file-preview-list" id="detailFileList">
+                                        <div class="file-preview-empty">등록된 사진이 없습니다.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-col-right">
+                                <%--
+                                    현재 점검상태 영역
+                                    - FACILITY.USE_YN과 분리된 점검 이용제한 표시 영역
+                                    - 현재 진행 중인 FACILITY_CHECK_HSTRY 이용제한 여부 표시
+                                    - 기존 렌더링 id(detailCurrentCheckBox, detailCurrentCheckStatus) 유지
+                                --%>
+                                <div class="detail-section check-status-section" id="detailCurrentCheckSection">
+                                    <h3 class="detail-section-title"><span class="material-symbols-rounded">fact_check</span>현재 점검상태</h3>
+                                    <div class="check-status-box" id="detailCurrentCheckBox">
+                                        <span class="check-status-icon"><span class="material-symbols-rounded">check_circle</span></span>
+                                        <div class="check-status-main" id="detailCurrentCheckStatus">
+                                            <div class="check-status-head"><span class="badge badge-use-y">제한 없음</span></div>
+                                            <div class="check-status-desc">현재 진행 중인 이용제한 점검이 없습니다.</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="detail-link-row">
                                     <div class="detail-section" id="detailHistorySection">
                                         <h3 class="detail-section-title">
@@ -174,15 +222,6 @@
                                         <div class="detail-summary">
                                             <div id="detailHistoryBody"></div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="detail-col-right">
-                                <div class="detail-section" id="detailFileSection">
-                                    <h3 class="detail-section-title"><span class="material-symbols-rounded">image</span><span id="detailPhotoSectionTitle">시설 사진</span></h3>
-                                    <div class="file-preview-list" id="detailFileList">
-                                        <div class="file-preview-empty">등록된 사진이 없습니다.</div>
                                     </div>
                                 </div>
 
@@ -246,9 +285,33 @@
         function alertMessage(message) { if (typeof showAlert === "function") showAlert(message); else alert(message); }
         function escapeHtml(value) { if (value == null) return ""; return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#39;"); }
         function formatDate(value) { return value ? String(value).slice(0, 10) : ""; }
+        function formatDateTime(value) {
+            if (!value) return "";
+            return String(value).replace("T", " ").slice(0, 16);
+        }
         function formatDongNo(value) { if (value == null || value === "") return "공용"; var text = String(value); var idx = text.lastIndexOf("_"); return idx > -1 ? text.slice(idx + 1) : text; }
         function badge(cls, text) { return '<span class="badge ' + cls + '">' + escapeHtml(text) + '</span>'; }
         function useYnBadge(useYn) { return useYn === "N" ? badge("badge-use-n","비활성") : badge("badge-use-y","활성"); }
+        function currentStatusBadge(facility) {
+            if (!facility || facility.useYn === "N") return badge("badge-use-n", "비활성");
+            if (facility.currentRestrictYn === "Y" || facility.facilityDisplayStatus === "이용제한중") return badge("badge-restrict", "이용제한중");
+            return badge("badge-use-y", "활성");
+        }
+        function formatRestrictPeriod(bgngDt, endDt) {
+            var bgng = formatDateTime(bgngDt);
+            var end = formatDateTime(endDt);
+            if (bgng && end) return bgng + " ~ " + end;
+            if (bgng) return bgng + " ~";
+            if (end) return "~ " + end;
+            return "";
+        }
+        function contractStatusBadge(contract) {
+            var statusCd = contract && (contract.contSttsCd || contract.CONT_STTS_CD);
+            var statusNm = contract && (contract.contSttsNm || contract.CONT_STTS_NM);
+            if (statusCd === "ACTIVE") return badge("badge-contract-active", statusNm || "유효");
+            if (statusCd === "END") return badge("badge-contract-end", statusNm || "종료");
+            return statusNm ? badge("badge-blue", statusNm) : "";
+        }
         function getResultFacility(result) { var d = result || {}; return d.detail || d.facility || d; }
         function getFileImageUrl(file) { var f = file || {}; if (f.viewUrl) return f.viewUrl; if (f.fileUrl) return f.fileUrl; if (f.googleId) return contextPath + "/file/display/" + encodeURIComponent(f.googleId); return ""; }
         function getCsrfHeaders() { var tokenMeta = document.querySelector('meta[name="_csrf"]'); var headerMeta = document.querySelector('meta[name="_csrf_header"]'); var headers = {}; if (tokenMeta && headerMeta) headers[headerMeta.content] = tokenMeta.content; return headers; }
@@ -297,6 +360,11 @@
             var period = formatContractPeriod(data);
             var html = [];
 
+            var statusBadge = contractStatusBadge(data);
+            if (statusBadge) {
+                html.push(statusBadge);
+            }
+
             if (contractNo) {
                 html.push('<span class="install-tag">[계약번호]</span> ' + escapeHtml(contractNo));
             }
@@ -329,6 +397,11 @@
                 var status = escapeHtml(history.chkSttsNm || history.chkSttsCd || "-");
                 var content = escapeHtml(history.chkCn || "-");
                 var date = escapeHtml(formatDate(history.chkDt) || "-");
+                var restrictYn = history.useRestrictYn === "Y";
+                var restrictPeriod = formatRestrictPeriod(history.useRestrictBgngDt, history.useRestrictEndDt);
+                var restrictHtml = restrictYn
+                    ? '<div class="ds-restrict"><span class="material-symbols-rounded">block</span><span>이용제한 ' + escapeHtml(restrictPeriod || "시간 미지정") + '</span></div>'
+                    : '';
 
                 return ''
                     + '<div class="ds-row">'
@@ -336,20 +409,75 @@
                     + '        <span class="ds-no">' + historyNo + '</span>'
                     + '        <span class="ds-type">' + type + '</span>'
                     + '        <span class="ds-status">' + status + '</span>'
+                    +          (restrictYn ? badge("badge-restrict", "이용제한") : '')
                     + '        <span class="ds-dt">' + date + '</span>'
                     + '    </div>'
                     + '    <div class="ds-nm">' + content + '</div>'
+                    +      restrictHtml
                     + '</div>';
             }).join("");
         }
 
         function renderFacilityInfo(facility) {
-            // 고정 항목은 JSP에 작성된 td id에 값만 주입
+            /* 시설유형 표시값 */
             var facilityTypeText = facility.facilityTyNm || facility.facilityTyCd || "-";
+
+            /* 시설 기본정보 값 주입 */
             setText("detailFacilityNo", facility.facilityNo);
             setText("detailFacilityNm", facility.facilityNm);
             setHtml("detailFacilityTyNm", badge("badge-blue", facilityTypeText));
             setHtml("detailUseYn", useYnBadge(facility.useYn));
+
+            /* 현재 점검상태 영역 렌더링 */
+            renderCurrentCheckStatus(facility);
+        }
+
+        /**
+         * 현재 점검상태 렌더링
+         * - 활성여부와 점검 이용제한을 분리하여 표시
+         * - 현재 시간이 이용제한 시작~종료 사이이면 이용제한중으로 표시
+         */
+        function renderCurrentCheckStatus(facility) {
+            /* 현재 점검상태 박스 */
+            var box = document.getElementById("detailCurrentCheckBox");
+
+            /* 현재 점검상태 본문 */
+            var target = document.getElementById("detailCurrentCheckStatus");
+
+            /* 현재 점검상태 아이콘 */
+            var icon = box ? box.querySelector(".check-status-icon .material-symbols-rounded") : null;
+
+            /* 현재 이용제한 여부 */
+            var isRestricted = facility.currentRestrictYn === "Y" || facility.facilityDisplayStatus === "이용제한중";
+
+            /* 제한일시 표시값 */
+            var restrictPeriod = formatRestrictPeriod(facility.currentRestrictBgngDt, facility.currentRestrictEndDt);
+
+            /* 대상 요소 없음 방어 */
+            if (!box || !target) {
+                return;
+            }
+
+            /* 이용제한중 표시 */
+            if (isRestricted) {
+                box.classList.add("is-restricted");
+                if (icon) icon.textContent = "block";
+
+                target.innerHTML = ''
+                    + '<div class="check-status-head">'
+                    +      badge("badge-restrict", "이용제한중")
+                    +      (restrictPeriod ? '<span class="check-status-period">' + escapeHtml(restrictPeriod) + '</span>' : '')
+                    + '</div>'
+                    + '<div class="check-status-desc">' + escapeHtml(facility.currentRestrictReason || "점검으로 인한 이용제한이 진행 중입니다.") + '</div>';
+                return;
+            }
+
+            /* 제한없음 표시 */
+            box.classList.remove("is-restricted");
+            if (icon) icon.textContent = "check_circle";
+            target.innerHTML = ''
+                + '<div class="check-status-head">' + badge("badge-use-y", "제한 없음") + '</div>'
+                + '<div class="check-status-desc">현재 진행 중인 이용제한 점검이 없습니다.</div>';
         }
 
         function renderLocationInfo(facility) {

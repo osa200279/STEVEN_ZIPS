@@ -22,19 +22,37 @@ public class ResidentCustomStatsController {
     private final IResidentCustomStatsService residentCustomStatsService;
     private final IAptComplexService aptComplexService;
 
-    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
-    @GetMapping("/resident/stats/custom/{aptCmplexNo}")
-    public String customStatsPage(
-            @PathVariable String aptCmplexNo,
-            Model model
-    ) {
-        /* 단지 공통 정보 */
-        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
-        model.addAttribute("aptInfo", aptCommonDTO);
-        model.addAttribute("aptCmplexNo", aptCmplexNo);
+    /*
+     * 화면 진입 라우트 ResidentMainController 로 이관
+     * 사유 - 다른 입주민 화면 라우트들과 동일 패턴 유지 (@authService.hasAccess + @AuthenticationPrincipal + Model)
+     * 본 컨트롤러는 데이터 API 전담
+     */
 
-        return "member/resident/stats_custom";
-    }
+//    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
+//    @GetMapping("/resident/stats/apartment/{aptCmplexNo}")
+//    public String aptStatsPage(
+//            @PathVariable String aptCmplexNo,
+//            Model model
+//    ) {
+//        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
+//        model.addAttribute("aptInfo", aptCommonDTO);
+//        model.addAttribute("aptCmplexNo", aptCmplexNo);
+//        return "member/resident/stats_apartment";
+//    }
+//
+//    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
+//    @GetMapping("/resident/stats/custom/{aptCmplexNo}")
+//    public String customStatsPage(
+//            @PathVariable String aptCmplexNo,
+//            Model model
+//    ) {
+//        // 단지 공통 정보
+//        AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
+//        model.addAttribute("aptInfo", aptCommonDTO);
+//        model.addAttribute("aptCmplexNo", aptCmplexNo);
+//
+//        return "member/resident/stats_custom";
+//    }
 
     @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
     @GetMapping("/resident/stats/custom/{aptCmplexNo}/data")

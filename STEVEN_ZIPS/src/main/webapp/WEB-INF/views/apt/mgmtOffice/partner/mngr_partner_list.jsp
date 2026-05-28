@@ -450,7 +450,8 @@
                     <div class="panel-header">
                         <div style="display:flex;align-items:center;gap:8px;">
                             <h3 class="panel-title"><span class="material-symbols-rounded">handshake</span>협력업체 목록</h3>
-                            <span class="list-count" id="partnerCount">0건</span>
+                            <%-- 전체 건수 (페이지네이션과 무관, 서버에서 내려준 totalRecord 사용) --%>
+                            <span class="list-count" id="partnerCount">${pageInfo.totalRecord}건</span>
                         </div>
 
                         <%-- ADMIN은 조회만 가능하므로 등록 버튼 숨김 --%>
@@ -852,10 +853,7 @@
             return base + (q.toString() ? '?' + q.toString() : '');
         }
 
-        function updateCount() {
-            var rows = document.querySelectorAll('#partnerTbody .partner-row');
-            fill('partnerCount', rows.length + '건');
-        }
+        // 전체 건수는 서버 렌더링값(${pageInfo.totalRecord})을 그대로 사용하므로 DOM 카운팅 미사용
 
         function openRegister() {
             selectedRow = null;
@@ -1045,7 +1043,6 @@
             });
         }
 
-        updateCount();
     }());
 </script>
 </body>

@@ -6,6 +6,8 @@ import kr.or.ddit.domain.apt.mgmtOffice.reservation.service.IPublicFacilityReser
 import kr.or.ddit.domain.apt.mgmtOffice.reservation.vo.PublicFacilityReservationVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
+// [추가] 비즈니스 예외 메시지를 HTTP 본문/상태코드로 전달하기 위해 사용
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -195,14 +197,23 @@ public class PublicFacilityReservationController {
     @PreAuthorize("hasRole('RESIDENT')")
     @PostMapping("/resident/publicFacility/reservation")
     @ResponseBody
-    public String reserve(
+    // [변경] 반환 타입을 String → ResponseEntity<String>로 변경
+    //  왜? 시설 점검/중복 예약 등 IllegalStateException 메시지를 HTTP 400 본문으로 클라이언트에 전달하기 위함
+    public ResponseEntity<String> reserve(
             PublicFacilityReservationVO vo,
             @AuthenticationPrincipal CustomUser customUser
     ) {
         vo.setUserNo(customUser.getMember().getUserNo());
         vo.setAptCmplexNo(service.getResidentAptCmplexNo(customUser.getMember().getUserNo()));
 
-        return service.reserve(vo);
+        // [추가] 서비스 호출을 try-catch로 감싸 비즈니스 예외를 400 응답 + 메시지 본문으로 변환
+        //  - 정상: 200 OK + 예약번호(rsvtNo)
+        //  - 비즈니스 차단(점검/중복 등): 400 Bad Request + 예외 메시지
+        try {
+            return ResponseEntity.ok(service.reserve(vo));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     /**

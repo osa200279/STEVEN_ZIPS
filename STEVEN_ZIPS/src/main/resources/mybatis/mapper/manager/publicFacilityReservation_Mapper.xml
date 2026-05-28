@@ -37,6 +37,7 @@
         <result property="mdfDt" column="MDF_DT"/>
         <result property="cmnFacilityCn" column="CMN_FACILITY_CN"/>
         <result property="reservedYn" column="RESERVED_YN"/>
+        <result property="timeLabel" column="TIME_LABEL"/>
     </resultMap>
 
     <sql id="baseJoin">
@@ -170,14 +171,14 @@
         TO_CHAR(FH.RSVT_END_DTTM, 'YYYY.MM.DD HH24:MI') RSVT_END_DTTM,
         FH.RSVT_STTS_CD,
         DECODE(
-                FH.RSVT_STTS_CD,
-                'PENDING','승인대기',
-                'APPROVED','승인완료',
-                'REJECTED','승인거절',
-                'CANCELLED','승인취소',
-                'EXPIRED','승인만료',
-                FH.RSVT_STTS_CD
-               ) RSVT_STTS_NM,
+        FH.RSVT_STTS_CD,
+        'PENDING','승인대기',
+        'APPROVED','승인완료',
+        'REJECTED','승인거절',
+        'CANCELLED','승인취소',
+        'EXPIRED','승인만료',
+        FH.RSVT_STTS_CD
+        ) RSVT_STTS_NM,
         FH.USE_PRPS_CN,
         FH.USE_PRSN_CNT,
         FH.RJCT_RSN_CN,
@@ -291,6 +292,33 @@
         AND RSVT_STTS_CD IN ('PENDING','APPROVED')
         AND RSVT_BGNG_DTTM &lt; TO_DATE(#{rsvtEndDttm}, 'YYYY-MM-DD HH24:MI')
         AND RSVT_END_DTTM &gt; TO_DATE(#{rsvtBgngDttm}, 'YYYY-MM-DD HH24:MI')
+    </select>
+
+    <!--
+        [추가] 시설 점검 이용제한 시간과 예약 시간이 겹치는지 조회
+
+        기준:
+        예약 대상 PUBLIC_ITEM → PUBLIC_FACILITY → FACILITY_NO 기준으로
+        FACILITY_CHECK_HSTRY의 이용제한 시간을 확인합니다.
+
+        시간 겹침 조건:
+        점검 제한 시작시간 &lt; 예약 종료시간
+        점검 제한 종료시간 &gt; 예약 시작시간
+    -->
+    <select id="selectFacilityCheckRestrictCount" resultType="int">
+        SELECT COUNT(*)
+        FROM FACILITY_CHECK_HSTRY FCH
+        JOIN PUBLIC_FACILITY PF
+        ON PF.FACILITY_NO = FCH.FACILITY_NO
+        JOIN PUBLIC_ITEM PI
+        ON PI.CMN_FACILITY_NO = PF.CMN_FACILITY_NO
+        WHERE PF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND PI.CMN_FACILITY_ITEM_NO = #{cmnFacilityItemNo}
+        AND NVL(FCH.USE_RESTRICT_YN, 'N') = 'Y'
+        AND FCH.USE_RESTRICT_BGNG_DT IS NOT NULL
+        AND FCH.USE_RESTRICT_END_DT IS NOT NULL
+        AND FCH.USE_RESTRICT_BGNG_DT &lt; TO_DATE(#{rsvtEndDttm}, 'YYYY-MM-DD HH24:MI')
+        AND FCH.USE_RESTRICT_END_DT &gt; TO_DATE(#{rsvtBgngDttm}, 'YYYY-MM-DD HH24:MI')
     </select>
 
     <select id="selectFacilityInfoByItemNo" resultMap="reservationMap">
@@ -481,15 +509,48 @@
         TO_CHAR(TS.BGNG_DTTM, 'YYYY-MM-DD HH24:MI') AS RSVT_BGNG_DTTM,
         TO_CHAR(TS.END_DTTM, 'YYYY-MM-DD HH24:MI') AS RSVT_END_DTTM,
         FH.RSVT_NO,
-        FH.CMN_FACILITY_ITEM_NO,
+        #{searchItemNo} AS CMN_FACILITY_ITEM_NO,
         M.USER_NM,
         CASE
-        WHEN FH.RSVT_NO IS NULL THEN 'N'
-        ELSE 'Y'
+        WHEN FH.RSVT_NO IS NOT NULL THEN 'Y'
+        <!--
+            [추가] 점검 이용제한 시간대는 화면에서 예약 불가 시간으로 표시합니다.
+            왜 추가? 입주민이 예약 버튼을 누르기 전에 점검중 시간을 알 수 있게 하기 위해 사용합니다.
+        -->
+        WHEN EXISTS (
+        SELECT 1
+        FROM FACILITY_CHECK_HSTRY FCH
+        JOIN PUBLIC_FACILITY TPF
+        ON TPF.FACILITY_NO = FCH.FACILITY_NO
+        WHERE TPF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND TPF.CMN_FACILITY_NO = #{searchCmnFacilityNo}
+        AND NVL(FCH.USE_RESTRICT_YN, 'N') = 'Y'
+        AND FCH.USE_RESTRICT_BGNG_DT IS NOT NULL
+        AND FCH.USE_RESTRICT_END_DT IS NOT NULL
+        AND FCH.USE_RESTRICT_BGNG_DT &lt; TS.END_DTTM
+        AND FCH.USE_RESTRICT_END_DT &gt; TS.BGNG_DTTM
+        ) THEN 'Y'
+        ELSE 'N'
         END AS RESERVED_YN,
         CASE
-        WHEN FH.RSVT_NO IS NULL THEN '예약가능'
-        ELSE '예약완료'
+        WHEN FH.RSVT_NO IS NOT NULL THEN '예약완료'
+        <!--
+            [추가] 점검 이용제한 시간대 표시 문구입니다.
+        -->
+        WHEN EXISTS (
+        SELECT 1
+        FROM FACILITY_CHECK_HSTRY FCH
+        JOIN PUBLIC_FACILITY TPF
+        ON TPF.FACILITY_NO = FCH.FACILITY_NO
+        WHERE TPF.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND TPF.CMN_FACILITY_NO = #{searchCmnFacilityNo}
+        AND NVL(FCH.USE_RESTRICT_YN, 'N') = 'Y'
+        AND FCH.USE_RESTRICT_BGNG_DT IS NOT NULL
+        AND FCH.USE_RESTRICT_END_DT IS NOT NULL
+        AND FCH.USE_RESTRICT_BGNG_DT &lt; TS.END_DTTM
+        AND FCH.USE_RESTRICT_END_DT &gt; TS.BGNG_DTTM
+        ) THEN '점검중'
+        ELSE '예약가능'
         END AS RSVT_STTS_NM
         FROM TIME_SLOT TS
         LEFT JOIN FACILITY_HSTRY FH

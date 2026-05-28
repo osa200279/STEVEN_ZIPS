@@ -43,12 +43,12 @@
   }
 
   function renderHouse(house) {
-    // 세대 표시
+    // 세대 정보
     setText('customStatsHouseText', house.displayDongHo || '-');
   }
 
   function renderSummary(summary) {
-    // 상단 카드 표시
+    // 상단 카드 영역
     setText('currentBillAmt', `${formatNumber(summary.currentBillAmt)}원`);
     setText('currentBillSub', formatBillYm(summary.billYm));
 
@@ -59,7 +59,7 @@
   }
 
   function setChangeText(valueId, subId, diffAmt, diffRate) {
-    // 전월 대비 문구 표시
+    // 전월 대비 문구
     const amount = Number(diffAmt || 0);
     const rate = Math.abs(Number(diffRate || 0));
 
@@ -73,10 +73,11 @@
     const directionText = amount > 0 ? '높음' : '낮음';
     setText(valueId, `${formatNumber(Math.abs(amount))}원 ${stateText}`);
     setText(subId, `전월보다 ${formatDecimal(rate)}% ${directionText}`);
+    setSubColor(subId, amount > 0 ? 'up' : 'down');
   }
 
   function setAverageText(valueId, subId, diffAmt, diffRate) {
-    // 단지 평균 대비 문구 표시
+    // 단지 평균 대비 문구
     const amount = Number(diffAmt || 0);
     const rate = Math.abs(Number(diffRate || 0));
 
@@ -89,6 +90,14 @@
     const directionText = amount > 0 ? '높음' : '낮음';
     setText(valueId, `${formatNumber(Math.abs(amount))}원 ${directionText}`);
     setText(subId, `단지 전체 평균보다 ${formatDecimal(rate)}% ${directionText}`);
+    setSubColor(subId, amount > 0 ? 'up' : 'down');
+  }
+
+  function setSubColor(id, direction) {
+    const el = $(id);
+    if (!el) return;
+    el.classList.remove('up', 'down');
+    el.classList.add(direction);
   }
 
   function renderMonthlyChart(monthlyList) {
@@ -226,14 +235,14 @@
   }
 
   function renderComplaint(complaint) {
-    // 민원 처리 현황 표시
+    // 민원 현황
     setText('complaintAppliedCnt', `접수 ${formatNumber(complaint.appliedCnt)}건`);
     setText('complaintProcessingCnt', `처리중 ${formatNumber(complaint.processingCnt)}건`);
     setText('complaintDoneCnt', `완료 ${formatNumber(complaint.doneCnt)}건`);
   }
 
   function renderError() {
-    // 오류 문구 표시
+    // 오류 문구
     setText('currentBillAmt', '0원');
     setText('currentBillSub', '통계 데이터를 불러오지 못했습니다.');
 

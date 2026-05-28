@@ -87,6 +87,139 @@
         WHEN f.use_yn = 'N' THEN '사용 불가'
         ELSE '-'
         END AS use_yn_nm,
+        CASE
+        WHEN EXISTS (
+        SELECT
+        1
+        FROM
+        facility_check_hstry fch_restrict
+        WHERE
+        fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND SYSDATE &gt;= fch_restrict.use_restrict_bgng_dt
+        AND SYSDATE &lt; fch_restrict.use_restrict_end_dt
+        ) THEN 'Y'
+        ELSE 'N'
+        END AS current_restrict_yn,
+        CASE
+        WHEN EXISTS (
+        SELECT 1
+        FROM facility_check_hstry fch_restrict
+        WHERE fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND SYSDATE &gt;= fch_restrict.use_restrict_bgng_dt
+        AND SYSDATE &lt; fch_restrict.use_restrict_end_dt
+        ) THEN 'ONGOING'
+        WHEN EXISTS (
+        SELECT 1
+        FROM facility_check_hstry fch_restrict
+        WHERE fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND fch_restrict.use_restrict_bgng_dt &gt; SYSDATE
+        ) THEN 'UPCOMING'
+        WHEN EXISTS (
+        SELECT 1
+        FROM facility_check_hstry fch_restrict
+        WHERE fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND fch_restrict.use_restrict_end_dt &lt;= SYSDATE
+        ) THEN 'ENDED'
+        ELSE 'NONE'
+        END AS current_restrict_status_cd,
+        CASE
+        WHEN EXISTS (
+        SELECT 1
+        FROM facility_check_hstry fch_restrict
+        WHERE fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND SYSDATE &gt;= fch_restrict.use_restrict_bgng_dt
+        AND SYSDATE &lt; fch_restrict.use_restrict_end_dt
+        ) THEN '제한중'
+        WHEN EXISTS (
+        SELECT 1
+        FROM facility_check_hstry fch_restrict
+        WHERE fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND fch_restrict.use_restrict_bgng_dt &gt; SYSDATE
+        ) THEN '제한예정'
+        WHEN EXISTS (
+        SELECT 1
+        FROM facility_check_hstry fch_restrict
+        WHERE fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND fch_restrict.use_restrict_end_dt &lt;= SYSDATE
+        ) THEN '제한종료'
+        ELSE '제한없음'
+        END AS current_restrict_status_nm,
+        CASE
+        WHEN f.use_yn = 'N' THEN '비활성'
+        WHEN EXISTS (
+        SELECT
+        1
+        FROM
+        facility_check_hstry fch_restrict
+        WHERE
+        fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND SYSDATE &gt;= fch_restrict.use_restrict_bgng_dt
+        AND SYSDATE &lt; fch_restrict.use_restrict_end_dt
+        ) THEN '이용제한중'
+        ELSE '활성'
+        END AS facility_display_status,
+        (
+        SELECT
+        TO_CHAR(current_restrict.use_restrict_bgng_dt, 'YYYY-MM-DD HH24:MI')
+        FROM (
+        SELECT
+        fch_restrict.use_restrict_bgng_dt
+        FROM
+        facility_check_hstry fch_restrict
+        WHERE
+        fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND SYSDATE &gt;= fch_restrict.use_restrict_bgng_dt
+        AND SYSDATE &lt; fch_restrict.use_restrict_end_dt
+        ORDER BY
+        fch_restrict.use_restrict_bgng_dt
+        ) current_restrict
+        WHERE ROWNUM = 1
+        ) AS current_restrict_bgng_dt,
+        (
+        SELECT
+        TO_CHAR(current_restrict.use_restrict_end_dt, 'YYYY-MM-DD HH24:MI')
+        FROM (
+        SELECT
+        fch_restrict.use_restrict_end_dt
+        FROM
+        facility_check_hstry fch_restrict
+        WHERE
+        fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND SYSDATE &gt;= fch_restrict.use_restrict_bgng_dt
+        AND SYSDATE &lt; fch_restrict.use_restrict_end_dt
+        ORDER BY
+        fch_restrict.use_restrict_bgng_dt
+        ) current_restrict
+        WHERE ROWNUM = 1
+        ) AS current_restrict_end_dt,
+        (
+        SELECT
+        current_restrict.chk_cn
+        FROM (
+        SELECT
+        fch_restrict.chk_cn
+        FROM
+        facility_check_hstry fch_restrict
+        WHERE
+        fch_restrict.facility_no = f.facility_no
+        AND fch_restrict.use_restrict_yn = 'Y'
+        AND SYSDATE &gt;= fch_restrict.use_restrict_bgng_dt
+        AND SYSDATE &lt; fch_restrict.use_restrict_end_dt
+        ORDER BY
+        fch_restrict.use_restrict_bgng_dt
+        ) current_restrict
+        WHERE ROWNUM = 1
+        ) AS current_restrict_reason,
         pf.cmn_facility_no,
         pf.cmn_facility_nm,
         pf.cmn_facility_rsv_yn,
@@ -140,6 +273,79 @@
         </if>
         <if test="useYn != null and useYn != ''">
             AND f.use_yn = #{useYn}
+        </if>
+
+        <!-- 현재 점검 이용제한 여부 조건 -->
+        <!-- Y: 현재 시간이 이용제한 시작~종료 사이인 시설만 조회 -->
+        <!-- N: 현재 시간이 이용제한 시작~종료 사이가 아닌 시설만 조회 -->
+        <if test="restrictYn != null and restrictYn != ''">
+            <choose>
+                <when test='"Y".equals(restrictYn) or "ONGOING".equals(restrictYn)'>
+                    AND EXISTS (
+                    SELECT
+                    1
+                    FROM
+                    facility_check_hstry fch_restrict_filter
+                    WHERE
+                    fch_restrict_filter.facility_no = f.facility_no
+                    AND fch_restrict_filter.use_restrict_yn = 'Y'
+                    AND SYSDATE &gt;= fch_restrict_filter.use_restrict_bgng_dt
+                    AND SYSDATE &lt; fch_restrict_filter.use_restrict_end_dt
+                    )
+                </when>
+                <when test='"UPCOMING".equals(restrictYn)'>
+                    AND NOT EXISTS (
+                    SELECT 1
+                    FROM facility_check_hstry fch_restrict_filter
+                    WHERE fch_restrict_filter.facility_no = f.facility_no
+                    AND fch_restrict_filter.use_restrict_yn = 'Y'
+                    AND SYSDATE &gt;= fch_restrict_filter.use_restrict_bgng_dt
+                    AND SYSDATE &lt; fch_restrict_filter.use_restrict_end_dt
+                    )
+                    AND EXISTS (
+                    SELECT 1
+                    FROM facility_check_hstry fch_restrict_filter
+                    WHERE fch_restrict_filter.facility_no = f.facility_no
+                    AND fch_restrict_filter.use_restrict_yn = 'Y'
+                    AND fch_restrict_filter.use_restrict_bgng_dt &gt; SYSDATE
+                    )
+                </when>
+                <when test='"ENDED".equals(restrictYn)'>
+                    AND NOT EXISTS (
+                    SELECT 1
+                    FROM facility_check_hstry fch_restrict_filter
+                    WHERE fch_restrict_filter.facility_no = f.facility_no
+                    AND fch_restrict_filter.use_restrict_yn = 'Y'
+                    AND SYSDATE &gt;= fch_restrict_filter.use_restrict_bgng_dt
+                    AND SYSDATE &lt; fch_restrict_filter.use_restrict_end_dt
+                    )
+                    AND NOT EXISTS (
+                    SELECT 1
+                    FROM facility_check_hstry fch_restrict_filter
+                    WHERE fch_restrict_filter.facility_no = f.facility_no
+                    AND fch_restrict_filter.use_restrict_yn = 'Y'
+                    AND fch_restrict_filter.use_restrict_bgng_dt &gt; SYSDATE
+                    )
+                    AND EXISTS (
+                    SELECT 1
+                    FROM facility_check_hstry fch_restrict_filter
+                    WHERE fch_restrict_filter.facility_no = f.facility_no
+                    AND fch_restrict_filter.use_restrict_yn = 'Y'
+                    AND fch_restrict_filter.use_restrict_end_dt &lt;= SYSDATE
+                    )
+                </when>
+                <when test='"N".equals(restrictYn) or "NONE".equals(restrictYn)'>
+                    AND NOT EXISTS (
+                    SELECT
+                    1
+                    FROM
+                    facility_check_hstry fch_restrict_filter
+                    WHERE
+                    fch_restrict_filter.facility_no = f.facility_no
+                    AND fch_restrict_filter.use_restrict_yn = 'Y'
+                    )
+                </when>
+            </choose>
         </if>
         <if test="dongNo != null and dongNo != ''">
             <choose>
@@ -235,12 +441,12 @@
         <if test="publicFacilityYn != null and publicFacilityYn != ''">
             <choose>
                 <!-- 운영등록 -->
-                <when test='publicFacilityYn == "Y"'>
+                <when test='"Y".equals(publicFacilityYn)'>
                     AND pf.cmn_facility_no IS NOT NULL
                 </when>
 
                 <!-- 운영미등록 -->
-                <when test='publicFacilityYn == "N"'>
+                <when test='"N".equals(publicFacilityYn)'>
                     AND f.facility_ty_cd IN (<include refid="publicfacilitytypecodes"/>)
                     AND pf.cmn_facility_no IS NULL
                 </when>
@@ -268,10 +474,10 @@
         -->
         <if test="publicFacilityYn != null and publicFacilityYn != ''">
             <choose>
-                <when test="publicFacilityYn == 'Y'">
+                <when test='"Y".equals(publicFacilityYn)'>
                     AND pf.cmn_facility_no IS NOT NULL
                 </when>
-                <when test="publicFacilityYn == 'N'">
+                <when test='"N".equals(publicFacilityYn)'>
                     AND f.facility_ty_cd IN (<include refid="publicfacilitytypecodes"/>)
                     AND pf.cmn_facility_no IS NULL
                 </when>
@@ -364,6 +570,9 @@
                       , fch.reg_dt
                       , fch.mdf_dt
                       , fch.chk_ty_cd
+                      , nvl(fch.use_restrict_yn, 'N') as use_restrict_yn
+                      , to_char(fch.use_restrict_bgng_dt, 'YYYY-MM-DD HH24:MI') as use_restrict_bgng_dt
+                      , to_char(fch.use_restrict_end_dt, 'YYYY-MM-DD HH24:MI') as use_restrict_end_dt
 
                       , f.facility_nm
                       , f.facility_ty_cd
@@ -419,7 +628,7 @@
     <select id="selectFacilityInstallContract" parameterType="map" resultType="map">
         select
             fc.cont_no                              as "contNo"
-             , fc.facility_no                       as "facilityNo"
+             , fct.facility_no                      as "facilityNo"
              , fc.partner_no                        as "partnerNo"
              , p.partner_nm                         as "partnerNm"
              , fc.cont_nm                           as "contNm"
@@ -435,8 +644,10 @@
              , to_char(fc.cont_bgng_dt, 'YYYY-MM-DD') as "contBgngDt"
              , to_char(fc.cont_end_dt, 'YYYY-MM-DD')  as "contEndDt"
         from facility_contract fc
+                 inner join facility_contract_target fct
+                            on fct.cont_no = fc.cont_no
                  inner join facility f
-                            on f.facility_no = fc.facility_no
+                            on f.facility_no = fct.facility_no
                  left outer join partner p
                                  on p.partner_no = fc.partner_no
                  left outer join common_code cont_ty
@@ -448,17 +659,15 @@
                  left outer join common_code cont_stts
                                  on cont_stts.group_code_no = 'CONTRACT_STTS'
                                      and cont_stts.code_no_cd = fc.cont_stts_cd
-        where fc.facility_no = #{facilityNo}
+        where fct.facility_no = #{facilityNo}
           and fc.cont_ty_cd = 'INSTALL'
-          and fc.cont_stts_cd = 'ACTIVE'
+          and fc.cont_stts_cd in ('ACTIVE', 'END')
           and f.apt_cmplex_no = (
             select mo.apt_cmplex_no
             from mgmt_office mo
             where mo.mgmt_ofc_no = #{mgmtOfcNo}
         )
-        order by
-            nvl(fc.cont_dt, fc.cont_bgng_dt) desc
-               , fc.cont_no desc
+        order by to_number(regexp_substr(fc.cont_no, '[0-9]+')) desc, fc.cont_no desc
             fetch first 1 row only
     </select>
 

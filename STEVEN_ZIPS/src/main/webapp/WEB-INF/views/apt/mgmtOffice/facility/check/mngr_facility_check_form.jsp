@@ -96,9 +96,9 @@
         #fchPage .area-title .material-symbols-rounded { font-size:15px; color:var(--acc); }
 
         /* 필터 한 줄 */
-        #fchPage .history-filter { display:flex; align-items:flex-end; gap:6px; margin-bottom:8px; padding:10px; border:1px solid var(--line); border-radius:6px; background:#fbfcfb; }
-        #fchPage .history-filter>.f-field { flex:1; min-width:0; }
-        #fchPage .history-filter>.f-btns  { flex:none; display:flex; gap:5px; }
+        #fchPage .history-filter { display:grid; grid-template-columns:1.1fr .8fr .8fr .8fr minmax(140px,1fr) auto; gap:6px; align-items:end; margin-bottom:8px; padding:10px; border:1px solid var(--line); border-radius:6px; background:#fbfcfb; }
+        #fchPage .history-filter>.f-field { min-width:0; }
+        #fchPage .history-filter>.f-btns  { display:flex; gap:5px; }
         #fchPage .field-label { display:block; margin-bottom:4px; color:#4a5c4e; font-size:11px; font-weight:800; }
         #fchPage .form-select, #fchPage .form-input { width:100%; height:30px; padding:0 8px; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:#1f2d23; font-size:12px; box-sizing:border-box; }
         #fchPage .form-select:focus, #fchPage .form-input:focus { border-color:var(--acc); outline:none; box-shadow:0 0 0 2px rgba(46,92,56,.08); }
@@ -132,8 +132,13 @@
         #fchPage .form-panel-title .material-symbols-rounded { font-size:16px; color:var(--acc); }
         #fchPage .form-panel-body { padding:16px; }
         #fchPage .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; }
+        #fchPage .form-grid.form-grid-3 { grid-template-columns:repeat(3, minmax(0, 1fr)); }
+        #fchPage .form-grid.restrict-grid { grid-template-columns:.65fr 1fr 1fr; }
         #fchPage .form-grid .full { grid-column:1 / -1; }
         #fchPage .form-label { display:block; margin-bottom:4px; color:#4a5c4e; font-size:11px; font-weight:800; }
+        #fchPage .form-section-title { display:flex; align-items:center; gap:6px; margin:14px 0 8px; color:var(--head); font-size:12px; font-weight:900; }
+        #fchPage .form-section-title:first-child { margin-top:0; }
+        #fchPage .form-section-title:before { content:''; width:4px; height:12px; border-radius:4px; background:var(--acc); }
         #fchPage .required { color:#b91c1c; }
         #fchPage .form-field-input, #fchPage .form-field-select { width:100%; height:34px; padding:0 9px; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:#1f2d23; font-size:12px; box-sizing:border-box; }
         #fchPage .form-field-input:focus, #fchPage .form-field-select:focus { border-color:var(--acc); outline:none; box-shadow:0 0 0 2px rgba(46,92,56,.08); }
@@ -146,7 +151,8 @@
         #fchPage .type-option:hover { background:#f8fcf9; color:var(--acc); }
         #fchPage .type-empty { padding:9px 10px; color:#8a9a8e; font-size:11px; text-align:center; }
         #fchPage .selected-history-summary { margin-bottom:10px; padding:10px 12px; border:1px solid var(--line); border-radius:5px; background:#fbfcfb; }
-        #fchPage .form-textarea { width:100%; padding:9px; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:#1f2d23; font-size:12px; line-height:1.55; resize:vertical; box-sizing:border-box; min-height:120px; }
+        #fchPage .form-textarea { width:100%; padding:9px; border:1px solid var(--line); border-radius:4px; background:var(--bg); color:#1f2d23; font-size:12px; line-height:1.55; resize:vertical; box-sizing:border-box; min-height:96px; }
+        #fchPage .form-textarea.work-content { min-height:122px; }
         #fchPage .form-textarea.short { min-height:70px; }
         #fchPage .form-textarea:focus { border-color:var(--acc); outline:none; box-shadow:0 0 0 2px rgba(46,92,56,.08); }
         #fchPage .form-textarea[readonly], #fchPage .form-textarea[disabled] { background:var(--soft); color:#6b7280; cursor:default; }
@@ -188,8 +194,8 @@
             #fchPage .list-area { border-right:none; padding-right:0; }
         }
         @media(max-width:760px) {
-            #fchPage .form-grid { grid-template-columns:1fr; }
-            #fchPage .history-filter { flex-wrap:wrap; }
+            #fchPage .form-grid, #fchPage .form-grid.form-grid-3, #fchPage .form-grid.restrict-grid { grid-template-columns:1fr; }
+            #fchPage .history-filter { grid-template-columns:1fr; }
         }
     </style>
 </head>
@@ -474,6 +480,14 @@
                                                     </select>
                                                 </div>
                                                 <div class="f-field">
+                                                    <label class="field-label" for="historyFilterUseRestrictYn">이용제한</label>
+                                                    <select class="form-select" id="historyFilterUseRestrictYn">
+                                                        <option value="">전체</option>
+                                                        <option value="Y">제한 있음</option>
+                                                        <option value="N">제한 없음</option>
+                                                    </select>
+                                                </div>
+                                                <div class="f-field">
                                                     <label class="field-label" for="historyFilterProcess">처리과정</label>
                                                     <select class="form-select" id="historyFilterProcess">
                                                         <option value="">전체</option>
@@ -484,7 +498,6 @@
                                                     <input type="text" class="form-input" id="historyFilterKeyword" placeholder="내용·업체명·처리과정번호">
                                                 </div>
                                                 <div class="f-btns">
-                                                    <button type="button" class="btn btn-primary" id="historySearchBtn">검색</button>
                                                     <button type="button" class="btn" id="historyResetBtn">초기화</button>
                                                 </div>
                                             </div>
@@ -504,8 +517,9 @@
                                         </div>
                                     </div>
                                     <div class="form-panel-body">
-                                        <%-- 기준이력번호 / 시설번호 / 처리과정번호 / 이력번호 표시 --%>
-                                        <div class="form-grid" style="margin-bottom:10px;">
+                                        <%-- 기본 식별 정보 --%>
+                                        <div class="form-section-title">기본 식별 정보</div>
+                                        <div class="form-grid form-grid-3" style="margin-bottom:10px;">
                                             <div id="baseHistoryRow" class="is-hidden">
                                                 <label class="form-label">기준이력번호</label>
                                                 <div class="readonly-box mono" id="baseHistoryNoText">-</div>
@@ -541,8 +555,9 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <%-- 점검 입력 필드 --%>
-                                        <div class="form-grid">
+                                        <%-- 점검 정보 --%>
+                                        <div class="form-section-title">점검 정보</div>
+                                        <div class="form-grid form-grid-3">
                                             <div>
                                                 <label class="form-label" for="chkTyNmInput">작업유형 <span class="required">*</span></label>
                                                 <div class="type-autocomplete">
@@ -560,13 +575,36 @@
                                                     </c:forEach>
                                                 </select>
                                             </div>
-                                            <div class="full">
+                                            <div>
                                                 <label class="form-label" for="chkDt">작업일자 <span class="required">*</span></label>
                                                 <input type="date" class="form-field-input" id="chkDt" name="chkDt" value="${check.chkDt}" readonly>
                                             </div>
+                                        </div>
+                                        <%-- 이용제한 정보 --%>
+                                        <div class="form-section-title">이용제한 정보</div>
+                                        <div class="form-grid restrict-grid">
+                                            <div>
+                                                <label class="form-label" for="useRestrictYn">이용제한 여부</label>
+                                                <select class="form-field-select" id="useRestrictYn" name="useRestrictYn" disabled>
+                                                    <option value="N" ${empty check.useRestrictYn or check.useRestrictYn eq 'N' ? 'selected' : ''}>제한 없음</option>
+                                                    <option value="Y" ${check.useRestrictYn eq 'Y' ? 'selected' : ''}>제한 있음</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="form-label" for="useRestrictBgngDt">제한 시작일시</label>
+                                                <input type="datetime-local" class="form-field-input" id="useRestrictBgngDt" name="useRestrictBgngDt" value="${check.useRestrictBgngDt}" readonly>
+                                            </div>
+                                            <div>
+                                                <label class="form-label" for="useRestrictEndDt">제한 종료일시</label>
+                                                <input type="datetime-local" class="form-field-input" id="useRestrictEndDt" name="useRestrictEndDt" value="${check.useRestrictEndDt}" readonly>
+                                            </div>
+                                        </div>
+                                        <%-- 작업내용 및 비고 --%>
+                                        <div class="form-section-title">상세 내용</div>
+                                        <div class="form-grid">
                                             <div class="full">
                                                 <label class="form-label" for="chkCn">작업내용 <span class="required">*</span></label>
-                                                <textarea class="form-textarea" id="chkCn" name="chkCn" readonly>${check.chkCn}</textarea>
+                                                <textarea class="form-textarea work-content" id="chkCn" name="chkCn" readonly>${check.chkCn}</textarea>
                                             </div>
                                             <div class="full">
                                                 <label class="form-label" for="rmk">비고</label>
@@ -682,13 +720,13 @@
         /* 입력 필드 전체 읽기 전용 / 편집 가능 전환 */
         function setReadonly(flag) {
             /* textarea, date, 작업유형 검색 input은 readonly 속성으로 제어 */
-            ['chkDt', 'chkCn', 'rmk', 'chkTyNmInput'].forEach(function (id) {
+            ['chkDt', 'chkCn', 'rmk', 'chkTyNmInput', 'useRestrictBgngDt', 'useRestrictEndDt'].forEach(function (id) {
                 var e = el(id);
                 if (!e) return;
                 flag ? e.setAttribute('readonly', '') : e.removeAttribute('readonly');
             });
             /* select 는 disabled 속성으로 제어 */
-            ['chkSttsCd'].forEach(function (id) {
+            ['chkSttsCd', 'useRestrictYn'].forEach(function (id) {
                 var e = el(id);
                 if (e) e.disabled = flag;
             });
@@ -696,8 +734,9 @@
 
         /* 폼 입력값 전체 초기화 */
         function clearForm() {
-            ['chkTyCd', 'chkTyNmInput', 'chkSttsCd', 'chkDt', 'chkCn', 'rmk'].forEach(function (id) { setVal(id, ''); });
+            ['chkTyCd', 'chkTyNmInput', 'chkSttsCd', 'chkDt', 'chkCn', 'rmk', 'useRestrictBgngDt', 'useRestrictEndDt'].forEach(function (id) { setVal(id, ''); });
             hide('chkTyDropdown');
+            setVal('useRestrictYn', 'N');
         }
 
         /* 이력 객체 값으로 폼 채우기 */
@@ -707,6 +746,9 @@
             setVal('chkDt',     h.chkDt     || '');
             setVal('chkCn',     h.chkCn     || '');
             setVal('rmk',       h.rmk       || '');
+            setVal('useRestrictYn', h.useRestrictYn || 'N');
+            setVal('useRestrictBgngDt', h.useRestrictBgngDt || '');
+            setVal('useRestrictEndDt', h.useRestrictEndDt || '');
             setVal('chkFlowNo', h.chkFlowNo || h.facChkHstryNo || '');
             if (syncOwner !== false) applyOwnerFromHistory(h);
         }
@@ -1290,6 +1332,7 @@
         function applyFilter() {
             var ty      = el('historyFilterChkTyCd').value;
             var st      = el('historyFilterChkSttsCd').value;
+            var restrict = el('historyFilterUseRestrictYn').value;
             var process = el('historyFilterProcess').value;
             var kw      = el('historyFilterKeyword').value.trim().toLowerCase();
 
@@ -1298,8 +1341,9 @@
                 var processNo = h.chkFlowNo || '';
                 var kwOk      = !kw || [h.chkCn, h.rmk, h.partnerNm, ownerText, h.chkFlowNo, h.facChkHstryNo].join(' ').toLowerCase().indexOf(kw) > -1;
                 var processOk = !process || processNo === process;
+                var restrictOk = !restrict || (h.useRestrictYn || 'N') === restrict;
                 if (process === '__NO_FLOW__') processOk = !processNo;
-                return (!ty || h.chkTyCd === ty) && (!st || h.chkSttsCd === st) && processOk && kwOk;
+                return (!ty || h.chkTyCd === ty) && (!st || h.chkSttsCd === st) && restrictOk && processOk && kwOk;
             });
 
             if (filtered.length === 0) {
@@ -1325,6 +1369,7 @@
             setVal('historyFilterChkTyCd',   '');
             setVal('historyFilterChkTyNmInput', '');
             setVal('historyFilterChkSttsCd', '');
+            setVal('historyFilterUseRestrictYn', '');
             setVal('historyFilterProcess',   '');
             setVal('historyFilterKeyword',   '');
             renderList(allList);
@@ -1618,6 +1663,13 @@
             }
         });
 
+
+        /* 이력 필터는 검색 버튼 없이 변경 즉시 적용한다. */
+        ['historyFilterChkSttsCd','historyFilterUseRestrictYn','historyFilterProcess'].forEach(function (id) {
+            var target = el(id);
+            if (target) target.addEventListener('change', applyFilter);
+        });
+
         /* ── 키보드 Enter 처리 ── */
         document.addEventListener('keydown', function (e) {
             if (e.key !== 'Enter') return;
@@ -1641,7 +1693,18 @@
             if (!el('chkSttsCd').value)      { alert('상태를 선택해 주세요.');           e.preventDefault(); return; }
             if (!el('chkDt').value)          { alert('작업일자를 입력해 주세요.');           e.preventDefault(); return; }
             if (!el('chkCn').value.trim())   { alert('작업내용을 입력해 주세요.');           e.preventDefault(); return; }
+            if (el('useRestrictYn').value === 'Y') {
+                if (!el('useRestrictBgngDt').value || !el('useRestrictEndDt').value) { alert('이용제한 시작일시와 종료일시를 입력해 주세요.'); e.preventDefault(); return; }
+                if (el('useRestrictBgngDt').value >= el('useRestrictEndDt').value) { alert('이용제한 종료일시는 시작일시보다 뒤여야 합니다.'); e.preventDefault(); return; }
+            }
         });
+
+        var restrictSelect = el('useRestrictYn');
+        if (restrictSelect) {
+            restrictSelect.addEventListener('change', function () {
+                if (this.value !== 'Y') { setVal('useRestrictBgngDt', ''); setVal('useRestrictEndDt', ''); }
+            });
+        }
 
         /* ── 초기 화면 상태 설정 ── */
         (function init() {

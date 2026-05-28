@@ -52,6 +52,22 @@ public class FacilityDTO {
     private String useCheckMsg;    // 사용여부 확인 안내문, DB 컬럼 아님, 예: 점검완료 후 사용여부 확인 필요
 
     /* ─────────────────────────────
+     * 2-1. 현재 이용제한 표시값
+     * ───────────────────────────── */
+
+    /* ─────────────────────────────
+     * 2-1. 현재 점검 이용제한 표시값
+     * ───────────────────────────── */
+
+    private String currentRestrictYn;       // 현재 점검 이용제한 여부, 현재 시간이 제한 시작~종료 사이이면 Y
+    private String currentRestrictStatusCd; // 이용제한 상태, ONGOING/UPCOMING/ENDED/NONE
+    private String currentRestrictStatusNm; // 이용제한 상태명
+    private String facilityDisplayStatus;   // 시설 표시 상태, 활성여부와 현재 점검 이용제한을 합산한 보조값
+    private String currentRestrictBgngDt;   // 현재 점검 이용제한 시작일시, YYYY-MM-DD HH24:MI 표시값
+    private String currentRestrictEndDt;    // 현재 점검 이용제한 종료일시, YYYY-MM-DD HH24:MI 표시값
+    private String currentRestrictReason;   // 현재 점검 이용제한 사유, FACILITY_CHECK_HSTRY.CHK_CN 기준
+
+    /* ─────────────────────────────
      * 3. 편의시설 전용 요약
      * ───────────────────────────── */
 

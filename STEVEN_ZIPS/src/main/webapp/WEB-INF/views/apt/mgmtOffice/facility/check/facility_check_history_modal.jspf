@@ -68,6 +68,12 @@
                         <td colspan="3"><span id="modalHistoryTy">-</span></td>
                     </tr>
                     <tr>
+                        <th>이용제한</th>
+                        <td><span id="modalUseRestrictYn">-</span></td>
+                        <th>제한일시</th>
+                        <td><span id="modalUseRestrictPeriod">-</span></td>
+                    </tr>
+                    <tr>
                         <th>점검내용</th>
                         <td colspan="3"><span id="modalHistoryCn">-</span></td>
                     </tr>

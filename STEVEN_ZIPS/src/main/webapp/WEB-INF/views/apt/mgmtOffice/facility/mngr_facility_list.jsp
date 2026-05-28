@@ -59,7 +59,7 @@
         /* 검색 */
         #facilityPage .facility-filter-panel { overflow:visible; }
         #facilityPage .facility-filter-panel .panel-body { overflow:visible; }
-        #facilityPage .facility-filter-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr minmax(260px,1.4fr) auto; gap:10px; align-items:end; }
+        #facilityPage .facility-filter-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr 1fr minmax(240px,1.35fr) auto; gap:10px; align-items:end; }
         #facilityPage .facility-search-field { position:relative; min-width:0; z-index:20; }
         #facilityPage .search-wrap { position:relative; width:100%; }
         #facilityPage .search-wrap .material-symbols-rounded { position:absolute; left:9px; top:50%; transform:translateY(-50%); font-size:15px; color:#9caa9e; pointer-events:none; }
@@ -110,6 +110,12 @@
         #facilityPage .status-text.is-available::before { background:#22c55e; }
         #facilityPage .status-text.is-disabled { color:#b42318; }
         #facilityPage .status-text.is-disabled::before { background:#ef4444; }
+#facilityPage .status-text.is-restricted { color:#c2410c; }
+#facilityPage .status-text.is-restricted::before { background:#f97316; }
+#facilityPage .status-text.is-wait { color:#7c3aed; }
+#facilityPage .status-text.is-wait::before { background:#8b5cf6; }
+#facilityPage .status-text.is-none { color:#6b7280; }
+#facilityPage .status-text.is-none::before { background:#cbd5e1; }
         #facilityPage .badge { display:inline-flex; align-items:center; justify-content:center; min-height:20px; height:20px; padding:0 7px; border-radius:4px; font-size:11px; font-weight:600; line-height:20px; border:1px solid transparent; box-shadow:none; white-space:nowrap; }
         #facilityPage .badge-blue { background:#dbeafe; color:#1e3a5f; border-color:#bfdbfe; }
         #facilityPage .badge-teal { background:#eef8f6; color:#245e55; border-color:#c8e3dd; }
@@ -206,6 +212,16 @@
                                     <option value="">전체</option>
                                     <option value="Y">활성</option>
                                     <option value="N">비활성</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">이용제한</label>
+                                <select class="form-select" id="filterRestrictYn" name="restrictYn">
+                                    <option value="">전체</option>
+                                    <option value="ONGOING">제한중</option>
+                                    <option value="UPCOMING">제한예정</option>
+                                    <option value="ENDED">제한종료</option>
+                                    <option value="NONE">제한없음</option>
                                 </select>
                             </div>
                             <div class="form-field">
@@ -532,6 +548,7 @@
                 facilityTyCd: el("filterFacTy").value,
                 publicFacilityYn: el("filterPublicFacilityYn").value,
                 useYn: el("filterUseYn").value,
+                restrictYn: el("filterRestrictYn").value,
                 dongNo: el("filterDong").value,
                 instlDt: el("filterInstlDt").value,
                 keyword: el("filterKeyword").value
@@ -600,6 +617,9 @@
 
             /* 활성여부 조건 반영 */
             el("filterUseYn").value = state.useYn || "";
+
+            /* 현재 점검 이용제한 조건 반영 */
+            el("filterRestrictYn").value = state.restrictYn || "";
 
             /* 동 조건 반영 */
             el("filterDong").value = state.dongNo || "";
@@ -681,6 +701,11 @@
                 params.append("useYn", el("filterUseYn").value);
             }
 
+            /* 현재 점검 이용제한 조건 */
+            if (el("filterRestrictYn").value) {
+                params.append("restrictYn", el("filterRestrictYn").value);
+            }
+
             /* 동 조건 */
             if (el("filterDong").value) {
                 params.append("dongNo", el("filterDong").value);
@@ -723,6 +748,9 @@
 
             /* 활성여부 조건 초기화 */
             el("filterUseYn").value = "";
+
+            /* 현재 점검 이용제한 조건 초기화 */
+            el("filterRestrictYn").value = "";
 
             /* 동 조건 초기화 */
             el("filterDong").value = "";
@@ -795,6 +823,14 @@
             var useYnSelect = el("filterUseYn");
 
             /*
+             * restrictYnSelect
+             * - 현재 점검 이용제한 필터
+             * - Y : 제한중
+             * - N : 제한없음
+             */
+            var restrictYnSelect = el("filterRestrictYn");
+
+            /*
              * dongSelect
              * - 시설 위치 동 필터
              * - _COMMON_은 동이 없는 공용 위치 시설 조회용
@@ -831,6 +867,11 @@
             /* 활성여부 조건 문구 */
             if (useYnSelect.value) {
                 labels.push("활성여부: " + useYnSelect.options[useYnSelect.selectedIndex].text);
+            }
+
+            /* 현재 점검 이용제한 조건 문구 */
+            if (restrictYnSelect.value) {
+                labels.push("이용제한: " + restrictYnSelect.options[restrictYnSelect.selectedIndex].text);
             }
 
             /* 동 조건 문구 */
@@ -1288,6 +1329,7 @@
                 event.target.id === "filterFacilityKind" ||
                 event.target.id === "filterPublicFacilityYn" ||
                 event.target.id === "filterUseYn" ||
+                event.target.id === "filterRestrictYn" ||
                 event.target.id === "filterDong" ||
                 event.target.id === "filterInstlDt"
             ) {

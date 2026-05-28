@@ -150,6 +150,7 @@ public class FacilityController {
             @RequestParam(required = false, defaultValue = "") String facilityTyCd,
             @RequestParam(required = false, defaultValue = "") String publicFacilityYn,
             @RequestParam(required = false, defaultValue = "") String useYn,
+            @RequestParam(required = false, defaultValue = "") String restrictYn,
             @RequestParam(required = false, defaultValue = "") String dongNo,
             @RequestParam(required = false, defaultValue = "") String instlStartDt,
             @RequestParam(required = false, defaultValue = "") String instlEndDt
@@ -165,7 +166,8 @@ public class FacilityController {
             paramMap.put("keyword", keyword);
             paramMap.put("facilityTyCd", facilityTyCd);
             paramMap.put("publicFacilityYn", publicFacilityYn); // 운영관리 등록 여부
-            paramMap.put("useYn", useYn);
+            paramMap.put("useYn", useYn);                       // 시설 기본 활성여부
+            paramMap.put("restrictYn", restrictYn);             // 현재 점검 이용제한 여부
             paramMap.put("dongNo", dongNo);
             paramMap.put("instlStartDt", instlStartDt);
             paramMap.put("instlEndDt", instlEndDt);
@@ -205,6 +207,7 @@ public class FacilityController {
             @RequestParam(required = false, defaultValue = "") String facilityTyCd,
             @RequestParam(required = false, defaultValue = "") String publicFacilityYn,
             @RequestParam(required = false, defaultValue = "") String useYn,
+            @RequestParam(required = false, defaultValue = "") String restrictYn,
             @RequestParam(required = false, defaultValue = "") String dongNo,
             @RequestParam(required = false, defaultValue = "") String instlStartDt,
             @RequestParam(required = false, defaultValue = "") String instlEndDt
@@ -220,7 +223,8 @@ public class FacilityController {
             paramMap.put("keyword", keyword);
             paramMap.put("facilityTyCd", facilityTyCd);
             paramMap.put("publicFacilityYn", publicFacilityYn); // 운영관리 등록 여부
-            paramMap.put("useYn", useYn);
+            paramMap.put("useYn", useYn);                       // 시설 기본 활성여부
+            paramMap.put("restrictYn", restrictYn);             // 현재 점검 이용제한 여부
             paramMap.put("dongNo", dongNo);
             paramMap.put("instlStartDt", instlStartDt);
             paramMap.put("instlEndDt", instlEndDt);

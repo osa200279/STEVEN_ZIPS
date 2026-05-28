@@ -418,6 +418,16 @@
         .time-slot-btn.past:hover {
             transform: none;
         }
+
+        /*
+         * [추가] 점검 이용제한 시간대 표시
+         * 왜 추가? 시설 점검으로 예약할 수 없는 시간대를 일반 예약가능 버튼과 구분하기 위해 사용합니다.
+         */
+        .time-slot-btn.restricted {
+            background: #fee2e2 !important;
+            color: #b91c1c !important;
+            cursor: not-allowed !important;
+        }
     </style>
 </head>
 
@@ -619,6 +629,15 @@
                         btn.classList.add('past');
                         btn.disabled = true;
                         btn.innerText = slot.timeLabel + ' / 지난 시간';
+                    } else if (slot.rsvtSttsNm === '점검중') {
+                        /*
+                         * [추가] 점검 이용제한 시간대 선택 차단
+                         * 왜 추가? 서버 시간표 조회에서 점검중으로 내려온 시간대는 선택되지 않게 처리합니다.
+                         */
+                        btn.classList.add('restricted');
+                        btn.disabled = true;
+                        btn.title = '점검중인 시간대입니다.';
+                        btn.innerText = slot.timeLabel + ' / 점검중';
                     } else {
                         btn.addEventListener('click', function () {
                             document.querySelectorAll('.time-slot-btn').forEach(other => {
@@ -780,7 +799,9 @@
             })
             .catch(error => {
                 console.error(error);
-                alert('예약 신청 중 오류가 발생했습니다.');
+                // [변경] 서버가 보낸 비즈니스 메시지(error.message: 예) "시설 점검으로 예약할 수 없는 시간입니다.")를 우선 표시
+                //  없거나 네트워크 오류인 경우 기존 폴백 문구로 표시
+                alert(error.message || '예약 신청 중 오류가 발생했습니다.');
             });
     });
 

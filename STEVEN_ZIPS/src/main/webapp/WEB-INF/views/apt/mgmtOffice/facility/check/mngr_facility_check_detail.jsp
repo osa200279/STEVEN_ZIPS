@@ -170,8 +170,13 @@
                     </div>
                 </div>
 
+                <%-- 등록/수정 완료 알림 (flash 메시지 → 기본 alert 창으로 표시) --%>
                 <c:if test="${not empty message}">
-                    <div style="margin-bottom:14px;padding:10px 16px;border:1px solid #bdd7c5;border-radius:6px;color:#1f5a35;font-size:12px;font-weight:700;background:#f4fbf5;">${message}</div>
+                    <script>
+                        window.addEventListener('DOMContentLoaded', function () {
+                            alert('${message}');
+                        });
+                    </script>
                 </c:if>
 
                 <%-- 대상 정보 --%>
@@ -311,7 +316,10 @@
                                                                     data-cont-start="${fn:escapeXml(history.contBgngDt)}"
                                                                     data-cont-end="${fn:escapeXml(history.contEndDt)}"
                                                                     data-check-content="${fn:escapeXml(history.chkCn)}"
-                                                                    data-check-remark="${fn:escapeXml(history.rmk)}">
+                                                                    data-check-remark="${fn:escapeXml(history.rmk)}"
+                                                                    data-use-restrict-yn="${fn:escapeXml(history.useRestrictYn)}"
+                                                                    data-use-restrict-bgng="${fn:escapeXml(history.useRestrictBgngDt)}"
+                                                                    data-use-restrict-end="${fn:escapeXml(history.useRestrictEndDt)}">
                                                                 보기
                                                             </button>
                                                         </td>
@@ -353,14 +361,27 @@
                                             <td class="mono">${empty check.facChkHstryNo ? '-' : check.facChkHstryNo}</td>
                                             <td>${empty check.chkTyNm ? '-' : check.chkTyNm}</td>
                                             <td>
-                                        <span class="badge ${check.chkSttsCd eq 'WAIT' ? 'badge-wait' : check.chkSttsCd eq 'ING' ? 'badge-ing' : check.chkSttsCd eq 'DONE' ? 'badge-done' : check.chkSttsCd eq 'FAULT' ? 'badge-fault' : 'badge-wait'}">
-                                            ${empty check.chkSttsNm ? '-' : check.chkSttsNm}
-                                        </span>
+                                                <span class="badge ${check.chkSttsCd eq 'WAIT' ? 'badge-wait' : check.chkSttsCd eq 'ING' ? 'badge-ing' : check.chkSttsCd eq 'DONE' ? 'badge-done' : check.chkSttsCd eq 'FAULT' ? 'badge-fault' : 'badge-wait'}">
+                                                    ${empty check.chkSttsNm ? '-' : check.chkSttsNm}
+                                                </span>
                                             </td>
                                             <td>${empty check.chkDt ? '-' : check.chkDt}</td>
                                         </tr>
+                                        <tr>
+                                            <th>이용제한</th>
+                                            <td colspan="3">
+                                                <c:choose>
+                                                    <c:when test="${check.useRestrictYn eq 'Y'}">
+                                                        <span class="badge badge-fault">제한 있음</span>
+                                                        <span>${fn:replace(check.useRestrictBgngDt, 'T', ' ')} ~ ${fn:replace(check.useRestrictEndDt, 'T', ' ')}</span>
+                                                    </c:when>
+                                                    <c:otherwise>제한 없음</c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        </tr>
                                         </tbody>
                                     </table>
+
 
                                     <div class="result-content">
                                         <div class="result-label">점검내용</div>
@@ -442,6 +463,12 @@
             document.getElementById("modalContPeriod").textContent = contPeriod;
             document.getElementById("modalHistoryCn").textContent = safeText(button.getAttribute("data-check-content"));
             document.getElementById("modalHistoryRmk").textContent = safeText(button.getAttribute("data-check-remark"));
+
+            var restrictYn = button.getAttribute("data-use-restrict-yn") || "N";
+            var restrictBgng = button.getAttribute("data-use-restrict-bgng") || "";
+            var restrictEnd = button.getAttribute("data-use-restrict-end") || "";
+            document.getElementById("modalUseRestrictYn").textContent = restrictYn === "Y" ? "제한 있음" : "제한 없음";
+            document.getElementById("modalUseRestrictPeriod").textContent = restrictYn === "Y" ? safeText(restrictBgng).replace("T", " ") + " ~ " + safeText(restrictEnd).replace("T", " ") : "-";
 
             if (typeof window.openModal === "function") {
                 window.openModal("historyDetailModal");

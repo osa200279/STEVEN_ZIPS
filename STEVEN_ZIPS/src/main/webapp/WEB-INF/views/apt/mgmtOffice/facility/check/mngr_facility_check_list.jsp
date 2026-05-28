@@ -32,7 +32,7 @@
         #facilityCheckPage .panel-title { display:flex; align-items:center; gap:6px; margin:0; font-size:13px; font-weight:800; color:var(--text-head); }
         #facilityCheckPage .panel-title .material-symbols-rounded { font-size:17px; color:var(--accent); }
         #facilityCheckPage .panel-body { padding:14px 16px 16px; background:#fff; }
-        #facilityCheckPage .filter-grid { display:grid; grid-template-columns:.85fr .85fr .9fr .9fr 1.6fr auto; gap:8px 10px; align-items:end; }
+        #facilityCheckPage .filter-grid { display:grid; grid-template-columns:.8fr .8fr .8fr .9fr .9fr minmax(240px,1fr) auto; gap:8px 10px; align-items:end; }
         #facilityCheckPage .form-input, #facilityCheckPage .form-select { height:32px; font-size:12px; border:1px solid var(--line); background:#fff; border-radius:4px; padding:0 9px; width:100%; box-sizing:border-box; }
         #facilityCheckPage .form-input:focus, #facilityCheckPage .form-select:focus { border-color:var(--accent); box-shadow:0 0 0 2px rgba(46,92,56,.08); outline:none; }
         #facilityCheckPage .field-label { display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--text-sec); }
@@ -69,6 +69,40 @@
         #facilityCheckPage .badge-fault { background:#fee2e2; color:#7f1d1d; border-color:#fca5a5; }
         #facilityCheckPage .row-actions { display:inline-flex; gap:5px; align-items:center; justify-content:center; }
         #facilityCheckPage .row-actions .btn { min-width:48px; height:28px; min-height:28px; padding:0 9px; font-size:11px; }
+        #facilityCheckPage .restrict-panel { border-color:#f1c7c7; background:#fffafa; }
+        #facilityCheckPage .restrict-panel .panel-header { border-bottom:0; background:#fffafa; min-height:46px; }
+        #facilityCheckPage .restrict-title-wrap { display:flex; align-items:center; gap:10px; min-width:0; }
+        #facilityCheckPage .restrict-title-desc { color:#6b7a6e; font-size:12px; font-weight:600; white-space:nowrap; }
+        #facilityCheckPage .today-restrict-inline { display:flex; align-items:center; justify-content:flex-end; gap:10px; min-width:0; color:#4b5563; font-size:12px; font-weight:700; }
+        #facilityCheckPage .today-restrict-inline strong { color:#7f1d1d; font-weight:800; }
+        #facilityCheckPage .today-restrict-inline .divider { color:#c0c7c2; }
+        #facilityCheckPage .today-restrict-inline-empty { color:var(--text-ter); }
+        #facilityCheckPage .badge-restrict { background:#fee2e2; color:#7f1d1d; border-color:#fca5a5; }
+        #facilityCheckPage .badge-restrict-wait { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+        #facilityCheckPage .badge-restrict-done { background:#f3f4f6; color:#4b5563; border-color:#d1d5db; }
+        #todayRestrictModal { display:none; position:fixed; inset:0; z-index:1000; align-items:center; justify-content:center; padding:24px; background:rgba(15,23,42,.38); box-sizing:border-box; }
+        #todayRestrictModal.open, #todayRestrictModal.is-open { display:flex; }
+        #todayRestrictModal .modal { width:min(860px, calc(100vw - 64px)); max-height:82vh; overflow:hidden; background:#fff; border:1px solid #d7dce2; border-radius:8px; box-shadow:0 18px 45px rgba(15,23,42,.22); }
+        #todayRestrictModal .modal-header { display:flex; align-items:center; justify-content:space-between; padding:16px 18px; border-bottom:1px solid #d7dce2; background:#fff; }
+        #todayRestrictModal .modal-title { display:flex; align-items:center; gap:6px; margin:0; font-size:15px; font-weight:800; color:#1a2e1e; }
+        #todayRestrictModal .modal-title .material-symbols-rounded { font-size:18px; color:#2e5c38; }
+        #todayRestrictModal .modal-close { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:0; border-radius:4px; background:#fff; cursor:pointer; color:#66736a; }
+        #todayRestrictModal .modal-close:hover { background:#f3f5f4; }
+        #todayRestrictModal .modal-body { max-height:calc(82vh - 64px); overflow:auto; padding:16px 18px 18px; background:#fff; }
+        #todayRestrictModal .today-restrict-empty { padding:22px 10px; border:1px dashed #d7dce2; border-radius:5px; color:#8a9a8e; font-size:12px; text-align:center; }
+        #todayRestrictModal .today-restrict-modal-list { display:grid; gap:8px; }
+        #todayRestrictModal .today-restrict-modal-item { display:grid; grid-template-columns:76px minmax(0, 1fr) 58px; gap:12px; align-items:center; padding:12px 14px; border:1px solid #d7dce2; border-radius:6px; background:#fff; font-size:12px; }
+        #todayRestrictModal .today-restrict-modal-item:hover { background:#f8fbf8; }
+        #todayRestrictModal .today-restrict-modal-main { display:grid; grid-template-columns:150px 1fr; gap:4px 12px; min-width:0; align-items:center; }
+        #todayRestrictModal .today-restrict-modal-main strong { color:#111827; font-size:13px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #todayRestrictModal .today-restrict-time { color:#243027; font-weight:700; white-space:nowrap; }
+        #todayRestrictModal .today-restrict-content { grid-column:1 / -1; color:#4b5563; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        #todayRestrictModal .badge { display:inline-flex; align-items:center; justify-content:center; min-height:20px; padding:0 7px; border-radius:4px; font-size:11px; font-weight:700; border:1px solid transparent; white-space:nowrap; }
+        #todayRestrictModal .badge-restrict { background:#fee2e2; color:#7f1d1d; border-color:#fca5a5; }
+        #todayRestrictModal .badge-restrict-wait { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+        #todayRestrictModal .badge-restrict-done { background:#f3f4f6; color:#4b5563; border-color:#d1d5db; }
+        #todayRestrictModal .btn { display:inline-flex; align-items:center; justify-content:center; min-height:28px; height:28px; padding:0 9px; border-radius:4px; border:1px solid #d7dce2; background:#fff; color:#39443d; font-size:11px; font-weight:700; cursor:pointer; text-decoration:none; box-sizing:border-box; }
+        #todayRestrictModal .btn:hover { background:#f4f7f4; }
         #facilityCheckPage .pagination-wrap { display:flex; justify-content:center; padding:14px 16px; }
         #facilityCheckPage .pagination { display:flex; gap:4px; list-style:none; margin:0; padding:0; }
         #facilityCheckPage .page-item .page-link { display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:30px; padding:0 8px; border:1px solid var(--line); border-radius:4px; color:#4a5c4e; background:#fff; font-size:12px; font-weight:700; text-decoration:none; }
@@ -119,6 +153,35 @@
                     </div>
                 </div>
 
+                <c:set var="restrictOngoingCnt" value="0" />
+                <c:set var="restrictUpcomingCnt" value="0" />
+                <c:forEach var="restrict" items="${todayUseRestrictList}">
+                    <c:if test="${restrict.useRestrictStatusCd eq 'ONGOING'}"><c:set var="restrictOngoingCnt" value="${restrictOngoingCnt + 1}" /></c:if>
+                    <c:if test="${restrict.useRestrictStatusCd eq 'UPCOMING'}"><c:set var="restrictUpcomingCnt" value="${restrictUpcomingCnt + 1}" /></c:if>
+                </c:forEach>
+
+                <div class="panel restrict-panel">
+                    <div class="panel-header">
+                        <div class="restrict-title-wrap">
+                            <h3 class="panel-title"><span class="material-symbols-rounded">block</span>오늘의 이용제한</h3>
+                            <span class="restrict-title-desc">시설 이용 제한 시간을 확인해 주세요.</span>
+                        </div>
+                        <c:choose>
+                            <c:when test="${empty todayUseRestrictList}">
+                                <div class="today-restrict-inline today-restrict-inline-empty">오늘 날짜와 겹치는 이용제한 점검 이력이 없습니다.</div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="today-restrict-inline">
+                                    <span>오늘 이용제한 <strong>${fn:length(todayUseRestrictList)}</strong>건</span>
+                                    <span class="divider">|</span>
+                                    <span>제한중 <strong>${restrictOngoingCnt}</strong>건 · 예정 <strong>${restrictUpcomingCnt}</strong>건</span>
+                                    <button type="button" class="btn btn-primary" id="openTodayRestrictModalBtn">전체 보기</button>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+
                 <div class="panel">
                     <div class="panel-header">
                         <h3 class="panel-title"><span class="material-symbols-rounded">manage_search</span>검색 조건</h3>
@@ -150,6 +213,16 @@
                                     </select>
                                 </div>
                                 <div class="form-field">
+                                    <label class="field-label">이용제한</label>
+                                    <select class="form-select" name="useRestrictStatusCd">
+                                        <option value="" ${empty searchVO.useRestrictStatusCd ? 'selected' : ''}>전체</option>
+                                        <option value="ONGOING" ${searchVO.useRestrictStatusCd eq 'ONGOING' ? 'selected' : ''}>제한중</option>
+                                        <option value="UPCOMING" ${searchVO.useRestrictStatusCd eq 'UPCOMING' ? 'selected' : ''}>제한예정</option>
+                                        <option value="ENDED" ${searchVO.useRestrictStatusCd eq 'ENDED' ? 'selected' : ''}>제한종료</option>
+                                        <option value="NONE" ${searchVO.useRestrictStatusCd eq 'NONE' ? 'selected' : ''}>제한없음</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
                                     <label class="field-label">점검일자 시작</label>
                                     <input type="date" class="form-input" name="chkStartDt" value="${searchVO.chkStartDt}">
                                 </div>
@@ -167,7 +240,6 @@
                                 <div class="form-field">
                                     <label class="field-label">&nbsp;</label>
                                     <div class="filter-actions">
-                                        <button type="submit" class="btn btn-primary">검색</button>
                                         <a href="${ctx}/manager/checkHistory/${mgmtOfcNo}" class="btn btn-secondary">초기화</a>
                                     </div>
                                 </div>
@@ -203,9 +275,10 @@
                                 <col style="width:10%;">
                                 <col style="width:14%;">
                                 <col style="width:9%;">
-                                <col style="width:9%;">
-                                <col style="width:9%;">
-                                <col style="width:11%;">
+                                <col style="width:8%;">
+                                <col style="width:8%;">
+                                <col style="width:8%;">
+                                <col style="width:10%;">
                             </colgroup>
                             <thead>
                             <tr>
@@ -218,6 +291,7 @@
                                 <th>점검유형</th>
                                 <th>점검상태</th>
                                 <th>점검일자</th>
+                                <th>이용제한</th>
                                 <th>관리</th>
                             </tr>
                             </thead>
@@ -225,7 +299,7 @@
                             <c:choose>
                                 <c:when test="${empty pagingVO.dataList}">
                                     <tr>
-                                        <td colspan="10" class="empty-row">조회된 시설 점검 이력이 없습니다.</td>
+                                        <td colspan="11" class="empty-row">조회된 시설 점검 이력이 없습니다.</td>
                                     </tr>
                                 </c:when>
                                 <c:otherwise>
@@ -249,6 +323,14 @@
                                                 </span>
                                             </td>
                                             <td>${check.chkDt}</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${check.useRestrictStatusCd eq 'ONGOING'}"><span class="badge badge-restrict">제한중</span></c:when>
+                                                    <c:when test="${check.useRestrictStatusCd eq 'UPCOMING'}"><span class="badge badge-restrict-wait">예정</span></c:when>
+                                                    <c:when test="${check.useRestrictStatusCd eq 'ENDED'}"><span class="badge badge-wait">종료</span></c:when>
+                                                    <c:otherwise><span class="badge badge-done">없음</span></c:otherwise>
+                                                </c:choose>
+                                            </td>
                                             <td>
                                                 <div class="row-actions">
                                                     <a class="btn" href="${ctx}/manager/checkHistory/detail/${mgmtOfcNo}/${check.facChkHstryNo}">상세</a>
@@ -275,10 +357,91 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="todayRestrictModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title"><span class="material-symbols-rounded">block</span>오늘의 이용제한</h3>
+            <button type="button" class="modal-close" data-modal-close>
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <c:choose>
+                <c:when test="${empty todayUseRestrictList}">
+                    <div class="today-restrict-empty">오늘 날짜와 겹치는 이용제한 점검 이력이 없습니다.</div>
+                </c:when>
+                <c:otherwise>
+                    <div class="today-restrict-modal-list">
+                        <c:forEach var="restrict" items="${todayUseRestrictList}">
+                            <div class="today-restrict-modal-item">
+                                <c:choose>
+                                    <c:when test="${restrict.useRestrictStatusCd eq 'ONGOING'}"><span class="badge badge-restrict">제한중</span></c:when>
+                                    <c:when test="${restrict.useRestrictStatusCd eq 'UPCOMING'}"><span class="badge badge-restrict-wait">예정</span></c:when>
+                                    <c:otherwise><span class="badge badge-restrict-done">종료</span></c:otherwise>
+                                </c:choose>
+                                <div class="today-restrict-modal-main">
+                                    <strong>${restrict.facilityNm}</strong>
+                                    <span class="today-restrict-time">${fn:replace(restrict.useRestrictBgngDt, 'T', ' ')} ~ ${fn:replace(restrict.useRestrictEndDt, 'T', ' ')}</span>
+                                    <span class="today-restrict-content">${empty restrict.chkCn ? '-' : restrict.chkCn}</span>
+                                </div>
+                                <a class="btn" href="${ctx}/manager/checkHistory/detail/${mgmtOfcNo}/${restrict.facChkHstryNo}">상세</a>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var searchForm = document.getElementById("searchForm");
         var pageInput = document.getElementById("page");
+        var todayRestrictModal = document.getElementById("todayRestrictModal");
+        var openTodayRestrictModalBtn = document.getElementById("openTodayRestrictModalBtn");
+
+        /* 오늘의 이용제한 모달 열기 */
+        if (openTodayRestrictModalBtn && todayRestrictModal) {
+            openTodayRestrictModalBtn.addEventListener("click", function () {
+                todayRestrictModal.classList.add("open");
+            });
+        }
+
+        /* 모달 닫기 */
+        document.querySelectorAll("[data-modal-close]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                this.closest(".modal-overlay").classList.remove("open");
+            });
+        });
+
+        /* 배경 클릭 시 모달 닫기 */
+        if (todayRestrictModal) {
+            todayRestrictModal.addEventListener("click", function (event) {
+                if (event.target === todayRestrictModal) {
+                    todayRestrictModal.classList.remove("open");
+                }
+            });
+        }
+
+
+        /* 검색 버튼 없이 조건 변경 또는 통합검색 Enter 시 조회 */
+        if (searchForm) {
+            searchForm.querySelectorAll("select, input[type='date']").forEach(function (field) {
+                field.addEventListener("change", function () {
+                    pageInput.value = "1";
+                    searchForm.submit();
+                });
+            });
+            var keywordInput = searchForm.querySelector("input[name='searchWord']");
+            if (keywordInput) {
+                keywordInput.addEventListener("keydown", function (event) {
+                    if (event.key === "Enter") {
+                        pageInput.value = "1";
+                    }
+                });
+            }
+        }
 
         /* 페이지 링크 클릭 시 검색 조건 유지 submit */
         document.querySelectorAll(".pagination .page-link[data-page]").forEach(function (link) {

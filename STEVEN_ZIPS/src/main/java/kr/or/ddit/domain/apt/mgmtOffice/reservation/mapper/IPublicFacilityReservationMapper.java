@@ -32,6 +32,13 @@ public interface IPublicFacilityReservationMapper {
     PublicFacilityReservationVO selectMyReservationDetail(PublicFacilityReservationVO searchVO);
 
     int insertReservation(PublicFacilityReservationVO vo);
+
+    /*
+     * [추가] 시설 점검 이용제한 시간과 예약 시간이 겹치는지 조회합니다.
+     * 왜 추가? 점검으로 이용 제한된 시간에는 입주민 예약을 막기 위해 사용합니다.
+     */
+    int selectFacilityCheckRestrictCount(PublicFacilityReservationVO vo);
+
     int approveReservation(PublicFacilityReservationVO vo);
     int rejectReservation(PublicFacilityReservationVO vo);
     int cancelReservation(PublicFacilityReservationVO vo);
