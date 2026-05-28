@@ -79,6 +79,7 @@ public class RentListingMapDTO {
     private String rprsntImgFileNo; // 대표 이미지 파일 번호
     private String dorojuso;        // 도로명 주소
     private String rprsntImgGoogleIds;
+    private String rprsntImgCats;   // 구분을 위해 cat 추가함(도선호)
 
     // 공고 관련
     private String annNo;

@@ -51,6 +51,7 @@
         <result property="cnscoNm" column="CNSCO_NM"/>
         <result property="rprsntImgFileNo" column="RPRSNT_IMG_FILE_NO"/>
         <result property="rprsntImgGoogleIds" column="RPRSNT_IMG_GOOGLE_IDS"/>
+        <result property="rprsntImgCats" column="RPRSNT_IMG_CATS"/>
 
     </resultMap>
 
@@ -173,6 +174,7 @@
         , A.CNSCO_NM
         , A.RPRSNT_IMG_FILE_NO
         , IMG.GOOGLE_IDS AS RPRSNT_IMG_GOOGLE_IDS
+        , IMG.CATS AS RPRSNT_IMG_CATS
 
         FROM RENT_LISTING R
 
@@ -195,12 +197,24 @@
         LEFT JOIN (
         SELECT
         AF.FILE_GROUP_NO
+
         , LISTAGG(AF.GOOGLE_ID, ',')
         WITHIN GROUP (
         ORDER BY NVL(AF.FILE_SORT_ORDER, 999999)
         , AF.REG_DT
         , AF.FILE_SAVE_UUID
         ) AS GOOGLE_IDS
+
+        , LISTAGG(
+        NVL(AF.CAT, 'NONE'),
+        ','
+        )
+        WITHIN GROUP (
+        ORDER BY NVL(AF.FILE_SORT_ORDER, 999999)
+        , AF.REG_DT
+        , AF.FILE_SAVE_UUID
+        ) AS CATS
+
         FROM ATTACH_FILE AF
         WHERE AF.GOOGLE_ID IS NOT NULL
         GROUP BY AF.FILE_GROUP_NO
@@ -297,6 +311,8 @@
         , A.RPRSNT_IMG_FILE_NO
 
         , IMG.GOOGLE_IDS AS RPRSNT_IMG_GOOGLE_IDS
+        , IMG.CATS AS RPRSNT_IMG_CATS
+
 
         FROM RENT_LISTING R
 
@@ -325,6 +341,16 @@
         , AF.REG_DT
         , AF.FILE_SAVE_UUID
         ) AS GOOGLE_IDS
+        , LISTAGG(
+        NVL(AF.CAT, 'NONE'),
+        ','
+        )
+        WITHIN GROUP (
+        ORDER BY NVL(AF.FILE_SORT_ORDER, 999999)
+        , AF.REG_DT
+        , AF.FILE_SAVE_UUID
+        ) AS CATS
+
         FROM ATTACH_FILE AF
         WHERE AF.GOOGLE_ID IS NOT NULL
         GROUP BY AF.FILE_GROUP_NO
@@ -394,6 +420,7 @@
         , A.RPRSNT_IMG_FILE_NO
 
         , IMG.GOOGLE_IDS AS RPRSNT_IMG_GOOGLE_IDS
+        , IMG.CATS AS RPRSNT_IMG_CATS
 
         FROM RENT_LISTING R
 
@@ -422,6 +449,16 @@
         , AF.REG_DT
         , AF.FILE_SAVE_UUID
         ) AS GOOGLE_IDS
+        , LISTAGG(
+        NVL(AF.CAT, 'NONE'),
+        ','
+        )
+        WITHIN GROUP (
+        ORDER BY NVL(AF.FILE_SORT_ORDER, 999999)
+        , AF.REG_DT
+        , AF.FILE_SAVE_UUID
+        ) AS CATS
+
         FROM ATTACH_FILE AF
         WHERE AF.GOOGLE_ID IS NOT NULL
         GROUP BY AF.FILE_GROUP_NO

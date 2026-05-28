@@ -6,10 +6,11 @@ import kr.or.ddit.domain.central.mapper.IRentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class RentServiceImpl implements IRentService{
+public class RentServiceImpl implements IRentService {
 
     @Autowired
     private IRentMapper rentMapper;
@@ -17,13 +18,24 @@ public class RentServiceImpl implements IRentService{
     // 매물 목록/지도 표시용 매물 리스트 조회
     @Override
     public List<RentListingMapDTO> selectRentListingMapList() {
-        return rentMapper.selectRentListingMapList();
+        List<RentListingMapDTO> list =
+                rentMapper.selectRentListingMapList();
+
+        for (RentListingMapDTO dto : list) {
+
+            filterComplexImages(dto);
+        }
+        return list;
     }
 
     // 매물 상세 조회
     @Override
     public RentListingMapDTO selectRentListingDetail(String rentLstgNo) {
-        return rentMapper.selectRentListingDetail(rentLstgNo);
+        RentListingMapDTO dto = rentMapper.selectRentListingDetail(rentLstgNo);
+
+        filterComplexImages(dto);
+
+        return dto;
     }
 
     @Override
@@ -32,7 +44,43 @@ public class RentServiceImpl implements IRentService{
     }
 
     @Override
-    public List<RentListingMapDTO> selectRentListingPagingList(PaginationInfoVO<RentListingMapDTO> pagingVO) {
-        return rentMapper.selectRentListingPagingList(pagingVO);
+    public List<RentListingMapDTO> selectRentListingPagingList(
+            PaginationInfoVO<RentListingMapDTO> pagingVO
+    ) {
+        List<RentListingMapDTO> list = rentMapper.selectRentListingPagingList(pagingVO);
+
+        for(RentListingMapDTO dto : list){filterComplexImages(dto);}
+
+        return list;
+    }
+
+    private void filterComplexImages(
+            RentListingMapDTO dto
+    ) {
+        if (dto == null) {return;
+        }
+        String googleIds = dto.getRprsntImgGoogleIds();
+        String cats = dto.getRprsntImgCats();
+        if (googleIds == null || cats == null) {
+            dto.setRprsntImgGoogleIds("");
+            return;
+        }
+        String[] idArr = googleIds.split(",");
+        String[] catArr = cats.split(",");
+        List<String> filtered = new ArrayList<>();
+
+        int len = Math.min(
+                idArr.length,
+                catArr.length
+        );
+
+        for (int i = 0; i < len; i++) {
+            if ("complexImage".equals(catArr[i])) {
+                filtered.add(idArr[i]);
+            }
+        }
+        dto.setRprsntImgGoogleIds(
+                String.join(",", filtered)
+        );
     }
 }

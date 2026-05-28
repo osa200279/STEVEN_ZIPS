@@ -9,6 +9,7 @@ import kr.or.ddit.domain.apt.apiApartment.vo.HshldMemberEntity;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.member.vo.AuthVO;
 import kr.or.ddit.domain.member.vo.MemberVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Random;
 
 @Service
+@Slf4j
 public class AptMemberApiServiceImpl implements IAptMemberApiService {
 
     @Autowired
@@ -117,25 +119,36 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService {
                 if (assigned >= count || userIndex >= users.size()) break;
 
                 MemberVO user = users.get(userIndex);
+
                 HshldHeadEntity hshldHeadEntity = new HshldHeadEntity();
-                HshldMemberEntity HshldMember = new HshldMemberEntity();
+                HshldMemberEntity hshldMember = new HshldMemberEntity();
 
                 String userNo = user.getUserNo();
 
-                hshldHeadEntity.setUserNo(user.getUserNo());
+                hshldHeadEntity.setUserNo(userNo);
                 hshldHeadEntity.setHeadYn(i == 0 ? "Y" : "N");
                 hshldHeadEntity.setHoNo(unit.getHoNo());
                 hshldHeadEntity.setInoutCd("LIVE");
 
-                HshldMember.setHoNo(unit.getHoNo());
-                HshldMember.setHshldMbrNm(user.getUserNm());
+                hshldMember.setHoNo(unit.getHoNo());
+                hshldMember.setHshldMbrNm(user.getUserNm());
+                log.info("이름 : {}", user.getUserNm());
 
-                memberMapper.insertMemberAssign(hshldHeadEntity);
-                memberMapper.updateMemberAuth(userNo);
-                aptMapper.updateEmpty(unit.getHoNo());
-                memberMapper.insertHshldMember(HshldMember);
+                // 세대주만 HSHLD_HEAD insert
+                if (i == 0) {
 
-                assigned++;
+                    memberMapper.insertMemberAssign(hshldHeadEntity);
+
+                    memberMapper.updateMemberAuth(userNo);
+
+                    aptMapper.updateEmpty(unit.getHoNo());
+
+                    assigned++;
+                }
+
+// 세대원은 전부 insert
+                memberMapper.insertHshldMember(hshldMember);
+
                 userIndex++;
             }
         }
@@ -213,7 +226,10 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService {
         String suffix =
                 SUFFIX[random.nextInt(SUFFIX.length)];
 
-        int number = 1000 + random.nextInt(9000);
+        int number = 10 + random.nextInt(90);
+
+        prefix = prefix.substring(0, Math.min(prefix.length(), 4));
+        suffix = suffix.substring(0, Math.min(suffix.length(), 4));
 
         return prefix + suffix + number;
     }

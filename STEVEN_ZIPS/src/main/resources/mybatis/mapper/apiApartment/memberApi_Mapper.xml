@@ -77,7 +77,7 @@
         SELECT M.*
         FROM MEMBER M
             JOIN AUTH A ON M.USER_NO = A.USER_NO
-        WHERE M.USER_ID LIKE 't%'
+        WHERE M.USER_NO LIKE 't%'
           AND A.USER_ROLE_CD = 'ROLE_MEMBER'
     </select>
 

@@ -203,8 +203,7 @@ public class ChatServiceImpl implements IChatService {
     @Transactional
     public void readRoom(String chatRoomNo, String userNo) {
 
-        String memberId =
-                mapper.selectMemberId(chatRoomNo, userNo);
+        String memberId = mapper.selectMemberId(chatRoomNo, userNo);
 
         mapper.readAllMessages(chatRoomNo, memberId);
     }

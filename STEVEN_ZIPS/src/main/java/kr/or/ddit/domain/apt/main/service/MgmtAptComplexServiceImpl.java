@@ -53,6 +53,10 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
                             complex.getImgFileNo()
                     );
 
+            if(allFiles == null){
+                allFiles = new ArrayList<>();
+            }
+
             response.setLayoutFiles(
                     allFiles.stream()
                             .filter(f ->
