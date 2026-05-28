@@ -63,6 +63,15 @@
         ) T
     </insert>
 
+    <!--가계약 완료 후 입주민에 입주대기로 insert-->
+    <insert id="insertHshldHead">
+        INSERT INTO HSHLD_HEAD (
+            USER_NO, HO_NO, INOUT_CD
+        ) VALUES (
+            #{detail.USER_NO},#{detail.HO_NO},'WAIT'
+        )
+    </insert>
+
     <!-- 계약 조회 -->
     <select id="selectCtrt" resultType="java.util.Map">
         select *

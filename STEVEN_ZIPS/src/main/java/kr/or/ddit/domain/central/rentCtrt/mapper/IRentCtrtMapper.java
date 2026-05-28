@@ -34,4 +34,6 @@ public interface IRentCtrtMapper {
     int selectContractsCount(Map<String, Object> params);
 
     List<Map<String, Object>> selectContracts(Map<String, Object> params);
+
+    void insertHshldHead(Map<String, Object> detail);
 }

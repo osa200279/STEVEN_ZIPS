@@ -72,9 +72,8 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
 
         String ctrtSttsCd = (String) detail.get("CTRT_STTS_CD");
 
-/*여기부터 작성중 ! dosun*/
         if ("APPROVED".equals(ctrtSttsCd)) {
-
+            rentCtrtMapper.insertHshldHead(detail);
         }
 
         return res;
