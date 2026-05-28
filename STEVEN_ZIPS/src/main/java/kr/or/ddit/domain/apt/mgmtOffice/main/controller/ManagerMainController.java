@@ -224,28 +224,49 @@ public class ManagerMainController {
     }
 
     // 관리사무소 - 단지 일정 캘린더 - 월간 일정 조회 Ajax API
+    /*
+     * 관리사무소 단지 일정 목록 조회 Ajax API
+     *
+     * 왜 Map<String, Object> 로 반환?
+     * - 일정 목록만 아니라
+     *   현재페이지, 전체페이지 같은 페이징 정보도 같이 보내기 위해 사용합니다.
+     */
     @ResponseBody
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/aptScheduleCalendar/{mgmtOfcNo}/list")
-    public ResponseEntity<Map<String, Object>> aptScheduleCalendarList(
+    public Map<String, Object> aptScheduleCalendarList(
             @PathVariable String mgmtOfcNo,
-            @RequestParam String monthStartDt,
-            @RequestParam String monthEndDt,
-            @RequestParam(required = false, defaultValue = "ALL") String scheduleTy,
-            @RequestParam(required = false) String keyword
+            @RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
+            AptScheduleCalendarDTO searchVO
     ) {
-        AptScheduleCalendarDTO searchDTO = new AptScheduleCalendarDTO();
-        searchDTO.setMgmtOfcNo(mgmtOfcNo);
-        searchDTO.setMonthStartDt(monthStartDt);
-        searchDTO.setMonthEndDt(monthEndDt);
-        searchDTO.setScheduleTy(scheduleTy);
-        searchDTO.setKeyword(keyword);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("list", aptScheduleCalendarService.selectScheduleCalendarList(searchDTO));
-        result.put("stat", aptScheduleCalendarService.selectScheduleCalendarStat(searchDTO));
+        /*
+         * 관리사무소 번호로 단지번호 조회
+         *
+         * 왜 필요?
+         * - 일정 데이터는 실제로 단지번호 기준으로 조회되기 때문입니다.
+         */
+        String aptCmplexNo =
+                aptScheduleCalendarService.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
 
-        return ResponseEntity.ok(result);
+        /*
+         * 검색조건 DTO 세팅
+         */
+        searchVO.setMgmtOfcNo(mgmtOfcNo);
+        searchVO.setAptCmplexNo(aptCmplexNo);
+
+        /*
+         * 페이징 처리 서비스 호출
+         *
+         * 반환 데이터 예시:
+         * - list
+         * - pagingHTML
+         * - currentPage
+         * - totalPage
+         * - totalRecord
+         */
+        return aptScheduleCalendarService
+                .selectScheduleCalendarPage(searchVO, currentPage);
     }
 
     // 관리사무소 - 단지 일정 캘린더 - 직원 휴가 등록 Ajax API

@@ -72,4 +72,7 @@ public class AptScheduleCalendarDTO {
 
     /** 통계: 직원 휴가 일정 수 */
     private int vacationCnt;
+
+    private int startRow;   // 페이징 시작 번호
+    private int endRow;     // 페이징 끝 번호
 }

@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.main.service;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IAptScheduleCalendarMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 단지 일정 캘린더 Service 구현체
@@ -16,7 +19,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class AptScheduleCalendarImpl implements IAptScheduleCalendarService {
+public class AptScheduleCalendarServiceImpl implements IAptScheduleCalendarService {
 
     private final IAptScheduleCalendarMapper aptScheduleCalendarMapper;
 
@@ -71,4 +74,47 @@ public class AptScheduleCalendarImpl implements IAptScheduleCalendarService {
             searchDTO.setMonthEndDt(thisMonth.atEndOfMonth().toString());
         }
     }
+
+    @Override
+    public Map<String, Object> selectScheduleCalendarPage(
+            AptScheduleCalendarDTO searchVO,
+            int currentPage
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        List<AptScheduleCalendarDTO> calendarList =
+                aptScheduleCalendarMapper.selectScheduleCalendarList(searchVO);
+
+        PaginationInfoVO<AptScheduleCalendarDTO> pagingVO =
+                new PaginationInfoVO<>(10, 5);
+
+        int totalRecord = aptScheduleCalendarMapper.selectScheduleCalendarCount(searchVO);
+
+        pagingVO.setTotalRecord(totalRecord);
+        pagingVO.setCurrentPage(currentPage);
+
+        searchVO.setStartRow(pagingVO.getStartRow());
+        searchVO.setEndRow(pagingVO.getEndRow());
+
+        List<AptScheduleCalendarDTO> pageList =
+                aptScheduleCalendarMapper.selectScheduleCalendarPagingList(searchVO);
+
+        AptScheduleCalendarDTO stat =
+                aptScheduleCalendarMapper.selectScheduleCalendarStat(searchVO);
+
+        result.put("calendarList", calendarList);
+        result.put("list", pageList);
+        result.put("stat", stat);
+        result.put("pagingHTML", pagingVO.getPagingHTML());
+        result.put("currentPage", currentPage);
+        result.put("totalRecord", totalRecord);
+
+        return result;
+    }
+
+    @Override
+    public String selectAptCmplexNoByMgmtOfcNo(String mgmtOfcNo) {
+        return aptScheduleCalendarMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
+    }
+
 }

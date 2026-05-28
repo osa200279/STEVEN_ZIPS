@@ -163,27 +163,14 @@ public class ResidentMainController {
      */
     @GetMapping("/calendar/{aptCmplexNo}/list")
     @ResponseBody
-    public List<AptScheduleCalendarDTO> residentScheduleCalendarList(
+    public Map<String, Object> residentScheduleCalendarList(
             @PathVariable String aptCmplexNo,
+            @RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
             AptScheduleCalendarDTO searchVO
     ) {
-
-        /*
-         * 검색 DTO에 단지번호 설정
-         *
-         * 왜 사용?
-         * → 해당 단지의 일정만 조회하기 위해.
-         */
         searchVO.setAptCmplexNo(aptCmplexNo);
 
-        /*
-         * @ResponseBody란?
-         * → return 데이터를 JSP가 아니라 JSON 형태로 반환하는 방식.
-         *
-         * 왜 사용?
-         * → JavaScript fetch/AJAX에서 일정 데이터를 받아오기 위해.
-         */
-        return aptScheduleCalendarService.selectScheduleCalendarList(searchVO);
+        return aptScheduleCalendarService.selectScheduleCalendarPage(searchVO, currentPage);
     }
 
     /**

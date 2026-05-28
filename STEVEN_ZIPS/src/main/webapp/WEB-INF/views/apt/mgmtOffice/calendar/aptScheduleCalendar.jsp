@@ -54,7 +54,23 @@
     #aptScheduleCalendarPage .more-count { margin-top:3px; font-size:10px; color:#475569; text-align:center; }
 
     #aptScheduleCalendarPage .schedule-list-table { table-layout:fixed; width:100%; }
-    #aptScheduleCalendarPage .schedule-list-table th, #aptScheduleCalendarPage .schedule-list-table td { text-align:center; vertical-align:middle; white-space:nowrap; }
+    #aptScheduleCalendarPage .schedule-list-table th,
+    #aptScheduleCalendarPage .schedule-list-table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    /*
+     * 등록자/직원 컬럼은 줄바꿈 허용
+     * 왜 사용?
+     * 이름이 길 경우 잘리지 않도록 처리하기 위해.
+     */
+    #aptScheduleCalendarPage .schedule-list-table td:last-child {
+      white-space: normal;
+      word-break: keep-all;
+      line-height: 1.5;
+      font-size: 12px;
+    }
     #aptScheduleCalendarPage .schedule-list-table .td-title { text-align:left; overflow:hidden; text-overflow:ellipsis; }
 
     #aptScheduleCalendarPage .schedule-list-detail {
@@ -103,6 +119,19 @@
       color:#64748b;
     }
 
+    #aptScheduleCalendarPage .more-count {
+      margin-top: 3px;
+      font-size: 10px;
+      color: #475569;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    #aptScheduleCalendarPage .more-count:hover {
+      color: #006b4f;
+      text-decoration: underline;
+    }
   </style>
 
   <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
@@ -197,8 +226,9 @@
           <div class="panel">
             <div class="panel-header"><div class="panel-title"><span class="material-symbols-rounded">list_alt</span>전체 일정 목록</div></div>
             <table class="tbl schedule-list-table">
-              <thead><tr><th style="width:70px;">유형</th><th>일정명</th><th style="width:180px;">기간</th><th style="width:140px;">위치</th><th style="width:100px;">등록자/직원</th></tr></thead>
+              <thead><tr><th style="width:70px;">유형</th><th>일정명</th><th style="width:180px;">기간</th><th style="width:140px;">위치</th><th style="width:180px;">등록자/직원</th></tr></thead>
               <tbody id="scheduleListBody"><tr><td colspan="5">조회된 일정이 없습니다.</td></tr></tbody>
+              <div id="schedulePagingArea" class="mt-3"></div>
             </table>
           </div>
         </div>
@@ -314,23 +344,62 @@
     return { start: formatDate(first), end: formatDate(last) };
   }
 
-  function loadSchedule() {
+  /* 페이징 */
+  let currentListPage = 1;
+  let listPageList = [];
+  let pagingHTML = '';
+
+  function loadSchedule(page) {
+    currentListPage = page || 1;
+
     const range = getMonthRange();
     const params = new URLSearchParams();
+
     params.append('monthStartDt', range.start);
     params.append('monthEndDt', range.end);
     params.append('scheduleTy', document.getElementById('scheduleTy').value);
     params.append('keyword', document.getElementById('keyword').value.trim());
+    params.append('currentPage', currentListPage);
 
     fetch(contextPath + '/manager/aptScheduleCalendar/' + mgmtOfcNo + '/list?' + params.toString())
-      .then(function (res) { return res.json(); })
-      .then(function (data) {
-        scheduleList = data.list || [];
-        renderStat(data.stat || {});
-        renderCalendar();
-        renderList();
-      })
-      .catch(function () { alert('일정 조회 중 오류가 발생했습니다.'); });
+            .then(function (res) {
+              return res.json();
+            })
+            .then(function (data) {
+              scheduleList = data.calendarList || [];
+              listPageList = data.list || [];
+              pagingHTML = data.pagingHTML || '';
+
+              renderStat(data.stat || {});
+              renderCalendar();
+              renderList();
+              renderPaging();
+            })
+            .catch(function () {
+              alert('일정 조회 중 오류가 발생했습니다.');
+            });
+  }
+
+  function renderPaging() {
+    const pagingArea = document.getElementById('schedulePagingArea');
+
+    if (!pagingArea) {
+      return;
+    }
+
+    pagingArea.innerHTML = pagingHTML;
+
+    pagingArea.querySelectorAll('.page-link[data-page]').forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const page = Number(link.dataset.page);
+
+        if (page > 0) {
+          loadSchedule(page);
+        }
+      });
+    });
   }
 
   function renderStat(stat) {
@@ -373,12 +442,50 @@
           html += '</button>';
         });
 
-        if (items.length > 5) html += '<div class="more-count">전체 +' + (items.length - 5) + '</div>';
+        if (items.length > 5) {
+          html += '<div class="more-count" data-date="' + dateStr + '">전체 +' + (items.length - 5) + '</div>';
+        }
         html += '</td>';
       }
       html += '</tr>';
     }
     calendarBody.innerHTML = html;
+
+    document.querySelectorAll('.more-count').forEach(function (moreBtn) {
+      moreBtn.addEventListener('click', function () {
+        const dateStr = moreBtn.dataset.date;
+        const td = moreBtn.closest('td');
+        const items = getSchedulesByDate(dateStr);
+
+        let extraHtml = '';
+
+        items.slice(5).forEach(function (item) {
+          extraHtml += '<button type="button"'
+                  + ' class="schedule-chip ' + escapeHtml(item.scheduleTy) + '"'
+                  + ' title="' + escapeHtml(item.scheduleTtl) + '"'
+                  + ' data-schedule-no="' + escapeHtml(item.scheduleNo) + '">';
+          extraHtml += escapeHtml(item.scheduleTtl);
+          extraHtml += '</button>';
+        });
+
+        moreBtn.insertAdjacentHTML('beforebegin', extraHtml);
+        moreBtn.remove();
+
+        document.querySelectorAll('.schedule-chip').forEach(function (btn) {
+          btn.onclick = function () {
+            const scheduleNo = btn.dataset.scheduleNo;
+
+            const selected = scheduleList.find(function (item) {
+              return String(item.scheduleNo) === String(scheduleNo);
+            });
+
+            if (selected) {
+              openDetailModal(selected);
+            }
+          };
+        });
+      });
+    });
 
     document.querySelectorAll('.schedule-chip').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -402,12 +509,12 @@
   }
 
   function renderList() {
-    if (!scheduleList.length) {
+    if (!listPageList.length) {
       scheduleListBody.innerHTML = '<tr><td colspan="5">조회된 일정이 없습니다.</td></tr>';
       return;
     }
 
-    scheduleListBody.innerHTML = scheduleList.map(function (item) {
+    scheduleListBody.innerHTML = listPageList.map(function (item) {
       const period = item.startDt === item.endDt
               ? item.startDt
               : item.startDt + ' ~ ' + item.endDt;
@@ -427,9 +534,6 @@
               + '</tr>';
     }).join('');
 
-    /*
-     * 목록 일정 클릭 시 상세 모달 열기
-     */
     document.querySelectorAll('.schedule-list-detail').forEach(function (btn) {
       btn.addEventListener('click', function () {
         const scheduleNo = btn.dataset.scheduleNo;
@@ -511,7 +615,15 @@
   document.getElementById('prevMonthBtn').addEventListener('click', function () { currentDate.setMonth(currentDate.getMonth() - 1); loadSchedule(); });
   document.getElementById('nextMonthBtn').addEventListener('click', function () { currentDate.setMonth(currentDate.getMonth() + 1); loadSchedule(); });
   document.getElementById('todayBtn').addEventListener('click', function () { currentDate = new Date(); loadSchedule(); });
-  document.getElementById('searchBtn').addEventListener('click', loadSchedule);
+  document.getElementById('searchBtn').addEventListener('click', function () {
+    loadSchedule(1);
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    document.getElementById('scheduleTy').value = 'ALL';
+    document.getElementById('keyword').value = '';
+    loadSchedule(1);
+  });
 
   /*
  * 검색조건 초기화
@@ -567,6 +679,7 @@
 
   loadSchedule();
 })();
+
 </script>
 </body>
 </html>

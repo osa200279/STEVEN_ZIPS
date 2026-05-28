@@ -3,6 +3,7 @@ package kr.or.ddit.domain.apt.mgmtOffice.main.service;
 import kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 단지 일정 캘린더 Service 인터페이스
@@ -25,4 +26,25 @@ public interface IAptScheduleCalendarService {
 
     /** 직원 휴가 삭제 */
     int deleteVacationSchedule(AptScheduleCalendarDTO aptScheduleCalendarDTO);
+
+    /*
+     * 단지 일정 목록 페이징 조회
+     *
+     * Map을 쓰는 이유?
+     * - list, pagingHTML, currentPage, totalPage 같은 여러 데이터를 한 번에 반환하기 위해 사용합니다.
+     */
+    Map<String, Object> selectScheduleCalendarPage(
+            AptScheduleCalendarDTO searchVO,
+            int currentPage
+    );
+
+    /*
+     * 관리사무소 번호로 단지번호 조회
+     *
+     * 왜 필요?
+     * - 관리자 URL은 mgmtOfcNo 기준이지만,
+     *   일정 데이터 조회는 aptCmplexNo 기준으로 해야 하기 때문입니다.
+     */
+    String selectAptCmplexNoByMgmtOfcNo(String mgmtOfcNo);
+
 }
