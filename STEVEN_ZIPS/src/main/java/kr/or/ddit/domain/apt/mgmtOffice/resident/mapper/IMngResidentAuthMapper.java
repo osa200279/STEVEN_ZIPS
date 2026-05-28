@@ -20,5 +20,5 @@ public interface IMngResidentAuthMapper {
     int updateResidentLive(Map<String, Object> param);
 
 
-
+    void updateAuth(String userNo);
 }

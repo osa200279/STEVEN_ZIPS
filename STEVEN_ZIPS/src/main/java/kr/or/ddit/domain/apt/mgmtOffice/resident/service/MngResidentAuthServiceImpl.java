@@ -28,8 +28,7 @@ public class MngResidentAuthServiceImpl implements IMngResidentAuthService {
     @Override
     public int approveResidentAuth(MngResidentAuthVO vo) {
 
-        MngResidentAuthVO rqst =
-                mapper.selectResidentAuthByRqstNo(Integer.parseInt(vo.getRqstNo()));
+        MngResidentAuthVO rqst = mapper.selectResidentAuthByRqstNo(Integer.parseInt(vo.getRqstNo()));
 
 
 
@@ -38,6 +37,7 @@ public class MngResidentAuthServiceImpl implements IMngResidentAuthService {
         param.put("hoNo", rqst.getHoNo());
 
         mapper.updateResidentLive(param);
+        mapper.updateAuth(rqst.getUserNo());
 
         return mapper.approveResidentAuth(vo);
     }

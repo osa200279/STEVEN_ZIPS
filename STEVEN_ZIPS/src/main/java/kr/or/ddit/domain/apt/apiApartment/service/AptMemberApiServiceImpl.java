@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-public class AptMemberApiServiceImpl implements IAptMemberApiService{
+public class AptMemberApiServiceImpl implements IAptMemberApiService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -59,10 +59,10 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService{
             AuthVO auth = new AuthVO();
             String encodedPw = passwordEncoder.encode("1234");
 
-
+            member.setUserId(generateUserId());
             member.setUserPw(encodedPw);
             member.setUserNm(generateRandomName());
-            member.setUserTelno("000-0000-0000");
+            member.setUserTelno(generatePhoneNumber());
             try {
                 member.setUserRrno(autil.encrypt(generateRrn()));
             } catch (Exception e) {
@@ -96,7 +96,7 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService{
             throw new RuntimeException("유저 없음");
         }
 
-        if(units.isEmpty()){
+        if (units.isEmpty()) {
             throw new RuntimeException("호실 없음");
         }
 
@@ -142,31 +142,31 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService{
     }
 
     private static final String[] LAST_NAMES = {
-            "김","이","박","최","정","강","조","윤","장","임","한","오","서","신","권",
-            "황","안","송","전","홍","유","고","문","양","손","배","백","허","남","심",
-            "노","하","곽","성","차","주","우","구","민","류","진","엄","채","원","천",
-            "방","공","강","현","변","염","여","추","도","소","석","선","설","마","길",
-            "연","위","표","명","기","반","왕","금","옥","육","인","맹","제","모","남궁"
+            "김", "이", "박", "최", "정", "강", "조", "윤", "장", "임", "한", "오", "서", "신", "권",
+            "황", "안", "송", "전", "홍", "유", "고", "문", "양", "손", "배", "백", "허", "남", "심",
+            "노", "하", "곽", "성", "차", "주", "우", "구", "민", "류", "진", "엄", "채", "원", "천",
+            "방", "공", "강", "현", "변", "염", "여", "추", "도", "소", "석", "선", "설", "마", "길",
+            "연", "위", "표", "명", "기", "반", "왕", "금", "옥", "육", "인", "맹", "제", "모", "남궁"
     };
 
     private static final String[] FIRST_NAMES = {
-            "민수","서연","지훈","지우","도윤","하은","지민","수현","예준","서준",
-            "하윤","지아","건우","유진","현우","소율","은우","나연","준호","다은",
+            "민수", "서연", "지훈", "지우", "도윤", "하은", "지민", "수현", "예준", "서준",
+            "하윤", "지아", "건우", "유진", "현우", "소율", "은우", "나연", "준호", "다은",
 
-            "서진","서현","지호","주원","시우","하린","예원","지안","태현","동현",
-            "민재","수아","채원","다윤","지유","은서","가은","유나","서우","아린",
+            "서진", "서현", "지호", "주원", "시우", "하린", "예원", "지안", "태현", "동현",
+            "민재", "수아", "채원", "다윤", "지유", "은서", "가은", "유나", "서우", "아린",
 
-            "승현","재윤","정우","민호","성민","준영","태윤","시윤","지후","건호",
-            "예빈","소연","채은","유빈","수빈","예린","하율","연우","나은","다인",
+            "승현", "재윤", "정우", "민호", "성민", "준영", "태윤", "시윤", "지후", "건호",
+            "예빈", "소연", "채은", "유빈", "수빈", "예린", "하율", "연우", "나은", "다인",
 
-            "태민","영준","동훈","진우","광수","철수","영희","미영","정희","순자",
-            "은정","혜진","경민","성훈","병철","상현","명수","지숙","선영","지영",
+            "태민", "영준", "동훈", "진우", "광수", "철수", "영희", "미영", "정희", "순자",
+            "은정", "혜진", "경민", "성훈", "병철", "상현", "명수", "지숙", "선영", "지영",
 
-            "지혁","도현","시현","민성","준서","태경","상민","동욱","정민","진호",
-            "아영","소희","지은","혜원","수진","유리","보람","은지","나영","서영",
+            "지혁", "도현", "시현", "민성", "준서", "태경", "상민", "동욱", "정민", "진호",
+            "아영", "소희", "지은", "혜원", "수진", "유리", "보람", "은지", "나영", "서영",
 
-            "준혁","태호","민석","지성","우진","기현","상훈","종현","현준","동건",
-            "수경","유정","소영","혜린","채린","은별","다혜","지혜","유미","보미"
+            "준혁", "태호", "민석", "지성", "우진", "기현", "상훈", "종현", "현준", "동건",
+            "수경", "유정", "소영", "혜린", "채린", "은별", "다혜", "지혜", "유미", "보미"
     };
 
     private String generateRandomName() {
@@ -202,4 +202,43 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService{
 
         return birth + genderCode + back;
     }
+
+    private String generateUserId() {
+
+        Random random = new Random();
+
+        String prefix =
+                PREFIX[random.nextInt(PREFIX.length)];
+
+        String suffix =
+                SUFFIX[random.nextInt(SUFFIX.length)];
+
+        int number = 1000 + random.nextInt(9000);
+
+        return prefix + suffix + number;
+    }
+
+    private static final String[] PREFIX = {
+            "sky", "cool", "blue", "mint", "nova",
+            "star", "deep", "luna", "neo", "fox",
+            "sun", "zen", "max", "gold", "snow"
+    };
+
+    private static final String[] SUFFIX = {
+            "cat", "fox", "tree", "moon", "river",
+            "wolf", "bird", "wind", "bear", "leaf",
+            "stone", "ocean", "hawk", "mint", "storm"
+    };
+
+    private String generatePhoneNumber() {
+
+        Random random = new Random();
+
+        return String.format(
+                "010-%04d-%04d",
+                random.nextInt(10000),
+                random.nextInt(10000)
+        );
+    }
+
 }

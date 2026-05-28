@@ -91,5 +91,12 @@
         WHERE HO_NO = #{hoNo} and USER_NO = #{userNo}
 
     </update>
+    <update id="updateAuth">
+        UPDATE AUTH
+        SET
+            USER_ROLE_CD = 'ROLE_RESIDENT'
+        WHERE
+            USER_NO = #{userNo}
+    </update>
 
 </mapper>

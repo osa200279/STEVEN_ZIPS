@@ -6,7 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <html>
 <head>
     <title>아파트목록조회</title>
@@ -38,6 +38,7 @@
         border: none;
         cursor: pointer;
     }
+
     select {
         width: 100px;
         max-width: 200px;
@@ -45,11 +46,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
     label {
         cursor: pointer;
     }
 
-    #toastContainer{
+    #toastContainer {
         position: fixed;
         right: 24px;
         bottom: 24px;
@@ -59,33 +61,33 @@
         z-index: 9999;
     }
 
-    .toast-item{
+    .toast-item {
         min-width: 320px;
         background: white;
         border-radius: 14px;
         padding: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         border-left: 6px solid #22c55e;
         animation: toastShow .25s ease;
     }
 
-    .toast-title{
+    .toast-title {
         font-weight: 700;
         margin-bottom: 6px;
     }
 
-    .toast-message{
+    .toast-message {
         color: #555;
     }
 
     @keyframes toastShow {
 
-        from{
+        from {
             opacity: 0;
             transform: translateY(20px);
         }
 
-        to{
+        to {
             opacity: 1;
             transform: translateY(0);
         }
@@ -93,9 +95,10 @@
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <body>
-<input type="button" value="apt동기화" id="aptBtn" onclick="collect()" >
+<input type="button" value="apt동기화" id="aptBtn" onclick="collect()" hidden="hidden">
 <button id="btnUpdateLatLng"
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+hidden="hidden">
     좌표 업데이트 실행
 </button>
 
@@ -104,7 +107,7 @@
 <select id="emd"></select>
 
 <button id="searchBtn">검색</button>
-<button id="publicSearchBtn">공공데이터 조회</button>
+<button id="publicSearchBtn" hidden="hidden">공공데이터 조회</button>
 
 <div>
     <label>
@@ -139,16 +142,16 @@
 
 </body>
 <script>
-    $(function(){
+    $(function () {
 
         loadNotAssignedUserCount();
 
         const searchBtn = $("#searchBtn");
 
         $.ajax({
-            url : "/api/sido",
-            success : function(result){
-            fillSelect(sidoEl, result);
+            url: "/api/adm/aptCmplex/sido",
+            success: function (result) {
+                fillSelect(sidoEl, result);
             }
         })
 
@@ -174,32 +177,37 @@
             });
         }
 
-        $("#sido").change(function() {
-            fetch(`/api/sigungu?sido=` + $(this).val())
+        $("#sido").change(function () {
+            fetch(`/api/adm/aptCmplex/sigungu?sido=` + $(this).val())
                 .then(res => res.json())
                 .then(data => {
-                    fillSelect(sigunguEl,data);
+                    fillSelect(sigunguEl, data);
                 });
             console.log(sidoEl);
         });
 
-        $("#sigungu").change(function() {
+        $("#sigungu").change(function () {
             const sido = $("#sido").val();
-            fetch(`/api/emd?sido=\${sido}&sigungu=` + $(this).val())
+            fetch(
+                "/api/adm/aptCmplex/emd?sido="
+                + encodeURIComponent(sido)
+                + "&sigungu="
+                + encodeURIComponent($(this).val())
+            )
                 .then(res => res.json())
                 .then(data => {
-                    fillSelect(emdEl,data);
+                    fillSelect(emdEl, data);
                 });
             console.log(emdEl);
         });
 
 
-        searchBtn.on("click",function(){
+        searchBtn.on("click", function () {
             const sido = $("#sido").val();
             const sigungu = $("#sigungu").val();
             const emd = $("#emd").val();
 
-            let url = "/api/aptList?";
+            let url = "/api/adm/aptCmplex/aptList?";
 
             const params = [];
 
@@ -230,7 +238,7 @@
                 });
         })
 
-        $("#aptList").on("click", ".apt-row", function(e){
+        $("#aptList").on("click", ".apt-row", function (e) {
 
             if (e.target.tagName === "INPUT") return;
 
@@ -238,7 +246,7 @@
             checkbox.prop("checked", !checkbox.prop("checked"));
         });
 
-        $("#checkAll").on("change", function(){
+        $("#checkAll").on("change", function () {
 
             const isChecked = $(this).prop("checked");
 
@@ -247,7 +255,7 @@
             $(".apt-row").toggleClass("selected", isChecked);
         });
 
-        $("#aptList").on("change", "input[type=checkbox]", function(){
+        $("#aptList").on("change", "input[type=checkbox]", function () {
 
             const total = $("#aptList input[type=checkbox]").length;
             const checked = $("#aptList input[type=checkbox]:checked").length;
@@ -257,7 +265,7 @@
             $(this).closest(".apt-row").toggleClass("selected", this.checked);
         });
 
-        $("#aptList").on("click", ".apt-row", function(e){
+        $("#aptList").on("click", ".apt-row", function (e) {
 
             if (e.target.tagName === "INPUT") return;
 
@@ -269,7 +277,7 @@
 
     });
 
-    $("#createUserBtn").on("click", function(){
+    $("#createUserBtn").on("click", function () {
 
         const count = $("#userCount").val();
 
@@ -278,12 +286,12 @@
             return;
         }
 
-        fetch("/api/user/createDummy", {
+        fetch("/api/adm/aptCmplex/user/createDummy", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ count: count })
+            body: JSON.stringify({count: count})
         })
             .then(res => res.text())
             .then(msg => {
@@ -292,17 +300,14 @@
             });
     });
 
-    function loadNotAssignedUserCount(){
+    function loadNotAssignedUserCount() {
 
-        fetch("/api/user/notAssignedCount")
+        fetch("/api/adm/aptCmplex/user/notAssignedCount")
             .then(res => res.json())
             .then(count => {
                 $("#userInfo").text("미입주 유저 수: " + count);
             });
     }
-
-
-
 
 
     async function collect() {
@@ -311,7 +316,7 @@
         const sigungu = $("#sigungu").val();
         const emd = $("#emd").val();
 
-        const res = await fetch('/api/apt/collect', {
+        const res = await fetch('/api/adm/aptCmplex/apt/collect', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
@@ -332,7 +337,7 @@
         if (!confirm("좌표 업데이트를 실행하시겠습니까?")) return;
 
         try {
-            const response = await fetch("/api/updateLatLng.do", {
+            const response = await fetch("/api/adm/aptCmplex/updateLatLng.do", {
                 method: "POST"
             });
 
@@ -347,7 +352,7 @@
     });
 
 
-    $("#assignBtn").on("click", function(){
+    $("#assignBtn").on("click", function () {
 
         const count = $("#assignCount").val();
 
@@ -358,7 +363,7 @@
 
         const selected = [];
 
-        $("#aptList input:checked").each(function(){
+        $("#aptList input:checked").each(function () {
             selected.push($(this).val());
         });
 
@@ -367,7 +372,7 @@
             return;
         }
 
-        fetch("/api/apt/assignResidents", {
+        fetch("/api/adm/aptCmplex/apt/assignResidents", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -385,7 +390,7 @@
     });
 
 
-    $("#publicSearchBtn").on("click", async function(){
+    $("#publicSearchBtn").on("click", async function () {
 
         const sido = $("#sido").val();
         const sigungu = $("#sigungu").val();
@@ -398,15 +403,15 @@
 
         try {
 
-            const response = await fetch("/api/apt/checkBaseInfo", {
-                method : "POST",
-                headers : {
-                    "Content-Type" : "application/json"
+            const response = await fetch("/api/adm/aptCmplex/apt/checkBaseInfo", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                body : JSON.stringify({
-                    sido : sido,
-                    sigungu : sigungu,
-                    emd : emd
+                body: JSON.stringify({
+                    sido: sido,
+                    sigungu: sigungu,
+                    emd: emd
                 })
             });
 
@@ -455,7 +460,7 @@
         }
     });
 
-    $("#toastTestBtn").on("click", function(){
+    $("#toastTestBtn").on("click", function () {
 
         showToast({
             title: "테스트 알림",

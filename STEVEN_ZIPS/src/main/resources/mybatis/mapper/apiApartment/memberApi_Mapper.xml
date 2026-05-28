@@ -3,9 +3,9 @@
 <mapper namespace="kr.or.ddit.domain.apt.apiApartment.mapper.IApiMemberMapper">
 
     <insert id="insertMember">
-    <selectKey keyProperty="userNo" order="BEFORE" resultType="string">
-        SELECT 't_' || SEQ_MEMBER.NEXTVAL FROM dual
-    </selectKey>
+        <selectKey keyProperty="userNo" order="BEFORE" resultType="string">
+            SELECT 't_' || SEQ_MEMBER.NEXTVAL FROM dual
+        </selectKey>
 
         INSERT INTO MEMBER (
             USER_NO,
@@ -16,12 +16,12 @@
             USER_TELNO
         ) VALUES (
             #{userNo},
-            'testUser_' || SEQ_TEST_USER.NEXTVAL,
+            #{userId},
             #{userPw},
             #{userNm},
             #{userRrno},
             #{userTelno}
-         )
+        )
     </insert>
 
     <insert id="insertMemberAuth">
@@ -77,7 +77,7 @@
         SELECT M.*
         FROM MEMBER M
             JOIN AUTH A ON M.USER_NO = A.USER_NO
-        WHERE M.USER_ID LIKE 'testUser_%'
+        WHERE M.USER_ID LIKE 't%'
           AND A.USER_ROLE_CD = 'ROLE_MEMBER'
     </select>
 

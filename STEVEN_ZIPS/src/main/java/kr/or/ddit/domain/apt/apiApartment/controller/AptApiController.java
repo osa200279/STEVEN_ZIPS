@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/api/react/adm/aptCmplex")
+@RequestMapping("/api/adm/aptCmplex")
 @Slf4j
 public class AptApiController {
 
