@@ -258,6 +258,12 @@
 
         AND D.HO_STTS_CD = 'EMPTY'
 
+        AND NOT EXISTS (
+        SELECT 1
+        FROM RENT_LISTING RL
+        WHERE RL.HO_NO = D.HO_NO
+        )
+
     </select>
 
     <update id="updateLatLng">
