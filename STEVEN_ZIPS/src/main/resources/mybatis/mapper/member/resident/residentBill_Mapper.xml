@@ -75,7 +75,7 @@
         U.DONG_NO,
         U.DONG_NM,
         H.HO,
-        U.DONG_NM || ' ' || H.HO || '호' AS DISPLAY_DONG_HO,
+        U.DONG_NM || '동 ' || H.HO || '호' AS DISPLAY_DONG_HO,
 
         C.CODE_NAME AS PYMT_STTS_NM,
         C.CODE_CONTENT AS PYMT_STTS_CONTENT
@@ -121,7 +121,7 @@
             U.DONG_NO,
             U.DONG_NM,
             H.HO,
-            U.DONG_NM || ' ' || H.HO || '호' AS DISPLAY_DONG_HO,
+            U.DONG_NM || '동 ' || H.HO || '호' AS DISPLAY_DONG_HO,
 
             C.CODE_NAME AS PYMT_STTS_NM,
             C.CODE_CONTENT AS PYMT_STTS_CONTENT

@@ -17,16 +17,37 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
 
     <style>
+        /*
+         * 조회 조건 검색영역
+         * - 조건별 묶음(filter-group) 사이에는 넉넉한 여백
+         * - 라벨과 입력창 사이는 가깝게 유지
+         */
         .issue-page .issue-form-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
             align-items: center;
+            column-gap: 24px;
+            row-gap: 14px;
+        }
+
+        .issue-page .filter-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .issue-page .filter-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 4px;
         }
 
         .issue-page .issue-form-row label {
             font-weight: 700;
             color: var(--text-primary);
+            white-space: nowrap;
         }
 
         .issue-page input,
@@ -279,51 +300,63 @@
 
                     <div class="panel-body">
                         <div class="issue-form-row">
-                            <label for="searchYear">관리연도</label>
-                            <input type="number" id="searchYear">
+                            <div class="filter-group">
+                                <label for="searchYear">관리연도</label>
+                                <input type="number" id="searchYear">
+                            </div>
 
-                            <label for="searchMonth">관리월</label>
-                            <select id="searchMonth">
-                                <option value="">전체</option>
-                                <option value="1">1월</option>
-                                <option value="2">2월</option>
-                                <option value="3">3월</option>
-                                <option value="4">4월</option>
-                                <option value="5">5월</option>
-                                <option value="6">6월</option>
-                                <option value="7">7월</option>
-                                <option value="8">8월</option>
-                                <option value="9">9월</option>
-                                <option value="10">10월</option>
-                                <option value="11">11월</option>
-                                <option value="12">12월</option>
-                            </select>
+                            <div class="filter-group">
+                                <label for="searchMonth">관리월</label>
+                                <select id="searchMonth">
+                                    <option value="">전체</option>
+                                    <option value="1">1월</option>
+                                    <option value="2">2월</option>
+                                    <option value="3">3월</option>
+                                    <option value="4">4월</option>
+                                    <option value="5">5월</option>
+                                    <option value="6">6월</option>
+                                    <option value="7">7월</option>
+                                    <option value="8">8월</option>
+                                    <option value="9">9월</option>
+                                    <option value="10">10월</option>
+                                    <option value="11">11월</option>
+                                    <option value="12">12월</option>
+                                </select>
+                            </div>
 
-                            <label for="pymtSttsCd">납부상태</label>
-                            <select id="pymtSttsCd">
-                                <option value="">전체</option>
-                                <option value="READY">고지완료</option>
-                                <option value="PAID">납부완료</option>
-                                <option value="UNPAID">미납</option>
-                                <option value="OVERDUE">연체</option>
-                            </select>
+                            <div class="filter-group">
+                                <label for="pymtSttsCd">납부상태</label>
+                                <select id="pymtSttsCd">
+                                    <option value="">전체</option>
+                                    <option value="READY">고지완료</option>
+                                    <option value="PAID">납부완료</option>
+                                    <option value="UNPAID">미납</option>
+                                    <option value="OVERDUE">연체</option>
+                                </select>
+                            </div>
 
-                            <label for="dongNo">동</label>
-                            <select id="dongNo" onchange="onDongChange()">
-                                <option value="">전체</option>
-                            </select>
+                            <div class="filter-group">
+                                <label for="dongNo">동</label>
+                                <select id="dongNo" onchange="onDongChange()">
+                                    <option value="">전체</option>
+                                </select>
+                            </div>
 
-                            <label for="ho">호수</label>
-                            <input type="text" id="ho" placeholder="동 선택 후 입력" disabled>
+                            <div class="filter-group">
+                                <label for="ho">호수</label>
+                                <input type="text" id="ho" placeholder="동 선택 후 입력" disabled>
+                            </div>
 
-                            <button type="button" class="btn btn-primary" onclick="loadBillIssueList(1)">
-                                <span class="material-symbols-rounded">search</span>
-                                조회
-                            </button>
+                            <div class="filter-actions">
+                                <button type="button" class="btn btn-primary" onclick="loadBillIssueList(1)">
+                                    <span class="material-symbols-rounded">search</span>
+                                    조회
+                                </button>
 
-                            <button type="button" class="btn btn-secondary" onclick="resetSearch()">
-                                초기화
-                            </button>
+                                <button type="button" class="btn btn-secondary" onclick="resetSearch()">
+                                    초기화
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -464,7 +497,7 @@
 
     function renderInitialEmptyState() {
         document.getElementById('billIssueTbody').innerHTML =
-            '<tr><td colspan="7" class="empty">동을 선택한 뒤 조회 버튼을 눌러 주세요.</td></tr>';
+            '<tr><td colspan="7" class="empty">조회 조건을 설정한 뒤 조회 버튼을 눌러 주세요.</td></tr>';
 
         document.getElementById('summaryTotalCount').textContent = '0건';
         document.getElementById('summaryTotalAmount').textContent = '0원';
@@ -564,13 +597,11 @@
         const dongNo = document.getElementById('dongNo').value;
         const ho = document.getElementById('ho').value;
 
-        // 동 선택 필수
-        if (!dongNo) {
-            alert('동을 선택해 주세요.');
-            renderInitialEmptyState();
-            return;
-        }
-
+        /*
+         * 동은 선택 조건으로만 사용한다.
+         * - 선택하지 않으면 해당 관리사무소의 전체 동 고지서를 조회한다.
+         * - 호수는 동을 선택한 경우에만 입력 가능하므로 함께 조회된다.
+         */
         let url = contextPath + '/manager/bill/issue/list/' + mgmtOfcNo;
 
         const params = [];
@@ -584,9 +615,11 @@
             params.push('pymtSttsCd=' + encodeURIComponent(pymtSttsCd));
         }
 
-        params.push('dongNo=' + encodeURIComponent(dongNo));
+        if (dongNo) {
+            params.push('dongNo=' + encodeURIComponent(dongNo));
+        }
 
-        if (ho) {
+        if (dongNo && ho) {
             params.push('ho=' + encodeURIComponent(ho));
         }
 

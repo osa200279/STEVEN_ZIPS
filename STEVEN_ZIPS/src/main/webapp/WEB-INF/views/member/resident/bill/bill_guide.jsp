@@ -41,6 +41,7 @@
       border-radius: 12px;
       overflow: hidden;
       margin-bottom: 18px;
+      text-align: center;
       background: #fff;
     }
     .label-grid .th {
@@ -304,7 +305,7 @@
         <div class="btn-row">
           <a href="javascript:void(0);" class="btn-main" onclick="goPayment()">즉시 납부하기</a>
           <a href="javascript:void(0);" class="btn-sub" onclick="downloadStatement()">상세 명세서 PDF 다운로드</a>
-          <a href="${pageContext.request.contextPath}/fee/receipt" class="btn-ghost">관리비 영수증 조회</a>
+          <a href="${pageContext.request.contextPath}/resident/bill/receipt/${aptCmplexNo}" class="btn-ghost">관리비 영수증 조회</a>
         </div>
 
       </div>

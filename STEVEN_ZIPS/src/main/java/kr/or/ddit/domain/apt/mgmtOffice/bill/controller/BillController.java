@@ -289,7 +289,7 @@ public class BillController {
             Model model
     ) {
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        return "apt/mgmtOffice/mngr_billIssue";
+        return "apt/mgmtOffice/bill/mngr_billIssue";
     }
 
     // 고지서 동 목록 조회
