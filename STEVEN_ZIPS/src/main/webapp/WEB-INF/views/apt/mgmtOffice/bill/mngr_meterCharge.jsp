@@ -5,7 +5,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>검침요금 계산</title>
+  <title>세대 검침 관리</title>
 
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
@@ -37,6 +37,43 @@
 
     .meter-page input[type="number"] {
       width: 120px;
+    }
+
+    /* 세대별 현재 검침값 입력 */
+    .meter-page .meter-current-input {
+      width: 112px !important;
+      height: 34px;
+      text-align: right;
+      font-weight: 800;
+      color: var(--text-primary);
+      border: 1px solid #cbd5e1;
+      background: #fff;
+    }
+
+    .meter-page .meter-current-input:focus {
+      outline: none;
+      border-color: #356859;
+      box-shadow: 0 0 0 3px rgba(53, 104, 89, 0.13);
+    }
+
+    .meter-page .meter-current-input.input-error {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+
+    .meter-page .input-guide {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 700;
+    }
+
+    .meter-page .input-guide .material-symbols-rounded {
+      font-size: 17px;
+      color: #356859;
     }
 
     .meter-page .summary-grid {
@@ -184,6 +221,31 @@
       overflow-x: auto;
     }
 
+    /* 검침값 저장 버튼 영역 */
+    .meter-page .save-area {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px 18px;
+    }
+
+    .meter-page .save-hint {
+      margin-right: auto;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 700;
+    }
+
+    .meter-page .btn-save-meter {
+      min-width: 140px;
+    }
+
+    .meter-page .btn-save-meter:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .meter-page .tbl th,
     .meter-page .tbl td {
       white-space: nowrap;
@@ -222,8 +284,8 @@
 
         <div class="page-header">
           <div class="page-title-block">
-            <h2>검침요금 계산</h2>
-            <p>세대별 전기, 수도, 가스 검침 사용량을 기준으로 개별요금을 계산합니다.</p>
+            <h2>세대별 검침 입력 및 요금 계산</h2>
+            <p>세대별 전기, 수도, 가스의 현재 검침 숫자를 입력하여 사용량과 개별요금을 확인합니다.</p>
           </div>
         </div>
 
@@ -267,6 +329,11 @@
               <button type="button" class="btn btn-secondary" onclick="resetPage()">
                 초기화
               </button>
+            </div>
+
+            <div class="input-guide">
+              <span class="material-symbols-rounded">edit_square</span>
+              조회 후 목록의 현재 검침값 칸에 숫자를 입력하면 사용량과 요금 합계가 즉시 다시 계산됩니다.
             </div>
           </div>
         </div>
@@ -335,7 +402,7 @@
                 <th>동/호수</th>
                 <th>항목</th>
                 <th class="text-right">이전 검침값</th>
-                <th class="text-right">현재 검침값</th>
+                <th class="text-right">현재 검침값 입력</th>
                 <th class="text-right">사용량</th>
                 <th class="text-right">단가</th>
                 <th class="text-right">계산금액</th>
@@ -349,6 +416,18 @@
               </tr>
               </tbody>
             </table>
+          </div>
+
+          <div class="save-area">
+            <span class="save-hint">현재 검침값을 입력한 행만 저장됩니다.</span>
+            <button type="button"
+                    id="btnSaveMeter"
+                    class="btn btn-primary btn-save-meter"
+                    onclick="saveMeterReadings()"
+                    disabled>
+              <span class="material-symbols-rounded">save</span>
+              검침값 저장
+            </button>
           </div>
         </div>
 
@@ -422,10 +501,19 @@
         return;
       }
 
-      meterChargeList = result.list || [];
+      meterChargeList = (result.list || []).map(function (item) {
+        // 서버에서 전달된 현재 검침값이 있으면 입력칸의 초기값으로 사용합니다.
+        item.currVal = item.currVal === null || item.currVal === undefined ? '' : item.currVal;
 
-      renderSummary(result);
+        // 저장 후 변경 여부를 판단하기 위한 원본값입니다.
+        item.originalCurrVal = item.currVal;
+
+        return item;
+      });
+
+      renderSummaryFromList();
       renderMeterChargeList();
+      updateSaveButton();
 
       showMessage(formatBillYm(billYm) + ' 검침요금 계산 결과를 조회했습니다.', 'info');
 
@@ -435,36 +523,100 @@
     }
   }
 
-  function renderSummary(result) {
-    const electricTotal = result.electricTotal || 0;
-    const waterTotal = result.waterTotal || 0;
-    const gasTotal = result.gasTotal || 0;
-    const grandTotal = result.grandTotal || 0;
+  /**
+   * 현재 화면에 입력되어 있는 검침값을 기준으로 요약 카드를 다시 계산합니다.
+   * 최종 저장 시에는 서버에서도 동일한 유효성 검사와 금액 계산을 수행해야 합니다.
+   */
+  function renderSummaryFromList() {
+    const totals = {
+      ELC: {amount: 0, usage: 0, unitPrice: 0},
+      WTR: {amount: 0, usage: 0, unitPrice: 0},
+      GAS: {amount: 0, usage: 0, unitPrice: 0}
+    };
 
-    const electricUsageTotal = result.electricUsageTotal || 0;
-    const waterUsageTotal = result.waterUsageTotal || 0;
-    const gasUsageTotal = result.gasUsageTotal || 0;
+    let enteredCount = 0;
 
-    const electricUnitPrice = result.electricUnitPrice || 0;
-    const waterUnitPrice = result.waterUnitPrice || 0;
-    const gasUnitPrice = result.gasUnitPrice || 0;
+    meterChargeList.forEach(function (item) {
+      const code = item.billItemCd;
 
-    document.getElementById('electricTotal').textContent = formatNumber(electricTotal) + '원';
-    document.getElementById('waterTotal').textContent = formatNumber(waterTotal) + '원';
-    document.getElementById('gasTotal').textContent = formatNumber(gasTotal) + '원';
+      if (!totals[code]) {
+        return;
+      }
+
+      totals[code].amount += Number(item.chargeAmt || 0);
+      totals[code].usage += Number(item.usageVal || 0);
+      totals[code].unitPrice = Number(item.unitPrice || totals[code].unitPrice || 0);
+
+      if (item.currVal !== '' && item.currVal !== null && item.currVal !== undefined) {
+        enteredCount++;
+      }
+    });
+
+    const grandTotal = totals.ELC.amount + totals.WTR.amount + totals.GAS.amount;
+
+    document.getElementById('electricTotal').textContent = formatNumber(totals.ELC.amount) + '원';
+    document.getElementById('waterTotal').textContent = formatNumber(totals.WTR.amount) + '원';
+    document.getElementById('gasTotal').textContent = formatNumber(totals.GAS.amount) + '원';
     document.getElementById('grandTotal').textContent = formatNumber(grandTotal) + '원';
 
     document.getElementById('electricUsage').textContent =
-            '사용량 ' + formatNumber(electricUsageTotal) + ' / 단가 ' + formatNumber(electricUnitPrice) + '원';
+            '사용량 ' + formatNumber(totals.ELC.usage) + ' / 단가 ' + formatNumber(totals.ELC.unitPrice) + '원';
 
     document.getElementById('waterUsage').textContent =
-            '사용량 ' + formatNumber(waterUsageTotal) + ' / 단가 ' + formatNumber(waterUnitPrice) + '원';
+            '사용량 ' + formatNumber(totals.WTR.usage) + ' / 단가 ' + formatNumber(totals.WTR.unitPrice) + '원';
 
     document.getElementById('gasUsage').textContent =
-            '사용량 ' + formatNumber(gasUsageTotal) + ' / 단가 ' + formatNumber(gasUnitPrice) + '원';
+            '사용량 ' + formatNumber(totals.GAS.usage) + ' / 단가 ' + formatNumber(totals.GAS.unitPrice) + '원';
 
     document.getElementById('meterCount').textContent =
-            formatNumber((result.list || []).length) + '건';
+            '입력 ' + formatNumber(enteredCount) + '건 / 전체 ' + formatNumber(meterChargeList.length) + '건';
+  }
+
+  /**
+   * 현재 검침값 입력 후, 해당 행의 사용량과 계산금액을 화면에서 즉시 갱신합니다.
+   */
+  function applyMeterInput(listIndex, inputElement) {
+    const item = meterChargeList[listIndex];
+    const enteredValue = inputElement.value.trim();
+    const previousValue = Number(item.preVal || 0);
+
+    inputElement.classList.remove('input-error');
+
+    if (enteredValue === '') {
+      item.currVal = '';
+      item.usageVal = 0;
+      item.chargeAmt = 0;
+
+      renderMeterChargeList();
+      renderSummaryFromList();
+      updateSaveButton();
+      showMessage('현재 검침값이 비어 있는 행은 요금 계산에서 제외됩니다.', 'warn');
+      return;
+    }
+
+    const currentValue = Number(enteredValue);
+
+    if (!Number.isFinite(currentValue) || currentValue < 0) {
+      inputElement.classList.add('input-error');
+      showMessage('현재 검침값은 0 이상의 숫자로 입력해 주세요.', 'warn');
+      return;
+    }
+
+    if (currentValue < previousValue) {
+      inputElement.classList.add('input-error');
+      showMessage('현재 검침값은 이전 검침값보다 작을 수 없습니다. (' +
+              formatNumber(previousValue) + ' 이상 입력)', 'warn');
+      return;
+    }
+
+    item.currVal = currentValue;
+    item.usageVal = currentValue - previousValue;
+    item.chargeAmt = Math.round(item.usageVal * Number(item.unitPrice || 0));
+
+    renderMeterChargeList();
+    renderSummaryFromList();
+    updateSaveButton();
+    showMessage('입력값을 기준으로 사용량과 계산금액을 반영했습니다.', 'info');
   }
 
   function renderMeterChargeList() {
@@ -504,21 +656,191 @@
     }
 
     filteredList.forEach(function (item) {
+      const listIndex = meterChargeList.indexOf(item);
       const tr = document.createElement('tr');
+      const currentValue = item.currVal === null || item.currVal === undefined ? '' : item.currVal;
 
       tr.innerHTML =
               '<td class="td-bold">' + escapeHtml(item.displayDongHo || '-') + '</td>' +
               '<td>' + renderMeterBadge(item.billItemCd, item.billItemNm) + '</td>' +
               '<td class="text-right">' + formatNumber(item.preVal) + '</td>' +
-              '<td class="text-right">' + formatNumber(item.currVal) + '</td>' +
+              '<td class="text-right">' +
+              '<input type="number" class="meter-current-input" min="' + Number(item.preVal || 0) + '"' +
+              ' step="1" value="' + escapeHtml(currentValue) + '"' +
+              ' aria-label="' + escapeHtml((item.displayDongHo || '') + ' ' + (item.billItemNm || '') + ' 현재 검침값') + '"' +
+              ' onchange="applyMeterInput(' + listIndex + ', this)">' +
+              '</td>' +
               '<td class="text-right td-bold">' + formatNumber(item.usageVal) + '</td>' +
               '<td class="text-right">' + formatNumber(item.unitPrice) + '원</td>' +
               '<td class="text-right td-bold">' + formatNumber(item.chargeAmt) + '원</td>' +
               '<td>' + formatDate(item.meterDt) + '</td>' +
-              '<td>' + escapeHtml(item.meterRsltCd || '-') + '</td>';
+              '<td>' + escapeHtml(item.meterRsltCd || '입력대기') + '</td>';
 
       tbody.appendChild(tr);
     });
+  }
+
+  /**
+   * 입력값이 있는 행 중 실제 변경된 검침값만 서버 전송용 목록으로 만듭니다.
+   * Controller에서는 meterList 배열을 받아 METER_HSTRY에 등록/수정합니다.
+   */
+  function makeSavePayload() {
+    const billYm = getBillYm();
+
+    const meterList = meterChargeList
+            .filter(function (item) {
+              return item.currVal !== ''
+                      && item.currVal !== null
+                      && item.currVal !== undefined
+                      && String(item.currVal) !== String(item.originalCurrVal);
+            })
+            .map(function (item) {
+              return {
+                hoNo: item.hoNo,
+                billItemCd: item.billItemCd,
+                utilityProviderNo: item.utilityProviderNo,
+                facilityNo: item.facilityNo,
+                preVal: Number(item.preVal || 0),
+                currVal: Number(item.currVal),
+                usageVal: Number(item.usageVal || 0),
+                unitPrice: Number(item.unitPrice || 0),
+                chargeAmt: Number(item.chargeAmt || 0)
+              };
+            });
+
+    return {
+      mgmtOfcNo: mgmtOfcNo,
+      billYm: billYm,
+      meterList: meterList
+    };
+  }
+
+  /**
+   * 저장 전 화면 입력값을 검증합니다.
+   * 금액 계산은 화면 편의 기능이므로, Controller/Service에서도 다시 검증해야 합니다.
+   */
+  function validateBeforeSave(payload) {
+    if (!payload.billYm) {
+      showMessage('검침년월을 선택해 주세요.', 'warn');
+      return false;
+    }
+
+    if (!payload.meterList.length) {
+      showMessage('저장할 검침값이 없습니다. 값을 입력하거나 변경해 주세요.', 'warn');
+      return false;
+    }
+
+    for (const item of payload.meterList) {
+      if (!item.hoNo) {
+        showMessage('호수 식별값(HO_NO)이 없는 행이 있습니다. 조회 쿼리에서 hoNo를 내려주도록 확인해 주세요.', 'error');
+        return false;
+      }
+
+      if (item.currVal < item.preVal) {
+        showMessage('현재 검침값은 이전 검침값보다 작을 수 없습니다.', 'warn');
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * 세대별 현재 검침값 저장
+   * 다음 단계에서 생성할 Controller URL:
+   * POST /manager/bill/meter-charge/save/{mgmtOfcNo}
+   */
+  async function saveMeterReadings() {
+    clearMessage();
+
+    const payload = makeSavePayload();
+
+    if (!validateBeforeSave(payload)) {
+      return;
+    }
+
+    const saveButton = document.getElementById('btnSaveMeter');
+    const originalButtonText = saveButton.innerHTML;
+
+    saveButton.disabled = true;
+    saveButton.innerHTML =
+            '<span class="material-symbols-rounded">hourglass_top</span> 저장 중';
+
+    const url = contextPath
+            + '/manager/bill/meter-charge/save/' + encodeURIComponent(mgmtOfcNo);
+
+    try {
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+
+      // Spring Security CSRF meta 태그를 사용하는 화면이라면 자동으로 헤더를 추가합니다.
+      const csrfToken = document.querySelector('meta[name="_csrf"]');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]');
+
+      if (csrfToken && csrfHeader) {
+        headers[csrfHeader.getAttribute('content')] = csrfToken.getAttribute('content');
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        showMessage('검침값 저장 중 오류가 발생했습니다. 상태코드: ' + response.status, 'error');
+        return;
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        showMessage(result.message || '검침값 저장에 실패했습니다.', 'error');
+        return;
+      }
+
+      // 저장이 완료된 값은 다시 변경 목록으로 잡히지 않도록 원본값을 갱신합니다.
+      meterChargeList.forEach(function (item) {
+        if (item.currVal !== '' && item.currVal !== null && item.currVal !== undefined) {
+          item.originalCurrVal = item.currVal;
+          item.meterRsltCd = item.meterRsltCd || '정상';
+        }
+      });
+
+      renderMeterChargeList();
+      updateSaveButton();
+
+      showMessage(result.message || ('검침값 ' + payload.meterList.length + '건을 저장했습니다.'), 'info');
+
+    } catch (e) {
+      console.error(e);
+      showMessage('검침값 저장 중 오류가 발생했습니다.', 'error');
+
+    } finally {
+      saveButton.innerHTML = originalButtonText;
+      updateSaveButton();
+    }
+  }
+
+  /**
+   * 변경된 현재 검침값이 존재할 때만 저장 버튼을 활성화합니다.
+   */
+  function updateSaveButton() {
+    const button = document.getElementById('btnSaveMeter');
+
+    if (!button) {
+      return;
+    }
+
+    const hasModifiedInput = meterChargeList.some(function (item) {
+      return item.currVal !== ''
+              && item.currVal !== null
+              && item.currVal !== undefined
+              && String(item.currVal) !== String(item.originalCurrVal);
+    });
+
+    button.disabled = !hasModifiedInput;
   }
 
   function renderMeterBadge(code, name) {
@@ -545,6 +867,7 @@
     document.getElementById('keywordFilter').value = '';
 
     renderEmptyState();
+    updateSaveButton();
   }
 
   function renderEmptyState() {

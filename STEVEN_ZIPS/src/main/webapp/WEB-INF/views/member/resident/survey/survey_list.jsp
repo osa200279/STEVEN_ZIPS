@@ -120,7 +120,7 @@
 
                     <c:when test="${survey.surveySttsCd eq 'OPEN'}">
 
-                      <a href="${pageContext.request.contextPath}/resident/survey/detail/${survey.surveyNo}"
+                      <a href="${pageContext.request.contextPath}/resident/survey/detail/${aptCmplexNo}/${survey.surveyNo}"
                          style="
             font-weight:700;
             color:var(--text-dark);

@@ -984,24 +984,9 @@ public class ResidentMainController {
         return "member/resident/survey/vote_resident_list";
     }
 
-    @GetMapping("/vote/detail")
-    public String voteDetail() {
-        return "member/resident/survey/vote_resident_detail";
-    }
-
-    @GetMapping("/vote/result")
-    public String voteResult() {
-        return "member/resident/survey/vote_resident_result";
-    }
-
-    @GetMapping("/survey")
-    public String survey() {
-
-        return "redirect:/resident/survey/list";
-    }
-
-    @GetMapping("/survey/detail/{surveyNo}")
+    @GetMapping("/survey/detail/{aptCmplexNo}/{surveyNo}")
     public String surveyDetail(
+            @PathVariable String aptCmplexNo,
             @PathVariable String surveyNo,
             @AuthenticationPrincipal CustomUser customUser,
             Model model
@@ -1019,7 +1004,7 @@ public class ResidentMainController {
         // 이미 참여했으면 결과페이지로 이동
         if (alreadyParticipated) {
 
-            return "redirect:/resident/survey/result/"
+            return "redirect:/resident/survey/result/{aptCmplexNo}/{surveyNo}"
                     + surveyNo;
         }
 
@@ -1029,14 +1014,17 @@ public class ResidentMainController {
                 surveyService.selectSurveyDetail(surveyNo)
         );
 
+        AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
+
+        model.addAttribute("aptInfo", aptMainPageDTO);
         return "member/resident/survey/survey_detail";
     }
 
-    @GetMapping("/survey/result/{surveyNo}")
-    public String surveyResult(
-            @PathVariable String surveyNo,
-            @AuthenticationPrincipal CustomUser customUser,
-            Model model
+    @GetMapping("/survey/result/{aptCmplexNo}/{surveyNo}")
+    public String surveyResult(@PathVariable String aptCmplexNo,
+                               @PathVariable String surveyNo,
+                               @AuthenticationPrincipal CustomUser customUser,
+                               Model model
     ) throws Exception {
 
         model.addAttribute(
@@ -1068,6 +1056,9 @@ public class ResidentMainController {
                 mapper.writeValueAsString(statistics)
         );
 
+        AptMainPageDTO.ResponseDto aptMainPageDTO = aptComplexService.selectAptMainDTO(aptCmplexNo);
+
+        model.addAttribute("aptInfo", aptMainPageDTO);
         return "member/resident/survey/survey_result";
     }
 

@@ -12,4 +12,7 @@ public interface IMeterChargeService {
 
     // 관리비 부과 로직에서 재사용할 원본 계산 목록
     List<MeterChargeVO> selectCalculatedMeterChargeList(String aptCmplexNo, String billYm);
+
+    // 세대 검침 입력 및 저장
+    Map<String, Object> saveMeterCharge(String aptCmplexNo, String billYm, List<Map<String, Object>> meterList);
 }

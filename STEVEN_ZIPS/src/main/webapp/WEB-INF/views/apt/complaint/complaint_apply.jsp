@@ -100,6 +100,11 @@
             line-height: 1.8;
             color: var(--text-dark);
         }
+
+        /* SweetAlert2를 민원 상세 모달보다 항상 위에 표시 */
+        .swal2-container {
+            z-index: 99999 !important;
+        }
     </style>
 </head>
 <body>
@@ -278,8 +283,17 @@
 </div>
 
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
-</body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
+
+    const AptSwal = Swal.mixin({
+        confirmButtonColor: '#163d2c',
+        cancelButtonColor: '#8a948d',
+        confirmButtonText: '확인',
+        reverseButtons: true
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
 
         document.addEventListener("click", function (e) {
@@ -316,7 +330,11 @@
 
                 const result = await resp.json();
                 if (resp.ok) {
-                    alert(result.message);
+                    await AptSwal.fire({
+                        icon: "success",
+                        title: "민원 접수 완료",
+                        text: result.message || "민원이 접수되었습니다."
+                    });
                     location.href = window.location.pathname + "?curPage=1"
                     // try{
                     //     const res = await fetch(`/apt/complaint/ajax/load-cvpl/{aptCmplexNo}`);
@@ -324,12 +342,20 @@
                     //     console.error(e);
                     // }
                 } else {
-                    alert(result.message);
+                    await AptSwal.fire({
+                        icon: "warning",
+                        title: "민원 접수 실패",
+                        text: result.message || "민원 접수 중 문제가 발생했습니다."
+                    });
                 }
 
             } catch (error) {
                 console.error(error);
-                alert("서버와 통신 중 문제가 발생했습니다.")
+                await AptSwal.fire({
+                    icon: "error",
+                    title: "통신 오류",
+                    text: "서버와 통신 중 문제가 발생했습니다."
+                });
             }
         });
     });
@@ -411,7 +437,19 @@
             cancelBtn.onclick = async () => {
                 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
                 const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-                if (!confirm("정말 이 민원을 취하하시겠습니까?")) return;
+
+                const confirmResult = await AptSwal.fire({
+                    icon: "question",
+                    title: "민원을 취소하시겠습니까?",
+                    text: "취소한 민원은 되돌릴 수 없습니다.",
+                    showCancelButton: true,
+                    confirmButtonText: "민원 취소",
+                    cancelButtonText: "닫기"
+                });
+
+                if (!confirmResult.isConfirmed) {
+                    return;
+                }
 
                 try {
                     const res = await fetch(`/apt/complaint/cancel/${aptCmplexNo}/\${cvplNo}`, {
@@ -425,11 +463,22 @@
                         throw new Error(errorMsg);
                     } else {
                         const msg = await res.text();
-                        alert(msg);
+                        await AptSwal.fire({
+                            icon: "success",
+                            title: "민원 취소 완료",
+                            text: msg || "민원이 정상적으로 취소되었습니다."
+                        });
                     }
                     closeModal();
+
+                    location.href = window.location.pathname + "?curPage=1";
+
                 } catch (err) {
-                    alert(err.message);
+                    await AptSwal.fire({
+                        icon: "error",
+                        title: "민원 취소 실패",
+                        text: error.message
+                    });
                 }
             }
 
@@ -438,7 +487,11 @@
             document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
 
         } catch (error) {
-            alert(error.message);
+            await AptSwal.fire({
+                icon: "error",
+                title: "상세 조회 실패",
+                text: error.message
+            });
         }
     }
 
@@ -457,4 +510,5 @@
         return res;
     }
 </script>
+</body>
 </html>

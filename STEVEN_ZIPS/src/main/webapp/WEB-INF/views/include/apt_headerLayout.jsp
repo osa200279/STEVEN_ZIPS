@@ -59,7 +59,7 @@
                 <a href="${pageContext.request.contextPath}/apt/main/aptInfo/${apt.aptCmplexNo}">우리아파트</a>
                 <a href="${pageContext.request.contextPath}/resident/calendar/${apt.aptCmplexNo}">우리단지일정</a>
                 <a href="${pageContext.request.contextPath}/apt/main/mgmtInfo/${apt.aptCmplexNo}">관리사무소 소개</a>
-                <a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>
+                <%--<a href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>--%>
                 <a href="${pageContext.request.contextPath}/resident/manage/facility/${apt.aptCmplexNo}">시설관리이력</a>
             </div>
         </div>
@@ -120,7 +120,7 @@
             <span>우리아파트통계<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
-                <a href="${pageContext.request.contextPath}/resident/stats/custom">우리집맞춤통계</a>
+                <a href="${pageContext.request.contextPath}/resident/stats/custom/${aptCmplexNo}">우리집맞춤통계</a>
                 <a href="${pageContext.request.contextPath}/resident/stats/apartment">아파트통계</a>
             </div>
         </div>

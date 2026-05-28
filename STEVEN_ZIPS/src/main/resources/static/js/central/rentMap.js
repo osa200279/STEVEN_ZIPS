@@ -563,7 +563,7 @@ function renderComplexRentList(complexInfo, complexRentList) {
             + '  <div class="complex-rent-card-top">'
             + '    <span class="rent-type-badge">' + escapeHtml(item.rentTypeNm) + '</span>'
             + '    <span style="font-size:12px; color:#667085;">'
-            +          escapeHtml(formatDate(item.rcrtEndDt)) + ' '
+            +          escapeHtml(formatDate(item.rcrtEndDt)) + ' 마감'
             + '    </span>'
             + '  </div>'
 

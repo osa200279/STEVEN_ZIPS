@@ -25,77 +25,196 @@
         <result property="billItemNm" column="BILL_ITEM_NM"/>
     </resultMap>
 
-    <select id="selectMeterChargeList"
-            resultMap="meterChargeMap">
+    <select id="selectMeterChargeList" resultMap="meterChargeMap">
 
-        SELECT
-            X.HO_NO,
-            X.DONG_NO,
-            X.DONG_NM,
-            X.HO,
-            X.DISPLAY_DONG_HO,
+        WITH TARGET_METER AS (
+            SELECT DISTINCT
+                M.HO_NO,
+                U.DONG_NO,
+                U.DONG_NM,
+                H.HO,
+                U.DONG_NM || '동 ' || H.HO || '호' AS DISPLAY_DONG_HO,
 
-            X.METER_HSTRY_NO,
-            X.FACILITY_NO,
-            X.UTILITY_PROVIDER_NO,
-            X.METER_DT,
-            X.PRE_VAL,
-            X.CURR_VAL,
-            X.USAGE_VAL,
-            X.METER_CN,
-            X.METER_RSLT_CD,
+                M.FACILITY_NO,
+                M.UTILITY_PROVIDER_NO,
 
-            X.BILL_ITEM_CD,
-            X.BILL_ITEM_NM
-        FROM (
+                F.FACILITY_TY_CD AS BILL_ITEM_CD,
+
+                CASE F.FACILITY_TY_CD
+                    WHEN 'ELC' THEN '전기요금'
+                    WHEN 'WTR' THEN '수도요금'
+                    WHEN 'GAS' THEN '가스요금'
+                    END AS BILL_ITEM_NM
+
+            FROM METER_HSTRY M
+                     JOIN FACILITY F
+                          ON M.FACILITY_NO = F.FACILITY_NO
+
+                     JOIN APT_DETAIL H
+                          ON M.HO_NO = H.HO_NO
+
+                     JOIN APT_UNIT U
+                          ON H.DONG_NO = U.DONG_NO
+
+                     JOIN UTILITY_PROVIDER UP
+                          ON M.UTILITY_PROVIDER_NO = UP.UTILITY_PROVIDER_NO
+                          AND UP.APT_CMPLEX_NO = U.APT_CMPLEX_NO
+
+            WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+              AND F.FACILITY_TY_CD IN ('ELC', 'WTR', 'GAS')
+        ),
+
+             PREV_METER AS (
                  SELECT
-                     H.HO_NO,
-                     U.DONG_NO,
-                     U.DONG_NM,
-                     H.HO,
-                     U.DONG_NM || '동 ' || H.HO || '호' AS DISPLAY_DONG_HO,
+                     M.HO_NO,
+                     M.FACILITY_NO,
+                     M.UTILITY_PROVIDER_NO,
+                     M.CURR_VAL,
+                     ROW_NUMBER() OVER (
+                   PARTITION BY M.HO_NO, M.FACILITY_NO, M.UTILITY_PROVIDER_NO
+                   ORDER BY M.METER_DT DESC, M.METER_HSTRY_NO DESC
+               ) AS RN
 
+                 FROM METER_HSTRY M
+                          JOIN TARGET_METER T
+                               ON M.HO_NO = T.HO_NO
+                                   AND M.FACILITY_NO = T.FACILITY_NO
+                                   AND M.UTILITY_PROVIDER_NO = T.UTILITY_PROVIDER_NO
+
+                 WHERE M.METER_DT &lt; TO_DATE(#{billYm} || '01', 'YYYYMMDD')
+             ),
+
+             CURR_METER AS (
+                 SELECT
                      M.METER_HSTRY_NO,
+                     M.HO_NO,
                      M.FACILITY_NO,
                      M.UTILITY_PROVIDER_NO,
                      M.METER_DT,
-                     M.PRE_VAL,
                      M.CURR_VAL,
-                     NVL(M.CURR_VAL, 0) - NVL(M.PRE_VAL, 0) AS USAGE_VAL,
                      M.METER_CN,
                      M.METER_RSLT_CD,
-
-                     F.FACILITY_TY_CD AS BILL_ITEM_CD,
-                     C.CODE_NAME AS BILL_ITEM_NM,
-
                      ROW_NUMBER() OVER (
-                    PARTITION BY H.HO_NO, F.FACILITY_TY_CD
-                    ORDER BY M.METER_DT DESC, M.METER_HSTRY_NO DESC
-                ) AS RN
+                   PARTITION BY M.HO_NO, M.FACILITY_NO, M.UTILITY_PROVIDER_NO
+                   ORDER BY M.METER_DT DESC, M.METER_HSTRY_NO DESC
+               ) AS RN
 
                  FROM METER_HSTRY M
-                          JOIN FACILITY F
-                               ON M.FACILITY_NO = F.FACILITY_NO
-                          JOIN APT_DETAIL H
-                               ON M.HO_NO = H.HO_NO
-                          JOIN APT_UNIT U
-                               ON H.DONG_NO = U.DONG_NO
-                          JOIN UTILITY_PROVIDER UP
-                               ON M.UTILITY_PROVIDER_NO = UP.UTILITY_PROVIDER_NO
-                                   AND UP.APT_CMPLEX_NO = U.APT_CMPLEX_NO
-                          LEFT JOIN COMMON_CODE C
-                                    ON C.GROUP_CODE_NO = 'EXPN_CD'
-                                        AND C.CODE_NO_CD = F.FACILITY_TY_CD
-                                        AND C.USE_YN = 'Y'
+                          JOIN TARGET_METER T
+                               ON M.HO_NO = T.HO_NO
+                                   AND M.FACILITY_NO = T.FACILITY_NO
+                                   AND M.UTILITY_PROVIDER_NO = T.UTILITY_PROVIDER_NO
 
-                 WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
-                   AND TO_CHAR(M.METER_DT, 'YYYYMM') = #{billYm}
-                   AND F.FACILITY_TY_CD IN ('ELC', 'WTR', 'GAS')
-                   AND M.METER_RSLT_CD IS NOT NULL
-             ) X
-        WHERE X.RN = 1
-        ORDER BY X.DONG_NM, X.HO, X.BILL_ITEM_CD
+                 WHERE M.METER_DT &gt;= TO_DATE(#{billYm} || '01', 'YYYYMMDD')
+                   AND M.METER_DT &lt; ADD_MONTHS(TO_DATE(#{billYm} || '01', 'YYYYMMDD'), 1)
+             )
+
+        SELECT
+            T.HO_NO,
+            T.DONG_NO,
+            T.DONG_NM,
+            T.HO,
+            T.DISPLAY_DONG_HO,
+
+            C.METER_HSTRY_NO,
+            T.FACILITY_NO,
+            T.UTILITY_PROVIDER_NO,
+            C.METER_DT,
+
+            NVL(P.CURR_VAL, 0) AS PRE_VAL,
+            C.CURR_VAL,
+
+            CASE
+                WHEN C.CURR_VAL IS NULL THEN NULL
+                ELSE C.CURR_VAL - NVL(P.CURR_VAL, 0)
+                END AS USAGE_VAL,
+
+            C.METER_CN,
+            C.METER_RSLT_CD,
+
+            T.BILL_ITEM_CD,
+            T.BILL_ITEM_NM
+
+        FROM TARGET_METER T
+
+                 LEFT JOIN PREV_METER P
+                           ON T.HO_NO = P.HO_NO
+                               AND T.FACILITY_NO = P.FACILITY_NO
+                               AND T.UTILITY_PROVIDER_NO = P.UTILITY_PROVIDER_NO
+                               AND P.RN = 1
+
+                 LEFT JOIN CURR_METER C
+                           ON T.HO_NO = C.HO_NO
+                               AND T.FACILITY_NO = C.FACILITY_NO
+                               AND T.UTILITY_PROVIDER_NO = C.UTILITY_PROVIDER_NO
+                               AND C.RN = 1
+
+        ORDER BY T.DONG_NM, T.HO, T.BILL_ITEM_CD
 
     </select>
 
+    <insert id="mergeMeterHistory">
+
+        MERGE INTO METER_HSTRY T
+            USING (
+                SELECT
+                    #{meter.hoNo} AS HO_NO,
+                    #{meter.utilityProviderNo} AS UTILITY_PROVIDER_NO,
+                    #{meter.facilityNo} AS FACILITY_NO,
+
+                    LAST_DAY(TO_DATE(#{billYm} || '01', 'YYYYMMDD')) AS METER_DT,
+
+                    #{meter.preVal} AS PRE_VAL,
+                    #{meter.currVal} AS CURR_VAL,
+                    #{meter.meterCn} AS METER_CN,
+                    #{meter.meterRsltCd} AS METER_RSLT_CD
+
+                FROM DUAL
+            ) S
+
+            ON (
+                T.HO_NO = S.HO_NO
+                    AND T.FACILITY_NO = S.FACILITY_NO
+                    AND T.UTILITY_PROVIDER_NO = S.UTILITY_PROVIDER_NO
+                    AND TO_CHAR(T.METER_DT, 'YYYYMM') = #{billYm}
+                )
+
+            WHEN MATCHED THEN
+                UPDATE SET
+                    T.PRE_VAL = S.PRE_VAL,
+                    T.CURR_VAL = S.CURR_VAL,
+                    T.METER_CN = S.METER_CN,
+                    T.METER_RSLT_CD = S.METER_RSLT_CD,
+                    T.MDF_DT = SYSDATE
+
+            WHEN NOT MATCHED THEN
+                INSERT (
+                        METER_HSTRY_NO,
+                        HO_NO,
+                        UTILITY_PROVIDER_NO,
+                        FACILITY_NO,
+                        METER_DT,
+                        PRE_VAL,
+                        CURR_VAL,
+                        METER_CN,
+                        METER_RSLT_CD,
+                        REG_DT,
+                        MDF_DT
+                    )
+                    VALUES (
+                               'MH' || TO_CHAR(SYSDATE, 'YYMMDD')
+                                   || LPAD(SEQ_METER_HSTRY.NEXTVAL, 7, '0'),
+                               S.HO_NO,
+                               S.UTILITY_PROVIDER_NO,
+                               S.FACILITY_NO,
+                               S.METER_DT,
+                               S.PRE_VAL,
+                               S.CURR_VAL,
+                               S.METER_CN,
+                               S.METER_RSLT_CD,
+                               SYSDATE,
+                               SYSDATE
+                           )
+
+    </insert>
 </mapper>

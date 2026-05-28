@@ -212,6 +212,74 @@ public class BillController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * 세대별 검침값 입력 및 저장
+     * 요청 URL:
+     * POST /manager/bill/meter-charge/save/{mgmtOfcNo}
+     *
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @PostMapping("/bill/meter-charge/save/{mgmtOfcNo}")
+    @ResponseBody
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<Map<String, Object>> saveMeterCharge(
+            @PathVariable String mgmtOfcNo,
+            @RequestBody Map<String, Object> body
+    ) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // 1. JSP에서 전송한 검침년월과 검침 목록을 꺼냅니다.
+            String billYm = (String) body.get("billYm");
+            List<Map<String, Object>> meterList =
+                    (List<Map<String, Object>>) body.get("meterList");
+
+            // 2. 기본값 검증
+            if (billYm == null || billYm.isBlank()) {
+                result.put("success", false);
+                result.put("message", "검침년월을 선택해 주세요.");
+                return ResponseEntity.ok(result);
+            }
+
+            if (meterList == null || meterList.isEmpty()) {
+                result.put("success", false);
+                result.put("message", "저장할 검침값이 없습니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            // 3. 관리사무소가 관리하는 아파트 단지번호를 조회합니다.
+            AptComplexVO aptComplexVO =
+                    aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+
+            if (aptComplexVO == null) {
+                result.put("success", false);
+                result.put("message", "관리사무소에 연결된 아파트 단지 정보가 없습니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            // 4. 실제 저장 처리는 Service에 전달합니다.
+            Map<String, Object> saveResult =
+                    meterChargeService.saveMeterCharge(
+                            aptComplexVO.getAptCmplexNo(),
+                            billYm,
+                            meterList
+                    );
+
+            // 5. 저장 성공 결과 반환
+            result.put("success", true);
+            result.put("message", "검침값 저장이 완료되었습니다.");
+            result.putAll(saveResult);
+
+        } catch (Exception e) {
+            log.error("검침값 저장 실패", e);
+
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
     // 고지서 등록
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/bill/issue/{mgmtOfcNo}")

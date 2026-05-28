@@ -87,7 +87,6 @@ public class HeaderModelAdvice {
 
             AptMainPageDTO.ResponseDto aptInfo = aptComplexService.selectAptMainDTO(aptCmplexNo);
 
-            log.info("공통 aptInfo 조회 aptCmplexNo = {}, aptInfo = {}", aptCmplexNo, aptInfo);
             return aptInfo;
 
         } catch (Exception e) {

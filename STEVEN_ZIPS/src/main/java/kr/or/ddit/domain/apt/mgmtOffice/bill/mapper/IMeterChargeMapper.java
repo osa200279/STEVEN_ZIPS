@@ -10,6 +10,9 @@ import java.util.List;
 public interface IMeterChargeMapper {
 
     // 세대별 검침 사용량 조회
-    List<MeterChargeVO> selectMeterChargeList(@Param("aptCmplexNo") String aptCmplexNo,
-                                              @Param("billYm") String billYm);
+    List<MeterChargeVO> selectMeterChargeList( @Param("aptCmplexNo") String aptCmplexNo,
+                                               @Param("billYm") String billYm);
+
+
+    int mergeMeterHistory(String aptCmplexNo, String billYm, MeterChargeVO meter);
 }
