@@ -56,6 +56,20 @@ public class AptScheduleCalendarServiceImpl implements IAptScheduleCalendarServi
 
     @Override
     @Transactional
+    public int updateVacationSchedule(AptScheduleCalendarDTO aptScheduleCalendarDTO) {
+        /*
+         * 휴가 일정 수정
+         *
+         * @Transactional이란?
+         * DB 작업을 하나의 작업 단위로 묶는 기능입니다.
+         * 왜 사용?
+         * 수정 중 오류가 나면 DB 반영을 취소하기 위해 사용합니다.
+         */
+        return aptScheduleCalendarMapper.updateVacationSchedule(aptScheduleCalendarDTO);
+    }
+
+    @Override
+    @Transactional
     public int deleteVacationSchedule(AptScheduleCalendarDTO aptScheduleCalendarDTO) {
         return aptScheduleCalendarMapper.deleteVacationSchedule(aptScheduleCalendarDTO);
     }
@@ -80,6 +94,14 @@ public class AptScheduleCalendarServiceImpl implements IAptScheduleCalendarServi
             AptScheduleCalendarDTO searchVO,
             int currentPage
     ) {
+        /*
+         * 기본 검색조건 세팅
+         * 왜 필요?
+         * monthStartDt, monthEndDt, aptCmplexNo가 없으면
+         * SQL에서 날짜 조건 오류가 나거나 조회가 안 될 수 있다.
+         */
+        setSearchDefault(searchVO);
+
         Map<String, Object> result = new HashMap<>();
 
         List<AptScheduleCalendarDTO> calendarList =
@@ -88,7 +110,8 @@ public class AptScheduleCalendarServiceImpl implements IAptScheduleCalendarServi
         PaginationInfoVO<AptScheduleCalendarDTO> pagingVO =
                 new PaginationInfoVO<>(10, 5);
 
-        int totalRecord = aptScheduleCalendarMapper.selectScheduleCalendarCount(searchVO);
+        int totalRecord =
+                aptScheduleCalendarMapper.selectScheduleCalendarCount(searchVO);
 
         pagingVO.setTotalRecord(totalRecord);
         pagingVO.setCurrentPage(currentPage);
@@ -104,7 +127,7 @@ public class AptScheduleCalendarServiceImpl implements IAptScheduleCalendarServi
 
         result.put("calendarList", calendarList);
         result.put("list", pageList);
-        result.put("stat", stat);
+        result.put("stat", stat == null ? new AptScheduleCalendarDTO() : stat);
         result.put("pagingHTML", pagingVO.getPagingHTML());
         result.put("currentPage", currentPage);
         result.put("totalRecord", totalRecord);

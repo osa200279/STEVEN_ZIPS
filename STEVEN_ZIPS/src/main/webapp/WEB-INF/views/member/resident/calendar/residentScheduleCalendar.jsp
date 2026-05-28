@@ -986,8 +986,21 @@
                     return res.json();
                 })
                 .then(function (data) {
-                    scheduleList = Array.isArray(data) ? data : [];
+                    /*
+                     * 서버 응답 구조
+                     * Controller가 Map<String, Object>를 반환하므로
+                     * 실제 캘린더 일정은 data.calendarList 안에 들어있다.
+                     *
+                     * 기존 문제:
+                     * data 자체는 배열이 아니라 객체라서 Array.isArray(data)가 false가 됨.
+                     * 그래서 scheduleList가 빈 배열이 되어 캘린더에 일정이 안 나왔다.
+                     */
+                    scheduleList = data.calendarList || [];
 
+                    /*
+                     * 전체 목록 탭에서 사용할 페이징 목록이 필요하면
+                     * data.list를 따로 사용해야 한다.
+                     */
                     renderCalendar();
                     renderList();
                 })

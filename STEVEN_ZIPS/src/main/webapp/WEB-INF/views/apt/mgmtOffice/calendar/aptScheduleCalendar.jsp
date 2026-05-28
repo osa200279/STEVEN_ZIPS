@@ -103,6 +103,47 @@
     #aptScheduleCalendarPage .form-row { margin-bottom:12px; }
     #aptScheduleCalendarPage .form-row label { display:block; font-size:12px; font-weight:800; margin-bottom:5px; color:#334155; }
     #aptScheduleCalendarPage .form-row input, #aptScheduleCalendarPage .form-row select, #aptScheduleCalendarPage .form-row textarea { width:100%; }
+    /*
+ * 상세 모달 읽기전용 표시 영역
+ *
+ * 왜 사용?
+ * 수정할 수 없는 유형, 위치, 내용은 입력창처럼 보이면 헷갈리기 때문에
+ * 테두리를 없애고 연한 회색 텍스트로 표시한다.
+ */
+    #aptScheduleCalendarPage .readonly-view {
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      color: #9ca3af !important;
+      font-weight: 600;
+      cursor: default;
+      resize: none;
+    }
+
+    #aptScheduleCalendarPage .readonly-view:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    /*
+ * select 비활성 스타일 제거
+ *
+ * 왜 사용?
+ * disabled select는 브라우저 기본 회색 박스가 남기 때문.
+ */
+    #aptScheduleCalendarPage select.readonly-view,
+    #aptScheduleCalendarPage input.readonly-view,
+    #aptScheduleCalendarPage textarea.readonly-view {
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      color: #9ca3af !important;
+      padding-left: 0 !important;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
     #aptScheduleCalendarPage .modal-foot { display:flex; justify-content:flex-end; gap:8px; padding:14px 18px; border-top:1px solid #e5e7eb; }
 
     #aptScheduleCalendarPage .detail-row {
@@ -131,6 +172,109 @@
     #aptScheduleCalendarPage .more-count:hover {
       color: #006b4f;
       text-decoration: underline;
+    }
+
+    /* 여러 날짜 일정 막대 */
+    #aptScheduleCalendarPage .apt-calendar {
+      overflow: visible;
+    }
+
+    /* tbody tr만 높이 적용: 요일 헤더는 커지지 않게 함 */
+    #aptScheduleCalendarPage .apt-calendar tbody tr {
+      height: 142px;
+    }
+
+    /* td padding을 없애야 막대가 칸 선에 정확히 맞음 */
+    #aptScheduleCalendarPage .apt-calendar td {
+      position: relative;
+      overflow: visible;
+      padding: 0;
+    }
+
+    /* 날짜 숫자에만 여백 적용 */
+    #aptScheduleCalendarPage .day-num {
+      padding: 8px 7px 0;
+    }
+
+    /* 일정 막대 */
+    #aptScheduleCalendarPage .week-event-bar {
+      position: absolute;
+      left: 0;
+      height: 19px;
+      line-height: 19px;
+      border: none;
+      border-radius: 4px;
+      padding: 0 8px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #334155;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    /* 파스텔톤 색상 */
+    #aptScheduleCalendarPage .week-event-bar.NOTICE {
+      background: #bfdbfe;
+      color: #1d4ed8;
+    }
+
+    #aptScheduleCalendarPage .week-event-bar.EVENT {
+      background: #bbf7d0;
+      color: #15803d;
+    }
+
+    #aptScheduleCalendarPage .week-event-bar.VACATION {
+      background: #e9d5ff;
+      color: #7e22ce;
+    }
+
+    #aptScheduleCalendarPage .week-event-bar.CONSTRUCTION {
+      background: #fed7aa;
+      color: #c2410c;
+    }
+
+    #aptScheduleCalendarPage .week-event-bar.METER {
+      background: #bae6fd;
+      color: #0369a1;
+    }
+
+    #aptScheduleCalendarPage .week-event-bar.CHECK {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    /* 접힌 일정 개수 표시 */
+    #aptScheduleCalendarPage .calendar-more-btn {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 18px;
+      line-height: 18px;
+      border: none;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      z-index: 10;
+    }
+    /* 기본은 4줄까지만 표시 */
+    #aptScheduleCalendarPage .week-event-bar.hidden-event {
+      display: none;
+    }
+    /*
+     * 전체+ 클릭 시 해당 날짜 칸만 펼침
+     */
+    #aptScheduleCalendarPage .apt-calendar td.expanded {
+      height: 240px;
+    }
+
+    #aptScheduleCalendarPage .apt-calendar td.expanded .week-event-bar.hidden-event {
+      display: block;
     }
   </style>
 
@@ -263,8 +407,14 @@
               </div>
             </div>
             <div class="modal-foot">
-              <button type="button" class="btn btn-secondary" id="cancelVacationBtn">취소</button>
-              <button type="button" class="btn btn-primary" id="saveVacationBtn">등록</button>
+              <!-- 휴가 등록 취소 버튼 -->
+              <button type="button" class="btn btn-secondary" id="cancelVacationBtn">
+                취소
+              </button>
+              <!-- 휴가 등록 저장 버튼 -->
+              <button type="button" class="btn btn-primary" id="saveVacationBtn">
+                등록
+              </button>
             </div>
           </div>
         </div>
@@ -276,33 +426,59 @@
             </div>
 
             <div class="modal-body">
-              <div class="detail-row">
-                <span class="detail-label">유형</span>
-                <span id="detailType">-</span>
+              <input type="hidden" id="detailScheduleNo">
+              <input type="hidden" id="detailScheduleTy">
+
+              <div class="form-row">
+                <label>유형</label>
+                <input type="text" id="detailType" class="form-control readonly-view" readonly>
               </div>
 
-              <div class="detail-row">
-                <span class="detail-label">기간</span>
-                <span id="detailPeriod">-</span>
+              <div class="form-row">
+                <label>직원</label>
+                <select id="detailUserNo" class="form-control">
+                  <option value="">직원 선택</option>
+                  <c:forEach var="emp" items="${managerEmployeeList}">
+                    <option value="${emp.userNo}">${emp.userNm}</option>
+                  </c:forEach>
+                </select>
               </div>
 
-              <div class="detail-row">
-                <span class="detail-label">위치</span>
-                <span id="detailLoc">-</span>
+              <div class="form-row">
+                <label>휴가 제목</label>
+                <input type="text" id="detailScheduleTtl" class="form-control">
               </div>
 
-              <div class="detail-row">
-                <span class="detail-label">등록자/직원</span>
-                <span id="detailPerson">-</span>
+              <div class="form-row">
+                <label>시작일</label>
+                <input type="date" id="detailStartDt" class="form-control">
               </div>
 
-              <div class="detail-row">
-                <span class="detail-label">내용</span>
-                <span id="detailCn">-</span>
+              <div class="form-row">
+                <label>종료일</label>
+                <input type="date" id="detailEndDt" class="form-control">
+              </div>
+
+              <div class="form-row">
+                <label>위치</label>
+                <input type="text" id="detailLoc" class="form-control readonly-view" readonly>
+              </div>
+
+              <div class="form-row">
+                <label>내용</label>
+                <textarea id="detailCn" class="form-control readonly-view" rows="3" readonly></textarea>
               </div>
             </div>
 
             <div class="modal-foot">
+              <button type="button" class="btn btn-primary" id="editScheduleBtn" style="display:none;">
+                수정
+              </button>
+
+              <button type="button" class="btn btn-danger" id="deleteScheduleBtn" style="display:none;">
+                삭제
+              </button>
+
               <button type="button" class="btn btn-secondary" id="closeDetailFootBtn">
                 닫기
               </button>
@@ -316,6 +492,9 @@
 </div>
 
 <script>
+
+  let selectedSchedule = null;
+
 (function () {
   const contextPath = '${pageContext.request.contextPath}';
   const mgmtOfcNo = '${mgmtOfcNo}';
@@ -419,75 +598,42 @@
     const todayStr = formatDate(new Date());
 
     let html = '';
+
     for (let week = 0; week < 6; week++) {
+      const weekStart = new Date(startDate);
+      weekStart.setDate(startDate.getDate() + week * 7);
+
+      /*
+       * 주 단위로 일정 막대 위치 계산
+       * 왜 사용?
+       * 같은 주 안에서 일정끼리 겹치지 않게 줄 번호를 계산하기 위해.
+       */
+      const maxVisibleLane = 4;
+      const weekSegments = createWeekSegments(weekStart);
+
       html += '<tr>';
+
       for (let day = 0; day < 7; day++) {
-        const cellDate = new Date(startDate);
-        cellDate.setDate(startDate.getDate() + (week * 7) + day);
+        const cellDate = new Date(weekStart);
+        cellDate.setDate(weekStart.getDate() + day);
+
         const dateStr = formatDate(cellDate);
         const isOther = cellDate.getMonth() !== month;
         const dayClass = day === 0 ? 'sun' : (day === 6 ? 'sat' : '');
         const todayClass = dateStr === todayStr ? 'today' : '';
-        const items = getSchedulesByDate(dateStr);
 
         html += '<td class="' + dayClass + ' ' + todayClass + (isOther ? ' other-month' : '') + '">';
         html += '<div class="day-num">' + cellDate.getDate() + '</div>';
-
-        items.slice(0, 5).forEach(function (item) {
-          html += '<button type="button"'
-                  + ' class="schedule-chip ' + escapeHtml(item.scheduleTy) + '"'
-                  + ' title="' + escapeHtml(item.scheduleTtl) + '"'
-                  + ' data-schedule-no="' + escapeHtml(item.scheduleNo) + '">';
-          html += escapeHtml(item.scheduleTtl);
-          html += '</button>';
-        });
-
-        if (items.length > 5) {
-          html += '<div class="more-count" data-date="' + dateStr + '">전체 +' + (items.length - 5) + '</div>';
-        }
+        html += renderWeekBarsByDate(dateStr, day, weekSegments);
         html += '</td>';
       }
+
       html += '</tr>';
     }
+
     calendarBody.innerHTML = html;
 
-    document.querySelectorAll('.more-count').forEach(function (moreBtn) {
-      moreBtn.addEventListener('click', function () {
-        const dateStr = moreBtn.dataset.date;
-        const td = moreBtn.closest('td');
-        const items = getSchedulesByDate(dateStr);
-
-        let extraHtml = '';
-
-        items.slice(5).forEach(function (item) {
-          extraHtml += '<button type="button"'
-                  + ' class="schedule-chip ' + escapeHtml(item.scheduleTy) + '"'
-                  + ' title="' + escapeHtml(item.scheduleTtl) + '"'
-                  + ' data-schedule-no="' + escapeHtml(item.scheduleNo) + '">';
-          extraHtml += escapeHtml(item.scheduleTtl);
-          extraHtml += '</button>';
-        });
-
-        moreBtn.insertAdjacentHTML('beforebegin', extraHtml);
-        moreBtn.remove();
-
-        document.querySelectorAll('.schedule-chip').forEach(function (btn) {
-          btn.onclick = function () {
-            const scheduleNo = btn.dataset.scheduleNo;
-
-            const selected = scheduleList.find(function (item) {
-              return String(item.scheduleNo) === String(scheduleNo);
-            });
-
-            if (selected) {
-              openDetailModal(selected);
-            }
-          };
-        });
-      });
-    });
-
-    document.querySelectorAll('.schedule-chip').forEach(function (btn) {
+    document.querySelectorAll('.week-event-bar').forEach(function (btn) {
       btn.addEventListener('click', function () {
         const scheduleNo = btn.dataset.scheduleNo;
 
@@ -500,6 +646,161 @@
         }
       });
     });
+
+    document.querySelectorAll('.calendar-more-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        /*
+         * tr이 아니라 td를 펼쳐야 함
+         * 왜?
+         * 주 전체를 펼치면 다른 날짜에서 시작한 숨김 일정까지 같이 보이기 때문.
+         */
+        const td = btn.closest('td');
+
+        td.classList.toggle('expanded');
+
+        if (td.classList.contains('expanded')) {
+          btn.textContent = '접기';
+        } else {
+          btn.textContent = '전체 +' + btn.dataset.hiddenCount;
+        }
+      });
+    });
+  }
+
+  function renderWeekBarsByDate(dateStr, dayOfWeek, weekSegments) {
+    const maxVisibleLane = 4;
+
+    const startSegments = weekSegments.filter(function (seg) {
+      return seg.startStr === dateStr;
+    });
+
+    /*
+     * 해당 날짜에서 시작하는 숨김 일정만 계산
+     * 왜?
+     * 다른 날짜에서 시작한 일정까지 전체+에 포함되면
+     * 펼쳤을 때 엉뚱한 위치에 일정이 나타난다.
+     */
+    const hiddenStartCount = startSegments.filter(function (seg) {
+      return seg.lane >= maxVisibleLane;
+    }).length;
+
+    let html = '';
+
+    startSegments.forEach(function (seg) {
+      const spanDays = seg.endDay - seg.startDay + 1;
+      const hiddenClass = seg.lane >= maxVisibleLane ? ' hidden-event' : '';
+
+      html += '<button type="button"'
+              + ' class="week-event-bar ' + escapeHtml(seg.item.scheduleTy) + hiddenClass + '"'
+              + ' style="top:' + (32 + seg.lane * 23) + 'px; width:calc(' + (spanDays * 100) + '% + ' + (spanDays - 1) + 'px);"'
+              + ' title="' + escapeHtml(seg.item.scheduleTtl) + '"'
+              + ' data-schedule-no="' + escapeHtml(seg.item.scheduleNo) + '">';
+      html += escapeHtml(seg.item.scheduleTtl);
+      html += '</button>';
+    });
+
+    /*
+     * 숨겨진 일정이 있을 때만 전체+ 표시
+     */
+    if (hiddenStartCount > 0) {
+      /*
+       * 전체+ 버튼은 숨겨진 일정 아래쪽에 배치
+       * 왜?
+       * 버튼과 숨김 일정이 같은 위치에 겹치면 펼쳐도 일정이 안 보이기 때문.
+       */
+      html += '<button type="button"'
+              + ' class="calendar-more-btn"'
+              + ' style="top:' + (32 + maxVisibleLane * 23) + 'px;"'
+              + ' data-hidden-count="' + hiddenStartCount + '">';
+      html += '전체 +' + hiddenStartCount;
+      html += '</button>';
+    }
+
+    return html;
+  }
+
+  function getBarSpanDays(item, dateStr, dayOfWeek) {
+    const start = parseLocalDate(dateStr);
+    const end = parseLocalDate(item.endDt);
+
+    const remainWeekDays = 7 - dayOfWeek;
+    const diffDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+    return Math.min(diffDays, remainWeekDays);
+  }
+
+  /*
+   * yyyy-MM-dd 문자열을 로컬 날짜로 변환
+   */
+  function parseLocalDate(dateStr) {
+    const parts = dateStr.split('-');
+    return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+  }
+
+  /*
+   * 일정별 고정 줄 번호 생성
+   *
+   * lane이란?
+   * 캘린더에서 일정 막대가 놓일 세로 줄 번호.
+   * 왜 사용?
+   * 같은 일정이 여러 주에 걸쳐도 같은 줄에 표시하기 위해.
+   */
+  function createWeekSegments(weekStart) {
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    const weekStartStr = formatDate(weekStart);
+    const weekEndStr = formatDate(weekEnd);
+
+    const segments = scheduleList
+            .filter(function (item) {
+              return item.startDt <= weekEndStr && item.endDt >= weekStartStr;
+            })
+            .map(function (item) {
+              const itemStart = parseLocalDate(item.startDt);
+              const itemEnd = parseLocalDate(item.endDt);
+
+              const segStart = itemStart < weekStart ? new Date(weekStart) : itemStart;
+              const segEnd = itemEnd > weekEnd ? new Date(weekEnd) : itemEnd;
+
+              return {
+                item: item,
+                startStr: formatDate(segStart),
+                endStr: formatDate(segEnd),
+                startDay: segStart.getDay(),
+                endDay: segEnd.getDay(),
+                lane: 0
+              };
+            })
+            .sort(function (a, b) {
+              if (a.startDay === b.startDay) {
+                return b.endDay - a.endDay;
+              }
+              return a.startDay - b.startDay;
+            });
+
+    /*
+     * lane이란?
+     * 일정 막대의 세로 줄 번호.
+     * 같은 날짜 범위에 겹치는 일정은 다른 lane에 배치한다.
+     */
+    const laneEndDays = [];
+
+    segments.forEach(function (seg) {
+      let lane = 0;
+
+      while (
+              laneEndDays[lane] !== undefined
+              && laneEndDays[lane] >= seg.startDay
+              ) {
+        lane++;
+      }
+
+      seg.lane = lane;
+      laneEndDays[lane] = seg.endDay;
+    });
+
+    return segments;
   }
 
   function getSchedulesByDate(dateStr) {
@@ -584,26 +885,193 @@
     document.getElementById('vacStartDt').value = '';
     document.getElementById('vacEndDt').value = '';
   }
-
   /*
- * 일정 상세 모달 열기
- */
+   * 일정 상세 모달 열기
+   *
+   * 직원 휴가(VACATION)는 이 화면에서 직접 등록한 데이터라 수정/삭제 가능.
+   * 공지, 공사, 검침, 점검은 각각 다른 테이블에서 가져온 데이터라 여기서는 읽기 전용으로 처리.
+   */
   function openDetailModal(item) {
-    const period = item.startDt === item.endDt
-            ? item.startDt
-            : item.startDt + ' ~ ' + item.endDt;
+    selectedSchedule = item;
 
-    const person = item.userNm || item.rgtrId || '-';
+    /*
+     * 일정유형 비교
+     * trim()이란? 앞뒤 공백 제거.
+     * 왜 사용? DB 값에 공백이 섞이면 'VACATION' 비교가 실패할 수 있기 때문.
+     */
+    const scheduleTy = String(item.scheduleTy || '').trim();
+    const editable = scheduleTy === 'VACATION';
+
+    /*
+     * 직원휴가가 아닐 경우
+     * 입력창 스타일 제거
+     */
+    const readonlyFields = [
+      'detailUserNo',
+      'detailScheduleTtl',
+      'detailStartDt',
+      'detailEndDt'
+    ];
 
     document.getElementById('detailTitle').textContent = item.scheduleTtl || '일정 상세';
-    document.getElementById('detailType').textContent = item.scheduleTyNm || '-';
-    document.getElementById('detailPeriod').textContent = period || '-';
-    document.getElementById('detailLoc').textContent = item.locCn || '-';
-    document.getElementById('detailPerson').textContent = person;
-    document.getElementById('detailCn').textContent = item.scheduleCn || '-';
+
+    document.getElementById('detailScheduleNo').value = item.scheduleNo || '';
+    document.getElementById('detailScheduleTy').value = item.scheduleTy || '';
+
+    document.getElementById('detailType').value = item.scheduleTyNm || '-';
+    document.getElementById('detailUserNo').value = item.userNo || '';
+    document.getElementById('detailScheduleTtl').value = item.scheduleTtl || '';
+    document.getElementById('detailStartDt').value = item.startDt || '';
+    document.getElementById('detailEndDt').value = item.endDt || '';
+    document.getElementById('detailLoc').value = item.locCn || '-';
+    document.getElementById('detailCn').value = item.scheduleCn || '-';
+
+    /*
+     * 직원휴가면 수정 가능
+     * 그 외 일정은 조회 전용 스타일 적용
+     */
+    if (editable) {
+
+      /*
+       * 수정 가능 상태
+       */
+      document.getElementById('detailUserNo').disabled = false;
+      document.getElementById('detailScheduleTtl').readOnly = false;
+      document.getElementById('detailStartDt').disabled = false;
+      document.getElementById('detailEndDt').disabled = false;
+
+      /*
+       * 읽기전용 스타일 제거
+       */
+      readonlyFields.forEach(function(id) {
+        document.getElementById(id).classList.remove('readonly-view');
+      });
+
+    } else {
+
+      /*
+       * 조회 전용 상태
+       */
+      document.getElementById('detailUserNo').disabled = true;
+      document.getElementById('detailScheduleTtl').readOnly = true;
+      document.getElementById('detailStartDt').disabled = true;
+      document.getElementById('detailEndDt').disabled = true;
+
+      /*
+       * 입력창 스타일 제거
+       */
+      readonlyFields.forEach(function(id) {
+        document.getElementById(id).classList.add('readonly-view');
+      });
+    }
+
+    document.getElementById('editScheduleBtn').style.display = editable ? 'inline-flex' : 'none';
+    document.getElementById('deleteScheduleBtn').style.display = editable ? 'inline-flex' : 'none';
 
     document.getElementById('detailModal').classList.add('active');
   }
+
+  /*
+   * 직원 휴가 일정 수정
+   */
+  document.getElementById('editScheduleBtn').addEventListener('click', function () {
+    if (!selectedSchedule) {
+      return;
+    }
+
+    if (String(selectedSchedule.scheduleTy || '').trim() !== 'VACATION') {
+      alert('직원 휴가 일정만 수정할 수 있습니다.');
+      return;
+    }
+
+    const userNo = document.getElementById('detailUserNo').value;
+    const title = document.getElementById('detailScheduleTtl').value.trim();
+    const startDt = document.getElementById('detailStartDt').value;
+    const endDt = document.getElementById('detailEndDt').value;
+
+    if (!userNo) {
+      alert('직원을 선택해 주세요.');
+      return;
+    }
+
+    if (!title) {
+      alert('휴가 제목을 입력해 주세요.');
+      return;
+    }
+
+    if (!startDt || !endDt) {
+      alert('휴가 기간을 선택해 주세요.');
+      return;
+    }
+
+    if (startDt > endDt) {
+      alert('종료일은 시작일보다 빠를 수 없습니다.');
+      return;
+    }
+
+    fetch(contextPath + '/manager/aptScheduleCalendar/' + mgmtOfcNo + '/vacation/' + selectedSchedule.scheduleNo, {
+      method: 'PUT',
+      headers: Object.assign(
+              { 'Content-Type': 'application/json' },
+              csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {}
+      ),
+      body: JSON.stringify({
+        userNo: userNo,
+        scheduleTtl: title,
+        startDt: startDt,
+        endDt: endDt,
+        colorCd: selectedSchedule.colorCd || 'PURPLE'
+      })
+    })
+            .then(function (res) {
+              return res.json();
+            })
+            .then(function (data) {
+              alert(data.message || '처리되었습니다.');
+
+              if (data.success) {
+                closeDetailModal();
+                loadSchedule(currentListPage);
+              }
+            })
+            .catch(function () {
+              alert('수정 중 오류가 발생했습니다.');
+            });
+  });
+
+  document.getElementById('deleteScheduleBtn').addEventListener('click', function () {
+    if (!selectedSchedule) {
+      return;
+    }
+
+    if (selectedSchedule.scheduleTy !== 'VACATION') {
+      alert('직원 휴가 일정만 삭제할 수 있습니다.');
+      return;
+    }
+
+    if (!confirm('휴가 일정을 삭제하시겠습니까?')) {
+      return;
+    }
+
+    fetch(contextPath + '/manager/aptScheduleCalendar/' + mgmtOfcNo + '/vacation/' + selectedSchedule.scheduleNo, {
+      method: 'DELETE',
+      headers: csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {}
+    })
+            .then(function (res) {
+              return res.json();
+            })
+            .then(function (data) {
+              alert(data.message || '처리되었습니다.');
+
+              if (data.success) {
+                closeDetailModal();
+                loadSchedule();
+              }
+            })
+            .catch(function () {
+              alert('삭제 중 오류가 발생했습니다.');
+            });
+  });
 
   /*
    * 일정 상세 모달 닫기

@@ -287,6 +287,35 @@ public class ManagerMainController {
         return ResponseEntity.ok(result);
     }
 
+    // 관리사무소 - 단지 일정 캘린더 - 직원 휴가 수정 Ajax API
+    @ResponseBody
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @PutMapping("/aptScheduleCalendar/{mgmtOfcNo}/vacation/{scheduleNo}")
+    public ResponseEntity<Map<String, Object>> updateVacationSchedule(
+            @PathVariable String mgmtOfcNo,
+            @PathVariable String scheduleNo,
+            @RequestBody AptScheduleCalendarDTO aptScheduleCalendarDTO
+    ) {
+        /*
+         * @PutMapping이란?
+         * 기존 데이터를 수정할 때 주로 사용하는 요청 방식입니다.
+         *
+         * 왜 사용?
+         * 휴가 일정은 이미 등록된 데이터이므로 POST가 아니라 PUT으로 수정 요청을 보냅니다.
+         */
+        aptScheduleCalendarDTO.setMgmtOfcNo(mgmtOfcNo);
+        aptScheduleCalendarDTO.setScheduleNo(scheduleNo);
+
+        Map<String, Object> result = new HashMap<>();
+
+        int cnt = aptScheduleCalendarService.updateVacationSchedule(aptScheduleCalendarDTO);
+
+        result.put("success", cnt > 0);
+        result.put("message", cnt > 0 ? "휴가 일정이 수정되었습니다." : "수정할 휴가 일정이 없습니다.");
+
+        return ResponseEntity.ok(result);
+    }
+
     // 관리사무소 - 단지 일정 캘린더 - 직원 휴가 삭제 Ajax API
     @ResponseBody
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")

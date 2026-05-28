@@ -37,6 +37,11 @@ public interface IAptScheduleCalendarMapper {
             AptScheduleCalendarDTO aptScheduleCalendarDTO
     );
 
+    /** 직원 휴가 수정 */
+    int updateVacationSchedule(
+            AptScheduleCalendarDTO aptScheduleCalendarDTO
+    );
+
     /** 직원 휴가 삭제 */
     int deleteVacationSchedule(
             AptScheduleCalendarDTO aptScheduleCalendarDTO

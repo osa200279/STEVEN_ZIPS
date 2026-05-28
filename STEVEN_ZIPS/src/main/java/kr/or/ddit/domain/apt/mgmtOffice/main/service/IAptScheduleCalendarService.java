@@ -27,6 +27,9 @@ public interface IAptScheduleCalendarService {
     /** 직원 휴가 삭제 */
     int deleteVacationSchedule(AptScheduleCalendarDTO aptScheduleCalendarDTO);
 
+    /** 직원 휴가 수정 */
+    int updateVacationSchedule(AptScheduleCalendarDTO aptScheduleCalendarDTO);
+
     /*
      * 단지 일정 목록 페이징 조회
      *
