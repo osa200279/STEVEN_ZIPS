@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -26,6 +25,16 @@
             --primary: #2b6be3;
             --primary-dark: #1f56be;
             --danger: #dc2626;
+            position: relative;
+            z-index: 1;
+            pointer-events: auto;
+        }
+
+        #broadcastPage button,
+        #broadcastPage input,
+        #broadcastPage select,
+        #broadcastPage textarea {
+            pointer-events: auto;
         }
 
         #broadcastPage .tts-wrap {
@@ -39,18 +48,6 @@
             gap: 10px;
             padding-bottom: 14px;
             border-bottom: 1px solid var(--line);
-        }
-
-        #broadcastPage .page-title .icon-wrap {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: #eef3fd;
-            color: var(--primary);
-            flex-shrink: 0;
         }
 
         #broadcastPage .page-title h2 {
@@ -282,11 +279,9 @@
                                     <textarea class="textarea" id="ttsText" placeholder="변환할 텍스트를 입력하세요."></textarea>
                                     <div class="hint">안내 문구를 그대로 붙여넣고 변환 버튼을 누르세요.</div>
                                 </div>
-
                                 <div class="actions">
                                     <button type="button" class="btnx btnx-secondary" id="clearBtn">
-                                        <span class="material-symbols-rounded"
-                                              style="font-size:17px;">restart_alt</span>
+                                        <span class="material-symbols-rounded" style="font-size:17px;">restart_alt</span>
                                         초기화
                                     </button>
                                     <button type="button" class="btnx btnx-primary" id="convertBtn">
@@ -311,7 +306,6 @@
                                         <option value="ja-JP">일본어</option>
                                     </select>
                                 </div>
-
                                 <div class="field">
                                     <label class="label" for="voiceSelect">음성 선택</label>
                                     <select class="select" id="voiceSelect">
@@ -393,72 +387,94 @@
         }
         setHistoryVisible(true);
         tbody.innerHTML = historyRows.map((row, idx) => {
-            const shortText = row.text.length > 40 ? row.text.slice(0, 40) + '…' : row.text;
+            const shortText = row.text.length > 40 ? row.text.slice(0, 40) + '...' : row.text;
             const audioHtml = row.audioUrl
-                ? `<div class="audio-wrap"><audio controls preload="none" src="${escapeHtml(row.audioUrl)}"></audio></div>`
-                : `<span class="help-text">오디오 준비중</span>`;
-            return `
-                <tr data-idx="${idx}">
-                    <td>${idx + 1}</td>
-                    <td title="${escapeHtml(row.text)}">${escapeHtml(shortText)}</td>
-                    <td><span class="badge">${escapeHtml(row.lang)}</span></td>
-                    <td>${escapeHtml(row.voice)}</td>
-                    <td>${escapeHtml(row.createdAt)}</td>
-                    <td>${audioHtml}</td>
-                    <td>
-                        <button type="button" class="icon-btn" data-action="remove">
-                            <span class="material-symbols-rounded" style="font-size:18px;">delete</span>
-                        </button>
-                    </td>
-                </tr>
-            `;
+                ? '<div class="audio-wrap"><audio controls preload="none" src="' + escapeHtml(row.audioUrl) + '"></audio></div>'
+                : '<span>오디오 준비중</span>';
+            return '<tr data-idx="' + idx + '">'
+                + '<td>' + (idx + 1) + '</td>'
+                + '<td title="' + escapeHtml(row.text) + '">' + escapeHtml(shortText) + '</td>'
+                + '<td><span class="badge">' + escapeHtml(row.lang) + '</span></td>'
+                + '<td>' + escapeHtml(row.voice) + '</td>'
+                + '<td>' + escapeHtml(row.createdAt) + '</td>'
+                + '<td>' + audioHtml + '</td>'
+                + '<td><button type="button" class="icon-btn" data-action="remove">'
+                + '<span class="material-symbols-rounded" style="font-size:18px;">delete</span>'
+                + '</button></td>'
+                + '</tr>';
         }).join('');
     }
 
-    const convertTts = async () => {
-        const {text, lang, voice} = getFormValues();
+    const convertTts = async function () {
+        console.log('convertTts 호출됨');
+        var values = getFormValues();
+        var text = values.text;
+        var lang = values.lang;
+        var voice = values.voice;
+
         if (text === '') {
-            alert("변환할 텍스트를 입력해주세요.");
+            alert('변환할 텍스트를 입력해주세요.');
             return false;
         }
         try {
-            const res = await fetch(`http://localhost:8060/tts/synthesize?text=${encodeURIComponent(text)}&languageCode=${encodeURIComponent(lang)}&voiceName=${encodeURIComponent(voice)}`);
-            const blob = await res.blob();
-            const audioUrl = URL.createObjectURL(blob);
+            var url = 'http://localhost:8060/tts/synthesize'
+                + '?text=' + encodeURIComponent(text)
+                + '&languageCode=' + encodeURIComponent(lang)
+                + '&voiceName=' + encodeURIComponent(voice);
+
+            var res = await fetch(url);
+            if (!res.ok) {
+                throw new Error('TTS synthesize failed: ' + res.status);
+            }
+            var blob = await res.blob();
+            var audioUrl = URL.createObjectURL(blob);
 
             historyRows.unshift({
-                text,
-                lang,
-                voice,
+                text: text,
+                lang: lang,
+                voice: voice,
                 createdAt: nowKST(),
                 audioUrl: audioUrl,
             });
             renderHistory();
         } catch (e) {
+            console.error(e);
             alert('TTS 서버 연결 실패. 도커 컨테이너 실행 중인지 확인해주세요.');
         }
-    }
+    };
 
+    document.addEventListener('DOMContentLoaded', function () {
+        var convertBtn = document.getElementById('convertBtn');
+        var clearBtn = document.getElementById('clearBtn');
+        var ttsText = document.getElementById('ttsText');
+        var historyTbody = document.getElementById('historyTbody');
 
-    document.getElementById('convertBtn').addEventListener('click', convertTts)
+        if (convertBtn) {
+            convertBtn.addEventListener('click', convertTts);
+        }
 
+        if (clearBtn && ttsText) {
+            clearBtn.addEventListener('click', function () {
+                ttsText.value = '';
+                ttsText.focus();
+            });
+        }
 
-    document.getElementById('clearBtn').addEventListener('click', function () {
-        document.getElementById('ttsText').value = '';
-    });
+        if (historyTbody) {
+            historyTbody.addEventListener('click', function (e) {
+                var btn = e.target.closest('button[data-action="remove"]');
+                if (!btn) return;
+                var tr = btn.closest('tr[data-idx]');
+                if (!tr) return;
+                var idx = Number(tr.getAttribute('data-idx'));
+                if (!Number.isFinite(idx)) return;
+                historyRows.splice(idx, 1);
+                renderHistory();
+            });
+        }
 
-    document.getElementById('historyTbody').addEventListener('click', function (e) {
-        const btn = e.target.closest('button[data-action="remove"]');
-        if (!btn) return;
-        const tr = btn.closest('tr[data-idx]');
-        if (!tr) return;
-        const idx = Number(tr.getAttribute('data-idx'));
-        if (!Number.isFinite(idx)) return;
-        historyRows.splice(idx, 1);
         renderHistory();
     });
-
-    renderHistory();
 </script>
 </body>
 </html>

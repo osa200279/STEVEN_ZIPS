@@ -485,6 +485,8 @@ public class ManagerMainController {
         return "apt/mgmtOffice/mngr_building_layout_edit";
     }
 
+
+
     // 단지 정보 수정페이지
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping({"/complex/edit/{mgmtOfcNo}"})
