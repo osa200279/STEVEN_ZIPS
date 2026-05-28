@@ -8,9 +8,6 @@ import java.util.Map;
 
 public interface IContractUserService {
 
-    //void insertContractDoc(MultipartFile file, String sbmsnDocTyCd, String aplctNo, String userNo) throws IOException;
-    //List<ContractUserVO> selectContractDoc(String userNo);
-
     void insertContractDoc(List<MultipartFile> files, List<String> cat, String aplctNo, String userNo) throws IOException;
 
     void updateInqCnt(String annNo);
