@@ -30,7 +30,7 @@ const AptList = ({
   }
 
   return (
-    <div className="apt-list">
+    <div className="apt-list-wrap">
 
       {aptList.map((apt) => {
 
@@ -41,10 +41,10 @@ const AptList = ({
 
           <div
             key={apt.kaptCode}
-            className={`
-              apt-list-item
-              ${selected ? 'selected' : ''}
-            `}
+            className={
+              `apt-list-item ${selected ? 'selected' : ''
+              }`
+            }
             onClick={() => onSelect(apt)}
           >
 

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import '../../styles/sales/AptSearchFilter.css';
+
 import { Button } from '../common/Button';
 
 import {
@@ -11,7 +13,8 @@ import {
 const AptSearchFilter = ({
   searchForm,
   setSearchForm,
-  onSearch,
+  onLoadApartments,
+  onFilter,
   loading,
 }) => {
 
@@ -27,6 +30,7 @@ const AptSearchFilter = ({
   }, []);
 
   const loadSidoList = async () => {
+
     try {
 
       const res = await getSidoList();
@@ -111,15 +115,29 @@ const AptSearchFilter = ({
   };
 
   // =========================
-  // 검색
+  // 아파트 조회
   // =========================
-  const handleSearch = () => {
+  useEffect(() => {
 
-    onSearch({
-      ...searchForm,
-      keyword: searchForm.keyword.trim(),
+    if (
+      !searchForm.sidoCd ||
+      !searchForm.sigunguCd ||
+      !searchForm.emdCd
+    ) {
+      return;
+    }
+
+    onLoadApartments({
+      sidoCd: searchForm.sidoCd,
+      sigunguCd: searchForm.sigunguCd,
+      emdCd: searchForm.emdCd,
     });
-  };
+
+  }, [
+    searchForm.sidoCd,
+    searchForm.sigunguCd,
+    searchForm.emdCd,
+  ]);
 
   // =========================
   // 공통 변경
@@ -132,10 +150,19 @@ const AptSearchFilter = ({
     }));
   };
 
+  // =========================
+  // 검색
+  // =========================
+  const handleSearch = () => {
+
+    onFilter(searchForm.keyword);
+  };
+
   return (
+
     <div className="apt-search-filter">
 
-      <div className="region-grid">
+      <div className="apt-search-row">
 
         {/* 시도 */}
         <select
@@ -216,19 +243,10 @@ const AptSearchFilter = ({
           ))}
         </select>
 
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          gap: '12px',
-          marginTop: '16px',
-        }}
-      >
-
+        {/* 검색어 */}
         <input
           type="text"
-          className="c-input"
+          className="c-input apt-search-input"
           placeholder="아파트명 검색"
           value={searchForm.keyword}
           onChange={(e) =>
@@ -239,14 +257,14 @@ const AptSearchFilter = ({
               handleSearch();
             }
           }}
-          style={{ flex: 1 }}
         />
 
+        {/* 검색 */}
         <Button
           onClick={handleSearch}
           disabled={loading}
         >
-          {loading ? '검색중...' : '검색'}
+          검색
         </Button>
 
       </div>
