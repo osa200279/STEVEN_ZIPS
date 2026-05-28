@@ -211,7 +211,7 @@
     </select>
 
     <update id="updateCtrt" parameterType="map">
-        UPDATE RENT_CTRT
+        update RENT_CTRT
         <set>
             <if test="detail.CTRT_STTS_CD != null and detail.CTRT_STTS_CD != ''">
                 CTRT_STTS_CD = #{detail.CTRT_STTS_CD},
@@ -227,7 +227,6 @@
             <if test="detail.MTHLY_RENT_AMT != null and detail.MTHLY_RENT_AMT != ''">MTHLY_RENT_AMT =
                 #{detail.MTHLY_RENT_AMT},
             </if>
-
             <if test="detail.MVIN_DT != null and detail.MVIN_DT != ''">
                 MVIN_DT = TO_DATE(SUBSTR(#{detail.MVIN_DT}, 1, 10), 'YYYY-MM-DD'),
             </if>
@@ -237,12 +236,17 @@
             <if test="detail.MVOUT_CMPL_DT != null and detail.MVOUT_CMPL_DT != ''">
                 MVOUT_CMPL_DT = TO_DATE(SUBSTR(#{detail.MVOUT_CMPL_DT}, 1, 10), 'YYYY-MM-DD'),
             </if>
-
             <if test="detail.SPCL_STPLTN_CN != null and detail.SPCL_STPLTN_CN != ''">SPCL_STPLTN_CN =
-                #{detail.SPCL_STPLTN_CN},
+                #{detail.SPCL_STPLTN_CN,jdbcType=CLOB},
+            </if>
+            <if test="detail.AGNT_NM != null and detail.AGNT_NM != ''">AGNT_NM =
+                #{detail.AGNT_NM},
+            </if>
+            <if test="detail.AGNT_TELNO != null and detail.AGNT_TELNO != ''">AGNT_TELNO =
+                #{detail.AGNT_TELNO},
             </if>
         </set>
-        WHERE RENT_CTRT_NO = #{rentCtrtNo}
+        where RENT_CTRT_NO = #{rentCtrtNo}
     </update>
 
     <select id="selectContractsCount" parameterType="map" resultType="int">
