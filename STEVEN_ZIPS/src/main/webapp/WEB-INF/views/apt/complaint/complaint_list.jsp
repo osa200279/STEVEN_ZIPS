@@ -270,6 +270,14 @@
                 <div id="modalStatus" class="td" style="grid-column: span 3;"></div>
             </div>
 
+            <%-- 처리 메모 / 반려 사유 (본인 민원 + 내용 있을 때만 표시) --%>
+            <div id="modalAnsWrap" style="display:none; margin-top: 16px;">
+                <div id="modalAnsBox" style="background:#fff8e1; border:1px solid #ffe082; border-radius:10px; padding:14px 18px;">
+                    <p style="margin:0 0 6px; font-size:12px; font-weight:700; color:#b8860b;" id="modalAnsLabel">처리 메모</p>
+                    <p id="modalAns" style="margin:0; font-size:13px; color:#5a4a00; line-height:1.8; white-space:pre-wrap;"></p>
+                </div>
+            </div>
+
             <div class="section-hd" style="margin-top: 24px; border-bottom: none;">
                 <h3>민원 설명</h3>
             </div>
@@ -317,6 +325,24 @@
             document.querySelector('#modalLoc').innerText    = cvpl.cvplLoc || '장소 미지정';
             document.querySelector('#modalCn').innerText     = cvpl.cvplCn  || '';
             document.querySelector('#modalStatus').innerText = getStatusText(cvpl.cvplSttsCd);
+
+            // 처리 메모 / 반려 사유 (본인 민원일 때 API가 cvplAns 반환)
+            const ansWrap = document.querySelector('#modalAnsWrap');
+            const ansBox = document.querySelector('#modalAnsBox');
+            const ansLabel = document.querySelector('#modalAnsLabel');
+            const ansEl = document.querySelector('#modalAns');
+            if (data.cvplAns) {
+                const isReject = cvpl.cvplSttsCd === 'RJCT' || cvpl.cvplSttsCd === 'REJS';
+                ansLabel.textContent = isReject ? '반려 / 처리불가 사유' : '처리 메모';
+                ansLabel.style.color = isReject ? '#a23a3a' : '#b8860b';
+                ansBox.style.background = isReject ? '#fbe8e8' : '#fff8e1';
+                ansBox.style.borderColor = isReject ? '#f5aaaa' : '#ffe082';
+                ansEl.style.color = isReject ? '#7a2020' : '#5a4a00';
+                ansEl.textContent = data.cvplAns;
+                ansWrap.style.display = 'block';
+            } else {
+                ansWrap.style.display = 'none';
+            }
 
             const fileBox = document.querySelector('#modalFiles');
             if (files && files.length > 0) {

@@ -227,9 +227,13 @@ public class CvplController {
 
         resp.put("detail", detail);
 
-        String cvplAns = cvplMapper.selectLatestCvplAns(cvplNo);
-        if (cvplAns != null && !cvplAns.isBlank()) {
-            resp.put("cvplAns", cvplAns);
+        // 본인 민원일 때만 처리 메모/반려 사유 노출
+        String myUserNo = customUser.getMember().getUserNo();
+        if (myUserNo != null && myUserNo.equals(detail.getUserNo())) {
+            String cvplAns = cvplMapper.selectLatestCvplAns(cvplNo);
+            if (cvplAns != null && !cvplAns.isBlank()) {
+                resp.put("cvplAns", cvplAns);
+            }
         }
 
         return ResponseEntity.ok(resp);

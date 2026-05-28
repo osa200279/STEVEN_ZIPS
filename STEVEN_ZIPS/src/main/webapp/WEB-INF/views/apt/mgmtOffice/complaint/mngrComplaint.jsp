@@ -258,13 +258,13 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="btnCloseDetail2">닫기</button>
-                        <button type="button" class="btn btn-danger"    id="btnRejectDetail">
-                            <span class="material-symbols-rounded">cancel</span>반려
-                        </button>
                         <button type="button" class="btn btn-primary"   id="btnApproveDetail">
                             <span class="material-symbols-rounded">check_circle</span>승인
                         </button>
+                        <button type="button" class="btn btn-danger"    id="btnRejectDetail">
+                            <span class="material-symbols-rounded">cancel</span>반려
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="btnCloseDetail2">닫기</button>
                     </div>
                 </div>
             </div>
