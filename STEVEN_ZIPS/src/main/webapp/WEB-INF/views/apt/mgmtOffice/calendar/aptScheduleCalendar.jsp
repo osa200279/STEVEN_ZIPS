@@ -276,6 +276,64 @@
     #aptScheduleCalendarPage .apt-calendar td.expanded .week-event-bar.hidden-event {
       display: block;
     }
+
+    /* 전체 일정 목록 페이징 */
+    #aptScheduleCalendarPage .schedule-paging-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 18px;
+    }
+
+    #aptScheduleCalendarPage .schedule-paging-area ul,
+    #aptScheduleCalendarPage .schedule-paging-area li {
+      list-style: none !important;
+      padding: 0;
+      margin: 0;
+    }
+
+    #aptScheduleCalendarPage .schedule-paging-area li::marker {
+      display: none;
+      content: '';
+    }
+
+    #aptScheduleCalendarPage .schedule-paging-area ul {
+      display: flex;
+      gap: 6px;
+    }
+
+    #aptScheduleCalendarPage .schedule-paging-area a,
+    #aptScheduleCalendarPage .schedule-paging-area .page-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      height: 34px;
+      padding: 0 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    #aptScheduleCalendarPage .schedule-paging-area .active a,
+    #aptScheduleCalendarPage .schedule-paging-area a.active,
+    #aptScheduleCalendarPage .schedule-paging-area .page-link.active {
+      background: #166534;
+      border-color: #166534;
+      color: #fff;
+    }
+    /* 페이징 점(•) 제거 */
+    #aptScheduleCalendarPage .schedule-paging-area ul {
+      list-style: none !important;
+    }
+    #aptScheduleCalendarPage .schedule-paging-area li {
+      list-style: none !important;
+    }
   </style>
 
   <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
@@ -370,10 +428,29 @@
           <div class="panel">
             <div class="panel-header"><div class="panel-title"><span class="material-symbols-rounded">list_alt</span>전체 일정 목록</div></div>
             <table class="tbl schedule-list-table">
-              <thead><tr><th style="width:70px;">유형</th><th>일정명</th><th style="width:180px;">기간</th><th style="width:140px;">위치</th><th style="width:180px;">등록자/직원</th></tr></thead>
-              <tbody id="scheduleListBody"><tr><td colspan="5">조회된 일정이 없습니다.</td></tr></tbody>
-              <div id="schedulePagingArea" class="mt-3"></div>
+              <thead>
+              <tr>
+                <th style="width:70px;">유형</th>
+                <th>일정명</th>
+                <th style="width:180px;">기간</th>
+                <th style="width:140px;">위치</th>
+                <th style="width:180px;">등록자/직원</th>
+              </tr>
+              </thead>
+
+              <tbody id="scheduleListBody">
+              <tr>
+                <td colspan="5">조회된 일정이 없습니다.</td>
+              </tr>
+              </tbody>
             </table>
+            <!--
+              페이징 영역
+              왜 table 밖에 둠?
+              table 안에는 tr, thead, tbody, td 같은 표 태그만 들어가야 한다.
+              div를 table 안에 넣으면 브라우저가 구조를 깨뜨려서 페이징이 이상하게 표시된다.
+            -->
+            <div id="schedulePagingArea" class="schedule-paging-area"></div>
           </div>
         </div>
 
