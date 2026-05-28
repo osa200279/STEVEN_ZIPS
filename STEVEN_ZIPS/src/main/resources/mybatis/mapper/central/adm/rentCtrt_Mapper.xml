@@ -115,16 +115,15 @@
         where M.USER_NO = #{userNo}
     </select>
 
-
     <select id="selectCtrtDashboard" resultType="java.util.Map">
         select /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectCtrtCount */
-            count(*)                                                                   as "totalCnt"
-             , count(case when CTRT_STTS_CD = 'PENDING' then 1 end)                    as "pendingCnt"
-             , count(case when CTRT_STTS_CD = 'EXPIRED' then 1 end)                    as "expiredCnt"
-             , count(case when CTRT_STTS_CD = 'APPROVED' then 1 end)                   as "approvedCnt"
-             , count(case when CTRT_STTS_CD = 'TERMINATED' then 1 end)                 as "terminatedCnt"
-             , count(case when CTRT_STTS_CD = 'REJECT' then 1 end)                     as "rejectCnt"
-             , count(case when CTRT_STTS_CD = 'CANCEL' then 1 end)                     as "cancelCnt"
+            count(*)                                                    as "totalCnt"
+             , count(case when CTRT_STTS_CD = 'PENDING' then 1 end)     as "pendingCnt"
+             , count(case when CTRT_STTS_CD = 'EXPIRED' then 1 end)     as "expiredCnt"
+             , count(case when CTRT_STTS_CD = 'APPROVED' then 1 end)    as "approvedCnt"
+             , count(case when CTRT_STTS_CD = 'TERMINATED' then 1 end)  as "terminatedCnt"
+             , count(case when CTRT_STTS_CD = 'REJECT' then 1 end)      as "rejectCnt"
+             , count(case when CTRT_STTS_CD = 'CANCEL' then 1 end)      as "cancelCnt"
              , count(case
                          when CTRT_STTS_CD = 'APPROVED'
                              and <![CDATA[trunc(MVIN_DT) <= trunc(sysdate)]]>
@@ -151,10 +150,8 @@
                                     / nullif(sum(case
                                                      when CTRT_STTS_CD = 'APPROVED' and trunc(CTRT_APRV_DT, 'MM') =
                                                                                         trunc(add_months(sysdate, -1), 'MM')
-                                                         then 1
-                                                     else 0 end), 0)
-                                    * 100
-                                ) end, 2), 0)                                          as "increaseRate"
+                                                         then 1 else 0 end), 0) * 100
+                                ) end, 2), 0) as "increaseRate"
         from RENT_CTRT
     </select>
 
@@ -165,7 +162,7 @@
     </select>
 
     <select id="selectOneCtrtDetail" resultType="java.util.Map">
-        select /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectOneCtrtDetail */
+        select
             C.RENT_CTRT_NO
              , C.CTRT_STTS_CD
              , C.RENT_LSTG_NO
@@ -200,16 +197,17 @@
              , M2.USER_NM as CTRT_MGR_USER_NM
              , CM.MGR_ASGN_DT
              , CM.CHG_YN
-           from RENT_CTRT C
-left outer join MEMBER M on (M.USER_NO = C.USER_NO)
-left outer join RENT_LISTING L on (L.RENT_LSTG_NO = C.RENT_LSTG_NO)
-left outer join CTRT_MGR CM on (CM.RENT_CTRT_NO = C.RENT_CTRT_NO)
-left outer join MEMBER M2 on (M2.USER_NO = CM.USER_NO)
-left outer join CENTER_ANN_BOARD_POST B on (B.ANN_NO = L.ANN_NO)
-left outer join SBMSN_DOC D on (D.SBMSN_DOC_NO = C.SBMSN_DOC_NO)
-left outer join APT_HO_TY HT on (HT.APT_CMPLEX_NO = B.APT_CMPLEX_NO)
-left outer join APT_COMPLEX A on (A.APT_CMPLEX_NO = HT.APT_CMPLEX_NO)
-          where C.RENT_CTRT_NO = #{rentCtrtNo}
+        from RENT_CTRT C
+                 left outer join MEMBER M on (M.USER_NO = C.USER_NO)
+                 left outer join RENT_LISTING L on (L.RENT_LSTG_NO = C.RENT_LSTG_NO)
+                 left outer join CTRT_MGR CM on (CM.RENT_CTRT_NO = C.RENT_CTRT_NO)
+                 left outer join MEMBER M2 on (M2.USER_NO = CM.USER_NO)
+                 left outer join CENTER_ANN_BOARD_POST B on (B.ANN_NO = L.ANN_NO)
+                 left outer join SBMSN_DOC D on (D.SBMSN_DOC_NO = C.SBMSN_DOC_NO)
+                 left outer join APT_DETAIL AD on (L.HO_NO = AD.HO_NO)
+                 left outer join APT_HO_TY HT on (HT.HO_TY_NO = AD.HO_TY_NO)
+                 left outer join APT_COMPLEX A on (A.APT_CMPLEX_NO = B.APT_CMPLEX_NO)
+        where C.RENT_CTRT_NO = #{rentCtrtNo}
     </select>
 
     <update id="updateCtrt" parameterType="map">
