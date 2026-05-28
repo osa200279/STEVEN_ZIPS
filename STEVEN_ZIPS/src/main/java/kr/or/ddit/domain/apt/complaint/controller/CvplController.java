@@ -45,6 +45,9 @@ public class CvplController {
     @Autowired
     private IAttachFileService attachFileService;
 
+    @Autowired
+    private kr.or.ddit.domain.apt.complaint.mapper.ICvplMapper cvplMapper;
+
     /**
      * 민원신청 페이지
      *
@@ -223,6 +226,11 @@ public class CvplController {
         }
 
         resp.put("detail", detail);
+
+        String cvplAns = cvplMapper.selectLatestCvplAns(cvplNo);
+        if (cvplAns != null && !cvplAns.isBlank()) {
+            resp.put("cvplAns", cvplAns);
+        }
 
         return ResponseEntity.ok(resp);
     }
