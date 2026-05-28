@@ -418,7 +418,7 @@
     const convertTts = async () => {
         const {text, lang, voice} = getFormValues();
         if (text === '') {
-            alert("변환할 텍스트를 입력해주세요.")
+            alert("변환할 텍스트를 입력해주세요.");
             return false;
         }
         try {
@@ -440,7 +440,9 @@
     }
 
 
-    document.getElementById('convertBtn').addEventListener('click', convertTts);
+    document.getElementById('convertBtn').addEventListener('click', convertTts){
+        console.log("버튼클릭테스트");
+    }
 
     document.getElementById('clearBtn').addEventListener('click', function () {
         document.getElementById('ttsText').value = '';
