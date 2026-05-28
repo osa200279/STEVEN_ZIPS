@@ -16,6 +16,7 @@ const AptManagePage = () => {
         sigunguCd: '',
         emdCd: '',
         keyword: '',
+        
     });
 
     // 원본 리스트
