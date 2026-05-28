@@ -474,20 +474,29 @@
       text-align: center;
     }
 
+    /*
+     * 상세 항목 테이블 정렬
+     * 1열: 항목 / 2열: 설명 / 3열: 금액
+     */
     .data-table tbody td:nth-child(1) {
-      text-align: left;
-      padding-left: 17px;
+      text-align: center;
+      font-weight: 400;
     }
 
     .data-table tbody td:nth-child(2) {
-      text-align: right;
-      padding-right: 17px;
-      font-weight: 700;
+      text-align: center;
+      font-weight: 400;
+      line-height: 1.55;
+      word-break: keep-all;
+      color: var(--text-dark, var(--receipt-text));
     }
 
     .data-table tbody td:nth-child(3) {
-      color: var(--text-light, var(--receipt-text-light));
-      text-align: left;
+      text-align: right;
+      padding-right: 22px;
+      font-weight: 700;
+      color: var(--receipt-green-deep);
+      white-space: nowrap;
     }
 
     .data-table tbody tr:last-child td {
@@ -784,15 +793,16 @@
 
               <table class="data-table">
                 <colgroup>
-                  <col style="width:28%;">
-                  <col style="width:22%;">
-                  <col style="width:50%;">
+                  <!-- 항목 / 설명 / 금액 -->
+                  <col style="width:23%;">
+                  <col style="width:57%;">
+                  <col style="width:20%;">
                 </colgroup>
                 <thead>
                 <tr>
                   <th>항목</th>
+                  <th>설명</th>
                   <th>금액</th>
-                  <th>비고</th>
                 </tr>
                 </thead>
                 <tbody id="receiptDetailTbody">
@@ -804,7 +814,7 @@
             </div>
 
             <div class="detail-button-row">
-              <button type="button" class="btn-main" onclick="printReceipt()">인쇄 / PDF 저장</button>
+              <button type="button" class="btn-main" onclick="printReceipt()">인쇄</button>
               <button type="button" class="btn-sub" onclick="showReceiptNumber()">영수증 번호 확인</button>
               <button type="button" class="btn-ghost" onclick="scrollToReceiptList()">목록으로</button>
             </div>
@@ -821,7 +831,7 @@
 
         <ul class="bullet-list">
           <li>납부 완료 처리된 관리비에 한해 영수증을 조회할 수 있습니다.</li>
-          <li>인쇄 / PDF 저장 버튼을 누르면 브라우저 인쇄창에서 PDF 파일로 저장할 수 있습니다.</li>
+          <li>인쇄 버튼을 누르면 브라우저 인쇄창에서 PDF 파일로 저장할 수 있습니다.</li>
           <li>결제 오류 또는 납부내역 문의가 필요한 경우 관리사무소 또는 1:1 문의를 이용해 주세요.</li>
         </ul>
       </section>
@@ -1125,16 +1135,16 @@
       html +=
               '<tr>' +
               '  <td>' + escapeHtml(detail.billItemNm || detail.billItemCd || '-') + '</td>' +
-              '  <td>' + formatNumber(detail.billItemAmt) + '원</td>' +
               '  <td>' + escapeHtml(detail.billItemContent || '-') + '</td>' +
+              '  <td>' + formatNumber(detail.billItemAmt) + '원</td>' +
               '</tr>';
     });
 
     html +=
             '<tr class="total-row">' +
             '  <td>합계</td>' +
-            '  <td>' + formatNumber(totalAmount) + '원</td>' +
             '  <td>납부 완료 금액</td>' +
+            '  <td>' + formatNumber(totalAmount) + '원</td>' +
             '</tr>';
 
     tbody.innerHTML = html;

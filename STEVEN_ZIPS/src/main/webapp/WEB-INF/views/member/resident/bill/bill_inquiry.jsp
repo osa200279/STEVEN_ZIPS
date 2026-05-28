@@ -298,7 +298,10 @@
     .info-table,
     .data-table {
       width: 100%;
-      border-collapse: collapse;
+      border: 1px solid #d8e7dc;
+      border-radius: 12px;
+      border-collapse: separate;
+      border-spacing: 0;
       font-size: 13px;
       background: #fff;
     }
@@ -315,7 +318,7 @@
       background: #f3f8f4;
       color: var(--text-mid);
       font-weight: 800;
-      text-align: left;
+      text-align: center;
       padding: 12px 14px;
       border-bottom: 1px solid var(--border);
     }
@@ -323,23 +326,67 @@
     .info-table td {
       padding: 12px 14px;
       border-bottom: 1px solid var(--border);
+      text-align: center;
       color: var(--text-dark);
+    }
+
+    /*
+     * 관리비 상세 항목 테이블
+     * - 항목 / 금액 2개 열만 사용
+     * - 상세 합계 박스와 동일한 테두리 톤으로 카드 형태 적용
+     * - 열이 2개뿐이므로 가운데 정렬된 컴팩트 너비 사용
+     */
+    .data-table {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      border: 1px solid #d8e7dc;
+      border-radius: 12px;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
     }
 
     .data-table thead th {
       background: #f3f8f4;
       color: var(--text-mid);
-      padding: 12px 14px;
-      text-align: left;
+      padding: 13px 20px;
       font-weight: 800;
       border-bottom: 1px solid var(--border);
     }
 
+    .data-table thead th:first-child {
+      width: 62%;
+      text-align: center;
+    }
+
+    .data-table thead th:last-child {
+      width: 38%;
+      text-align: center;
+      padding-right: 24px;
+    }
+
     .data-table tbody td {
-      padding: 13px 14px;
+      padding: 14px 20px;
       border-bottom: 1px solid #edf0eb;
       color: var(--text-dark);
       vertical-align: middle;
+    }
+
+    .data-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .data-table tbody td:first-child {
+      text-align: center;
+      font-weight: 400;
+    }
+
+    .data-table tbody td:last-child {
+      text-align: right;
+      padding-right: 24px;
+      font-weight: 800;
+      color: var(--green-dark);
+      white-space: nowrap;
     }
 
     .text-right {
@@ -347,8 +394,8 @@
     }
 
     .td-bold {
-      font-weight: 900;
-      color: #111827;
+      font-weight: 800;
+      color: var(--green-dark);
     }
 
     .empty {
@@ -391,7 +438,8 @@
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      margin-top: 18px;
+      width: min(100%, 560px);
+      margin: 18px auto 0;
       padding: 18px;
       border: 1px solid #d8e7dc;
       border-radius: 12px;
@@ -517,13 +565,12 @@
               <thead>
               <tr>
                 <th>항목</th>
-                <th>구분</th>
-                <th class="text-right">금액</th>
+                <th>금액</th>
               </tr>
               </thead>
               <tbody id="billDetailTbody">
               <tr>
-                <td colspan="3" class="empty">왼쪽에서 고지서를 선택해 주세요.</td>
+                <td colspan="2" class="empty">왼쪽에서 고지서를 선택해 주세요.</td>
               </tr>
               </tbody>
             </table>
@@ -806,7 +853,7 @@
 
     if (detailList.length === 0) {
       tbody.innerHTML =
-              '<tr><td colspan="3" class="empty">조회된 상세 항목이 없습니다.</td></tr>';
+              '<tr><td colspan="2" class="empty">조회된 상세 항목이 없습니다.</td></tr>';
       document.getElementById('detailTotalAmt').textContent = '0원';
       return;
     }
@@ -819,7 +866,6 @@
 
       tr.innerHTML =
               '<td>' + escapeHtml(item.billItemNm || '-') + '</td>' +
-              '<td>' + escapeHtml(item.billItemCd || '-') + '</td>' +
               '<td class="text-right td-bold">' + formatNumber(billItemAmt) + '원</td>';
 
       tbody.appendChild(tr);
@@ -841,7 +887,7 @@
     document.getElementById('infoBillTotAmt').textContent = '0원';
 
     document.getElementById('billDetailTbody').innerHTML =
-            '<tr><td colspan="3" class="empty">해당 월 관리비 고지서가 없습니다.</td></tr>';
+            '<tr><td colspan="2" class="empty">해당 월 관리비 고지서가 없습니다.</td></tr>';
 
     document.getElementById('detailTotalAmt').textContent = '0원';
   }
@@ -860,7 +906,7 @@
             '<div class="empty panel">관리비 조회 버튼을 눌러 주세요.</div>';
 
     document.getElementById('billDetailTbody').innerHTML =
-            '<tr><td colspan="3" class="empty">왼쪽에서 고지서를 선택해 주세요.</td></tr>';
+            '<tr><td colspan="2" class="empty">왼쪽에서 고지서를 선택해 주세요.</td></tr>';
 
     document.getElementById('detailTotalAmt').textContent = '0원';
   }
@@ -965,7 +1011,7 @@
     document.getElementById('infoBillTotAmt').textContent = '0원';
 
     document.getElementById('billDetailTbody').innerHTML =
-            '<tr><td colspan="3" class="empty">조회된 관리비 상세 내역이 없습니다.</td></tr>';
+            '<tr><td colspan="2" class="empty">조회된 관리비 상세 내역이 없습니다.</td></tr>';
 
     document.getElementById('detailTotalAmt').textContent = '0원';
   }
