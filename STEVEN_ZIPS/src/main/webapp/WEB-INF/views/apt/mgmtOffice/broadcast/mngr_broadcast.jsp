@@ -440,9 +440,8 @@
     }
 
 
-    document.getElementById('convertBtn').addEventListener('click', convertTts){
-        console.log("버튼클릭테스트");
-    }
+    document.getElementById('convertBtn').addEventListener('click', convertTts)
+
 
     document.getElementById('clearBtn').addEventListener('click', function () {
         document.getElementById('ttsText').value = '';
