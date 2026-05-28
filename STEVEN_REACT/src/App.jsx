@@ -17,6 +17,7 @@ import './styles/common.css';
 import './styles/header.css';
 import './styles/sidebar.css';
 import { getCookie } from './util/api/requestApi';
+import Anls from './pages/analytics/Anls';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 function App() {
@@ -67,6 +68,7 @@ function App() {
             {/* 문의 관리 */}
             {/* 단지관리자 계정 관리 */}
             {/* 통계 */}
+            <Route path="/adm/analytics" element={<Anls />} />
           </Route>
         </Route>
       </Routes>

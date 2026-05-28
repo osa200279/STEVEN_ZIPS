@@ -126,10 +126,6 @@ const Ctrt = () => {
 
       <div className="filter-panel">
         <div className="filter-grid">
-          {/* 1열 */}
-          {/* 필터 패널 내부에 이렇게 적용하세요 */}
-
-          {/* 1열 */}
           <div className="filter-column">
             <div className="filter-group">
               <label className="filter-label">계약 번호</label>

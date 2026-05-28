@@ -78,6 +78,15 @@ const CtrtDetail = () => {
     return statusMap[code] || '상태없음';
   };
 
+  console.log(detail?.HO_NO);
+  const getHo = (hoNo) => {
+    if (!hoNo) return [];
+
+    return hoNo.split('_');
+  }
+
+  const hoInfo = getHo(detail?.HO_NO)
+
   if (!detail) return <div className="content-wrapper">로딩 중...</div>;
 
   let docs = detail.docList;
@@ -177,18 +186,18 @@ const CtrtDetail = () => {
                 <h3 className="compact-card-title">
                   매물 및 임차인 정보
                 </h3>
+                <div className="compact-input-group" >
+                  <label>아파트 정보</label>
+                  <input type="text" value={`${detail.APT_CMPLEX_NM} ${hoInfo[1]}동 ${hoInfo[2]}호`} className="bg-gray-disabled" readOnly />
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                  <div className="compact-input-group" style={{ gridColumn: '2 / 1' }}>
-                    <label>아파트 정보</label>
-                    <input type="text" value={detail.APT_CMPLEX_NM} className="bg-gray-disabled" readOnly />
-                  </div>
-                  <div className="compact-input-group" style={{ gridColumn: '2 / -1' }}>
+                  <div className="compact-input-group" >
                     <label>타입</label>
                     <input type="text" value={detail.TY_NM ? `${detail.TY_NM} ${detail.EXCLUSIVE_SIZE}㎡` : ''} className="bg-gray-disabled" readOnly />
                   </div>
                   <div className="compact-input-group">
                     <label>임차인 이름</label>
-                    <input type="text" value={detail.USER_NM} className="bg-gray-disabled" readOnly />
+                    <input type="text" value={detail.USER_NM ? `${detail.USER_NM}` : `${detail.RENTOR_NM}`} className="bg-gray-disabled" readOnly />
                   </div>
                   <div className="compact-input-group">
                     <label>임차인 ID (번호)</label>
@@ -331,26 +340,26 @@ const CtrtDetail = () => {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                  {detail.RENTOR_NM && (
-                    <div className="compact-input-group">
-                      <label>임대인</label>
-                      <input
-                        type="text"
-                        value={detail.RENTOR_NM}
-                        className="font-bold text-primary-color bg-white-force"
-                      />
-                    </div>
-                  )}
-                  {detail.AGNT_NM && (
-                    <div className="compact-input-group">
-                      <label>대리인</label>
-                      <input
-                        type="text"
-                        value={`${detail.AGNT_NM}${detail.AGNT_TELNO ? ` (${detail.AGNT_TELNO})` : ''}`}
-                        className="font-bold text-primary-color bg-white-force"
-                      />
-                    </div>
-                  )}
+                  <div className="compact-input-group">
+                    <label>대리인</label>
+                    <input
+                      type="text"
+                      value={detail.AGNT_NM || ''}
+                      name='AGNT_NM'
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
+                  <div className="compact-input-group">
+                    <label>대리인 전화번호</label>
+                    <input
+                      type="text"
+                      value={detail.AGNT_TELNO || ''}
+                      name='AGNT_TELNO'
+                      onChange={handleChange}
+                      className="font-bold text-primary-color bg-white-force"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

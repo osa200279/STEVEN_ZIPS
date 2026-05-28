@@ -43,8 +43,8 @@ const MENU_DATA = [
     id: 'staff',
     label: '직원',
     items: [
-      { to: '/adm/staff', label: '직원 계정 관리', icon: <IdCardLanyard className='luci-icon' /> },
-      { to: '/adm/mgmtOfc/account', label: '하위 관리자 생성 요청', icon: <UserRoundPlus className='luci-icon' /> },
+      // { to: '/adm/staff', label: '직원 계정 관리', icon: <UserRoundPlus className='luci-icon' /> },
+      { to: '/adm/mgmtOfc/account', label: '관리사무소 직원 관리', icon: <IdCardLanyard className='luci-icon' /> },
     ]
   },
   {
