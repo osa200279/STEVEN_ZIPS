@@ -2,6 +2,7 @@ package kr.or.ddit.domain.apt.apiApartment.service;
 
 import kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper;
 import kr.or.ddit.domain.apt.apiApartment.vo.*;
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.main.vo.AptUnitVO;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
@@ -184,8 +185,6 @@ public class AptApiServiceImpl implements IAptApiService {
         }
 
 
-
-
         return result;
     }
 
@@ -217,6 +216,65 @@ public class AptApiServiceImpl implements IAptApiService {
                 log.error("단지 등록 실패 : {}", kaptCode, e);
             }
         }
+    }
+
+    @Override
+    public AptComplexVO getDetail(String kaptCode) {
+
+        // 1. DB 조회
+        AptComplexVO complex = aptMapper.selectAptComplex(kaptCode);
+
+        // 2. 등록된 단지면 DB 정보 반환
+        if (complex != null) {
+            return complex;
+        }
+
+        // 3. 미등록 단지면 공공 API 조회
+        AptBass bass = getBassInfo(kaptCode);
+
+        AptComplexVO vo = new AptComplexVO();
+
+        vo.setAptCmplexNo(bass.getKaptCode());
+        vo.setAptCmplexNm(bass.getKaptName());
+        vo.setDorojuso(bass.getDoroJuso());
+        vo.setCnscoNm(bass.getKaptBcompany());
+
+        vo.setHeatTy(
+                bass.getCodeHeatNm()
+        );
+
+        // 준공년도
+        vo.setBldYr(
+                bass.getKaptUsedate()
+        );
+
+        // 세대수
+        if (bass.getKaptdaCnt() != null) {
+            try {
+                vo.setUnitCnt(
+                        Integer.parseInt(
+                                bass.getKaptdaCnt()
+                        )
+                );
+            } catch (Exception e) {
+                vo.setUnitCnt(0);
+            }
+        }
+
+        // 동수
+        if (bass.getKaptDongCnt() != null) {
+            try {
+                vo.setDongCnt(
+                        Integer.parseInt(
+                                bass.getKaptDongCnt()
+                        )
+                );
+            } catch (Exception e) {
+                vo.setDongCnt(0);
+            }
+        }
+
+        return vo;
     }
 
     /**

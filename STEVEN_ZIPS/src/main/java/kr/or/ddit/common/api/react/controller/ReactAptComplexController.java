@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.apiApartment.service.IAptApiService;
 import kr.or.ddit.domain.apt.apiApartment.service.IAptMemberApiService;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptBass;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity;
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -112,12 +113,10 @@ public class ReactAptComplexController {
     @ResponseBody
     public List<AptBass> checkBaseInfo(
             @RequestBody Map<String, String> param
-    ){
+    ) {
 
         String sido = param.get("sido");
-
         String sigungu = param.get("sigungu");
-
         String emd = param.get("emd");
 
         log.info(
@@ -198,5 +197,13 @@ public class ReactAptComplexController {
         );
 
         return count + "명 입주 완료";
+    }
+
+    @GetMapping("/apt/detail")
+    @ResponseBody
+    public AptComplexVO getDetail(
+            @RequestParam String kaptCode
+    ) {
+        return aptService.getDetail(kaptCode);
     }
 }

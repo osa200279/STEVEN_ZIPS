@@ -86,18 +86,12 @@ public class AptApiController {
     @GetMapping("/aptList")
     @ResponseBody
     public List<AptComplexEntity> getAptList(
-
-            @RequestParam(required = false)
             String sido,
-
             @RequestParam(required = false)
             String sigungu,
-
             @RequestParam(required = false)
             String emd
-
     ) {
-
         return aptMemberService.getAptList(
                 sido,
                 sigungu,

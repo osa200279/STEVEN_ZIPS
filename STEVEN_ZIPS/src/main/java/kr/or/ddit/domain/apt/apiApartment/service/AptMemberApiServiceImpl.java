@@ -220,30 +220,59 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService {
 
         Random random = new Random();
 
-        String prefix =
-                PREFIX[random.nextInt(PREFIX.length)];
+        String prefix = PREFIX[random.nextInt(PREFIX.length)];
+        String suffix = SUFFIX[random.nextInt(SUFFIX.length)];
 
-        String suffix =
-                SUFFIX[random.nextInt(SUFFIX.length)];
+        int pattern = random.nextInt(5);
 
-        int number = 10 + random.nextInt(90);
-
-        prefix = prefix.substring(0, Math.min(prefix.length(), 4));
-        suffix = suffix.substring(0, Math.min(suffix.length(), 4));
-
-        return prefix + suffix + number;
+        switch (pattern) {
+            case 0:
+                return prefix + suffix;
+            case 1:
+                return prefix + suffix + String.format("%02d", random.nextInt(100));
+            case 2:
+                return prefix + suffix + (100 + random.nextInt(900));
+            case 3:
+                return prefix + String.format("%02d", random.nextInt(100));
+            default:
+                return suffix + String.format("%02d", random.nextInt(100));
+        }
     }
 
     private static final String[] PREFIX = {
-            "sky", "cool", "blue", "mint", "nova",
-            "star", "deep", "luna", "neo", "fox",
-            "sun", "zen", "max", "gold", "snow"
+            "smart", "happy", "cool", "blue", "green", "red", "yellow",
+            "white", "black", "silver", "gold", "nova", "alpha", "beta",
+            "gamma", "delta", "omega", "prime", "urban", "metro",
+            "seoul", "busan", "daejeon", "ulsan", "jeju", "incheon",
+            "river", "mountain", "forest", "ocean", "lake", "sky",
+            "cloud", "rain", "snow", "wind", "storm", "sun", "moon",
+            "star", "galaxy", "cosmos", "planet", "earth", "mars",
+            "venus", "jupiter", "saturn", "tiger", "lion", "eagle",
+            "hawk", "falcon", "wolf", "bear", "fox", "cat", "dog",
+            "rabbit", "panda", "koala", "otter", "deer", "horse",
+            "dragon", "phoenix", "legend", "magic", "hero", "king",
+            "queen", "knight", "master", "boss", "captain", "ace",
+            "rapid", "fast", "super", "ultra", "mega", "hyper",
+            "power", "energy", "fresh", "young", "bright", "lucky",
+            "peace", "dream", "future", "vision", "digital", "cyber"
     };
 
     private static final String[] SUFFIX = {
-            "cat", "fox", "tree", "moon", "river",
-            "wolf", "bird", "wind", "bear", "leaf",
-            "stone", "ocean", "hawk", "mint", "storm"
+            "kim", "lee", "park", "choi", "jung", "kang", "yoon",
+            "stone", "river", "tree", "wood", "leaf", "flower",
+            "ocean", "wave", "wind", "storm", "cloud", "rain",
+            "snow", "light", "star", "moon", "sun", "planet",
+            "tiger", "lion", "fox", "wolf", "eagle", "hawk",
+            "bear", "dragon", "rabbit", "cat", "dog", "horse",
+            "master", "player", "gamer", "user", "member", "people",
+            "family", "house", "home", "villa", "town", "city",
+            "korea", "seoul", "busan", "jeju", "asia", "world",
+            "tech", "soft", "code", "java", "react", "spring",
+            "data", "cloud", "server", "system", "manager", "admin",
+            "power", "energy", "dream", "future", "vision", "leader",
+            "smart", "best", "good", "nice", "happy", "lucky",
+            "hero", "legend", "champ", "winner", "ace", "king",
+            "queen", "captain", "pilot", "doctor", "teacher", "artist"
     };
 
     private String generatePhoneNumber() {

@@ -4,6 +4,7 @@ import kr.or.ddit.domain.apt.apiApartment.vo.AptComplexEntity;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptHoTyDTO;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptInfraEntity;
 import kr.or.ddit.domain.apt.apiApartment.vo.MgmtOfficeEntity;
+import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.main.vo.AptUnitVO;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
@@ -126,4 +127,6 @@ public interface IAptApiMapper {
     );
 
     void updateEmpty(String hoNo);
+
+    AptComplexVO selectAptComplex(String kaptCode);
 }

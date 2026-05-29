@@ -3,12 +3,16 @@
 <mapper namespace="kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper">
 
     <select id="selectLawdCdList" resultType="string">
+
         SELECT LAWD_CD
         FROM LAW_DONG
+
         WHERE SIDO_NM = #{sido}
-          AND SIGUNGU_NM = #{sigungu}
-          AND DONG_NM = #{emd}
-          AND RI_NM IS NULL
+        AND SIGUNGU_NM = #{sigungu}
+        <if test="emd != null and emd != ''">
+            AND DONG_NM = #{emd}
+        </if>
+        AND RI_NM IS NULL
     </select>
 
     <insert id="insertAptBatch">
@@ -410,6 +414,11 @@
 
     </select>
 
+    <select id="selectAptComplex" resultType="kr.or.ddit.domain.apt.main.vo.AptComplexVO">
+        SELECT APT_CMPLEX_NO
+        FROM APT_COMPLEX
+        WHERE APT_CMPLEX_NO = #{aptCmplexNo}
+    </select>
 
 
 </mapper>
