@@ -126,7 +126,7 @@
 
     </select>
 
-    <select id="selectAnnouncement"
+    <!--<select id="selectAnnouncement"
             parameterType="string"
             resultType="kr.or.ddit.domain.central.admin.dto.AnnouncementDTO">
 
@@ -209,6 +209,91 @@
         ON cap.board_no = cbi.board_no
         LEFT JOIN apt_complex ac
         ON cbi.apt_cmplex_no = ac.apt_cmplex_no
+        WHERE cap.ann_no = #{annNo}
+        AND NVL(cap.del_yn, 'N') = 'N'
+
+    </select>-->
+
+    <select id="selectAnnouncement"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.central.admin.dto.AnnouncementDTO">
+
+        /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.selectAnnouncement */
+        /* 공고 상세 조회 */
+
+        SELECT
+        cap.ann_no AS annNo
+        , cap.board_no AS boardNo
+        , cbi.board_nm AS boardNm
+        , cbi.board_ty_cd AS boardTyCd
+        , cbi.apt_cmplex_no AS aptCmplexNo
+        , ac.apt_cmplex_nm AS aptCmplexNm
+        , cap.ttl AS ttl
+        , cap.cn AS cn
+        , cap.wrtr_id AS wrtrId
+        , cap.top_fix_yn AS topFixYn
+        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD') AS pblancBgngDt
+        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD') AS pblancEndDt
+        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD') AS rcrtBgngDt
+        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD') AS rcrtEndDt
+        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD') AS regDttm
+        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD') AS mdfDttm
+        , NVL(cap.inq_cnt, 0) AS inqCnt
+        , NVL(cap.del_yn, 'N') AS delYn
+        , NVL(cap.opn_yn, 'Y') AS opnYn
+        , cap.sbmsn_doc AS sbmsnDoc
+        , cap.atch_file_id AS atchFileId
+        , ac.dorojuso
+
+        , NVL((
+        SELECT SUM(NVL(au.unit_cnt, 0))
+        FROM apt_unit au
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        ), NVL(ac.unit_cnt, 0)) total_unit_cnt
+
+        , NVL((
+        SELECT COUNT(*)
+        FROM rent_listing rl
+        INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        AND rl.ann_no = cap.ann_no
+        ), 0) supply_cnt
+
+        , NVL((
+        SELECT COUNT(*)
+        FROM rent_listing rl
+        INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        AND rl.ann_no = cap.ann_no
+        ), 0)
+        || '/'
+        || NVL((
+        SELECT SUM(NVL(au.unit_cnt, 0))
+        FROM apt_unit au
+        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
+        ), NVL(ac.unit_cnt, 0))
+        || '세대' supplyDisplay
+
+        , CASE
+        WHEN cap.atch_file_id IS NULL THEN 'N'
+        ELSE 'Y'
+        END hasFileYn
+        , CASE
+        WHEN cap.rcrt_bgng_dt IS NULL
+        OR cap.rcrt_end_dt IS NULL
+        THEN '-'
+        WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
+        THEN '예정'
+        WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
+        THEN '마감'
+        ELSE '진행중'
+        END AS statusNm
+
+        FROM center_ann_board_post cap
+        INNER JOIN center_board_instance cbi ON cap.board_no = cbi.board_no
+        LEFT JOIN apt_complex ac ON cbi.apt_cmplex_no = ac.apt_cmplex_no
         WHERE cap.ann_no = #{annNo}
         AND NVL(cap.del_yn, 'N') = 'N'
 
