@@ -27,7 +27,7 @@
     #aptScheduleCalendarPage .filter-row select { width:160px; }
     #aptScheduleCalendarPage .filter-row input { width:280px; }
 
-    #aptScheduleCalendarPage .legend-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:10px 0 14px; font-size:12px; color:#64748b; }
+    #aptScheduleCalendarPage .legend-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:10px 0 14px; padding-left:22px; font-size:12px; color:#64748b; }
     #aptScheduleCalendarPage .legend-dot { width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:4px; }
     #aptScheduleCalendarPage .legend-dot.NOTICE { background:#2563eb; }
     #aptScheduleCalendarPage .legend-dot.EVENT { background:#16a34a; }
@@ -66,10 +66,12 @@
      * 이름이 길 경우 잘리지 않도록 처리하기 위해.
      */
     #aptScheduleCalendarPage .schedule-list-table td:last-child {
-      white-space: normal;
-      word-break: keep-all;
-      line-height: 1.5;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       font-size: 12px;
+      text-align: left;
+      padding-left: 16px;
     }
     #aptScheduleCalendarPage .schedule-list-table .td-title { text-align:left; overflow:hidden; text-overflow:ellipsis; }
 
@@ -319,20 +321,109 @@
       font-weight: 700;
       text-decoration: none;
     }
-
-    #aptScheduleCalendarPage .schedule-paging-area .active a,
-    #aptScheduleCalendarPage .schedule-paging-area a.active,
-    #aptScheduleCalendarPage .schedule-paging-area .page-link.active {
-      background: #166534;
-      border-color: #166534;
-      color: #fff;
-    }
     /* 페이징 점(•) 제거 */
     #aptScheduleCalendarPage .schedule-paging-area ul {
       list-style: none !important;
     }
     #aptScheduleCalendarPage .schedule-paging-area li {
       list-style: none !important;
+    }
+    /*
+ * 페이징 위 가로선 제거
+ */
+    #aptScheduleCalendarPage .schedule-paging-area {
+      border-top: none !important;
+      box-shadow: none !important;
+    }
+
+    #aptScheduleCalendarPage .schedule-paging-area::before,
+    #aptScheduleCalendarPage .schedule-paging-area::after {
+      display: none !important;
+      content: none !important;
+    }
+
+    #aptScheduleCalendarPage .schedule-paging-area ul {
+      border-top: none !important;
+      border-bottom: none !important;
+    }
+
+    #aptScheduleCalendarPage .schedule-paging-area li {
+      border-top: none !important;
+    }
+    /*
+     * 현재 보고 있는 페이지 표시
+     */
+    #aptScheduleCalendarPage .schedule-paging-area a.active,
+    #aptScheduleCalendarPage .schedule-paging-area .page-link.active,
+    #aptScheduleCalendarPage .schedule-paging-area li.active a {
+      background: #166534 !important;
+      border-color: #166534 !important;
+      color: #fff !important;
+    }
+    /*
+ * 일정명 컬럼 헤더 왼쪽 정렬
+ */
+    #aptScheduleCalendarPage .schedule-list-table th:nth-child(2) {
+      text-align: left;
+      padding-left: 16px;
+    }
+
+    /*
+     * 위치 컬럼 헤더 왼쪽 정렬
+     */
+    #aptScheduleCalendarPage .schedule-list-table th:nth-child(4) {
+      text-align: left;
+      padding-left: 16px;
+    }
+
+    /*
+     * 등록자/직원 컬럼 헤더 왼쪽 정렬
+     */
+    #aptScheduleCalendarPage .schedule-list-table th:nth-child(5) {
+      text-align: left;
+      padding-left: 16px;
+    }
+
+    /*
+     * 일정명 데이터 왼쪽 정렬
+     */
+    #aptScheduleCalendarPage .schedule-list-table td:nth-child(2) {
+      text-align: left;
+      padding-left: 16px;
+    }
+
+    /*
+     * 위치 데이터 왼쪽 정렬
+     */
+    #aptScheduleCalendarPage .schedule-list-table td:nth-child(4) {
+      text-align: left;
+      padding-left: 16px;
+    }
+
+    /*
+     * 등록자/직원 데이터 왼쪽 정렬
+     */
+    #aptScheduleCalendarPage .schedule-list-table td:nth-child(5) {
+      text-align: left;
+      padding-left: 16px;
+    }
+    /*
+     * 전체 일정 목록 제목 영역
+     */
+    #aptScheduleCalendarPage .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #aptScheduleCalendarPage .panel-header h3 {
+      margin: 0;
+    }
+
+    #aptScheduleCalendarPage .section-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      white-space: nowrap;
     }
   </style>
 
@@ -426,15 +517,24 @@
 
         <div class="tab-panel" id="listPanel" style="display:none;">
           <div class="panel">
-            <div class="panel-header"><div class="panel-title"><span class="material-symbols-rounded">list_alt</span>전체 일정 목록</div></div>
+            <div class="panel-header">
+
+              <div class="panel-title">
+                <span class="material-symbols-rounded">list_alt</span>
+                전체 일정 목록
+              </div>
+              <span class="section-desc" id="currentMonthInfo">
+                  현재 조회는 월 기준 목록입니다.
+              </span>
+            </div>
             <table class="tbl schedule-list-table">
               <thead>
               <tr>
-                <th style="width:70px;">유형</th>
+                <th style="width:130px;">유형</th>
                 <th>일정명</th>
-                <th style="width:180px;">기간</th>
-                <th style="width:140px;">위치</th>
-                <th style="width:180px;">등록자/직원</th>
+                <th style="width:200px;">기간</th>
+                <th style="width:250px;">위치</th>
+                <th style="width:260px;">등록자/직원</th>
               </tr>
               </thead>
 
@@ -458,7 +558,6 @@
           <div class="modal-card">
             <div class="modal-head">
               <div class="modal-title">직원 휴가 등록</div>
-              <button type="button" class="btn btn-sm btn-secondary" id="closeVacationBtn">닫기</button>
             </div>
             <div class="modal-body">
               <div class="form-row">
@@ -484,13 +583,13 @@
               </div>
             </div>
             <div class="modal-foot">
-              <!-- 휴가 등록 취소 버튼 -->
-              <button type="button" class="btn btn-secondary" id="cancelVacationBtn">
-                취소
-              </button>
               <!-- 휴가 등록 저장 버튼 -->
               <button type="button" class="btn btn-primary" id="saveVacationBtn">
                 등록
+              </button>
+              <!-- 휴가 등록 취소 버튼 -->
+              <button type="button" class="btn btn-secondary" id="cancelVacationBtn">
+                취소
               </button>
             </div>
           </div>
@@ -645,7 +744,25 @@
 
     pagingArea.innerHTML = pagingHTML;
 
-    pagingArea.querySelectorAll('.page-link[data-page]').forEach(function (link) {
+    /*
+     * 현재 페이지 표시
+     * 서버 pagingHTML에 active 클래스가 없어도
+     * JS에서 현재 페이지 번호와 같은 버튼에 active를 직접 붙인다.
+     */
+    pagingArea.querySelectorAll('a, .page-link').forEach(function (link) {
+      const page = Number(link.dataset.page || link.textContent.trim());
+
+      if (page === currentListPage) {
+        link.classList.add('active');
+
+        const li = link.closest('li');
+        if (li) {
+          li.classList.add('active');
+        }
+      }
+    });
+
+    pagingArea.querySelectorAll('.page-link[data-page], a[data-page]').forEach(function (link) {
       link.addEventListener('click', function (e) {
         e.preventDefault();
 
@@ -669,6 +786,17 @@
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     calendarTitle.textContent = year + '년 ' + (month + 1) + '월';
+    /*
+     * 전체 일정 목록 안내 문구 변경
+     * 예)
+     * 현재 조회는 5월 기준 목록입니다.
+     */
+    const currentMonthInfo = document.getElementById('currentMonthInfo');
+
+    if(currentMonthInfo){
+      currentMonthInfo.textContent =
+              '현재 조회는 ' + (month + 1) + '월 기준 목록입니다.';
+    }
 
     const firstDay = new Date(year, month, 1);
     const startDate = new Date(year, month, 1 - firstDay.getDay());
@@ -1210,7 +1338,6 @@
   });
 
   document.getElementById('openVacationBtn').addEventListener('click', openVacationModal);
-  document.getElementById('closeVacationBtn').addEventListener('click', closeVacationModal);
   document.getElementById('cancelVacationBtn').addEventListener('click', closeVacationModal);
   document.getElementById('saveVacationBtn').addEventListener('click', saveVacation);
 

@@ -375,6 +375,7 @@
             gap: 12px;
             flex-wrap: wrap;
             margin: 10px 0 14px;
+            padding-left: 10px;
             font-size: 12px;
             color: #64748b;
         }
@@ -708,12 +709,174 @@
             text-decoration: none;
         }
 
-        #residentScheduleCalendarPage .schedule-paging-area .active a,
+        /* 여러 날짜 일정 막대 */
+        #residentScheduleCalendarPage .apt-calendar {
+            overflow: visible;
+        }
+
+        #residentScheduleCalendarPage .apt-calendar tbody tr {
+            height: 142px;
+        }
+
+        #residentScheduleCalendarPage .apt-calendar td {
+            position: relative;
+            overflow: visible;
+            padding: 0;
+        }
+
+        #residentScheduleCalendarPage .day-num {
+            padding: 8px 7px 0;
+        }
+
+        /* 캘린더 일정 막대 */
+        #residentScheduleCalendarPage .week-event-bar {
+            position: absolute;
+            left: 0;
+            height: 19px;
+            line-height: 19px;
+            border: none;
+            border-radius: 4px;
+            padding: 0 8px;
+            font-size: 10px;
+            font-weight: 800;
+            color: #334155;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        #residentScheduleCalendarPage .week-event-bar.NOTICE {
+            background: #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        #residentScheduleCalendarPage .week-event-bar.EVENT {
+            background: #bbf7d0;
+            color: #15803d;
+        }
+
+        #residentScheduleCalendarPage .week-event-bar.VACATION {
+            background: #e9d5ff;
+            color: #7e22ce;
+        }
+
+        #residentScheduleCalendarPage .week-event-bar.CONSTRUCTION {
+            background: #fed7aa;
+            color: #c2410c;
+        }
+
+        #residentScheduleCalendarPage .week-event-bar.METER {
+            background: #bae6fd;
+            color: #0369a1;
+        }
+
+        #residentScheduleCalendarPage .week-event-bar.CHECK {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        #residentScheduleCalendarPage .calendar-more-btn {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 18px;
+            line-height: 18px;
+            border: none;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        #residentScheduleCalendarPage .week-event-bar.hidden-event {
+            display: none;
+        }
+
+        #residentScheduleCalendarPage .apt-calendar td.expanded {
+            height: 240px;
+        }
+
+        #residentScheduleCalendarPage .apt-calendar td.expanded .week-event-bar.hidden-event {
+            display: block;
+        }
+        /*
+         * 현재 보고 있는 페이지 표시
+         */
         #residentScheduleCalendarPage .schedule-paging-area a.active,
-        #residentScheduleCalendarPage .schedule-paging-area .page-link.active {
-            background: #166534;
-            border-color: #166534;
-            color: #fff;
+        #residentScheduleCalendarPage .schedule-paging-area .page-link.active,
+        #residentScheduleCalendarPage .schedule-paging-area li.active a {
+            background: #166534 !important;
+            border-color: #166534 !important;
+            color: #fff !important;
+        }
+        /*
+ * 전체 일정 목록 - 관리자 화면과 동일한 정렬
+ */
+        #residentScheduleCalendarPage .schedule-list-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        #residentScheduleCalendarPage .schedule-list-table th,
+        #residentScheduleCalendarPage .schedule-list-table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /*
+         * 일정명 헤더
+         */
+        #residentScheduleCalendarPage .schedule-list-table th:nth-child(2) {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        /*
+         * 위치 헤더
+         */
+        #residentScheduleCalendarPage .schedule-list-table th:nth-child(4) {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        /*
+         * 등록자 헤더
+         */
+        #residentScheduleCalendarPage .schedule-list-table th:nth-child(5) {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        /*
+         * 일정명 데이터
+         */
+        #residentScheduleCalendarPage .schedule-list-table td:nth-child(2) {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        /*
+         * 위치 데이터
+         */
+        #residentScheduleCalendarPage .schedule-list-table td:nth-child(4) {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        /*
+         * 등록자 데이터
+         */
+        #residentScheduleCalendarPage .schedule-list-table td:nth-child(5) {
+            text-align: left;
+            padding-left: 16px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
@@ -886,18 +1049,18 @@
                         <span class="material-symbols-rounded">list_alt</span>
                         전체 일정 목록
                     </h3>
-                    <span>현재 조회 월 기준 목록입니다.</span>
+                    <span id="currentMonthInfo">
+                        현재 조회는 월 기준 목록입니다.
+                    </span>
                 </div>
 
                 <table class="data-table schedule-list-table">
                     <thead>
-                    <tr>
-                        <th style="width:70px;">유형</th>
-                        <th>일정명</th>
-                        <th style="width:180px;">기간</th>
-                        <th style="width:140px;">위치</th>
-                        <th style="width:100px;">등록자/직원</th>
-                    </tr>
+                    <th style="width:110px;">유형</th>
+                    <th>일정명</th>
+                    <th style="width:200px;">기간</th>
+                    <th style="width:210px;">위치</th>
+                    <th style="width:210px;">등록자/직원</th>
                     </thead>
                     <tbody id="scheduleListBody">
                     <tr>
@@ -1117,6 +1280,17 @@
             const month = currentDate.getMonth();
 
             calendarTitle.textContent = year + '년 ' + (month + 1) + '월';
+            /*
+             * 전체 일정 목록 안내 문구 변경
+             * 예)
+             * 현재 조회는 5월 기준 목록입니다.
+             */
+            const currentMonthInfo = document.getElementById('currentMonthInfo');
+
+            if(currentMonthInfo){
+                currentMonthInfo.textContent =
+                    '현재 조회는 ' + (month + 1) + '월 기준 목록입니다.';
+            }
 
             const firstDay = new Date(year, month, 1);
             const startDate = new Date(year, month, 1 - firstDay.getDay());
@@ -1125,34 +1299,25 @@
             let html = '';
 
             for (let week = 0; week < 6; week++) {
+                const weekStart = new Date(startDate);
+                weekStart.setDate(startDate.getDate() + week * 7);
+
+                const weekSegments = createWeekSegments(weekStart);
+
                 html += '<tr>';
 
                 for (let day = 0; day < 7; day++) {
-                    const cellDate = new Date(startDate);
-                    cellDate.setDate(startDate.getDate() + (week * 7) + day);
+                    const cellDate = new Date(weekStart);
+                    cellDate.setDate(weekStart.getDate() + day);
 
                     const dateStr = formatDate(cellDate);
                     const isOther = cellDate.getMonth() !== month;
                     const dayClass = day === 0 ? 'sun' : (day === 6 ? 'sat' : '');
                     const todayClass = dateStr === todayStr ? 'today' : '';
-                    const items = getSchedulesByDate(dateStr);
 
                     html += '<td class="' + dayClass + ' ' + todayClass + (isOther ? ' other-month' : '') + '">';
                     html += '<div class="day-num">' + cellDate.getDate() + '</div>';
-
-                    items.slice(0, 5).forEach(function (item) {
-                        html += '<button type="button"'
-                            + ' class="schedule-chip ' + escapeHtml(item.scheduleTy) + '"'
-                            + ' title="' + escapeHtml(item.scheduleTtl) + '"'
-                            + ' data-schedule-no="' + escapeHtml(item.scheduleNo) + '">';
-                        html += escapeHtml(item.scheduleTtl);
-                        html += '</button>';
-                    });
-
-                    if (items.length > 5) {
-                        html += '<div class="more-count">전체 +' + (items.length - 5) + '</div>';
-                    }
-
+                    html += renderWeekBarsByDate(dateStr, weekSegments);
                     html += '</td>';
                 }
 
@@ -1161,7 +1326,7 @@
 
             calendarBody.innerHTML = html;
 
-            document.querySelectorAll('.schedule-chip').forEach(function (btn) {
+            document.querySelectorAll('.week-event-bar').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     const scheduleNo = btn.dataset.scheduleNo;
 
@@ -1174,6 +1339,114 @@
                     }
                 });
             });
+
+            document.querySelectorAll('.calendar-more-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const td = btn.closest('td');
+
+                    td.classList.toggle('expanded');
+
+                    btn.textContent = td.classList.contains('expanded')
+                        ? '접기'
+                        : '전체 +' + btn.dataset.hiddenCount;
+                });
+            });
+        }
+
+        function renderWeekBarsByDate(dateStr, weekSegments) {
+            const maxVisibleLane = 4;
+
+            const startSegments = weekSegments.filter(function (seg) {
+                return seg.startStr === dateStr;
+            });
+
+            const hiddenStartCount = startSegments.filter(function (seg) {
+                return seg.lane >= maxVisibleLane;
+            }).length;
+
+            let html = '';
+
+            startSegments.forEach(function (seg) {
+                const spanDays = seg.endDay - seg.startDay + 1;
+                const hiddenClass = seg.lane >= maxVisibleLane ? ' hidden-event' : '';
+
+                html += '<button type="button"'
+                    + ' class="week-event-bar ' + escapeHtml(seg.item.scheduleTy) + hiddenClass + '"'
+                    + ' style="top:' + (32 + seg.lane * 23) + 'px; width:calc(' + (spanDays * 100) + '% + ' + (spanDays - 1) + 'px);"'
+                    + ' title="' + escapeHtml(seg.item.scheduleTtl) + '"'
+                    + ' data-schedule-no="' + escapeHtml(seg.item.scheduleNo) + '">';
+                html += escapeHtml(seg.item.scheduleTtl);
+                html += '</button>';
+            });
+
+            if (hiddenStartCount > 0) {
+                html += '<button type="button"'
+                    + ' class="calendar-more-btn"'
+                    + ' style="top:' + (32 + maxVisibleLane * 23) + 'px;"'
+                    + ' data-hidden-count="' + hiddenStartCount + '">';
+                html += '전체 +' + hiddenStartCount;
+                html += '</button>';
+            }
+
+            return html;
+        }
+
+        function parseLocalDate(dateStr) {
+            const parts = dateStr.split('-');
+            return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        }
+
+        function createWeekSegments(weekStart) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+
+            const weekStartStr = formatDate(weekStart);
+            const weekEndStr = formatDate(weekEnd);
+
+            const segments = scheduleList
+                .filter(function (item) {
+                    return item.startDt <= weekEndStr && item.endDt >= weekStartStr;
+                })
+                .map(function (item) {
+                    const itemStart = parseLocalDate(item.startDt);
+                    const itemEnd = parseLocalDate(item.endDt);
+
+                    const segStart = itemStart < weekStart ? new Date(weekStart) : itemStart;
+                    const segEnd = itemEnd > weekEnd ? new Date(weekEnd) : itemEnd;
+
+                    return {
+                        item: item,
+                        startStr: formatDate(segStart),
+                        endStr: formatDate(segEnd),
+                        startDay: segStart.getDay(),
+                        endDay: segEnd.getDay(),
+                        lane: 0
+                    };
+                })
+                .sort(function (a, b) {
+                    if (a.startDay === b.startDay) {
+                        return b.endDay - a.endDay;
+                    }
+                    return a.startDay - b.startDay;
+                });
+
+            const laneEndDays = [];
+
+            segments.forEach(function (seg) {
+                let lane = 0;
+
+                while (
+                    laneEndDays[lane] !== undefined &&
+                    laneEndDays[lane] >= seg.startDay
+                    ) {
+                    lane++;
+                }
+
+                seg.lane = lane;
+                laneEndDays[lane] = seg.endDay;
+            });
+
+            return segments;
         }
 
         /*
@@ -1185,10 +1458,9 @@
             });
         }
         /*
- * 목록 페이징 렌더링
- */
+         * 목록 페이징 렌더링
+         */
         function renderPaging() {
-
             const pagingArea = document.getElementById('schedulePagingArea');
 
             if (!pagingArea) {
@@ -1198,12 +1470,25 @@
             pagingArea.innerHTML = pagingHTML;
 
             /*
-             * 페이지 번호 클릭 이벤트
+             * 현재 페이지 표시
+             * 서버 pagingHTML에 active 클래스가 없어도
+             * JS에서 현재 페이지 번호와 같은 버튼에 active를 직접 붙인다.
              */
-            pagingArea.querySelectorAll('.page-link[data-page]').forEach(function (link) {
+            pagingArea.querySelectorAll('a, .page-link').forEach(function (link) {
+                const page = Number(link.dataset.page || link.textContent.trim());
 
+                if (page === currentListPage) {
+                    link.classList.add('active');
+
+                    const li = link.closest('li');
+                    if (li) {
+                        li.classList.add('active');
+                    }
+                }
+            });
+
+            pagingArea.querySelectorAll('.page-link[data-page], a[data-page]').forEach(function (link) {
                 link.addEventListener('click', function (e) {
-
                     e.preventDefault();
 
                     const page = Number(link.dataset.page);
@@ -1318,7 +1603,18 @@
             loadSchedule();
         });
 
-        document.getElementById('searchBtn').addEventListener('click', loadSchedule);
+        /*
+         * 검색 버튼 클릭
+         *
+         * 주의:
+         * addEventListener에 loadSchedule을 바로 넣으면
+         * 클릭 이벤트 객체가 page 값으로 들어갈 수 있다.
+         *
+         * 그래서 반드시 function으로 감싸서 loadSchedule(1)을 호출한다.
+         */
+        document.getElementById('searchBtn').addEventListener('click', function () {
+            loadSchedule(1);
+        });
 
         document.getElementById('keyword').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
