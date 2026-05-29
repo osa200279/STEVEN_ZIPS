@@ -81,4 +81,11 @@
           AND A.USER_ROLE_CD = 'ROLE_MEMBER'
     </select>
 
+    <select id="countUserId"
+            parameterType="string"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM MEMBER
+        WHERE USER_ID = #{userId}
+    </select>
 </mapper>

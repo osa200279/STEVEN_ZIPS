@@ -226,6 +226,9 @@ public class AptApiServiceImpl implements IAptApiService {
 
         // 2. 등록된 단지면 DB 정보 반환
         if (complex != null) {
+
+
+
             return complex;
         }
 

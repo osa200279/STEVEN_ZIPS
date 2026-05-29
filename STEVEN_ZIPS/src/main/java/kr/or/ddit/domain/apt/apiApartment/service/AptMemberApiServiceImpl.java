@@ -61,7 +61,7 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService {
             AuthVO auth = new AuthVO();
             String encodedPw = passwordEncoder.encode("1234");
 
-            member.setUserId(generateUserId());
+            member.setUserId(generateUniqueUserId());
             member.setUserPw(encodedPw);
             member.setUserNm(generateRandomName());
             member.setUserTelno(generatePhoneNumber());
@@ -284,6 +284,24 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService {
                 random.nextInt(10000),
                 random.nextInt(10000)
         );
+    }
+
+    private String generateUniqueUserId() {
+
+        int retry = 0;
+
+        while (retry < 100) {
+
+            String userId = generateUserId();
+
+            if (memberMapper.countUserId(userId) == 0) {
+                return userId;
+            }
+
+            retry++;
+        }
+
+        throw new RuntimeException("아이디 생성 실패");
     }
 
 }

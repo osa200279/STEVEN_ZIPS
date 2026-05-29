@@ -145,65 +145,11 @@ public class ReactAptComplexController {
         return "좌표 업데이트 완료";
     }
 
-    /**
-     * 더미 유저 생성
-     */
-    @PostMapping("/user/createDummy")
-    @ResponseBody
-    public String createDummyUser(
-            @RequestBody Map<String, Object> param
-    ) {
-
-        int count =
-                Integer.parseInt(
-                        param.get("count").toString()
-                );
-
-        aptMemberService.createDummyUsers(count);
-
-        return count + "명 생성 완료";
-    }
-
-    /**
-     * 미배정 유저 수
-     */
-    @GetMapping("/user/notAssignedCount")
-    @ResponseBody
-    public int getNotAssignedCount() {
-
-        return aptMemberService.getNotAssignedUserCount();
-    }
-
-    /**
-     * 입주민 랜덤 배정
-     */
-    @PostMapping("/apt/assignResidents")
-    @ResponseBody
-    public String assignResidents(
-            @RequestBody Map<String, Object> param
-    ) {
-
-        List<String> aptList =
-                (List<String>) param.get("aptList");
-
-        int count =
-                Integer.parseInt(
-                        param.get("count").toString()
-                );
-
-        aptMemberService.assignResidents(
-                aptList,
-                count
-        );
-
-        return count + "명 입주 완료";
-    }
-
     @GetMapping("/apt/detail")
     @ResponseBody
     public AptComplexVO getDetail(
             @RequestParam String kaptCode
-    ) {
+    ){
         return aptService.getDetail(kaptCode);
     }
 }

@@ -23,4 +23,6 @@ public interface IApiMemberMapper {
     void updateMemberAuth(String userNo);
 
     void insertHshldMember(HshldMemberEntity hshldMember);
+
+    int countUserId(String userId);
 }
