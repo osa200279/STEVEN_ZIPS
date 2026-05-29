@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.domain.central.admin.mapper.IAnlsMapper">
+
+    <select id="selectRecruitingAnnList" resultType="java.util.Map">
+        SELECT B.ANN_NO
+             , B.TTL
+             , B.APT_CMPLEX_NO
+             , (SELECT COUNT(*) FROM APLCT WHERE ANN_NO = B.ANN_NO) AS APLCT_CNT
+             , (SELECT COUNT(*) FROM RENT_LISTING WHERE ANN_NO = B.ANN_NO) AS LSTG_CNT
+        FROM CENTER_ANN_BOARD_POST B
+        WHERE SYSDATE BETWEEN B.RCRT_BGNG_DT AND B.RCRT_END_DT;
+    </select>
+</mapper>
