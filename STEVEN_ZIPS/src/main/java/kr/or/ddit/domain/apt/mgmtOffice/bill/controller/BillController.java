@@ -156,7 +156,7 @@ public class BillController {
     }
 
     /**
-     * 검침요금 계산 화면
+     * 검 침요금 계산 화면
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/bill/meter-charge/{mgmtOfcNo}")
@@ -173,40 +173,67 @@ public class BillController {
     }
 
     /**
-     * 검침요금 계산 목록 조회
+     * 세대별 검침요금 목록 조회
+     * - PaginationInfoVO 기반 DB 페이징 적용
+     * - 항목, 동/호수 검색조건 적용
      */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/bill/meter-charge/list/{mgmtOfcNo}")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> selectMeterChargeList(
             @PathVariable String mgmtOfcNo,
-            @RequestParam String billYm
+            @RequestParam String billYm,
+            @RequestParam(required = false) String billItemCd,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int currentPage
     ) {
+
         Map<String, Object> result = new HashMap<>();
 
         try {
-            AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
+            /*
+             * 관리사무소 번호로 해당 아파트 단지번호 조회
+             */
+            AptComplexVO aptComplexVO =
+                    aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
 
             if (aptComplexVO == null) {
                 result.put("success", false);
                 result.put("message", "관리사무소에 연결된 아파트 단지 정보가 없습니다.");
+
                 return ResponseEntity.ok(result);
             }
 
-            Map<String, Object> data = meterChargeService.selectMeterChargeList(
+            /*
+             * 검침년월 검증
+             * 예: 202605
+             */
+            if (billYm == null || !billYm.matches("\\d{6}")) {
+                result.put("success", false);
+                result.put("message", "검침년월 형식이 올바르지 않습니다.");
+
+                return ResponseEntity.ok(result);
+            }
+
+            /*
+             * 기존 전체조회 메서드가 아니라
+             * PaginationInfoVO 기반 페이징 조회 메서드를 호출해야 한다.
+             */
+            result = meterChargeService.selectMeterChargePagingList(
                     aptComplexVO.getAptCmplexNo(),
-                    billYm
+                    billYm,
+                    billItemCd,
+                    keyword,
+                    currentPage
             );
 
             result.put("success", true);
-            result.putAll(data);
-            result.put("aptCmplexNo", aptComplexVO.getAptCmplexNo());
             result.put("billYm", billYm);
 
         } catch (Exception e) {
             log.error("검침요금 계산 조회 실패", e);
+
             result.put("success", false);
-            result.put("message", e.getMessage());
+            result.put("message", "검침요금 계산 조회 중 오류가 발생했습니다.");
         }
 
         return ResponseEntity.ok(result);
@@ -355,7 +382,7 @@ public class BillController {
             searchVO.setDongNo(dongNo);
             searchVO.setHo(ho);
 
-            PaginationInfoVO<BillVO> pagingVO = new PaginationInfoVO<>(10, 5);
+            PaginationInfoVO<BillVO> pagingVO = new PaginationInfoVO<>(20, 10);
             pagingVO.setSearchVO(searchVO);
             pagingVO.setCurrentPage(currentPage);
 

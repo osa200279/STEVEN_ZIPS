@@ -15,4 +15,6 @@ public interface IMeterChargeService {
 
     // 세대 검침 입력 및 저장
     Map<String, Object> saveMeterCharge(String aptCmplexNo, String billYm, List<Map<String, Object>> meterList);
+
+    Map<String, Object> selectMeterChargePagingList(String aptCmplexNo, String billYm, String billItemCd, String keyword, int currentPage);
 }

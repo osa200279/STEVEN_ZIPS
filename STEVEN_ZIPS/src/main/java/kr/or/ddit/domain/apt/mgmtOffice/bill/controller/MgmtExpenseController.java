@@ -2,6 +2,8 @@ package kr.or.ddit.domain.apt.mgmtOffice.bill.controller;
 
 import kr.or.ddit.domain.apt.main.service.IAptComplexService;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
+import kr.or.ddit.domain.apt.mgmtOffice.bill.mapper.IMeterChargeMapper;
+import kr.or.ddit.domain.apt.mgmtOffice.bill.service.IMeterChargeService;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.service.IMgmtExpenseService;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.ExpenseVO;
 import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
@@ -31,6 +33,9 @@ public class MgmtExpenseController {
 
     @Autowired
     private IAptComplexService aptComplexService;
+
+    @Autowired
+    private IMeterChargeService meterChargeService;
 
     @Autowired
     private IManagerModelService managerAccessService;

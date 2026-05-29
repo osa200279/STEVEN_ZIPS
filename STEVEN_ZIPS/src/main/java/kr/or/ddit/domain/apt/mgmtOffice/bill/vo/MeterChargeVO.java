@@ -39,4 +39,11 @@ public class MeterChargeVO {
     private Long unitPrice;             // 단가
     private Long chargeAmt;             // 계산금액 = usageVal * unitPrice
 
+    /* 조회 조건 / 페이징 요약용 */
+    private String aptCmplexNo;          // 검색 대상 단지번호
+    private String billYm;               // 검침년월 YYYYMM
+    private String keyword;              // 동/호수 검색어
+    private Integer rowCount;            // 요약 조회 건수
+    private Integer enteredCount;        // 현재 검침값 입력 건수
+
 }

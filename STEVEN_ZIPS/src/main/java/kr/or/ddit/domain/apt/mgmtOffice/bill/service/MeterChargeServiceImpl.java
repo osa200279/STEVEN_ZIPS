@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.bill.service;
 
+import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.mapper.IMeterChargeMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.MeterChargeVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,17 +72,24 @@ public class MeterChargeServiceImpl implements IMeterChargeService{
         return result;
     }
 
+    @Override
     public List<MeterChargeVO> selectCalculatedMeterChargeList(String aptCmplexNo, String billYm) {
-        List<MeterChargeVO> list = meterChargeMapper.selectMeterChargeList(aptCmplexNo, billYm);
+        /*
+         * meterCharge_Mapper.xml에서는 #{searchVO.aptCmplexNo},
+         * #{searchVO.billYm} 형태로 조건을 읽는다.
+         * 따라서 기존처럼 문자열 2개를 바로 넘기지 않고,
+         * PaginationInfoVO.searchVO에 조회조건을 담아서 전달한다.
+         */
+        MeterChargeVO searchVO = new MeterChargeVO();
+        searchVO.setAptCmplexNo(aptCmplexNo);
+        searchVO.setBillYm(billYm);
 
-        for (MeterChargeVO meter : list) {
-            long usageVal = meter.getUsageVal() == null ? 0L : meter.getUsageVal();
-            long unitPrice = getUnitPrice(meter.getBillItemCd());
-            long chargeAmt = usageVal * unitPrice;
+        PaginationInfoVO<MeterChargeVO> pagingVO = new PaginationInfoVO<>();
+        pagingVO.setSearchVO(searchVO);
 
-            meter.setUnitPrice(unitPrice);
-            meter.setChargeAmt(chargeAmt);
-        }
+        List<MeterChargeVO> list = meterChargeMapper.selectMeterChargeList(pagingVO);
+
+        calculateChargeAmount(list);
 
         return list;
     }
@@ -117,7 +125,7 @@ public class MeterChargeServiceImpl implements IMeterChargeService{
          * DB에서 다시 조회한 이전 검침값을 기준으로 실제 저장값을 계산합니다.
          */
         List<MeterChargeVO> dbMeterList =
-                meterChargeMapper.selectMeterChargeList(aptCmplexNo, billYm);
+                selectCalculatedMeterChargeList(aptCmplexNo, billYm);
 
         int savedCount = 0;
 
@@ -200,6 +208,175 @@ public class MeterChargeServiceImpl implements IMeterChargeService{
         result.put("savedCount", savedCount);
 
         return result;
+    }
+
+    @Override
+    public Map<String, Object> selectMeterChargePagingList(String aptCmplexNo, String billYm, String billItemCd, String keyword, int currentPage) {
+        /*
+         * 1. 페이징 객체 생성
+         *    - 한 페이지 10건
+         *    - 페이지 번호 5개 단위 표시
+         */
+        PaginationInfoVO<MeterChargeVO> pagingVO =
+                new PaginationInfoVO<>(20, 10);
+
+        /*
+         * 2. 검색조건 생성
+         *    XML에서는 #{searchVO.aptCmplexNo}, #{searchVO.billYm} 형태로 사용
+         */
+        MeterChargeVO searchVO = new MeterChargeVO();
+        searchVO.setAptCmplexNo(aptCmplexNo);
+        searchVO.setBillYm(billYm);
+        searchVO.setBillItemCd(billItemCd);
+        searchVO.setKeyword(keyword);
+
+        pagingVO.setSearchVO(searchVO);
+
+        /*
+         * 3. 전체 건수 조회 후 페이징 정보 계산
+         */
+        int totalRecord =
+                meterChargeMapper.selectMeterChargeCount(pagingVO);
+
+        pagingVO.setTotalRecord(totalRecord);
+
+        /*
+         * 잘못된 페이지 번호 방어 처리
+         */
+        int validPage = currentPage < 1 ? 1 : currentPage;
+
+        if (pagingVO.getTotalPage() > 0
+                && validPage > pagingVO.getTotalPage()) {
+            validPage = pagingVO.getTotalPage();
+        }
+
+        pagingVO.setCurrentPage(validPage);
+
+        /*
+         * 4. 현재 페이지 목록 조회
+         */
+        List<MeterChargeVO> list =
+                meterChargeMapper.selectMeterChargePagingList(pagingVO);
+
+        /*
+         * XML에서는 사용량까지만 계산하고,
+         * 단가와 금액은 기존 Service 기준으로 계산
+         */
+        calculateChargeAmount(list);
+
+        pagingVO.setDataList(list);
+
+        /*
+         * 5. 상단 요약 카드 조회
+         *    현재 페이지 10건이 아니라 전체 검색 결과 기준 합계
+         */
+        List<MeterChargeVO> summaryList =
+                meterChargeMapper.selectMeterChargeSummary(pagingVO);
+
+        Map<String, Object> result =
+                makeSummaryResultFromSummaryRows(summaryList);
+
+        /*
+         * 6. JSP로 반환할 데이터
+         */
+        result.put("list", list);
+        result.put("pagingVO", pagingVO);
+        result.put("pagingHTML", pagingVO.getPagingHTML());
+
+        return result;
+    }
+
+    private Map<String, Object> makeSummaryResultFromSummaryRows(List<MeterChargeVO> summaryList) {
+        long electricTotal = 0L;
+        long waterTotal = 0L;
+        long gasTotal = 0L;
+
+        long electricUsageTotal = 0L;
+        long waterUsageTotal = 0L;
+        long gasUsageTotal = 0L;
+
+        long enteredCount = 0L;
+        long totalCount = 0L;
+
+        for (MeterChargeVO summary : summaryList) {
+
+            long usageVal =
+                    summary.getUsageVal() == null ? 0L : summary.getUsageVal();
+
+            long unitPrice =
+                    getUnitPrice(summary.getBillItemCd());
+
+            long chargeAmt =
+                    usageVal * unitPrice;
+
+            if ("ELC".equals(summary.getBillItemCd())) {
+
+                electricUsageTotal = usageVal;
+                electricTotal = chargeAmt;
+
+            } else if ("WTR".equals(summary.getBillItemCd())) {
+
+                waterUsageTotal = usageVal;
+                waterTotal = chargeAmt;
+
+            } else if ("GAS".equals(summary.getBillItemCd())) {
+
+                gasUsageTotal = usageVal;
+                gasTotal = chargeAmt;
+            }
+
+            enteredCount += summary.getEnteredCount() == null
+                    ? 0
+                    : summary.getEnteredCount();
+
+            totalCount += summary.getRowCount() == null
+                    ? 0
+                    : summary.getRowCount();
+        }
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("electricTotal", electricTotal);
+        result.put("waterTotal", waterTotal);
+        result.put("gasTotal", gasTotal);
+        result.put("grandTotal", electricTotal + waterTotal + gasTotal);
+
+        result.put("electricUsageTotal", electricUsageTotal);
+        result.put("waterUsageTotal", waterUsageTotal);
+        result.put("gasUsageTotal", gasUsageTotal);
+
+        result.put("electricUnitPrice", ELECTRIC_UNIT_PRICE);
+        result.put("waterUnitPrice", WATER_UNIT_PRICE);
+        result.put("gasUnitPrice", GAS_UNIT_PRICE);
+
+        result.put("enteredCount", enteredCount);
+        result.put("totalCount", totalCount);
+
+        return result;
+    }
+
+    /**
+     * 조회된 검침 목록의 단가와 계산금액을 설정합니다.
+     *
+     * 사용량 = 현재검침값 - 이전검침값
+     * 계산금액 = 사용량 * 항목별 단가
+     */
+    private void calculateChargeAmount(List<MeterChargeVO> list) {
+
+        for (MeterChargeVO meter : list) {
+
+            long usageVal =
+                    meter.getUsageVal() == null ? 0L : meter.getUsageVal();
+
+            long unitPrice =
+                    getUnitPrice(meter.getBillItemCd());
+
+            long chargeAmt =
+                    usageVal * unitPrice;
+
+            meter.setUnitPrice(unitPrice);
+            meter.setChargeAmt(chargeAmt);
+        }
     }
 
     private long getUnitPrice(String billItemCd) {
