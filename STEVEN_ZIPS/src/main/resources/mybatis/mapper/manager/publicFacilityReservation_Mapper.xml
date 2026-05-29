@@ -644,4 +644,25 @@
         AND FH.RSVT_NO = #{rsvtNo}
     </select>
 
+    <!-- SMS 발송용 예약 상세 조회 -->
+    <select id="selectReservationSmsInfo"
+            parameterType="string"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.reservation.vo.PublicFacilityReservationVO">
+
+        SELECT
+        FH.RSVT_NO                 AS rsvtNo,
+        FH.USER_NO                 AS userNo,
+        PF.CMN_FACILITY_NM         AS cmnFacilityNm,
+        FH.RSVT_BGNG_DTTM          AS rsvtBgngDttm,
+        FH.RSVT_END_DTTM           AS rsvtEndDttm,
+        FH.RJCT_RSN_CN             AS rejectReason
+        FROM FACILITY_HSTRY FH
+        INNER JOIN PUBLIC_ITEM PI
+        ON FH.CMN_FACILITY_ITEM_NO = PI.CMN_FACILITY_ITEM_NO
+        INNER JOIN PUBLIC_FACILITY PF
+        ON PI.CMN_FACILITY_NO = PF.CMN_FACILITY_NO
+        WHERE FH.RSVT_NO = #{rsvtNo}
+
+    </select>
+
 </mapper>

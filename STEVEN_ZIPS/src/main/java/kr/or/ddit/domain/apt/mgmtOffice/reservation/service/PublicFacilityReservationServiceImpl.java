@@ -199,15 +199,23 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
         mapper.updateItemStatusUse(vo);
 
         /*
-         * SMS 문자 발송
-         * Mock 모드에서는 실제 문자는 가지 않고 SMS_SND, SMS_SND_DTL 이력만 저장.
+         * SMS 발송용 예약 상세 재조회
+         *
+         * 이유:
+         * 승인 버튼에서는 보통 예약번호(rsvtNo)만 넘어옵니다.
+         * 그래서 userNo, 시설명, 예약시간을 DB에서 다시 조회해야 합니다.
          */
-        smsService.sendReservationApproved(
-                vo.getUserNo(),
-                vo.getCmnFacilityNm(),
-                vo.getRsvtBgngDttm() + " ~ " + vo.getRsvtEndDttm(),
-                "SYSTEM"
-        );
+        PublicFacilityReservationVO smsInfo =
+                mapper.selectReservationSmsInfo(vo.getRsvtNo());
+
+        if (smsInfo != null) {
+            smsService.sendReservationApproved(
+                    smsInfo.getUserNo(),
+                    smsInfo.getCmnFacilityNm(),
+                    smsInfo.getRsvtBgngDttm() + " ~ " + smsInfo.getRsvtEndDttm(),
+                    "SYSTEM"
+            );
+        }
 
     }
 
@@ -217,14 +225,23 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
         if (!StringUtils.hasText(vo.getRejectReason())) {
             throw new IllegalArgumentException("거절사유는 필수입니다.");
         }
+
         mapper.rejectReservation(vo);
 
-        smsService.sendReservationRejected(
-                vo.getUserNo(),
-                vo.getCmnFacilityNm(),
-                vo.getRejectReason(),
-                "SYSTEM"
-        );
+        /*
+         * SMS 발송용 예약 상세 재조회
+         */
+        PublicFacilityReservationVO smsInfo =
+                mapper.selectReservationSmsInfo(vo.getRsvtNo());
+
+        if (smsInfo != null) {
+            smsService.sendReservationRejected(
+                    smsInfo.getUserNo(),
+                    smsInfo.getCmnFacilityNm(),
+                    vo.getRejectReason(),
+                    "SYSTEM"
+            );
+        }
     }
 
     @Override

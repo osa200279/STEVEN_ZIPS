@@ -38,6 +38,10 @@ public class SmsServiceImpl implements ISmsService {
         /** SMS 발송번호 생성 */
         String smsNo = smsMapper.selectNextSmsNo();
         request.setSmsNo(smsNo);
+        /*
+         * 발송건수 세팅
+         */
+        request.setSndCnt(request.getReceivers().size());
 
         /** SMS 발송 마스터 이력 저장 */
         smsMapper.insertSmsSnd(request);

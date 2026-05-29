@@ -93,5 +93,8 @@ public interface IPublicFacilityReservationMapper {
      */
     int expirePendingReservations(String aptCmplexNo);
 
+    /* SMS 발송용 예약 상세 조회 */
+    PublicFacilityReservationVO selectReservationSmsInfo(String rsvtNo);
+
 }
 

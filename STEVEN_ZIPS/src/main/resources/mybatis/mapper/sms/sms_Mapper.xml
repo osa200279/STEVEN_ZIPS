@@ -10,7 +10,7 @@
         /* kr.or.ddit.common.sms.mapper.ISmsMapper.selectNextSmsNo */
         /* SMS 발송번호 생성 */
 
-        SELECT 'SMS' || LPAD(SEQ_SMS_SND.NEXTVAL, 12, '0')
+        SELECT 'SMS' || LPAD(SEQ_SMS_SND.NEXTVAL, 6, '0')
         FROM DUAL
     </select>
 
@@ -20,7 +20,7 @@
         /* kr.or.ddit.common.sms.mapper.ISmsMapper.selectNextSmsDtlNo */
         /* SMS 발송상세번호 생성 */
 
-        SELECT 'SMD' || LPAD(SEQ_SMS_SND_DTL.NEXTVAL, 12, '0')
+        SELECT 'SMD' || LPAD(SEQ_SMS_SND_DTL.NEXTVAL, 6, '0')
         FROM DUAL
     </select>
 
@@ -54,7 +54,7 @@
                      'SUCCESS',
                      SYSDATE,
                      #{rgtrId},
-                     #{receivers.size}
+                     #{sndCnt}
                  )
     </insert>
 

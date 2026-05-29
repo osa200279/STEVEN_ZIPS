@@ -20,4 +20,6 @@ public class SmsSendRequest {
     private List<SmsReceiver> receivers;  //SMS 문자 수신자 정보(회원번호+폰번호)
 
     private String smsNo;            // SMS 발송번호
+    private int sndCnt;            // 발송건수
+
 }
