@@ -167,13 +167,13 @@
               <label for="expenseCd">지출항목</label>
               <select id="expenseCd">
                 <option value="">선택</option>
-                <option value="SAL">급여/수당</option>
-                <option value="OFF">사무비</option>
-                <option value="REP">수선유지비</option>
-                <option value="UTL">공공요금</option>
-                <option value="SRV">위탁수수료</option>
-                <option value="INS">보험료</option>
-                <option value="ETC">잡지출</option>
+                <option value="SAL" data-label="급여/수당">급여/수당</option>
+                <option value="OFF" data-label="사무비">사무비</option>
+                <option value="REP" data-label="수선유지비">수선유지비</option>
+                <option value="UTL" data-label="공공요금">공공요금</option>
+                <option value="SRV" data-label="위탁수수료">위탁수수료</option>
+                <option value="INS" data-label="보험료">보험료</option>
+                <option value="ETC" data-label="잡지출">잡지출</option>
               </select>
 
               <label for="expenseAmt">금액</label>
@@ -248,6 +248,14 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     initDate();
+
+    /*
+   * 입력 영역의 연도/월을 변경하면
+   * 해당 월에 이미 등록된 항목을 다시 비활성화합니다.
+   */
+    document.getElementById('expenseYr').addEventListener('change', updateExpenseCdOptions);
+    document.getElementById('expenseMm').addEventListener('change', updateExpenseCdOptions);
+
     loadExpenseList();
   });
 
@@ -300,6 +308,17 @@
 
     renderExpenseList(currentExpenseList);
     document.getElementById('totalAmount').textContent = formatNumber(result.totalAmount || 0);
+
+    /*
+     * 조회한 연도/월을 지출 입력 영역에도 동일하게 반영합니다.
+     * 예: 조회조건 2026년 4월 조회 → 지출입력도 2026년 4월로 변경
+     */
+    syncInputPeriodWithSearch();
+
+    /*
+     * 조회된 목록을 기준으로 이미 등록된 항목 비활성화
+     */
+    updateExpenseCdOptions();
   }
 
   function renderExpenseList(list) {
@@ -327,6 +346,83 @@
               '</td>';
 
       tbody.appendChild(tr);
+    });
+  }
+
+  /**
+   * 조회 조건의 연도/월을 지출 입력 영역의 연도/월에 동일하게 반영합니다.
+   * 조회 월이 변경되면 수정 중이던 데이터는 초기화하여
+   * 다른 월 데이터로 잘못 저장되는 것을 방지합니다.
+   */
+  function syncInputPeriodWithSearch() {
+    const searchYear = document.getElementById('searchYear').value;
+    const searchMonth = document.getElementById('searchMonth').value;
+
+    // 조회한 연도/월을 입력 영역에 반영
+    document.getElementById('expenseYr').value = searchYear;
+    document.getElementById('expenseMm').value = searchMonth;
+
+    // 다른 월을 조회했을 때 기존 수정 상태가 남지 않도록 초기화
+    document.getElementById('expenseNo').value = '';
+    document.getElementById('expenseCd').value = '';
+    document.getElementById('expenseAmt').value = '';
+    document.getElementById('expenseCn').value = '';
+  }
+
+  /**
+   * 입력하려는 연도/월에 이미 등록되어 있는 지출항목은
+   * 신규 등록 시 선택할 수 없도록 비활성화합니다.
+   *
+   * 수정 중인 행의 항목은 다시 선택 가능해야 하므로 제외합니다.
+   */
+  function updateExpenseCdOptions() {
+    const expenseNo = document.getElementById('expenseNo').value;
+    const inputYear = Number(document.getElementById('expenseYr').value);
+    const inputMonth = Number(document.getElementById('expenseMm').value);
+    const expenseCdSelect = document.getElementById('expenseCd');
+
+    /*
+     * 현재 입력 중인 연도/월이 조회 조건의 연도/월과 다르면
+     * 현재 목록만으로 중복 여부를 정확히 판단할 수 없습니다.
+     *
+     * 서버에서도 최종 차단할 예정이므로,
+     * 화면에서는 조회된 월과 입력 월이 같은 경우에만 비활성화합니다.
+     */
+    const searchYear = Number(document.getElementById('searchYear').value);
+    const searchMonth = Number(document.getElementById('searchMonth').value);
+    const canCheckByCurrentList =
+            inputYear === searchYear && inputMonth === searchMonth;
+
+    Array.from(expenseCdSelect.options).forEach(function (option) {
+      if (!option.value) {
+        return;
+      }
+
+      const originalLabel = option.dataset.label || option.textContent;
+      option.textContent = originalLabel;
+      option.disabled = false;
+
+      if (!canCheckByCurrentList) {
+        return;
+      }
+
+      const alreadyRegistered = currentExpenseList.some(function (item) {
+        /*
+         * 수정 중인 자신의 항목은 중복으로 보지 않습니다.
+         */
+        if (expenseNo && item.expenseNo === expenseNo) {
+          return false;
+        }
+
+        return Number(item.expenseYr) === inputYear
+                && Number(item.expenseMm) === inputMonth
+                && item.expenseCd === option.value;
+      });
+
+      if (alreadyRegistered) {
+        option.disabled = true;
+        option.textContent = originalLabel + ' (등록완료)';
+      }
     });
   }
 
@@ -364,6 +460,25 @@
 
     const isUpdate = expenseNo !== '';
 
+    /*
+     * 현재 조회 중인 연도/월과 입력 연도/월이 같은 경우,
+     * 이미 등록된 동일 항목은 신규 저장 또는 다른 항목으로의 수정이 불가능합니다.
+     */
+    const duplicateExpense = currentExpenseList.some(function (item) {
+      if (isUpdate && item.expenseNo === expenseNo) {
+        return false;
+      }
+
+      return Number(item.expenseYr) === payload.expenseYr
+              && Number(item.expenseMm) === payload.expenseMm
+              && item.expenseCd === payload.expenseCd;
+    });
+
+    if (duplicateExpense) {
+      alert('해당 연월에 이미 등록된 지출항목입니다.');
+      return;
+    }
+
     const url = isUpdate
             ? contextPath + '/manager/expense/' + mgmtOfcNo + '/' + expenseNo
             : contextPath + '/manager/expense/' + mgmtOfcNo;
@@ -395,6 +510,8 @@
     document.getElementById('expenseCd').value = item.expenseCd;
     document.getElementById('expenseAmt').value = item.expenseAmt;
     document.getElementById('expenseCn').value = item.expenseCn || '';
+
+    updateExpenseCdOptions();
   }
 
   async function deleteExpense(expenseNo) {
@@ -424,6 +541,8 @@
 
     document.getElementById('expenseYr').value = document.getElementById('searchYear').value;
     document.getElementById('expenseMm').value = document.getElementById('searchMonth').value;
+
+    updateExpenseCdOptions();
   }
 
   function formatNumber(value) {

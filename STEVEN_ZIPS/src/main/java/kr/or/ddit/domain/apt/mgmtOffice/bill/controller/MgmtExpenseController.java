@@ -134,8 +134,17 @@ public class MgmtExpenseController {
                 return ResponseEntity.ok(result);
             }
 
-            // 2. 클라이언트에서 받은 aptCmplexNo는 믿지 않고 서버에서 세팅
-            expenseVO.setAptCmplexNo(aptComplexVO.getAptCmplexNo());
+            /*
+             * 같은 단지, 같은 연도, 같은 월, 같은 지출항목은
+             * 한 번만 등록할 수 있도록 중복 여부를 검사합니다.
+             */
+            int duplicateCount = expenseService.selectExpenseDuplicateCount(expenseVO);
+
+            if (duplicateCount > 0) {
+                result.put("success", false);
+                result.put("message", "해당 연월에 이미 등록된 지출항목입니다.");
+                return ResponseEntity.ok(result);
+            }
 
             // 3. 등록
             int row = expenseService.insertExpense(expenseVO);
@@ -180,7 +189,29 @@ public class MgmtExpenseController {
             expenseVO.setExpenseNo(expenseNo);
             expenseVO.setAptCmplexNo(aptComplexVO.getAptCmplexNo());
 
-            // 3. 수정
+            // 3. 필수값 검증
+            if (expenseVO.getExpenseYr() <= 0
+                    || expenseVO.getExpenseMm() < 1
+                    || expenseVO.getExpenseMm() > 12
+                    || expenseVO.getExpenseCd() == null
+                    || expenseVO.getExpenseCd().isBlank()
+                    || expenseVO.getExpenseAmt() <= 0) {
+
+                result.put("success", false);
+                result.put("message", "연도, 월, 지출항목을 모두 선택해 주세요.");
+                return ResponseEntity.ok(result);
+            }
+
+            // 4. 자기 자신을 제외하고 같은 연월, 같은 항목이 있는지 확인
+            int duplicateCount = expenseService.selectExpenseDuplicateCount(expenseVO);
+
+            if (duplicateCount > 0) {
+                result.put("success", false);
+                result.put("message", "해당 연월에 이미 등록된 지출항목입니다.");
+                return ResponseEntity.ok(result);
+            }
+
+            // 5. 수정
             int row = expenseService.updateExpense(expenseVO);
 
             result.put("success", row > 0);

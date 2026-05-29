@@ -41,4 +41,9 @@ public class MgmtExpenseServiceImpl implements IMgmtExpenseService{
     public int deleteExpense(ExpenseVO expenseVO) {
         return expenseMapper.deleteExpense(expenseVO);
     }
+
+    @Override
+    public int selectExpenseDuplicateCount(ExpenseVO expenseVO) {
+        return expenseMapper.selectExpenseDuplicateCount(expenseVO);
+    }
 }

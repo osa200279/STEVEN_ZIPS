@@ -15,4 +15,6 @@ public interface IMgmtExpenseService {
     public int updateExpense(ExpenseVO expenseVO);
 
     public int deleteExpense(ExpenseVO expenseVO);
+
+    public int selectExpenseDuplicateCount(ExpenseVO expenseVO);
 }

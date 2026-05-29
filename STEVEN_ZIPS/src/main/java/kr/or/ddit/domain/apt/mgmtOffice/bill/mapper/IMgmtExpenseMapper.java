@@ -17,4 +17,6 @@ public interface IMgmtExpenseMapper {
     int updateExpense(ExpenseVO expenseVO);
 
     int deleteExpense(ExpenseVO expenseVO);
+
+    int selectExpenseDuplicateCount(ExpenseVO expenseVO);
 }

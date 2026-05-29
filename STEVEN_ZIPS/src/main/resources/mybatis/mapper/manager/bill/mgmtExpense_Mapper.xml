@@ -77,6 +77,25 @@
 
     </select>
 
+    <!-- 같은 단지, 같은 연월, 같은 지출항목 중복 여부 확인 -->
+    <select id="selectExpenseDuplicateCount"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.ExpenseVO"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM EXPENSE E
+        WHERE E.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND E.EXPENSE_YR = #{expenseYr}
+        AND E.EXPENSE_MM = #{expenseMm}
+        AND E.EXPENSE_CD = #{expenseCd}
+
+        <!-- 수정 시에는 현재 수정 중인 자기 자신은 중복 대상에서 제외 -->
+        <if test="expenseNo != null and expenseNo != ''">
+            AND E.EXPENSE_NO != #{expenseNo}
+        </if>
+
+    </select>
+
     <!-- 지출 등록 -->
     <insert id="insertExpense"
             parameterType="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.ExpenseVO">
