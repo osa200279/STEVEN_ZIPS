@@ -31,7 +31,7 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService {
     @Autowired
     private IApiMemberMapper memberMapper;
 
-    AESUtil autil = new AESUtil();
+    AESUtil aesUtil = new AESUtil();
 
     @Override
     public List<String> getSidoList() {
@@ -66,7 +66,7 @@ public class AptMemberApiServiceImpl implements IAptMemberApiService {
             member.setUserNm(generateRandomName());
             member.setUserTelno(generatePhoneNumber());
             try {
-                member.setUserRrno(autil.encrypt(generateRrn()));
+                member.setUserRrno(aesUtil.encrypt(generateRrn()));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

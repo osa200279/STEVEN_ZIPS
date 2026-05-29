@@ -1,10 +1,13 @@
 package kr.or.ddit.domain.apt.apiApartment.service;
 
+import kr.or.ddit.common.api.react.vo.AptManageDetailDTO;
 import kr.or.ddit.domain.apt.apiApartment.mapper.IAptApiMapper;
 import kr.or.ddit.domain.apt.apiApartment.vo.*;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.apt.main.vo.AptDetailVO;
 import kr.or.ddit.domain.apt.main.vo.AptUnitVO;
+import kr.or.ddit.domain.apt.mgmtOffice.main.service.IMgmtAptComplexEditService;
+import kr.or.ddit.domain.apt.mgmtOffice.main.vo.UpdateBuildingStructureDTO;
 import kr.or.ddit.domain.member.manager.vo.ManagerVO;
 import kr.or.ddit.domain.member.vo.AuthVO;
 import kr.or.ddit.domain.member.vo.MemberVO;
@@ -39,6 +42,9 @@ public class AptApiServiceImpl implements IAptApiService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IMgmtAptComplexEditService mgmtAptComplexEditService;
 
     private final String serviceKey = "279564b17283c0863ff904cbfee96deb15c26cd426ec71fe7c5966a865f64f2f";
 
@@ -219,62 +225,119 @@ public class AptApiServiceImpl implements IAptApiService {
     }
 
     @Override
-    public AptComplexVO getDetail(String kaptCode) {
-
-        // 1. DB 조회
+    public AptManageDetailDTO getDetail(
+            String kaptCode
+    ) {
+        AptManageDetailDTO dto = new AptManageDetailDTO();
         AptComplexVO complex = aptMapper.selectAptComplex(kaptCode);
 
-        // 2. 등록된 단지면 DB 정보 반환
+        // 등록된 단지
         if (complex != null) {
 
-
-
-            return complex;
+            dto.setRegistered(true);
+            dto.setComplex(complex);
+            dto.setUnitList(
+                    aptMapper.selectAptUnitList(
+                            kaptCode
+                    )
+            );
+            return dto;
         }
 
-        // 3. 미등록 단지면 공공 API 조회
-        AptBass bass = getBassInfo(kaptCode);
+// 미등록 단지
+        AptBass bass =
+                getBassInfo(kaptCode);
 
-        AptComplexVO vo = new AptComplexVO();
+        AptDetail detail =
+                getDetailInfo(kaptCode);
 
-        vo.setAptCmplexNo(bass.getKaptCode());
-        vo.setAptCmplexNm(bass.getKaptName());
-        vo.setDorojuso(bass.getDoroJuso());
-        vo.setCnscoNm(bass.getKaptBcompany());
+        dto.setRegistered(false);
+
+        dto.setComplex(
+                createComplexVO(
+                        bass,
+                        detail
+                )
+        );
+
+        dto.setUnitList(
+                createUnitList(bass)
+        );
+
+        return dto;
+    }
+
+    private AptComplexVO createComplexVO(
+            AptBass bass,
+            AptDetail detail
+    ) {
+
+        AptComplexVO vo =
+                new AptComplexVO();
+
+        vo.setAptCmplexNo(
+                bass.getKaptCode()
+        );
+
+        vo.setAptCmplexNm(
+                bass.getKaptName()
+        );
+
+        vo.setDorojuso(
+                bass.getDoroJuso()
+        );
+
+        vo.setCnscoNm(
+                bass.getKaptBcompany()
+        );
 
         vo.setHeatTy(
                 bass.getCodeHeatNm()
         );
 
-        // 준공년도
         vo.setBldYr(
                 bass.getKaptUsedate()
         );
 
-        // 세대수
-        if (bass.getKaptdaCnt() != null) {
-            try {
-                vo.setUnitCnt(
-                        Integer.parseInt(
-                                bass.getKaptdaCnt()
-                        )
-                );
-            } catch (Exception e) {
-                vo.setUnitCnt(0);
-            }
-        }
+        vo.setDongCnt(
+                safeParseInt(
+                        bass.getKaptDongCnt()
+                )
+        );
 
-        // 동수
-        if (bass.getKaptDongCnt() != null) {
-            try {
-                vo.setDongCnt(
-                        Integer.parseInt(
-                                bass.getKaptDongCnt()
-                        )
-                );
-            } catch (Exception e) {
-                vo.setDongCnt(0);
-            }
+        vo.setUnitCnt(
+                safeParseInt(
+                        bass.getKaptdaCnt()
+                )
+        );
+
+        vo.setMaxFloor(
+                Math.max(
+                        bass.getKaptTopFloor(),
+                        bass.getKtownFlrNo()
+                )
+        );
+
+        if (detail != null) {
+
+            vo.setPkgCnt(
+                    safeParseInt(
+                            detail.getKaptdPcnt()
+                    )
+                            +
+                            safeParseInt(
+                                    detail.getKaptdPcntu()
+                            )
+            );
+
+            vo.setCcCnt(
+                    String.valueOf(
+                            safeParseInt(
+                                    detail.getKaptdCccnt()
+                            )
+                    )
+            );
+
         }
 
         return vo;
@@ -842,6 +905,42 @@ public class AptApiServiceImpl implements IAptApiService {
         return (int) Double.parseDouble(str);
     }
 
+    private String getRandomBankCd() {
+
+        String[] arr = {
+                "KB",
+                "SH",
+                "WR",
+                "HN",
+                "NH",
+                "IBK"
+        };
+
+        return arr[
+                (int) (
+                        Math.random()
+                                * arr.length
+                )
+                ];
+    }
+
+    private String createRandomAccountNo() {
+
+        return (100 + (int) (Math.random() * 900))
+                + "-"
+                + (100000 + (int) (Math.random() * 900000))
+                + "-"
+                + (10 + (int) (Math.random() * 90));
+    }
+
+    private String createRandomTelNo() {
+
+        return "042-"
+                + (100 + (int) (Math.random() * 900))
+                + "-"
+                + (1000 + (int) (Math.random() * 9000));
+    }
+
     private Map<String, String> getLatLng(
             String address
     ) {
@@ -920,4 +1019,326 @@ public class AptApiServiceImpl implements IAptApiService {
             return null;
         }
     }
+
+    @Override
+    @Transactional
+    public void saveApartment(AptManageDetailDTO dto) {
+        AptComplexVO complex = dto.getComplex();
+        int exists = aptMapper.existsApt(complex.getAptCmplexNo());
+        if (exists > 0) {
+            updateApartment(dto);
+        } else {
+            registerApartment(dto);
+        }
+    }
+
+    private void registerApartment(
+            AptManageDetailDTO dto
+    ) {
+
+        AptComplexVO complex =
+                dto.getComplex();
+
+        List<AptUnitVO> unitList =
+                dto.getUnitList();
+
+        // 단지
+        AptComplexEntity apt =
+                new AptComplexEntity();
+
+        apt.setAptCmplexNo(
+                complex.getAptCmplexNo()
+        );
+
+        apt.setAptCmplexNm(
+                complex.getAptCmplexNm()
+        );
+
+        apt.setBjdCd(
+                complex.getBjdCd()
+        );
+
+        apt.setSidoNm(
+                complex.getSidoNm()
+        );
+
+        apt.setSigunguNm(
+                complex.getSigunguNm()
+        );
+
+        apt.setEmdNm(
+                complex.getEmdNm()
+        );
+
+        apt.setLatVal(
+                complex.getLatVal() == null
+                        ? 0
+                        : complex.getLatVal().doubleValue()
+        );
+
+        apt.setLonVal(
+                complex.getLonVal() == null
+                        ? 0
+                        : complex.getLonVal().doubleValue()
+        );
+
+        apt.setUnitCnt(
+                complex.getUnitCnt()
+        );
+
+        apt.setBldYr(
+                complex.getBldYr()
+        );
+
+        apt.setCnscoNm(
+                complex.getCnscoNm()
+        );
+
+        apt.setHeatTy(
+                complex.getHeatTy()
+        );
+
+        apt.setPkgCnt(
+                complex.getPkgCnt()
+        );
+
+        apt.setMaxFloor(
+                complex.getMaxFloor()
+        );
+
+        apt.setDongCnt(
+                complex.getDongCnt()
+        );
+
+        apt.setDorojuso(
+                complex.getDorojuso()
+        );
+
+        apt.setCcCnt(
+                safeParseInt(
+                        complex.getCcCnt()
+                )
+        );
+
+        aptMapper.insertApt(
+                apt
+        );
+
+        // 관리사무소
+        String mgmtOfcNo =
+                seqService.getMgmtSeq();
+
+        MgmtOfficeEntity mgmt =
+                new MgmtOfficeEntity();
+
+        mgmt.setMgmtOfcNo(
+                mgmtOfcNo
+        );
+
+        mgmt.setAptCmplexNo(
+                complex.getAptCmplexNo()
+        );
+
+        mgmt.setMgmtOfcNm(
+                complex.getAptCmplexNm()
+                        + " 관리사무소"
+        );
+
+        mgmt.setMgmtOfcTelno(
+                createRandomTelNo()
+        );
+
+        String bankCd =
+                getRandomBankCd();
+
+        mgmt.setMgmtOfcBankCd(
+                bankCd
+        );
+
+        mgmt.setMgmtOfcAcntNo(
+                createRandomAccountNo()
+        );
+
+        mgmt.setMgmtOfcAcntHldrNm(
+                complex.getAptCmplexNm()
+                        + " 관리사무소"
+        );
+
+        aptMapper.insertMgmtOffice(
+                mgmt
+        );
+
+        aptMapper.insertMgmtOfficeBank(
+                mgmt
+        );
+
+        // Member
+        String userNo =
+                seqService.getMemberSeq();
+
+        MemberVO member =
+                new MemberVO();
+
+        member.setUserNo(userNo);
+
+        member.setUserId(
+                complex.getAptCmplexNo()
+        );
+
+        member.setUserPw(
+                passwordEncoder.encode("1234")
+        );
+
+        member.setUserNm(
+                complex.getAptCmplexNm()
+                        + "_관리소장"
+        );
+
+        member.setUserTelno(
+                mgmt.getMgmtOfcTelno()
+        );
+
+        member.setUserRrno(
+                "1234561234567"
+        );
+
+        aptMapper.insertMember(member);
+
+        // Manager
+        ManagerVO manager =
+                new ManagerVO();
+
+        manager.setUserNo(
+                userNo
+        );
+
+        manager.setMgmtOfcNo(
+                mgmtOfcNo
+        );
+
+        manager.setMngrDutyCd(
+                "HEAD"
+        );
+
+        aptMapper.insertManager(
+                manager
+        );
+        // Auth
+        AuthVO auth =
+                new AuthVO();
+
+        auth.setUserNo(
+                userNo
+        );
+
+        auth.setAuth(
+                "ROLE_MNGR"
+        );
+
+        aptMapper.insertAuth(
+                auth
+        );
+        // AptUnit
+        if(!unitList.isEmpty()){
+
+            aptMapper.insertAptUnitBatch(
+                    unitList
+            );
+        }
+        // AptHoTy
+        AptHoTyDTO hoType =
+                new AptHoTyDTO();
+
+        hoType.setHoTyNo(
+                complex.getAptCmplexNo()
+                        + "_1"
+        );
+
+        hoType.setAptCmplexNo(
+                complex.getAptCmplexNo()
+        );
+
+        hoType.setTyNm("A타입");
+        hoType.setExclusiveSize("84");
+        hoType.setRoomCnt(3);
+        hoType.setBathroomCnt(2);
+
+        aptMapper.insertAptHoTy(hoType);
+        for(AptUnitVO unit : unitList){
+            UpdateBuildingStructureDTO
+                    structureDto =
+                    new UpdateBuildingStructureDTO();
+            structureDto.setDongNo(
+                    unit.getDongNo()
+            );
+            structureDto.setDongNm(
+                    unit.getDongNm()
+            );
+            structureDto.setAptCmplexNo(
+                    unit.getAptCmplexNo()
+            );
+            structureDto.setTotalFloor(
+                    unit.getFloor()
+            );
+            structureDto.setHoPerFloor(
+                    unit.getFloor() > 0
+                            ? unit.getUnitCnt()
+                            / unit.getFloor()
+                            : 0
+            );
+            mgmtAptComplexEditService
+                    .updateBuildingStructure(
+                            structureDto
+                    );
+        }
+    }
+
+    private void updateApartment(
+            AptManageDetailDTO dto
+    ) {
+
+        for (AptUnitVO unit
+                : dto.getUnitList()) {
+
+            int cnt1 = aptMapper.updateUnit(unit);
+
+            log.info(
+                    "updateUnit result={}",
+                    cnt1
+            );
+
+            UpdateBuildingStructureDTO structureDto =
+                    new UpdateBuildingStructureDTO();
+
+            structureDto.setDongNo(unit.getDongNo());
+            structureDto.setDongNm(unit.getDongNm());
+            structureDto.setAptCmplexNo(unit.getAptCmplexNo());
+
+            structureDto.setTotalFloor(unit.getFloor());
+
+            structureDto.setHoPerFloor(
+                    unit.getFloor() > 0
+                            ? unit.getUnitCnt()
+                            / unit.getFloor()
+                            : 0
+            );
+
+            mgmtAptComplexEditService
+                    .updateBuildingStructure(
+                            structureDto
+                    );
+        }
+
+        int cnt2 =
+                aptMapper.updateComplex(
+                        dto.getComplex()
+                );
+
+        log.info(
+                "updateComplex result={}",
+                cnt2
+        );
+    }
+
+
 }

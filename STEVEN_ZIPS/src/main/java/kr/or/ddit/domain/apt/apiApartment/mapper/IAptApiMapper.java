@@ -129,4 +129,14 @@ public interface IAptApiMapper {
     void updateEmpty(String hoNo);
 
     AptComplexVO selectAptComplex(String kaptCode);
+
+    List<AptUnitVO> selectAptUnitList(String kaptCode);
+
+    int updateComplex(AptComplexVO complex);
+
+    int updateUnit(AptUnitVO unit);
+
+    void insertMgmtOfficeBank(MgmtOfficeEntity mgmt);
+
+    void insertAptHoTy(AptHoTyDTO hoType);
 }

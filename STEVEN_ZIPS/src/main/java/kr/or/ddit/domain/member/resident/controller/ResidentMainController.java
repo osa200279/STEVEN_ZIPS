@@ -417,7 +417,6 @@ public class ResidentMainController {
         AptMainPageDTO.ResponseDto aptCommonDTO = aptComplexService.selectAptCommonDTO(aptCmplexNo);
         model.addAttribute("aptInfo", aptCommonDTO);
         model.addAttribute("aptCmplexNo", aptCmplexNo);
-
         model.addAttribute("statusCardList", statusCardList);
         model.addAttribute("historyList", historyList);
         model.addAttribute("currentPage", currentPage);
@@ -991,8 +990,7 @@ public class ResidentMainController {
         // 이미 참여했으면 결과페이지로 이동
         if (alreadyParticipated) {
 
-            return "redirect:/resident/survey/result/{aptCmplexNo}/{surveyNo}"
-                    + surveyNo;
+            return "redirect:/resident/survey/result/{aptCmplexNo}/{surveyNo}";
         }
 
         // 미참여자만 설문 상세 진입
@@ -1057,9 +1055,6 @@ public class ResidentMainController {
             @PathVariable String aptCmplexNo,
             Model model
     ) {
-
-        ResidentVO resident =
-                (ResidentVO) customUser.getMember();
 
         String aptCd = aptCmplexNo;
 

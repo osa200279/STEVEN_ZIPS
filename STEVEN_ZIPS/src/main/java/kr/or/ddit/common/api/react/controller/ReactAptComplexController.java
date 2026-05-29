@@ -1,5 +1,6 @@
 package kr.or.ddit.common.api.react.controller;
 
+import kr.or.ddit.common.api.react.vo.AptManageDetailDTO;
 import kr.or.ddit.domain.apt.apiApartment.service.IAptApiService;
 import kr.or.ddit.domain.apt.apiApartment.service.IAptMemberApiService;
 import kr.or.ddit.domain.apt.apiApartment.vo.AptBass;
@@ -49,7 +50,6 @@ public class ReactAptComplexController {
     @GetMapping("/sido")
     @ResponseBody
     public List<String> getSido() {
-
         return aptMemberService.getSidoList();
     }
 
@@ -145,11 +145,46 @@ public class ReactAptComplexController {
         return "좌표 업데이트 완료";
     }
 
-    @GetMapping("/apt/detail")
+    @GetMapping("/apt/detail/{kaptCode}")
     @ResponseBody
-    public AptComplexVO getDetail(
-            @RequestParam String kaptCode
-    ){
+    public AptManageDetailDTO getDetail(
+            @PathVariable String kaptCode
+    ) {
         return aptService.getDetail(kaptCode);
+    }
+
+    @PostMapping("/apt/save")
+    @ResponseBody
+    public String saveApartment(
+            @RequestBody AptManageDetailDTO dto
+    ) {
+
+        log.info(
+                "saveApartment : {}",
+                dto.getComplex()
+                        .getAptCmplexNo()
+        );
+
+        aptService.saveApartment(dto);
+
+        log.info(
+                "aptCmplexNo={}",
+                dto.getComplex()
+                        .getAptCmplexNo()
+        );
+
+        log.info(
+                "ccCnt={}",
+                dto.getComplex()
+                        .getCcCnt()
+        );
+
+        log.info(
+                "freePkgCnt={}",
+                dto.getComplex()
+                        .getFreePkgCnt()
+        );
+
+        return "저장 완료";
     }
 }
