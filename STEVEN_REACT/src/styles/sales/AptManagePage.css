@@ -206,3 +206,28 @@
         width:100%;
     }
 }
+
+.apt-detail-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.apt-save-btn{
+    padding:8px 18px;
+
+    border:none;
+    border-radius:8px;
+
+    background:#2563eb;
+    color:#fff;
+
+    font-size:13px;
+    font-weight:600;
+
+    cursor:pointer;
+}
+
+.apt-save-btn:hover{
+    opacity:.9;
+}

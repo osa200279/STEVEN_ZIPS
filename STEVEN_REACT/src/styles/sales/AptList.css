@@ -1,53 +1,73 @@
-.apt-list{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+/* =========================
+   리스트 row
+========================= */
 
 .apt-list-item{
-  padding:14px 16px;
+    display:flex;
+    align-items:center;
 
-  border:1px solid var(--outline-variant);
-  border-radius:12px;
+    gap:20px;
 
-  background:#fff;
+    height:54px;
 
-  cursor:pointer;
+    padding:0 18px;
 
-  transition:all .15s ease;
+    border-bottom:1px solid #eef2f7;
+
+    cursor:pointer;
+
+    transition:
+        background .12s ease;
+}
+
+.apt-list-item:last-child{
+    border-bottom:none;
 }
 
 .apt-list-item:hover{
-  background:var(--surface-container-low);
-  border-color:var(--primary-fixed);
+    background:#f8fafc;
 }
+
+/* 선택 */
 
 .apt-list-item.selected{
-  border-color:var(--primary);
-  background:var(--surface-container-high);
+    background:#eff6ff;
+
+    box-shadow:
+        inset 4px 0 0 #2563eb;
 }
+
+/* =========================
+   아파트명
+========================= */
 
 .apt-list-name{
-  font-size:14px;
-  font-weight:700;
+    width:240px;
 
-  color:var(--primary);
+    flex-shrink:0;
+
+    font-size:14px;
+    font-weight:700;
+
+    color:#1e293b;
+
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }
+
+/* =========================
+   주소
+========================= */
 
 .apt-list-address{
-  margin-top:4px;
+    flex:1;
 
-  font-size:13px;
-  line-height:1.5;
+    font-size:13px;
 
-  color:var(--on-surface-variant);
-}
+    color:#64748b;
 
-.apt-list-empty{
-  padding:40px 0;
-
-  text-align:center;
-
-  font-size:14px;
-  color:var(--on-surface-variant);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }

@@ -89,3 +89,22 @@ export const updateLatLng = async () => {
         `${API_URL}/updateLatLng.do`
     );
 };
+
+export const getApartmentDetail = async (
+    kaptCode
+) => {
+
+    return requestApi.get(
+        `${API_URL}/apt/detail/${kaptCode}`
+    );
+};
+
+export const saveApartment = async (
+    data
+) => {
+
+    return requestApi.post(
+        `${API_URL}/apt/save`,
+        data
+    );
+};

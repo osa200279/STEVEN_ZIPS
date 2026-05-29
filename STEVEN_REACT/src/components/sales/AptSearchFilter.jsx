@@ -114,30 +114,6 @@ const AptSearchFilter = ({
     }
   };
 
-  // =========================
-  // 아파트 조회
-  // =========================
-  useEffect(() => {
-
-    if (
-      !searchForm.sidoCd ||
-      !searchForm.sigunguCd ||
-      !searchForm.emdCd
-    ) {
-      return;
-    }
-
-    onLoadApartments({
-      sidoCd: searchForm.sidoCd,
-      sigunguCd: searchForm.sigunguCd,
-      emdCd: searchForm.emdCd,
-    });
-
-  }, [
-    searchForm.sidoCd,
-    searchForm.sigunguCd,
-    searchForm.emdCd,
-  ]);
 
   // =========================
   // 공통 변경
@@ -153,10 +129,16 @@ const AptSearchFilter = ({
   // =========================
   // 검색
   // =========================
-  const handleSearch = () => {
+const handleSearch = () => {
 
-    onFilter(searchForm.keyword);
-  };
+  onLoadApartments({
+    sidoCd: searchForm.sidoCd,
+    sigunguCd: searchForm.sigunguCd,
+    emdCd: searchForm.emdCd,
+  });
+
+  onFilter(searchForm.keyword);
+};
 
   return (
 

@@ -4,7 +4,11 @@ import AptSearchFilter from '../../components/sales/AptSearchFilter';
 import AptList from '../../components/sales/AptList';
 import AptDetailPanel from '../../components/sales/AptDetailPanel';
 
-import {getApartmentList} from '../../util/api/sales/aptRegisterApi';
+import {
+    getApartmentList,
+    getApartmentDetail,
+    saveApartment,
+} from '../../util/api/sales/aptRegisterApi';
 
 import '../../styles/sales/AptManagePage.css';
 
@@ -16,8 +20,30 @@ const AptManagePage = () => {
         sigunguCd: '',
         emdCd: '',
         keyword: '',
-        
+
     });
+
+    const [complex, setComplex] =
+        useState({
+            aptCmplexNm: '',
+            cnscoNm: '',
+            dorojuso: '',
+
+            unitCnt: 0,
+            dongCnt: 0,
+            maxFloor: 0,
+
+            pkgCnt: 0,
+            freePkgCnt: 0,
+            ccCnt: 0,
+
+            heatTy: '',
+        });
+
+    const [unitList, setUnitList] =
+        useState([]);
+
+    const [selectedKaptCode, setSelectedKaptCode] = useState(null);
 
     // 원본 리스트
     const [originAptList, setOriginAptList] = useState([]);
@@ -26,7 +52,7 @@ const AptManagePage = () => {
     const [filteredAptList, setFilteredAptList] = useState([]);
 
     // 선택 아파트
-    const [selectedApt, setSelectedApt] = useState(null);
+    const [detailData, setDetailData] = useState(null);
 
     // 로딩
     const [loading, setLoading] = useState(false);
@@ -69,9 +95,49 @@ const AptManagePage = () => {
     /**
      * 아파트 선택
      */
-    const handleSelectApt = (apt) => {
-        setSelectedApt(apt);
+    const handleSelectApt = async (apt) => {
+
+        setSelectedKaptCode(
+            apt.kaptCode
+        );
+
+        try {
+
+            const res =
+                await getApartmentDetail(
+                    apt.kaptCode
+                );
+
+            setDetailData(
+                res.data
+            );
+
+            setComplex(
+                res.data?.complex || {
+                    aptCmplexNm: '',
+                    cnscoNm: '',
+                    dorojuso: '',
+                    unitCnt: 0,
+                    dongCnt: 0,
+                    maxFloor: 0,
+                    pkgCnt: 0,
+                    freePkgCnt: 0,
+                    ccCnt: 0,
+                    heatTy: '',
+                }
+            );
+
+            setUnitList(
+                res.data?.unitList || []
+            );
+
+        } catch (e) {
+
+            console.error(e);
+
+        }
     };
+
 
     /**
      * 이름 필터
@@ -101,6 +167,33 @@ const AptManagePage = () => {
 
         setFilteredAptList(filtered);
     };
+
+    const handleSave = async () => {
+
+        if (!complex?.aptCmplexNo) {
+
+            alert('아파트를 선택해주세요.');
+            return;
+        }
+
+        try {
+
+            await saveApartment({
+                complex,
+                unitList,
+            });
+
+            alert('저장 완료');
+
+        } catch (e) {
+
+            console.error(e);
+
+            alert('저장 실패');
+        }
+    };
+
+
 
     return (
         <div className="content-wrapper">
@@ -156,24 +249,43 @@ const AptManagePage = () => {
 
                     <AptList
                         aptList={filteredAptList}
-                        selectedApt={selectedApt}
+                        selectedApt={{
+                            kaptCode:
+                                selectedKaptCode
+                        }}
                         onSelect={handleSelectApt}
                         loading={loading}
                     />
-
                 </div>
 
                 {/* 상세 */}
                 <div className="apt-section">
 
-                    <div className="apt-section-header">
-                        상세 정보
+                    <div className="apt-section-header apt-detail-header">
+
+                        <span>
+                            상세 정보
+                        </span>
+
+                        <button
+                            type="button"
+                            className="apt-save-btn"
+                            onClick={handleSave}
+                        >
+                            저장
+                        </button>
+
                     </div>
 
                     <AptDetailPanel
-                        selectedApt={selectedApt}
-                    />
+                        detailData={detailData}
 
+                        complex={complex}
+                        setComplex={setComplex}
+
+                        unitList={unitList}
+                        setUnitList={setUnitList}
+                    />
                 </div>
 
             </div>

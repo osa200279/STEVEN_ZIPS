@@ -48,12 +48,10 @@ const AptList = ({
             onClick={() => onSelect(apt)}
           >
 
-            {/* 아파트명 */}
             <div className="apt-list-name">
               {apt.kaptName}
             </div>
 
-            {/* 주소 */}
             <div className="apt-list-address">
               {apt.doroJuso}
             </div>
