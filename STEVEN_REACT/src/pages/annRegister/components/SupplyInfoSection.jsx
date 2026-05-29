@@ -2,6 +2,21 @@ import { LR, SUPPLY_LABELS, annStyles } from './formBits';
 
 const L = SUPPLY_LABELS;
 
+// 1) 0/빈값은 '-'로, 숫자는 '원' + 콤마
+export const formatWon = (value, { zeroAsDash = true } = {}) => {
+  if (value == null || value === '') return '-';
+  const n = Number(value);
+  if (!Number.isFinite(n)) return '-';
+  if (zeroAsDash && n === 0) return '-';
+  return `${n.toLocaleString('ko-KR')}원`;
+};
+// 2) 접미사(동/호) 중복 방지해서 붙이기
+export const withSuffix = (value, suffix) => {
+  const s = String(value ?? '').trim();
+  if (!s) return '-';
+  return s.endsWith(suffix) ? s : `${s}${suffix}`;
+};
+
 export default function SupplyInfoSection({
   sido,
   setsido,
@@ -125,6 +140,7 @@ export default function SupplyInfoSection({
               <thead>
                 <tr>
                   <th>선택</th>
+                  <th>동</th>
                   <th>호</th>
                   <th>타입</th>
                   <th>전용면적(㎡)</th>
@@ -152,18 +168,19 @@ export default function SupplyInfoSection({
                           }}
                         />
                       </td>
-                      <td>{row.HO ?? row.ho}</td>
+                      <td>{row.DONG_NM ?? row.dong_nm}동</td>
+                      <td>{row.HO ?? row.ho}호</td>
                       <td>{row.TY_NM ?? row.ty_nm}</td>
                       <td>{row.EXCLUSIVE_SIZE ?? row.exclusive_size}</td>
                       <td>{row.ROOM_CNT ?? row.room_cnt}</td>
                       <td>{row.BATHROOM_CNT ?? row.bathroom_cnt}</td>
-                      <td>{row.DPST_AMT ?? row.dpst_amt}</td>
-                      <td>{row.MTHLY_RENT_AMT ?? row.mthly_rent_amt}</td>
+                      <td>{formatWon(row.DPST_AMT ?? row.dpst_amt,{zeroAsDash:false})}</td>
+                      <td>{formatWon(row.MTHLY_RENT_AMT ?? row.mthly_rent_amt)}</td>
                     </tr>
                   ))
                   : (
                     <tr>
-                      <td colSpan={8} style={{ textAlign: 'center', color: 'gray' }}>
+                      <td colSpan={9} style={{ textAlign: 'center', color: 'gray' }}>
                         단지를 선택하세요
                       </td>
                     </tr>
