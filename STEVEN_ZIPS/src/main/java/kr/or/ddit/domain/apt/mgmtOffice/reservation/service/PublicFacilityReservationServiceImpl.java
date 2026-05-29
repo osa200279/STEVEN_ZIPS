@@ -1,6 +1,7 @@
 package kr.or.ddit.domain.apt.mgmtOffice.reservation.service;
 
 import kr.or.ddit.common.model.PaginationInfoVO;
+import kr.or.ddit.common.sms.service.ISmsService;
 import kr.or.ddit.domain.apt.mgmtOffice.reservation.mapper.IPublicFacilityReservationMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.reservation.vo.PublicFacilityReservationVO;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import java.util.List;
+import kr.or.ddit.common.sms.service.ISmsService;
 
 /**
  * ServiceImpl란? 실제 업무 규칙을 처리하는 클래스입니다.
@@ -18,6 +20,10 @@ import java.util.List;
 public class PublicFacilityReservationServiceImpl implements IPublicFacilityReservationService {
 
     private final IPublicFacilityReservationMapper mapper;
+
+    /* SMS 문자 발송 */
+    private final ISmsService smsService;
+
 
     private PaginationInfoVO<PublicFacilityReservationVO> buildPaging(
             PublicFacilityReservationVO searchVO, int currentPage, int totalRecord, List<PublicFacilityReservationVO> dataList) {
@@ -187,18 +193,38 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     @Transactional
     public void approve(PublicFacilityReservationVO vo) {
         mapper.approveReservation(vo);
-
         /*
          * 관리자가 승인하면 회의실 자원 상태를 USE(사용중)로 변경합니다.
          */
         mapper.updateItemStatusUse(vo);
+
+        /*
+         * SMS 문자 발송
+         * Mock 모드에서는 실제 문자는 가지 않고 SMS_SND, SMS_SND_DTL 이력만 저장.
+         */
+        smsService.sendReservationApproved(
+                vo.getUserNo(),
+                vo.getCmnFacilityNm(),
+                vo.getRsvtBgngDttm() + " ~ " + vo.getRsvtEndDttm(),
+                "SYSTEM"
+        );
+
     }
 
     @Override
     @Transactional
     public void reject(PublicFacilityReservationVO vo) {
-        if (!StringUtils.hasText(vo.getRejectReason())) throw new IllegalArgumentException("거절사유는 필수입니다.");
+        if (!StringUtils.hasText(vo.getRejectReason())) {
+            throw new IllegalArgumentException("거절사유는 필수입니다.");
+        }
         mapper.rejectReservation(vo);
+
+        smsService.sendReservationRejected(
+                vo.getUserNo(),
+                vo.getCmnFacilityNm(),
+                vo.getRejectReason(),
+                "SYSTEM"
+        );
     }
 
     @Override
