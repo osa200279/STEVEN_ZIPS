@@ -566,8 +566,8 @@ public class ManagerMainController {
         AptComplexVO aptComplexVO = aptComplexService.selectMgmtOfcNoAptComplex(mgmtOfcNo);
 
         managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
-        System.out.println("mgmtOfcNo = " + mgmtOfcNo);
-        System.out.println("complex = " + aptComplexVO);
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+        model.addAttribute("dongList", facilityService.selectDongList(mgmtOfcNo));
 
         return "apt/mgmtOffice/broadcast/mngr_broadcast";
     }

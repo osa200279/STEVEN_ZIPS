@@ -13,127 +13,6 @@
         /* 공고 목록 조회 */
 
         SELECT
-        cap.ann_no AS annNo                                      /** 공고번호 */
-        , cap.board_no AS boardNo                                  /** 게시판번호 */
-        , cbi.board_nm AS boardNm                                  /** 게시판명 */
-        , cbi.board_ty_cd AS boardTyCd                             /** 게시판유형코드 */
-        , cbi.apt_cmplex_no AS aptCmplexNo                         /** 아파트단지번호 */
-        , ac.apt_cmplex_nm AS aptCmplexNm                          /** 아파트단지명 */
-        , cap.ttl AS ttl                                           /** 제목 */
-        , cap.cn AS cn                                             /** 내용 */
-        , cap.wrtr_id AS wrtrId                                    /** 작성자아이디 */
-        , cap.top_fix_yn AS topFixYn                               /** 상단고정여부 */
-        , TO_CHAR(cap.pblanc_bgng_dt, 'YYYY-MM-DD') AS pblancBgngDt /** 공고게시시작일 */
-        , TO_CHAR(cap.pblanc_end_dt, 'YYYY-MM-DD') AS pblancEndDt   /** 공고게시종료일 */
-        , TO_CHAR(cap.rcrt_bgng_dt, 'YYYY-MM-DD') AS rcrtBgngDt     /** 모집시작일 */
-        , TO_CHAR(cap.rcrt_end_dt, 'YYYY-MM-DD') AS rcrtEndDt       /** 모집종료일 */
-        , TO_CHAR(cap.reg_dttm, 'YYYY-MM-DD') AS regDttm            /** 등록일시 */
-        , TO_CHAR(cap.mdf_dttm, 'YYYY-MM-DD') AS mdfDttm            /** 수정일시 */
-        , NVL(cap.inq_cnt, 0) AS inqCnt                             /** 조회수 */
-        , NVL(cap.del_yn, 'N') AS delYn                             /** 삭제여부 */
-        , NVL(cap.opn_yn, 'Y') AS opnYn                             /** 공개여부 */
-        , cap.sbmsn_doc AS sbmsnDoc                                 /** 제출서류내용 */
-        , cap.atch_file_id AS atchFileId                            /** 첨부파일ID */
-        , ac.dorojuso                                                   /** 상세주소 */
-
-        , NVL((
-        SELECT SUM(NVL(au.unit_cnt, 0))
-        FROM apt_unit au
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), NVL(ac.unit_cnt, 0)) total_unit_cnt                          /** 전체세대수 */
-
-        , NVL((
-        SELECT COUNT(*)
-        FROM rent_listing rl
-        INNER JOIN apt_detail ad
-        ON rl.ho_no = ad.ho_no
-        INNER JOIN apt_unit au
-        ON ad.dong_no = au.dong_no
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        AND rl.ann_no = cap.ann_no
-        ), 0) supply_cnt                                                /** 공급수 */
-
-        , NVL((
-        SELECT COUNT(*)
-        FROM rent_listing rl
-        INNER JOIN apt_detail ad
-        ON rl.ho_no = ad.ho_no
-        INNER JOIN apt_unit au
-        ON ad.dong_no = au.dong_no
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        AND rl.ann_no = cap.ann_no
-        ), 0)
-        || '/'
-        || NVL((
-        SELECT SUM(NVL(au.unit_cnt, 0))
-        FROM apt_unit au
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), NVL(ac.unit_cnt, 0))
-        || '세대' supplyDisplay                                        /** 공급표시 */
-
-        , CASE
-        WHEN cap.atch_file_id IS NULL THEN 'N'
-        ELSE 'Y'
-        END hasFileYn                                               /** 첨부파일존재여부 */
-        , CASE
-        WHEN cap.rcrt_bgng_dt IS NULL
-        OR cap.rcrt_end_dt IS NULL
-        THEN '-'
-        WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
-        THEN '예정'
-        WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
-        THEN '마감'
-        ELSE '진행중'
-        END AS statusNm                                           /** 공고상태 */
-        FROM center_ann_board_post cap
-        INNER JOIN center_board_instance cbi
-        ON cap.board_no = cbi.board_no
-        LEFT JOIN apt_complex ac
-        ON cbi.apt_cmplex_no = ac.apt_cmplex_no
-        WHERE 1 = 1
-        AND NVL(cap.del_yn, 'N') = 'N'
-
-        <if test="searchTtl != null and searchTtl != ''">
-            AND LOWER(cap.ttl) LIKE '%' || LOWER(#{searchTtl}) || '%'
-        </if>
-
-        <if test="searchAptCmplexNo != null and searchAptCmplexNo != ''">
-            AND cbi.apt_cmplex_no = #{searchAptCmplexNo}
-        </if>
-
-        <if test="searchFrom != null and searchFrom != ''">
-            AND cap.rcrt_bgng_dt <![CDATA[>=]]> TO_DATE(#{searchFrom}, 'YYYY-MM-DD')
-        </if>
-
-        <if test="searchTo != null and searchTo != ''">
-            AND cap.rcrt_end_dt <![CDATA[<=]]> TO_DATE(#{searchTo}, 'YYYY-MM-DD')
-        </if>
-
-        <if test="searchStatus != null and searchStatus != ''">
-            AND CASE
-            WHEN cap.rcrt_bgng_dt IS NULL
-            OR cap.rcrt_end_dt IS NULL
-            THEN '-'
-            WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
-            THEN '예정'
-            WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
-            THEN '마감'
-            ELSE '진행중'
-            END = #{searchStatus}
-        </if>
-
-        ORDER BY cap.reg_dttm DESC
-
-    </select>
-
-    <!--<select id="selectAnnouncement"
-            parameterType="string"
-            resultType="kr.or.ddit.domain.central.admin.dto.AnnouncementDTO">
-
-        /* kr.or.ddit.domain.central.admin.mapper.AnnouncementMapper.selectAnnouncement */
-        /* 공고 상세 조회 */
-
-        SELECT
         cap.ann_no AS annNo
         , cap.board_no AS boardNo
         , cbi.board_nm AS boardNm
@@ -153,47 +32,23 @@
         , NVL(cap.inq_cnt, 0) AS inqCnt
         , NVL(cap.del_yn, 'N') AS delYn
         , NVL(cap.opn_yn, 'Y') AS opnYn
-        , cap.sbmsn_doc AS sbmsnDoc                                     /** 제출서류내용 */
+        , cap.sbmsn_doc AS sbmsnDoc
         , cap.atch_file_id AS atchFileId
-        , ac.dorojuso                                                   /** 상세주소 */
-
-        , NVL((
-        SELECT SUM(NVL(au.unit_cnt, 0))
-        FROM apt_unit au
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), NVL(ac.unit_cnt, 0)) total_unit_cnt                          /** 전체세대수 */
+        , ac.dorojuso
 
         , NVL((
         SELECT COUNT(*)
         FROM rent_listing rl
-        INNER JOIN apt_detail ad
-        ON rl.ho_no = ad.ho_no
-        INNER JOIN apt_unit au
-        ON ad.dong_no = au.dong_no
+        INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
+        INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
         WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), 0) supply_cnt                                                /** 공급수 */
-
-        , NVL((
-        SELECT COUNT(*)
-        FROM rent_listing rl
-        INNER JOIN apt_detail ad
-        ON rl.ho_no = ad.ho_no
-        INNER JOIN apt_unit au
-        ON ad.dong_no = au.dong_no
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), 0)
-        || '/'
-        || NVL((
-        SELECT SUM(NVL(au.unit_cnt, 0))
-        FROM apt_unit au
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), NVL(ac.unit_cnt, 0))
-        || '세대' supplyDisplay                                        /** 공급표시 */
+        AND rl.ann_no = cap.ann_no
+        ), 0) || '세대' supplyDisplay
 
         , CASE
         WHEN cap.atch_file_id IS NULL THEN 'N'
         ELSE 'Y'
-        END hasFileYn                                               /** 첨부파일존재여부 */
+        END hasFileYn
         , CASE
         WHEN cap.rcrt_bgng_dt IS NULL
         OR cap.rcrt_end_dt IS NULL
@@ -204,15 +59,41 @@
         THEN '마감'
         ELSE '진행중'
         END AS statusNm
+
         FROM center_ann_board_post cap
-        INNER JOIN center_board_instance cbi
-        ON cap.board_no = cbi.board_no
-        LEFT JOIN apt_complex ac
-        ON cbi.apt_cmplex_no = ac.apt_cmplex_no
-        WHERE cap.ann_no = #{annNo}
+        INNER JOIN center_board_instance cbi ON cap.board_no = cbi.board_no
+        LEFT JOIN apt_complex ac ON cbi.apt_cmplex_no = ac.apt_cmplex_no
+        WHERE 1 = 1
         AND NVL(cap.del_yn, 'N') = 'N'
 
-    </select>-->
+        <if test="searchTtl != null and searchTtl != ''">
+            AND LOWER(cap.ttl) LIKE '%' || LOWER(#{searchTtl}) || '%'
+        </if>
+        <if test="searchAptCmplexNo != null and searchAptCmplexNo != ''">
+            AND cbi.apt_cmplex_no = #{searchAptCmplexNo}
+        </if>
+        <if test="searchFrom != null and searchFrom != ''">
+            AND cap.rcrt_bgng_dt <![CDATA[>=]]> TO_DATE(#{searchFrom}, 'YYYY-MM-DD')
+        </if>
+        <if test="searchTo != null and searchTo != ''">
+            AND cap.rcrt_end_dt <![CDATA[<=]]> TO_DATE(#{searchTo}, 'YYYY-MM-DD')
+        </if>
+        <if test="searchStatus != null and searchStatus != ''">
+            AND CASE
+            WHEN cap.rcrt_bgng_dt IS NULL
+            OR cap.rcrt_end_dt IS NULL
+            THEN '-'
+            WHEN TRUNC(SYSDATE) <![CDATA[<]]> TRUNC(cap.rcrt_bgng_dt)
+            THEN '예정'
+            WHEN TRUNC(SYSDATE) <![CDATA[>]]> TRUNC(cap.rcrt_end_dt)
+            THEN '마감'
+            ELSE '진행중'
+            END = #{searchStatus}
+        </if>
+
+        ORDER BY cap.reg_dttm DESC
+
+    </select>
 
     <select id="selectAnnouncement"
             parameterType="string"
@@ -246,35 +127,13 @@
         , ac.dorojuso
 
         , NVL((
-        SELECT SUM(NVL(au.unit_cnt, 0))
-        FROM apt_unit au
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), NVL(ac.unit_cnt, 0)) total_unit_cnt
-
-        , NVL((
         SELECT COUNT(*)
         FROM rent_listing rl
         INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
         INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
         WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
         AND rl.ann_no = cap.ann_no
-        ), 0) supply_cnt
-
-        , NVL((
-        SELECT COUNT(*)
-        FROM rent_listing rl
-        INNER JOIN apt_detail ad ON rl.ho_no = ad.ho_no
-        INNER JOIN apt_unit au ON ad.dong_no = au.dong_no
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        AND rl.ann_no = cap.ann_no
-        ), 0)
-        || '/'
-        || NVL((
-        SELECT SUM(NVL(au.unit_cnt, 0))
-        FROM apt_unit au
-        WHERE au.apt_cmplex_no = cbi.apt_cmplex_no
-        ), NVL(ac.unit_cnt, 0))
-        || '세대' supplyDisplay
+        ), 0) || '세대' supplyDisplay
 
         , CASE
         WHEN cap.atch_file_id IS NULL THEN 'N'
@@ -313,38 +172,33 @@
         /* 공고 등록 */
 
         INSERT INTO center_ann_board_post (
-        ann_no              /** 공고번호 */
-        , board_no            /** 게시판번호 */
-        , ttl                 /** 제목 */
-        , cn                  /** 내용 */
-        , wrtr_id             /** 작성자아이디 */
-        , top_fix_yn          /** 상단고정여부 */
-        , pblanc_bgng_dt      /** 공고게시시작일 */
-        , pblanc_end_dt       /** 공고게시종료일 */
-        , rcrt_bgng_dt        /** 모집시작일 */
-        , rcrt_end_dt         /** 모집종료일 */
-        , reg_dttm            /** 등록일시 */
-        , inq_cnt             /** 조회수 */
-        , sbmsn_doc           /** 제출서류 */
-        , atch_file_id        /** 첨부파일ID */
-        , del_yn              /** 삭제여부 */
-        , opn_yn              /** 공개여부 */
+        ann_no
+        , board_no
+        , ttl
+        , cn
+        , wrtr_id
+        , top_fix_yn
+        , pblanc_bgng_dt
+        , pblanc_end_dt
+        , rcrt_bgng_dt
+        , rcrt_end_dt
+        , reg_dttm
+        , inq_cnt
+        , sbmsn_doc
+        , atch_file_id
+        , del_yn
+        , opn_yn
         ) VALUES (
         #{annNo}
         , (
-        SELECT board_no
-        FROM (
+        SELECT board_no FROM (
         SELECT cbi.board_no
         FROM center_board_instance cbi
         WHERE cbi.apt_cmplex_no = #{aptCmplexNo}
         AND NVL(cbi.use_yn, 'Y') = 'Y'
-        AND (
-        cbi.board_ty_cd = 'ANN'
-        OR cbi.board_nm LIKE '%공고%'
-        )
+        AND (cbi.board_ty_cd = 'ANN' OR cbi.board_nm LIKE '%공고%')
         ORDER BY cbi.board_no
-        )
-        WHERE ROWNUM = 1
+        ) WHERE ROWNUM = 1
         )
         , #{ttl}
         , #{cn}
@@ -372,14 +226,14 @@
 
         UPDATE center_ann_board_post
         SET
-        ttl = #{ttl}                                      /** 제목 */
-        , cn = #{cn}                                        /** 내용 */
-        , sbmsn_doc = #{sbmsnDoc}                           /** 제출서류 */
+        ttl = #{ttl}
+        , cn = #{cn}
+        , sbmsn_doc = #{sbmsnDoc}
         , pblanc_bgng_dt = TO_DATE(#{pblancBgngDt}, 'YYYY-MM-DD')
         , pblanc_end_dt = TO_DATE(#{pblancEndDt}, 'YYYY-MM-DD')
         , rcrt_bgng_dt = TO_DATE(#{rcrtBgngDt}, 'YYYY-MM-DD')
         , rcrt_end_dt = TO_DATE(#{rcrtEndDt}, 'YYYY-MM-DD')
-        , mdf_dttm = SYSDATE                                /** 수정일시 */
+        , mdf_dttm = SYSDATE
         WHERE ann_no = #{annNo}
         AND NVL(del_yn, 'N') = 'N'
 
@@ -393,8 +247,8 @@
 
         UPDATE center_ann_board_post
         SET
-        del_yn = 'Y'       /** 삭제여부 */
-        , mdf_dttm = SYSDATE /** 수정일시 */
+        del_yn = 'Y'
+        , mdf_dttm = SYSDATE
         WHERE ann_no = #{annNo}
 
     </update>
@@ -408,7 +262,7 @@
         SELECT
         ac.apt_cmplex_no AS aptCmplexNo
         , ac.apt_cmplex_nm AS aptCmplexNm
-        , ac.dorojuso AS dorojuso                      /** 상세주소 */
+        , ac.dorojuso AS dorojuso
         , NVL((
         SELECT SUM(NVL(au.unit_cnt, 0))
         FROM apt_unit au
@@ -425,8 +279,6 @@
 
     </select>
 
-
-    <!-- 단지 상세정보 조회 -->
     <select id="selectAptDetail"
             resultType="kr.or.ddit.domain.central.admin.dto.AnnouncementDTO">
 
@@ -435,21 +287,13 @@
         SELECT
         ac.apt_cmplex_no AS aptCmplexNo
         , ac.apt_cmplex_nm AS aptCmplexNm
-        , ac.dorojuso      AS dorojuso
-
-        /*
-        전체 세대수 조회
-
-        apt_unit의 세대수를 모두 합산.
-        */
+        , ac.dorojuso AS dorojuso
         , NVL((
         SELECT SUM(NVL(au.unit_cnt, 0))
         FROM apt_unit au
         WHERE au.apt_cmplex_no = ac.apt_cmplex_no
         ), 0) AS unitCnt
-
         FROM apt_complex ac
-
         WHERE ac.apt_cmplex_no = #{aptCmplexNo}
 
     </select>

@@ -212,7 +212,7 @@
                         <th style="width:120px">모집기간</th>
                         <td>${fn:replace(announcement.rcrtBgngDt, '-', '.')}
                             ~ ${fn:replace(announcement.rcrtEndDt, '-', '.')}</td>
-                        <th style="width:120px">공급세대수</th>
+                        <th style="width:120px">모집세대수</th>
                         <td style="width:120px">${announcement.supplyDisplay}</td>
                     </tr>
                     <tr>

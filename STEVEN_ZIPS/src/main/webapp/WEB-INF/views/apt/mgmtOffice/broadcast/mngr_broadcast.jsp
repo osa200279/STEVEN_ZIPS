@@ -1,256 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>방송 안내 관리</title>
-    <sec:csrfMetaTags/>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0"
-          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
-    <style>
-        #broadcastPage {
-            --bg: #f4f6fb;
-            --card: #ffffff;
-            --line: #e5e9f2;
-            --text: #1f2a37;
-            --muted: #6b7280;
-            --primary: #2b6be3;
-            --primary-dark: #1f56be;
-            --danger: #dc2626;
-            position: relative;
-            z-index: 1;
-            pointer-events: auto;
-        }
-
-        #broadcastPage button,
-        #broadcastPage input,
-        #broadcastPage select,
-        #broadcastPage textarea {
-            pointer-events: auto;
-        }
-
-        #broadcastPage .tts-wrap {
-            display: grid;
-            gap: 16px;
-        }
-
-        #broadcastPage .page-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--line);
-        }
-
-        #broadcastPage .page-title h2 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        #broadcastPage .page-title p {
-            margin: 2px 0 0;
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        #broadcastPage .tts-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
-            gap: 16px;
-            align-items: start;
-        }
-
-        #broadcastPage .card {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 14px;
-            overflow: hidden;
-        }
-
-        #broadcastPage .card-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 14px 18px;
-            border-bottom: 1px solid var(--line);
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        #broadcastPage .card-body {
-            padding: 18px;
-        }
-
-        #broadcastPage .field {
-            display: grid;
-            gap: 6px;
-            margin-bottom: 14px;
-        }
-
-        #broadcastPage .field:last-child {
-            margin-bottom: 0;
-        }
-
-        #broadcastPage .label {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        #broadcastPage .hint {
-            font-size: 12px;
-            color: var(--muted);
-            line-height: 1.45;
-        }
-
-        #broadcastPage .input,
-        #broadcastPage .select,
-        #broadcastPage .textarea {
-            width: 100%;
-            border: 1px solid #d6dbe5;
-            border-radius: 10px;
-            background: #fff;
-            color: var(--text);
-            font-size: 14px;
-            outline: none;
-            transition: border-color .15s ease, box-shadow .15s ease;
-        }
-
-        #broadcastPage .input,
-        #broadcastPage .select {
-            height: 42px;
-            padding: 0 12px;
-        }
-
-        #broadcastPage .textarea {
-            min-height: 230px;
-            resize: vertical;
-            line-height: 1.6;
-            padding: 12px;
-        }
-
-        #broadcastPage .input:focus,
-        #broadcastPage .select:focus,
-        #broadcastPage .textarea:focus {
-            border-color: #8cb2f8;
-            box-shadow: 0 0 0 3px rgba(43, 107, 227, 0.14);
-        }
-
-        #broadcastPage .actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 14px;
-        }
-
-        #broadcastPage .btnx {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            height: 38px;
-            padding: 0 14px;
-            border-radius: 10px;
-            border: 1px solid transparent;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        #broadcastPage .btnx-secondary {
-            border-color: #d6dbe5;
-            background: #fff;
-            color: #374151;
-        }
-
-        #broadcastPage .btnx-secondary:hover {
-            background: #f7f9fc;
-        }
-
-        #broadcastPage .btnx-primary {
-            background: var(--primary);
-            color: #fff;
-        }
-
-        #broadcastPage .btnx-primary:hover {
-            background: var(--primary-dark);
-        }
-
-        #broadcastPage .history-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        #broadcastPage .history-table th,
-        #broadcastPage .history-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid var(--line);
-            font-size: 13px;
-            vertical-align: middle;
-            text-align: left;
-        }
-
-        #broadcastPage .history-table th {
-            color: var(--muted);
-            font-weight: 700;
-            background: #f8faff;
-        }
-
-        #broadcastPage .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #0a5f8a;
-            background: #dcf5ff;
-            border: 1px solid #b8e7ff;
-        }
-
-        #broadcastPage .history-empty {
-            padding: 30px 12px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 13px;
-        }
-
-        #broadcastPage .audio-wrap audio {
-            width: 250px;
-            max-width: 100%;
-        }
-
-        #broadcastPage .icon-btn {
-            width: 34px;
-            height: 34px;
-            border: 1px solid #f2b4b4;
-            background: #fff5f5;
-            color: var(--danger);
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        #broadcastPage .icon-btn:hover {
-            background: #fee2e2;
-        }
-
-        @media (max-width: 980px) {
-            #broadcastPage .tts-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/toast.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/broadcast/mngr-broadcast.css">
 </head>
 <body>
 <div class="app-wrapper">
@@ -258,223 +22,208 @@
     <div class="main-wrap">
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
         <main class="main-content">
-            <div class="office-page" id="broadcastPage">
-                <div class="tts-wrap">
+            <c:set var="complexNm" value="${not empty aptCmplexNm ? aptCmplexNm : (not empty office.aptCmplexNm ? office.aptCmplexNm : '본 단지')}"/>
+            <c:set var="broadcastIntro" value="안녕하세요. ${complexNm} 관리사무소입니다."/>
+            <div class="office-page" id="broadcastPage" data-broadcast-intro="${fn:escapeXml(broadcastIntro)}">
+                <div class="bc-wrap">
                     <div class="page-title">
-                        <div>
-                            <h2 style="font-size: 20px">방송 안내 관리</h2>
-                            <p>안내 문구를 입력하고 음성으로 변환합니다.</p>
-                        </div>
+                        <h2>방송 안내</h2>
+                        <p>${complexNm} · 업무 이력에서 초안을 불러와 음성으로 변환합니다.</p>
                     </div>
 
-                    <div class="tts-grid">
-                        <section class="card" aria-label="text-input">
-                            <div class="card-header">
-                                <span class="material-symbols-rounded">edit_note</span>
-                                텍스트 입력
-                            </div>
-                            <div class="card-body">
-                                <div class="field">
-                                    <label class="label" for="ttsText">변환할 텍스트</label>
-                                    <textarea class="textarea" id="ttsText" placeholder="변환할 텍스트를 입력하세요."></textarea>
-                                    <div class="hint">안내 문구를 그대로 붙여넣고 변환 버튼을 누르세요.</div>
+                    <div class="bc-layout">
+                        <%-- 좌: 작성 + 플레이어 --%>
+                        <div class="bc-main">
+                            <section class="card card-compose" aria-label="broadcast-compose">
+                                <div class="card-header">
+                                    <span class="material-symbols-rounded">campaign</span>
+                                    방송 안내 작성
                                 </div>
-                                <div class="actions">
-                                    <button type="button" class="btnx btnx-secondary" id="clearBtn">
-                                        <span class="material-symbols-rounded" style="font-size:17px;">restart_alt</span>
-                                        초기화
-                                    </button>
-                                    <button type="button" class="btnx btnx-primary" id="convertBtn">
-                                        <span class="material-symbols-rounded" style="font-size:17px;">graphic_eq</span>
-                                        음성 변환하기
-                                    </button>
-                                </div>
-                            </div>
-                        </section>
+                                <div class="card-body compose-body">
+                                    <div id="composeLoading" class="compose-loading" hidden aria-live="polite">
+                                        <div class="compose-spinner" role="status"></div>
+                                        <span>음성을 변환하고 있습니다</span>
+                                    </div>
 
-                        <aside class="card" aria-label="options">
-                            <div class="card-header">
-                                <span class="material-symbols-rounded">tune</span>
-                                옵션
-                            </div>
-                            <div class="card-body">
-                                <div class="field">
-                                    <label class="label" for="langSelect">언어 선택</label>
-                                    <select class="select" id="langSelect">
-                                        <option value="ko-KR" selected>한국어</option>
-                                        <option value="en-US">영어</option>
-                                        <option value="ja-JP">일본어</option>
-                                    </select>
+                                    <div class="row row-compact">
+                                        <span class="row-label">빠른 문구</span>
+                                        <div class="chip-group">
+                                            <button type="button" class="chip template-chip"
+                                                    data-template="${broadcastIntro}&#10;오늘 오후 2시부터 4시까지 1호기 엘리베이터 정기점검이 있습니다.&#10;이용에 불편을 드려 죄송합니다. 2호기는 정상 운행됩니다.&#10;감사합니다.">
+                                                <span class="material-symbols-rounded">elevator</span>엘리베이터
+                                            </button>
+                                            <button type="button" class="chip template-chip"
+                                                    data-template="${broadcastIntro}&#10;오늘 오전 10시부터 12시까지 수도 점검으로 잠시 단수가 있습니다.&#10;미리 물을 비축해 주시고, 수도꼭지는 꼭 잠가 주세요.&#10;이용에 불편을 드려 죄송합니다.&#10;감사합니다.">
+                                                <span class="material-symbols-rounded">water_drop</span>단수
+                                            </button>
+                                            <button type="button" class="chip template-chip"
+                                                    data-template="${broadcastIntro}&#10;분리수거는 지정된 요일과 시간에 맞춰 배출해 주시면 감사하겠습니다.&#10;깨끗한 우리 아파트, 함께 지켜 주세요.&#10;감사합니다.">
+                                                <span class="material-symbols-rounded">recycling</span>분리수거
+                                            </button>
+                                            <button type="button" class="chip template-chip"
+                                                    data-template="${broadcastIntro}&#10;소방 통로와 출입구 주변에 주차된 차량이 있어 안내드립니다.&#10;30분 이내에 차량을 옮겨 주시면 감사하겠습니다.&#10;감사합니다.">
+                                                <span class="material-symbols-rounded">local_parking</span>주차
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="editor">
+                                        <textarea id="ttsText" maxlength="500"
+                                                  placeholder="방송할 안내 문구를 입력해주세요."></textarea>
+                                        <div class="editor-foot">
+                                            <div class="editor-meta" id="editorMeta">
+                                                <span>글자 수 <b id="charCount">0</b><span class="char-limit"> / 500</span></span>
+                                                <span>예상 <b id="estDuration">0초</b></span>
+                                            </div>
+                                            <div class="editor-foot-right">
+                                                <button type="button" class="btnx btnx-secondary btnx-sm" id="previewBtn">
+                                                    <span class="material-symbols-rounded">hearing</span>미리듣기
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="meta-grid meta-grid-stack">
+                                        <div class="row meta-row">
+                                            <span class="row-label">방송 구역</span>
+                                            <div class="area-field">
+                                                <div class="bc-select" id="areaSelect">
+                                                    <button type="button" class="bc-select-trigger" id="areaSelectTrigger"
+                                                            aria-expanded="false" aria-haspopup="listbox">
+                                                        <span class="bc-select-label" id="areaSelectLabel">전체</span>
+                                                        <span class="material-symbols-rounded bc-select-caret">expand_more</span>
+                                                    </button>
+                                                    <div class="bc-select-panel" id="areaSelectPanel" role="listbox" hidden>
+                                                        <label class="bc-select-option">
+                                                            <input type="checkbox" name="areaOpt" value="전체" data-area-all checked>
+                                                            <span>전체</span>
+                                                        </label>
+                                                        <c:forEach var="dong" items="${dongList}">
+                                                            <c:set var="dongBase"
+                                                                   value="${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}"/>
+                                                            <c:choose>
+                                                                <c:when test="${fn:endsWith(dongBase, '동')}">
+                                                                    <c:set var="dongLabel" value="${dongBase}"/>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <c:set var="dongLabel" value="${dongBase}동"/>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                            <label class="bc-select-option">
+                                                                <input type="checkbox" name="areaOpt" value="${dongLabel}" data-dong-no="${dong.dongNo}">
+                                                                <span>${dongLabel}</span>
+                                                            </label>
+                                                        </c:forEach>
+                                                    </div>
+                                                </div>
+                                                <c:if test="${empty dongList}">
+                                                    <p class="hint">등록된 동 정보가 없습니다.</p>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                        <div class="row meta-row">
+                                            <span class="row-label">음성</span>
+                                            <div class="voice-field">
+                                                <div class="bc-select" id="voiceSelectWrap">
+                                                    <button type="button" class="bc-select-trigger" id="voiceSelectTrigger"
+                                                            aria-expanded="false" aria-haspopup="listbox">
+                                                        <span class="bc-select-label" id="voiceSelectLabel">남성 A</span>
+                                                        <span class="material-symbols-rounded bc-select-caret">expand_more</span>
+                                                    </button>
+                                                    <div class="bc-select-panel bc-select-panel--voice" id="voiceSelectPanel" role="listbox" hidden>
+                                                        <button type="button" class="bc-select-option bc-select-option--single active"
+                                                                role="option" data-voice="ko-KR-Standard-C" aria-selected="true">남성 A</button>
+                                                        <button type="button" class="bc-select-option bc-select-option--single"
+                                                                role="option" data-voice="ko-KR-Standard-D" aria-selected="false">남성 B</button>
+                                                        <button type="button" class="bc-select-option bc-select-option--single"
+                                                                role="option" data-voice="ko-KR-Standard-A" aria-selected="false">여성 A</button>
+                                                        <button type="button" class="bc-select-option bc-select-option--single"
+                                                                role="option" data-voice="ko-KR-Standard-B" aria-selected="false">여성 B</button>
+                                                    </div>
+                                                    <select class="sr-only" id="voiceSelect" aria-hidden="true">
+                                                        <option value="ko-KR-Standard-C" selected>남성 A</option>
+                                                        <option value="ko-KR-Standard-D">남성 B</option>
+                                                        <option value="ko-KR-Standard-A">여성 A</option>
+                                                        <option value="ko-KR-Standard-B">여성 B</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="actions">
+                                        <button type="button" class="btnx btnx-ghost" id="clearBtn">
+                                            <span class="material-symbols-rounded">restart_alt</span>초기화
+                                        </button>
+                                        <button type="button" class="btnx btnx-primary" id="convertBtn">
+                                            <span class="material-symbols-rounded">graphic_eq</span>음성 변환하기
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="field">
-                                    <label class="label" for="voiceSelect">음성 선택</label>
-                                    <select class="select" id="voiceSelect">
-                                        <option value="ko-KR-Standard-A" selected>한국어 여성 A (Standard)</option>
-                                        <option value="ko-KR-Standard-B">한국어 남성 B (Standard)</option>
-                                    </select>
+                            </section>
+
+                            <section class="card" id="playerCard" style="display:none;" aria-label="now-playing">
+                                <div class="player player-compact">
+                                    <div class="eq eq-sm" id="eqBars">
+                                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                                    </div>
+                                    <div class="player-info">
+                                        <div class="player-label" id="playerLabel">최근 변환 음성</div>
+                                        <p class="player-text" id="playerText"></p>
+                                        <div class="player-audio-row">
+                                            <button type="button" class="player-toggle" id="playerToggleBtn" aria-label="일시정지">
+                                                <span class="material-symbols-rounded" id="playerToggleIcon">pause</span>
+                                            </button>
+                                            <audio id="playerAudio" controls preload="metadata"></audio>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </section>
+                        </div>
+
+                        <%-- 우: 업무 이력 (더미) + 변환 이력 --%>
+                        <aside class="bc-side">
+                            <section class="card card-side" aria-label="broadcast-sources">
+                                <div class="card-header card-header-tabs">
+                                    <div class="source-tabs" role="tablist">
+                                        <button type="button" class="source-tab active" data-source-tab="check" role="tab" aria-selected="true">시설점검</button>
+                                        <button type="button" class="source-tab" data-source-tab="complaint" role="tab" aria-selected="false">민원</button>
+                                        <button type="button" class="source-tab" data-source-tab="history" role="tab" aria-selected="false">변환이력</button>
+                                    </div>
+                                </div>
+                                <div class="card-body card-body-side">
+                                    <p class="source-note" id="sourceNote">점검 건을 클릭하면 좌측에 방송 초안이 채워집니다.</p>
+
+                                    <div class="source-panel active" id="panelCheck" data-panel="check"></div>
+                                    <div class="source-panel" id="panelComplaint" data-panel="complaint"></div>
+                                    <div class="source-panel" id="panelHistory" data-panel="history">
+                                        <div class="source-panel-head">
+                                            <button type="button" class="btnx btnx-ghost btnx-sm" id="clearHistoryBtn">
+                                                <span class="material-symbols-rounded">delete_sweep</span>비우기
+                                            </button>
+                                        </div>
+                                        <div id="historyEmpty" class="source-empty">아직 변환한 방송이 없습니다.</div>
+                                        <div class="source-list" id="historyList"></div>
+                                    </div>
+                                </div>
+                            </section>
                         </aside>
                     </div>
-
-                    <section class="card" aria-label="history">
-                        <div class="card-header">
-                            <span class="material-symbols-rounded">history</span>
-                            변환 이력
-                        </div>
-                        <div class="card-body">
-                            <div id="historyEmpty" class="history-empty">변환 이력이 없습니다.</div>
-                            <div style="overflow:auto;">
-                                <table class="history-table" id="historyTable" style="display:none;">
-                                    <thead>
-                                    <tr>
-                                        <th style="width:60px;">#</th>
-                                        <th>입력 텍스트</th>
-                                        <th style="width:90px;">언어</th>
-                                        <th style="width:170px;">음성</th>
-                                        <th style="width:170px;">변환 시각</th>
-                                        <th style="width:280px;">재생</th>
-                                        <th style="width:90px;">삭제</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="historyTbody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
                 </div>
             </div>
         </main>
     </div>
 </div>
 
+<div id="toastContainer"></div>
+
 <script>
-    const historyRows = [];
-
-    function nowKST() {
-        return new Date().toLocaleString('ko-KR');
-    }
-
-    function escapeHtml(str) {
-        return (str ?? '')
-            .toString()
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#039;');
-    }
-
-    function getFormValues() {
-        return {
-            text: document.getElementById('ttsText').value.trim(),
-            lang: document.getElementById('langSelect').value,
-            voice: document.getElementById('voiceSelect').value,
-        };
-    }
-
-    function setHistoryVisible(isVisible) {
-        document.getElementById('historyEmpty').style.display = isVisible ? 'none' : 'block';
-        document.getElementById('historyTable').style.display = isVisible ? 'table' : 'none';
-    }
-
-    function renderHistory() {
-        const tbody = document.getElementById('historyTbody');
-        if (historyRows.length === 0) {
-            tbody.innerHTML = '';
-            setHistoryVisible(false);
-            return;
-        }
-        setHistoryVisible(true);
-        tbody.innerHTML = historyRows.map((row, idx) => {
-            const shortText = row.text.length > 40 ? row.text.slice(0, 40) + '...' : row.text;
-            const audioHtml = row.audioUrl
-                ? '<div class="audio-wrap"><audio controls preload="none" src="' + escapeHtml(row.audioUrl) + '"></audio></div>'
-                : '<span>오디오 준비중</span>';
-            return '<tr data-idx="' + idx + '">'
-                + '<td>' + (idx + 1) + '</td>'
-                + '<td title="' + escapeHtml(row.text) + '">' + escapeHtml(shortText) + '</td>'
-                + '<td><span class="badge">' + escapeHtml(row.lang) + '</span></td>'
-                + '<td>' + escapeHtml(row.voice) + '</td>'
-                + '<td>' + escapeHtml(row.createdAt) + '</td>'
-                + '<td>' + audioHtml + '</td>'
-                + '<td><button type="button" class="icon-btn" data-action="remove">'
-                + '<span class="material-symbols-rounded" style="font-size:18px;">delete</span>'
-                + '</button></td>'
-                + '</tr>';
-        }).join('');
-    }
-
-    const convertTts = async function () {
-        console.log('convertTts 호출됨');
-        var values = getFormValues();
-        var text = values.text;
-        var lang = values.lang;
-        var voice = values.voice;
-
-        if (text === '') {
-            alert('변환할 텍스트를 입력해주세요.');
-            return false;
-        }
-        try {
-            var url = 'http://localhost:8060/tts/synthesize'
-                + '?text=' + encodeURIComponent(text)
-                + '&languageCode=' + encodeURIComponent(lang)
-                + '&voiceName=' + encodeURIComponent(voice);
-
-            var res = await fetch(url);
-            if (!res.ok) {
-                throw new Error('TTS synthesize failed: ' + res.status);
-            }
-            var blob = await res.blob();
-            var audioUrl = URL.createObjectURL(blob);
-
-            historyRows.unshift({
-                text: text,
-                lang: lang,
-                voice: voice,
-                createdAt: nowKST(),
-                audioUrl: audioUrl,
-            });
-            renderHistory();
-        } catch (e) {
-            console.error(e);
-            alert('TTS 서버 연결 실패. 도커 컨테이너 실행 중인지 확인해주세요.');
-        }
+    window.BC_PAGE = {
+        contextPath: '${pageContext.request.contextPath}',
+        mgmtOfcNo: '${mgmtOfcNo}'
     };
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var convertBtn = document.getElementById('convertBtn');
-        var clearBtn = document.getElementById('clearBtn');
-        var ttsText = document.getElementById('ttsText');
-        var historyTbody = document.getElementById('historyTbody');
-
-        if (convertBtn) {
-            convertBtn.addEventListener('click', convertTts);
-        }
-
-        if (clearBtn && ttsText) {
-            clearBtn.addEventListener('click', function () {
-                ttsText.value = '';
-                ttsText.focus();
-            });
-        }
-
-        if (historyTbody) {
-            historyTbody.addEventListener('click', function (e) {
-                var btn = e.target.closest('button[data-action="remove"]');
-                if (!btn) return;
-                var tr = btn.closest('tr[data-idx]');
-                if (!tr) return;
-                var idx = Number(tr.getAttribute('data-idx'));
-                if (!Number.isFinite(idx)) return;
-                historyRows.splice(idx, 1);
-                renderHistory();
-            });
-        }
-
-        renderHistory();
-    });
 </script>
+<script src="${pageContext.request.contextPath}/js/common/toast.js"></script>
+<script src="${pageContext.request.contextPath}/js/manager/broadcast/mngr-broadcast.js"></script>
 </body>
 </html>

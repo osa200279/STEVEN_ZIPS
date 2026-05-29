@@ -182,9 +182,11 @@ public class ContractUserServiceImpl implements IContractUserService {
             String savedFileName = uuid + "_" + file.getOriginalFilename();
             String fullPath = folderPath + "/" + savedFileName;
 
-
+            log.info("파일 업로드 시도: {}, MIME: {}", savedFileName, file.getContentType());
 
             String googleId = googleDriveService.uploadFile(file, folderPath, savedFileName);
+
+            log.info("구글 드라이브 업로드 성공: googleId={}", googleId);
 
             long fileGroupNo = iAttachFileMapper.getSeqFileGroupNo();
 
@@ -232,6 +234,7 @@ public class ContractUserServiceImpl implements IContractUserService {
      * 특정 아파트 단지의 전용면적 상세 정보 목록을 조회하는 메소드
      * 공고 상세 페이지에서 면적별 세대 정보를 표시할 때 사용
      *
+     * annNo 조회할 공고 번호
      * aptCmplexNo 조회할 아파트 단지 번호
      * 전용면적 상세 정보 목록 (면적, 세대수 등)
      */
@@ -241,9 +244,6 @@ public class ContractUserServiceImpl implements IContractUserService {
     }
 
     /**
-     * 청약신청을 처리하는 메소드
-     *
-     * 처리 순서:
      *   1. 동일 공고에 이미 신청한 이력이 있는지 중복 검사
      *   2. 중복이면 RuntimeException 발생 (트랜잭션 롤백)
      *   3. 신청 조건에 맞는 호 타입 번호(hoTyNo) 조회
