@@ -28,6 +28,10 @@
         on chk_ty.group_code_no = 'CHECK_TY'
         and chk_ty.code_no_cd = fch.chk_ty_cd
         and chk_ty.use_yn = 'Y'
+        left join common_code chk_ctgry
+        on chk_ctgry.group_code_no = 'CHECK_CTGRY'
+        and chk_ctgry.code_no_cd = fch.chk_ctgry_cd
+        and chk_ctgry.use_yn = 'Y'
         left join common_code chk_stts
         on chk_stts.group_code_no = 'CHECK_STTS'
         and chk_stts.code_no_cd = fch.chk_stts_cd
@@ -56,7 +60,12 @@
             )
         </if>
 
-        <!-- 점검유형 필터 -->
+        <!-- 점검분류 필터 -->
+        <if test="searchVO.chkCtgryCd != null and searchVO.chkCtgryCd != ''">
+            and fch.chk_ctgry_cd = #{searchVO.chkCtgryCd}
+        </if>
+
+        <!-- 작업유형 필터 -->
         <if test="searchVO.chkTyCd != null and searchVO.chkTyCd != ''">
             and fch.chk_ty_cd = #{searchVO.chkTyCd}
         </if>
@@ -126,6 +135,8 @@
         , x.chk_flow_no
         , x.partner_nm
         , x.biz_ty_nm
+        , x.chk_ctgry_cd
+        , x.chk_ctgry_nm
         , x.chk_ty_cd
         , x.chk_ty_nm
         , x.chk_stts_cd
@@ -149,6 +160,8 @@
         , fch.chk_flow_no
         , p.partner_nm
         , p.biz_ty_nm
+        , fch.chk_ctgry_cd
+        , chk_ctgry.code_name as chk_ctgry_nm
         , fch.chk_ty_cd
         , chk_ty.code_name as chk_ty_nm
         , fch.chk_stts_cd
@@ -204,6 +217,8 @@
             fch.fac_chk_hstry_no
              , fch.facility_no
              , f.facility_nm
+             , fch.chk_ctgry_cd
+             , chk_ctgry.code_name as chk_ctgry_nm
              , fch.chk_ty_cd
              , chk_ty.code_name as chk_ty_nm
              , fch.chk_stts_cd
@@ -233,6 +248,10 @@
                            on chk_ty.group_code_no = 'CHECK_TY'
                                and chk_ty.code_no_cd = fch.chk_ty_cd
                                and chk_ty.use_yn = 'Y'
+                 left join common_code chk_ctgry
+                           on chk_ctgry.group_code_no = 'CHECK_CTGRY'
+                               and chk_ctgry.code_no_cd = fch.chk_ctgry_cd
+                               and chk_ctgry.use_yn = 'Y'
                  left join common_code chk_stts
                            on chk_stts.group_code_no = 'CHECK_STTS'
                                and chk_stts.code_no_cd = fch.chk_stts_cd
@@ -240,7 +259,52 @@
         where mo.mgmt_ofc_no = #{mgmtOfcNo}
           and nvl(fch.use_restrict_yn, 'N') = 'Y'
           and fch.use_restrict_bgng_dt &lt; trunc(sysdate) + 1
-          and fch.use_restrict_end_dt &gt; trunc(sysdate)
+          <!-- end_dt > sysdate: 이미 종료된(ENDED) 제한은 제외. 카드 합계가 '제한중+예정'과 일치하도록 함 -->
+          and fch.use_restrict_end_dt &gt; sysdate
+        order by fch.use_restrict_bgng_dt, fch.fac_chk_hstry_no
+    </select>
+
+    <!-- [추가] 내일 이후 시작 예정인 이용제한 점검 이력 목록 조회
+         - 카드 클릭 모달의 '예정 일정' 섹션에서 사용
+         - bgng_dt >= 내일 0시 조건으로 오늘 시작 건과 겹치지 않음 -->
+    <select id="selectFutureUseRestrictList"
+            resultType="kr.or.ddit.domain.apt.mgmtOffice.facility.check.vo.FacilityCheckHstryVO">
+        select
+            fch.fac_chk_hstry_no
+             , fch.facility_no
+             , f.facility_nm
+             , fch.chk_ctgry_cd
+             , chk_ctgry.code_name as chk_ctgry_nm
+             , fch.chk_ty_cd
+             , chk_ty.code_name as chk_ty_nm
+             , fch.chk_stts_cd
+             , chk_stts.code_name as chk_stts_nm
+             , fch.chk_cn
+             , nvl(fch.use_restrict_yn, 'N') as use_restrict_yn
+             , to_char(fch.use_restrict_bgng_dt, 'yyyy-mm-dd"T"hh24:mi') as use_restrict_bgng_dt
+             , to_char(fch.use_restrict_end_dt, 'yyyy-mm-dd"T"hh24:mi') as use_restrict_end_dt
+             , 'UPCOMING' as use_restrict_status_cd
+             , '예정' as use_restrict_status_nm
+        from facility_check_hstry fch
+                 inner join facility f
+                            on fch.facility_no = f.facility_no
+                 inner join mgmt_office mo
+                            on mo.apt_cmplex_no = f.apt_cmplex_no
+                 left join common_code chk_ty
+                           on chk_ty.group_code_no = 'CHECK_TY'
+                               and chk_ty.code_no_cd = fch.chk_ty_cd
+                               and chk_ty.use_yn = 'Y'
+                 left join common_code chk_ctgry
+                           on chk_ctgry.group_code_no = 'CHECK_CTGRY'
+                               and chk_ctgry.code_no_cd = fch.chk_ctgry_cd
+                               and chk_ctgry.use_yn = 'Y'
+                 left join common_code chk_stts
+                           on chk_stts.group_code_no = 'CHECK_STTS'
+                               and chk_stts.code_no_cd = fch.chk_stts_cd
+                               and chk_stts.use_yn = 'Y'
+        where mo.mgmt_ofc_no = #{mgmtOfcNo}
+          and nvl(fch.use_restrict_yn, 'N') = 'Y'
+          and fch.use_restrict_bgng_dt &gt;= trunc(sysdate) + 1
         order by fch.use_restrict_bgng_dt, fch.fac_chk_hstry_no
     </select>
 
@@ -264,6 +328,8 @@
              , p.pic_nm
              , p.pic_telno
              , p.pic_email
+             , fch.chk_ctgry_cd
+             , chk_ctgry.code_name as chk_ctgry_nm
              , fch.chk_ty_cd
              , chk_ty.code_name as chk_ty_nm
              , fch.chk_stts_cd
@@ -296,6 +362,10 @@
                            on chk_ty.group_code_no = 'CHECK_TY'
                                and chk_ty.code_no_cd = fch.chk_ty_cd
                                and chk_ty.use_yn = 'Y'
+                 left join common_code chk_ctgry
+                           on chk_ctgry.group_code_no = 'CHECK_CTGRY'
+                               and chk_ctgry.code_no_cd = fch.chk_ctgry_cd
+                               and chk_ctgry.use_yn = 'Y'
                  left join common_code chk_stts
                            on chk_stts.group_code_no = 'CHECK_STTS'
                                and chk_stts.code_no_cd = fch.chk_stts_cd
@@ -443,6 +513,7 @@
         , use_restrict_bgng_dt
         , use_restrict_end_dt
         , reg_dt
+        , chk_ctgry_cd
         , chk_ty_cd
         ) values (
         #{facChkHstryNo}
@@ -458,6 +529,7 @@
         , case when #{useRestrictYn} = 'Y' and #{useRestrictBgngDt} is not null then to_date(#{useRestrictBgngDt}, 'yyyy-mm-dd"T"hh24:mi') end
         , case when #{useRestrictYn} = 'Y' and #{useRestrictEndDt} is not null then to_date(#{useRestrictEndDt}, 'yyyy-mm-dd"T"hh24:mi') end
         , sysdate
+        , #{chkCtgryCd}
         , #{chkTyCd}
         )
     </insert>
@@ -478,6 +550,7 @@
           , use_restrict_bgng_dt = case when #{useRestrictYn} = 'Y' and #{useRestrictBgngDt} is not null then to_date(#{useRestrictBgngDt}, 'yyyy-mm-dd"T"hh24:mi') end
           , use_restrict_end_dt = case when #{useRestrictYn} = 'Y' and #{useRestrictEndDt} is not null then to_date(#{useRestrictEndDt}, 'yyyy-mm-dd"T"hh24:mi') end
           , mdf_dt = sysdate
+          , chk_ctgry_cd = #{chkCtgryCd}
           , chk_ty_cd = #{chkTyCd}
         where fac_chk_hstry_no = #{facChkHstryNo}
     </update>
@@ -496,6 +569,8 @@
              , p.pic_email
              , p.partner_nm
              , p.biz_ty_nm
+             , fch.chk_ctgry_cd
+             , chk_ctgry.code_name as chk_ctgry_nm
              , fch.chk_ty_cd
              , chk_ty.code_name as chk_ty_nm
              , fch.chk_stts_cd
@@ -520,6 +595,10 @@
                            on chk_ty.group_code_no = 'CHECK_TY'
                                and chk_ty.code_no_cd = fch.chk_ty_cd
                                and chk_ty.use_yn = 'Y'
+                 left join common_code chk_ctgry
+                           on chk_ctgry.group_code_no = 'CHECK_CTGRY'
+                               and chk_ctgry.code_no_cd = fch.chk_ctgry_cd
+                               and chk_ctgry.use_yn = 'Y'
                  left join common_code chk_stts
                            on chk_stts.group_code_no = 'CHECK_STTS'
                                and chk_stts.code_no_cd = fch.chk_stts_cd

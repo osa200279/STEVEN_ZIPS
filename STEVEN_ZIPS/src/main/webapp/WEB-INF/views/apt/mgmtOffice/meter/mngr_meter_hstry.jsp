@@ -336,6 +336,10 @@
                                         <span class="list-count">총 ${fn:length(complexMeterList)}건</span>
                                     </div>
                                     <div class="list-head-right">
+                                        <%-- CSV 다운로드 모달 진입 --%>
+                                        <button type="button" class="btn js-download-btn" data-default-scope="COMPLEX">
+                                            <span class="material-symbols-rounded">download</span>CSV 다운로드
+                                        </button>
                                         <button type="button" class="btn btn-primary" id="openComplexUploadModalBtn">
                                             <span class="material-symbols-rounded">upload_file</span>단지별 검침 CSV 업로드
                                         </button>
@@ -382,9 +386,9 @@
                                                                 </c:otherwise>
                                                             </c:choose>
                                                         </td>
-                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.preVal}" pattern="#,#0.##"/><span class="unit-label">${meterUnit}</span></span></td>
-                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.currVal}" pattern="#,#0.##"/><span class="unit-label">${meterUnit}</span></span></td>
-                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.currVal - row.preVal}" pattern="#,#0.##"/><span class="unit-label">${meterUnit}</span></span></td>
+                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.preVal}" groupingUsed="false" maxFractionDigits="2"/><span class="unit-label">${meterUnit}</span></span></td>
+                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.currVal}" groupingUsed="false" maxFractionDigits="2"/><span class="unit-label">${meterUnit}</span></span></td>
+                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.currVal - row.preVal}" groupingUsed="false" maxFractionDigits="2"/><span class="unit-label">${meterUnit}</span></span></td>
                                                         <td>
                                                             <c:choose>
                                                                 <c:when test="${row.meterRsltCd eq 'NORMAL'}"><span class="badge badge-normal">${row.meterRsltNm}</span></c:when>
@@ -505,6 +509,10 @@
                                         <span class="list-count">총 ${fn:length(facilityMeterList)}건</span>
                                     </div>
                                     <div class="list-head-right">
+                                        <%-- CSV 다운로드 모달 진입 --%>
+                                        <button type="button" class="btn js-download-btn" data-default-scope="FACILITY">
+                                            <span class="material-symbols-rounded">download</span>CSV 다운로드
+                                        </button>
                                         <button type="button" class="btn btn-primary" id="openFacilityUploadModalBtn">
                                             <span class="material-symbols-rounded">upload_file</span>시설 검침 CSV 업로드
                                         </button>
@@ -544,9 +552,9 @@
                                                             <div class="meter-main">${row.facilityNm}</div>
                                                             <div class="meter-sub">${row.facilityNo} · ${row.facilityTyNm}</div>
                                                         </td>
-                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.preVal}" pattern="#,#0.##"/><span class="unit-label">${meterUnit}</span></span></td>
-                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.currVal}" pattern="#,#0.##"/><span class="unit-label">${meterUnit}</span></span></td>
-                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.currVal - row.preVal}" pattern="#,#0.##"/><span class="unit-label">${meterUnit}</span></span></td>
+                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.preVal}" groupingUsed="false" maxFractionDigits="2"/><span class="unit-label">${meterUnit}</span></span></td>
+                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.currVal}" groupingUsed="false" maxFractionDigits="2"/><span class="unit-label">${meterUnit}</span></span></td>
+                                                        <td class="td-unit"><span class="unit-value"><fmt:formatNumber value="${row.currVal - row.preVal}" groupingUsed="false" maxFractionDigits="2"/><span class="unit-label">${meterUnit}</span></span></td>
                                                         <td>
                                                             <c:choose>
                                                                 <c:when test="${row.meterRsltCd eq 'NORMAL'}"><span class="badge badge-normal">${row.meterRsltNm}</span></c:when>
@@ -713,6 +721,104 @@
                 </div>
 
                 <%-- ===== 상세 모달 ===== --%>
+                <%-- CSV 다운로드 조건 모달 --%>
+                <div class="modal-overlay" id="meterDownloadModal">
+                    <div class="modal modal-sm">
+                        <div class="modal-header">
+                            <h3 class="modal-title">검침 CSV 다운로드</h3>
+                            <button type="button" class="modal-close js-modal-close" data-modal-id="meterDownloadModal">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+                        <form method="get" action="${ctx}/manager/meter/hstry/download/${mgmtOfcNo}" id="meterDownloadForm">
+                            <div class="modal-body">
+                                <div class="form-section">
+                                    <div class="form-section-title"><span class="material-symbols-rounded">filter_alt</span>다운로드 조건</div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field">
+                                            <label class="field-label" for="downloadMeterScope">검침 구분</label>
+                                            <select class="form-select" name="meterScope" id="downloadMeterScope">
+                                                <option value="ALL">전체</option>
+                                                <option value="COMPLEX">단지별</option>
+                                                <option value="FACILITY">시설별</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="field-label" for="downloadUtilityProviderNo">업체</label>
+                                            <select class="form-select" name="utilityProviderNo" id="downloadUtilityProviderNo">
+                                                <option value="">전체</option>
+                                                <c:forEach var="provider" items="${providerList}">
+                                                    <c:if test="${not empty provider.utilityProviderNo}">
+                                                        <option value="${provider.utilityProviderNo}" data-meter-ty-cd="${provider.meterTyCd}">
+                                                            <c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
+                                                        </option>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </select>
+                                            <input type="hidden" name="meterTyCd" id="downloadMeterTyCd">
+                                        </div>
+                                    </div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field">
+                                            <label class="field-label" for="downloadMeterRsltCd">결과</label>
+                                            <select class="form-select" name="meterRsltCd" id="downloadMeterRsltCd">
+                                                <option value="">전체</option>
+                                                <c:forEach var="code" items="${rsltCodeList}">
+                                                    <option value="${code.codeNoCd}">${code.codeName}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <%-- 기간 방식 선택 --%>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field">
+                                            <label class="field-label" for="downloadPeriodType">기간 방식</label>
+                                            <select class="form-select" id="downloadPeriodType">
+                                                <option value="MONTH">월별</option>
+                                                <option value="RANGE">날짜범위</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-field" id="downloadMonthField">
+                                            <label class="field-label" for="downloadMonth">관리년월</label>
+                                            <input type="month" class="form-input" id="downloadMonth">
+                                        </div>
+                                    </div>
+                                    <div class="form-row" id="downloadDateRangeField">
+                                        <div class="form-field">
+                                            <label class="field-label">검침일자</label>
+                                            <div class="date-range-inputs">
+                                                <input type="date" class="form-input" name="startDt" id="downloadStartDt">
+                                                <span class="date-filter-sep">~</span>
+                                                <input type="date" class="form-input" name="endDt" id="downloadEndDt">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-field">
+                                            <label class="field-label" for="downloadKeyword">검색어</label>
+                                            <input type="text" class="form-input" name="keyword" id="downloadKeyword" placeholder="검침번호, 동/호, 시설명, 시설번호, 업체명">
+                                        </div>
+                                    </div>
+                                </div>
+                                <%-- 다운로드 조건 확인 결과 --%>
+                                <input type="hidden" id="downloadCheckPassed" value="">
+                                <div class="preview-box visible" id="downloadCheckBox">
+                                    <div class="preview-msg" id="downloadCheckMessage">다운로드 전 조건 확인이 필요합니다.</div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn js-modal-close" data-modal-id="meterDownloadModal">취소</button>
+                                <button type="button" class="btn" id="downloadCheckBtn">
+                                    <span class="material-symbols-rounded">search_check</span>조건 확인
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="material-symbols-rounded">download</span>다운로드
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <div class="modal-overlay" id="meterDetailModal">
                     <div class="modal modal-sm">
                         <div class="modal-header">
@@ -889,6 +995,7 @@
             // 업로드 모달은 닫을 때 CSV 확인 결과와 hidden 설정값도 초기화함
             if (modalId === 'complexUploadModal') resetPreview('complex');
             if (modalId === 'facilityUploadModal') resetPreview('facility');
+            if (modalId === 'meterDownloadModal') resetDownloadCheck();
         }
 
         /* 공통 닫기 이벤트 */
@@ -906,6 +1013,182 @@
         var facilityUploadBtn = document.getElementById('openFacilityUploadModalBtn');
         if (complexUploadBtn) complexUploadBtn.addEventListener('click', function () { openMeterModal('complexUploadModal'); });
         if (facilityUploadBtn) facilityUploadBtn.addEventListener('click', function () { openMeterModal('facilityUploadModal'); });
+
+        /* 다운로드 모달 기본 조건 세팅 */
+        function setDownloadValue(id, value) {
+            var el = document.getElementById(id);
+            if (el) el.value = value || '';
+        }
+
+        /* 다운로드 조건 확인 상태 초기화 */
+        function resetDownloadCheck() {
+            var passed = document.getElementById('downloadCheckPassed');
+            var msg = document.getElementById('downloadCheckMessage');
+            if (passed) passed.value = '';
+            if (msg) {
+                msg.className = 'preview-msg';
+                msg.textContent = '다운로드 전 조건 확인이 필요합니다.';
+            }
+        }
+
+        /* 선택 업체 기준 검침유형 동기화 */
+        function syncDownloadProviderMeterType() {
+            var provider = document.getElementById('downloadUtilityProviderNo');
+            var meterTy = document.getElementById('downloadMeterTyCd');
+            if (!provider || !meterTy) return;
+            var selected = provider.options[provider.selectedIndex];
+            meterTy.value = selected ? (selected.getAttribute('data-meter-ty-cd') || '') : '';
+        }
+
+        /* 현재 탭 검색조건 기반 다운로드 조건 복사 */
+        function applyDownloadDefaults(defaultScope) {
+            setDownloadValue('downloadMeterScope', defaultScope || 'ALL');
+            setDownloadValue('downloadPeriodType', 'MONTH');
+            resetDownloadCheck();
+
+            if (defaultScope === 'COMPLEX') {
+                setDownloadValue('downloadUtilityProviderNo', document.getElementById('complexUtilityProviderNo') && document.getElementById('complexUtilityProviderNo').value);
+                syncDownloadProviderMeterType();
+                setDownloadValue('downloadMeterRsltCd', document.getElementById('complexMeterRsltCd') && document.getElementById('complexMeterRsltCd').value);
+                setDownloadValue('downloadStartDt', document.getElementById('complexStartDt') && document.getElementById('complexStartDt').value);
+                setDownloadValue('downloadEndDt', document.getElementById('complexEndDt') && document.getElementById('complexEndDt').value);
+                setDownloadValue('downloadKeyword', document.getElementById('complexKeyword') && document.getElementById('complexKeyword').value);
+                setDownloadMonthFromRange();
+                toggleDownloadPeriodFields();
+                return;
+            }
+
+            setDownloadValue('downloadUtilityProviderNo', document.getElementById('filterUtilityProviderNo') && document.getElementById('filterUtilityProviderNo').value);
+            syncDownloadProviderMeterType();
+            setDownloadValue('downloadMeterRsltCd', document.getElementById('filterMeterRsltCd') && document.getElementById('filterMeterRsltCd').value);
+            setDownloadValue('downloadStartDt', document.getElementById('filterStartDt') && document.getElementById('filterStartDt').value);
+            setDownloadValue('downloadEndDt', document.getElementById('filterEndDt') && document.getElementById('filterEndDt').value);
+            setDownloadValue('downloadKeyword', document.getElementById('filterKeyword') && document.getElementById('filterKeyword').value);
+            setDownloadMonthFromRange();
+            toggleDownloadPeriodFields();
+        }
+
+        /* 월별 다운로드 기본값 산정 */
+        function setDownloadMonthFromRange() {
+            var startDt = document.getElementById('downloadStartDt');
+            var month = document.getElementById('downloadMonth');
+            if (!month) return;
+            if (startDt && startDt.value) {
+                month.value = startDt.value.substring(0, 7);
+                return;
+            }
+
+            var now = new Date();
+            month.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        }
+
+        /* 기간 방식별 입력 영역 표시 */
+        function toggleDownloadPeriodFields() {
+            var periodType = document.getElementById('downloadPeriodType');
+            var monthField = document.getElementById('downloadMonthField');
+            var rangeField = document.getElementById('downloadDateRangeField');
+            var isMonth = !periodType || periodType.value === 'MONTH';
+            if (monthField) monthField.style.display = isMonth ? '' : 'none';
+            if (rangeField) rangeField.style.display = isMonth ? 'none' : '';
+        }
+
+        /* 월별 다운로드 날짜 조건 변환 */
+        function applyMonthDownloadRange() {
+            var periodType = document.getElementById('downloadPeriodType');
+            var month = document.getElementById('downloadMonth');
+            if (!periodType || periodType.value !== 'MONTH' || !month || !month.value) {
+                return;
+            }
+
+            var parts = month.value.split('-');
+            var year = Number(parts[0]);
+            var monthNo = Number(parts[1]);
+            var lastDay = new Date(year, monthNo, 0).getDate();
+            setDownloadValue('downloadStartDt', month.value + '-01');
+            setDownloadValue('downloadEndDt', month.value + '-' + String(lastDay).padStart(2, '0'));
+        }
+
+        /* 다운로드 조건 기준 검침 건수 확인 */
+        function checkDownloadCondition() {
+            var form = document.getElementById('meterDownloadForm');
+            var passed = document.getElementById('downloadCheckPassed');
+            var msg = document.getElementById('downloadCheckMessage');
+            if (!form || !msg) return;
+
+            applyMonthDownloadRange();
+            syncDownloadProviderMeterType();
+            if (passed) passed.value = '';
+            msg.className = 'preview-msg';
+            msg.textContent = '조건 확인 중입니다.';
+
+            var params = new URLSearchParams(new FormData(form));
+            fetch('${ctx}/manager/meter/hstry/download/check/${mgmtOfcNo}?' + params.toString(), {
+                method: 'GET',
+                credentials: 'same-origin'
+            })
+                .then(function (response) { return response.json(); })
+                .then(function (result) {
+                    var count = Number(result.count || 0);
+                    if (result.success && count > 0) {
+                        if (passed) passed.value = 'Y';
+                        msg.className = 'preview-msg success';
+                        msg.textContent = count + '건의 검침 이력이 확인되었습니다.';
+                        return;
+                    }
+                    msg.className = 'preview-msg error';
+                    msg.textContent = '해당 조건의 검침 이력이 없습니다.';
+                })
+                .catch(function () {
+                    msg.className = 'preview-msg error';
+                    msg.textContent = '조건 확인 중 오류가 발생했습니다.';
+                });
+        }
+
+        document.querySelectorAll('.js-download-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                applyDownloadDefaults(btn.getAttribute('data-default-scope'));
+                openMeterModal('meterDownloadModal');
+            });
+        });
+
+        var downloadPeriodType = document.getElementById('downloadPeriodType');
+        if (downloadPeriodType) downloadPeriodType.addEventListener('change', function () {
+            toggleDownloadPeriodFields();
+            resetDownloadCheck();
+        });
+
+        var downloadProvider = document.getElementById('downloadUtilityProviderNo');
+        if (downloadProvider) downloadProvider.addEventListener('change', function () {
+            syncDownloadProviderMeterType();
+            resetDownloadCheck();
+        });
+
+        document.querySelectorAll('#meterDownloadForm input, #meterDownloadForm select').forEach(function (el) {
+            if (el.id !== 'downloadCheckPassed') {
+                el.addEventListener('change', resetDownloadCheck);
+                el.addEventListener('input', resetDownloadCheck);
+            }
+        });
+
+        var downloadCheckBtn = document.getElementById('downloadCheckBtn');
+        if (downloadCheckBtn) downloadCheckBtn.addEventListener('click', checkDownloadCondition);
+
+        var downloadForm = document.getElementById('meterDownloadForm');
+        if (downloadForm) {
+            downloadForm.addEventListener('submit', function (e) {
+                applyMonthDownloadRange();
+                syncDownloadProviderMeterType();
+                var passed = document.getElementById('downloadCheckPassed');
+                if (!passed || passed.value !== 'Y') {
+                    e.preventDefault();
+                    var msg = document.getElementById('downloadCheckMessage');
+                    if (msg) {
+                        msg.className = 'preview-msg error';
+                        msg.textContent = '조건 확인을 먼저 완료해주세요.';
+                    }
+                }
+            });
+        }
 
         /* ============================================================
            업로드 모달 - CSV 확인/자동 매칭

@@ -1336,17 +1336,35 @@ public class ResidentMainController {
         return "member/resident/board/board_chat";
     }
 
-    /* =========================
-     * 우리아파트통계
-     * ========================= */
+
+    /** 우리집맞춤통계 진입 (번호 없는 URL → 번호 붙은 URL 로 리다이렉트) */
+    @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/stats/custom")
-    public String statsCustom() {
-        return "member/resident/stats_custom";
+    public String statsCustom(@AuthenticationPrincipal CustomUser principal) {
+        // 로그인 사용자의 첫 단지번호 추출
+        ResidentVO resident = (ResidentVO) principal.getMember();
+        // 등록된 단지가 없으면 폴백으로 기존 JSP 반환
+        if (resident.getMyAptList() == null || resident.getMyAptList().isEmpty()) {
+            return "member/resident/stats_custom";
+        }
+        // 번호 붙은 URL 로 302 리다이렉트 → ResidentCustomStatsController 가 처리
+        String aptCmplexNo = resident.getMyAptList().get(0).getAptCmplexNo();
+        return "redirect:/resident/stats/custom/" + aptCmplexNo;
     }
 
+    /** 아파트통계 진입 (번호 없는 URL → 번호 붙은 URL 로 리다이렉트) */
+    @PreAuthorize("hasRole('RESIDENT')")
     @GetMapping("/stats/apartment")
-    public String statsApartment() {
-        return "member/resident/stats_apartment";
+    public String statsApartment(@AuthenticationPrincipal CustomUser principal) {
+        // 로그인 사용자의 첫 단지번호 추출
+        ResidentVO resident = (ResidentVO) principal.getMember();
+        // 등록된 단지가 없으면 폴백으로 기존 JSP 반환
+        if (resident.getMyAptList() == null || resident.getMyAptList().isEmpty()) {
+            return "member/resident/stats_apartment";
+        }
+        // 번호 붙은 URL 로 302 리다이렉트 → ResidentCustomStatsController 가 처리
+        String aptCmplexNo = resident.getMyAptList().get(0).getAptCmplexNo();
+        return "redirect:/resident/stats/apartment/" + aptCmplexNo;
     }
 
 

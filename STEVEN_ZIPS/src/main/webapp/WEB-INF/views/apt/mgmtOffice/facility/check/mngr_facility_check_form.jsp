@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -96,7 +96,7 @@
         #fchPage .area-title .material-symbols-rounded { font-size:15px; color:var(--acc); }
 
         /* 필터 한 줄 */
-        #fchPage .history-filter { display:grid; grid-template-columns:1.1fr .8fr .8fr .8fr minmax(140px,1fr) auto; gap:6px; align-items:end; margin-bottom:8px; padding:10px; border:1px solid var(--line); border-radius:6px; background:#fbfcfb; }
+        #fchPage .history-filter { display:grid; grid-template-columns:.85fr 1fr .8fr .8fr .8fr minmax(140px,1fr) auto; gap:6px; align-items:end; margin-bottom:8px; padding:10px; border:1px solid var(--line); border-radius:6px; background:#fbfcfb; }
         #fchPage .history-filter>.f-field { min-width:0; }
         #fchPage .history-filter>.f-btns  { display:flex; gap:5px; }
         #fchPage .field-label { display:block; margin-bottom:4px; color:#4a5c4e; font-size:11px; font-weight:800; }
@@ -133,6 +133,7 @@
         #fchPage .form-panel-body { padding:16px; }
         #fchPage .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 12px; }
         #fchPage .form-grid.form-grid-3 { grid-template-columns:repeat(3, minmax(0, 1fr)); }
+        #fchPage .form-grid.form-grid-4 { grid-template-columns:1fr 1fr .8fr 1.3fr; }
         #fchPage .form-grid.restrict-grid { grid-template-columns:.65fr 1fr 1fr; }
         #fchPage .form-grid .full { grid-column:1 / -1; }
         #fchPage .form-label { display:block; margin-bottom:4px; color:#4a5c4e; font-size:11px; font-weight:800; }
@@ -147,6 +148,8 @@
         #fchPage .type-autocomplete { position:relative; }
         #fchPage .type-dropdown { position:absolute; left:0; right:0; top:calc(100% + 3px); z-index:20; max-height:170px; overflow-y:auto; border:1px solid var(--line); border-radius:4px; background:#fff; box-shadow:0 10px 24px rgba(15,23,42,.14); }
         #fchPage .type-option { width:100%; min-height:31px; padding:0 10px; border:0; border-bottom:1px solid #eef1f3; background:#fff; color:#1f2d23; font-size:12px; font-weight:700; text-align:left; cursor:pointer; font-family:'Noto Sans KR',sans-serif; }
+        #fchPage .type-option { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+        #fchPage .type-option-ctgry { flex:0 0 auto; color:#7a887d; font-size:10px; font-weight:800; }
         #fchPage .type-option:last-child { border-bottom:none; }
         #fchPage .type-option:hover { background:#f8fcf9; color:var(--acc); }
         #fchPage .type-empty { padding:9px 10px; color:#8a9a8e; font-size:11px; text-align:center; }
@@ -194,7 +197,7 @@
             #fchPage .list-area { border-right:none; padding-right:0; }
         }
         @media(max-width:760px) {
-            #fchPage .form-grid, #fchPage .form-grid.form-grid-3, #fchPage .form-grid.restrict-grid { grid-template-columns:1fr; }
+            #fchPage .form-grid, #fchPage .form-grid.form-grid-3, #fchPage .form-grid.form-grid-4, #fchPage .form-grid.restrict-grid { grid-template-columns:1fr; }
             #fchPage .history-filter { grid-template-columns:1fr; }
         }
     </style>
@@ -463,6 +466,15 @@
                                         <div class="split-body">
                                             <div class="history-filter">
                                                 <div class="f-field">
+                                                    <label class="field-label" for="historyFilterChkCtgryCd">점검분류</label>
+                                                    <select class="form-select" id="historyFilterChkCtgryCd">
+                                                        <option value="">전체</option>
+                                                        <c:forEach var="code" items="${checkCategoryList}">
+                                                            <option value="${code.codeNoCd}">${code.codeName}</option>
+                                                        </c:forEach>
+                                                    </select>
+                                                </div>
+                                                <div class="f-field">
                                                     <label class="field-label" for="historyFilterChkTyNmInput">작업유형</label>
                                                     <div class="type-autocomplete">
                                                         <input type="text" class="form-input" id="historyFilterChkTyNmInput" placeholder="전체 또는 작업유형 검색" autocomplete="off">
@@ -557,7 +569,16 @@
                                         </div>
                                         <%-- 점검 정보 --%>
                                         <div class="form-section-title">점검 정보</div>
-                                        <div class="form-grid form-grid-3">
+                                        <div class="form-grid form-grid-4">
+                                            <div>
+                                                <label class="form-label" for="chkCtgryCd">점검분류 <span class="required">*</span></label>
+                                                <select class="form-field-select" id="chkCtgryCd" name="chkCtgryCd" disabled>
+                                                    <option value="">선택</option>
+                                                    <c:forEach var="code" items="${checkCategoryList}">
+                                                        <option value="${code.codeNoCd}" ${check.chkCtgryCd eq code.codeNoCd ? 'selected' : ''}>${code.codeName}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
                                             <div>
                                                 <label class="form-label" for="chkTyNmInput">작업유형 <span class="required">*</span></label>
                                                 <div class="type-autocomplete">
@@ -690,6 +711,16 @@
             </c:forEach>
         ];
 
+        var checkCategoryList = [
+            <c:forEach var="code" items="${checkCategoryList}" varStatus="st">
+            {
+                codeNoCd: '${code.codeNoCd}',
+                codeName: '${fn:escapeXml(code.codeName)}',
+                codeContent: '${fn:escapeXml(code.codeContent)}'
+            }<c:if test="${not st.last}">,</c:if>
+            </c:forEach>
+        ];
+
         /* 현재 선택된 계약유형 - 작업유형 후보 필터링에 사용 */
         var currentContTyCd = '';
         var followTypeLocked = false;
@@ -726,7 +757,7 @@
                 flag ? e.setAttribute('readonly', '') : e.removeAttribute('readonly');
             });
             /* select 는 disabled 속성으로 제어 */
-            ['chkSttsCd', 'useRestrictYn'].forEach(function (id) {
+            ['chkCtgryCd', 'chkSttsCd', 'useRestrictYn'].forEach(function (id) {
                 var e = el(id);
                 if (e) e.disabled = flag;
             });
@@ -734,13 +765,14 @@
 
         /* 폼 입력값 전체 초기화 */
         function clearForm() {
-            ['chkTyCd', 'chkTyNmInput', 'chkSttsCd', 'chkDt', 'chkCn', 'rmk', 'useRestrictBgngDt', 'useRestrictEndDt'].forEach(function (id) { setVal(id, ''); });
+            ['chkCtgryCd', 'chkTyCd', 'chkTyNmInput', 'chkSttsCd', 'chkDt', 'chkCn', 'rmk', 'useRestrictBgngDt', 'useRestrictEndDt'].forEach(function (id) { setVal(id, ''); });
             hide('chkTyDropdown');
             setVal('useRestrictYn', 'N');
         }
 
         /* 이력 객체 값으로 폼 채우기 */
         function fillForm(h, syncOwner) {
+            setVal('chkCtgryCd', h.chkCtgryCd || inferCheckCategory(h.chkTyCd, h.chkTyNm));
             setCheckType(h.chkTyCd || '', h.chkTyNm || getCheckTypeName(h.chkTyCd), true);
             setVal('chkSttsCd', h.chkSttsCd || '');
             setVal('chkDt',     h.chkDt     || '');
@@ -760,10 +792,35 @@
             return found ? found.codeName : code;
         }
 
+        function getCheckCategoryName(code) {
+            if (!code) return '';
+            var found = checkCategoryList.filter(function (item) { return item.codeNoCd === code; })[0];
+            return found ? found.codeName : code;
+        }
+
+        function inferCheckCategory(code, name, content) {
+            var text = [code, name, content].join(' ').toUpperCase();
+            var servicePattern = /(청소|방역|소독|조경|용역|관리|CLEAN|DISINFECT|SANIT|LANDSCAPE|SERVICE|MGMT)/;
+            return servicePattern.test(text) ? 'SERVICE' : 'REVIEW';
+        }
+
+        function getTypeCategory(item) {
+            if (!item) return 'REVIEW';
+            return inferCheckCategory(item.codeNoCd, item.codeName, item.codeContent);
+        }
+
+        function getHistoryCategory(h) {
+            return (h && h.chkCtgryCd) ? h.chkCtgryCd : inferCheckCategory(h && h.chkTyCd, h && h.chkTyNm);
+        }
+
         /* 작업유형 값 세팅 - 표시명 input과 hidden code를 함께 맞춤 */
         function setCheckType(code, name, keepDropdownHidden) {
             setVal('chkTyCd', code || '');
             setVal('chkTyNmInput', name || (code ? getCheckTypeName(code) : ''));
+            if (code && el('chkCtgryCd') && !el('chkCtgryCd').value) {
+                var found = checkTypeList.filter(function (item) { return item.codeNoCd === code; })[0];
+                setVal('chkCtgryCd', getTypeCategory(found));
+            }
             if (keepDropdownHidden !== false) hide('chkTyDropdown');
         }
 
@@ -852,11 +909,12 @@
         }
 
         /* 작업유형 후보 필터링 - 등록폼은 계약유형 기준, 이력 필터는 전체 기준 */
-        function getTypeCandidates(keyword, useContractFilter) {
+        function getTypeCandidates(keyword, useContractFilter, categoryCode) {
             var kw = String(keyword || '').trim().toLowerCase();
             return checkTypeList.filter(function (item) {
                 var nameOk = !kw || String(item.codeName || '').toLowerCase().indexOf(kw) > -1 || String(item.codeNoCd || '').toLowerCase().indexOf(kw) > -1;
                 if (!nameOk) return false;
+                if (categoryCode && getTypeCategory(item) !== categoryCode) return false;
                 if (!useContractFilter || !currentContTyCd) return true;
                 var content = String(item.codeContent || 'ALL');
                 if (content === 'ALL') return true;
@@ -872,14 +930,18 @@
             if (!input || !hidden || !box) return;
             if (input.hasAttribute('readonly') || input.disabled) { hide(dropdownId); return; }
 
-            var list = getTypeCandidates(input.value, useContractFilter);
+            var categoryCode = hiddenId === 'historyFilterChkTyCd'
+                ? (el('historyFilterChkCtgryCd') ? el('historyFilterChkCtgryCd').value : '')
+                : (el('chkCtgryCd') ? el('chkCtgryCd').value : '');
+            var list = getTypeCandidates(input.value, useContractFilter, categoryCode);
             if (list.length === 0) {
                 box.innerHTML = '<div class="type-empty">선택 가능한 작업유형이 없습니다.</div>';
                 show(dropdownId);
                 return;
             }
             box.innerHTML = list.map(function (item) {
-                return '<button type="button" class="type-option" data-input-id="' + esc(inputId) + '" data-hidden-id="' + esc(hiddenId) + '" data-dropdown-id="' + esc(dropdownId) + '" data-code="' + esc(item.codeNoCd) + '" data-name="' + esc(item.codeName) + '">' + esc(item.codeName) + '</button>';
+                var ctgryCd = getTypeCategory(item);
+                return '<button type="button" class="type-option" data-input-id="' + esc(inputId) + '" data-hidden-id="' + esc(hiddenId) + '" data-dropdown-id="' + esc(dropdownId) + '" data-code="' + esc(item.codeNoCd) + '" data-name="' + esc(item.codeName) + '" data-category="' + esc(ctgryCd) + '"><span>' + esc(item.codeName) + '</span><span class="type-option-ctgry">' + esc(getCheckCategoryName(ctgryCd)) + '</span></button>';
             }).join('');
             show(dropdownId);
         }
@@ -981,7 +1043,7 @@
                     + '<div class="h-date">' + esc(h.chkDt) + '</div>'
                     + '<div class="h-main">'
                     +   '<div class="h-meta">'
-                    +     '<span class="h-type">' + esc(h.chkTyNm) + '</span>'
+                    +     '<span class="h-type">' + esc(h.chkCtgryNm || getCheckCategoryName(getHistoryCategory(h)) || '-') + ' · ' + esc(h.chkTyNm || '-') + '</span>'
                     +     '<span class="badge ' + badgeCls(h.chkSttsCd) + '">' + esc(h.chkSttsNm) + '</span>'
                     +   '</div>'
                     +   '<span class="h-partner">업체: ' + esc(getOwnerText(h)) + '</span>'
@@ -1217,6 +1279,7 @@
             hide('baseHistoryRow');
             clearSelectedHistorySummary();
             followTypeLocked = false;
+            if (el('chkCtgryCd')) delete el('chkCtgryCd').dataset.locked;
             setReadonly(true);
 
             var fNo = el('facilityNo').value;
@@ -1297,11 +1360,13 @@
                     applyOwnerType('SELF');
                     setVal('contNo', base.contNo || '');
                 }
+                setVal('chkCtgryCd', base.chkCtgryCd || getHistoryCategory(base));
                 setCheckType(base.chkTyCd || '', base.chkTyNm || getCheckTypeName(base.chkTyCd), true);
                 setVal('rmk', baseNo ? '기준이력 ' + baseNo + ' 후속 조치' : '');
                 setReadonly(false);
                 /* 같은 흐름의 후속 등록에서는 작업유형을 변경하지 않도록 잠금 */
                 followTypeLocked = true;
+                if (el('chkCtgryCd')) el('chkCtgryCd').dataset.locked = 'true';
                 if (el('chkTyNmInput')) el('chkTyNmInput').setAttribute('readonly', '');
                 if (base.chkSttsCd === 'DONE' || hasDoneInSameFlow(followFlowNo)) show('followNotice');
                 if (!IS_ADMIN) { show('saveHistoryBtn'); el('saveHistoryBtn').textContent = '후속 등록'; }
@@ -1319,6 +1384,7 @@
                 setText('currentHistoryNoText', uh.facChkHstryNo || '${check.facChkHstryNo}' || '-');
                 setVal('chkFlowNo', uh.chkFlowNo || '');
                 fillForm(uh);
+                if (el('chkCtgryCd')) delete el('chkCtgryCd').dataset.locked;
                 /* 수정 대상 정보는 폼 값으로만 표시한다. */
                 setReadonly(false);
                 show('correctNotice');
@@ -1330,6 +1396,7 @@
 
         /* ── 이력 필터 (클라이언트 사이드) ── */
         function applyFilter() {
+            var ctgry   = el('historyFilterChkCtgryCd') ? el('historyFilterChkCtgryCd').value : '';
             var ty      = el('historyFilterChkTyCd').value;
             var st      = el('historyFilterChkSttsCd').value;
             var restrict = el('historyFilterUseRestrictYn').value;
@@ -1343,7 +1410,7 @@
                 var processOk = !process || processNo === process;
                 var restrictOk = !restrict || (h.useRestrictYn || 'N') === restrict;
                 if (process === '__NO_FLOW__') processOk = !processNo;
-                return (!ty || h.chkTyCd === ty) && (!st || h.chkSttsCd === st) && restrictOk && processOk && kwOk;
+                return (!ctgry || getHistoryCategory(h) === ctgry) && (!ty || h.chkTyCd === ty) && (!st || h.chkSttsCd === st) && restrictOk && processOk && kwOk;
             });
 
             if (filtered.length === 0) {
@@ -1366,6 +1433,7 @@
 
         /* 이력 필터 초기화 */
         function resetFilter() {
+            setVal('historyFilterChkCtgryCd', '');
             setVal('historyFilterChkTyCd',   '');
             setVal('historyFilterChkTyNmInput', '');
             setVal('historyFilterChkSttsCd', '');
@@ -1530,7 +1598,14 @@
                 var dropdownId = typeOption.getAttribute('data-dropdown-id');
                 setVal(inputId, typeOption.getAttribute('data-name') || '');
                 setVal(hiddenId, typeOption.getAttribute('data-code') || '');
+                if (hiddenId === 'chkTyCd') {
+                    setVal('chkCtgryCd', typeOption.getAttribute('data-category') || '');
+                }
+                if (hiddenId === 'historyFilterChkTyCd' && el('historyFilterChkCtgryCd') && !el('historyFilterChkCtgryCd').value) {
+                    setVal('historyFilterChkCtgryCd', typeOption.getAttribute('data-category') || '');
+                }
                 hide(dropdownId);
+                if (hiddenId === 'historyFilterChkTyCd') applyFilter();
                 return;
             }
 
@@ -1635,6 +1710,17 @@
 
         /* 작업유형 검색 input 이벤트 */
         var chkTyNmInput = el('chkTyNmInput');
+        var chkCtgryCd = el('chkCtgryCd');
+        if (chkCtgryCd) {
+            chkCtgryCd.addEventListener('change', function () {
+                if (this.dataset.locked === 'true') {
+                    var base = selectedHistory || latest || {};
+                    setVal('chkCtgryCd', base.chkCtgryCd || getHistoryCategory(base));
+                    return;
+                }
+                if (!followTypeLocked && currentMode !== 'detail') clearCheckType();
+            });
+        }
         if (chkTyNmInput) {
             chkTyNmInput.addEventListener('input', function () {
                 setVal('chkTyCd', '');
@@ -1646,6 +1732,14 @@
         }
 
         var historyFilterTypeInput = el('historyFilterChkTyNmInput');
+        var historyFilterCtgry = el('historyFilterChkCtgryCd');
+        if (historyFilterCtgry) {
+            historyFilterCtgry.addEventListener('change', function () {
+                setVal('historyFilterChkTyCd', '');
+                setVal('historyFilterChkTyNmInput', '');
+                applyFilter();
+            });
+        }
         if (historyFilterTypeInput) {
             historyFilterTypeInput.addEventListener('input', function () {
                 setVal('historyFilterChkTyCd', '');
@@ -1689,6 +1783,7 @@
                 alert('협력업체 처리 이력은 협력업체를 선택해 주세요.');
                 e.preventDefault(); return;
             }
+            if (!el('chkCtgryCd').value)     { alert('점검분류를 선택해 주세요.');           e.preventDefault(); return; }
             if (!el('chkTyCd').value)        { alert('작업유형을 선택해 주세요.');           e.preventDefault(); return; }
             if (!el('chkSttsCd').value)      { alert('상태를 선택해 주세요.');           e.preventDefault(); return; }
             if (!el('chkDt').value)          { alert('작업일자를 입력해 주세요.');           e.preventDefault(); return; }

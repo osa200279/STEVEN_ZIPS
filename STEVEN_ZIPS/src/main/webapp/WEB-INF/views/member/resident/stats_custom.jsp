@@ -21,6 +21,7 @@
     .breadcrumb .cur {color:var(--green-dark);font-weight:700;}
     .page-title {font-size:22px;font-weight:800;color:var(--text-dark);padding-bottom:14px;border-bottom:2px solid var(--green-dark);margin-bottom:16px;letter-spacing:-.4px;}
     .page-desc {font-size:13px;line-height:1.8;color:var(--text-light);margin-bottom:24px;}
+    #customStatsHouseText {display:inline-flex;align-items:center;margin-right:4px;padding:2px 8px;border-radius:6px;background:#eef8f0;color:var(--green-dark);font-size:17px;font-weight:800;line-height:1.5;vertical-align:baseline;}
     .stats-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px;}
     .stat-card,.panel {background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 24px rgba(30,60,40,.05);}
     .stat-card {padding:18px 18px 16px;}

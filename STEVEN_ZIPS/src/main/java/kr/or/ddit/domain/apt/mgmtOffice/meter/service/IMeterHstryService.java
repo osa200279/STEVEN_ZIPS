@@ -35,4 +35,10 @@ public interface IMeterHstryService {
 
     /** 검침 이력 수정 */
     int updateMeterHstry(MeterHstryVO meterHstryVO);
+
+    /** 다운로드 조건 기준 CSV 생성 */
+    byte[] downloadMeterCsv(String mgmtOfcNo, Map<String, Object> paramMap);
+
+    /** 다운로드 조건 기준 검침 건수 조회 */
+    int countDownloadMeter(String mgmtOfcNo, Map<String, Object> paramMap);
 }

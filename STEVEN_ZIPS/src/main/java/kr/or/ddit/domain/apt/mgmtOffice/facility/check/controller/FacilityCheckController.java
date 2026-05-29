@@ -56,6 +56,7 @@ public class FacilityCheckController {
             @RequestParam(required = false, defaultValue = "") String searchWord,
             @RequestParam(required = false, defaultValue = "") String facilityNo,
             @RequestParam(required = false, defaultValue = "") String partnerNo,
+            @RequestParam(required = false, defaultValue = "") String chkCtgryCd,
             @RequestParam(required = false, defaultValue = "") String chkTyCd,
             @RequestParam(required = false, defaultValue = "") String chkSttsCd,
             @RequestParam(required = false, defaultValue = "") String useRestrictYn,
@@ -75,6 +76,7 @@ public class FacilityCheckController {
         searchVO.setFacilityNo(facilityNo);
         /* 협력업체 상세 화면에서 넘어온 협력업체번호 필터 */
         searchVO.setPartnerNo(partnerNo);
+        searchVO.setChkCtgryCd(chkCtgryCd);
         searchVO.setChkTyCd(chkTyCd);
         searchVO.setChkSttsCd(chkSttsCd);
         /* 이용제한 여부 검색 조건 */
@@ -114,7 +116,11 @@ public class FacilityCheckController {
         /* 오늘 날짜와 겹치는 이용제한 이력 */
         model.addAttribute("todayUseRestrictList", facilityCheckService.selectTodayUseRestrictList(mgmtOfcNo));
 
+        /* [추가] 내일 이후 시작 예정인 이용제한 이력 - 카드 클릭 모달의 '예정 일정' 섹션에서 사용 */
+        model.addAttribute("futureUseRestrictList", facilityCheckService.selectFutureUseRestrictList(mgmtOfcNo));
+
         /* 필터용 공통코드 목록 */
+        model.addAttribute("checkCategoryList", facilityCheckService.selectCheckCategoryList());
         model.addAttribute("checkTypeList", facilityCheckService.selectCheckTypeList());
         model.addAttribute("checkStatusList", facilityCheckService.selectCheckStatusList());
 
@@ -396,6 +402,7 @@ public class FacilityCheckController {
         model.addAttribute("partnerList", facilityCheckService.selectPartnerSelectList(mgmtOfcNo));
 
         /* 공통코드 목록 */
+        model.addAttribute("checkCategoryList", facilityCheckService.selectCheckCategoryList());
         model.addAttribute("checkTypeList", facilityCheckService.selectCheckTypeList());
         model.addAttribute("checkStatusList", facilityCheckService.selectCheckStatusList());
 

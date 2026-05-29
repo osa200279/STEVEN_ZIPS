@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -276,15 +276,17 @@
                                 <div class="history-table-wrap">
                                     <table class="history-table">
                                         <colgroup>
-                                            <col style="width:28%;">
-                                            <col style="width:27%;">
-                                            <col style="width:23%;">
+                                            <col style="width:24%;">
+                                            <col style="width:20%;">
                                             <col style="width:22%;">
+                                            <col style="width:18%;">
+                                            <col style="width:16%;">
                                         </colgroup>
                                         <thead>
                                         <tr>
-                                            <th>점검일자</th>
-                                            <th>점검유형</th>
+                                            <th>작업일자</th>
+                                            <th>점검분류</th>
+                                            <th>작업유형</th>
                                             <th>상태</th>
                                             <th>상세</th>
                                         </tr>
@@ -295,6 +297,7 @@
                                                 <c:forEach var="history" items="${sameFacilityCheckList}">
                                                     <tr class="${history.facChkHstryNo eq check.facChkHstryNo ? 'is-current' : ''}">
                                                         <td>${empty history.chkDt ? '-' : history.chkDt}</td>
+                                                        <td>${empty history.chkCtgryNm ? '-' : history.chkCtgryNm}</td>
                                                         <td>${empty history.chkTyNm ? '-' : history.chkTyNm}</td>
                                                         <td>
                                                             <span class="badge ${history.chkSttsCd eq 'WAIT' ? 'badge-wait' : history.chkSttsCd eq 'ING' ? 'badge-ing' : history.chkSttsCd eq 'DONE' ? 'badge-done' : history.chkSttsCd eq 'FAULT' ? 'badge-fault' : 'badge-wait'}">
@@ -307,6 +310,7 @@
                                                                     data-history-no="${fn:escapeXml(history.facChkHstryNo)}"
                                                                     data-check-flow="${fn:escapeXml(history.chkFlowNo)}"
                                                                     data-check-date="${fn:escapeXml(history.chkDt)}"
+                                                                    data-check-category="${fn:escapeXml(history.chkCtgryNm)}"
                                                                     data-check-type="${fn:escapeXml(history.chkTyNm)}"
                                                                     data-check-status="${fn:escapeXml(history.chkSttsNm)}"
                                                                     data-partner-no="${fn:escapeXml(history.partnerNo)}"
@@ -328,7 +332,7 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <tr>
-                                                    <td colspan="4">같은 시설의 점검 이력이 없습니다.</td>
+                                                    <td colspan="5">같은 시설의 점검 이력이 없습니다.</td>
                                                 </tr>
                                             </c:otherwise>
                                         </c:choose>
@@ -351,14 +355,16 @@
                                         <thead>
                                         <tr>
                                             <th>점검이력번호</th>
-                                            <th>점검유형</th>
+                                            <th>점검분류</th>
+                                            <th>작업유형</th>
                                             <th>점검상태</th>
-                                            <th>점검일자</th>
+                                            <th>작업일자</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <tr>
                                             <td class="mono">${empty check.facChkHstryNo ? '-' : check.facChkHstryNo}</td>
+                                            <td>${empty check.chkCtgryNm ? '-' : check.chkCtgryNm}</td>
                                             <td>${empty check.chkTyNm ? '-' : check.chkTyNm}</td>
                                             <td>
                                                 <span class="badge ${check.chkSttsCd eq 'WAIT' ? 'badge-wait' : check.chkSttsCd eq 'ING' ? 'badge-ing' : check.chkSttsCd eq 'DONE' ? 'badge-done' : check.chkSttsCd eq 'FAULT' ? 'badge-fault' : 'badge-wait'}">
@@ -369,7 +375,7 @@
                                         </tr>
                                         <tr>
                                             <th>이용제한</th>
-                                            <td colspan="3">
+                                            <td colspan="4">
                                                 <c:choose>
                                                     <c:when test="${check.useRestrictYn eq 'Y'}">
                                                         <span class="badge badge-fault">제한 있음</span>
@@ -444,6 +450,7 @@
             document.getElementById("modalHistoryNo").textContent = safeText(button.getAttribute("data-history-no"));
             document.getElementById("modalCheckFlowNo").textContent = safeText(button.getAttribute("data-check-flow"));
             document.getElementById("modalHistoryDt").textContent = safeText(button.getAttribute("data-check-date"));
+            document.getElementById("modalHistoryCtgry").textContent = safeText(button.getAttribute("data-check-category"));
             document.getElementById("modalHistoryTy").textContent = safeText(button.getAttribute("data-check-type"));
             document.getElementById("modalHistoryStts").textContent = safeText(button.getAttribute("data-check-status"));
 

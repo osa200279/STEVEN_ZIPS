@@ -4,6 +4,10 @@ import kr.or.ddit.domain.apt.mgmtOffice.meter.service.IMeterHstryService;
 import kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterHstryVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -12,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -141,8 +148,79 @@ public class MeterHstryController {
     }
 
     /**
-     * 검침 이력 상세 조회 (JSON)
+     * 다운로드 조건 기준 검침 건수 확인
      */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/download/check/{mgmtOfcNo}")
+    @ResponseBody
+    public Map<String, Object> checkDownloadCsv(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(required = false) String meterScope,
+            @RequestParam(required = false) String utilityProviderNo,
+            @RequestParam(required = false) String partnerNo,
+            @RequestParam(required = false) String meterTyCd,
+            @RequestParam(required = false) String meterRsltCd,
+            @RequestParam(required = false) String startDt,
+            @RequestParam(required = false) String endDt,
+            @RequestParam(required = false) String keyword
+    ) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("meterScope", meterScope);
+        paramMap.put("utilityProviderNo", utilityProviderNo);
+        paramMap.put("partnerNo", partnerNo);
+        paramMap.put("meterTyCd", meterTyCd);
+        paramMap.put("meterRsltCd", meterRsltCd);
+        paramMap.put("startDt", startDt);
+        paramMap.put("endDt", endDt);
+        paramMap.put("keyword", keyword);
+
+        int count = meterHstryService.countDownloadMeter(mgmtOfcNo, paramMap);
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("count", count);
+        return result;
+    }
+
+    /**
+     * 다운로드 조건 기준 검침 CSV 응답
+     */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/download/{mgmtOfcNo}")
+    public ResponseEntity<byte[]> downloadCsv(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(required = false) String meterScope,
+            @RequestParam(required = false) String utilityProviderNo,
+            @RequestParam(required = false) String partnerNo,
+            @RequestParam(required = false) String meterTyCd,
+            @RequestParam(required = false) String meterRsltCd,
+            @RequestParam(required = false) String startDt,
+            @RequestParam(required = false) String endDt,
+            @RequestParam(required = false) String keyword
+    ) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("meterScope", meterScope);
+        paramMap.put("utilityProviderNo", utilityProviderNo);
+        paramMap.put("partnerNo", partnerNo);
+        paramMap.put("meterTyCd", meterTyCd);
+        paramMap.put("meterRsltCd", meterRsltCd);
+        paramMap.put("startDt", startDt);
+        paramMap.put("endDt", endDt);
+        paramMap.put("keyword", keyword);
+
+        byte[] csvBytes = meterHstryService.downloadMeterCsv(mgmtOfcNo, paramMap);
+        String filename = "meter_hstry_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".csv";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("text", "csv", StandardCharsets.UTF_8));
+        headers.setContentDisposition(ContentDisposition.attachment()
+                .filename(filename, StandardCharsets.UTF_8)
+                .build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(csvBytes);
+    }
+
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/detail/{mgmtOfcNo}/{meterHstryNo}")
     @ResponseBody

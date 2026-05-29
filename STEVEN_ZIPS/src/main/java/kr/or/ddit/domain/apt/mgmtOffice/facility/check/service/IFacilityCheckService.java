@@ -24,6 +24,9 @@ public interface IFacilityCheckService {
     /** 오늘의 이용제한 점검 이력 목록 조회 */
     List<FacilityCheckHstryVO> selectTodayUseRestrictList(String mgmtOfcNo);
 
+    /** [추가] 내일 이후 시작 예정인 이용제한 점검 이력 목록 조회 */
+    List<FacilityCheckHstryVO> selectFutureUseRestrictList(String mgmtOfcNo);
+
     /** 시설 점검 이력 상세 조회 */
     FacilityCheckHstryVO selectFacilityCheckDetail(String mgmtOfcNo, String facChkHstryNo);
 
@@ -35,6 +38,9 @@ public interface IFacilityCheckService {
 
     /** 점검유형 공통코드 목록 조회 */
     List<FacilityCheckCodeVO> selectCheckTypeList();
+
+    /** 점검분류 공통코드 목록 조회 */
+    List<FacilityCheckCodeVO> selectCheckCategoryList();
 
     /** 점검상태 공통코드 목록 조회 */
     List<FacilityCheckCodeVO> selectCheckStatusList();

@@ -31,6 +31,9 @@ public interface IFacilityCheckHstryMapper {
     /** 오늘의 이용제한 점검 이력 목록 조회 */
     List<FacilityCheckHstryVO> selectTodayUseRestrictList(@Param("mgmtOfcNo") String mgmtOfcNo);
 
+    /** [추가] 내일 이후 시작 예정인 이용제한 점검 이력 목록 조회 — 카드 클릭 모달의 '예정 일정' 섹션용 */
+    List<FacilityCheckHstryVO> selectFutureUseRestrictList(@Param("mgmtOfcNo") String mgmtOfcNo);
+
     /** 시설 점검 이력 상세 조회 */
     FacilityCheckHstryVO selectFacilityCheckDetail(
             @Param("mgmtOfcNo") String mgmtOfcNo,

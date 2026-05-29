@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
   <style>
     body {font-family: 'Noto Sans KR', sans-serif !important;background: var(--bg);color: var(--text-dark);margin: 0;}
@@ -41,8 +42,29 @@
     .chat-layout {display:grid;grid-template-columns:320px 1fr;gap:18px;} .chat-list,.chat-box {background:#fff;border:1px solid var(--border);border-radius:14px;} .chat-list {padding:16px;} .chat-box {padding:18px;} .chat-room-item {padding:12px 10px;border-radius:10px;cursor:pointer;border:1px solid transparent;} .chat-room-item.active {background:#f4f8f5;border-color:#d8e6db;} .message-stream {display:flex;flex-direction:column;gap:12px;min-height:320px;} .message {max-width:72%;padding:12px 14px;border-radius:14px;font-size:13px;line-height:1.7;} .message.me {align-self:flex-end;background:var(--green-dark);color:#fff;} .message.other {align-self:flex-start;background:#f2f4f0;color:var(--text-dark);}
     .search-row {display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;} .search-row .fake-input,.search-row .fake-select {max-width:220px;} .notice-card {padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,#fff8ea,#fff1d5);border:1px solid #f0dfb4;margin-bottom:18px;}
     .process-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:14px;} .process-step {padding:18px 14px;border-radius:14px;border:1px solid var(--border);background:#fff;text-align:center;} .process-step.active {background:#eef8f0;border-color:#b8d9c0;}
+    /* 분포 막대 표시 */
+    .meter-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;} .meter-card {border:1px solid #dfe6dc;border-radius:12px;padding:16px;background:#fff;}
+    .meter-title {display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;} .meter-title strong {font-size:15px;color:var(--text-dark);}
+    .meter-grade {display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;background:#ecf7ef;color:#2f7a4d;}
+    .meter-values {display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;} .meter-values span {display:block;font-size:11px;color:var(--text-light);margin-bottom:4px;} .meter-values b {font-size:16px;color:var(--text-dark);}
+    .meter-desc {margin-top:6px;font-size:11px;color:var(--text-light);}
+    .gauge {height:8px;border-radius:999px;background:#edf0eb;overflow:hidden;margin-top:8px;} .gauge-bar {height:100%;background:#2f7a4d;border-radius:999px;}
+    .bar-wrap {display:inline-block;width:120px;height:8px;border-radius:999px;background:#edf0eb;vertical-align:middle;margin-right:8px;} .bar-fill {height:100%;background:var(--green-dark);border-radius:999px;}
+    .bar-num {font-size:12px;color:var(--text-dark);font-weight:700;}
+    .rank-cell {font-weight:800;color:var(--green-dark);width:40px;text-align:center;}
+    .text-right {text-align:right !important;}
+    .chart-panel {height:320px;border:1px solid #dfe6dc;border-radius:12px;background:#fff;padding:14px;box-sizing:border-box;}
+    .chart-panel.compact {height:260px;}
+    .chart-panel canvas {width:100% !important;height:100% !important;}
+    .check-summary {display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:center;}
+    .check-copy strong {display:block;font-size:28px;color:var(--green-dark);letter-spacing:-.6px;margin-bottom:6px;}
+    .check-copy p {margin:0 0 12px;font-size:13px;color:var(--text-light);line-height:1.7;}
+    .check-kpis {display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .check-kpi {border:1px solid #dfe6dc;border-radius:10px;padding:12px;background:#fff;}
+    .check-kpi span {display:block;font-size:11px;color:var(--text-light);margin-bottom:4px;}
+    .check-kpi b {font-size:17px;color:var(--text-dark);}
     @media (max-width:1200px){.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid{grid-template-columns:repeat(2,1fr)} .grid-2,.grid-2.equal,.chat-layout{grid-template-columns:1fr} .label-grid{grid-template-columns:140px 1fr}}
-    @media (max-width:900px){.main-shell{flex-direction:column}.content-area{padding:24px 18px 48px}.page-content-wrap{max-width:100%}.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid,.seat-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:120px 1fr}.label-grid{grid-template-columns:120px 1fr}}
+    @media (max-width:900px){.main-shell{flex-direction:column}.content-area{padding:24px 18px 48px}.page-content-wrap{max-width:100%}.stats-grid,.menu-grid,.grid-3,.room-grid,.process-grid,.seat-grid,.check-summary,.check-kpis{grid-template-columns:1fr}.form-grid{grid-template-columns:120px 1fr}.label-grid{grid-template-columns:120px 1fr}.chart-panel{height:280px}.chart-panel.compact{height:240px}}
   </style>
 
 </head>
@@ -60,9 +82,94 @@
           <span class="cur">아파트통계</span>
         </div>
         <h1 class="page-title">아파트통계</h1>
-        <p class="page-desc">사이드바에 존재하는 추가 메뉴용 화면입니다. 단지 전체 기준의 공용 통계를 요약해 보여주도록 구성했습니다.</p>
+        <p class="page-desc">단지 전체의 입주 현황, 시설 이용 흐름, 점검 요약을 그래프로 확인합니다.</p>
 
-<section class="stats-grid"><div class="stat-card"><div class="stat-label">전체 세대</div><div class="stat-value">482세대</div><div class="stat-sub">입주율 97%</div></div><div class="stat-card"><div class="stat-label">이번 달 민원</div><div class="stat-value">18건</div><div class="stat-sub">전월 대비 -3건</div></div><div class="stat-card"><div class="stat-label">시설 예약</div><div class="stat-value">126건</div><div class="stat-sub">편의시설 누적</div></div><div class="stat-card"><div class="stat-label">관리비 평균</div><div class="stat-value">161,300원</div><div class="stat-sub">전용 84㎡ 기준</div></div></section><section class="panel"><div class="section-hd"><h3>단지 전체 요약</h3><span>운영 현황</span></div><table class="data-table"><thead><tr><th>구분</th><th>지표</th><th>비고</th></tr></thead><tbody><tr><td>시설</td><td>정기점검 이행률 94%</td><td>월간 기준</td></tr><tr><td>커뮤니티</td><td>편의시설 이용률 78%</td><td>전월 대비 증가</td></tr><tr><td>민원</td><td>평균 처리기간 1.8일</td><td>대기건 감소</td></tr></tbody></table></section>
+        <%-- 상단 요약 카드 --%>
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">전체 세대</div>
+            <div class="stat-value" id="totalUnitCnt">-</div>
+            <div class="stat-sub" id="occupancyRate">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">동 수</div>
+            <div class="stat-value" id="dongCnt">-</div>
+            <div class="stat-sub" id="emptyCnt">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">이번 달 시설 예약</div>
+            <div class="stat-value" id="facilityReservationTotal">-</div>
+            <div class="stat-sub">공용시설 이용 기준</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">시설 점검 완료율</div>
+            <div class="stat-value" id="checkDoneRate">-</div>
+            <div class="stat-sub">사용 제한 <span id="checkRestrictedTop">-</span></div>
+          </div>
+        </section>
+
+        <%-- 입주 현황 + 시설 이용 랭킹 --%>
+        <div class="grid-2 equal">
+          <section class="panel">
+            <div class="section-hd">
+              <h3>입주 현황</h3>
+              <span>입주 세대와 공실 비율</span>
+            </div>
+            <div class="chart-panel compact">
+              <canvas id="occupancyChart"></canvas>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-hd">
+              <h3>시설 이용 랭킹</h3>
+              <span>이번 달 Top 5</span>
+            </div>
+            <div class="chart-panel compact">
+              <canvas id="facilityRankChart"></canvas>
+            </div>
+          </section>
+        </div>
+
+        <%-- 시설 이용 표 + 점검 요약 --%>
+        <div class="grid-2 equal">
+          <section class="panel">
+            <div class="section-hd">
+              <h3>시설별 예약 현황</h3>
+              <span>예약 건수 기준</span>
+            </div>
+            <table class="data-table mini-table">
+              <thead><tr><th>순위</th><th>시설</th><th class="text-right">예약</th></tr></thead>
+              <tbody id="facilityRankRows"></tbody>
+            </table>
+          </section>
+
+          <section class="panel">
+            <div class="section-hd">
+              <h3>시설 점검 요약</h3>
+              <span>입주민 공개용 요약</span>
+            </div>
+            <div class="check-summary">
+              <div class="chart-panel compact">
+                <canvas id="checkDoneChart"></canvas>
+              </div>
+              <div class="check-copy">
+                <strong id="checkDoneRateLarge">-</strong>
+                <p>이번 달 등록된 시설 점검 중 완료된 비율입니다.</p>
+                <div class="check-kpis">
+                  <div class="check-kpi">
+                    <span>전체 점검</span>
+                    <b id="checkTotal">-</b>
+                  </div>
+                  <div class="check-kpi">
+                    <span>사용 제한 시설</span>
+                    <b id="checkRestricted">-</b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
 
       </div>
     </main>
@@ -73,5 +180,6 @@
     window.aptStatsContextPath = '${pageContext.request.contextPath}';
     window.aptStatsAptCmplexNo = '${aptCmplexNo}';
   </script>
+  <script src="${pageContext.request.contextPath}/js/member/resident/apartmentStats.js"></script>
 </body>
 </html>

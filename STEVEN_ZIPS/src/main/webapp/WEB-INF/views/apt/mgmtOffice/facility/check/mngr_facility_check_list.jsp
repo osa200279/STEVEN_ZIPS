@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -32,7 +32,7 @@
         #facilityCheckPage .panel-title { display:flex; align-items:center; gap:6px; margin:0; font-size:13px; font-weight:800; color:var(--text-head); }
         #facilityCheckPage .panel-title .material-symbols-rounded { font-size:17px; color:var(--accent); }
         #facilityCheckPage .panel-body { padding:14px 16px 16px; background:#fff; }
-        #facilityCheckPage .filter-grid { display:grid; grid-template-columns:.8fr .8fr .8fr .9fr .9fr minmax(240px,1fr) auto; gap:8px 10px; align-items:end; }
+        #facilityCheckPage .filter-grid { display:grid; grid-template-columns:.8fr .8fr .8fr .8fr .9fr .9fr minmax(220px,1fr) auto; gap:8px 10px; align-items:end; }
         #facilityCheckPage .form-input, #facilityCheckPage .form-select { height:32px; font-size:12px; border:1px solid var(--line); background:#fff; border-radius:4px; padding:0 9px; width:100%; box-sizing:border-box; }
         #facilityCheckPage .form-input:focus, #facilityCheckPage .form-select:focus { border-color:var(--accent); box-shadow:0 0 0 2px rgba(46,92,56,.08); outline:none; }
         #facilityCheckPage .field-label { display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--text-sec); }
@@ -69,14 +69,14 @@
         #facilityCheckPage .badge-fault { background:#fee2e2; color:#7f1d1d; border-color:#fca5a5; }
         #facilityCheckPage .row-actions { display:inline-flex; gap:5px; align-items:center; justify-content:center; }
         #facilityCheckPage .row-actions .btn { min-width:48px; height:28px; min-height:28px; padding:0 9px; font-size:11px; }
-        #facilityCheckPage .restrict-panel { border-color:#f1c7c7; background:#fffafa; }
-        #facilityCheckPage .restrict-panel .panel-header { border-bottom:0; background:#fffafa; min-height:46px; }
-        #facilityCheckPage .restrict-title-wrap { display:flex; align-items:center; gap:10px; min-width:0; }
-        #facilityCheckPage .restrict-title-desc { color:#6b7a6e; font-size:12px; font-weight:600; white-space:nowrap; }
-        #facilityCheckPage .today-restrict-inline { display:flex; align-items:center; justify-content:flex-end; gap:10px; min-width:0; color:#4b5563; font-size:12px; font-weight:700; }
-        #facilityCheckPage .today-restrict-inline strong { color:#7f1d1d; font-weight:800; }
-        #facilityCheckPage .today-restrict-inline .divider { color:#c0c7c2; }
-        #facilityCheckPage .today-restrict-inline-empty { color:var(--text-ter); }
+        #facilityCheckPage .status-card-restrict .card-value { display:inline-flex; flex-direction:column; align-items:flex-end; gap:4px; }
+        #facilityCheckPage .status-card-restrict .card-sub { font-size:11px; font-weight:700; line-height:1; white-space:nowrap; }
+        #facilityCheckPage .status-card-restrict.danger .card-sub { color:#7f1d1d; }
+        #facilityCheckPage .status-card-restrict:not(.danger) .card-sub { color:var(--text-ter); }
+        /* [추가] 카드 항상 클릭 가능(0건이어도 모달 오픈). 0건은 연한 회색 hover, 1건 이상은 연한 빨간 hover */
+        #facilityCheckPage .status-card-restrict { cursor:pointer; transition:background .15s; }
+        #facilityCheckPage .status-card-restrict.danger:hover { background:#fff5f5; }
+        #facilityCheckPage .status-card-restrict:not(.danger):hover { background:#f4f7f4; }
         #facilityCheckPage .badge-restrict { background:#fee2e2; color:#7f1d1d; border-color:#fca5a5; }
         #facilityCheckPage .badge-restrict-wait { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
         #facilityCheckPage .badge-restrict-done { background:#f3f4f6; color:#4b5563; border-color:#d1d5db; }
@@ -89,6 +89,11 @@
         #todayRestrictModal .modal-close { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border:0; border-radius:4px; background:#fff; cursor:pointer; color:#66736a; }
         #todayRestrictModal .modal-close:hover { background:#f3f5f4; }
         #todayRestrictModal .modal-body { max-height:calc(82vh - 64px); overflow:auto; padding:16px 18px 18px; background:#fff; }
+        /* [추가] 모달 섹션 구조 - 오늘의 일정 현황 / 예정 일정 두 섹션 구분 */
+        #todayRestrictModal .restrict-section + .restrict-section { margin-top:18px; }
+        #todayRestrictModal .restrict-section-title { display:flex; align-items:center; gap:6px; margin:0 0 8px; font-size:13px; font-weight:800; color:#1a2e1e; }
+        #todayRestrictModal .restrict-section-title .material-symbols-rounded { font-size:17px; color:#2e5c38; }
+        #todayRestrictModal .restrict-section-count { color:#6b7a6e; font-size:11px; font-weight:700; margin-left:auto; }
         #todayRestrictModal .today-restrict-empty { padding:22px 10px; border:1px dashed #d7dce2; border-radius:5px; color:#8a9a8e; font-size:12px; text-align:center; }
         #todayRestrictModal .today-restrict-modal-list { display:grid; gap:8px; }
         #todayRestrictModal .today-restrict-modal-item { display:grid; grid-template-columns:76px minmax(0, 1fr) 58px; gap:12px; align-items:center; padding:12px 14px; border:1px solid #d7dce2; border-radius:6px; background:#fff; font-size:12px; }
@@ -133,7 +138,14 @@
                     <div class="page-actions"></div>
                 </div>
 
-                <%-- 현황 카드 - 요약 확인용이며 클릭 필터 기능 없음 --%>
+                <c:set var="restrictOngoingCnt" value="0" />
+                <c:set var="restrictUpcomingCnt" value="0" />
+                <c:forEach var="restrict" items="${todayUseRestrictList}">
+                    <c:if test="${restrict.useRestrictStatusCd eq 'ONGOING'}"><c:set var="restrictOngoingCnt" value="${restrictOngoingCnt + 1}" /></c:if>
+                    <c:if test="${restrict.useRestrictStatusCd eq 'UPCOMING'}"><c:set var="restrictUpcomingCnt" value="${restrictUpcomingCnt + 1}" /></c:if>
+                </c:forEach>
+
+                <%-- 현황 카드 - 오늘 이용제한 카드는 1건 이상일 때 클릭하면 상세 모달이 열립니다 --%>
                 <div class="status-card-row" aria-label="시설 점검 이력 현황">
                     <div class="status-card">
                         <span class="card-label"><span class="material-symbols-rounded">list_alt</span>전체 이력</span>
@@ -147,38 +159,20 @@
                         <span class="card-label"><span class="material-symbols-rounded">engineering</span>점검중</span>
                         <strong><c:out value="${summary.ingCnt}" default="0"/></strong>
                     </div>
-                    <div class="status-card danger">
-                        <span class="card-label"><span class="material-symbols-rounded">warning</span>이상발견</span>
-                        <strong><c:out value="${summary.faultCnt}" default="0"/></strong>
-                    </div>
-                </div>
-
-                <c:set var="restrictOngoingCnt" value="0" />
-                <c:set var="restrictUpcomingCnt" value="0" />
-                <c:forEach var="restrict" items="${todayUseRestrictList}">
-                    <c:if test="${restrict.useRestrictStatusCd eq 'ONGOING'}"><c:set var="restrictOngoingCnt" value="${restrictOngoingCnt + 1}" /></c:if>
-                    <c:if test="${restrict.useRestrictStatusCd eq 'UPCOMING'}"><c:set var="restrictUpcomingCnt" value="${restrictUpcomingCnt + 1}" /></c:if>
-                </c:forEach>
-
-                <div class="panel restrict-panel">
-                    <div class="panel-header">
-                        <div class="restrict-title-wrap">
-                            <h3 class="panel-title"><span class="material-symbols-rounded">block</span>오늘의 이용제한</h3>
-                            <span class="restrict-title-desc">시설 이용 제한 시간을 확인해 주세요.</span>
-                        </div>
-                        <c:choose>
-                            <c:when test="${empty todayUseRestrictList}">
-                                <div class="today-restrict-inline today-restrict-inline-empty">오늘 날짜와 겹치는 이용제한 점검 이력이 없습니다.</div>
-                            </c:when>
-                            <c:otherwise>
-                                <div class="today-restrict-inline">
-                                    <span>오늘 이용제한 <strong>${fn:length(todayUseRestrictList)}</strong>건</span>
-                                    <span class="divider">|</span>
-                                    <span>제한중 <strong>${restrictOngoingCnt}</strong>건 · 예정 <strong>${restrictUpcomingCnt}</strong>건</span>
-                                    <button type="button" class="btn btn-primary" id="openTodayRestrictModalBtn">전체 보기</button>
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
+                    <%-- 카드는 항상 클릭 가능(0건이어도 모달 오픈해서 '예정 일정' 섹션 확인). 경고 톤(.danger)은 오늘 1건 이상일 때만 --%>
+                    <div class="status-card ${empty todayUseRestrictList ? '' : 'danger'} status-card-restrict" id="openTodayRestrictModalBtn">
+                        <span class="card-label"><span class="material-symbols-rounded">block</span>오늘 이용제한</span>
+                        <span class="card-value">
+                            <strong>${fn:length(todayUseRestrictList)}</strong>
+                            <c:choose>
+                                <c:when test="${empty todayUseRestrictList}">
+                                    <span class="card-sub">제한 일정 없음</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="card-sub">제한중 ${restrictOngoingCnt} · 예정 ${restrictUpcomingCnt}</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </span>
                     </div>
                 </div>
 
@@ -195,7 +189,16 @@
                             <input type="hidden" name="partnerNo" value="${fn:escapeXml(searchVO.partnerNo)}">
                             <div class="filter-grid">
                                 <div class="form-field">
-                                    <label class="field-label">점검유형</label>
+                                    <label class="field-label">점검분류</label>
+                                    <select class="form-select" name="chkCtgryCd">
+                                        <option value="">전체</option>
+                                        <c:forEach var="code" items="${checkCategoryList}">
+                                            <option value="${code.codeNoCd}" ${searchVO.chkCtgryCd eq code.codeNoCd ? 'selected' : ''}>${code.codeName}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label class="field-label">작업유형</label>
                                     <select class="form-select" name="chkTyCd">
                                         <option value="">전체</option>
                                         <c:forEach var="code" items="${checkTypeList}">
@@ -273,7 +276,8 @@
                                 <col style="width:11%;">
                                 <col style="width:15%;">
                                 <col style="width:10%;">
-                                <col style="width:14%;">
+                                <col style="width:12%;">
+                                <col style="width:8%;">
                                 <col style="width:9%;">
                                 <col style="width:8%;">
                                 <col style="width:8%;">
@@ -288,9 +292,10 @@
                                 <th>시설명</th>
                                 <th>시설유형</th>
                                 <th>협력업체</th>
-                                <th>점검유형</th>
+                                <th>점검분류</th>
+                                <th>작업유형</th>
                                 <th>점검상태</th>
-                                <th>점검일자</th>
+                                <th>작업일자</th>
                                 <th>이용제한</th>
                                 <th>관리</th>
                             </tr>
@@ -299,7 +304,7 @@
                             <c:choose>
                                 <c:when test="${empty pagingVO.dataList}">
                                     <tr>
-                                        <td colspan="11" class="empty-row">조회된 시설 점검 이력이 없습니다.</td>
+                                        <td colspan="12" class="empty-row">조회된 시설 점검 이력이 없습니다.</td>
                                     </tr>
                                 </c:when>
                                 <c:otherwise>
@@ -316,6 +321,7 @@
                                                     <c:otherwise>${check.partnerNm}</c:otherwise>
                                                 </c:choose>
                                             </td>
+                                            <td>${empty check.chkCtgryNm ? '-' : check.chkCtgryNm}</td>
                                             <td>${check.chkTyNm}</td>
                                             <td>
                                                 <span class="badge ${check.chkSttsCd eq 'WAIT' ? 'badge-wait' : check.chkSttsCd eq 'ING' ? 'badge-ing' : check.chkSttsCd eq 'DONE' ? 'badge-done' : check.chkSttsCd eq 'FAULT' ? 'badge-fault' : 'badge-wait'}">
@@ -366,30 +372,65 @@
             </button>
         </div>
         <div class="modal-body">
-            <c:choose>
-                <c:when test="${empty todayUseRestrictList}">
-                    <div class="today-restrict-empty">오늘 날짜와 겹치는 이용제한 점검 이력이 없습니다.</div>
-                </c:when>
-                <c:otherwise>
-                    <div class="today-restrict-modal-list">
-                        <c:forEach var="restrict" items="${todayUseRestrictList}">
-                            <div class="today-restrict-modal-item">
-                                <c:choose>
-                                    <c:when test="${restrict.useRestrictStatusCd eq 'ONGOING'}"><span class="badge badge-restrict">제한중</span></c:when>
-                                    <c:when test="${restrict.useRestrictStatusCd eq 'UPCOMING'}"><span class="badge badge-restrict-wait">예정</span></c:when>
-                                    <c:otherwise><span class="badge badge-restrict-done">종료</span></c:otherwise>
-                                </c:choose>
-                                <div class="today-restrict-modal-main">
-                                    <strong>${restrict.facilityNm}</strong>
-                                    <span class="today-restrict-time">${fn:replace(restrict.useRestrictBgngDt, 'T', ' ')} ~ ${fn:replace(restrict.useRestrictEndDt, 'T', ' ')}</span>
-                                    <span class="today-restrict-content">${empty restrict.chkCn ? '-' : restrict.chkCn}</span>
+            <%-- [추가] 섹션1: 오늘의 일정 현황 (오늘 안에 시작/진행 중인 이용제한) --%>
+            <section class="restrict-section">
+                <h4 class="restrict-section-title">
+                    <span class="material-symbols-rounded">today</span>오늘의 일정 현황
+                    <span class="restrict-section-count">${fn:length(todayUseRestrictList)}건</span>
+                </h4>
+                <c:choose>
+                    <c:when test="${empty todayUseRestrictList}">
+                        <div class="today-restrict-empty">오늘 일정 없음</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="today-restrict-modal-list">
+                            <c:forEach var="restrict" items="${todayUseRestrictList}">
+                                <div class="today-restrict-modal-item">
+                                    <c:choose>
+                                        <c:when test="${restrict.useRestrictStatusCd eq 'ONGOING'}"><span class="badge badge-restrict">제한중</span></c:when>
+                                        <c:when test="${restrict.useRestrictStatusCd eq 'UPCOMING'}"><span class="badge badge-restrict-wait">예정</span></c:when>
+                                        <c:otherwise><span class="badge badge-restrict-done">종료</span></c:otherwise>
+                                    </c:choose>
+                                    <div class="today-restrict-modal-main">
+                                        <strong>${restrict.facilityNm}</strong>
+                                        <span class="today-restrict-time">${fn:replace(restrict.useRestrictBgngDt, 'T', ' ')} ~ ${fn:replace(restrict.useRestrictEndDt, 'T', ' ')}</span>
+                                        <span class="today-restrict-content">${empty restrict.chkCn ? '-' : restrict.chkCn}</span>
+                                    </div>
+                                    <a class="btn" href="${ctx}/manager/checkHistory/detail/${mgmtOfcNo}/${restrict.facChkHstryNo}">상세</a>
                                 </div>
-                                <a class="btn" href="${ctx}/manager/checkHistory/detail/${mgmtOfcNo}/${restrict.facChkHstryNo}">상세</a>
-                            </div>
-                        </c:forEach>
-                    </div>
-                </c:otherwise>
-            </c:choose>
+                            </c:forEach>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </section>
+
+            <%-- [추가] 섹션2: 예정 일정 (내일 이후 시작 예정인 이용제한) --%>
+            <section class="restrict-section">
+                <h4 class="restrict-section-title">
+                    <span class="material-symbols-rounded">event_upcoming</span>예정 일정
+                    <span class="restrict-section-count">${fn:length(futureUseRestrictList)}건</span>
+                </h4>
+                <c:choose>
+                    <c:when test="${empty futureUseRestrictList}">
+                        <div class="today-restrict-empty">예정 일정 없음</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="today-restrict-modal-list">
+                            <c:forEach var="restrict" items="${futureUseRestrictList}">
+                                <div class="today-restrict-modal-item">
+                                    <span class="badge badge-restrict-wait">예정</span>
+                                    <div class="today-restrict-modal-main">
+                                        <strong>${restrict.facilityNm}</strong>
+                                        <span class="today-restrict-time">${fn:replace(restrict.useRestrictBgngDt, 'T', ' ')} ~ ${fn:replace(restrict.useRestrictEndDt, 'T', ' ')}</span>
+                                        <span class="today-restrict-content">${empty restrict.chkCn ? '-' : restrict.chkCn}</span>
+                                    </div>
+                                    <a class="btn" href="${ctx}/manager/checkHistory/detail/${mgmtOfcNo}/${restrict.facChkHstryNo}">상세</a>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </section>
         </div>
     </div>
 </div>

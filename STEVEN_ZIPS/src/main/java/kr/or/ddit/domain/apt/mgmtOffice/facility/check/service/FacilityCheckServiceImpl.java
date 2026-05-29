@@ -51,6 +51,12 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
         return facilityCheckHstryMapper.selectTodayUseRestrictList(mgmtOfcNo);
     }
 
+    /** [추가] 내일 이후 시작 예정인 이용제한 점검 이력 목록 조회 */
+    @Override
+    public List<FacilityCheckHstryVO> selectFutureUseRestrictList(String mgmtOfcNo) {
+        return facilityCheckHstryMapper.selectFutureUseRestrictList(mgmtOfcNo);
+    }
+
     /** 시설 선택 모달 기본 목록 조회 */
     @Override
     public List<FacilityCheckHstryVO> selectFacilitySelectList(String mgmtOfcNo) {
@@ -67,6 +73,12 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
     @Override
     public List<FacilityCheckCodeVO> selectCheckTypeList() {
         return facilityCheckHstryMapper.selectCommonCodeList("CHECK_TY");
+    }
+
+    /** 점검분류 공통코드 목록 조회 */
+    @Override
+    public List<FacilityCheckCodeVO> selectCheckCategoryList() {
+        return facilityCheckHstryMapper.selectCommonCodeList("CHECK_CTGRY");
     }
 
     /** 점검상태 공통코드 목록 조회 */
@@ -311,9 +323,14 @@ public class FacilityCheckServiceImpl implements IFacilityCheckService {
             throw new IllegalArgumentException("협력업체 점검은 협력업체를 선택해 주세요.");
         }
 
-        // 점검유형 필수 검증
+        // 점검분류 필수 검증
+        if (isBlank(checkVO.getChkCtgryCd())) {
+            throw new IllegalArgumentException("점검분류를 선택해 주세요.");
+        }
+
+        // 작업유형 필수 검증
         if (isBlank(checkVO.getChkTyCd())) {
-            throw new IllegalArgumentException("점검유형을 선택해 주세요.");
+            throw new IllegalArgumentException("작업유형을 선택해 주세요.");
         }
 
         // 점검상태 필수 검증

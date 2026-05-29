@@ -23,6 +23,9 @@ public interface IMeterHstryMapper {
     /** 검침 이력 목록 조회 */
     List<MeterHstryVO> selectMeterHstryList(Map<String, Object> paramMap);
 
+    /** 검침 이력 조건 건수 조회 */
+    int selectMeterHstryCount(Map<String, Object> paramMap);
+
     /** 공급/검침 설정 목록 조회 */
     List<UtilityProviderVO> selectUtilityProviderList(String aptCmplexNo);
 

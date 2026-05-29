@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -57,6 +58,10 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
     /** 업로드 실패 상태값 */
     private static final String UPLOAD_FAIL = "FAIL";
 
+    /** CSV 다운로드 헤더 */
+    private static final String CSV_HEADER =
+            "meter_hstry_no,meter_scope,meter_ty_cd,meter_ty_nm,meter_dt,facility_no,facility_nm,ho_no,pre_val,curr_val,usage_val,meter_rslt_cd,meter_rslt_nm,partner_nm,meter_cn";
+
     /**
      * 검침 이력 목록 조회
      */
@@ -71,6 +76,25 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
 
         // 검침 이력 목록 조회
         return meterHstryMapper.selectMeterHstryList(paramMap);
+    }
+
+    /**
+     * 다운로드 조건 기준 CSV 생성
+     */
+    @Override
+    public byte[] downloadMeterCsv(String mgmtOfcNo, Map<String, Object> paramMap) {
+        Map<String, Object> downloadParamMap = buildDownloadParamMap(mgmtOfcNo, paramMap);
+        List<MeterHstryVO> meterList = meterHstryMapper.selectMeterHstryList(downloadParamMap);
+        return buildMeterCsv(meterList);
+    }
+
+    /**
+     * 다운로드 조건 기준 검침 건수 조회
+     */
+    @Override
+    public int countDownloadMeter(String mgmtOfcNo, Map<String, Object> paramMap) {
+        Map<String, Object> downloadParamMap = buildDownloadParamMap(mgmtOfcNo, paramMap);
+        return meterHstryMapper.selectMeterHstryCount(downloadParamMap);
     }
 
     /**
@@ -810,5 +834,99 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
     @Override
     public int updateMeterHstry(MeterHstryVO meterHstryVO) {
         return meterHstryMapper.updateMeterHstry(meterHstryVO);
+    }
+
+    /**
+     * 다운로드 조건 파라미터 구성
+     */
+    private Map<String, Object> buildDownloadParamMap(String mgmtOfcNo, Map<String, Object> paramMap) {
+        Map<String, Object> downloadParamMap = new HashMap<>();
+        if (paramMap != null) {
+            downloadParamMap.putAll(paramMap);
+        }
+
+        String aptCmplexNo = meterHstryMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
+        downloadParamMap.put("aptCmplexNo", aptCmplexNo);
+
+        if ("ALL".equals(downloadParamMap.get("meterScope"))) {
+            downloadParamMap.put("meterScope", "");
+        }
+        return downloadParamMap;
+    }
+
+    /**
+     * CSV 본문 생성
+     */
+    private byte[] buildMeterCsv(List<MeterHstryVO> meterList) {
+        StringBuilder csv = new StringBuilder();
+        csv.append('\uFEFF');
+        csv.append(CSV_HEADER).append("\r\n");
+
+        if (meterList != null) {
+            for (MeterHstryVO meter : meterList) {
+                csv.append(csvValue(meter.getMeterHstryNo())).append(',');
+                csv.append(csvValue(meter.getMeterScope())).append(',');
+                csv.append(csvValue(meter.getMeterTyCd())).append(',');
+                csv.append(csvValue(meter.getMeterTyNm())).append(',');
+                csv.append(csvValue(formatDate(meter.getMeterDt()))).append(',');
+                csv.append(csvValue(meter.getFacilityNo())).append(',');
+                csv.append(csvValue(meter.getFacilityNm())).append(',');
+                csv.append(csvValue(meter.getHoNo())).append(',');
+                csv.append(csvValue(formatNumber(meter.getPreVal()))).append(',');
+                csv.append(csvValue(formatNumber(meter.getCurrVal()))).append(',');
+                csv.append(csvValue(formatNumber(calcUsageVal(meter)))).append(',');
+                csv.append(csvValue(meter.getMeterRsltCd())).append(',');
+                csv.append(csvValue(meter.getMeterRsltNm())).append(',');
+                csv.append(csvValue(meter.getPartnerNm())).append(',');
+                csv.append(csvValue(meter.getMeterCn())).append("\r\n");
+            }
+        }
+
+        return csv.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    /**
+     * CSV 날짜 값 변환
+     */
+    private String formatDate(java.util.Date date) {
+        if (date == null) {
+            return "";
+        }
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+
+    /**
+     * 검침 사용량 계산
+     */
+    private BigDecimal calcUsageVal(MeterHstryVO meter) {
+        if (meter.getCurrVal() == null || meter.getPreVal() == null) {
+            return null;
+        }
+        return meter.getCurrVal().subtract(meter.getPreVal());
+    }
+
+    /**
+     * CSV 숫자 값 변환
+     */
+    private String formatNumber(BigDecimal value) {
+        if (value == null) {
+            return "";
+        }
+        return value.stripTrailingZeros().toPlainString();
+    }
+
+    /**
+     * CSV 셀 값 이스케이프
+     */
+    private String csvValue(Object value) {
+        if (value == null) {
+            return "";
+        }
+
+        String text = String.valueOf(value);
+        if (text.contains("\"") || text.contains(",") || text.contains("\n") || text.contains("\r")) {
+            return "\"" + text.replace("\"", "\"\"") + "\"";
+        }
+        return text;
     }
 }

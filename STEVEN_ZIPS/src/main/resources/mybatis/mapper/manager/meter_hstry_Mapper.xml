@@ -78,6 +78,19 @@
         <!-- 검색어 조건 -->
         <if test="keyword != null and keyword != ''">
             <choose>
+                <!-- 전체 검침 검색 조건 -->
+                <when test="meterScope == null or meterScope == ''">
+                    and (
+                    upper(mh.meter_hstry_no) like '%' || upper(#{keyword}) || '%'
+                    or lower(f.facility_nm) like '%' || lower(#{keyword}) || '%'
+                    or lower(mh.facility_no) like '%' || lower(#{keyword}) || '%'
+                    or lower(p.partner_nm) like '%' || lower(#{keyword}) || '%'
+                    or lower(mh.ho_no) like '%' || lower(#{keyword}) || '%'
+                    or regexp_substr(mh.ho_no, '[^_]+', 1, 2) = #{keyword}
+                    or regexp_substr(mh.ho_no, '[^_]+', 1, 3) = #{keyword}
+                    )
+                </when>
+
                 <!-- 단지별 검침 검색 -->
                 <when test="meterScope == 'COMPLEX'">
                     <choose>
@@ -114,6 +127,82 @@
         </if>
         order by mh.meter_dt desc
         , mh.meter_hstry_no desc
+    </select>
+
+    <!-- 검침 이력 조건 건수 조회 -->
+    <select id="selectMeterHstryCount" parameterType="map" resultType="int">
+        select count(*)
+        from meter_hstry mh
+        left join facility f
+        on mh.facility_no = f.facility_no
+        left join utility_provider up
+        on mh.utility_provider_no = up.utility_provider_no
+        left join partner p
+        on up.partner_no = p.partner_no
+        where up.apt_cmplex_no = #{aptCmplexNo}
+        <if test="meterScope != null and meterScope != ''">
+            and mh.meter_scope = #{meterScope}
+        </if>
+        <if test="utilityProviderNo != null and utilityProviderNo != ''">
+            and up.utility_provider_no = #{utilityProviderNo}
+        </if>
+        <if test="partnerNo != null and partnerNo != ''">
+            and up.partner_no = #{partnerNo}
+        </if>
+        <if test="meterTyCd != null and meterTyCd != ''">
+            and mh.meter_ty_cd = #{meterTyCd}
+        </if>
+        <if test="meterRsltCd != null and meterRsltCd != ''">
+            and mh.meter_rslt_cd = #{meterRsltCd}
+        </if>
+        <if test="startDt != null and startDt != ''">
+            and mh.meter_dt &gt;= to_date(#{startDt}, 'yyyy-mm-dd')
+        </if>
+        <if test="endDt != null and endDt != ''">
+            and mh.meter_dt &lt; to_date(#{endDt}, 'yyyy-mm-dd') + 1
+        </if>
+        <if test="keyword != null and keyword != ''">
+            <choose>
+                <!-- 전체 검침 검색 조건 -->
+                <when test="meterScope == null or meterScope == ''">
+                    and (
+                    upper(mh.meter_hstry_no) like '%' || upper(#{keyword}) || '%'
+                    or lower(f.facility_nm) like '%' || lower(#{keyword}) || '%'
+                    or lower(mh.facility_no) like '%' || lower(#{keyword}) || '%'
+                    or lower(p.partner_nm) like '%' || lower(#{keyword}) || '%'
+                    or lower(mh.ho_no) like '%' || lower(#{keyword}) || '%'
+                    or regexp_substr(mh.ho_no, '[^_]+', 1, 2) = #{keyword}
+                    or regexp_substr(mh.ho_no, '[^_]+', 1, 3) = #{keyword}
+                    )
+                </when>
+                <!-- 단지별 검침 검색 조건 -->
+                <when test="meterScope == 'COMPLEX'">
+                    <choose>
+                        <when test="keyword.toUpperCase().startsWith('MH')">
+                            and upper(mh.meter_hstry_no) like '%' || upper(#{keyword}) || '%'
+                        </when>
+                        <otherwise>
+                            and (
+                            lower(mh.ho_no) like '%' || lower(#{keyword}) || '%'
+                            or regexp_substr(mh.ho_no, '[^_]+', 1, 2) = #{keyword}
+                            or regexp_substr(mh.ho_no, '[^_]+', 1, 3) = #{keyword}
+                            )
+                        </otherwise>
+                    </choose>
+                </when>
+                <!-- 시설 검침 검색 조건 -->
+                <otherwise>
+                    and (
+                    lower(f.facility_nm) like '%' || lower(#{keyword}) || '%'
+                    or lower(mh.facility_no) like '%' || lower(#{keyword}) || '%'
+                    or lower(p.partner_nm) like '%' || lower(#{keyword}) || '%'
+                    <if test="keyword.toUpperCase().startsWith('MH')">
+                        or upper(mh.meter_hstry_no) like '%' || upper(#{keyword}) || '%'
+                    </if>
+                    )
+                </otherwise>
+            </choose>
+        </if>
     </select>
 
     <!-- 공급/검침 설정 목록 조회 : CSV 업로드에 사용할 검침 설정만 표시 -->

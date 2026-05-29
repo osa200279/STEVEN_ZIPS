@@ -53,6 +53,12 @@ public class FacilityCheckHstryVO {
     /** 점검유형코드 */
     private String chkTyCd;
 
+    /** 점검분류코드
+     * - REVIEW  : 점검·확인
+     * - SERVICE : 관리·용역
+     */
+    private String chkCtgryCd;
+
     /** 이용제한 여부 */
     private String useRestrictYn;
 
@@ -148,6 +154,9 @@ public class FacilityCheckHstryVO {
 
     /** 점검유형명 */
     private String chkTyNm;
+
+    /** 점검분류명 */
+    private String chkCtgryNm;
 
     /** 점검상태명 */
     private String chkSttsNm;

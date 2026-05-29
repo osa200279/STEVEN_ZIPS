@@ -54,7 +54,7 @@
                     <tr>
                         <th>이력번호</th>
                         <td><span class="mono" id="modalHistoryNo">-</span></td>
-                        <th>점검일자</th>
+                        <th>작업일자</th>
                         <td><span id="modalHistoryDt">-</span></td>
                     </tr>
                     <tr>
@@ -64,8 +64,10 @@
                         <td><span id="modalHistoryStts">-</span></td>
                     </tr>
                     <tr>
-                        <th>점검유형</th>
-                        <td colspan="3"><span id="modalHistoryTy">-</span></td>
+                        <th>점검분류</th>
+                        <td><span id="modalHistoryCtgry">-</span></td>
+                        <th>작업유형</th>
+                        <td><span id="modalHistoryTy">-</span></td>
                     </tr>
                     <tr>
                         <th>이용제한</th>

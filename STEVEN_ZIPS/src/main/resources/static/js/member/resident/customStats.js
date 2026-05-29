@@ -62,10 +62,11 @@
     // 전월 대비 문구
     const amount = Number(diffAmt || 0);
     const rate = Math.abs(Number(diffRate || 0));
+    clearSubColor(subId);
 
-    if (amount === 0) {
+    if (amount === 0 || rate === 0) {
       setText(valueId, '변동 없음');
-      setText(subId, '전월과 같은 금액');
+      setText(subId, '전월 대비 0원 차이');
       return;
     }
 
@@ -98,6 +99,12 @@
     if (!el) return;
     el.classList.remove('up', 'down');
     el.classList.add(direction);
+  }
+
+  function clearSubColor(id) {
+    const el = $(id);
+    if (!el) return;
+    el.classList.remove('up', 'down');
   }
 
   function renderMonthlyChart(monthlyList) {
