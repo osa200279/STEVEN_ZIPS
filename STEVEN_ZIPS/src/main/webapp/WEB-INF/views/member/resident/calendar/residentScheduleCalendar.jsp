@@ -665,6 +665,56 @@
         .btn-reset .material-symbols-rounded {
             font-size: 18px;
         }
+        /* 전체 일정 목록 페이징 */
+        #residentScheduleCalendarPage .schedule-paging-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: 18px;
+        }
+
+        #residentScheduleCalendarPage .schedule-paging-area ul,
+        #residentScheduleCalendarPage .schedule-paging-area li {
+            list-style: none !important;
+            padding: 0;
+            margin: 0;
+        }
+
+        #residentScheduleCalendarPage .schedule-paging-area li::marker {
+            display: none;
+            content: '';
+        }
+
+        #residentScheduleCalendarPage .schedule-paging-area ul {
+            display: flex;
+            gap: 6px;
+        }
+
+        #residentScheduleCalendarPage .schedule-paging-area a,
+        #residentScheduleCalendarPage .schedule-paging-area .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #fff;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        #residentScheduleCalendarPage .schedule-paging-area .active a,
+        #residentScheduleCalendarPage .schedule-paging-area a.active,
+        #residentScheduleCalendarPage .schedule-paging-area .page-link.active {
+            background: #166534;
+            border-color: #166534;
+            color: #fff;
+        }
     </style>
 </head>
 
@@ -855,6 +905,10 @@
                     </tr>
                     </tbody>
                 </table>
+                <!--
+                  목록 페이징 영역
+                -->
+                <div id="schedulePagingArea" class="schedule-paging-area"></div>
             </section>
 
         </div>
@@ -910,7 +964,29 @@
         const aptCmplexNo = '${aptCmplexNo}';
 
         let currentDate = new Date();
+
+        /*
+         * calendarList
+         * 달력용 전체 일정
+         */
         let scheduleList = [];
+
+        /*
+         * listPageList
+         * 전체목록 탭 페이징용 목록
+         */
+        let listPageList = [];
+
+        /*
+         * pagingHTML
+         * 서버에서 내려주는 페이징 HTML
+         */
+        let pagingHTML = '';
+
+        /*
+         * 현재 목록 페이지 번호
+         */
+        let currentListPage = 1;
 
         const calendarTitle = document.getElementById('calendarTitle');
         const calendarBody = document.getElementById('calendarBody');
@@ -972,51 +1048,54 @@
          * JavaScript에서 서버로 요청을 보내는 기능.
          * 왜 사용? 화면 새로고침 없이 캘린더 일정만 다시 조회하기 위해.
          */
-        function loadSchedule() {
+        function loadSchedule(page) {
+
+            currentListPage = page || 1;
+
             const range = getMonthRange();
 
             const params = new URLSearchParams();
+
             params.append('monthStartDt', range.start);
             params.append('monthEndDt', range.end);
             params.append('scheduleTy', document.getElementById('scheduleTy').value);
             params.append('keyword', document.getElementById('keyword').value.trim());
+
+            /*
+             * currentPage 추가
+             * 왜 사용?
+             * 전체 일정 목록 페이징 조회를 위해.
+             */
+            params.append('currentPage', currentListPage);
 
             fetch(contextPath + '/resident/calendar/' + aptCmplexNo + '/list?' + params.toString())
                 .then(function (res) {
                     return res.json();
                 })
                 .then(function (data) {
+
                     /*
-                     * 서버 응답 구조
-                     * Controller가 Map<String, Object>를 반환하므로
-                     * 실제 캘린더 일정은 data.calendarList 안에 들어있다.
-                     *
-                     * 기존 문제:
-                     * data 자체는 배열이 아니라 객체라서 Array.isArray(data)가 false가 됨.
-                     * 그래서 scheduleList가 빈 배열이 되어 캘린더에 일정이 안 나왔다.
+                     * 달력용 전체 일정
                      */
                     scheduleList = data.calendarList || [];
 
                     /*
-                     * 전체 목록 탭에서 사용할 페이징 목록이 필요하면
-                     * data.list를 따로 사용해야 한다.
+                     * 목록 탭 페이징용 목록
                      */
+                    listPageList = data.list || [];
+
+                    /*
+                     * 서버 페이징 HTML
+                     */
+                    pagingHTML = data.pagingHTML || '';
+
+                    renderStat(data.stat || {});
                     renderCalendar();
                     renderList();
+                    renderPaging();
                 })
                 .catch(function () {
                     alert('일정 조회 중 오류가 발생했습니다.');
-                });
-
-            fetch(contextPath + '/resident/calendar/' + aptCmplexNo + '/stat?' + params.toString())
-                .then(function (res) {
-                    return res.json();
-                })
-                .then(function (stat) {
-                    renderStat(stat || {});
-                })
-                .catch(function () {
-                    renderStat({});
                 });
         }
 
@@ -1105,38 +1184,85 @@
                 return item.startDt <= dateStr && item.endDt >= dateStr;
             });
         }
+        /*
+ * 목록 페이징 렌더링
+ */
+        function renderPaging() {
 
+            const pagingArea = document.getElementById('schedulePagingArea');
+
+            if (!pagingArea) {
+                return;
+            }
+
+            pagingArea.innerHTML = pagingHTML;
+
+            /*
+             * 페이지 번호 클릭 이벤트
+             */
+            pagingArea.querySelectorAll('.page-link[data-page]').forEach(function (link) {
+
+                link.addEventListener('click', function (e) {
+
+                    e.preventDefault();
+
+                    const page = Number(link.dataset.page);
+
+                    if (page > 0) {
+                        loadSchedule(page);
+                    }
+                });
+            });
+        }
         /*
          * 전체 목록 출력
          */
         function renderList() {
-            if (!scheduleList.length) {
-                scheduleListBody.innerHTML = '<tr><td colspan="5">조회된 일정이 없습니다.</td></tr>';
+
+            if (!listPageList.length) {
+
+                scheduleListBody.innerHTML =
+                    '<tr>' +
+                    '<td colspan="5">조회된 일정이 없습니다.</td>' +
+                    '</tr>';
+
                 return;
             }
 
-            scheduleListBody.innerHTML = scheduleList.map(function (item) {
-                const period = item.startDt === item.endDt
-                    ? item.startDt
-                    : item.startDt + ' ~ ' + item.endDt;
+            scheduleListBody.innerHTML = listPageList.map(function (item) {
+
+                const period =
+                    item.startDt === item.endDt
+                        ? item.startDt
+                        : item.startDt + ' ~ ' + item.endDt;
 
                 const person = item.userNm || item.rgtrId || '-';
 
                 return '<tr>'
                     + '<td>' + escapeHtml(item.scheduleTyNm) + '</td>'
+
                     + '<td class="td-title">'
-                    + '<button type="button" class="schedule-list-detail" data-schedule-no="' + escapeHtml(item.scheduleNo) + '">'
+                    + '<button type="button"'
+                    + ' class="schedule-list-detail"'
+                    + ' data-schedule-no="' + escapeHtml(item.scheduleNo) + '">'
                     + escapeHtml(item.scheduleTtl)
                     + '</button>'
                     + '</td>'
+
                     + '<td>' + escapeHtml(period) + '</td>'
                     + '<td>' + escapeHtml(item.locCn || '-') + '</td>'
                     + '<td>' + escapeHtml(person) + '</td>'
                     + '</tr>';
+
             }).join('');
 
+            /*
+             * 상세 모달 연결
+             */
             document.querySelectorAll('.schedule-list-detail').forEach(function (btn) {
+
                 btn.addEventListener('click', function () {
+
                     const scheduleNo = btn.dataset.scheduleNo;
 
                     const selected = scheduleList.find(function (item) {
