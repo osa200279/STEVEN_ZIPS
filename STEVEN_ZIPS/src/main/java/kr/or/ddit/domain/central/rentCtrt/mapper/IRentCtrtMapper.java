@@ -27,8 +27,6 @@ public interface IRentCtrtMapper {
 
     Map<String, Object> selectOneCtrtDetail(String rentCtrtNo);
 
-//    List<AttachFileVO> selectSbmsnDocList(@Param("atchFileNo") long fileNo);
-
     int updateCtrt(@Param("rentCtrtNo") String rentCtrtNo, @Param("detail") Map<String, Object> detail);
 
     int selectContractsCount(Map<String, Object> params);

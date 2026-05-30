@@ -2,6 +2,7 @@ package kr.or.ddit.domain.central.admin.controller;
 
 import kr.or.ddit.common.util.BusinessException;
 import kr.or.ddit.domain.central.admin.dto.AplctDTO;
+import kr.or.ddit.domain.central.admin.service.IAnlsService;
 import kr.or.ddit.domain.central.admin.service.IAplctService;
 import kr.or.ddit.domain.central.rentCtrt.service.IRentCtrtService;
 import kr.or.ddit.domain.member.admin.vo.AdmVO;
@@ -31,8 +32,10 @@ public class AdmDashBoardRestController {
     @Autowired
     private IRentCtrtService rentCtrtService;
 
+    @Autowired
+    private IAnlsService anlsService;
+
     // 리액트 페이지로 로그인한 관리자 정보를 넘김
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/info")
     public ResponseEntity<?> getAdminInfo(@AuthenticationPrincipal CustomUser customUser) {
         if (customUser == null) {
@@ -46,7 +49,6 @@ public class AdmDashBoardRestController {
     }
 
     // 청약 신청 목록 조회
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/aplct")
     public ResponseEntity<List<AplctDTO>> getAplctList() {
         try {
@@ -62,7 +64,6 @@ public class AdmDashBoardRestController {
     }
 
     // 청약 신청 처리(업데이트)
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/aplct/upd")
     public ResponseEntity<?> updAplct(@RequestBody Map<String, Object> params,
                                         @AuthenticationPrincipal CustomUser customUser) {
@@ -89,37 +90,6 @@ public class AdmDashBoardRestController {
         }
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @GetMapping("/ctrt")
-//    public ResponseEntity<Map<String, Object>> getCtrtList(
-//            @AuthenticationPrincipal CustomUser customUser,
-//            @RequestParam(value = "page", required = false, defaultValue = "1") int curPage
-//    ) {
-//        log.info("getCtrtList() 실행");
-//        String userNo = customUser.getMember().getUserNo();
-//
-//        // 리액트용 페이징
-//        int screenSize = 12;
-//        int startRow = (curPage - 1) * screenSize + 1;
-//        int endRow = curPage * screenSize;
-//
-//        // 서비스에 startRow, endRow를 넘겨서 한페이지만큼만 리스트 가져오기
-//        List<Map<String, Object>> ctrtList = rentCtrtService.selectCtrt(startRow, endRow);
-//
-//        int totalRecord = rentCtrtService.selectCtrtCount(userNo);
-//        int totalPage = (int) Math.ceil((double) totalRecord / (double) screenSize);
-//
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("ctrtList", ctrtList);
-//        response.put("curPage", curPage);
-//        response.put("totalPage", totalPage);
-//        response.put("totalRecord", totalRecord);
-//        log.info("### ctrtList : {}", response.get("ctrtList"));
-//
-//        return ResponseEntity.ok(response);
-//    }
-
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/ctrt/dashboard")
     public ResponseEntity<Map<String, Object>> getCtrtDashboard(){
         log.info("계약 대시보드 컨트롤러 진입");
@@ -166,7 +136,6 @@ public class AdmDashBoardRestController {
      * @param params
      * @return
      */
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/ctrt")
     public ResponseEntity<Map<String, Object>> getCtrtList(
             @AuthenticationPrincipal CustomUser customUser,
@@ -199,6 +168,16 @@ public class AdmDashBoardRestController {
         response.put("totalRecord", totalRecord);
 
         log.info("결과 : {}", response.get("ctrtList") );
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/anls/aplct-rate")
+    public ResponseEntity<Map<String, Object>> getAnnRecruiting(){
+        Map<String, Object> response = new HashMap<>();
+
+        List<Map<String, Object>> data = anlsService.getAnnList();
+        response.put("data", data);
+
         return ResponseEntity.ok(response);
     }
 }

@@ -141,8 +141,7 @@ public class AttachFileServiceImpl implements IAttachFileService {
 
         try {
             Drive drive = googleDriveService.getDriveService();
-
-            googleDriveService.moveToTrash(drive, googleId);
+//            googleDriveService.moveToTrash(drive, googleId);
 
         } catch (Exception e) {
             throw new RuntimeException("구글 파일 삭제 실패", e);

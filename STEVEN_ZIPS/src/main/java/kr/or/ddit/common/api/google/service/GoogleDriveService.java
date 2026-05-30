@@ -256,7 +256,7 @@ public class GoogleDriveService {
     }
 
     /**
-     * 파일 구글아이디로 업로드 파일 삭제 (휴지통 이동) => 영구삭제로 로직 변경
+     * 파일 구글아이디로 업로드 파일 삭제 (휴지통 이동)
      * @param service
      * @param googleId
      * @author 이용로
@@ -264,7 +264,7 @@ public class GoogleDriveService {
     public void moveToTrash(Drive service, String googleId) throws IOException {
 //        File target = new File();
 //        target.setTrashed(true);
-        service.files().delete(googleId).setSupportsAllDrives(true).execute();   // 영구삭제 update()=>delete(googleId)
+//        service.files().update(googleId, target).setSupportsAllDrives(true).execute();   // 영구삭제 update()=>delete(googleId)
     }
 
 }
