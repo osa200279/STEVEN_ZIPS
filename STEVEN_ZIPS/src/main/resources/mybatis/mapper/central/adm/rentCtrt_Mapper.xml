@@ -274,82 +274,64 @@
             </if>
             <if test="status != null and status != 'ALL' and status != ''">AND C.CTRT_STTS_CD = #{status}</if>
             <if test="manager != null and manager != ''">AND U2.USER_NM LIKE '%' || #{manager} || '%'</if>
+            <if test="manager != null and manager != ''">
+                AND (U2.USER_NM LIKE '%' || #{manager} || '%'
+                OR U2.USER_ID LIKE '%' || #{manager} || '%'
+                OR U2.USER_NO LIKE '%' || #{manager} || '%')
+            </if>
             <if test="startDt != null and startDt != ''">AND C.MVIN_DT >= TO_DATE(#{startDt}, 'YYYY-MM-DD')</if>
-            <if test="endDt != null and endDt != ''">AND C.MVOUT_DT <![CDATA[ <= ]]> TO_DATE(#{endDt}, 'YYYY-MM-DD')</if>
+            <if test="endDt != null and endDt != ''">AND C.MVOUT_DT <![CDATA[ <= ]]> TO_DATE(#{endDt}, 'YYYY-MM-DD')
+            </if>
             <if test="minRent != null and minRent != ''">
                 AND (C.DPST_AMT >= TO_NUMBER(#{minRent}) OR C.MTHLY_RENT_AMT >= TO_NUMBER(#{minRent}))
             </if>
             <if test="maxRent != null and maxRent != ''">
-                AND (C.DPST_AMT <![CDATA[ <= ]]> TO_NUMBER(#{maxRent}) OR C.MTHLY_RENT_AMT <![CDATA[ <= ]]> TO_NUMBER(#{maxRent}))
-            </if>
-            <if test="userSearch != null and userSearch != ''">
-                AND (U.USER_NM LIKE '%' || #{userSearch} || '%'
-                OR U.USER_ID LIKE '%' || #{userSearch} || '%')
+                AND (C.DPST_AMT <![CDATA[ <= ]]> TO_NUMBER(#{maxRent}) OR C.MTHLY_RENT_AMT <![CDATA[ <= ]]>
+                TO_NUMBER(#{maxRent}))
             </if>
         </where>
     </select>
 
     <select id="selectContracts" parameterType="map" resultType="map">
-        SELECT B.* FROM (
-        SELECT A.*, ROWNUM AS RNUM
-        FROM (
+        SELECT * FROM (
+        SELECT B.*, ROWNUM AS RNUM FROM (
         SELECT /* kr.or.ddit.domain.central.rentCtrt.mapper.IRentCtrtMapper.selectContracts */
-        C.RENT_CTRT_NO
-        , U.USER_ID
-        , C.USER_NO
-        , U.USER_NM
-        , A.APT_CMPLEX_NO
-        , A.APT_CMPLEX_NM
-        , C.CTRT_APRV_DT
-        , C.MVIN_DT
-        , C.MVOUT_DT
-        , L.RENT_TYPE_CD
-        , C.DPST_AMT
-        , C.MTHLY_RENT_AMT
-        , C.CTRT_STTS_CD
-        , M.USER_NO AS CTRT_MGR_USER_NO
-        , U2.USER_ID AS CTRT_MGR_USER_ID
-        , U2.USER_NM AS CTRT_MGR_USER_NM
+        C.RENT_CTRT_NO, U.USER_ID, C.USER_NO, U.USER_NM, A.APT_CMPLEX_NO,
+        A.APT_CMPLEX_NM, C.CTRT_APRV_DT, C.MVIN_DT, C.MVOUT_DT,
+        L.RENT_TYPE_CD, C.DPST_AMT, C.MTHLY_RENT_AMT, C.CTRT_STTS_CD,
+        M.USER_NO AS CTRT_MGR_USER_NO, U2.USER_ID AS CTRT_MGR_USER_ID, U2.USER_NM AS CTRT_MGR_USER_NM
         FROM RENT_CTRT C
-        INNER JOIN CTRT_MGR M ON (C.RENT_CTRT_NO = M.RENT_CTRT_NO)
-        INNER JOIN RENT_LISTING L ON (C.RENT_LSTG_NO = L.RENT_LSTG_NO)
-        INNER JOIN APT_DETAIL H ON (H.HO_NO = L.HO_NO)
-        INNER JOIN APT_UNIT D ON (D.DONG_NO = H.DONG_NO)
-        INNER JOIN APT_COMPLEX A ON (A.APT_CMPLEX_NO = D.APT_CMPLEX_NO)
-        left outer join MEMBER U ON (C.USER_NO = U.USER_NO)
-        left outer join MEMBER U2 ON (M.USER_NO = U2.USER_NO)
+        INNER JOIN CTRT_MGR M ON C.RENT_CTRT_NO = M.RENT_CTRT_NO
+        INNER JOIN RENT_LISTING L ON C.RENT_LSTG_NO = L.RENT_LSTG_NO
+        INNER JOIN APT_DETAIL H ON H.HO_NO = L.HO_NO
+        INNER JOIN APT_UNIT D ON D.DONG_NO = H.DONG_NO
+        INNER JOIN APT_COMPLEX A ON A.APT_CMPLEX_NO = D.APT_CMPLEX_NO
+        LEFT OUTER JOIN MEMBER U ON C.USER_NO = U.USER_NO
+        LEFT OUTER JOIN MEMBER U2 ON M.USER_NO = U2.USER_NO
         <where>
-            AND M.CHG_YN = 'N'
-            AND M.USER_NO = #{userNo}
+            M.CHG_YN = 'N' AND M.USER_NO = #{userNo}
             <if test="ctrtNo != null and ctrtNo != ''">AND C.RENT_CTRT_NO LIKE '%' || #{ctrtNo} || '%'</if>
             <if test="aptNm != null and aptNm != ''">
                 AND (A.APT_CMPLEX_NM LIKE '%' || #{aptNm} || '%' OR A.APT_CMPLEX_NO LIKE '%' || #{aptNm} || '%')
             </if>
-            <if test="aprvStartDt != null and aprvStartDt != ''">
-                AND TRUNC(C.CTRT_APRV_DT) >= TO_DATE(#{aprvStartDt}, 'YYYY-MM-DD')
-            </if>
-            <if test="aprvEndDt != null and aprvEndDt != ''">
-                AND TRUNC(C.CTRT_APRV_DT) <![CDATA[ <= ]]> TO_DATE(#{aprvEndDt}, 'YYYY-MM-DD')
-            </if>
+            <if test="aprvStartDt != null and aprvStartDt != ''">AND TRUNC(C.CTRT_APRV_DT) >= TO_DATE(#{aprvStartDt}, 'YYYY-MM-DD')</if>
+            <if test="aprvEndDt != null and aprvEndDt != ''">AND TRUNC(C.CTRT_APRV_DT) <![CDATA[ <= ]]> TO_DATE(#{aprvEndDt}, 'YYYY-MM-DD')</if>
             <if test="status != null and status != 'ALL' and status != ''">AND C.CTRT_STTS_CD = #{status}</if>
-            <if test="manager != null and manager != ''">AND U2.USER_NM LIKE '%' || #{manager} || '%'</if>
+            <if test="manager != null and manager != ''">
+                AND (U2.USER_NM LIKE '%' || #{manager} || '%'
+                OR U2.USER_ID LIKE '%' || #{manager} || '%'
+                OR U2.USER_NO LIKE '%' || #{manager} || '%')
+            </if>
             <if test="startDt != null and startDt != ''">AND C.MVIN_DT >= TO_DATE(#{startDt}, 'YYYY-MM-DD')</if>
             <if test="endDt != null and endDt != ''">AND C.MVOUT_DT <![CDATA[ <= ]]> TO_DATE(#{endDt}, 'YYYY-MM-DD')</if>
-            <if test="minRent != null and minRent != ''">
-                AND (C.DPST_AMT >= TO_NUMBER(#{minRent}) OR C.MTHLY_RENT_AMT >= TO_NUMBER(#{minRent}))
-            </if>
-            <if test="maxRent != null and maxRent != ''">
-                AND (C.DPST_AMT <![CDATA[ <= ]]> TO_NUMBER(#{maxRent}) OR C.MTHLY_RENT_AMT <![CDATA[ <= ]]> TO_NUMBER(#{maxRent}))
-            </if>
+            <if test="minRent != null and minRent != ''">AND (C.DPST_AMT >= TO_NUMBER(#{minRent}) OR C.MTHLY_RENT_AMT >= TO_NUMBER(#{minRent}))</if>
+            <if test="maxRent != null and maxRent != ''">AND (C.DPST_AMT <![CDATA[ <= ]]> TO_NUMBER(#{maxRent}) OR C.MTHLY_RENT_AMT <![CDATA[ <= ]]> TO_NUMBER(#{maxRent}))</if>
             <if test="userSearch != null and userSearch != ''">
-                AND (U.USER_NM LIKE '%' || #{userSearch} || '%'
-                OR U.USER_ID LIKE '%' || #{userSearch} || '%')
+                AND (U.USER_NM LIKE '%' || #{userSearch} || '%' OR U.USER_ID LIKE '%' || #{userSearch} || '%')
             </if>
         </where>
         ORDER BY C.RENT_CTRT_NO DESC
-        ) A
-        WHERE ROWNUM <![CDATA[ <= ]]> #{endRow}
-        ) B
-        WHERE B.RNUM >= #{startRow}
+        ) B WHERE ROWNUM <![CDATA[ <= ]]> #{endRow}
+        ) WHERE RNUM >= #{startRow}
     </select>
 </mapper>
