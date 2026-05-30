@@ -53,7 +53,12 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     }
 
     @Override
-    public PaginationInfoVO<PublicFacilityReservationVO> getApprovalPaging(PublicFacilityReservationVO searchVO, int currentPage) {
+    public PaginationInfoVO<PublicFacilityReservationVO> getApprovalPaging(
+            PublicFacilityReservationVO searchVO,
+            int currentPage
+    ) {
+        mapper.expirePendingReservations(searchVO.getAptCmplexNo());
+
         int total = mapper.selectApprovalListCount(searchVO);
         PaginationInfoVO<PublicFacilityReservationVO> paging = new PaginationInfoVO<>(10, 5);
         paging.setTotalRecord(total); paging.setCurrentPage(currentPage); applyPaging(searchVO, paging);
@@ -264,11 +269,11 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     }
 
     @Override
-    public List<PublicFacilityReservationVO> getReservationTimeSlotList(PublicFacilityReservationVO searchVO) {
-        /*
-         * 시간표 조회
-         * 선택한 예약대상 + 선택한 날짜 기준으로 1시간 단위 예약현황을 조회합니다.
-         */
+    public List<PublicFacilityReservationVO> getReservationTimeSlotList(
+            PublicFacilityReservationVO searchVO
+    ) {
+        mapper.expirePendingReservations(searchVO.getAptCmplexNo());
+
         return mapper.selectReservationTimeSlotList(searchVO);
     }
 

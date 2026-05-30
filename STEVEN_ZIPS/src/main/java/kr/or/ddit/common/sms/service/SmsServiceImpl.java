@@ -97,7 +97,7 @@ public class SmsServiceImpl implements ISmsService {
         SmsSendRequest request = new SmsSendRequest();
         request.setSndTyCd("RESIDENT_APPROVED");
         request.setSmsTtl("입주 승인 완료");
-        request.setSmsCn("[우리집맵핑] 입주 승인이 완료되었습니다.");
+        request.setSmsCn("[우리집맵핑] 입주승인완료.");
         request.setRcptTrgtGrpCd("RESIDENT");
         request.setRcptTrgtCd("SINGLE");
         request.setRcptUserNo(userNo);
@@ -133,7 +133,7 @@ public class SmsServiceImpl implements ISmsService {
         SmsSendRequest request = new SmsSendRequest();
         request.setSndTyCd("RSVT_APPROVED");
         request.setSmsTtl("예약 승인 완료");
-        request.setSmsCn("[우리집맵핑] " + facilityNm + " 예약이 승인되었습니다. 예약일시: " + rsvtDttm);
+        request.setSmsCn("[우리집맵핑] " + facilityNm + " 예약 승인. 예약일시: " + rsvtDttm);
         request.setRcptTrgtGrpCd("RESIDENT");
         request.setRcptTrgtCd("SINGLE");
         request.setRcptUserNo(userNo);
@@ -169,7 +169,7 @@ public class SmsServiceImpl implements ISmsService {
         SmsSendRequest request = new SmsSendRequest();
         request.setSndTyCd("RSVT_REJECTED");
         request.setSmsTtl("예약 거절 안내");
-        request.setSmsCn("[우리집맵핑] " + facilityNm + " 예약이 거절되었습니다. 사유: " + reason);
+        request.setSmsCn("[우리집맵핑] " + facilityNm + " 예약 거절. 사유: " + reason);
         request.setRcptTrgtGrpCd("RESIDENT");
         request.setRcptTrgtCd("SINGLE");
         request.setRcptUserNo(userNo);
