@@ -128,18 +128,6 @@ const Ctrt = () => {
         <div className="filter-grid">
           <div className="filter-column">
             <div className="filter-group">
-              <label className="filter-label">계약 번호</label>
-              <input name="ctrtNo" value={searchParams.ctrtNo} onChange={handleInputChange} className="filter-input" placeholder="검색" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-            </div>
-            <div className="filter-group">
-              <label className="filter-label">계약자 (이름/ID)</label>
-              <input name="userSearch" value={searchParams.userSearch} onChange={handleInputChange} className="filter-input" placeholder="이름 또는 ID 입력" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-            </div>
-          </div>
-
-          {/* 2열 */}
-          <div className="filter-column">
-            <div className="filter-group">
               <label className="filter-label">상태</label>
               <select name="status" value={searchParams.status} onChange={handleInputChange} className="filter-input">
                 <option value="ALL">전체</option>
@@ -150,6 +138,19 @@ const Ctrt = () => {
                 <option value="TERMINATED">중도해지</option>
                 <option value="EXPIRED">계약만료</option>
               </select>
+            </div>
+            
+            <div className="filter-group">
+              <label className="filter-label">계약자 (이름/ID)</label>
+              <input name="userSearch" value={searchParams.userSearch} onChange={handleInputChange} className="filter-input" placeholder="이름 또는 ID 입력" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+            </div>
+          </div>
+
+          {/* 2열 */}
+          <div className="filter-column">
+            <div className="filter-group">
+              <label className="filter-label">계약 번호</label>
+              <input name="ctrtNo" value={searchParams.ctrtNo} onChange={handleInputChange} className="filter-input" placeholder="검색" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
             </div>
 
             <div className="filter-group">

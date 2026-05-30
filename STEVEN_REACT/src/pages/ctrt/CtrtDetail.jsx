@@ -147,6 +147,7 @@ const CtrtDetail = () => {
                     <option value="CANCEL">취소</option>
                     <option value="REJECT">반려</option>
                     <option value="TERMINATED">중도해지</option>
+                    <option value="EXPIRED">만료</option>
                   </select>
                 </div>
                 <div className="compact-input-group">
