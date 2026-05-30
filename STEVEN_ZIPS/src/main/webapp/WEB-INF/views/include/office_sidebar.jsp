@@ -499,7 +499,7 @@
 
                         <a href="${ctx}/manager/publicFacility/page${mgmtPath}"
                            class="nav-text facility-parent-link">
-                            편의시설 관리
+                            편의시설 운영관리
                         </a>
 
                         <span class="material-symbols-rounded facility-parent-arrow">expand_more</span>
