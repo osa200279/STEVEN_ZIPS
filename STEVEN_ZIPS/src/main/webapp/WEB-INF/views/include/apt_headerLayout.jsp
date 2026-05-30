@@ -120,8 +120,9 @@
             <span>우리아파트통계<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path
                     d="M6 9l6 6 6-6"/></svg></span>
             <div class="slim-drop">
+                <%-- 단지번호 포함 URL (URL 유실 시 404 방지) --%>
                 <a href="${pageContext.request.contextPath}/resident/stats/custom/${aptCmplexNo}">우리집맞춤통계</a>
-                <a href="${pageContext.request.contextPath}/resident/stats/apartment">아파트통계</a>
+                <a href="${pageContext.request.contextPath}/resident/stats/apartment/${aptCmplexNo}">아파트통계</a>
             </div>
         </div>
 
@@ -212,8 +213,9 @@
             <div class="all-menu-section">
                 <div class="all-menu-section-title">우리아파트통계</div>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/resident/stats/custom">우리집맞춤통계</a></li>
-                    <li><a href="${pageContext.request.contextPath}/resident/stats/apartment">아파트통계</a></li>
+                    <%-- 단지번호 포함 URL (URL 유실 시 404 방지) --%>
+                    <li><a href="${pageContext.request.contextPath}/resident/stats/custom/${aptCmplexNo}">우리집맞춤통계</a></li>
+                    <li><a href="${pageContext.request.contextPath}/resident/stats/apartment/${aptCmplexNo}">아파트통계</a></li>
                 </ul>
             </div>
         </div>
