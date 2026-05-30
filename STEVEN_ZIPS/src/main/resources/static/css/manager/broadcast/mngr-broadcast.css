@@ -159,10 +159,31 @@
     display: block;
 }
 
-#broadcastPage .source-panel-head {
+#broadcastPage .card-body-side > .source-panel.active {
+    flex: 1;
+    min-height: 0;
+}
+
+#broadcastPage #panelHistory.active {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#broadcastPage .history-panel-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+#broadcastPage .history-panel-foot {
+    flex-shrink: 0;
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 8px;
+    align-items: center;
+    padding-top: 10px;
+    margin-top: 8px;
+    border-top: 1px solid var(--line);
 }
 
 #broadcastPage .source-list {
@@ -287,32 +308,80 @@
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-    padding: 12px;
+    padding: 10px 12px;
     min-width: 0;
+    position: relative;
 }
 
 #broadcastPage .bc-side .history-item .h-text {
     min-width: 0;
 }
 
-#broadcastPage .bc-side .history-item .history-playback {
-    width: 100%;
-    justify-content: flex-start;
+#broadcastPage .bc-side .history-item .h-title {
+    font-size: 14px;
+    line-height: 1.35;
 }
 
-#broadcastPage .bc-side .history-item {
-    position: relative;
+#broadcastPage .bc-side .history-item .h-meta {
+    margin-top: 3px;
+    font-size: 12px;
+}
+
+#broadcastPage .bc-side .history-item-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#broadcastPage .bc-side .history-item .history-playback {
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
 }
 
 #broadcastPage .bc-side .history-item .h-actions {
     display: flex;
+    align-items: center;
     gap: 6px;
-    justify-content: flex-end;
+    flex-shrink: 0;
 }
 
-#broadcastPage .bc-side .icon-btn {
-    width: 36px;
-    height: 36px;
+#broadcastPage .bc-side .history-item .h-actions .btnx-sm {
+    height: 34px;
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+#broadcastPage .bc-side .history-item .bc-sq-btn {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    max-width: 34px;
+    max-height: 34px;
+    flex: 0 0 34px;
+}
+
+#broadcastPage .bc-side .history-item .bc-sq-btn .material-symbols-rounded {
+    font-size: 20px;
+}
+
+#broadcastPage .bc-side .history-item .bc-stop-mark {
+    width: 11px;
+    height: 11px;
+}
+
+#broadcastPage .bc-side .history-item .history-time {
+    font-size: 12px;
+    min-width: 80px;
+}
+
+#broadcastPage .h-btn-remove:hover {
+    background: #fef2f2;
+    border-color: #f2b4b4;
+    color: var(--danger);
 }
 
 #broadcastPage .page-title {

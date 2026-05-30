@@ -13,6 +13,7 @@
     var HISTORY_MAX = 20;
     var DEFAULT_RESET_VOICE = 'ko-KR-Standard-C';
     var CONVERT_BTN_HTML = '<span class="material-symbols-rounded">graphic_eq</span>음성 변환하기';
+    var PREVIEW_BTN_HTML = '<span class="material-symbols-rounded">hearing</span>미리듣기';
 
     var VOICE_OPTIONS = {
         'ko-KR-Standard-A': '여성 A',
@@ -23,13 +24,14 @@
 
     var historyRows = [];
     var selectedSourceId = '';
-    var synth = window.speechSynthesis;
+    var previewActive = false;
+    var previewFetchAbort = null;
+    var previewToken = 0;
     var $ = function (id) { return document.getElementById(id); };
 
     var SOURCE_NOTES = {
         check: '점검 건을 클릭하면 좌측에 방송 초안이 채워집니다.',
-        complaint: '민원 건을 클릭하면 익명·일반화된 안내 초안이 채워집니다.',
-        history: '변환한 음성 이력입니다. 항목을 눌러 다시 불러올 수 있습니다.'
+        complaint: '민원 건을 클릭하면 익명·일반화된 안내 초안이 채워집니다.'
     };
 
     function getVoiceLabel(voice) {
@@ -638,6 +640,61 @@
         };
     }
 
+    function getTtsErrorMessage(e) {
+        if (e && e.name === 'AbortError') return '';
+        var msg = 'TTS 서버 연결에 실패했습니다. 서버 실행 상태를 확인해주세요.';
+        if (e && e.status === 403) {
+            msg = '요청이 차단되었습니다(403). 페이지를 새로고침한 뒤 다시 시도해주세요.';
+        } else if (String(e && e.message || '').indexOf('not audio') !== -1) {
+            msg = '서버가 음성이 아닌 응답을 반환했습니다. 로그인·권한(CSRF) 또는 TTS 설정을 확인해주세요.';
+        } else if (String(e && e.message || '').indexOf('invalid mp3') !== -1) {
+            msg = '음성 데이터 형식이 올바르지 않습니다. Google TTS 키·서버 로그를 확인해주세요.';
+        } else if (String(e && e.message || '').indexOf('TTS failed: 500') !== -1) {
+            msg = 'TTS 변환 중 서버 오류가 발생했습니다. IntelliJ 로그의 "TTS 변환 실패"를 확인해주세요.';
+        }
+        return msg;
+    }
+
+    function synthesizeTtsRequest(v, signal) {
+        var formBody = new URLSearchParams();
+        formBody.set('text', v.text);
+        formBody.set('languageCode', v.lang);
+        formBody.set('voiceName', v.voice);
+        return fetch(cfg.contextPath + '/tts/synthesize/' + cfg.mgmtOfcNo, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: buildTtsFetchHeaders('application/x-www-form-urlencoded;charset=UTF-8'),
+            body: formBody.toString(),
+            signal: signal
+        })
+            .then(function (res) {
+                var ct = (res.headers.get('content-type') || '').toLowerCase();
+                if (!res.ok) {
+                    var err = new Error('TTS failed: ' + res.status + (ct ? ' (' + ct + ')' : ''));
+                    err.status = res.status;
+                    throw err;
+                }
+                if (ct.indexOf('audio/') === -1) {
+                    throw new Error('not audio response: ' + (ct || 'unknown'));
+                }
+                return res.blob();
+            })
+            .then(function (blob) {
+                if (!blob || blob.size < 128) {
+                    throw new Error('empty audio blob');
+                }
+                return isLikelyMp3Blob(blob).then(function (ok) {
+                    if (!ok) {
+                        throw new Error('invalid mp3 payload');
+                    }
+                    var audioBlob = ensureAudioBlob(blob);
+                    return blobToDataUrl(audioBlob).then(function (dataUrl) {
+                        return { blob: audioBlob, dataUrl: dataUrl };
+                    });
+                });
+            });
+    }
+
     function formatDuration(len) {
         var sec = Math.max(0, Math.round(len / 5));
         return sec >= 60 ? (Math.floor(sec / 60) + '분 ' + (sec % 60) + '초') : (sec + '초');
@@ -665,35 +722,137 @@
 
     function setPreviewState(on) {
         var btn = $('previewBtn');
+        if (!btn) return;
+        previewActive = !!on;
         if (on) {
             btn.classList.add('listening');
-            btn.innerHTML = '<span class="material-symbols-rounded">stop</span>미리듣기 정지';
+            btn.disabled = false;
+            btn.setAttribute('aria-label', '정지');
+            btn.innerHTML = '<span class="material-symbols-rounded">stop</span>정지';
         } else {
             btn.classList.remove('listening');
-            btn.innerHTML = '<span class="material-symbols-rounded">hearing</span>미리듣기';
+            btn.setAttribute('aria-label', '미리듣기');
+            btn.innerHTML = PREVIEW_BTN_HTML;
+        }
+    }
+
+    function setPreviewLoading(on) {
+        var btn = $('previewBtn');
+        if (!btn) return;
+        if (on) {
+            btn.disabled = true;
+            btn.classList.remove('listening');
+            btn.setAttribute('aria-label', '변환 중');
+            btn.innerHTML = '<span class="material-symbols-rounded">hourglass_empty</span>변환중';
+        } else if (!previewActive) {
+            btn.disabled = false;
+            btn.setAttribute('aria-label', '미리듣기');
+            btn.innerHTML = PREVIEW_BTN_HTML;
+        }
+    }
+
+    function stopPreview() {
+        previewToken += 1;
+        previewActive = false;
+        if (previewFetchAbort) {
+            previewFetchAbort.abort();
+            previewFetchAbort = null;
+        }
+        setPreviewState(false);
+        var audio = $('previewAudio');
+        if (audio) {
+            clearAudioTimingWatch(audio);
+            audio.pause();
+            revokePlayerObjectUrl(audio);
+            audio.removeAttribute('src');
+            audio.load();
+        }
+    }
+
+    function startPreviewPlayback(blob, dataUrl) {
+        var audio = $('previewAudio');
+        if (!audio) return;
+        pauseAllBroadcastAudio(audio);
+        setPlayerAudioSource(audio, dataUrl, blob);
+        audio.preload = 'auto';
+
+        function onPreviewEnd() {
+            stopPreview();
+        }
+
+        audio.addEventListener('ended', onPreviewEnd, { once: true });
+        audio.addEventListener('error', function () {
+            stopPreview();
+            toast({
+                title: '미리듣기 실패',
+                message: '음성을 재생할 수 없습니다.',
+                type: 'error'
+            });
+        }, { once: true });
+
+        var playPromise = audio.play();
+        if (playPromise && typeof playPromise.then === 'function') {
+            playPromise.then(function () {
+                setPreviewState(true);
+            }).catch(function (err) {
+                console.warn('preview play failed', err);
+                stopPreview();
+                toast({
+                    title: '미리듣기',
+                    message: '자동 재생이 제한되었습니다. 다시 시도해 주세요.',
+                    type: 'info',
+                    duration: 4000
+                });
+            });
+        } else {
+            setPreviewState(true);
         }
     }
 
     function togglePreview() {
-        if (!synth) {
-            toast({ title: '미리듣기 불가', message: '이 브라우저는 미리듣기를 지원하지 않습니다.', type: 'warning' });
+        if (previewActive) {
+            stopPreview();
             return;
         }
-        if (synth.speaking) {
-            synth.cancel();
-            setPreviewState(false);
-            return;
-        }
-        var text = $('ttsText').value.trim();
-        if (!text) {
+
+        var v = getFormValues();
+        if (!v.text) {
             toast({ title: '입력 필요', message: '미리 들을 문구를 입력해주세요.', type: 'warning' });
             return;
         }
-        var u = new SpeechSynthesisUtterance(text);
-        u.lang = LANG;
-        u.onend = u.onerror = function () { setPreviewState(false); };
-        synth.speak(u);
-        setPreviewState(true);
+        if (v.text.length > CHAR_MAX) {
+            toast({
+                title: '문구가 너무 깁니다',
+                message: '방송 문구는 ' + CHAR_MAX + '자 이하로 작성해주세요.',
+                type: 'warning',
+                duration: 4500
+            });
+            return;
+        }
+
+        stopPreview();
+        var ac = new AbortController();
+        previewFetchAbort = ac;
+        var token = previewToken;
+        setPreviewLoading(true);
+
+        synthesizeTtsRequest(v, ac.signal)
+            .then(function (result) {
+                if (token !== previewToken) return;
+                startPreviewPlayback(result.blob, result.dataUrl);
+            })
+            .catch(function (e) {
+                if (e && e.name === 'AbortError') return;
+                console.error(e);
+                var msg = getTtsErrorMessage(e);
+                if (msg) {
+                    toast({ title: '미리듣기 실패', message: msg, type: 'error', duration: 5000 });
+                }
+            })
+            .finally(function () {
+                previewFetchAbort = null;
+                setPreviewLoading(false);
+            });
     }
 
     function setPlayerControlsEnabled(enabled) {
@@ -738,6 +897,11 @@
             main.pause();
             updatePlayerToggle(false);
         }
+        var preview = $('previewAudio');
+        if (preview && preview !== exceptEl && !preview.paused) {
+            preview.pause();
+            if (previewActive) stopPreview();
+        }
         document.querySelectorAll('#historyList .history-item').forEach(function (itemEl) {
             var a = itemEl.querySelector('.history-audio');
             if (!a || a === exceptEl) return;
@@ -774,15 +938,6 @@
         audio.preload = 'auto';
         watchAudioTiming(audio, updatePlayerTimeDisplay);
 
-        var started = false;
-        function beginPlay() {
-            if (started) return;
-            started = true;
-            startPlayerPlayback(audio, { notifyBlocked: true });
-        }
-
-        audio.addEventListener('loadeddata', beginPlay, { once: true });
-        audio.addEventListener('canplay', beginPlay, { once: true });
         audio.addEventListener('error', function () {
             updatePlayerToggle(false);
             setPlayerControlsEnabled(false);
@@ -864,7 +1019,15 @@
             panel.classList.toggle('active', panel.getAttribute('data-panel') === tab);
         });
         var note = $('sourceNote');
-        if (note) note.textContent = SOURCE_NOTES[tab] || '';
+        if (note) {
+            if (tab === 'history') {
+                note.hidden = true;
+                note.textContent = '';
+            } else {
+                note.hidden = false;
+                note.textContent = SOURCE_NOTES[tab] || '';
+            }
+        }
     }
 
     function renderDummyPanel(type, items) {
@@ -924,6 +1087,7 @@
             return '<div class="history-item" data-idx="' + idx + '">'
                 + '<div class="h-text"><div class="h-title">' + escapeHtml(title) + '</div>'
                 + '<div class="h-meta">' + escapeHtml(row.area) + ' · ' + escapeHtml(row.createdAt) + '</div></div>'
+                + '<div class="history-item-foot">'
                 + '<div class="history-playback">'
                 + '<div class="player-sq-btns history-sq-btns" role="group" aria-label="이력 음성 재생">'
                 + '<button type="button" class="bc-sq-btn bc-sq-btn--light" data-action="hist-play" title="재생" aria-label="재생">'
@@ -935,11 +1099,9 @@
                 + '<audio class="history-audio" preload="metadata"></audio>'
                 + '</div>'
                 + '<div class="h-actions">'
-                + '<button type="button" class="icon-btn icon-btn-neutral" data-action="reuse" title="불러오기">'
-                + '<span class="material-symbols-rounded" style="font-size:17px;">edit_note</span></button>'
-                + '<button type="button" class="icon-btn" data-action="remove" title="삭제">'
-                + '<span class="material-symbols-rounded" style="font-size:17px;">delete</span></button>'
-                + '</div></div>';
+                + '<button type="button" class="btnx btnx-ghost btnx-sm" data-action="reuse">불러오기</button>'
+                + '<button type="button" class="btnx btnx-ghost btnx-sm h-btn-remove" data-action="remove">삭제</button>'
+                + '</div></div></div>';
         }).join('');
 
         list.querySelectorAll('.history-item').forEach(function (itemEl) {
@@ -952,6 +1114,7 @@
 
     function loadHistoryToComposer(row) {
         if (!row) return;
+        stopPreview();
         $('ttsText').value = row.text || '';
         selectAreas(row.areas && row.areas.length ? row.areas : [row.area]);
         selectVoice(row.voice, row.voiceLabel);
@@ -961,10 +1124,7 @@
     }
 
     function resetComposer() {
-        if (synth && synth.speaking) {
-            synth.cancel();
-            setPreviewState(false);
-        }
+        stopPreview();
         selectedSourceId = '';
         document.querySelectorAll('#broadcastPage .source-item.selected').forEach(function (el) {
             el.classList.remove('selected');
@@ -997,43 +1157,9 @@
             return;
         }
 
+        stopPreview();
         setComposeLoading(true);
-        var formBody = new URLSearchParams();
-        formBody.set('text', v.text);
-        formBody.set('languageCode', v.lang);
-        formBody.set('voiceName', v.voice);
-        fetch(cfg.contextPath + '/tts/synthesize/' + cfg.mgmtOfcNo, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: buildTtsFetchHeaders('application/x-www-form-urlencoded;charset=UTF-8'),
-            body: formBody.toString()
-        })
-            .then(function (res) {
-                var ct = (res.headers.get('content-type') || '').toLowerCase();
-                if (!res.ok) {
-                    var err = new Error('TTS failed: ' + res.status + (ct ? ' (' + ct + ')' : ''));
-                    err.status = res.status;
-                    throw err;
-                }
-                if (ct.indexOf('audio/') === -1) {
-                    throw new Error('not audio response: ' + (ct || 'unknown'));
-                }
-                return res.blob();
-            })
-            .then(function (blob) {
-                if (!blob || blob.size < 128) {
-                    throw new Error('empty audio blob');
-                }
-                return isLikelyMp3Blob(blob).then(function (ok) {
-                    if (!ok) {
-                        throw new Error('invalid mp3 payload');
-                    }
-                    var audioBlob = ensureAudioBlob(blob);
-                    return blobToDataUrl(audioBlob).then(function (dataUrl) {
-                        return { blob: audioBlob, dataUrl: dataUrl };
-                    });
-                });
-            })
+        synthesizeTtsRequest(v)
             .then(function (result) {
                 historyRows.unshift({
                     text: v.text,
@@ -1058,22 +1184,15 @@
             })
             .catch(function (e) {
                 console.error(e);
-                var msg = 'TTS 서버 연결에 실패했습니다. 서버 실행 상태를 확인해주세요.';
-                if (e.status === 403) {
-                    msg = '요청이 차단되었습니다(403). 페이지를 새로고침한 뒤 다시 시도해주세요.';
-                } else if (String(e.message || '').indexOf('not audio') !== -1) {
-                    msg = '서버가 음성이 아닌 응답을 반환했습니다. 로그인·권한(CSRF) 또는 TTS 설정을 확인해주세요.';
-                } else if (String(e.message || '').indexOf('invalid mp3') !== -1) {
-                    msg = '음성 데이터 형식이 올바르지 않습니다. Google TTS 키·서버 로그를 확인해주세요.';
-                } else if (String(e.message || '').indexOf('TTS failed: 500') !== -1) {
-                    msg = 'TTS 변환 중 서버 오류가 발생했습니다. IntelliJ 로그의 "TTS 변환 실패"를 확인해주세요.';
+                var msg = getTtsErrorMessage(e);
+                if (msg) {
+                    toast({
+                        title: '변환 실패',
+                        message: msg,
+                        type: 'error',
+                        duration: 5000
+                    });
                 }
-                toast({
-                    title: '변환 실패',
-                    message: msg,
-                    type: 'error',
-                    duration: 5000
-                });
             })
             .finally(function () {
                 setComposeLoading(false);

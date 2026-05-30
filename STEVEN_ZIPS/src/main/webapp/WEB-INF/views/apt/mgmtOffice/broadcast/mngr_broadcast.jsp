@@ -29,7 +29,7 @@
             <div class="office-page" id="broadcastPage" data-broadcast-intro="${fn:escapeXml(broadcastIntro)}">
                 <div class="bc-wrap">
                     <div class="page-title">
-                        <h2>방송 안내</h2>
+                        <h2>방송 안내 관리</h2>
                         <p>${complexNm} · 업무 이력에서 초안을 불러와 음성으로 변환합니다.</p>
                     </div>
 
@@ -78,9 +78,11 @@
                                                 <span>예상 <b id="estDuration">0초</b></span>
                                             </div>
                                             <div class="editor-foot-right">
-                                                <button type="button" class="btnx btnx-secondary btnx-sm" id="previewBtn">
+                                                <button type="button" class="btnx btnx-secondary btnx-sm" id="previewBtn"
+                                                        aria-label="미리듣기">
                                                     <span class="material-symbols-rounded">hearing</span>미리듣기
                                                 </button>
+                                                <audio id="previewAudio" class="sr-only" preload="none" aria-hidden="true"></audio>
                                             </div>
                                         </div>
                                     </div>
@@ -209,13 +211,15 @@
                                     <div class="source-panel active" id="panelCheck" data-panel="check"></div>
                                     <div class="source-panel" id="panelComplaint" data-panel="complaint"></div>
                                     <div class="source-panel" id="panelHistory" data-panel="history">
-                                        <div class="source-panel-head">
+                                        <div class="history-panel-body">
+                                            <div id="historyEmpty" class="source-empty">아직 변환한 방송이 없습니다.</div>
+                                            <div class="source-list" id="historyList"></div>
+                                        </div>
+                                        <div class="history-panel-foot">
                                             <button type="button" class="btnx btnx-ghost btnx-sm" id="clearHistoryBtn">
                                                 <span class="material-symbols-rounded">delete_sweep</span>비우기
                                             </button>
                                         </div>
-                                        <div id="historyEmpty" class="source-empty">아직 변환한 방송이 없습니다.</div>
-                                        <div class="source-list" id="historyList"></div>
                                     </div>
                                 </div>
                             </section>
