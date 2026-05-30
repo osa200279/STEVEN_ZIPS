@@ -313,5 +313,12 @@
             <artifactId>google-cloud-texttospeech</artifactId>
             <version>2.38.0</version>
         </dependency>
+
+        <!-- Solapi 문자 발송 SDK - 김보라 -->
+        <dependency>
+            <groupId>net.nurigo</groupId>
+            <artifactId>sdk</artifactId>
+            <version>4.3.2</version>
+        </dependency>
     </dependencies>
 </project>
