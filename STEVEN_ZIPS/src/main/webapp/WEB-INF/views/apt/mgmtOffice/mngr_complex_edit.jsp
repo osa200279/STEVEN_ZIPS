@@ -346,11 +346,6 @@
                                     <div class="form-field">
 
                                         <div class="complex-image-header">
-
-                                            <label class="field-label">
-                                                배치도
-                                            </label>
-
                                             <button type="button"
                                                     class="btn-file-add"
                                                     id="btnAddLayout">
@@ -359,6 +354,10 @@
                                                 </span>
                                                 추가
                                             </button>
+
+                                            <label class="field-label" style="font-size: 20px">
+                                                배치도
+                                            </label>
 
                                         </div>
 
@@ -399,10 +398,6 @@
                                     <div class="form-field">
 
                                         <div class="complex-image-header">
-                                            <label class="field-label">
-                                                단지 사진
-                                            </label>
-
                                             <button type="button"
                                                     class="btn-file-add"
                                                     id="btnAddComplexImage">
@@ -411,21 +406,11 @@
                                                 </span>
                                                 추가
                                             </button>
+
+                                            <label class="field-label" style="font-size: 20px">
+                                                단지 사진
+                                            </label>
                                         </div>
-
-                                        <!--
-                                            JS 렌더링 구조
-
-                                            <div class="complex-file-item"
-                                                 data-file-key=""
-                                                 data-file-type=""
-                                                 data-file-group-no=""
-                                                 data-file-no=""
-                                                 data-google-file-id=""
-                                                 data-sort-order="">
-                                            </div>
-                                        -->
-
 
                                         <input type="file"
                                                id="complexImgFileInput"

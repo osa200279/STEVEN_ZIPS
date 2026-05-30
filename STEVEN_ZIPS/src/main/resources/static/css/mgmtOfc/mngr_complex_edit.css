@@ -342,9 +342,8 @@
 .complex-image-header{
     display: flex;
     align-items: center;
-    justify-content: space-between;
-
-    margin-bottom: 10px;
+    justify-content: flex-start;
+    gap: 8px;
 }
 
 .complex-image-header .field-label{
