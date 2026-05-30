@@ -678,6 +678,7 @@
                                                     class="layout-slide ${status.first ? 'active' : ''}"
                                                     src="${pageContext.request.contextPath}/file/display/${file.googleId}"
                                                     alt="단지배치도 ${status.index + 1}"
+                                                    style = "width: 100%"
                                             >
 
                                         </c:forEach>

@@ -112,13 +112,13 @@
     </select>
 
     <select id="existsVhclNo" resultType="int">
-        SELECT  COUNT(*)
+        SELECT  COUNT(1)
         FROM    RSID_VHCL
         WHERE   VHCL_NO = #{vhclNo}
     </select>
 
     <select id="countMyVhcl" resultType="int">
-        SELECT  COUNT(*)
+        SELECT  COUNT(1)
         FROM    rsid_vhcl
         WHERE   ho_no = #{hoNo}
     </select>

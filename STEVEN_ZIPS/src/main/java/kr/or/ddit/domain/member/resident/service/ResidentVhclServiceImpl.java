@@ -37,7 +37,9 @@ public class ResidentVhclServiceImpl implements IResidentVhclService {
 
         int currentCnt = vhclMapper.countMyVhcl(hoNo);
 
-        return currentCnt >= freeCnt;
+        boolean result = currentCnt >= freeCnt;
+
+        return result;
     }
 
     @Override
