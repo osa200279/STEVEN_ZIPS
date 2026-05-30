@@ -193,23 +193,12 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     @Transactional
     public void approve(PublicFacilityReservationVO vo) {
         mapper.approveReservation(vo);
-        /*
-         * 관리자가 승인하면 회의실 자원 상태를 USE(사용중)로 변경합니다.
-         */
-        mapper.updateItemStatusUse(vo);
 
-        /*
-         * SMS 발송용 예약 상세 재조회
-         *
-         * 이유:
-         * 승인 버튼에서는 보통 예약번호(rsvtNo)만 넘어옵니다.
-         * 그래서 userNo, 시설명, 예약시간을 DB에서 다시 조회해야 합니다.
-         */
+        // 삭제 또는 주석 처리
+        // mapper.updateItemStatusUse(vo);
+
         PublicFacilityReservationVO smsInfo =
                 mapper.selectReservationSmsInfo(vo.getRsvtNo());
-
-        System.out.println("SMS 예약번호 = " + vo.getRsvtNo());
-        System.out.println("SMS 조회결과 = " + smsInfo);
 
         if (smsInfo != null) {
             smsService.sendReservationApproved(
@@ -219,7 +208,6 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
                     "SYSTEM"
             );
         }
-
     }
 
     @Override
