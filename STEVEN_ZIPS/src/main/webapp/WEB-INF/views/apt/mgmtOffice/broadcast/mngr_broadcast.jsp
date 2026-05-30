@@ -1,11 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <sec:csrfMetaTags/>
     <title>방송 안내 관리</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -170,11 +172,21 @@
                                     <div class="player-info">
                                         <div class="player-label" id="playerLabel">최근 변환 음성</div>
                                         <p class="player-text" id="playerText"></p>
-                                        <div class="player-audio-row">
-                                            <button type="button" class="player-toggle" id="playerToggleBtn" aria-label="일시정지">
-                                                <span class="material-symbols-rounded" id="playerToggleIcon">pause</span>
-                                            </button>
-                                            <audio id="playerAudio" controls preload="metadata"></audio>
+                                        <div class="player-controls">
+                                            <div class="player-sq-btns" role="group" aria-label="음성 재생 제어">
+                                                <button type="button" class="bc-sq-btn" id="playerToggleBtn"
+                                                        title="재생" aria-label="재생" disabled>
+                                                    <span class="material-symbols-rounded" id="playerToggleIcon">play_arrow</span>
+                                                </button>
+                                                <button type="button" class="bc-sq-btn bc-sq-btn-reset" id="playerResetBtn"
+                                                        title="재생 초기화" aria-label="재생 초기화" disabled>
+                                                    <span class="bc-stop-mark" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="player-audio-meta">
+                                                <span class="player-time" id="playerTime">0:00 / --:--</span>
+                                                <audio id="playerAudio" preload="metadata"></audio>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -114,12 +114,271 @@
         }
     }
 
+    function buildTtsFetchHeaders(contentType) {
+        var headers = { 'X-Requested-With': 'XMLHttpRequest' };
+        if (contentType) {
+            headers['Content-Type'] = contentType;
+        }
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]');
+        var csrfToken = document.querySelector('meta[name="_csrf"]');
+        if (csrfHeader && csrfToken) {
+            headers[csrfHeader.getAttribute('content')] = csrfToken.getAttribute('content');
+        }
+        return headers;
+    }
+
+    function isLikelyMp3Blob(blob) {
+        if (!blob || blob.size < 128) {
+            return Promise.resolve(false);
+        }
+        return blob.slice(0, 4).arrayBuffer().then(function (buf) {
+            var b = new Uint8Array(buf);
+            if (b[0] === 0xFF && (b[1] & 0xE0) === 0xE0) return true;
+            return b[0] === 0x49 && b[1] === 0x44 && b[2] === 0x33;
+        });
+    }
+
+    function ensureAudioBlob(blob) {
+        var mime = blob && blob.type ? blob.type : 'audio/mpeg';
+        if (mime.indexOf('audio/') !== 0) {
+            mime = 'audio/mpeg';
+        }
+        if (!blob.type || blob.type !== mime) {
+            return new Blob([blob], { type: mime });
+        }
+        return blob;
+    }
+
     function blobToDataUrl(blob) {
         return new Promise(function (resolve, reject) {
             var reader = new FileReader();
             reader.onloadend = function () { resolve(reader.result); };
             reader.onerror = reject;
             reader.readAsDataURL(blob);
+        });
+    }
+
+    function dataUrlToBlobUrl(dataUrl) {
+        if (!dataUrl || dataUrl.indexOf('data:') !== 0) return null;
+        var m = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+        if (!m) return null;
+        var binary = atob(m[2]);
+        var len = binary.length;
+        var bytes = new Uint8Array(len);
+        for (var i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+        return URL.createObjectURL(new Blob([bytes], { type: m[1] || 'audio/mpeg' }));
+    }
+
+    function revokePlayerObjectUrl(audio) {
+        if (audio && audio._bcObjectUrl) {
+            URL.revokeObjectURL(audio._bcObjectUrl);
+            audio._bcObjectUrl = null;
+        }
+    }
+
+    function setPlayerAudioSource(audio, audioUrl, playbackBlob) {
+        clearAudioTimingWatch(audio);
+        revokePlayerObjectUrl(audio);
+        audio.pause();
+        audio.currentTime = 0;
+        if (playbackBlob && typeof playbackBlob.size === 'number' && playbackBlob.size > 0) {
+            var typedBlob = ensureAudioBlob(playbackBlob);
+            audio._bcObjectUrl = URL.createObjectURL(typedBlob);
+            audio.src = audio._bcObjectUrl;
+        } else if (audioUrl && audioUrl.indexOf('data:') === 0) {
+            audio._bcObjectUrl = dataUrlToBlobUrl(audioUrl);
+            audio.src = audio._bcObjectUrl || audioUrl;
+        } else {
+            audio.src = audioUrl || '';
+        }
+    }
+
+    function startPlayerPlayback(audio, opts) {
+        if (!audio || !audio.src) return Promise.resolve();
+        opts = opts || {};
+        return audio.play().then(function () {
+            updatePlayerToggle(true);
+        }).catch(function (err) {
+            console.warn('audio play failed', err);
+            updatePlayerToggle(false);
+            if (opts.notifyBlocked) {
+                toast({
+                    title: '재생',
+                    message: '자동 재생이 제한되었습니다. 재생 버튼을 눌러 주세요.',
+                    type: 'info',
+                    duration: 4000
+                });
+            }
+        });
+    }
+
+    function formatAudioTime(sec) {
+        if (!isFinite(sec) || sec < 0) return '0:00';
+        var s = Math.floor(sec);
+        var m = Math.floor(s / 60);
+        return m + ':' + String(s % 60).padStart(2, '0');
+    }
+
+    function formatTimeRange(audio) {
+        if (!audio) return '0:00 / --:--';
+        var cur = formatAudioTime(audio.currentTime);
+        var dur = isFinite(audio.duration) && audio.duration > 0
+            ? formatAudioTime(audio.duration)
+            : '--:--';
+        return cur + ' / ' + dur;
+    }
+
+    function updatePlayerTimeDisplay() {
+        var audio = $('playerAudio');
+        var el = $('playerTime');
+        if (!audio || !el) return;
+        el.textContent = formatTimeRange(audio);
+    }
+
+    function clearAudioTimingWatch(audio) {
+        if (!audio) return;
+        if (audio._bcWatchers) {
+            audio._bcWatchers.forEach(function (w) {
+                audio.removeEventListener(w.ev, w.fn);
+            });
+            audio._bcWatchers = null;
+        }
+        if (audio._bcDurTimer) {
+            clearTimeout(audio._bcDurTimer);
+            audio._bcDurTimer = null;
+        }
+    }
+
+    function watchAudioTiming(audio, onUpdate) {
+        clearAudioTimingWatch(audio);
+        if (!audio || typeof onUpdate !== 'function') return;
+
+        audio._bcWatchers = [];
+        function add(ev, fn) {
+            audio.addEventListener(ev, fn);
+            audio._bcWatchers.push({ ev: ev, fn: fn });
+        }
+
+        function refresh() {
+            onUpdate();
+            if (!isFinite(audio.duration) || audio.duration <= 0) {
+                if (!audio._bcDurTimer) {
+                    audio._bcDurTimer = setTimeout(refresh, 120);
+                }
+            } else if (audio._bcDurTimer) {
+                clearTimeout(audio._bcDurTimer);
+                audio._bcDurTimer = null;
+            }
+        }
+
+        add('loadedmetadata', refresh);
+        add('durationchange', refresh);
+        add('canplay', refresh);
+        add('canplaythrough', refresh);
+        add('timeupdate', onUpdate);
+        refresh();
+        if (audio.readyState < 1) {
+            audio.load();
+        }
+    }
+
+    function revokeHistoryObjectUrl(audio) {
+        if (audio && audio._bcHistUrl) {
+            URL.revokeObjectURL(audio._bcHistUrl);
+            audio._bcHistUrl = null;
+        }
+    }
+
+    function setHistoryAudioSource(audio, audioUrl) {
+        revokeHistoryObjectUrl(audio);
+        if (audioUrl && audioUrl.indexOf('data:') === 0) {
+            audio._bcHistUrl = dataUrlToBlobUrl(audioUrl);
+            audio.src = audio._bcHistUrl || audioUrl;
+        } else {
+            audio.src = audioUrl || '';
+        }
+    }
+
+    function updateHistoryItemTime(itemEl) {
+        var audio = itemEl ? itemEl.querySelector('.history-audio') : null;
+        var el = itemEl ? itemEl.querySelector('[data-role="hist-time"]') : null;
+        if (!audio || !el) return;
+        el.textContent = formatTimeRange(audio);
+    }
+
+    function updateHistoryPlayToggle(itemEl, isPlaying) {
+        var icon = itemEl.querySelector('[data-role="hist-play-icon"]');
+        var btn = itemEl.querySelector('[data-action="hist-play"]');
+        if (icon) icon.textContent = isPlaying ? 'pause' : 'play_arrow';
+        if (btn) btn.setAttribute('aria-label', isPlaying ? '일시정지' : '재생');
+        itemEl.classList.toggle('is-playing', !!isPlaying);
+    }
+
+    function resetHistoryPlayback(itemEl) {
+        var audio = itemEl.querySelector('.history-audio');
+        if (!audio || !audio.src) return;
+        audio.pause();
+        try {
+            audio.currentTime = 0;
+        } catch (ignore) { /* seek */ }
+        updateHistoryPlayToggle(itemEl, false);
+        updateHistoryItemTime(itemEl);
+    }
+
+    function toggleHistoryPlayback(itemEl) {
+        var audio = itemEl.querySelector('.history-audio');
+        if (!audio || !audio.src) return;
+        if (audio.paused) {
+            pauseAllBroadcastAudio(audio);
+            var eq = $('eqBars');
+            if (eq) eq.classList.remove('playing');
+            updatePlayerToggle(false);
+            var playPromise = audio.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(function (err) {
+                    console.warn('history audio play failed', err);
+                    updateHistoryPlayToggle(itemEl, false);
+                });
+            }
+        } else {
+            audio.pause();
+        }
+    }
+
+    function initHistoryItemPlayer(itemEl, row) {
+        var audio = itemEl.querySelector('.history-audio');
+        if (!audio || !row) return;
+
+        clearAudioTimingWatch(audio);
+        audio.pause();
+        audio.preload = 'auto';
+        setHistoryAudioSource(audio, row.audioUrl);
+        updateHistoryItemTime(itemEl);
+        updateHistoryPlayToggle(itemEl, false);
+
+        watchAudioTiming(audio, function () {
+            updateHistoryItemTime(itemEl);
+        });
+
+        audio.addEventListener('play', function () {
+            pauseAllBroadcastAudio(audio);
+            var eq = $('eqBars');
+            if (eq) eq.classList.remove('playing');
+            updatePlayerToggle(false);
+            document.querySelectorAll('#historyList .history-item').forEach(function (el) {
+                if (el !== itemEl) updateHistoryPlayToggle(el, false);
+            });
+            updateHistoryPlayToggle(itemEl, true);
+        });
+        audio.addEventListener('pause', function () {
+            updateHistoryPlayToggle(itemEl, false);
+        });
+        audio.addEventListener('ended', function () {
+            try {
+                audio.currentTime = 0;
+            } catch (ignore) { /* ended */ }
+            updateHistoryPlayToggle(itemEl, false);
+            updateHistoryItemTime(itemEl);
         });
     }
 
@@ -437,14 +696,38 @@
         setPreviewState(true);
     }
 
+    function setPlayerControlsEnabled(enabled) {
+        var playBtn = $('playerToggleBtn');
+        var resetBtn = $('playerResetBtn');
+        if (playBtn) playBtn.disabled = !enabled;
+        if (resetBtn) resetBtn.disabled = !enabled;
+    }
+
+    function resetPlayerPlayback() {
+        var audio = $('playerAudio');
+        if (!audio || !audio.src) return;
+        audio.pause();
+        try {
+            audio.currentTime = 0;
+        } catch (ignore) { /* 일부 브라우저 */ }
+        var eq = $('eqBars');
+        if (eq) eq.classList.remove('playing');
+        updatePlayerToggle(false);
+        updatePlayerTimeDisplay();
+    }
+
     function hidePlayer() {
         var audio = $('playerAudio');
         if (audio) {
+            clearAudioTimingWatch(audio);
             audio.pause();
+            revokePlayerObjectUrl(audio);
             audio.removeAttribute('src');
             audio.load();
         }
         updatePlayerToggle(false);
+        updatePlayerTimeDisplay();
+        setPlayerControlsEnabled(false);
         $('eqBars').classList.remove('playing');
         $('playerCard').style.display = 'none';
     }
@@ -453,9 +736,13 @@
         var main = $('playerAudio');
         if (main && main !== exceptEl && !main.paused) {
             main.pause();
+            updatePlayerToggle(false);
         }
-        document.querySelectorAll('#historyList audio').forEach(function (a) {
-            if (a !== exceptEl && !a.paused) a.pause();
+        document.querySelectorAll('#historyList .history-item').forEach(function (itemEl) {
+            var a = itemEl.querySelector('.history-audio');
+            if (!a || a === exceptEl) return;
+            if (!a.paused) a.pause();
+            updateHistoryPlayToggle(itemEl, false);
         });
     }
 
@@ -467,42 +754,78 @@
         btn.setAttribute('aria-label', isPlaying ? '일시정지' : '재생');
     }
 
-    function showPlayer(row, label) {
+    function showPlayer(row, label, playbackBlob) {
         var audio = $('playerAudio');
         if (!audio) return;
         $('playerLabel').textContent = label || '최근 변환 음성';
         $('playerText').textContent = row.text;
         pauseAllBroadcastAudio();
-        audio.pause();
-        audio.src = row.audioUrl;
-        audio.load();
+        setPlayerAudioSource(audio, row.audioUrl, playbackBlob);
         $('playerCard').style.display = 'block';
-        var playWhenReady = function () {
-            audio.removeEventListener('canplay', playWhenReady);
-            audio.play().catch(function () {
-                updatePlayerToggle(false);
-            });
-        };
-        if (audio.readyState >= 2) {
-            audio.play().catch(function () {
-                updatePlayerToggle(false);
-            });
-        } else {
-            audio.addEventListener('canplay', playWhenReady);
+        updatePlayerToggle(false);
+        updatePlayerTimeDisplay();
+
+        if (!audio.src) {
+            setPlayerControlsEnabled(false);
+            toast({ title: '재생 불가', message: '음성 데이터가 없습니다.', type: 'error' });
+            return;
         }
+        setPlayerControlsEnabled(true);
+        audio.preload = 'auto';
+        watchAudioTiming(audio, updatePlayerTimeDisplay);
+
+        var started = false;
+        function beginPlay() {
+            if (started) return;
+            started = true;
+            startPlayerPlayback(audio, { notifyBlocked: true });
+        }
+
+        audio.addEventListener('loadeddata', beginPlay, { once: true });
+        audio.addEventListener('canplay', beginPlay, { once: true });
+        audio.addEventListener('error', function () {
+            updatePlayerToggle(false);
+            setPlayerControlsEnabled(false);
+            var code = audio.error ? audio.error.code : 0;
+            console.warn('playerAudio error', code, audio.src);
+            toast({
+                title: '재생 불가',
+                message: '음성 파일을 불러오지 못했습니다. 변환을 다시 시도해 주세요.',
+                type: 'error'
+            });
+        }, { once: true });
     }
 
     function bindPlayerControls() {
         var audio = $('playerAudio');
         var toggle = $('playerToggleBtn');
+        var resetBtn = $('playerResetBtn');
         var eq = $('eqBars');
         if (!audio || !toggle) return;
 
-        toggle.addEventListener('click', function () {
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                resetPlayerPlayback();
+            });
+        }
+
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
             if (!audio.src) return;
             if (audio.paused) {
                 pauseAllBroadcastAudio(audio);
-                audio.play().catch(function () {});
+                if (audio.readyState < 2) {
+                    audio.addEventListener('canplay', function () {
+                        startPlayerPlayback(audio);
+                    }, { once: true });
+                    if (!audio.src) return;
+                    audio.load();
+                } else {
+                    startPlayerPlayback(audio);
+                }
             } else {
                 audio.pause();
             }
@@ -510,6 +833,9 @@
 
         audio.addEventListener('play', function () {
             pauseAllBroadcastAudio(audio);
+            document.querySelectorAll('#historyList .history-item').forEach(function (el) {
+                updateHistoryPlayToggle(el, false);
+            });
             if (eq) eq.classList.add('playing');
             updatePlayerToggle(true);
         });
@@ -520,15 +846,12 @@
         audio.addEventListener('ended', function () {
             if (eq) eq.classList.remove('playing');
             updatePlayerToggle(false);
+            try {
+                audio.currentTime = 0;
+            } catch (ignore) { /* ended 후 seek */ }
+            updatePlayerTimeDisplay();
         });
 
-        $('historyList').addEventListener('play', function (e) {
-            if (e.target && e.target.tagName === 'AUDIO') {
-                pauseAllBroadcastAudio(e.target);
-                if (eq) eq.classList.remove('playing');
-                updatePlayerToggle(false);
-            }
-        }, true);
     }
 
     function switchSourceTab(tab) {
@@ -592,12 +915,25 @@
         }
         empty.style.display = 'none';
         list.style.display = 'grid';
+        list.querySelectorAll('.history-audio').forEach(function (a) {
+            clearAudioTimingWatch(a);
+            revokeHistoryObjectUrl(a);
+        });
         list.innerHTML = historyRows.map(function (row, idx) {
             var title = row.text.length > 40 ? row.text.slice(0, 40) + '...' : row.text;
             return '<div class="history-item" data-idx="' + idx + '">'
                 + '<div class="h-text"><div class="h-title">' + escapeHtml(title) + '</div>'
                 + '<div class="h-meta">' + escapeHtml(row.area) + ' · ' + escapeHtml(row.createdAt) + '</div></div>'
-                + '<audio controls preload="none" src="' + escapeHtml(row.audioUrl) + '"></audio>'
+                + '<div class="history-playback">'
+                + '<div class="player-sq-btns history-sq-btns" role="group" aria-label="이력 음성 재생">'
+                + '<button type="button" class="bc-sq-btn bc-sq-btn--light" data-action="hist-play" title="재생" aria-label="재생">'
+                + '<span class="material-symbols-rounded" data-role="hist-play-icon">play_arrow</span></button>'
+                + '<button type="button" class="bc-sq-btn bc-sq-btn--light bc-sq-btn-reset" data-action="hist-reset" title="재생 초기화" aria-label="재생 초기화">'
+                + '<span class="bc-stop-mark" aria-hidden="true"></span></button>'
+                + '</div>'
+                + '<span class="history-time" data-role="hist-time">0:00 / --:--</span>'
+                + '<audio class="history-audio" preload="metadata"></audio>'
+                + '</div>'
                 + '<div class="h-actions">'
                 + '<button type="button" class="icon-btn icon-btn-neutral" data-action="reuse" title="불러오기">'
                 + '<span class="material-symbols-rounded" style="font-size:17px;">edit_note</span></button>'
@@ -605,6 +941,13 @@
                 + '<span class="material-symbols-rounded" style="font-size:17px;">delete</span></button>'
                 + '</div></div>';
         }).join('');
+
+        list.querySelectorAll('.history-item').forEach(function (itemEl) {
+            var idx = Number(itemEl.getAttribute('data-idx'));
+            if (Number.isFinite(idx) && historyRows[idx]) {
+                initHistoryItemPlayer(itemEl, historyRows[idx]);
+            }
+        });
     }
 
     function loadHistoryToComposer(row) {
@@ -655,16 +998,43 @@
         }
 
         setComposeLoading(true);
-        fetch(cfg.contextPath + '/tts/synthesize/' + cfg.mgmtOfcNo
-            + '?text=' + encodeURIComponent(v.text)
-            + '&languageCode=' + encodeURIComponent(v.lang)
-            + '&voiceName=' + encodeURIComponent(v.voice))
+        var formBody = new URLSearchParams();
+        formBody.set('text', v.text);
+        formBody.set('languageCode', v.lang);
+        formBody.set('voiceName', v.voice);
+        fetch(cfg.contextPath + '/tts/synthesize/' + cfg.mgmtOfcNo, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: buildTtsFetchHeaders('application/x-www-form-urlencoded;charset=UTF-8'),
+            body: formBody.toString()
+        })
             .then(function (res) {
-                if (!res.ok) throw new Error('TTS failed: ' + res.status);
+                var ct = (res.headers.get('content-type') || '').toLowerCase();
+                if (!res.ok) {
+                    var err = new Error('TTS failed: ' + res.status + (ct ? ' (' + ct + ')' : ''));
+                    err.status = res.status;
+                    throw err;
+                }
+                if (ct.indexOf('audio/') === -1) {
+                    throw new Error('not audio response: ' + (ct || 'unknown'));
+                }
                 return res.blob();
             })
-            .then(blobToDataUrl)
-            .then(function (dataUrl) {
+            .then(function (blob) {
+                if (!blob || blob.size < 128) {
+                    throw new Error('empty audio blob');
+                }
+                return isLikelyMp3Blob(blob).then(function (ok) {
+                    if (!ok) {
+                        throw new Error('invalid mp3 payload');
+                    }
+                    var audioBlob = ensureAudioBlob(blob);
+                    return blobToDataUrl(audioBlob).then(function (dataUrl) {
+                        return { blob: audioBlob, dataUrl: dataUrl };
+                    });
+                });
+            })
+            .then(function (result) {
                 historyRows.unshift({
                     text: v.text,
                     voice: v.voice,
@@ -672,12 +1042,12 @@
                     area: v.area,
                     voiceLabel: v.voiceLabel,
                     createdAt: nowKST(),
-                    audioUrl: dataUrl
+                    audioUrl: result.dataUrl
                 });
                 if (historyRows.length > HISTORY_MAX) historyRows.length = HISTORY_MAX;
                 saveHistory();
                 renderHistory();
-                showPlayer(historyRows[0]);
+                showPlayer(historyRows[0], undefined, result.blob);
                 switchSourceTab('history');
                 toast({
                     title: '변환 완료',
@@ -688,9 +1058,19 @@
             })
             .catch(function (e) {
                 console.error(e);
+                var msg = 'TTS 서버 연결에 실패했습니다. 서버 실행 상태를 확인해주세요.';
+                if (e.status === 403) {
+                    msg = '요청이 차단되었습니다(403). 페이지를 새로고침한 뒤 다시 시도해주세요.';
+                } else if (String(e.message || '').indexOf('not audio') !== -1) {
+                    msg = '서버가 음성이 아닌 응답을 반환했습니다. 로그인·권한(CSRF) 또는 TTS 설정을 확인해주세요.';
+                } else if (String(e.message || '').indexOf('invalid mp3') !== -1) {
+                    msg = '음성 데이터 형식이 올바르지 않습니다. Google TTS 키·서버 로그를 확인해주세요.';
+                } else if (String(e.message || '').indexOf('TTS failed: 500') !== -1) {
+                    msg = 'TTS 변환 중 서버 오류가 발생했습니다. IntelliJ 로그의 "TTS 변환 실패"를 확인해주세요.';
+                }
                 toast({
                     title: '변환 실패',
-                    message: 'TTS 서버 연결에 실패했습니다. 서버 실행 상태를 확인해주세요.',
+                    message: msg,
                     type: 'error',
                     duration: 5000
                 });
@@ -750,6 +1130,14 @@
             if (!item) return;
             var idx = Number(item.getAttribute('data-idx'));
             if (!Number.isFinite(idx)) return;
+            if (btn.getAttribute('data-action') === 'hist-play') {
+                toggleHistoryPlayback(item);
+                return;
+            }
+            if (btn.getAttribute('data-action') === 'hist-reset') {
+                resetHistoryPlayback(item);
+                return;
+            }
             if (btn.getAttribute('data-action') === 'reuse') {
                 loadHistoryToComposer(historyRows[idx]);
                 return;

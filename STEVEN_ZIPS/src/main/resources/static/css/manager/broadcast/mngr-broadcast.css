@@ -295,10 +295,13 @@
     min-width: 0;
 }
 
-#broadcastPage .bc-side .history-item audio {
+#broadcastPage .bc-side .history-item .history-playback {
     width: 100%;
-    min-width: 0;
-    height: 36px;
+    justify-content: flex-start;
+}
+
+#broadcastPage .bc-side .history-item {
+    position: relative;
 }
 
 #broadcastPage .bc-side .history-item .h-actions {
@@ -919,39 +922,140 @@
 }
 
 #broadcastPage .player audio {
+    display: block;
     width: 100%;
-    height: 40px;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#broadcastPage .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     flex: 1;
     min-width: 0;
 }
 
-#broadcastPage .player-audio-row {
+#broadcastPage .player-sq-btns,
+#broadcastPage .history-sq-btns {
     display: flex;
+    gap: 8px;
+    flex-shrink: 0;
     align-items: center;
-    gap: 10px;
 }
 
-#broadcastPage .player-toggle {
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    border: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.22);
+#broadcastPage .bc-sq-btn {
+    box-sizing: border-box;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    max-width: 44px;
+    max-height: 44px;
+    flex: 0 0 44px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.18);
     color: #fff;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: background .15s ease;
+    flex-shrink: 0;
+    appearance: none;
+    transition: background .15s ease, border-color .15s ease;
 }
 
-#broadcastPage .player-toggle:hover {
+/* 재생 초기화 — ■ 정지 아이콘 (버튼 크기는 bc-sq-btn과 동일) */
+#broadcastPage .bc-stop-mark {
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: currentColor;
+    border-radius: 1px;
+    flex-shrink: 0;
+}
+
+#broadcastPage .bc-sq-btn--light.bc-sq-btn-reset .bc-stop-mark {
+    background: var(--text);
+}
+
+#broadcastPage .bc-sq-btn:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.32);
+    border-color: rgba(255, 255, 255, 0.45);
 }
 
-#broadcastPage .player-toggle .material-symbols-rounded {
-    font-size: 26px;
+#broadcastPage .bc-sq-btn:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+}
+
+#broadcastPage .bc-sq-btn .material-symbols-rounded {
+    font-size: 24px;
+}
+
+#broadcastPage .bc-sq-btn--light {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--text);
+}
+
+#broadcastPage .bc-sq-btn--light:hover:not(:disabled) {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+#broadcastPage .history-playback {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+#broadcastPage .history-time {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    min-width: 92px;
+}
+
+#broadcastPage .history-audio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#broadcastPage .history-item.is-playing {
+    border-color: var(--primary);
+    background: #f3faf5;
+}
+
+#broadcastPage .player-audio-meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+}
+
+#broadcastPage .player-time {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.88);
+    font-variant-numeric: tabular-nums;
 }
 
 #broadcastPage .player-download {
@@ -1017,9 +1121,7 @@
     color: var(--muted);
 }
 
-#broadcastPage .history-item audio {
-    width: 260px;
-    height: 40px;
+#broadcastPage .history-item .history-playback {
     flex-shrink: 0;
 }
 
