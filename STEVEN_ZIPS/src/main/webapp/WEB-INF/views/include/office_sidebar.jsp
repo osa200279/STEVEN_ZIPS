@@ -653,7 +653,7 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">방송 안내 관리</span>
                     </a>
-                    <a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">긴급 SMS 발송</span></a>
+                    <%--<a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">긴급 SMS 발송</span></a>--%>
 
                     <span class="sub-group-label">투표/설문</span>
                     <a href="${ctx}/manager/survey/${mgmtOfcNo}"
