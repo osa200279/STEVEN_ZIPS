@@ -1,3 +1,6 @@
+import Anls from "./analytics/Anls";
+import RecruitContainer from "./analytics/recruitment/RecruitContainer";
+import ResidentContainer from "./analytics/resident/ResidentContainer";
 import CtrtBoard from "./ctrt/CtrtBoard";
 
 const Home = () => {
@@ -38,7 +41,16 @@ const Home = () => {
         <section>
           <h1 className="section-title board">계약 현황</h1>
           <CtrtBoard />
-        </section> 
+          <div style={{marginTop: '20px'}}>
+            <h1 className="section-title board">진행중인 공고별 지원률</h1>
+            <RecruitContainer />
+          </div>
+          <div style={{marginTop: '20px'}}>
+            <h1 className="section-title board">최근 6개월 입주자 수 추이</h1>
+            <ResidentContainer />
+          </div>
+
+        </section>
       </div>
     </>
   );
