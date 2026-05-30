@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
@@ -36,11 +36,14 @@
         #meterPage .btn:hover { background:#f4f7f4; }
         #meterPage .btn-primary { background:var(--accent); border-color:var(--accent); color:#fff; }
         #meterPage .btn-primary:hover { background:var(--accent-hover); border-color:var(--accent-hover); }
+        #meterPage .btn-primary:disabled { opacity:.72; cursor:not-allowed; }
         #meterPage .btn-ghost { background:#fff; color:#374151; }
         #meterPage .btn .material-symbols-rounded { font-size:15px; }
         #meterPage .btn-sm { height:28px; min-height:28px; padding:0 9px; font-size:11px; }
         #meterPage .btn-edit { background:var(--accent); border-color:var(--accent); color:#fff; }
         #meterPage .btn-edit:hover { background:var(--accent-hover); border-color:var(--accent-hover); color:#fff; }
+        #meterPage .upload-spinner { width:14px; height:14px; border:2px solid rgba(255,255,255,.45); border-top-color:#fff; border-radius:50%; animation:meterUploadSpin .8s linear infinite; box-sizing:border-box; }
+        @keyframes meterUploadSpin { to { transform:rotate(360deg); } }
 
         /* 검침 탭 */
         #meterPage .meter-tab-wrap { margin-top:12px; }
@@ -82,6 +85,10 @@
         /* 필터 */
         #meterPage .filter-grid { display:grid; grid-template-columns:1.2fr .8fr .75fr 1.45fr minmax(220px,2fr) auto; gap:8px 12px; align-items:end; }
         #meterPage .complex-filter-grid { grid-template-columns:1.2fr .8fr .75fr 1.45fr minmax(220px,2fr) auto; }
+        /* 다운로드 모달 검침유형 체크박스 그룹 */
+        #meterPage .meter-ty-checkbox-group { display:flex; align-items:center; gap:12px; height:32px; }
+        #meterPage .meter-ty-check { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--text-head); cursor:pointer; user-select:none; }
+        #meterPage .meter-ty-check input[type="checkbox"] { width:14px; height:14px; accent-color:var(--accent); cursor:pointer; }
         #meterPage .field-label { display:block; margin-bottom:5px; font-size:11px; font-weight:800; color:var(--text-sec); }
         #meterPage .form-select, #meterPage .form-input, #meterPage .form-textarea { width:100%; box-sizing:border-box; border:1px solid var(--line); background:#fff; border-radius:4px; font-family:'Noto Sans KR',sans-serif; color:#1f2d23; }
         #meterPage .form-select, #meterPage .form-input { height:32px; padding:0 9px; font-size:12px; }
@@ -104,6 +111,10 @@
         #meterPage .tbl td { height:43px; padding:6px 8px; border-bottom:1px solid #eef1f3; color:#243027; font-size:12px; text-align:center; vertical-align:middle; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-sizing:border-box; }
         #meterPage .tbl tr:last-child td { border-bottom:none; }
         #meterPage .tbl tr:hover td { background:#f8fbf8; }
+        #meterPage .sort-btn { display:inline-flex; align-items:center; justify-content:center; gap:3px; width:100%; height:100%; border:0; background:transparent; color:inherit; font:inherit; font-weight:800; cursor:pointer; }
+        #meterPage .sort-btn:hover, #meterPage .sort-btn.active { color:var(--accent); }
+        #meterPage .sort-icon { min-width:10px; color:var(--text-ter); font-size:10px; line-height:1; }
+        #meterPage .sort-btn.active .sort-icon { color:var(--accent); }
         #meterPage .tbl .td-left { text-align:left; }
         #meterPage .tbl .td-right { text-align:right; }
         #meterPage .tbl .mono { font-family:'Consolas','SF Mono',monospace; font-size:11px; color:#66736a; }
@@ -232,8 +243,8 @@
 
                 <%-- 검침 탭 영역 --%>
                 <div class="meter-tab-wrap">
-                    <input type="radio" class="meter-tab-input" name="meterTab" id="meterTabComplex" <c:if test="${param.meterScope ne 'FACILITY'}">checked</c:if>>
-                    <input type="radio" class="meter-tab-input" name="meterTab" id="meterTabFacility" <c:if test="${param.meterScope eq 'FACILITY'}">checked</c:if>>
+                    <input type="radio" class="meter-tab-input" name="meterTab" id="meterTabComplex" <c:if test="${activeMeterScope ne 'FACILITY'}">checked</c:if>>
+                    <input type="radio" class="meter-tab-input" name="meterTab" id="meterTabFacility" <c:if test="${activeMeterScope eq 'FACILITY'}">checked</c:if>>
 
                     <div class="meter-tab-labels" role="tablist" aria-label="검침 구분">
                         <label class="meter-tab-label" for="meterTabComplex" role="tab">
@@ -270,7 +281,8 @@
                                                 <label class="field-label" for="complexUtilityProviderNo">공급/검침 업체</label>
                                                 <select class="form-select" id="complexUtilityProviderNo" name="complexUtilityProviderNo">
                                                     <option value="">전체</option>
-                                                    <c:forEach var="provider" items="${providerList}">
+                                                    <%-- 단지별 검침 이력이 있는 업체만 노출 (다운로드 모달과 동일 규칙) --%>
+                                                    <c:forEach var="provider" items="${complexProviderList}">
                                                         <c:choose>
                                                             <c:when test="${empty provider.utilityProviderNo}">
                                                                 <option value="" disabled>[설정 필요] ${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if></option>
@@ -289,7 +301,9 @@
                                                 <select class="form-select" id="complexMeterTyCd" name="complexMeterTyCd">
                                                     <option value="">전체</option>
                                                     <c:forEach var="code" items="${meterTyCodeList}">
-                                                        <option value="${code.codeNoCd}" <c:if test="${complexSearch.meterTyCd eq code.codeNoCd}">selected</c:if>>${code.codeName}</option>
+                                                        <c:if test="${code.codeNoCd ne 'HEAT'}">
+                                                            <option value="${code.codeNoCd}" <c:if test="${complexSearch.meterTyCd eq code.codeNoCd}">selected</c:if>>${code.codeName}</option>
+                                                        </c:if>
                                                     </c:forEach>
                                                 </select>
                                             </div>
@@ -333,7 +347,7 @@
                                 <div class="panel-header">
                                     <div class="list-head-left">
                                         <h3 class="panel-title"><span class="material-symbols-rounded">format_list_bulleted</span>단지별 검침 목록</h3>
-                                        <span class="list-count">총 ${fn:length(complexMeterList)}건</span>
+                                        <span class="list-count">총 ${complexTotalCount}건</span>
                                     </div>
                                     <div class="list-head-right">
                                         <%-- CSV 다운로드 모달 진입 --%>
@@ -354,9 +368,13 @@
                                         </colgroup>
                                         <thead>
                                         <tr>
-                                            <th>번호</th><th>검침번호</th><th>검침유형</th><th>검침일자</th>
-                                            <th class="td-left">동/호</th><th>이전값</th><th>현재값</th>
-                                            <th>사용량</th><th>결과</th><th class="td-left">업체</th><th>관리</th>
+                                            <th>번호</th><th>검침번호</th><th>검침유형</th>
+                                            <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="METER_DT">검침일자<span class="sort-icon"></span></button></th>
+                                            <th class="td-left"><button type="button" class="sort-btn js-sort-btn" data-sort-field="HO_NO">동/호<span class="sort-icon"></span></button></th>
+                                            <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="PRE_VAL">이전값<span class="sort-icon"></span></button></th>
+                                            <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="CURR_VAL">현재값<span class="sort-icon"></span></button></th>
+                                            <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="USAGE_VAL">사용량<span class="sort-icon"></span></button></th>
+                                            <th>결과</th><th class="td-left">업체</th><th>관리</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -372,7 +390,7 @@
                                                         <c:if test="${row.meterTyCd eq 'GAS' or row.meterTyCd eq 'WATER'}"><c:set var="meterUnit" value="㎥" /></c:if>
                                                         <c:if test="${row.meterTyCd eq 'HEAT'}"><c:set var="meterUnit" value="Gcal" /></c:if>
                                                         <c:set var="hoParts" value="${fn:split(row.hoNo, '_')}" />
-                                                        <td class="mono">${fn:length(complexMeterList) - status.index}</td>
+                                                        <td class="mono">${complexStartNo - status.index}</td>
                                                         <td class="meter-no">${row.meterHstryNo}</td>
                                                         <td><span class="badge badge-gray">${empty row.meterTyNm ? '-' : row.meterTyNm}</span></td>
                                                         <td><fmt:formatDate value="${row.meterDt}" pattern="yyyy.MM.dd"/></td>
@@ -412,7 +430,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="pagination-wrap" data-pagination-target="complex">
+                                <div class="pagination-wrap" data-pagination-target="complex" data-scope="COMPLEX" data-total-count="${complexTotalCount}" data-current-page="${meterPage}" data-page-size="${meterPageSize}">
                                     <div class="pagination-info" id="complexPaginationInfo">총 0건</div>
                                     <div class="pagination" id="complexPagination"></div>
                                 </div>
@@ -443,7 +461,8 @@
                                                 <label class="field-label" for="filterUtilityProviderNo">공급/검침 업체</label>
                                                 <select class="form-select" id="filterUtilityProviderNo" name="utilityProviderNo">
                                                     <option value="">전체</option>
-                                                    <c:forEach var="provider" items="${providerList}">
+                                                    <%-- 시설 검침 이력이 있는 업체만 노출 (다운로드 모달과 동일 규칙) --%>
+                                                    <c:forEach var="provider" items="${facilityProviderList}">
                                                         <c:choose>
                                                             <c:when test="${empty provider.utilityProviderNo}">
                                                                 <option value="" disabled>[설정 필요] ${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if></option>
@@ -462,7 +481,9 @@
                                                 <select class="form-select" id="filterMeterTyCd" name="meterTyCd">
                                                     <option value="">전체</option>
                                                     <c:forEach var="code" items="${meterTyCodeList}">
-                                                        <option value="${code.codeNoCd}" <c:if test="${search.meterTyCd eq code.codeNoCd}">selected</c:if>>${code.codeName}</option>
+                                                        <c:if test="${code.codeNoCd ne 'HEAT'}">
+                                                            <option value="${code.codeNoCd}" <c:if test="${search.meterTyCd eq code.codeNoCd}">selected</c:if>>${code.codeName}</option>
+                                                        </c:if>
                                                     </c:forEach>
                                                 </select>
                                             </div>
@@ -506,7 +527,7 @@
                                 <div class="panel-header">
                                     <div class="list-head-left">
                                         <h3 class="panel-title"><span class="material-symbols-rounded">format_list_bulleted</span>시설 검침 목록</h3>
-                                        <span class="list-count">총 ${fn:length(facilityMeterList)}건</span>
+                                        <span class="list-count">총 ${facilityTotalCount}건</span>
                                     </div>
                                     <div class="list-head-right">
                                         <%-- CSV 다운로드 모달 진입 --%>
@@ -527,9 +548,13 @@
                                         </colgroup>
                                         <thead>
                                         <tr>
-                                            <th>번호</th><th>검침번호</th><th>검침유형</th><th>검침일자</th>
-                                            <th class="td-left">시설</th><th>이전값</th><th>현재값</th>
-                                            <th>사용량</th><th>결과</th><th class="td-left">업체</th><th>관리</th>
+                                            <th>번호</th><th>검침번호</th><th>검침유형</th>
+                                            <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="METER_DT">검침일자<span class="sort-icon"></span></button></th>
+                                            <th class="td-left">시설</th>
+                                            <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="PRE_VAL">이전값<span class="sort-icon"></span></button></th>
+                                            <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="CURR_VAL">현재값<span class="sort-icon"></span></button></th>
+                                            <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="USAGE_VAL">사용량<span class="sort-icon"></span></button></th>
+                                            <th>결과</th><th class="td-left">업체</th><th>관리</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -544,7 +569,7 @@
                                                         <c:if test="${row.meterTyCd eq 'ELEC'}"><c:set var="meterUnit" value="kWh" /></c:if>
                                                         <c:if test="${row.meterTyCd eq 'GAS' or row.meterTyCd eq 'WATER'}"><c:set var="meterUnit" value="㎥" /></c:if>
                                                         <c:if test="${row.meterTyCd eq 'HEAT'}"><c:set var="meterUnit" value="Gcal" /></c:if>
-                                                        <td class="mono">${fn:length(facilityMeterList) - status.index}</td>
+                                                        <td class="mono">${facilityStartNo - status.index}</td>
                                                         <td class="meter-no">${row.meterHstryNo}</td>
                                                         <td><span class="badge badge-gray">${empty row.meterTyNm ? '-' : row.meterTyNm}</span></td>
                                                         <td><fmt:formatDate value="${row.meterDt}" pattern="yyyy.MM.dd"/></td>
@@ -578,7 +603,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="pagination-wrap" data-pagination-target="facility">
+                                <div class="pagination-wrap" data-pagination-target="facility" data-scope="FACILITY" data-total-count="${facilityTotalCount}" data-current-page="${meterPage}" data-page-size="${meterPageSize}">
                                     <div class="pagination-info" id="facilityPaginationInfo">총 0건</div>
                                     <div class="pagination" id="facilityPagination"></div>
                                 </div>
@@ -736,29 +761,16 @@
                                     <div class="form-section-title"><span class="material-symbols-rounded">filter_alt</span>다운로드 조건</div>
                                     <div class="form-row cols-2">
                                         <div class="form-field">
+                                            <%-- 검침 구분은 어느 탭에서 모달을 열었는지에 따라 자동 결정되므로 사용자 수정은 막음 --%>
                                             <label class="field-label" for="downloadMeterScope">검침 구분</label>
-                                            <select class="form-select" name="meterScope" id="downloadMeterScope">
+                                            <select class="form-select" id="downloadMeterScope" disabled>
                                                 <option value="ALL">전체</option>
                                                 <option value="COMPLEX">단지별</option>
                                                 <option value="FACILITY">시설별</option>
                                             </select>
+                                            <%-- 비활성 select는 form 제출에서 제외되므로 hidden으로 실제 값을 전송함 --%>
+                                            <input type="hidden" name="meterScope" id="downloadMeterScopeHidden">
                                         </div>
-                                        <div class="form-field">
-                                            <label class="field-label" for="downloadUtilityProviderNo">업체</label>
-                                            <select class="form-select" name="utilityProviderNo" id="downloadUtilityProviderNo">
-                                                <option value="">전체</option>
-                                                <c:forEach var="provider" items="${providerList}">
-                                                    <c:if test="${not empty provider.utilityProviderNo}">
-                                                        <option value="${provider.utilityProviderNo}" data-meter-ty-cd="${provider.meterTyCd}">
-                                                            <c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
-                                                        </option>
-                                                    </c:if>
-                                                </c:forEach>
-                                            </select>
-                                            <input type="hidden" name="meterTyCd" id="downloadMeterTyCd">
-                                        </div>
-                                    </div>
-                                    <div class="form-row cols-2">
                                         <div class="form-field">
                                             <label class="field-label" for="downloadMeterRsltCd">결과</label>
                                             <select class="form-select" name="meterRsltCd" id="downloadMeterRsltCd">
@@ -767,6 +779,33 @@
                                                     <option value="${code.codeNoCd}">${code.codeName}</option>
                                                 </c:forEach>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <%-- 업체는 옵션 라벨이 길어 한 줄을 통째로 차지하게 둠 --%>
+                                    <%-- 업체 목록은 검침 스코프별로 분리해서 렌더링하고 JS에서 보이기/숨김 처리함 --%>
+                                    <div class="form-row">
+                                        <div class="form-field">
+                                            <label class="field-label" for="downloadUtilityProviderNo">업체</label>
+                                            <select class="form-select" name="utilityProviderNo" id="downloadUtilityProviderNo">
+                                                <option value="" data-scope="ANY">전체</option>
+                                                <%-- 단지별 검침에 실제 사용 이력이 있는 업체 --%>
+                                                <c:forEach var="provider" items="${complexProviderList}">
+                                                    <c:if test="${not empty provider.utilityProviderNo}">
+                                                        <option value="${provider.utilityProviderNo}" data-meter-ty-cd="${provider.meterTyCd}" data-scope="COMPLEX">
+                                                            <c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
+                                                        </option>
+                                                    </c:if>
+                                                </c:forEach>
+                                                <%-- 시설 검침에 실제 사용 이력이 있는 업체 --%>
+                                                <c:forEach var="provider" items="${facilityProviderList}">
+                                                    <c:if test="${not empty provider.utilityProviderNo}">
+                                                        <option value="${provider.utilityProviderNo}" data-meter-ty-cd="${provider.meterTyCd}" data-scope="FACILITY">
+                                                            <c:if test="${not empty provider.meterTyNm}">[${provider.meterTyNm}] </c:if>${provider.partnerNm}<c:if test="${not empty provider.contNm}"> / ${provider.contNm}</c:if>
+                                                        </option>
+                                                    </c:if>
+                                                </c:forEach>
+                                            </select>
+                                            <input type="hidden" name="meterTyCd" id="downloadMeterTyCd">
                                         </div>
                                     </div>
                                     <%-- 기간 방식 선택 --%>
@@ -793,24 +832,113 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <%-- 추가 필터: 검침유형 다중선택 + 동/호 범위(단지) + 검침값 범위 --%>
+                                <div class="form-section">
+                                    <div class="form-section-title">
+                                        <span class="material-symbols-rounded">tune</span>추가 필터 (선택)
+                                    </div>
                                     <div class="form-row">
+                                        <div class="form-field">
+                                            <label class="field-label">검침유형</label>
+                                            <div class="meter-ty-checkbox-group">
+                                                <label class="meter-ty-check"><input type="checkbox" name="meterTyCdList" value="ELEC">전기</label>
+                                                <label class="meter-ty-check"><input type="checkbox" name="meterTyCdList" value="GAS">가스</label>
+                                                <label class="meter-ty-check"><input type="checkbox" name="meterTyCdList" value="WATER">수도</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%-- 동/호 범위: 단지별 검침일 때만 표시. 시설 검침은 동/호가 없음 --%>
+                                    <div class="form-row cols-2" id="downloadDongHoRow">
+                                        <div class="form-field">
+                                            <label class="field-label">동 범위</label>
+                                            <div class="date-range-inputs">
+                                                <input type="number" class="form-input" name="dongStart" id="downloadDongStart" placeholder="시작">
+                                                <span class="date-filter-sep">~</span>
+                                                <input type="number" class="form-input" name="dongEnd" id="downloadDongEnd" placeholder="끝">
+                                            </div>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="field-label">호 범위</label>
+                                            <div class="date-range-inputs">
+                                                <input type="number" class="form-input" name="hoStart" id="downloadHoStart" placeholder="시작">
+                                                <span class="date-filter-sep">~</span>
+                                                <input type="number" class="form-input" name="hoEnd" id="downloadHoEnd" placeholder="끝">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row cols-2">
+                                        <div class="form-field">
+                                            <label class="field-label">이전값 범위</label>
+                                            <div class="date-range-inputs">
+                                                <input type="number" step="any" class="form-input" name="preValStart" id="downloadPreValStart" placeholder="시작">
+                                                <span class="date-filter-sep">~</span>
+                                                <input type="number" step="any" class="form-input" name="preValEnd" id="downloadPreValEnd" placeholder="끝">
+                                            </div>
+                                        </div>
+                                        <div class="form-field">
+                                            <label class="field-label">현재값 범위</label>
+                                            <div class="date-range-inputs">
+                                                <input type="number" step="any" class="form-input" name="currValStart" id="downloadCurrValStart" placeholder="시작">
+                                                <span class="date-filter-sep">~</span>
+                                                <input type="number" step="any" class="form-input" name="currValEnd" id="downloadCurrValEnd" placeholder="끝">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-field">
+                                            <label class="field-label">사용량 범위 (현재값 - 이전값)</label>
+                                            <div class="date-range-inputs">
+                                                <input type="number" step="any" class="form-input" name="usageValStart" id="downloadUsageValStart" placeholder="시작">
+                                                <span class="date-filter-sep">~</span>
+                                                <input type="number" step="any" class="form-input" name="usageValEnd" id="downloadUsageValEnd" placeholder="끝">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%-- 모든 필터 입력 끝 → 검색어 + 조건 확인 (이 줄을 누르면 위의 모든 조건이 반영된 미리보기가 아래에 표시됨) --%>
+                                    <div class="form-row cols-2">
                                         <div class="form-field">
                                             <label class="field-label" for="downloadKeyword">검색어</label>
                                             <input type="text" class="form-input" name="keyword" id="downloadKeyword" placeholder="검침번호, 동/호, 시설명, 시설번호, 업체명">
                                         </div>
+                                        <div class="form-field">
+                                            <label class="field-label">&nbsp;</label>
+                                            <button type="button" class="btn btn-primary" id="downloadCheckBtn">
+                                                <span class="material-symbols-rounded">search_check</span>조건 확인
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <%-- 다운로드 조건 확인 결과 --%>
+                                <%-- 다운로드 조건 확인 결과: 건수 + 상위 3행 샘플 미리보기 --%>
                                 <input type="hidden" id="downloadCheckPassed" value="">
-                                <div class="preview-box visible" id="downloadCheckBox">
-                                    <div class="preview-msg" id="downloadCheckMessage">다운로드 전 조건 확인이 필요합니다.</div>
+                                <div class="csv-preview-box visible" id="downloadCheckBox">
+                                    <div class="csv-preview-head">
+                                        <span class="material-symbols-rounded">preview</span>다운로드 미리보기
+                                    </div>
+                                    <div class="csv-preview-body">
+                                        <div class="csv-preview-grid" id="downloadPreviewSummary"></div>
+                                        <div class="preview-table-wrap" id="downloadPreviewTableWrap" style="display:none;">
+                                            <table class="preview-table">
+                                                <thead>
+                                                <tr>
+                                                    <th>구분</th>
+                                                    <th>검침유형</th>
+                                                    <th>검침일자</th>
+                                                    <th>동/호</th>
+                                                    <th>시설명</th>
+                                                    <th>사용량</th>
+                                                    <th>결과</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="downloadPreviewRows"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="preview-msg" id="downloadCheckMessage">조건 확인을 누르면 상위 3건의 샘플과 총 다운로드 건수를 보여드립니다.</div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn js-modal-close" data-modal-id="meterDownloadModal">취소</button>
-                                <button type="button" class="btn" id="downloadCheckBtn">
-                                    <span class="material-symbols-rounded">search_check</span>조건 확인
-                                </button>
                                 <button type="submit" class="btn btn-primary">
                                     <span class="material-symbols-rounded">download</span>다운로드
                                 </button>
@@ -1018,17 +1146,124 @@
         function setDownloadValue(id, value) {
             var el = document.getElementById(id);
             if (el) el.value = value || '';
+            // 검침 구분은 select가 disabled라 form 제출에서 제외되므로 hidden mirror도 같이 업데이트함
+            var mirror = document.getElementById(id + 'Hidden');
+            if (mirror) mirror.value = value || '';
         }
 
         /* 다운로드 조건 확인 상태 초기화 */
         function resetDownloadCheck() {
             var passed = document.getElementById('downloadCheckPassed');
             var msg = document.getElementById('downloadCheckMessage');
+            var summary = document.getElementById('downloadPreviewSummary');
+            var tableWrap = document.getElementById('downloadPreviewTableWrap');
+            var rows = document.getElementById('downloadPreviewRows');
+
             if (passed) passed.value = '';
+            if (summary) summary.innerHTML = '';
+            if (rows) rows.innerHTML = '';
+            if (tableWrap) tableWrap.style.display = 'none';
             if (msg) {
                 msg.className = 'preview-msg';
-                msg.textContent = '다운로드 전 조건 확인이 필요합니다.';
+                msg.textContent = '조건 확인을 누르면 상위 3건의 샘플과 총 다운로드 건수를 보여드립니다.';
             }
+        }
+
+        /* 검침 구분 코드 표시명 */
+        function scopeLabel(code) {
+            if (code === 'COMPLEX') return '단지별';
+            if (code === 'FACILITY') return '시설별';
+            return '전체';
+        }
+
+        /* 범위 [시작~끝] 문자열, 둘 다 비어있으면 빈 문자열 반환 */
+        function rangeText(startId, endId, suffix) {
+            var s = readVal(startId);
+            var e = readVal(endId);
+            if (!s && !e) return '';
+            return (s || '-') + ' ~ ' + (e || '-') + (suffix || '');
+        }
+
+        /* 다운로드 조건 요약 그리드 렌더링 */
+        function renderDownloadSummary(result) {
+            var summary = document.getElementById('downloadPreviewSummary');
+            if (!summary) return;
+
+            var scope = scopeLabel(document.getElementById('downloadMeterScope').value);
+            var providerSel = document.getElementById('downloadUtilityProviderNo');
+            var providerText = providerSel.options[providerSel.selectedIndex].textContent.trim() || '전체';
+            var periodType = document.getElementById('downloadPeriodType').value;
+            var periodText;
+            if (periodType === 'MONTH') {
+                periodText = document.getElementById('downloadMonth').value || '-';
+            } else {
+                periodText = (document.getElementById('downloadStartDt').value || '-') + ' ~ ' + (document.getElementById('downloadEndDt').value || '-');
+            }
+            var keyword = document.getElementById('downloadKeyword').value || '-';
+
+            // 모달의 검침유형 체크박스에서 선택된 유형명 추출
+            var meterTyCdNames = { ELEC: '전기', GAS: '가스', WATER: '수도' };
+            var checkedTypes = [];
+            document.querySelectorAll('#meterDownloadForm input[type="checkbox"][name="meterTyCdList"]:checked').forEach(function (cb) {
+                if (meterTyCdNames[cb.value]) checkedTypes.push(meterTyCdNames[cb.value]);
+            });
+            var meterTyText = checkedTypes.length > 0 ? checkedTypes.join(', ') : '전체';
+
+            // 적용된 추가 필터 모음 (비어 있으면 행 자체를 표시 안 함)
+            var extraFilters = [];
+            var dongText = rangeText('downloadDongStart', 'downloadDongEnd', '동');
+            if (dongText) extraFilters.push('동: ' + dongText);
+            var hoText = rangeText('downloadHoStart', 'downloadHoEnd', '호');
+            if (hoText) extraFilters.push('호: ' + hoText);
+            var preText = rangeText('downloadPreValStart', 'downloadPreValEnd');
+            if (preText) extraFilters.push('이전값: ' + preText);
+            var currText = rangeText('downloadCurrValStart', 'downloadCurrValEnd');
+            if (currText) extraFilters.push('현재값: ' + currText);
+            var usageText = rangeText('downloadUsageValStart', 'downloadUsageValEnd');
+            if (usageText) extraFilters.push('사용량: ' + usageText);
+
+            var html = ''
+                + '<div class="csv-preview-label">파일명</div><div class="csv-preview-value">' + escapeHtml(result.filename || '-') + '</div>'
+                + '<div class="csv-preview-label">대상 건수</div><div class="csv-preview-value"><strong>' + escapeHtml(String(result.count || 0)) + '</strong>건</div>'
+                + '<div class="csv-preview-label">검침 구분</div><div class="csv-preview-value">' + escapeHtml(scope) + '</div>'
+                + '<div class="csv-preview-label">업체</div><div class="csv-preview-value">' + escapeHtml(providerText) + '</div>'
+                + '<div class="csv-preview-label">검침유형</div><div class="csv-preview-value">' + escapeHtml(meterTyText) + '</div>'
+                + '<div class="csv-preview-label">기간</div><div class="csv-preview-value">' + escapeHtml(periodText) + '</div>'
+                + '<div class="csv-preview-label">검색어</div><div class="csv-preview-value">' + escapeHtml(keyword) + '</div>';
+            if (extraFilters.length > 0) {
+                html += '<div class="csv-preview-label">추가 필터</div><div class="csv-preview-value">' + escapeHtml(extraFilters.join(' / ')) + '</div>';
+            }
+            summary.innerHTML = html;
+        }
+
+        /* 다운로드 샘플 3행 렌더링 */
+        function renderDownloadSampleRows(sampleRows) {
+            var tableWrap = document.getElementById('downloadPreviewTableWrap');
+            var rows = document.getElementById('downloadPreviewRows');
+            if (!rows || !tableWrap) return;
+
+            rows.innerHTML = '';
+            if (!sampleRows || sampleRows.length === 0) {
+                tableWrap.style.display = 'none';
+                return;
+            }
+
+            sampleRows.forEach(function (r) {
+                var scopeText = scopeLabel(r.meterScope);
+                // 동/호 표시값이 없으면 시설 검침이므로 '-' 처리
+                var hoText = r.hoDisp ? r.hoDisp : '-';
+                var tr = document.createElement('tr');
+                tr.innerHTML = ''
+                    + '<td>' + escapeHtml(scopeText) + '</td>'
+                    + '<td>' + escapeHtml(r.meterTyNm || '-') + '</td>'
+                    + '<td>' + escapeHtml(r.meterDt || '-') + '</td>'
+                    + '<td>' + escapeHtml(hoText) + '</td>'
+                    + '<td>' + escapeHtml(r.facilityNm || '-') + '</td>'
+                    + '<td>' + escapeHtml(r.usageVal || '-') + '</td>'
+                    + '<td>' + escapeHtml(r.meterRsltNm || '-') + '</td>';
+                rows.appendChild(tr);
+            });
+            tableWrap.style.display = '';
         }
 
         /* 선택 업체 기준 검침유형 동기화 */
@@ -1040,30 +1275,76 @@
             meterTy.value = selected ? (selected.getAttribute('data-meter-ty-cd') || '') : '';
         }
 
-        /* 현재 탭 검색조건 기반 다운로드 조건 복사 */
+        /* 검침 스코프에 맞춰 업체 옵션 보이기/숨기기 (다운로드 모달 전용) */
+        function filterProviderOptionsByScope(scope) {
+            var select = document.getElementById('downloadUtilityProviderNo');
+            if (!select) return;
+            var hasCurrent = false;
+            for (var i = 0; i < select.options.length; i++) {
+                var opt = select.options[i];
+                var optScope = opt.getAttribute('data-scope') || '';
+                // ANY('전체') 또는 현재 스코프와 일치하는 옵션만 노출함
+                var visible = (optScope === 'ANY' || optScope === scope);
+                opt.hidden = !visible;
+                opt.disabled = !visible;
+                if (visible && opt.value === select.value) hasCurrent = true;
+            }
+            // 현재 선택값이 숨겨졌다면 '전체'로 되돌림
+            if (!hasCurrent) select.value = '';
+        }
+
+        /* id 도우미: 인풋 값을 안전하게 읽음 */
+        function readVal(id) {
+            var el = document.getElementById(id);
+            return el ? el.value : '';
+        }
+
+        /* 모달 안의 추가 필터(검침유형 체크박스 + 동/호/검침값 범위)를 초기화 */
+        function resetDownloadExtraFilters() {
+            // 검침유형 체크박스 전부 해제
+            document.querySelectorAll('#meterDownloadForm input[type="checkbox"][name="meterTyCdList"]').forEach(function (cb) { cb.checked = false; });
+            // 범위 인풋 전부 비움
+            ['downloadDongStart','downloadDongEnd','downloadHoStart','downloadHoEnd',
+             'downloadPreValStart','downloadPreValEnd','downloadCurrValStart','downloadCurrValEnd',
+             'downloadUsageValStart','downloadUsageValEnd'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+        }
+
+        /* 동/호 범위 줄은 단지별 검침일 때만 보임. 시설 검침은 동/호 의미 없음 */
+        function toggleDongHoRow(scope) {
+            var row = document.getElementById('downloadDongHoRow');
+            if (!row) return;
+            row.style.display = (scope === 'COMPLEX') ? '' : 'none';
+        }
+
+        /* 현재 탭 검색조건 기반 다운로드 조건 복사 (기본 필터만, 추가 필터는 모달에서 직접 입력) */
         function applyDownloadDefaults(defaultScope) {
-            setDownloadValue('downloadMeterScope', defaultScope || 'ALL');
+            var scope = defaultScope || 'ALL';
+            setDownloadValue('downloadMeterScope', scope);
             setDownloadValue('downloadPeriodType', 'MONTH');
             resetDownloadCheck();
+            resetDownloadExtraFilters();
+            toggleDongHoRow(scope);
 
             if (defaultScope === 'COMPLEX') {
-                setDownloadValue('downloadUtilityProviderNo', document.getElementById('complexUtilityProviderNo') && document.getElementById('complexUtilityProviderNo').value);
-                syncDownloadProviderMeterType();
-                setDownloadValue('downloadMeterRsltCd', document.getElementById('complexMeterRsltCd') && document.getElementById('complexMeterRsltCd').value);
-                setDownloadValue('downloadStartDt', document.getElementById('complexStartDt') && document.getElementById('complexStartDt').value);
-                setDownloadValue('downloadEndDt', document.getElementById('complexEndDt') && document.getElementById('complexEndDt').value);
-                setDownloadValue('downloadKeyword', document.getElementById('complexKeyword') && document.getElementById('complexKeyword').value);
-                setDownloadMonthFromRange();
-                toggleDownloadPeriodFields();
-                return;
+                setDownloadValue('downloadUtilityProviderNo', readVal('complexUtilityProviderNo'));
+                setDownloadValue('downloadMeterRsltCd', readVal('complexMeterRsltCd'));
+                setDownloadValue('downloadStartDt', readVal('complexStartDt'));
+                setDownloadValue('downloadEndDt', readVal('complexEndDt'));
+                setDownloadValue('downloadKeyword', readVal('complexKeyword'));
+            } else {
+                setDownloadValue('downloadUtilityProviderNo', readVal('filterUtilityProviderNo'));
+                setDownloadValue('downloadMeterRsltCd', readVal('filterMeterRsltCd'));
+                setDownloadValue('downloadStartDt', readVal('filterStartDt'));
+                setDownloadValue('downloadEndDt', readVal('filterEndDt'));
+                setDownloadValue('downloadKeyword', readVal('filterKeyword'));
             }
 
-            setDownloadValue('downloadUtilityProviderNo', document.getElementById('filterUtilityProviderNo') && document.getElementById('filterUtilityProviderNo').value);
+            // 값 세팅이 끝난 뒤 스코프 필터링을 돌려야 숨겨진 옵션이 선택된 상태가 남지 않음
+            filterProviderOptionsByScope(scope);
             syncDownloadProviderMeterType();
-            setDownloadValue('downloadMeterRsltCd', document.getElementById('filterMeterRsltCd') && document.getElementById('filterMeterRsltCd').value);
-            setDownloadValue('downloadStartDt', document.getElementById('filterStartDt') && document.getElementById('filterStartDt').value);
-            setDownloadValue('downloadEndDt', document.getElementById('filterEndDt') && document.getElementById('filterEndDt').value);
-            setDownloadValue('downloadKeyword', document.getElementById('filterKeyword') && document.getElementById('filterKeyword').value);
             setDownloadMonthFromRange();
             toggleDownloadPeriodFields();
         }
@@ -1108,16 +1389,23 @@
             setDownloadValue('downloadEndDt', month.value + '-' + String(lastDay).padStart(2, '0'));
         }
 
-        /* 다운로드 조건 기준 검침 건수 확인 */
+        /* 다운로드 조건 기준 검침 건수 확인 + 상위 3행 미리보기 */
         function checkDownloadCondition() {
             var form = document.getElementById('meterDownloadForm');
             var passed = document.getElementById('downloadCheckPassed');
             var msg = document.getElementById('downloadCheckMessage');
+            var summary = document.getElementById('downloadPreviewSummary');
+            var tableWrap = document.getElementById('downloadPreviewTableWrap');
+            var rows = document.getElementById('downloadPreviewRows');
             if (!form || !msg) return;
 
             applyMonthDownloadRange();
             syncDownloadProviderMeterType();
             if (passed) passed.value = '';
+            // 이전 응답 잔여 표시 정리
+            if (summary) summary.innerHTML = '';
+            if (rows) rows.innerHTML = '';
+            if (tableWrap) tableWrap.style.display = 'none';
             msg.className = 'preview-msg';
             msg.textContent = '조건 확인 중입니다.';
 
@@ -1131,8 +1419,10 @@
                     var count = Number(result.count || 0);
                     if (result.success && count > 0) {
                         if (passed) passed.value = 'Y';
+                        renderDownloadSummary(result);
+                        renderDownloadSampleRows(result.sampleRows);
                         msg.className = 'preview-msg success';
-                        msg.textContent = count + '건의 검침 이력이 확인되었습니다.';
+                        msg.textContent = '총 ' + count + '건이 다운로드됩니다. 위 3건은 실제 CSV 내용 샘플입니다.';
                         return;
                     }
                     msg.className = 'preview-msg error';
@@ -1306,10 +1596,15 @@
             var form = document.getElementById(formId);
             var fileInput = document.getElementById(fileId);
             var previewBtn = document.getElementById(prefix + 'PreviewBtn');
+            var submitBtn = document.getElementById(prefix + 'UploadSubmitBtn');
+            var uploading = false;
 
             if (!form || !fileInput || !previewBtn) return;
 
-            fileInput.addEventListener('change', function () { resetPreview(prefix); });
+            fileInput.addEventListener('change', function () {
+                uploading = false;
+                resetPreview(prefix);
+            });
 
             previewBtn.addEventListener('click', function () {
                 resetPreview(prefix);
@@ -1350,15 +1645,61 @@
 
             form.addEventListener('submit', function (e) {
                 var hidden = document.getElementById(prefix + 'MatchedUtilityProviderNo');
+                if (uploading) {
+                    e.preventDefault();
+                    return;
+                }
                 if (!hidden || !hidden.value) {
                     e.preventDefault();
                     showPreviewError(prefix, 'CSV 확인을 먼저 완료해주세요.');
+                    return;
                 }
+
+                uploading = true;
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="upload-spinner"></span>업로드중입니다...';
+                }
+                previewBtn.disabled = true;
+                fileInput.readOnly = true;
             });
         }
 
         bindCsvPreview('complex', 'complexMeterCsvUploadForm', 'complexCsvFile', 'COMPLEX');
         bindCsvPreview('facility', 'facilityMeterCsvUploadForm', 'facilityCsvFile', 'FACILITY');
+
+        /* ============================================================
+           목록 정렬
+        ============================================================ */
+        function initMeterSortHeaders() {
+            var currentField = '${meterSortField}';
+            var currentDir = '${meterSortDir}';
+            var activeScope = '${activeMeterScope}';
+
+            document.querySelectorAll('.js-sort-btn').forEach(function (btn) {
+                var field = btn.getAttribute('data-sort-field');
+                var icon = btn.querySelector('.sort-icon');
+
+                if (field === currentField) {
+                    btn.classList.add('active');
+                    if (icon) icon.textContent = currentDir === 'ASC' ? '▲' : '▼';
+                } else if (icon) {
+                    icon.textContent = '↕';
+                }
+
+                btn.addEventListener('click', function () {
+                    var nextDir = field === currentField && currentDir === 'ASC' ? 'DESC' : 'ASC';
+                    var params = new URLSearchParams(location.search);
+                    params.set('meterScope', activeScope);
+                    params.set('sortField', field);
+                    params.set('sortDir', nextDir);
+                    params.set('page', '1');
+                    location.href = ctx + '/manager/meter/hstry/' + mgmtOfcNo + '?' + params.toString();
+                });
+            });
+        }
+
+        initMeterSortHeaders();
 
         /* ============================================================
            날짜/값 표시 유틸
@@ -1560,25 +1901,30 @@
            페이지네이션
         ============================================================ */
         function initMeterPagination(targetName) {
-            var pageSize = 10;
-            var currentPage = 1;
-            var rows = Array.prototype.slice.call(document.querySelectorAll('.js-page-row[data-page-target="' + targetName + '"]'));
             var pagination = document.getElementById(targetName + 'Pagination');
             var paginationInfo = document.getElementById(targetName + 'PaginationInfo');
             var paginationWrap = document.querySelector('[data-pagination-target="' + targetName + '"]');
-            var totalCount = rows.length;
+            var pageSize = Number(paginationWrap && paginationWrap.getAttribute('data-page-size')) || 10;
+            var currentPage = Number(paginationWrap && paginationWrap.getAttribute('data-current-page')) || 1;
+            var totalCount = Number(paginationWrap && paginationWrap.getAttribute('data-total-count')) || 0;
             var totalPage = Math.ceil(totalCount / pageSize);
+            var scope = paginationWrap ? paginationWrap.getAttribute('data-scope') : '';
 
             if (!pagination || !paginationInfo || !paginationWrap) return;
 
             if (totalCount === 0) { paginationWrap.style.display = 'none'; return; }
             paginationWrap.style.display = 'flex';
 
-            function renderRows() {
-                var s = (currentPage - 1) * pageSize;
-                var e = s + pageSize;
-                rows.forEach(function (r, i) { r.style.display = (i >= s && i < e) ? '' : 'none'; });
+            function renderInfo() {
                 paginationInfo.textContent = '총 ' + totalCount + '건 · ' + currentPage + ' / ' + totalPage + '페이지';
+            }
+
+            function movePage(pageNo) {
+                var params = new URLSearchParams(location.search);
+                params.set('meterScope', scope);
+                params.set('page', String(pageNo));
+                params.set('pageSize', String(pageSize));
+                location.href = ctx + '/manager/meter/hstry/' + mgmtOfcNo + '?' + params.toString();
             }
 
             function createBtn(label, pageNo, disabled, active) {
@@ -1587,12 +1933,12 @@
                 b.className = 'page-btn' + ((label === '이전' || label === '다음') ? ' page-btn-nav' : '') + (active ? ' active' : '');
                 b.textContent = label;
                 b.disabled = disabled;
-                b.addEventListener('click', function () { currentPage = pageNo; render(); });
+                b.addEventListener('click', function () { movePage(pageNo); });
                 return b;
             }
 
             function render() {
-                renderRows();
+                renderInfo();
                 pagination.innerHTML = '';
                 pagination.appendChild(createBtn('이전', Math.max(1, currentPage - 1), currentPage === 1, false));
                 var sp = Math.max(1, currentPage - 2);
@@ -1612,8 +1958,12 @@
            - 선택한 탭만 유지하고 기본 목록으로 다시 조회
         ============================================================ */
         function moveMeterTab(scope) {
-            var url = ctx + '/manager/meter/hstry/' + mgmtOfcNo + '?meterScope=' + encodeURIComponent(scope);
-            location.href = url;
+            var current = new URLSearchParams(location.search);
+            var params = new URLSearchParams();
+            params.set('meterScope', scope);
+            params.set('page', '1');
+            if (current.get('partnerNo')) params.set('partnerNo', current.get('partnerNo'));
+            location.href = ctx + '/manager/meter/hstry/' + mgmtOfcNo + '?' + params.toString();
         }
 
         var complexTabLabel = document.querySelector('label[for="meterTabComplex"]');
@@ -1621,7 +1971,7 @@
 
         if (complexTabLabel) {
             complexTabLabel.addEventListener('click', function (e) {
-                if (new URLSearchParams(location.search).get('partnerNo')) {
+                if ('${activeMeterScope}' !== 'COMPLEX') {
                     e.preventDefault();
                     moveMeterTab('COMPLEX');
                 }
@@ -1630,7 +1980,7 @@
 
         if (facilityTabLabel) {
             facilityTabLabel.addEventListener('click', function (e) {
-                if (new URLSearchParams(location.search).get('partnerNo')) {
+                if ('${activeMeterScope}' !== 'FACILITY') {
                     e.preventDefault();
                     moveMeterTab('FACILITY');
                 }

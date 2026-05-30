@@ -9,8 +9,21 @@
         where mgmt_ofc_no = #{mgmtOfcNo}
     </select>
 
+    <!-- 아파트단지번호로 단지명 조회 (CSV 파일명 표시용) -->
+    <select id="selectAptCmplexNmByAptCmplexNo" parameterType="string" resultType="string">
+        select apt_cmplex_nm
+        from apt_complex
+        where apt_cmplex_no = #{aptCmplexNo}
+    </select>
+
     <!-- 검침 이력 목록 조회 -->
     <select id="selectMeterHstryList" parameterType="map" resultType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterHstryVO">
+        <if test="pageSize != null and pageSize &gt; 0">
+            select *
+            from (
+            select paged_meter_hstry.*, rownum rn
+            from (
+        </if>
         select mh.meter_hstry_no
         , mh.facility_no
         , f.facility_nm
@@ -63,8 +76,12 @@
         <if test="partnerNo != null and partnerNo != ''">
             and up.partner_no = #{partnerNo}
         </if>
-        <if test="meterTyCd != null and meterTyCd != ''">
-            and mh.meter_ty_cd = #{meterTyCd}
+        <!-- 검침유형 다중 선택: 비어 있으면 전체 -->
+        <if test="meterTyCdList != null and meterTyCdList.size() > 0">
+            and mh.meter_ty_cd in
+            <foreach collection="meterTyCdList" item="cd" open="(" close=")" separator=",">
+                #{cd}
+            </foreach>
         </if>
         <if test="meterRsltCd != null and meterRsltCd != ''">
             and mh.meter_rslt_cd = #{meterRsltCd}
@@ -75,7 +92,57 @@
         <if test="endDt != null and endDt != ''">
             and mh.meter_dt &lt; to_date(#{endDt}, 'yyyy-mm-dd') + 1
         </if>
+        <!--
+          동/호 범위: ho_no는 'APTCMPLX_DONG_HO' 형태라 split해서 숫자 부분만 비교
+          - 숫자가 아닌 값(B1 등)은 case-when에서 NULL이 되어 자동 제외됨
+          - 시설 검침 등 ho_no가 NULL인 행도 NULL 비교로 제외됨
+        -->
+        <if test="dongStart != null and dongStart != ''">
+            and (case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 2), '^[0-9]+$')
+                      then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 2))
+                      else null end) &gt;= to_number(#{dongStart})
+        </if>
+        <if test="dongEnd != null and dongEnd != ''">
+            and (case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 2), '^[0-9]+$')
+                      then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 2))
+                      else null end) &lt;= to_number(#{dongEnd})
+        </if>
+        <if test="hoStart != null and hoStart != ''">
+            and (case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 3), '^[0-9]+$')
+                      then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 3))
+                      else null end) &gt;= to_number(#{hoStart})
+        </if>
+        <if test="hoEnd != null and hoEnd != ''">
+            and (case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 3), '^[0-9]+$')
+                      then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 3))
+                      else null end) &lt;= to_number(#{hoEnd})
+        </if>
+        <!-- 검침값 범위 (이전값/현재값/사용량) -->
+        <if test="preValStart != null and preValStart != ''">
+            and mh.pre_val &gt;= to_number(#{preValStart})
+        </if>
+        <if test="preValEnd != null and preValEnd != ''">
+            and mh.pre_val &lt;= to_number(#{preValEnd})
+        </if>
+        <if test="currValStart != null and currValStart != ''">
+            and mh.curr_val &gt;= to_number(#{currValStart})
+        </if>
+        <if test="currValEnd != null and currValEnd != ''">
+            and mh.curr_val &lt;= to_number(#{currValEnd})
+        </if>
+        <if test="usageValStart != null and usageValStart != ''">
+            and (mh.curr_val - mh.pre_val) &gt;= to_number(#{usageValStart})
+        </if>
+        <if test="usageValEnd != null and usageValEnd != ''">
+            and (mh.curr_val - mh.pre_val) &lt;= to_number(#{usageValEnd})
+        </if>
         <!-- 검색어 조건 -->
+        <if test="uploadedFrom != null and uploadedFrom != ''">
+            and mh.reg_dt &gt;= to_date(#{uploadedFrom}, 'yyyy-mm-dd hh24:mi:ss')
+        </if>
+        <if test="uploadedTo != null and uploadedTo != ''">
+            and mh.reg_dt &lt;= to_date(#{uploadedTo}, 'yyyy-mm-dd hh24:mi:ss')
+        </if>
         <if test="keyword != null and keyword != ''">
             <choose>
                 <!-- 전체 검침 검색 조건 -->
@@ -125,8 +192,65 @@
                 </otherwise>
             </choose>
         </if>
-        order by mh.meter_dt desc
-        , mh.meter_hstry_no desc
+        <choose>
+            <when test="sortField == 'METER_DT' and sortDir == 'ASC'">
+                order by mh.meter_dt asc nulls last, mh.meter_hstry_no desc
+            </when>
+            <when test="sortField == 'HO_NO' and sortDir == 'ASC'">
+                order by
+                case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 2), '^[0-9]+$')
+                     then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 2))
+                     else null end asc nulls last,
+                case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 3), '^[0-9]+$')
+                     then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 3))
+                     else null end asc nulls last,
+                mh.meter_dt desc, mh.meter_hstry_no desc
+            </when>
+            <when test="sortField == 'HO_NO' and sortDir == 'DESC'">
+                order by
+                case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 2), '^[0-9]+$')
+                     then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 2))
+                     else null end desc nulls last,
+                case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 3), '^[0-9]+$')
+                     then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 3))
+                     else null end desc nulls last,
+                mh.meter_dt desc, mh.meter_hstry_no desc
+            </when>
+            <when test="sortField == 'PRE_VAL' and sortDir == 'ASC'">
+                order by mh.pre_val asc nulls last, mh.meter_dt desc, mh.meter_hstry_no desc
+            </when>
+            <when test="sortField == 'PRE_VAL' and sortDir == 'DESC'">
+                order by mh.pre_val desc nulls last, mh.meter_dt desc, mh.meter_hstry_no desc
+            </when>
+            <when test="sortField == 'CURR_VAL' and sortDir == 'ASC'">
+                order by mh.curr_val asc nulls last, mh.meter_dt desc, mh.meter_hstry_no desc
+            </when>
+            <when test="sortField == 'CURR_VAL' and sortDir == 'DESC'">
+                order by mh.curr_val desc nulls last, mh.meter_dt desc, mh.meter_hstry_no desc
+            </when>
+            <when test="sortField == 'USAGE_VAL' and sortDir == 'ASC'">
+                order by (mh.curr_val - mh.pre_val) asc nulls last, mh.meter_dt desc, mh.meter_hstry_no desc
+            </when>
+            <when test="sortField == 'USAGE_VAL' and sortDir == 'DESC'">
+                order by (mh.curr_val - mh.pre_val) desc nulls last, mh.meter_dt desc, mh.meter_hstry_no desc
+            </when>
+            <otherwise>
+                order by case mh.meter_ty_cd
+                when 'ELEC' then 1
+                when 'GAS' then 2
+                when 'WATER' then 3
+                else 9
+                end,
+                mh.meter_dt desc nulls last,
+                mh.meter_hstry_no desc
+            </otherwise>
+        </choose>
+        <if test="pageSize != null and pageSize &gt; 0">
+            ) paged_meter_hstry
+            where rownum &lt;= (#{offset} + #{pageSize})
+            )
+            where rn &gt; #{offset}
+        </if>
     </select>
 
     <!-- 검침 이력 조건 건수 조회 -->
@@ -149,8 +273,11 @@
         <if test="partnerNo != null and partnerNo != ''">
             and up.partner_no = #{partnerNo}
         </if>
-        <if test="meterTyCd != null and meterTyCd != ''">
-            and mh.meter_ty_cd = #{meterTyCd}
+        <if test="meterTyCdList != null and meterTyCdList.size() > 0">
+            and mh.meter_ty_cd in
+            <foreach collection="meterTyCdList" item="cd" open="(" close=")" separator=",">
+                #{cd}
+            </foreach>
         </if>
         <if test="meterRsltCd != null and meterRsltCd != ''">
             and mh.meter_rslt_cd = #{meterRsltCd}
@@ -160,6 +287,52 @@
         </if>
         <if test="endDt != null and endDt != ''">
             and mh.meter_dt &lt; to_date(#{endDt}, 'yyyy-mm-dd') + 1
+        </if>
+        <!-- 동/호 범위 (list와 동일 규칙) -->
+        <if test="dongStart != null and dongStart != ''">
+            and (case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 2), '^[0-9]+$')
+                      then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 2))
+                      else null end) &gt;= to_number(#{dongStart})
+        </if>
+        <if test="dongEnd != null and dongEnd != ''">
+            and (case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 2), '^[0-9]+$')
+                      then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 2))
+                      else null end) &lt;= to_number(#{dongEnd})
+        </if>
+        <if test="hoStart != null and hoStart != ''">
+            and (case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 3), '^[0-9]+$')
+                      then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 3))
+                      else null end) &gt;= to_number(#{hoStart})
+        </if>
+        <if test="hoEnd != null and hoEnd != ''">
+            and (case when regexp_like(regexp_substr(mh.ho_no, '[^_]+', 1, 3), '^[0-9]+$')
+                      then to_number(regexp_substr(mh.ho_no, '[^_]+', 1, 3))
+                      else null end) &lt;= to_number(#{hoEnd})
+        </if>
+        <!-- 검침값 범위 -->
+        <if test="preValStart != null and preValStart != ''">
+            and mh.pre_val &gt;= to_number(#{preValStart})
+        </if>
+        <if test="preValEnd != null and preValEnd != ''">
+            and mh.pre_val &lt;= to_number(#{preValEnd})
+        </if>
+        <if test="currValStart != null and currValStart != ''">
+            and mh.curr_val &gt;= to_number(#{currValStart})
+        </if>
+        <if test="currValEnd != null and currValEnd != ''">
+            and mh.curr_val &lt;= to_number(#{currValEnd})
+        </if>
+        <if test="usageValStart != null and usageValStart != ''">
+            and (mh.curr_val - mh.pre_val) &gt;= to_number(#{usageValStart})
+        </if>
+        <if test="usageValEnd != null and usageValEnd != ''">
+            and (mh.curr_val - mh.pre_val) &lt;= to_number(#{usageValEnd})
+        </if>
+        <if test="uploadedFrom != null and uploadedFrom != ''">
+            and mh.reg_dt &gt;= to_date(#{uploadedFrom}, 'yyyy-mm-dd hh24:mi:ss')
+        </if>
+        <if test="uploadedTo != null and uploadedTo != ''">
+            and mh.reg_dt &lt;= to_date(#{uploadedTo}, 'yyyy-mm-dd hh24:mi:ss')
         </if>
         <if test="keyword != null and keyword != ''">
             <choose>
@@ -233,6 +406,55 @@
         and up.cont_no is not null
         and fc.cont_stts_cd = 'ACTIVE'
         and up.meter_ty_cd is not null
+        order by case up.meter_ty_cd
+        when 'ELEC' then 1
+        when 'WATER' then 2
+        when 'GAS' then 3
+        when 'HEAT' then 4
+        else 9
+        end
+        , up.utility_provider_no
+    </select>
+
+    <!--
+      검침 스코프(COMPLEX/FACILITY)별 공급/검침 설정 목록 조회
+      - utility_provider 자체에는 스코프 컬럼이 없음
+      - 실제 사용 이력(meter_hstry.meter_scope) 기준으로 EXISTS 필터링
+      - 다운로드 모달에서만 사용함. 0건짜리는 어차피 받을 데이터가 없어 노출 의미가 없음
+    -->
+    <select id="selectUtilityProviderListByScope" parameterType="map" resultType="kr.or.ddit.domain.apt.mgmtOffice.meter.vo.UtilityProviderVO">
+        select up.utility_provider_no
+        , up.apt_cmplex_no
+        , up.partner_no
+        , up.csv_idntf_key
+        , up.ext_cust_no
+        , up.meter_ty_cd
+        , provider_meter_ty.code_name as meter_ty_nm
+        , up.cont_no
+        , up.rmrk_cn
+        , p.partner_nm
+        , fc.cont_nm
+        , fc.cont_cn
+        , to_char(fc.cont_bgng_dt, 'yyyy.mm.dd') as cont_bgng_dt
+        , to_char(fc.cont_end_dt,  'yyyy.mm.dd') as cont_end_dt
+        from utility_provider up
+        left join partner p
+        on up.partner_no = p.partner_no
+        left join facility_contract fc
+        on up.cont_no = fc.cont_no
+        left join common_code provider_meter_ty
+        on up.meter_ty_cd = provider_meter_ty.code_no_cd
+        and provider_meter_ty.group_code_no = 'METER_TY'
+        where up.apt_cmplex_no = #{aptCmplexNo}
+        and up.cont_no is not null
+        and fc.cont_stts_cd = 'ACTIVE'
+        and up.meter_ty_cd is not null
+        and exists (
+            select 1
+            from meter_hstry mh
+            where mh.utility_provider_no = up.utility_provider_no
+            and mh.meter_scope = #{meterScope}
+        )
         order by case up.meter_ty_cd
         when 'ELEC' then 1
         when 'WATER' then 2

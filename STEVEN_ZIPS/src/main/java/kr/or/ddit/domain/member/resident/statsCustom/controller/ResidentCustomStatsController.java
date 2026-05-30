@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('RESIDENT')")
+@PreAuthorize("hasAnyRole('RESIDENT', 'MNGR', 'ADMIN')")
 public class ResidentCustomStatsController {
 
     private final IResidentCustomStatsService residentCustomStatsService;
@@ -26,7 +26,7 @@ public class ResidentCustomStatsController {
      * 아파트통계 화면
      * 단지번호 포함 URL 진입 시 단지 공통 정보·단지번호 모델 주입 후 JSP 반환
      */
-    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/resident/stats/apartment/{aptCmplexNo}")
     public String aptStatsPage(
             @PathVariable String aptCmplexNo,
@@ -43,7 +43,7 @@ public class ResidentCustomStatsController {
      * 우리집맞춤통계 화면
      * 단지번호 포함 URL 진입 시 단지 공통 정보·단지번호 모델 주입 후 JSP 반환
      */
-    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/resident/stats/custom/{aptCmplexNo}")
     public String customStatsPage(
             @PathVariable String aptCmplexNo,
@@ -56,7 +56,7 @@ public class ResidentCustomStatsController {
         return "member/resident/stats_custom";
     }
 
-    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/resident/stats/custom/{aptCmplexNo}/data")
     @ResponseBody
     public ResidentCustomStatsResponseDTO customStatsData(

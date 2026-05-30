@@ -58,9 +58,12 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
     /** 업로드 실패 상태값 */
     private static final String UPLOAD_FAIL = "FAIL";
 
-    /** CSV 다운로드 헤더 */
+    /** CSV 다운로드 헤더 - ho_disp 는 "101동 1502호" 형태의 사람용 표시값 */
     private static final String CSV_HEADER =
-            "meter_hstry_no,meter_scope,meter_ty_cd,meter_ty_nm,meter_dt,facility_no,facility_nm,ho_no,pre_val,curr_val,usage_val,meter_rslt_cd,meter_rslt_nm,partner_nm,meter_cn";
+            "meter_hstry_no,meter_scope,meter_ty_cd,meter_ty_nm,meter_dt,facility_no,facility_nm,ho_no,ho_disp,pre_val,curr_val,usage_val,meter_rslt_cd,meter_rslt_nm,partner_nm,meter_cn";
+
+    /** 미리보기에 내려줄 샘플 행 수 */
+    private static final int DOWNLOAD_PREVIEW_LIMIT = 3;
 
     /**
      * 검침 이력 목록 조회
@@ -76,6 +79,14 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
 
         // 검침 이력 목록 조회
         return meterHstryMapper.selectMeterHstryList(paramMap);
+    }
+
+    @Override
+    public int selectMeterHstryCount(Map<String, Object> paramMap) {
+        String mgmtOfcNo = String.valueOf(paramMap.get("mgmtOfcNo"));
+        String aptCmplexNo = meterHstryMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
+        paramMap.put("aptCmplexNo", aptCmplexNo);
+        return meterHstryMapper.selectMeterHstryCount(paramMap);
     }
 
     /**
@@ -98,6 +109,96 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
     }
 
     /**
+     * 다운로드 조건 기준 미리보기
+     * - 건수 + 상위 N건의 샘플 행을 모달에 그대로 그려줄 수 있게 포맷팅하여 반환
+     * - ho_no는 "101동 1502호" 형태로 분리해서 사용자가 다운로드 결과를 짐작할 수 있게 함
+     */
+    @Override
+    public Map<String, Object> previewDownloadMeter(String mgmtOfcNo, Map<String, Object> paramMap) {
+        Map<String, Object> downloadParamMap = buildDownloadParamMap(mgmtOfcNo, paramMap);
+
+        int count = meterHstryMapper.selectMeterHstryCount(downloadParamMap);
+
+        // 건수가 0이면 굳이 목록을 조회하지 않음
+        List<Map<String, Object>> sampleRows = new ArrayList<>();
+        if (count > 0) {
+            List<MeterHstryVO> meterList = meterHstryMapper.selectMeterHstryList(downloadParamMap);
+            int limit = Math.min(meterList.size(), DOWNLOAD_PREVIEW_LIMIT);
+            for (int i = 0; i < limit; i++) {
+                sampleRows.add(toPreviewRow(meterList.get(i)));
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("count", count);
+        result.put("sampleRows", sampleRows);
+        result.put("filename", buildDownloadFilename(mgmtOfcNo));
+        return result;
+    }
+
+    /**
+     * CSV 파일명 생성
+     * - 단지명 + 시각으로 어느 단지 데이터인지 파일명만으로 식별 가능하게 함
+     * - 파일시스템에서 문제되는 문자는 _ 로 치환함
+     */
+    @Override
+    public String buildDownloadFilename(String mgmtOfcNo) {
+        String aptCmplexNo = meterHstryMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
+        String aptCmplexNm = StringUtils.hasText(aptCmplexNo)
+                ? meterHstryMapper.selectAptCmplexNmByAptCmplexNo(aptCmplexNo)
+                : null;
+
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        if (!StringUtils.hasText(aptCmplexNm)) {
+            return "검침이력_" + timestamp + ".csv";
+        }
+
+        // 파일명에 쓸 수 없는 문자 치환
+        String safeName = aptCmplexNm.replaceAll("[\\\\/:*?\"<>|]", "_").trim();
+        return "검침이력_" + safeName + "_" + timestamp + ".csv";
+    }
+
+    /**
+     * 미리보기 한 행 구성
+     * - 화면에서 그대로 표시할 수 있게 ho_disp, usage_val 등 가공된 값까지 같이 내림
+     */
+    private Map<String, Object> toPreviewRow(MeterHstryVO meter) {
+        Map<String, Object> row = new HashMap<>();
+        row.put("meterHstryNo", meter.getMeterHstryNo());
+        row.put("meterScope", meter.getMeterScope());
+        row.put("meterTyNm", meter.getMeterTyNm());
+        row.put("meterDt", formatDate(meter.getMeterDt()));
+        row.put("facilityNo", meter.getFacilityNo());
+        row.put("facilityNm", meter.getFacilityNm());
+        row.put("hoNo", meter.getHoNo());
+        row.put("hoDisp", formatHoDisp(meter.getHoNo()));
+        row.put("preVal", formatNumber(meter.getPreVal()));
+        row.put("currVal", formatNumber(meter.getCurrVal()));
+        row.put("usageVal", formatNumber(calcUsageVal(meter)));
+        row.put("meterRsltNm", meter.getMeterRsltNm());
+        row.put("partnerNm", meter.getPartnerNm());
+        return row;
+    }
+
+    /**
+     * ho_no를 "101동 1502호" 형태로 변환
+     * - 저장 형식: APTCMPLX_DONG_HO (예: A10023118_101_1502)
+     * - 시설 검침 등 ho_no가 비어 있는 행은 빈 문자열을 반환함
+     */
+    private String formatHoDisp(String hoNo) {
+        if (!StringUtils.hasText(hoNo)) {
+            return "";
+        }
+
+        String[] parts = hoNo.split("_");
+        if (parts.length < 3) {
+            // 형식이 어긋난 데이터는 원본을 그대로 노출함
+            return hoNo;
+        }
+        return parts[1] + "동 " + parts[2] + "호";
+    }
+
+    /**
      * 공급/검침 설정 목록 조회
      */
     @Override
@@ -107,6 +208,21 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
 
         // 화면 선택용 공급/검침 설정 목록 조회
         return meterHstryMapper.selectUtilityProviderList(aptCmplexNo);
+    }
+
+    /**
+     * 검침 스코프별 공급/검침 설정 목록 조회
+     * - 다운로드 모달 전용. 해당 스코프 검침이력이 실제 있는 업체만 노출함
+     * - meter_scope는 utility_provider가 아닌 meter_hstry에 저장되므로 사용 이력 기반 EXISTS로 필터링
+     */
+    @Override
+    public List<UtilityProviderVO> selectUtilityProviderListByScope(String mgmtOfcNo, String meterScope) {
+        String aptCmplexNo = meterHstryMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("aptCmplexNo", aptCmplexNo);
+        paramMap.put("meterScope", meterScope);
+        return meterHstryMapper.selectUtilityProviderListByScope(paramMap);
     }
 
     /**
@@ -260,7 +376,7 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
      */
     @Override
     @Transactional
-    public int uploadMeterCsv(
+    public Map<String, Object> uploadMeterCsv(
             String mgmtOfcNo,
             String utilityProviderNo,
             String meterScope,
@@ -317,6 +433,7 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
         Long fileGroupNo = saveCsvAttachFile(csvFile, aptCmplexNo, uploadNo);
 
         try {
+            LocalDateTime uploadFilterFrom = LocalDateTime.now().minusSeconds(5);
             // 검증 완료된 검침 이력 등록
             for (MeterHstryVO meterHstryVO : meterRows) {
                 meterHstryMapper.insertMeterHstry(meterHstryVO);
@@ -326,7 +443,14 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
             insertUploadHistory(uploadNo, provider, fileGroupNo, meterRows.size(), UPLOAD_DONE, null, uploadUserNo);
 
             // 등록 건수 반환
-            return meterRows.size();
+            LocalDateTime uploadFilterTo = LocalDateTime.now().plusSeconds(5);
+            Map<String, Object> result = new HashMap<>();
+            result.put("insertCnt", meterRows.size());
+            result.put("meterScope", meterScope);
+            result.put("utilityProviderNo", provider.getUtilityProviderNo());
+            result.put("uploadedFrom", uploadFilterFrom.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            result.put("uploadedTo", uploadFilterTo.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            return result;
 
         } catch (Exception e) {
             /*
@@ -854,12 +978,17 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
         return downloadParamMap;
     }
 
+    /** 한국 엑셀 호환용 CSV 출력 인코딩 */
+    private static final java.nio.charset.Charset CSV_CHARSET = java.nio.charset.Charset.forName("MS949");
+
     /**
      * CSV 본문 생성
+     * - UTF-8 BOM을 한국 엑셀이 가끔 무시해 한글이 깨지는 사례가 있어 MS949(CP949)로 직접 인코딩함
+     * - MS949는 한국 엑셀 기본 인코딩이라 별도 처리 없이 더블클릭만으로 정상 표시됨
+     * - 한글/숫자/영문만 다루는 검침 이력 CSV 특성상 MS949로 표현 불가한 문자가 들어올 일은 없음
      */
     private byte[] buildMeterCsv(List<MeterHstryVO> meterList) {
         StringBuilder csv = new StringBuilder();
-        csv.append('\uFEFF');
         csv.append(CSV_HEADER).append("\r\n");
 
         if (meterList != null) {
@@ -872,6 +1001,7 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
                 csv.append(csvValue(meter.getFacilityNo())).append(',');
                 csv.append(csvValue(meter.getFacilityNm())).append(',');
                 csv.append(csvValue(meter.getHoNo())).append(',');
+                csv.append(csvValue(formatHoDisp(meter.getHoNo()))).append(',');
                 csv.append(csvValue(formatNumber(meter.getPreVal()))).append(',');
                 csv.append(csvValue(formatNumber(meter.getCurrVal()))).append(',');
                 csv.append(csvValue(formatNumber(calcUsageVal(meter)))).append(',');
@@ -882,7 +1012,7 @@ public class MeterHstryServiceImpl implements IMeterHstryService {
             }
         }
 
-        return csv.toString().getBytes(StandardCharsets.UTF_8);
+        return csv.toString().getBytes(CSV_CHARSET);
     }
 
     /**

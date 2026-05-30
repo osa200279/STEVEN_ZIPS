@@ -20,6 +20,9 @@ public interface IMeterHstryMapper {
     /** 관리사무소 번호로 아파트단지번호 조회 */
     String selectAptCmplexNoByMgmtOfcNo(String mgmtOfcNo);
 
+    /** 아파트단지번호로 단지명 조회 */
+    String selectAptCmplexNmByAptCmplexNo(String aptCmplexNo);
+
     /** 검침 이력 목록 조회 */
     List<MeterHstryVO> selectMeterHstryList(Map<String, Object> paramMap);
 
@@ -28,6 +31,9 @@ public interface IMeterHstryMapper {
 
     /** 공급/검침 설정 목록 조회 */
     List<UtilityProviderVO> selectUtilityProviderList(String aptCmplexNo);
+
+    /** 검침 스코프(COMPLEX/FACILITY)별 공급/검침 설정 목록 조회 (다운로드 모달 전용) */
+    List<UtilityProviderVO> selectUtilityProviderListByScope(Map<String, Object> paramMap);
 
     /** 공급/검침 설정 상세 조회 */
     UtilityProviderVO selectUtilityProviderDetail(Map<String, Object> paramMap);

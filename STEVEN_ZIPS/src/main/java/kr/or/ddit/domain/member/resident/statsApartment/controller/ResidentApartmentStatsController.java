@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('RESIDENT')")
+@PreAuthorize("hasAnyRole('RESIDENT', 'MNGR', 'ADMIN')")
 public class ResidentApartmentStatsController {
 
     private final IResidentApartmentStatsService apartmentStatsService;
 
     /* 단지 통계 데이터 조회 */
-    @PreAuthorize("@authService.isResidentOnly(principal, #aptCmplexNo)")
+    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/resident/stats/apartment/{aptCmplexNo}/data")
     @ResponseBody
     public ResidentApartmentStatsResponseDTO apartmentStatsData(@PathVariable String aptCmplexNo) {
