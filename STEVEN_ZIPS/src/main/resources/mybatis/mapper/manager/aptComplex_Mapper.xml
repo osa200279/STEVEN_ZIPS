@@ -37,7 +37,6 @@
             BLD_YR             = #{bldYr},
             CNSCO_NM           = #{cnscoNm},
             IMG_FILE_NO        = #{imgFileNo},
-            RPRSNT_IMG_FILE_NO = #{rprsntImgFileNo},
             HEAT_TY            = #{heatTy},
             PKG_CNT            = #{pkgCnt},
             MAX_FLOOR          = #{maxFloor},

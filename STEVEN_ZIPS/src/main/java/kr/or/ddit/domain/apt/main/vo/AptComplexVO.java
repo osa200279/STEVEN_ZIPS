@@ -1,8 +1,11 @@
 package kr.or.ddit.domain.apt.main.vo;
 
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 /*db 테이블과 1:1 매칭되는 vo 입니다*/
 @Data
@@ -27,4 +30,6 @@ public class AptComplexVO {
     private int dongCnt;            // 동 수
     private String dorojuso;        // 도로명주소
     private String ccCnt;           // cctv 수
+
+    private List<AttachFileVO> fileList;    // 화면에 보여줄 fileVOList
 }

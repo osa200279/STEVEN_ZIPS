@@ -60,10 +60,10 @@
                            name="imgFileNo"
                            >
 
-                    <input type="hidden"
+<%--                    <input type="hidden"
                            id="rprsntImgFileNo"
                            name="rprsntImgFileNo"
-                           >
+                           >--%>
 
 
                     <!-- 정렬 순서 -->

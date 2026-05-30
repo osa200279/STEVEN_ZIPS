@@ -785,10 +785,10 @@ function renderComplexDetail(detail) {
         complex.imgFileNo
     );
 
-    setValue(
+/*    setValue(
         "rprsntImgFileNo",
         complex.rprsntImgFileNo
-    );
+    );*/
 }
 
 function setValue(id, value) {

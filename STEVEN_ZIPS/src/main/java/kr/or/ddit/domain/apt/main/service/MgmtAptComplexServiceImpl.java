@@ -145,7 +145,7 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
 
             List<AttachFileVO> existLayoutFiles =
                     attachFileService.setFileMetaData(
-                            request.getRprsntImgFileNo()
+                            request.getImgFileNo()
                     );
 
             List<AttachFileVO> existComplexFiles =
@@ -272,9 +272,9 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
                     String.valueOf(fileGroupNo)
             );
 
-            request.setRprsntImgFileNo(
+/*            request.setRprsntImgFileNo(
                     String.valueOf(fileGroupNo)
-            );
+            );*/
 
             /* 업로드 진행 */
             String layoutUploadPath = "aptcomplex/RPRSNT_IMG_FILE/" + aptCmplexVO.getAptCmplexNo();
@@ -343,9 +343,6 @@ public class MgmtAptComplexServiceImpl implements IMgmtAptComplexService {
 
         log.info("FINAL img = {}",
                 request.getImgFileNo());
-
-        log.info("FINAL rprsnt = {}",
-                request.getRprsntImgFileNo());
 
         aptComplexMapper.updateComplex(request);
 
