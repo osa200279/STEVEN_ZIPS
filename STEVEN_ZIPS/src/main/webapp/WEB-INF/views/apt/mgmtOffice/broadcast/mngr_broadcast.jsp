@@ -51,15 +51,15 @@
                                         <span class="row-label">빠른 문구</span>
                                         <div class="chip-group">
                                             <button type="button" class="chip template-chip"
-                                                    data-template="${broadcastIntro}&#10;오늘 오후 2시부터 4시까지 1호기 엘리베이터 정기점검이 있습니다.&#10;이용에 불편을 드려 죄송합니다. 2호기는 정상 운행됩니다.&#10;감사합니다.">
+                                                    data-template="${broadcastIntro}&#10;오늘 오후 2시부터 4시까지 1호기 엘리베이터 정기점검이 있습니다.&#10;이용에 불편을 드려 죄송합니다.&#10;감사합니다.">
                                                 <span class="material-symbols-rounded">elevator</span>엘리베이터
                                             </button>
                                             <button type="button" class="chip template-chip"
-                                                    data-template="${broadcastIntro}&#10;오늘 오전 10시부터 12시까지 수도 점검으로 잠시 단수가 있습니다.&#10;미리 물을 비축해 주시고, 수도꼭지는 꼭 잠가 주세요.&#10;이용에 불편을 드려 죄송합니다.&#10;감사합니다.">
+                                                    data-template="${broadcastIntro}&#10;오늘 오전 10시부터 12시까지 수도 점검으로 잠시 단수가 있습니다.&#10;미리 물을 비축해 주시고, 수도꼭지는 꼭 잠가 주시기 바랍니다.&#10;이용에 불편을 드려 죄송합니다.&#10;감사합니다.">
                                                 <span class="material-symbols-rounded">water_drop</span>단수
                                             </button>
                                             <button type="button" class="chip template-chip"
-                                                    data-template="${broadcastIntro}&#10;분리수거는 지정된 요일과 시간에 맞춰 배출해 주시면 감사하겠습니다.&#10;깨끗한 우리 아파트, 함께 지켜 주세요.&#10;감사합니다.">
+                                                    data-template="${broadcastIntro}&#10;분리수거는 지정된 요일과 시간에 맞춰 배출해 주시면 감사하겠습니다.&#10;깨끗한 우리 아파트, 함께 지켜 주시기 바랍니다.&#10;감사합니다.">
                                                 <span class="material-symbols-rounded">recycling</span>분리수거
                                             </button>
                                             <button type="button" class="chip template-chip"
@@ -72,6 +72,7 @@
                                     <div class="editor">
                                         <textarea id="ttsText" maxlength="500"
                                                   placeholder="방송할 안내 문구를 입력해주세요."></textarea>
+
                                         <div class="editor-foot">
                                             <div class="editor-meta" id="editorMeta">
                                                 <span>글자 수 <b id="charCount">0</b><span class="char-limit"> / 500</span></span>
@@ -85,83 +86,81 @@
                                                 <audio id="previewAudio" class="sr-only" preload="none" aria-hidden="true"></audio>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div class="meta-grid meta-grid-stack">
-                                        <div class="row meta-row">
-                                            <span class="row-label">방송 구역</span>
-                                            <div class="area-field">
-                                                <div class="bc-select" id="areaSelect">
-                                                    <button type="button" class="bc-select-trigger" id="areaSelectTrigger"
-                                                            aria-expanded="false" aria-haspopup="listbox">
-                                                        <span class="bc-select-label" id="areaSelectLabel">전체</span>
-                                                        <span class="material-symbols-rounded bc-select-caret">expand_more</span>
-                                                    </button>
-                                                    <div class="bc-select-panel" id="areaSelectPanel" role="listbox" hidden>
-                                                        <label class="bc-select-option">
-                                                            <input type="checkbox" name="areaOpt" value="전체" data-area-all checked>
-                                                            <span>전체</span>
-                                                        </label>
-                                                        <c:forEach var="dong" items="${dongList}">
-                                                            <c:set var="dongBase"
-                                                                   value="${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}"/>
-                                                            <c:choose>
-                                                                <c:when test="${fn:endsWith(dongBase, '동')}">
-                                                                    <c:set var="dongLabel" value="${dongBase}"/>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <c:set var="dongLabel" value="${dongBase}동"/>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                            <label class="bc-select-option">
-                                                                <input type="checkbox" name="areaOpt" value="${dongLabel}" data-dong-no="${dong.dongNo}">
-                                                                <span>${dongLabel}</span>
-                                                            </label>
-                                                        </c:forEach>
+                                        <div class="compose-options">
+                                            <div class="compose-options-fields">
+                                                <div class="compose-option">
+                                                    <span class="compose-option-label">방송 구역</span>
+                                                    <div class="area-field">
+                                                        <div class="bc-select" id="areaSelect">
+                                                            <button type="button" class="bc-select-trigger" id="areaSelectTrigger"
+                                                                    aria-expanded="false" aria-haspopup="listbox">
+                                                                <span class="bc-select-label" id="areaSelectLabel">전체</span>
+                                                                <span class="material-symbols-rounded bc-select-caret">expand_more</span>
+                                                            </button>
+                                                            <div class="bc-select-panel" id="areaSelectPanel" role="listbox" hidden>
+                                                                <label class="bc-select-option">
+                                                                    <input type="checkbox" name="areaOpt" value="전체" data-area-all checked>
+                                                                    <span>전체</span>
+                                                                </label>
+                                                                <c:forEach var="dong" items="${dongList}">
+                                                                    <c:set var="dongBase"
+                                                                           value="${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}"/>
+                                                                    <c:choose>
+                                                                        <c:when test="${fn:endsWith(dongBase, '동')}">
+                                                                            <c:set var="dongLabel" value="${dongBase}"/>
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <c:set var="dongLabel" value="${dongBase}동"/>
+                                                                        </c:otherwise>
+                                                                    </c:choose>
+                                                                    <label class="bc-select-option">
+                                                                        <input type="checkbox" name="areaOpt" value="${dongLabel}" data-dong-no="${dong.dongNo}">
+                                                                        <span>${dongLabel}</span>
+                                                                    </label>
+                                                                </c:forEach>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <c:if test="${empty dongList}">
-                                                    <p class="hint">등록된 동 정보가 없습니다.</p>
-                                                </c:if>
-                                            </div>
-                                        </div>
-                                        <div class="row meta-row">
-                                            <span class="row-label">음성</span>
-                                            <div class="voice-field">
-                                                <div class="bc-select" id="voiceSelectWrap">
-                                                    <button type="button" class="bc-select-trigger" id="voiceSelectTrigger"
-                                                            aria-expanded="false" aria-haspopup="listbox">
-                                                        <span class="bc-select-label" id="voiceSelectLabel">남성 A</span>
-                                                        <span class="material-symbols-rounded bc-select-caret">expand_more</span>
-                                                    </button>
-                                                    <div class="bc-select-panel bc-select-panel--voice" id="voiceSelectPanel" role="listbox" hidden>
-                                                        <button type="button" class="bc-select-option bc-select-option--single active"
-                                                                role="option" data-voice="ko-KR-Standard-C" aria-selected="true">남성 A</button>
-                                                        <button type="button" class="bc-select-option bc-select-option--single"
-                                                                role="option" data-voice="ko-KR-Standard-D" aria-selected="false">남성 B</button>
-                                                        <button type="button" class="bc-select-option bc-select-option--single"
-                                                                role="option" data-voice="ko-KR-Standard-A" aria-selected="false">여성 A</button>
-                                                        <button type="button" class="bc-select-option bc-select-option--single"
-                                                                role="option" data-voice="ko-KR-Standard-B" aria-selected="false">여성 B</button>
+                                                <div class="compose-option">
+                                                    <span class="compose-option-label">음성</span>
+                                                    <div class="voice-field">
+                                                        <div class="bc-select" id="voiceSelectWrap">
+                                                            <button type="button" class="bc-select-trigger" id="voiceSelectTrigger"
+                                                                    aria-expanded="false" aria-haspopup="listbox">
+                                                                <span class="bc-select-label" id="voiceSelectLabel">남성 A</span>
+                                                                <span class="material-symbols-rounded bc-select-caret">expand_more</span>
+                                                            </button>
+                                                            <div class="bc-select-panel bc-select-panel--voice" id="voiceSelectPanel" role="listbox" hidden>
+                                                                <button type="button" class="bc-select-option bc-select-option--single active"
+                                                                        role="option" data-voice="ko-KR-Standard-C" aria-selected="true">남성 A</button>
+                                                                <button type="button" class="bc-select-option bc-select-option--single"
+                                                                        role="option" data-voice="ko-KR-Standard-D" aria-selected="false">남성 B</button>
+                                                                <button type="button" class="bc-select-option bc-select-option--single"
+                                                                        role="option" data-voice="ko-KR-Standard-A" aria-selected="false">여성 A</button>
+                                                                <button type="button" class="bc-select-option bc-select-option--single"
+                                                                        role="option" data-voice="ko-KR-Standard-B" aria-selected="false">여성 B</button>
+                                                            </div>
+                                                            <select class="sr-only" id="voiceSelect" aria-hidden="true">
+                                                                <option value="ko-KR-Standard-C" selected>남성 A</option>
+                                                                <option value="ko-KR-Standard-D">남성 B</option>
+                                                                <option value="ko-KR-Standard-A">여성 A</option>
+                                                                <option value="ko-KR-Standard-B">여성 B</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                    <select class="sr-only" id="voiceSelect" aria-hidden="true">
-                                                        <option value="ko-KR-Standard-C" selected>남성 A</option>
-                                                        <option value="ko-KR-Standard-D">남성 B</option>
-                                                        <option value="ko-KR-Standard-A">여성 A</option>
-                                                        <option value="ko-KR-Standard-B">여성 B</option>
-                                                    </select>
                                                 </div>
                                             </div>
+                                            <div class="compose-options-actions">
+                                                <button type="button" class="btnx btnx-ghost" id="clearBtn">
+                                                    <span class="material-symbols-rounded">restart_alt</span>초기화
+                                                </button>
+                                                <button type="button" class="btnx btnx-primary" id="convertBtn">
+                                                    <span class="material-symbols-rounded">graphic_eq</span>음성 변환하기
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-
-                                    <div class="actions">
-                                        <button type="button" class="btnx btnx-ghost" id="clearBtn">
-                                            <span class="material-symbols-rounded">restart_alt</span>초기화
-                                        </button>
-                                        <button type="button" class="btnx btnx-primary" id="convertBtn">
-                                            <span class="material-symbols-rounded">graphic_eq</span>음성 변환하기
-                                        </button>
                                     </div>
                                 </div>
                             </section>
@@ -189,13 +188,17 @@
                                                 <span class="player-time" id="playerTime">0:00 / --:--</span>
                                                 <audio id="playerAudio" preload="metadata"></audio>
                                             </div>
+                                            <button type="button" class="bc-broadcast-btn" id="broadcastBtn" disabled
+                                                    title="변환된 음성을 단지 방송으로 송출">
+                                                <span class="material-symbols-rounded">campaign</span>방송 송출
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </section>
                         </div>
 
-                        <%-- 우: 업무 이력 (더미) + 변환 이력 --%>
+                        <%-- 우: 업무 이력 + 변환 이력 --%>
                         <aside class="bc-side">
                             <section class="card card-side" aria-label="broadcast-sources">
                                 <div class="card-header card-header-tabs">

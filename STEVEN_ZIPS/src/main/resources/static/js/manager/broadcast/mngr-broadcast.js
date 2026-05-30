@@ -27,6 +27,7 @@
     var previewActive = false;
     var previewFetchAbort = null;
     var previewToken = 0;
+    var broadcastActive = false;
     var $ = function (id) { return document.getElementById(id); };
 
     var SOURCE_NOTES = {
@@ -61,7 +62,7 @@
                     badge: '제한중',
                     badgeClass: 'warn',
                     areas: ['1동'],
-                    draft: intro + '\n오늘 오후 2시부터 4시까지 1호기 엘리베이터 정기점검이 있습니다.\n이용에 불편을 드려 죄송합니다. 2호기는 정상 운행됩니다.\n감사합니다.'
+                    draft: intro + '\n오늘 오후 2시부터 4시까지 1호기 엘리베이터 정기점검이 있습니다.\n이용에 불편을 드려 죄송합니다.\n감사합니다.'
                 },
                 {
                     id: 'chk-2',
@@ -69,7 +70,7 @@
                     meta: '2026-05-30 · 예정',
                     badge: '점검 예정',
                     areas: ['전체'],
-                    draft: intro + '\n내일 오전 10시부터 12시까지 지하 주차장 환기시설 점검이 있습니다.\n해당 시간에는 소음이 있을 수 있습니다.\n이용에 참고해 주세요.\n감사합니다.'
+                    draft: intro + '\n내일 오전 10시부터 12시까지 지하 주차장 환기시설 점검이 있습니다.\n해당 시간에는 소음이 있을 수 있으므로 이용에 참고해 주시기 바랍니다.\n감사합니다.'
                 }
             ],
             complaint: [
@@ -87,7 +88,7 @@
                     meta: '접수 · 102동',
                     badge: '생활소음',
                     areas: ['102동'],
-                    draft: intro + '\n층간소음으로 불편하신 이웃이 계셔 안내드립니다.\n심야 시간대에는 발소리와 TV 음량에 조금만 신경 써 주세요.\n이웃을 배려해 주셔서 감사합니다.'
+                    draft: intro + '\n층간소음으로 불편하신 이웃이 계셔 안내드립니다.\n심야 시간대에는 발소리와 TV 음량에 조금만 신경 써 주시기 바랍니다.\n이웃을 배려해 주셔서 감사합니다.'
                 }
             ]
         };
@@ -403,6 +404,12 @@
             })));
         } catch (e) {
             console.warn('방송 이력 저장 실패:', e);
+            toast({
+                title: '이력 저장 실패',
+                message: '브라우저 저장 공간이 부족합니다. 이력을 줄이거나 짧은 문구로 변환해 주세요.',
+                type: 'warning',
+                duration: 5000
+            });
             if (historyRows.length > 1) {
                 historyRows.pop();
                 saveHistory();
@@ -858,8 +865,71 @@
     function setPlayerControlsEnabled(enabled) {
         var playBtn = $('playerToggleBtn');
         var resetBtn = $('playerResetBtn');
+        var broadcastBtn = $('broadcastBtn');
         if (playBtn) playBtn.disabled = !enabled;
         if (resetBtn) resetBtn.disabled = !enabled;
+        if (broadcastBtn && !broadcastActive) broadcastBtn.disabled = !enabled;
+    }
+
+    function setBroadcastButtonState(disabled, broadcasting) {
+        var btn = $('broadcastBtn');
+        if (!btn) return;
+        btn.disabled = !!disabled;
+        btn.classList.toggle('is-broadcasting', !!broadcasting);
+    }
+
+    function finishBroadcastSession(showCompleteToast) {
+        if (!broadcastActive && !showCompleteToast) return;
+        broadcastActive = false;
+        var audio = $('playerAudio');
+        var hasAudio = !!(audio && audio.src);
+        setBroadcastButtonState(!hasAudio, false);
+        if (showCompleteToast) {
+            toast({
+                title: '방송',
+                message: '방송 완료',
+                type: 'success',
+                duration: 2800
+            });
+        }
+    }
+
+    function startBroadcast() {
+        var audio = $('playerAudio');
+        if (!audio || !audio.src || broadcastActive) return;
+
+        stopPreview();
+        pauseAllBroadcastAudio(audio);
+        broadcastActive = true;
+        setBroadcastButtonState(true, true);
+        toast({
+            title: '방송',
+            message: '방송 송출 중...',
+            type: 'info',
+            duration: 3500
+        });
+
+        try {
+            audio.currentTime = 0;
+        } catch (ignore) { /* seek */ }
+
+        audio.addEventListener('ended', function () {
+            finishBroadcastSession(true);
+        }, { once: true });
+
+        var playPromise = audio.play();
+        if (playPromise && typeof playPromise.then === 'function') {
+            playPromise.catch(function (err) {
+                console.warn('broadcast play failed', err);
+                finishBroadcastSession(false);
+                toast({
+                    title: '방송 실패',
+                    message: '음성을 재생할 수 없습니다.',
+                    type: 'error',
+                    duration: 4000
+                });
+            });
+        }
     }
 
     function resetPlayerPlayback() {
@@ -876,6 +946,7 @@
     }
 
     function hidePlayer() {
+        finishBroadcastSession(false);
         var audio = $('playerAudio');
         if (audio) {
             clearAudioTimingWatch(audio);
@@ -997,6 +1068,9 @@
         audio.addEventListener('pause', function () {
             if (eq) eq.classList.remove('playing');
             updatePlayerToggle(false);
+            if (broadcastActive) {
+                finishBroadcastSession(false);
+            }
         });
         audio.addEventListener('ended', function () {
             if (eq) eq.classList.remove('playing');
@@ -1033,8 +1107,7 @@
     function renderDummyPanel(type, items) {
         var panel = $('panel' + (type === 'check' ? 'Check' : 'Complaint'));
         if (!panel) return;
-        panel.innerHTML = '<p class="source-dummy-tag">시나리오 테스트용 더미 데이터</p>'
-            + '<div class="source-list">' + items.map(function (item) {
+        panel.innerHTML = '<div class="source-list">' + items.map(function (item) {
                 return '<button type="button" class="source-item" data-source-type="' + type + '" data-source-id="' + item.id + '">'
                     + '<div class="source-item-title">' + escapeHtml(item.title) + '</div>'
                     + '<div class="source-item-meta">' + escapeHtml(item.meta) + '</div>'
