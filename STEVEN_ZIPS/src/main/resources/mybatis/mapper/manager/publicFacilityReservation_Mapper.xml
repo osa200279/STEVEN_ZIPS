@@ -661,7 +661,7 @@
         ON FH.CMN_FACILITY_ITEM_NO = PI.CMN_FACILITY_ITEM_NO
         INNER JOIN PUBLIC_FACILITY PF
         ON PI.CMN_FACILITY_NO = PF.CMN_FACILITY_NO
-        WHERE FH.RSVT_NO = #{rsvtNo}
+        WHERE FH.RSVT_NO = #{value}
 
     </select>
 

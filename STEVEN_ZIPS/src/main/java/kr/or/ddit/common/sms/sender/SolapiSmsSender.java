@@ -1,18 +1,16 @@
 package kr.or.ddit.common.sms.sender;
 
 import kr.or.ddit.common.sms.dto.SmsReceiver;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-/**
- * Solapi 실제 문자 발송기
- * 운영 환경에서 sms.sender-type=solapi 로 바꾸면 사용됩니다.
- * 테스트중이라 아직 사용안하는 중. - 김보라
- */
+@Slf4j
 @Component
-@RequiredArgsConstructor
 @ConditionalOnProperty(name = "sms.sender-type", havingValue = "solapi")
 public class SolapiSmsSender implements SmsSender {
 
@@ -27,10 +25,32 @@ public class SolapiSmsSender implements SmsSender {
 
     @Override
     public void send(SmsReceiver receiver, String message) {
-        /*
-         * 현재 발표용은 Mock을 사용할 것이므로 여기서는 구조만 만들어둡니다.
-         * 실제 운영 시 Solapi SDK 의존성을 추가하고 이 안에서 API를 호출하면 됩니다.
-         */
-        throw new UnsupportedOperationException("Solapi 실제 발송은 운영 환경에서 SDK 연결 후 사용하세요.");
+
+        DefaultMessageService messageService =
+                NurigoApp.INSTANCE.initialize(
+                        apiKey,
+                        apiSecret,
+                        "https://api.coolsms.co.kr"
+                );
+
+        Message solapiMessage = new Message();
+
+        String to = receiver.getUserTel().replaceAll("[^0-9]", "");
+        String sender = from.replaceAll("[^0-9]", "");
+
+        solapiMessage.setFrom(sender);
+        solapiMessage.setTo(to);
+        solapiMessage.setText(message);
+
+        try {
+            messageService.send(solapiMessage);
+
+            log.info("Solapi SMS 실제 발송 요청 완료 - to={}", to);
+
+        } catch (Exception e) {
+            log.error("Solapi SMS 발송 실패 - to={}, error={}", to, e.getMessage(), e);
+
+            throw new RuntimeException("Solapi SMS 발송 실패: " + e.getMessage(), e);
+        }
     }
 }

@@ -208,6 +208,9 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
         PublicFacilityReservationVO smsInfo =
                 mapper.selectReservationSmsInfo(vo.getRsvtNo());
 
+        System.out.println("SMS 예약번호 = " + vo.getRsvtNo());
+        System.out.println("SMS 조회결과 = " + smsInfo);
+
         if (smsInfo != null) {
             smsService.sendReservationApproved(
                     smsInfo.getUserNo(),

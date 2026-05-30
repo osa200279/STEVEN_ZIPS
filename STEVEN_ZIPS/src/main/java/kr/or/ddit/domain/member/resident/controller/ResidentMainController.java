@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.member.resident.dto.ResidentNoticeBoardDTO;
 import tools.jackson.databind.ObjectMapper;
-import kr.or.ddit.domain.apt.mgmtOffice.main.service.IAptScheduleCalendarService;
+import kr.or.ddit.common.sms.service.ISmsService;
 
 import java.util.HashMap;
 
@@ -62,6 +62,9 @@ public class ResidentMainController {
 
     @Autowired
     private IAptScheduleCalendarService aptScheduleCalendarService;
+
+    @Autowired
+    private ISmsService smsService;
 
     /**
      * 내 아파트 목록 조회 컨트롤러
@@ -1360,6 +1363,19 @@ public class ResidentMainController {
         // 번호 붙은 URL 로 302 리다이렉트 → ResidentCustomStatsController 가 처리
         String aptCmplexNo = resident.getMyAptList().get(0).getAptCmplexNo();
         return "redirect:/resident/stats/apartment/" + aptCmplexNo;
+    }
+
+    /* SMS 발송 테스트용 */
+    @GetMapping("/test/sms")
+    @ResponseBody
+    public String testSms() {
+
+        smsService.sendResidentApproved(
+                "t_1101", // 문자를 받을 입주민 회원번호
+                "admin"   // 등록자/처리자 ID
+        );
+
+        return "OK";
     }
 
 
