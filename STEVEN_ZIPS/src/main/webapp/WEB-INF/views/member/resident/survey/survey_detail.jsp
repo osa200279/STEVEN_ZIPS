@@ -333,7 +333,7 @@
                 location.href =
                         "${pageContext.request.contextPath}"
                         + "/resident/survey/result/"
-                        + "${survey.aptCmplexNo}" + "/"
+                        + "${survey.aptCd}" + "/"
                         + "${survey.surveyNo}";
 
               }catch (e){
