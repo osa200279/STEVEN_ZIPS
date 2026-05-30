@@ -41,15 +41,16 @@ const Home = () => {
         <section>
           <h1 className="section-title board">계약 현황</h1>
           <CtrtBoard />
-          <div style={{marginTop: '20px'}}>
-            <h1 className="section-title board">진행중인 공고별 지원률</h1>
-            <RecruitContainer />
+          <div style={{display: 'flex', gap:'20px'}}>
+            <div style={{ flex: 1, paddingBottom: '5px', marginTop: '20px', height: '300px' }}>
+              <h1 className="section-title board">진행중인 공고별 지원률</h1>
+              <RecruitContainer />
+            </div>
+            <div style={{ flex: 1, marginTop: '20px', height: '300px' }}>
+              <h1 className="section-title board">최근 6개월 입주자 수 추이</h1>
+              <ResidentContainer />
+            </div>
           </div>
-          <div style={{marginTop: '20px'}}>
-            <h1 className="section-title board">최근 6개월 입주자 수 추이</h1>
-            <ResidentContainer />
-          </div>
-
         </section>
       </div>
     </>

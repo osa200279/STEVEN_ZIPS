@@ -8,7 +8,7 @@ function RecruitContainer() {
         { annNo: 3, ttl: '가락 미륭 아파트', supplyCnt: 200, applicantCnt: 210, rate: (210 / 200) * 100 },
     ];
     return (
-        <div>
+        <div className="card-container" style={{paddingBottom: '10px'}}>
             <RecruitChart data={dummyData} />
         </div>
     )

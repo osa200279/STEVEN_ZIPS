@@ -5,8 +5,6 @@ const RecruitChart = ({ data = [] }) => {
 
   return (
     <div className="card-container">
-      <h3 className="section-title">
-      </h3>
       
       {data.map((item) => {
         const percentage = Math.min(item.rate, 100);
