@@ -124,4 +124,46 @@ public class RentController {
 
         return result;
     }
+
+    @GetMapping("/map-data")
+    @ResponseBody
+    public Map<String, Object> rentMapData() {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            List<RentListingMapDTO> list = rentService.selectRentMapComplexList();
+
+            result.put("success", true);
+            result.put("list", list);
+
+        } catch (Exception e) {
+            log.error("지도 마커 목록 조회 중 오류 발생", e);
+
+            result.put("success", false);
+            result.put("message", "지도 마커 목록 조회 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
+
+    @GetMapping("/complex-data/{aptCmplexNo}")
+    @ResponseBody
+    public Map<String, Object> rentComplexData(@PathVariable String aptCmplexNo) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            List<RentListingMapDTO> list = rentService.selectRentListByComplexNo(aptCmplexNo);
+
+            result.put("success", true);
+            result.put("list", list);
+
+        } catch (Exception e) {
+            log.error("단지별 매물 목록 조회 중 오류 발생 aptCmplexNo={}", aptCmplexNo, e);
+
+            result.put("success", false);
+            result.put("message", "단지별 매물 목록 조회 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
 }

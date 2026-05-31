@@ -1,9 +1,14 @@
 // 임대 매물 지도 화면 JS
 // DB 데이터: /rent/list-data
 
+// 지도 마커용 단지 집계 데이터
+let complexMarkerList = [];
+
 let rentListingList = [];
+// 단지별 상세 매물 캐시
+let complexRentCache = {};
 let map;
-let geocoder;
+// let geocoder;
 let markers = [];
 let selectedRentNo = null;
 let selectedAptCmplexNo = null;
@@ -47,53 +52,44 @@ function initMap() {
     };
 
     map = new kakao.maps.Map(mapContainer, mapOption);
-
-    if (kakao.maps.services) {
-        geocoder = new kakao.maps.services.Geocoder();
-    } else {
-        console.error("카카오 services 라이브러리가 없습니다. SDK에 &libraries=services 를 추가해야 합니다.");
-    }
 }
 
 /**
- * DB 매물 목록 조회
+ * 지도 마커용 단지 목록 조회
  */
 function loadRentListings() {
-    const apiUrl = (typeof CONTEXT_PATH !== "undefined" ? CONTEXT_PATH : "") + "/rent/list-data";
+    const apiUrl = (typeof CONTEXT_PATH !== "undefined" ? CONTEXT_PATH : "") + "/rent/map-data";
 
     fetch(apiUrl)
         .then(function (response) {
             if (!response.ok) {
-                throw new Error("매물 목록 조회 실패");
+                throw new Error("지도 마커 목록 조회 실패");
             }
 
             return response.json();
         })
         .then(function (data) {
-            console.log("매물 목록 데이터:", data);
+            console.log("지도 마커 데이터:", data);
 
             if (!data.success) {
-                alert(data.message || "매물 목록을 불러오지 못했습니다.");
+                alert(data.message || "지도 마커 목록을 불러오지 못했습니다.");
                 return;
             }
 
-            rentListingList = normalizeRentList(data.list || []);
+            // 중요: 마커용 데이터는 complexMarkerList에 저장
+            complexMarkerList = normalizeRentList(data.list || []);
 
-            if (rentListingList.length === 0) {
+            if (complexMarkerList.length === 0) {
                 showEmptyMapMessage();
                 return;
             }
 
             renderMarkers();
-            /*
-             * 공고 상세페이지에서 뒤로 돌아온 경우
-             * 저장해 둔 단지와 매물을 다시 선택한다.
-             */
             restoreRentMapSelection();
         })
         .catch(function (error) {
-            console.error("매물 목록 조회 오류:", error);
-            alert("매물 목록 조회 중 오류가 발생했습니다.");
+            console.error("지도 마커 목록 조회 오류:", error);
+            alert("지도 마커 목록 조회 중 오류가 발생했습니다.");
         });
 }
 
@@ -113,13 +109,38 @@ function normalizeRentList(list) {
         normalized.annTtl = nvl(item.annTtl, item.rentTtl);
         normalized.aptCmplexNm = nvl(item.aptCmplexNm, "아파트 단지");
         normalized.dorojuso = nvl(item.dorojuso);
+        normalized.latVal = item.latVal != null && item.latVal !== "" ? Number(item.latVal) : null;
+        normalized.lonVal = item.lonVal != null && item.lonVal !== "" ? Number(item.lonVal) : null;
         normalized.dongNm = nvl(item.dongNm, item.dongNo);
         normalized.dongNo = nvl(item.dongNo);
         normalized.ho = nvl(item.ho);
         normalized.floor = item.floor || "-";
         normalized.empty = nvl(item.empty, "-");
         normalized.dpstAmt = Number(item.dpstAmt || 0);
+        normalized.jsCount = Number(item.jsCount || 0);
+        normalized.peCount = Number(item.peCount || 0);
+
+        normalized.minJsDpstAmt =
+            item.minJsDpstAmt != null && item.minJsDpstAmt !== ""
+                ? Number(item.minJsDpstAmt)
+                : null;
+
+        normalized.minPeMonthlyRentAmt =
+            item.minPeMonthlyRentAmt != null && item.minPeMonthlyRentAmt !== ""
+                ? Number(item.minPeMonthlyRentAmt)
+                : null;
         normalized.mthlyRentAmt = Number(item.mthlyRentAmt || 0);
+        // 지도 마커 전용 집계 데이터
+        normalized.rentCount = Number(item.rentCount || 0);
+        normalized.minMonthlyRentAmt =
+            item.minMonthlyRentAmt != null && item.minMonthlyRentAmt !== ""
+                ? Number(item.minMonthlyRentAmt)
+                : null;
+
+        normalized.maxDpstAmt =
+            item.maxDpstAmt != null && item.maxDpstAmt !== ""
+                ? Number(item.maxDpstAmt)
+                : null;
         normalized.rentLstgCn = nvl(item.rentLstgCn, "등록된 매물 설명이 없습니다.");
         normalized.rcrtBgngDt = nvl(item.rcrtBgngDt);
         normalized.rcrtEndDt = nvl(item.rcrtEndDt);
@@ -180,34 +201,30 @@ function bindEvents() {
 }
 
 /**
- * 현재 필터 조건에 맞는 매물 목록 반환
+ * 현재 필터 조건에 맞는 단지 마커 목록 반환
  */
 function getFilteredList() {
     const keywordEl = document.getElementById("rentKeyword");
     const keyword = keywordEl ? keywordEl.value.trim() : "";
 
-    return rentListingList.filter(function (item) {
-        const typeMatched =
-            currentType === "ALL" || item.rentTypeCd === currentType;
-
+    return complexMarkerList.filter(function (item) {
         const keywordMatched =
             keyword === "" ||
             nvl(item.aptCmplexNm).includes(keyword) ||
             nvl(item.dorojuso).includes(keyword) ||
-            nvl(item.rentTtl).includes(keyword) ||
             nvl(item.sidoNm).includes(keyword) ||
             nvl(item.sigunguNm).includes(keyword) ||
             nvl(item.emdNm).includes(keyword);
 
-        return typeMatched && keywordMatched;
+        return keywordMatched;
     });
 }
 
 /**
- * 단지 번호 기준 매물 목록 조회
+ * 단지 번호 기준 현재 로딩된 실제 매물 목록 조회
  */
 function getRentListByComplex(aptCmplexNo) {
-    return getFilteredList().filter(function (item) {
+    return rentListingList.filter(function (item) {
         return item.aptCmplexNo === aptCmplexNo;
     });
 }
@@ -258,55 +275,12 @@ function groupRentListByAnnouncement(complexRentList) {
 }
 
 /**
- * 같은 단지에 매물이 여러 개 있어도 마커는 하나만 만든다.
+ * 마커용 단지 목록 반환
+ *
+ * /rent/map-data는 이미 단지별 집계 데이터이므로 그대로 사용한다.
  */
 function getComplexMarkerList() {
-    const complexMap = {};
-    const filteredList = getFilteredList();
-
-    filteredList.forEach(function (item) {
-        if (!item.aptCmplexNo) {
-            return;
-        }
-
-        if (!complexMap[item.aptCmplexNo]) {
-            complexMap[item.aptCmplexNo] = {
-                aptCmplexNo: item.aptCmplexNo,
-                aptCmplexNm: item.aptCmplexNm,
-                dorojuso: item.dorojuso,
-                latVal: item.latVal,
-                lonVal: item.lonVal,
-                rentCount: 0,
-                minMonthlyRentAmt: null,
-                maxDpstAmt: null,
-                firstRent: item
-            };
-        }
-
-        complexMap[item.aptCmplexNo].rentCount++;
-
-        /*
-         * JS: 전세임대
-         * PE: 영구임대(월세)
-         */
-        if (item.rentTypeCd === "PE") {
-            if (
-                complexMap[item.aptCmplexNo].minMonthlyRentAmt == null ||
-                item.mthlyRentAmt < complexMap[item.aptCmplexNo].minMonthlyRentAmt
-            ) {
-                complexMap[item.aptCmplexNo].minMonthlyRentAmt = item.mthlyRentAmt;
-            }
-        }
-
-        if (
-            complexMap[item.aptCmplexNo].maxDpstAmt == null ||
-            item.dpstAmt > complexMap[item.aptCmplexNo].maxDpstAmt
-        ) {
-            complexMap[item.aptCmplexNo].maxDpstAmt = item.dpstAmt;
-        }
-    });
-
-    return Object.values(complexMap);
+    return getFilteredList();
 }
 
 /**
@@ -329,72 +303,48 @@ function renderMarkers() {
     let markerCount = 0;
 
     complexList.forEach(function (complex) {
-        createComplexMarker(complex, function (position) {
+        const position = createComplexMarker(complex);
+
+        if (position) {
             bounds.extend(position);
             markerCount++;
-
-            if (markerCount > 0) {
-                map.setBounds(bounds);
-            }
-        });
+        }
     });
+
+    // 마커가 하나라도 생성된 경우에만 지도 범위 조정
+    if (markerCount > 0) {
+        map.setBounds(bounds);
+    }
 }
 
 /**
  * 단지 마커 생성
- * lat/lon이 있으면 사용하고, 없으면 dorojuso 주소검색으로 좌표 생성
+ * DB의 LAT_VAL, LON_VAL만 사용한다.
+ * 주소검색 geocoder를 사용하지 않아 address.json 반복 호출을 방지한다.
  */
-function createComplexMarker(complex, afterCreate) {
-    if (complex.latVal != null && complex.lonVal != null) {
-        const position = new kakao.maps.LatLng(Number(complex.latVal), Number(complex.lonVal));
-        addComplexOverlay(complex, position);
+function createComplexMarker(complex) {
+    const lat = Number(complex.latVal);
+    const lon = Number(complex.lonVal);
 
-        if (afterCreate) {
-            afterCreate(position);
-        }
-
-        return;
+    // 좌표가 없거나 숫자가 아니면 마커 생성하지 않음
+    if (!lat || !lon || isNaN(lat) || isNaN(lon)) {
+        console.warn("단지 좌표 없음. 마커 생성 제외:", complex);
+        return null;
     }
 
-    if (!geocoder) {
-        console.error("geocoder가 초기화되지 않았습니다.");
-        return;
-    }
+    const position = new kakao.maps.LatLng(lat, lon);
 
-    if (!complex.dorojuso) {
-        console.warn("주소가 없는 단지:", complex);
-        return;
-    }
-
-    geocoder.addressSearch(complex.dorojuso, function (result, status) {
-        if (status !== kakao.maps.services.Status.OK || !result || result.length === 0) {
-            console.warn("주소 변환 실패:", complex.dorojuso);
-            return;
-        }
-
-        const lat = Number(result[0].y);
-        const lng = Number(result[0].x);
-        const position = new kakao.maps.LatLng(lat, lng);
-
-        /*
-         * 같은 단지 매물들은 이후 지도 이동에 쓸 수 있게 좌표를 저장
-         */
-        rentListingList.forEach(function (item) {
-            if (item.aptCmplexNo === complex.aptCmplexNo) {
-                item.latVal = lat;
-                item.lonVal = lng;
-            }
-        });
-
-        complex.latVal = lat;
-        complex.lonVal = lng;
-
-        addComplexOverlay(complex, position);
-
-        if (afterCreate) {
-            afterCreate(position);
+    // 같은 단지의 매물들도 선택/이동 시 좌표를 쓸 수 있게 보정
+    rentListingList.forEach(function (item) {
+        if (item.aptCmplexNo === complex.aptCmplexNo) {
+            item.latVal = lat;
+            item.lonVal = lon;
         }
     });
+
+    addComplexOverlay(complex, position);
+
+    return position;
 }
 
 /**
@@ -418,13 +368,88 @@ function addComplexOverlay(complex, position) {
 
 /**
  * 단지 마커 문구
+ *
+ * 전체 상태에서는 전세/월세 중 매물 수가 많은 유형의 금액을 표시한다.
  */
 function getComplexMarkerText(complex) {
-    if (complex.minMonthlyRentAmt != null && complex.minMonthlyRentAmt > 0) {
-        return "월 " + formatMoneyShort(complex.minMonthlyRentAmt);
+    const jsCount = Number(complex.jsCount || 0);
+    const peCount = Number(complex.peCount || 0);
+
+    const minJsDpstAmt = Number(complex.minJsDpstAmt || 0);
+    const minPeMonthlyRentAmt = Number(complex.minPeMonthlyRentAmt || 0);
+
+    const maxDpstAmt = Number(complex.maxDpstAmt || 0);
+    const minMonthlyRentAmt = Number(complex.minMonthlyRentAmt || 0);
+
+    /*
+     * 전세 필터
+     */
+    if (currentType === "JS") {
+        if (minJsDpstAmt > 0) {
+            return "전세 " + formatMoneyShort(minJsDpstAmt);
+        }
+
+        if (maxDpstAmt > 0) {
+            return "전세 " + formatMoneyShort(maxDpstAmt);
+        }
+
+        return "전세 -";
     }
 
-    return "전세 " + formatMoneyShort(complex.maxDpstAmt);
+    /*
+     * 월세 필터
+     */
+    if (currentType === "PE") {
+        if (minPeMonthlyRentAmt > 0) {
+            return "월 " + formatMoneyShort(minPeMonthlyRentAmt);
+        }
+
+        if (minMonthlyRentAmt > 0) {
+            return "월 " + formatMoneyShort(minMonthlyRentAmt);
+        }
+
+        return "월 -";
+    }
+
+    /*
+     * 전체 상태
+     * 전세 매물이 더 많거나 같으면 전세 우선
+     */
+    if (jsCount >= peCount && jsCount > 0) {
+        if (minJsDpstAmt > 0) {
+            return "전세 " + formatMoneyShort(minJsDpstAmt);
+        }
+
+        if (maxDpstAmt > 0) {
+            return "전세 " + formatMoneyShort(maxDpstAmt);
+        }
+    }
+
+    /*
+     * 월세 매물이 더 많으면 월세 우선
+     */
+    if (peCount > jsCount && peCount > 0) {
+        if (minPeMonthlyRentAmt > 0) {
+            return "월 " + formatMoneyShort(minPeMonthlyRentAmt);
+        }
+
+        if (minMonthlyRentAmt > 0) {
+            return "월 " + formatMoneyShort(minMonthlyRentAmt);
+        }
+    }
+
+    /*
+     * 집계 개수가 없을 때 fallback
+     */
+    if (maxDpstAmt > 0) {
+        return "전세 " + formatMoneyShort(maxDpstAmt);
+    }
+
+    if (minMonthlyRentAmt > 0) {
+        return "월 " + formatMoneyShort(minMonthlyRentAmt);
+    }
+
+    return "매물";
 }
 
 /**
@@ -440,58 +465,100 @@ function clearMarkers() {
 
 /**
  * 지도 마커 클릭 시 실행
+ * 단지별 실제 매물 목록을 서버에서 조회한 뒤 패널을 렌더링한다.
  */
 function selectComplex(aptCmplexNo) {
-    const complexRentList = getRentListByComplex(aptCmplexNo);
-
-    if (complexRentList.length === 0) {
+    if (!aptCmplexNo) {
         return;
     }
 
     selectedAptCmplexNo = aptCmplexNo;
 
-    const firstItem = complexRentList[0];
-    const page = document.querySelector(".rent-map-page");
-
-    /*
-     * 패널이 닫혀 있는 최초 상태에서 마커를 클릭한 경우
-     * 패널 애니메이션이 끝난 뒤 지도 크기를 재계산하고,
-     * 클릭한 단지가 축소된 지도 영역 안에 보이도록 이동시킨다.
-     */
-    if (page && page.classList.contains("panels-collapsed")) {
-        page.classList.remove("panels-collapsed");
-
-        setTimeout(function () {
-            if (map) {
-                map.relayout();
-
-                if (firstItem.latVal != null && firstItem.lonVal != null) {
-                    map.panTo(
-                        new kakao.maps.LatLng(
-                            Number(firstItem.latVal),
-                            Number(firstItem.lonVal)
-                        )
-                    );
-                }
-            }
-        }, 260);
-    } else {
-        /*
-         * 이미 패널이 열린 상태에서 다른 지도 마커를 클릭한 경우
-         * 지도 크기는 그대로이므로 즉시 해당 단지로 이동한다.
-         */
-        if (map && firstItem.latVal != null && firstItem.lonVal != null) {
-            map.panTo(
-                new kakao.maps.LatLng(
-                    Number(firstItem.latVal),
-                    Number(firstItem.lonVal)
-                )
-            );
+    loadComplexRentList(aptCmplexNo, function (complexRentList) {
+        if (!complexRentList || complexRentList.length === 0) {
+            alert("해당 단지의 매물 정보를 찾을 수 없습니다.");
+            return;
         }
+
+        // 현재 선택 단지의 실제 매물 목록으로 교체
+        rentListingList = complexRentList;
+
+        const firstItem = complexRentList[0];
+        const page = document.querySelector(".rent-map-page");
+
+        if (page && page.classList.contains("panels-collapsed")) {
+            page.classList.remove("panels-collapsed");
+
+            setTimeout(function () {
+                if (map) {
+                    map.relayout();
+
+                    if (firstItem.latVal != null && firstItem.lonVal != null) {
+                        map.panTo(
+                            new kakao.maps.LatLng(
+                                Number(firstItem.latVal),
+                                Number(firstItem.lonVal)
+                            )
+                        );
+                    }
+                }
+            }, 260);
+        } else {
+            if (map && firstItem.latVal != null && firstItem.lonVal != null) {
+                map.panTo(
+                    new kakao.maps.LatLng(
+                        Number(firstItem.latVal),
+                        Number(firstItem.lonVal)
+                    )
+                );
+            }
+        }
+
+        renderComplexRentList(firstItem, complexRentList);
+        selectRent(firstItem.rentLstgNo);
+    });
+}
+
+/**
+ * 선택한 단지의 실제 매물 목록 조회
+ */
+function loadComplexRentList(aptCmplexNo, callback) {
+    if (complexRentCache[aptCmplexNo]) {
+        callback(complexRentCache[aptCmplexNo]);
+        return;
     }
 
-    renderComplexRentList(firstItem, complexRentList);
-    selectRent(firstItem.rentLstgNo);
+    const contextPath = typeof CONTEXT_PATH !== "undefined" ? CONTEXT_PATH : "";
+    const apiUrl = contextPath + "/rent/complex-data/" + encodeURIComponent(aptCmplexNo);
+
+    fetch(apiUrl)
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error("단지별 매물 목록 조회 실패");
+            }
+
+            return response.json();
+        })
+        .then(function (data) {
+            console.log("단지별 매물 데이터:", aptCmplexNo, data);
+
+            if (!data.success) {
+                alert(data.message || "단지별 매물 목록을 불러오지 못했습니다.");
+                callback([]);
+                return;
+            }
+
+            const list = normalizeRentList(data.list || []);
+
+            complexRentCache[aptCmplexNo] = list;
+
+            callback(list);
+        })
+        .catch(function (error) {
+            console.error("단지별 매물 목록 조회 오류:", error);
+            alert("단지별 매물 목록 조회 중 오류가 발생했습니다.");
+            callback([]);
+        });
 }
 
 /**

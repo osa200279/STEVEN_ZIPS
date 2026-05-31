@@ -54,6 +54,27 @@ public class RentServiceImpl implements IRentService {
         return list;
     }
 
+    /**
+     * 특정 단지의 매물 목록 조회
+     *
+     * 지도 마커 클릭 시 좌측 목록/상세 패널에 표시할 데이터.
+     */
+    @Override
+    public List<RentListingMapDTO> selectRentListByComplexNo(String aptCmplexNo) {
+        List<RentListingMapDTO> list = rentMapper.selectRentListByComplexNo(aptCmplexNo);
+
+        for (RentListingMapDTO dto : list) {
+            filterComplexImages(dto);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<RentListingMapDTO> selectRentMapComplexList() {
+        return rentMapper.selectRentMapComplexList();
+    }
+
     private void filterComplexImages(
             RentListingMapDTO dto
     ) {

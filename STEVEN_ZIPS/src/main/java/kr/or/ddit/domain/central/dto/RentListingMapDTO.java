@@ -91,4 +91,13 @@ public class RentListingMapDTO {
     private String searchAmountRange;     // UNDER_5000, 5000_10000, 10000_20000, OVER_20000
     private String searchStatus;          // ALL, OPEN, CLOSE
     private String searchKeyword;         // 단지명/주소/매물명
+
+    private Integer rentCount;          // 단지 내 공급 매물 수
+    private Long minMonthlyRentAmt;     // 월세 최저가
+    private Long maxDpstAmt;            // 전세/보증금 최대값
+    private Integer jsCount;             // 전세 매물 수
+    private Integer peCount;             // 월세 매물 수
+    private Long minJsDpstAmt;           // 전세 최저 보증금
+    private Long minPeMonthlyRentAmt;    // 월세 최저 월 임대료
+
 }

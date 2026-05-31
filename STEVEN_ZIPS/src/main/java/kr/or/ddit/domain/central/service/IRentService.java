@@ -13,4 +13,8 @@ public interface IRentService {
     int selectRentListingCount(PaginationInfoVO<RentListingMapDTO> pagingVO);
 
     List<RentListingMapDTO> selectRentListingPagingList(PaginationInfoVO<RentListingMapDTO> pagingVO);
+
+    List<RentListingMapDTO> selectRentListByComplexNo(String aptCmplexNo);
+
+    List<RentListingMapDTO> selectRentMapComplexList();
 }
