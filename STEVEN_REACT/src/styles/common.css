@@ -1162,3 +1162,54 @@
   border-color: var(--primary);
   background-color: var(--surface-container-low);
 }
+
+/* 통계 섹션 전용 레이아웃 */
+.stats-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .stats-wrapper { grid-template-columns: 1fr; }
+}
+
+.stat-group-card {
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.stat-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--outline-variant);
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--on-surface);
+}
+
+.stat-rank {
+  font-weight: 800;
+  color: var(--on-surface-variant);
+  width: 24px;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace; /* 모노스페이스 사용 */
+}

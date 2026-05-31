@@ -8,7 +8,6 @@ function Anls() {
     <div>
       <FeeContainer />
       <div className='content-wrapper'>
-      <RecruitContainer />
       </div>
     </div>
   )
