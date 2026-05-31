@@ -70,7 +70,9 @@
 
                         <div class="kakao-window-top">
 
-                            <button type="button" class="kakao-window-btn">
+                            <button type="button"
+                                    id="kakaoMinBtn"
+                                    class="kakao-window-btn">
                                 <svg viewBox="0 0 24 24" class="kakao-window-svg">
                                     <path d="M5 12H19"/>
                                 </svg>
@@ -475,6 +477,7 @@
         flex-direction:column;
         box-shadow:0 15px 40px rgba(0,0,0,.25);
         font-family:"Malgun Gothic","맑은 고딕",sans-serif;
+        position:relative; /* JS로 left/top 이동시키기 위한 기준 */
     }
 
     /* =========================
@@ -489,6 +492,8 @@
         gap:8px;
         padding:0 9px;
         flex-shrink:0;
+        cursor:move; /* 드래그 가능하다는 표시 */
+        user-select:none; /* 드래그 중 글자 선택 방지 */
     }
 
     .kakao-window-btn{
@@ -825,6 +830,7 @@
         font-size:13px;
         letter-spacing:-0.3px;
     }
+
 </style>
 
 <script type="module">
@@ -860,11 +866,81 @@
     const kakaoAlimBtn = document.getElementById("kakaoAlimBtn");
     const kakaoModal = document.getElementById("kakaoModal");
     const kakaoCloseBtn = document.getElementById("kakaoCloseBtn");
+    const kakaoMinBtn = document.getElementById("kakaoMinBtn");
     const kakaoAlimList = document.getElementById("kakaoAlimList");
     const kakaoBadge = document.querySelector(".kakao-badge");
 
     const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
     const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
+
+    const kakaoTalkWindow = document.querySelector(".kakao-talk-window");
+    const kakaoWindowTop = document.querySelector(".kakao-window-top");
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let currentLeft = 0;
+    let currentTop = 0;
+
+    /*
+ * 최소화 버튼
+ * 화면에서 카카오 모달창을 숨김
+ */
+    if (kakaoMinBtn) {
+        kakaoMinBtn.addEventListener("click", async () => {
+            kakaoModal.style.display = "none";
+            // 닫은 뒤 알림 개수 다시 조회
+            await loadKakaoUnreadCount();
+        });
+    }
+
+    /*
+     * 드래그 기능
+     * 드래그란?
+     * 마우스로 클릭한 상태에서 움직이는 동작입니다.
+     * 왜 사용?
+     * 사용자가 모달창 위치를 직접 옮길 수 있게 하기 위해 사용합니다.
+     */
+    if (kakaoTalkWindow && kakaoWindowTop) {
+
+        kakaoWindowTop.addEventListener("mousedown", function (e) {
+
+            // 닫기/최소화/최대화 버튼을 누를 때는 드래그하지 않음
+            if (e.target.closest(".kakao-window-btn")) {
+                return;
+            }
+
+            isDragging = true;
+
+            const rect = kakaoTalkWindow.getBoundingClientRect();
+
+            startX = e.clientX;
+            startY = e.clientY;
+            currentLeft = rect.left;
+            currentTop = rect.top;
+
+            kakaoModal.style.justifyContent = "flex-start";
+            kakaoModal.style.alignItems = "flex-start";
+
+            kakaoTalkWindow.style.position = "fixed";
+            kakaoTalkWindow.style.left = currentLeft + "px";
+            kakaoTalkWindow.style.top = currentTop + "px";
+        });
+
+        document.addEventListener("mousemove", function (e) {
+            if (!isDragging) return;
+
+            const moveX = e.clientX - startX;
+            const moveY = e.clientY - startY;
+
+            kakaoTalkWindow.style.left = (currentLeft + moveX) + "px";
+            kakaoTalkWindow.style.top = (currentTop + moveY) + "px";
+        });
+
+        document.addEventListener("mouseup", function () {
+            isDragging = false;
+        });
+    }
 
     /*
      * 알림 개수 조회
@@ -970,6 +1046,14 @@
         kakaoAlimBtn.addEventListener("click", async () => {
             await loadKakaoAlimList();
             kakaoModal.style.display = "flex";
+            /* 새로 켤 때 위치 중앙으로 초기화 열리게 */
+            kakaoModal.style.justifyContent = "center";
+            kakaoModal.style.alignItems = "center";
+
+            kakaoTalkWindow.style.position = "relative";
+            kakaoTalkWindow.style.left = "";
+            kakaoTalkWindow.style.top = "";
+            kakaoTalkWindow.classList.remove("minimized");
         });
     }
 
