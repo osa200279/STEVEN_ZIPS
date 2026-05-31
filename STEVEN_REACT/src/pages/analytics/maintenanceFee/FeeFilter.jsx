@@ -1,66 +1,64 @@
 import React from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 const FeeFilter = ({ filters, setFilters, onSearch }) => {
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFilters(prev => ({ ...prev, [name]: value }));
+    // 50개까지 확장 가능한 아파트 리스트
+    const aptOptions = [
+        "반포자이", "래미안원베일리", "아크로리버파크", "헬리오시티", "잠실엘스",
+        "트리지움", "고덕그라시움", "마포래미안푸르지오", "경희궁자이", "은평뉴타운",
+        "래미안대치팰리스", "은마아파트", "도곡렉슬", "개포래미안포레스트", "디에이치자이개포"
+    ];
+
+    const handleInputChange = (index, value) => {
+        const newSelected = [...filters.selectedApts];
+        newSelected[index] = value;
+        setFilters(prev => ({ ...prev, selectedApts: newSelected }));
     };
 
     return (
-        <div className="filter-panel">
-            <div className="filter-grid">
-                {/* 단지 필터 */}
-                <div className="filter-column">
-                    <div className="filter-group">
-                        <label className="filter-label">단지명</label>
-                        <select 
-                            name="aptCmplexNo" 
-                            className="filter-input" 
-                            value={filters.aptCmplexNo} 
-                            onChange={handleInputChange}
-                        >
-                            <option value="">전체 단지</option>
-                            <option value="1">A아파트</option>
-                            <option value="2">B아파트</option>
-                        </select>
-                    </div>
-                </div>
+        <div style={{ padding: '5px', background: '#f8f9fa', borderRadius: '12px', marginBottom: '0px' }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{ fontWeight: 'bold', marginRight: '10px' }}>아파트 비교:</span>
 
-                {/* 기간 필터 (연도) */}
-                <div className="filter-column">
-                    <div className="filter-group">
-                        <label className="filter-label">연도</label>
-                        <input 
-                            type="number" 
-                            name="year" 
-                            className="filter-input" 
-                            placeholder="YYYY"
-                            value={filters.year}
-                            onChange={handleInputChange}
+                {[0, 1, 2, 3].map((index) => (
+                    <div key={index} style={{ position: 'relative' }}>
+                        <input
+                            // 모든 인풋이 각각 독립적인 datalist를 참조하도록 설정
+                            list={`apt-list-${index}`}
+                            value={filters.selectedApts[index] || ""}
+                            onChange={(e) => handleInputChange(index, e.target.value)}
+                            placeholder={`아파트 ${index + 1}`}
+                            style={{ 
+                                padding: '8px', 
+                                borderRadius: '6px', 
+                                border: '1px solid #ddd', 
+                                width: '130px' 
+                            }}
                         />
-                    </div>
-                </div>
-
-                {/* 기간 필터 (월) */}
-                <div className="filter-column">
-                    <div className="filter-group">
-                        <label className="filter-label">월</label>
-                        <select name="month" className="filter-input" value={filters.month} onChange={handleInputChange}>
-                            {[...Array(12)].map((_, i) => (
-                                <option key={i + 1} value={i + 1}>{i + 1}월</option>
+                        <datalist id={`apt-list-${index}`}>
+                            {aptOptions.map(apt => (
+                                <option key={apt} value={apt} />
                             ))}
-                        </select>
+                        </datalist>
                     </div>
-                </div>
+                ))}
 
-                {/* 조회 버튼 */}
-                <div className="filter-column" style={{ justifyContent: 'flex-end' }}>
-                    <button className="btn-primary" onClick={onSearch}>
-                        <Search size={16} />
-                        조회
-                    </button>
-                </div>
+                <button 
+                    onClick={onSearch} 
+                    style={{ 
+                        marginLeft: 'auto', 
+                        padding: '8px 16px', 
+                        background: '#4a90e2', 
+                        color: 'white', 
+                        border: 'none', 
+                        borderRadius: '6px', 
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}
+                >
+                    <Search size={16} style={{ marginRight: '5px' }} /> 조회
+                </button>
             </div>
         </div>
     );

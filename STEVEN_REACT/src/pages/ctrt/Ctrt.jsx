@@ -97,7 +97,6 @@ const Ctrt = () => {
     navigate(`/adm/ctrt/detail/${RENT_CTRT_NO}`);
   };
 
-
   return (
     <div className="content-wrapper" style={{ paddingTop: '0px' }}>
       {/* 타이틀 세션 */}
@@ -249,7 +248,9 @@ const Ctrt = () => {
                         <p className="cell-sub">{item.APT_CMPLEX_NM}</p>
                       </td>
                       <td> {/* 계약 승인일 */}
-                        <span className="cell-title">{item.CTRT_APRV_DT ? new Date(item.CTRT_APRV_DT).toLocaleDateString().replace(/\.$/, '') : '-'}</span>
+                        <span className="cell-title">{item.CTRT_APRV_DT
+                          ? new Date(item.CTRT_APRV_DT).toLocaleDateString().replace(/\.$/, '')
+                          : '-'}</span>
                       </td>
                       <td> {/* 기간 */}
                         {item.MVIN_DT && item.MVOUT_DT ?
@@ -265,7 +266,8 @@ const Ctrt = () => {
                       </td>
                       <td className='price'> {/* 임대료 */}
                         <span className='cell-title'>
-                          {item.RENT_TYPE_CD === 'JS' ? `${item.DPST_AMT?.toLocaleString()}원` : `${item.MTHLY_RENT_AMT?.toLocaleString()}원`}
+                          {item.RENT_TYPE_CD === 'JS' ? `${Number(item.DPST_AMT || 0).toLocaleString()}원`
+                            : `${(Number(item.MTHLY_RENT_AMT) || 0).toLocaleString()}원`}
                         </span>
                       </td>
                       <td> {/* 상태 */}

@@ -6,9 +6,10 @@ function Anls() {
 
   return (
     <div>
-      통계 페이지
       <FeeContainer />
+      <div className='content-wrapper'>
       <RecruitContainer />
+      </div>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { X, FileText, User, ClipboardList, MapPin, Calendar } from 'lucide-react
 const ApplicantDetailModal = ({ isOpen, data, onClose }) => {
     if (!isOpen || !data) return null;
 
+
     return (
         <div className="mngr-modal-overlay">
             <div className="mngr-modal mngr-detail-modal">
