@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.common.kakao.mapper.IKakaoAlimMapper">
+
+    <select id="selectNextAlimNo" resultType="string">
+        SELECT 'KAKAO' || LPAD(SEQ_KAKAO_ALIM.NEXTVAL, 6, '0')
+        FROM DUAL
+    </select>
+
+    <insert id="insertKakaoAlim"
+            parameterType="kr.or.ddit.common.kakao.vo.KakaoAlimVO">
+        INSERT INTO KAKAO_ALIM (
+            ALIM_NO,
+            USER_NO,
+            ALIM_TY_CD,
+            ALIM_TTL,
+            ALIM_CN,
+            LINK_URL,
+            READ_YN,
+            SND_DTTM,
+            RGTR_ID
+        ) VALUES (
+                     #{alimNo},
+                     #{userNo},
+                     #{alimTyCd},
+                     #{alimTtl},
+                     #{alimCn},
+                     #{linkUrl},
+                     'N',
+                     SYSDATE,
+                     #{rgtrId}
+                 )
+    </insert>
+
+    <select id="selectMyKakaoAlimList"
+            parameterType="string"
+            resultType="kr.or.ddit.common.kakao.vo.KakaoAlimVO">
+        SELECT
+            ALIM_NO AS alimNo,
+            USER_NO AS userNo,
+            ALIM_TY_CD AS alimTyCd,
+            ALIM_TTL AS alimTtl,
+            ALIM_CN AS alimCn,
+            LINK_URL AS linkUrl,
+            READ_YN AS readYn,
+            TO_CHAR(SND_DTTM, 'YYYY-MM-DD HH24:MI') AS sndDttm,
+            RGTR_ID AS rgtrId
+        FROM KAKAO_ALIM
+        WHERE USER_NO = #{userNo}
+        ORDER BY SND_DTTM DESC
+    </select>
+
+    <update id="updateReadYn">
+        UPDATE KAKAO_ALIM
+        SET READ_YN = 'Y'
+        WHERE ALIM_NO = #{alimNo}
+          AND USER_NO = #{userNo}
+    </update>
+
+</mapper>

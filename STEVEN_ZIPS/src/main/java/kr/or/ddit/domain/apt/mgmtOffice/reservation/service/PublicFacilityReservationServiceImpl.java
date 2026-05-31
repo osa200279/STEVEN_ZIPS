@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.reservation.service;
 
+import kr.or.ddit.common.kakao.service.IKakaoAlimService;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.common.sms.service.ISmsService;
 import kr.or.ddit.domain.apt.mgmtOffice.reservation.mapper.IPublicFacilityReservationMapper;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import java.util.List;
-import kr.or.ddit.common.sms.service.ISmsService;
+import kr.or.ddit.common.kakao.service.IKakaoAlimService;
 
 /**
  * ServiceImpl란? 실제 업무 규칙을 처리하는 클래스입니다.
@@ -23,6 +24,9 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
 
     /* SMS 문자 발송 */
     private final ISmsService smsService;
+
+    /* 카카오톡 스타일 알림 저장 서비스 */
+    private final IKakaoAlimService kakaoAlimService;
 
 
     private PaginationInfoVO<PublicFacilityReservationVO> buildPaging(
@@ -197,6 +201,7 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     @Override
     @Transactional
     public void approve(PublicFacilityReservationVO vo) {
+
         mapper.approveReservation(vo);
 
         // 삭제 또는 주석 처리
@@ -206,11 +211,21 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
                 mapper.selectReservationSmsInfo(vo.getRsvtNo());
 
         if (smsInfo != null) {
+
+            // SMS 발송
             smsService.sendReservationApproved(
                     smsInfo.getUserNo(),
                     smsInfo.getCmnFacilityNm(),
                     smsInfo.getRsvtBgngDttm() + " ~ " + smsInfo.getRsvtEndDttm(),
                     "SYSTEM"
+            );
+
+            // 카카오톡 스타일 알림 저장
+            kakaoAlimService.sendReservationApproved(
+                    smsInfo.getUserNo(),
+                    smsInfo.getCmnFacilityNm(),
+                    smsInfo.getRsvtBgngDttm() + " ~ " + smsInfo.getRsvtEndDttm(),
+                    "/resident/publicFacility/myReservation/" + smsInfo.getAptCmplexNo()
             );
         }
     }

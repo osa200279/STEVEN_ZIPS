@@ -29,6 +29,43 @@
         </a>
 
         <div class="header-actions">
+
+            <%-- 카카오 알림 --%>
+            <button type="button"
+                    id="kakaoAlimBtn"
+                    class="kakao-alim-btn">
+
+                <svg class="kakao-bell"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/>
+                    <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                </svg>
+
+                <span class="kakao-label">알림</span>
+
+                <span class="kakao-badge">
+                <c:out value="${empty unreadCount ? 0 : unreadCount}"/>
+            </span>
+            </button>
+            <!-- 카카오톡 모달 -->
+            <div id="kakaoModal" class="kakao-modal">
+                <div class="kakao-phone">
+                    <div class="kakao-header">
+                        <span>STEVEN_ZIPS</span>
+                        <button type="button" id="kakaoCloseBtn">×</button>
+                    </div>
+
+                    <div id="kakaoAlimList" class="kakao-chat-body">
+                        <!-- JS로 알림 출력 -->
+                    </div>
+                </div>
+            </div>
+
             <sec:authorize access="isAuthenticated()">
             <span style="font-size:1.2em; color:blue; font-weight:bold;">
             <sec:authentication property="principal.member.userNm"/>
@@ -221,6 +258,57 @@
         </div>
     </div>
 </div>
+
+    <style>
+        /* 스타일시트를 못찾아서.. 알려주면 옮기겠습니다. -보라 */
+        .kakao-alim-btn{
+            display:flex;
+            align-items:center;
+            gap:4px;
+
+            background:#FEE500;
+
+            border:none;
+            border-radius:999px;
+
+            padding:4px 8px;
+
+            font-size:11px;
+            font-weight:700;
+
+            color:#191919;
+
+            margin-right:10px;
+            cursor:pointer;
+        }
+
+        .kakao-bell{
+            width:11px;
+            height:11px;
+            fill:#191919;
+        }
+
+        .kakao-badge{
+            min-width:14px;
+            height:14px;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            border-radius:50%;
+
+            background:#3C1E1E;
+            color:#FEE500;
+
+            font-size:9px;
+            font-weight:700;
+        }
+        /* 카카오 모달은 버튼 클릭 전까지 숨김 */
+        .kakao-modal{
+            display:none;
+        }
+    </style>
 
 <script type="module">
 
