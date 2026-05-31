@@ -75,6 +75,9 @@ public class SmsServiceImpl implements ISmsService {
                         "FAIL",
                         e.getMessage()
                 );
+
+                // 문자 실패 시 상위 로직 중단
+                throw new RuntimeException("SMS 발송에 실패했습니다.", e);
             }
         }
     }

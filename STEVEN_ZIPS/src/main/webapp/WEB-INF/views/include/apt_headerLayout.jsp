@@ -127,7 +127,7 @@
                             </div>
                         </div>
 
-                        <div class="kakao-date-pill">
+                        <div class="kakao-date-pill" id="kakaoDatePill">
                             <svg width="12"
                                  height="12"
                                  viewBox="0 0 24 24"
@@ -955,6 +955,47 @@
     }
 
     /*
+     * 카카오톡 시간 표시 형식으로 변환
+     * 예: 2026-06-01 15:44:00 -> 오후 3:44
+     */
+    function formatKakaoTime(sndDttm) {
+        if (!sndDttm) return "";
+
+        const date = new Date(sndDttm.replace(" ", "T"));
+
+        let hour = date.getHours();
+        const minute = String(date.getMinutes()).padStart(2, "0");
+        const ampm = hour < 12 ? "오전" : "오후";
+
+        hour = hour % 12;
+        if (hour === 0) hour = 12;
+
+        return ampm + " " + hour + ":" + minute;
+    }
+
+    /*
+     * 오늘 날짜를
+     * 2026년 6월 1일 월요일
+     * 형식으로 반환
+     */
+    function getTodayLabel() {
+
+        const now = new Date();
+
+        const weekNames = [
+            "일요일",
+            "월요일",
+            "화요일",
+            "수요일",
+            "목요일",
+            "금요일",
+            "토요일"
+        ];
+
+        return `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${weekNames[now.getDay()]}`;
+    }
+
+    /*
      * 알림 목록 조회
      * 왜 사용?
      * 사용자가 알림 버튼을 클릭했을 때 DB에 저장된 알림 내용을 카카오톡 화면처럼 보여주기 위해 사용합니다.
@@ -1017,7 +1058,7 @@
 
                                     <div class="kakao-chat-bubble-wrap">
                                         <div class="kakao-chat-bubble"></div>
-                                        <div class="kakao-chat-time">오전 3:44</div>
+                                        <div class="kakao-chat-time">` + formatKakaoTime(alim.sndDttm) + `</div>
                                     </div>
                                 </div>
                             `;
@@ -1045,6 +1086,24 @@
     if (kakaoAlimBtn) {
         kakaoAlimBtn.addEventListener("click", async () => {
             await loadKakaoAlimList();
+            const datePill = document.getElementById("kakaoDatePill");
+
+            if (datePill) {
+                datePill.innerHTML = `
+                    <svg width="12"
+                         height="12"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="#666"
+                         stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    ` + getTodayLabel() + `
+                `;
+            }
             kakaoModal.style.display = "flex";
             /* 새로 켤 때 위치 중앙으로 초기화 열리게 */
             kakaoModal.style.justifyContent = "center";

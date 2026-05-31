@@ -78,7 +78,10 @@
             ALIM_CN,
             LINK_URL,
             READ_YN,
-            SND_DTTM,
+
+            /* 카카오톡 시간 표시용 */
+            TO_CHAR(SND_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS SND_DTTM,
+
             RGTR_ID
         FROM KAKAO_ALIM
         WHERE USER_NO = #{userNo}

@@ -220,65 +220,76 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
 
         mapper.approveReservation(vo);
 
-        // 삭제 또는 주석 처리
-        // mapper.updateItemStatusUse(vo);
-
         PublicFacilityReservationVO smsInfo =
                 mapper.selectReservationSmsInfo(vo.getRsvtNo());
 
-        if (smsInfo != null) {
-
-            // SMS 발송
-            smsService.sendReservationApproved(
-                    smsInfo.getUserNo(),
-                    smsInfo.getCmnFacilityNm(),
-                    smsInfo.getRsvtBgngDttm() + " ~ " + smsInfo.getRsvtEndDttm(),
-                    "SYSTEM"
-            );
-
-            // 카카오톡 스타일 알림 저장
-            kakaoAlimService.sendReservationApproved(
-                    smsInfo.getUserNo(),
-                    smsInfo.getCmnFacilityNm(),
-                    smsInfo.getRsvtBgngDttm() + " ~ " + smsInfo.getRsvtEndDttm(),
-                    "/resident/publicFacility/myReservation/" + smsInfo.getAptCmplexNo()
-            );
+        if (smsInfo == null) {
+            throw new IllegalStateException("예약 알림 발송 정보를 찾을 수 없습니다.");
         }
+
+        String rsvtDttm =
+                smsInfo.getRsvtBgngDttm() + " ~ " + smsInfo.getRsvtEndDttm();
+
+        /*
+         * 1. 실제 SMS 발송
+         * 여기서 실패하면 예외가 발생해야 함.
+         * 그래야 아래 카카오 알림 INSERT가 실행되지 않음.
+         */
+        smsService.sendReservationApproved(
+                smsInfo.getUserNo(),
+                smsInfo.getCmnFacilityNm(),
+                rsvtDttm,
+                "SYSTEM"
+        );
+
+        /*
+         * 2. SMS 성공 후에만 카카오 알림 DB 저장
+         * 이 데이터가 입주민 카카오 모달에 출력됨.
+         */
+        kakaoAlimService.sendReservationApproved(
+                smsInfo.getUserNo(),
+                smsInfo.getCmnFacilityNm(),
+                rsvtDttm,
+                "/resident/publicFacility/myReservation/" + smsInfo.getAptCmplexNo()
+        );
     }
 
     @Override
     @Transactional
     public void reject(PublicFacilityReservationVO vo) {
+
         if (!StringUtils.hasText(vo.getRejectReason())) {
             throw new IllegalArgumentException("거절사유는 필수입니다.");
         }
 
         mapper.rejectReservation(vo);
 
-        /*
-         * SMS 발송용 예약 상세 재조회
-         */
         PublicFacilityReservationVO smsInfo =
                 mapper.selectReservationSmsInfo(vo.getRsvtNo());
 
-        if (smsInfo != null) {
-
-            // SMS 발송
-            smsService.sendReservationRejected(
-                    smsInfo.getUserNo(),
-                    smsInfo.getCmnFacilityNm(),
-                    vo.getRejectReason(),
-                    "SYSTEM"
-            );
-
-            // 카카오 알림 저장
-            kakaoAlimService.sendReservationRejected(
-                    smsInfo.getUserNo(),
-                    smsInfo.getCmnFacilityNm(),
-                    vo.getRejectReason(),
-                    "/resident/publicFacility/myReservation/" + smsInfo.getAptCmplexNo()
-            );
+        if (smsInfo == null) {
+            throw new IllegalStateException("예약 알림 발송 정보를 찾을 수 없습니다.");
         }
+
+        /*
+         * 1. 실제 SMS 발송
+         */
+        smsService.sendReservationRejected(
+                smsInfo.getUserNo(),
+                smsInfo.getCmnFacilityNm(),
+                vo.getRejectReason(),
+                "SYSTEM"
+        );
+
+        /*
+         * 2. SMS 성공 후에만 카카오 알림 DB 저장
+         */
+        kakaoAlimService.sendReservationRejected(
+                smsInfo.getUserNo(),
+                smsInfo.getCmnFacilityNm(),
+                vo.getRejectReason(),
+                "/resident/publicFacility/myReservation/" + smsInfo.getAptCmplexNo()
+        );
     }
 
     @Override
