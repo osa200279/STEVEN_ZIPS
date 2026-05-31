@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
 import java.util.List;
-import kr.or.ddit.common.kakao.service.IKakaoAlimService;
 
 /**
  * ServiceImpl란? 실제 업무 규칙을 처리하는 클래스입니다.
@@ -188,13 +188,29 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
         mapper.insertReservation(vo);
 
         /*
-         * 승인대기 예약도 다른 사람이 같은 시간에 중복 예약하지 못하도록
-         * FACILITY_HSTRY에서 PENDING 상태로 조회되게 합니다.
-         *
-         * 주의:
-         * PUBLIC_ITEM 자체를 REPAIR로 바꾸면 전체 시간대에서 좌석이 막힐 수 있으므로
-         * 시간대별 예약 여부는 FACILITY_HSTRY 기준으로 판단하는 게 더 안전합니다.
+         * 카카오 알림 저장
+         * PENDING 예약이면 "예약 신청 완료"
+         * APPROVED 예약이면 "예약 승인 완료" 알림을 저장합니다.
          */
+        String linkUrl = "/resident/publicFacility/myReservation/" + vo.getAptCmplexNo();
+        String rsvtDttm = vo.getRsvtBgngDttm() + " ~ " + vo.getRsvtEndDttm();
+
+        if ("PENDING".equals(vo.getRsvtSttsCd())) {
+            kakaoAlimService.sendReservationRequested(
+                    vo.getUserNo(),
+                    vo.getCmnFacilityNm(),
+                    rsvtDttm,
+                    linkUrl
+            );
+        } else if ("APPROVED".equals(vo.getRsvtSttsCd())) {
+            kakaoAlimService.sendReservationApproved(
+                    vo.getUserNo(),
+                    vo.getCmnFacilityNm(),
+                    rsvtDttm,
+                    linkUrl
+            );
+        }
+
         return vo.getRsvtNo();
     }
 
@@ -246,11 +262,21 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
                 mapper.selectReservationSmsInfo(vo.getRsvtNo());
 
         if (smsInfo != null) {
+
+            // SMS 발송
             smsService.sendReservationRejected(
                     smsInfo.getUserNo(),
                     smsInfo.getCmnFacilityNm(),
                     vo.getRejectReason(),
                     "SYSTEM"
+            );
+
+            // 카카오 알림 저장
+            kakaoAlimService.sendReservationRejected(
+                    smsInfo.getUserNo(),
+                    smsInfo.getCmnFacilityNm(),
+                    vo.getRejectReason(),
+                    "/resident/publicFacility/myReservation/" + smsInfo.getAptCmplexNo()
             );
         }
     }
@@ -258,13 +284,29 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     @Override
     @Transactional
     public void cancel(PublicFacilityReservationVO vo) {
+
         /*
-         * 취소 가능 조건은 Mapper에서 처리합니다.
-         * Mapper 조건: 본인 예약 + 승인대기/승인완료 + 예약 시작 전
+         * 취소 전 예약 정보를 먼저 조회합니다.
+         * 왜 먼저 조회?
+         * cancelReservation 실행 후에는 상태가 CANCELLED로 바뀌므로,
+         * 알림에 넣을 시설명/예약시간/단지번호를 미리 가져오기 위해서입니다.
          */
+        PublicFacilityReservationVO smsInfo =
+                mapper.selectReservationSmsInfo(vo.getRsvtNo());
+
         int result = mapper.cancelReservation(vo);
+
         if (result == 0) {
             throw new IllegalStateException("예약 시작 시간이 지났거나 취소할 수 없는 예약입니다.");
+        }
+
+        if (smsInfo != null) {
+            kakaoAlimService.sendReservationCancelled(
+                    smsInfo.getUserNo(),
+                    smsInfo.getCmnFacilityNm(),
+                    smsInfo.getRsvtBgngDttm() + " ~ " + smsInfo.getRsvtEndDttm(),
+                    "/resident/publicFacility/myReservation/" + smsInfo.getAptCmplexNo()
+            );
         }
     }
 

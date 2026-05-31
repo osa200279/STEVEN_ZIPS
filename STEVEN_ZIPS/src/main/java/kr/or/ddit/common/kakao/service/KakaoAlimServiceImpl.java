@@ -39,6 +39,8 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
         mapper.insertKakaoAlim(vo);
     }
 
+
+
     @Override
     @Transactional
     public void sendReservationRejected(String userNo, String facilityNm, String reason, String linkUrl) {
@@ -80,5 +82,37 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
     @Transactional
     public void readAlim(String alimNo, String userNo) {
         mapper.updateReadYn(alimNo, userNo);
+    }
+
+    @Override
+    @Transactional
+    public void sendReservationRequested(String userNo, String facilityNm, String rsvtDttm, String linkUrl) {
+        KakaoAlimVO vo = new KakaoAlimVO();
+
+        vo.setAlimNo(mapper.selectNextAlimNo());
+        vo.setUserNo(userNo);
+        vo.setAlimTyCd("RSVT_REQUESTED");
+        vo.setAlimTtl("편의시설 예약 신청");
+        vo.setAlimCn(facilityNm + " 예약 신청이 완료되었습니다.\n예약일시: " + rsvtDttm);
+        vo.setLinkUrl(linkUrl);
+        vo.setRgtrId("SYSTEM");
+
+        mapper.insertKakaoAlim(vo);
+    }
+
+    @Override
+    @Transactional
+    public void sendReservationCancelled(String userNo, String facilityNm, String rsvtDttm, String linkUrl) {
+        KakaoAlimVO vo = new KakaoAlimVO();
+
+        vo.setAlimNo(mapper.selectNextAlimNo());
+        vo.setUserNo(userNo);
+        vo.setAlimTyCd("RSVT_CANCELLED");
+        vo.setAlimTtl("편의시설 예약 취소");
+        vo.setAlimCn(facilityNm + " 예약이 취소되었습니다.\n예약일시: " + rsvtDttm);
+        vo.setLinkUrl(linkUrl);
+        vo.setRgtrId("SYSTEM");
+
+        mapper.insertKakaoAlim(vo);
     }
 }
