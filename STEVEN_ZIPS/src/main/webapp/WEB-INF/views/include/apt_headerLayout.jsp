@@ -31,40 +31,153 @@
         <div class="header-actions">
 
             <%-- 카카오 알림 --%>
-            <button type="button"
-                    id="kakaoAlimBtn"
-                    class="kakao-alim-btn">
+                <%-- 카카오 알림 이미지 버튼 --%>
+                <button type="button"
+                        id="kakaoAlimBtn"
+                        class="kakao-alim-img-btn">
+                    <img class="kakao-bell-img"
+                         src="${pageContext.request.contextPath}/img/kakaoConsult.png"
+                         alt="카카오알림">
+                    <span class="kakao-badge">
+                        <c:out value="${empty unreadCount ? 0 : unreadCount}"/>
+                    </span>
 
-                <svg class="kakao-bell"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="2"
-                     stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/>
-                    <path d="M13.73 21a2 2 0 01-3.46 0"/>
-                </svg>
+                </button>
+<%--            <button type="button"--%>
+<%--                    id="kakaoAlimBtn"--%>
+<%--                    class="kakao-alim-btn">--%>
 
-                <span class="kakao-label">알림</span>
+<%--                <svg class="kakao-bell"--%>
+<%--                     viewBox="0 0 24 24"--%>
+<%--                     fill="none"--%>
+<%--                     stroke="currentColor"--%>
+<%--                     stroke-width="2"--%>
+<%--                     stroke-linecap="round"--%>
+<%--                     stroke-linejoin="round">--%>
+<%--                    <path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/>--%>
+<%--                    <path d="M13.73 21a2 2 0 01-3.46 0"/>--%>
+<%--                </svg>--%>
 
-                <span class="kakao-badge">
-                <c:out value="${empty unreadCount ? 0 : unreadCount}"/>
-            </span>
-            </button>
-            <!-- 카카오톡 모달 -->
-            <div id="kakaoModal" class="kakao-modal">
-                <div class="kakao-phone">
-                    <div class="kakao-header">
-                        <span>STEVEN_ZIPS</span>
-                        <button type="button" id="kakaoCloseBtn">×</button>
-                    </div>
+<%--                <span class="kakao-label">알림</span>--%>
 
-                    <div id="kakaoAlimList" class="kakao-chat-body">
-                        <!-- JS로 알림 출력 -->
+<%--                <span class="kakao-badge">--%>
+<%--                <c:out value="${empty unreadCount ? 0 : unreadCount}"/>--%>
+<%--            </span>--%>
+<%--            </button>--%>
+                <!-- 카카오톡 모달 -->
+                <div id="kakaoModal" class="kakao-modal">
+                    <div class="kakao-talk-window">
+
+                        <div class="kakao-window-top">
+
+                            <button type="button" class="kakao-window-btn">
+                                <svg viewBox="0 0 24 24" class="kakao-window-svg">
+                                    <path d="M5 12H19"/>
+                                </svg>
+                            </button>
+
+                            <button type="button" class="kakao-window-btn">
+                                <svg viewBox="0 0 24 24" class="kakao-window-svg">
+                                    <rect x="7" y="7" width="10" height="10"/>
+                                </svg>
+                            </button>
+
+                            <button type="button"
+                                    id="kakaoCloseBtn"
+                                    class="kakao-window-btn">
+                                <svg viewBox="0 0 24 24" class="kakao-window-svg">
+                                    <path d="M6 6L18 18"/>
+                                    <path d="M18 6L6 18"/>
+                                </svg>
+                            </button>
+
+                        </div>
+
+                        <div class="kakao-talk-header">
+                            <div class="kakao-profile">
+                                <div class="kakao-profile-img">
+                                    <img class="kakao-profile-photo"
+                                         src="${pageContext.request.contextPath}/img/kakaoManager.png"
+                                         alt="관리사무소">
+                                </div>
+                                <div class="kakao-profile-name">아파트 관리사무소</div>
+                            </div>
+
+                            <div class="kakao-header-icons">
+
+                                <!-- 돋보기 아이콘 -->
+                                <svg class="kakao-search-svg"
+                                     viewBox="0 0 24 24"
+                                     aria-hidden="true">
+                                    <circle cx="10" cy="10" r="6"/>
+                                    <path d="M14.5 14.5L20 20"/>
+                                </svg>
+
+                                <!-- 메뉴 아이콘 -->
+                                <svg class="kakao-menu-svg"
+                                     viewBox="0 0 24 24"
+                                     aria-hidden="true">
+                                    <path d="M4 6H20"/>
+                                    <path d="M4 12H20"/>
+                                    <path d="M4 18H20"/>
+                                </svg>
+
+                            </div>
+                        </div>
+
+                        <div class="kakao-date-pill">
+                            <svg width="12"
+                                 height="12"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="#666"
+                                 stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            2026년 6월 1일 월요일
+                        </div>
+
+                        <div id="kakaoAlimList" class="kakao-chat-body">
+                            <!-- JS로 알림 출력 -->
+                        </div>
+
+                        <div class="kakao-input-area">
+                            <div class="kakao-input-placeholder">메시지 입력</div>
+
+                            <div class="kakao-input-bottom">
+                                <div class="kakao-input-icons">
+
+                                    <!-- 실제 카카오톡 파일 아이콘 느낌 -->
+                                    <svg class="kakao-file-svg"
+                                         viewBox="0 0 24 24">
+
+                                        <path d="M4.5 3.5H15.5L19 7V20.5H4.5Z"/>
+                                        <path d="M15.5 3.5V7H19"/>
+
+                                    </svg>
+
+                                    <!-- 플러스 아이콘 -->
+                                    <svg class="kakao-plus-svg"
+                                         viewBox="0 0 24 24"
+                                         aria-hidden="true">
+                                        <path d="M7 4V17H20"/>
+                                        <path d="M4 7H17V20"/>
+                                    </svg>
+
+                                </div>
+
+                                <div class="kakao-send-box">
+                                    <span class="kakao-slider"></span>
+                                    <button type="button">전송</button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </div>
 
             <sec:authorize access="isAuthenticated()">
             <span style="font-size:1.2em; color:blue; font-weight:bold;">
@@ -259,56 +372,460 @@
     </div>
 </div>
 
-    <style>
-        /* 스타일시트를 못찾아서.. 알려주면 옮기겠습니다. -보라 */
-        .kakao-alim-btn{
-            display:flex;
-            align-items:center;
-            gap:4px;
+<style>
+    /* =========================
+       카카오 알림 버튼
+       ========================= */
+    .kakao-alim-img-btn{
+        position:relative;
+        border:none;
+        background:transparent;
+        cursor:pointer;
 
-            background:#FEE500;
+        padding:0;
+        margin-right:15px;
 
-            border:none;
-            border-radius:999px;
+        width:auto;
+        height:auto;
+    }
 
-            padding:4px 8px;
+    .kakao-bell-img{
+        width:70px;
+        height:auto;
+        display:block;
+    }
 
-            font-size:11px;
-            font-weight:700;
+    .kakao-badge{
+        position:absolute;
+        top:-3px;
+        right:-4px;
 
-            color:#191919;
+        min-width:14px;
+        height:14px;
+        padding:0 4px;
 
-            margin-right:10px;
-            cursor:pointer;
-        }
+        display:flex;
+        align-items:center;
+        justify-content:center;
 
-        .kakao-bell{
-            width:11px;
-            height:11px;
-            fill:#191919;
-        }
+        border-radius:999px;
+        background:#ff3b30;
+        color:#fff;
 
-        .kakao-badge{
-            min-width:14px;
-            height:14px;
+        font-size:9px;
+        font-weight:700;
+        line-height:1;
+    }
+    /*.kakao-alim-btn{*/
+    /*    display:flex;*/
+    /*    align-items:center;*/
+    /*    gap:4px;*/
+    /*    background:#FEE500;*/
+    /*    border:none;*/
+    /*    border-radius:999px;*/
+    /*    padding:4px 8px;*/
+    /*    font-size:11px;*/
+    /*    font-weight:700;*/
+    /*    color:#191919;*/
+    /*    margin-right:10px;*/
+    /*    cursor:pointer;*/
+    /*}*/
 
-            display:flex;
-            align-items:center;
-            justify-content:center;
+    /*.kakao-bell{*/
+    /*    width:11px;*/
+    /*    height:11px;*/
+    /*}*/
 
-            border-radius:50%;
+    /*.kakao-badge{*/
+    /*    min-width:14px;*/
+    /*    height:14px;*/
+    /*    display:flex;*/
+    /*    align-items:center;*/
+    /*    justify-content:center;*/
+    /*    border-radius:50%;*/
+    /*    background:#3C1E1E;*/
+    /*    color:#FEE500;*/
+    /*    font-size:9px;*/
+    /*    font-weight:700;*/
+    /*}*/
 
-            background:#3C1E1E;
-            color:#FEE500;
+    /* =========================
+       카카오톡 모달 배경
+       ========================= */
+    .kakao-modal{
+        position:fixed;
+        inset:0;
+        display:none;
+        justify-content:center;
+        align-items:center;
+        background:rgba(0,0,0,.38);
+        z-index:5000;
+    }
 
-            font-size:9px;
-            font-weight:700;
-        }
-        /* 카카오 모달은 버튼 클릭 전까지 숨김 */
-        .kakao-modal{
-            display:none;
-        }
-    </style>
+    /* =========================
+       카카오톡 PC 창
+       ========================= */
+    .kakao-talk-window{
+        width:385px;
+        height:535px;
+        background:#b9d0e3;
+        border-radius:8px;
+        overflow:hidden;
+        display:flex;
+        flex-direction:column;
+        box-shadow:0 15px 40px rgba(0,0,0,.25);
+        font-family:"Malgun Gothic","맑은 고딕",sans-serif;
+    }
+
+    /* =========================
+       상단 윈도우 버튼 영역
+       왼쪽 실제 카톡처럼 얇고 낮게
+       ========================= */
+    .kakao-window-top{
+        height:24px;
+        display:flex;
+        justify-content:flex-end;
+        align-items:center;
+        gap:8px;
+        padding:0 9px;
+        flex-shrink:0;
+    }
+
+    .kakao-window-btn{
+        border:none;
+        background:none;
+        cursor:pointer;
+        font-size:13px;
+        font-weight:300;
+        color:#444;
+        line-height:1;
+        padding:0;
+        width:18px;
+        height:18px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .kakao-window-svg{
+        width:13px;
+        height:13px;
+
+        fill:none;
+        stroke:#5f6b70;
+        stroke-width:1.7;
+
+        stroke-linecap:round;
+        stroke-linejoin:round;
+    }
+
+    /* =========================
+       상단 프로필 영역
+       ========================= */
+    .kakao-talk-header{
+        height:61px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:0 18px;
+        flex-shrink:0;
+    }
+
+    .kakao-profile{
+        display:flex;
+        align-items:center;
+        gap:10px;
+    }
+
+    .kakao-profile-img,
+    .kakao-chat-profile-img{
+        width:36px;
+        height:36px;
+        border-radius:50%;
+        background:#fff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        overflow:hidden;
+        flex-shrink:0;
+    }
+
+    .kakao-profile-photo{
+        width:28px;
+        height:28px;
+        border-radius:50%;
+        object-fit:cover;
+        display:block;
+    }
+
+    .kakao-profile-name{
+        font-size:14px;
+        font-weight:400;
+        letter-spacing:-0.5px;
+    }
+
+    /* =========================
+       검색 / 메뉴 아이콘
+       ========================= */
+    .kakao-header-icons{
+        display:flex;
+        align-items:center;
+        gap:14px; /* 돋보기와 메뉴 사이 간격 */
+    }
+
+    .kakao-search-svg{
+        width:20px;
+        height:20px;
+
+        fill:none;
+        stroke:#111;
+        stroke-width:1.8;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+    }
+
+    .kakao-menu-svg{
+        width:22px;
+        height:22px;
+
+        fill:none;
+        stroke:#111;
+        stroke-width:1.8;
+        stroke-linecap:round;
+    }
+
+    /* =========================
+       날짜 pill
+       기존 이모지 달력 제거 → 회색 CSS 아이콘
+       ========================= */
+    .kakao-date-pill{
+        align-self:center;
+        display:flex;
+        align-items:center;
+        gap:6px;
+        background:rgba(135,160,180,.45);
+        border-radius:999px;
+        padding:5px 12px;
+        font-size:11px;
+        color:#202020;
+        margin:4px 0 13px;
+        flex-shrink:0;
+        letter-spacing:-0.4px;
+    }
+
+    .kakao-date-icon{
+        width:13px;
+        height:13px;
+        border:1.5px solid #555;
+        border-radius:2px;
+        display:none;
+        position:relative;
+        box-sizing:border-box;
+    }
+
+    .kakao-date-icon::before{
+        content:"";
+        position:absolute;
+        left:-1.5px;
+        top:3px;
+        width:13px;
+        height:1.5px;
+        background:#555;
+    }
+
+    .kakao-date-icon::after{
+        content:"";
+        position:absolute;
+        left:3px;
+        top:-3px;
+        width:6px;
+        height:3px;
+        border-left:1.5px solid #555;
+        border-right:1.5px solid #555;
+    }
+
+    /* =========================
+       채팅 영역
+       ========================= */
+    .kakao-chat-body{
+        flex:1;
+        overflow-y:auto;
+        padding:0 18px 10px;
+        box-sizing:border-box;
+    }
+
+    .kakao-chat-body::-webkit-scrollbar{
+        width:7px;
+    }
+
+    .kakao-chat-body::-webkit-scrollbar-thumb{
+        background:rgba(0,0,0,.25);
+        border-radius:10px;
+    }
+
+    .kakao-chat-body::-webkit-scrollbar-track{
+        background:rgba(255,255,255,.18);
+    }
+
+    .kakao-chat-row{
+        display:flex;
+        align-items:flex-start;
+        gap:9px;
+        margin-bottom:14px;
+    }
+
+    .kakao-chat-profile-img{
+        width:32px;
+        height:32px;
+    }
+
+    .kakao-chat-profile-img .kakao-profile-photo{
+        width:32px;
+        height:32px;
+    }
+
+    .kakao-chat-main{
+        max-width:245px;
+    }
+
+    .kakao-chat-sender{
+        font-size:11px;
+        margin-bottom:4px;
+        color:#222;
+        letter-spacing:-0.3px;
+    }
+
+    .kakao-chat-bubble-wrap{
+        display:flex;
+        align-items:flex-end;
+        gap:6px;
+    }
+
+    .kakao-chat-bubble{
+        background:#fff;
+        padding:9px 11px;
+        border-radius:3px;
+        font-size:11px;
+        line-height:1.4;
+        color:#111;
+        letter-spacing:-0.3px;
+        word-break:keep-all;
+    }
+
+    .kakao-chat-time{
+        font-size:10px;
+        color:#555;
+        white-space:nowrap;
+        margin-bottom:2px;
+    }
+
+    /* =========================
+       입력창
+       왼쪽 실제 카톡처럼 낮게 정렬
+       ========================= */
+    .kakao-input-area{
+        height:105px;
+        background:#fff;
+        padding:12px 12px 10px;
+        box-sizing:border-box;
+        flex-shrink:0;
+    }
+
+    .kakao-input-placeholder{
+        color:#999;
+        font-size:11px;
+        margin-bottom:28px;
+        letter-spacing:-0.3px;
+    }
+
+    .kakao-input-bottom{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    }
+
+    .kakao-input-icons{
+        display:flex;
+        align-items:center;
+        gap:16px;
+    }
+
+    /* =========================
+   실제 카카오톡 느낌 SVG 아이콘
+   ========================= */
+
+    .kakao-file-svg{
+        width:19px;
+        height:19px;
+
+        fill:none;
+        stroke:#4b4b4b;
+        stroke-width:1.45;
+
+        stroke-linecap:square;
+        stroke-linejoin:miter;
+    }
+
+    .kakao-plus-svg{
+        width:21px;
+        height:21px;
+
+        fill:none;
+        stroke:#4a4a4a;
+        stroke-width:1.5;
+
+        stroke-linecap:square;
+        stroke-linejoin:miter;
+    }
+
+    .kakao-file-svg,
+    .kakao-plus-svg{
+        transform:translateY(3px);
+    }
+
+    .kakao-input-icons{
+        display:flex;
+        align-items:center;
+        gap:12px;
+
+        margin-top:6px;
+    }
+
+    .kakao-send-box{
+        display:flex;
+        align-items:center;
+        gap:14px;
+    }
+
+    .kakao-slider{
+        width:56px;
+        height:1px;
+        background:#bbb;
+        position:relative;
+    }
+
+    .kakao-slider::after{
+        content:"";
+        position:absolute;
+        right:0;
+        top:-5px;
+        width:11px;
+        height:11px;
+        border:1px solid #bbb;
+        border-radius:50%;
+        background:#fff;
+    }
+
+    .kakao-send-box button{
+        border:none;
+        background:#f1f1f1;
+        color:#aaa;
+        border-radius:5px;
+        padding:7px 14px;
+        font-size:13px;
+        letter-spacing:-0.3px;
+    }
+</style>
 
 <script type="module">
 
@@ -338,6 +855,132 @@
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') closeMenu();
     });
+
+    /* 카카오 알림 */
+    const kakaoAlimBtn = document.getElementById("kakaoAlimBtn");
+    const kakaoModal = document.getElementById("kakaoModal");
+    const kakaoCloseBtn = document.getElementById("kakaoCloseBtn");
+    const kakaoAlimList = document.getElementById("kakaoAlimList");
+    const kakaoBadge = document.querySelector(".kakao-badge");
+
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']")?.content;
+    const csrfToken = document.querySelector("meta[name='_csrf']")?.content;
+
+    /*
+     * 알림 개수 조회
+     * 왜 사용?
+     * DB의 READ_YN = 'N'인 알림 개수를 헤더 뱃지에 보여주기 위해 사용합니다.
+     */
+    async function loadKakaoUnreadCount() {
+        const response = await fetch("${pageContext.request.contextPath}/resident/kakaoAlim/count");
+        const count = await response.json();
+
+        kakaoBadge.textContent = count;
+    }
+
+    /*
+     * 알림 목록 조회
+     * 왜 사용?
+     * 사용자가 알림 버튼을 클릭했을 때 DB에 저장된 알림 내용을 카카오톡 화면처럼 보여주기 위해 사용합니다.
+     */
+    async function loadKakaoAlimList() {
+        const response = await fetch("${pageContext.request.contextPath}/resident/kakaoAlim/list");
+        const list = await response.json();
+
+        kakaoAlimList.innerHTML = "";
+
+        if (!list || list.length === 0) {
+            kakaoAlimList.innerHTML = `
+            <div style="padding:20px; text-align:center; color:#777;">
+                도착한 알림이 없습니다.
+            </div>
+        `;
+            return;
+        }
+
+        const welcomeItem = document.createElement("div");
+        welcomeItem.className = "kakao-chat-row";
+        welcomeItem.innerHTML = `
+                <div class="kakao-chat-profile-img">
+                    <img class="kakao-profile-photo"
+                         src="${pageContext.request.contextPath}/img/kakaoManager.png"
+                         alt="관리사무소">
+                </div>
+
+                <div class="kakao-chat-main">
+                    <div class="kakao-chat-sender">아파트 관리사무소</div>
+
+                    <div class="kakao-chat-bubble-wrap">
+                        <div class="kakao-chat-bubble">
+                            '아파트 관리사무소' 채널을 추가해<br>
+                            주셔서 감사합니다.<br>
+                            앞으로 다양한 소식과 혜택/정보를<br>
+                            메시지로 받으실 수 있습니다.<br><br>
+                            채널 추가 일시(한국시간 기준): 2026년 06월 01일 03:26<br>
+                            수신거부: 홈&gt;채널 차단
+                        </div>
+                        <div class="kakao-chat-time">오전 3:26</div>
+                    </div>
+                </div>
+            `;
+        kakaoAlimList.appendChild(welcomeItem);
+
+        list.forEach(alim => {
+            const item = document.createElement("div");
+            item.className = "kakao-chat-row";
+
+            item.innerHTML = `
+                                <div class="kakao-chat-profile-img">
+                                    <img class="kakao-profile-photo"
+                                         src="${pageContext.request.contextPath}/img/kakaoManager.png"
+                                         alt="관리사무소">
+                                </div>
+
+                                <div class="kakao-chat-main">
+                                    <div class="kakao-chat-sender">아파트 관리사무소</div>
+
+                                    <div class="kakao-chat-bubble-wrap">
+                                        <div class="kakao-chat-bubble"></div>
+                                        <div class="kakao-chat-time">오전 3:44</div>
+                                    </div>
+                                </div>
+                            `;
+
+            item.querySelector(".kakao-chat-bubble").innerHTML =
+                alim.alimCn.replace(/\n/g, "<br>");
+
+            item.addEventListener("click", async () => {
+                await fetch("${pageContext.request.contextPath}/resident/kakaoAlim/" + alim.alimNo + "/read", {
+                    method: "POST",
+                    headers: {
+                        [csrfHeader]: csrfToken
+                    }
+                });
+
+                if (alim.linkUrl) {
+                    location.href = "${pageContext.request.contextPath}" + alim.linkUrl;
+                }
+            });
+
+            kakaoAlimList.appendChild(item);
+        });
+    }
+
+    if (kakaoAlimBtn) {
+        kakaoAlimBtn.addEventListener("click", async () => {
+            await loadKakaoAlimList();
+            kakaoModal.style.display = "flex";
+        });
+    }
+
+    if (kakaoCloseBtn) {
+        kakaoCloseBtn.addEventListener("click", async () => {
+            kakaoModal.style.display = "none";
+            await loadKakaoUnreadCount();
+        });
+    }
+
+    loadKakaoUnreadCount();
 
 </script>
 <jsp:include page="/WEB-INF/views/include/websocket.jsp"/>

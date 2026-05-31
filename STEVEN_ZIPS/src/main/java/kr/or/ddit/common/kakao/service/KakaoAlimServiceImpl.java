@@ -21,8 +21,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class KakaoAlimServiceImpl implements IKakaoAlimService {
 
+    /**
+     * Mapper 호출 객체
+     *
+     * DB 조회 및 저장 담당
+     */
     private final IKakaoAlimMapper mapper;
 
+    /**
+     * 예약 승인 알림 생성
+     *
+     * 승인 완료 시 알림 테이블에 저장
+     */
     @Override
     @Transactional
     public void sendReservationApproved(String userNo, String facilityNm, String rsvtDttm, String linkUrl) {
@@ -39,8 +49,11 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
         mapper.insertKakaoAlim(vo);
     }
 
-
-
+    /**
+     * 예약 거절 알림 생성
+     *
+     * 거절 사유와 함께 알림 저장
+     */
     @Override
     @Transactional
     public void sendReservationRejected(String userNo, String facilityNm, String reason, String linkUrl) {
@@ -57,6 +70,11 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
         mapper.insertKakaoAlim(vo);
     }
 
+    /**
+     * 입주 승인 알림 생성
+     *
+     * 입주 승인 완료 시 알림 저장
+     */
     @Override
     @Transactional
     public void sendResidentApproved(String userNo, String linkUrl) {
@@ -73,17 +91,32 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
         mapper.insertKakaoAlim(vo);
     }
 
+    /**
+     * 내 알림 목록 조회
+     *
+     * 알림센터 목록 조회용
+     */
     @Override
     public List<KakaoAlimVO> getMyAlimList(String userNo) {
         return mapper.selectMyKakaoAlimList(userNo);
     }
 
+    /**
+     * 알림 읽음 처리
+     *
+     * READ_YN 값을 N → Y로 변경
+     */
     @Override
     @Transactional
     public void readAlim(String alimNo, String userNo) {
         mapper.updateReadYn(alimNo, userNo);
     }
 
+    /**
+     * 예약 신청 완료 알림 생성
+     *
+     * 예약 등록 직후 알림 저장
+     */
     @Override
     @Transactional
     public void sendReservationRequested(String userNo, String facilityNm, String rsvtDttm, String linkUrl) {
@@ -100,6 +133,11 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
         mapper.insertKakaoAlim(vo);
     }
 
+    /**
+     * 예약 취소 완료 알림 생성
+     *
+     * 예약 취소 시 알림 저장
+     */
     @Override
     @Transactional
     public void sendReservationCancelled(String userNo, String facilityNm, String rsvtDttm, String linkUrl) {
@@ -115,4 +153,15 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
 
         mapper.insertKakaoAlim(vo);
     }
+
+    /**
+     * 읽지 않은 알림 개수 조회
+     *
+     * 상단 알림 배지(🔔) 숫자 표시용
+     */
+    @Override
+    public int getUnreadCount(String userNo) {
+        return mapper.selectUnreadCount(userNo);
+    }
+
 }
