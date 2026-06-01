@@ -96,7 +96,7 @@
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-      gap: 6px;
+      gap: 12px;
       min-width: 0;
       white-space: normal;
       box-shadow: 0 2px 10px rgba(17, 24, 39, 0.03);
@@ -449,7 +449,7 @@
      * - 따라서 현재 부모 폭에서 좌우 120px을 빼서 항상 눈에 띄게 줄인다.
      */
     .meter-page .panel.meter-list-panel {
-      width: min(calc(100% - 200px), 1000px) !important;
+      width: min(calc(100% - 200px), 1200px) !important;
       max-width: none !important;
       margin-left: auto !important;
       margin-right: auto !important;

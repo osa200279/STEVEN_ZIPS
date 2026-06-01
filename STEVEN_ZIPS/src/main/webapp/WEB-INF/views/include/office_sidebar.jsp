@@ -607,9 +607,9 @@
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">고지서 조회</span>
                     </a>
-                    <a href="${ctx}/manager/bill/item-summary${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/item-summary') ? 'active' : ''}">
+                    <a href="${ctx}/manager/bill/statistics${mgmtPath}" class="nav-item ${fn:contains(uri, '/manager/bill/item-summary') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">관리비 항목·집계</span>
+                        <span class="nav-text">관리비 통계</span>
                     </a>
                 </div>
             </div>
