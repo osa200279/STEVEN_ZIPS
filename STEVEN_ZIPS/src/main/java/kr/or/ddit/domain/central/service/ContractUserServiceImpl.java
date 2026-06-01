@@ -194,7 +194,8 @@ public class ContractUserServiceImpl implements IContractUserService {
                     file, fileGroupNo, sbmsnDocTyCd,
                     savedFileName, googleId, fullPath, 1
             );
-            iAttachFileMapper.insertAttachFile(attachFileVO);
+            int cnt = iAttachFileMapper.insertAttachFile(attachFileVO);
+            log.info("####파일 인서트 결과 {}", cnt);
 
             ContractUserVO contractUserVO = new ContractUserVO();
             contractUserVO.setSbmsnDocTyCd(sbmsnDocTyCd);
@@ -202,7 +203,6 @@ public class ContractUserServiceImpl implements IContractUserService {
             contractUserVO.setAplctNo(aplctNo);
             contractUserMapper.insertContractDoc(contractUserVO);
         }
-
         int submitted = contractUserMapper.selectSubmittedDocCount(aplctNo);
         int required = contractUserMapper.selectRequiredDocCount(aplctNo);
         log.info("[서류제출 상태체크] aplctNo={}, submitted={}, required={}", aplctNo, submitted, required);
@@ -214,14 +214,6 @@ public class ContractUserServiceImpl implements IContractUserService {
             log.warn("[서류제출 상태미변경] 아직 미제출 서류 있음: submitted={}, required={}", submitted, required);
         }
     }
-
-
-    /*@Override
-    public List<ContractUserVO> selectContractDoc(String userNo) {
-        return contractUserMapper.selectContractDoc(userNo);
-    }*/
-
-
 
     // 계약공고 조회수 증가 메소드
     @Transactional

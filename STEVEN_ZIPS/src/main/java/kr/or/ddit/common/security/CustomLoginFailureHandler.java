@@ -16,7 +16,8 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
 		log.info("## CustomLoginFailureHandler::onAuthenticationFailure_ : " + exception.getMessage());
-		response.sendRedirect("/login");
+		request.getSession().setAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
+		response.sendRedirect("/login.do?error=true");
 	}
 
 }

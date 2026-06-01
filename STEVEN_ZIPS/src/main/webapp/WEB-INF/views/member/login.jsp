@@ -7,6 +7,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <html>
 <head>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
@@ -17,7 +18,6 @@
 </head>
 <body>
     <div class="login-page">
-
         <header class="topbar">
             <a href="${pageContext.request.contextPath}/" class="logo">
                 <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -106,7 +106,25 @@
                         </div>
                     </div>
                 </section>
-
+                <%
+                    String errorMessage = (String) session.getAttribute("errorMessage");
+                    if (errorMessage != null) {
+                %>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        Swal.fire({
+                            icon: "error", // 에러 상황이므로 error 아이콘
+                            title: "로그인 실패",
+                            text: "<%= errorMessage %>",
+                            confirmButtonText: "확인"
+                        });
+                    });
+                </script>
+                <%
+                        // 알림 후 세션 제거
+                        session.removeAttribute("errorMessage");
+                    }
+                %>
             </div>
         </div>
     </div>
