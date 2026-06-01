@@ -28,6 +28,7 @@
     var previewFetchAbort = null;
     var previewToken = 0;
     var broadcastActive = false;
+    var currentPlayerRow = null;
     var $ = function (id) { return document.getElementById(id); };
 
     var SOURCE_NOTES = {
@@ -170,6 +171,55 @@
         var bytes = new Uint8Array(len);
         for (var i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
         return URL.createObjectURL(new Blob([bytes], { type: m[1] || 'audio/mpeg' }));
+    }
+
+    function buildAudioFileName(row) {
+        var base = 'broadcast';
+        if (row && row.text) {
+            base = row.text.replace(/\s+/g, ' ').trim().slice(0, 24);
+            base = base.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_');
+        }
+        if (!base) base = 'broadcast';
+        var stamp = '';
+        if (row && row.createdAt) {
+            stamp = String(row.createdAt).replace(/[^\d]/g, '').slice(0, 12);
+        }
+        if (!stamp) {
+            var d = new Date();
+            stamp = String(d.getFullYear())
+                + String(d.getMonth() + 1).padStart(2, '0')
+                + String(d.getDate()).padStart(2, '0')
+                + String(d.getHours()).padStart(2, '0')
+                + String(d.getMinutes()).padStart(2, '0');
+        }
+        return base + '_' + stamp + '.mp3';
+    }
+
+    function triggerAudioDownload(audioUrl, fileName) {
+        if (!audioUrl) return false;
+        var a = document.createElement('a');
+        a.href = audioUrl;
+        a.download = fileName || 'broadcast.mp3';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        return true;
+    }
+
+    function downloadRowAudio(row) {
+        if (!row || !row.audioUrl) {
+            toast({ title: '다운로드', message: '음성 데이터가 없습니다.', type: 'error' });
+            return;
+        }
+        if (triggerAudioDownload(row.audioUrl, buildAudioFileName(row))) {
+            toast({
+                title: '다운로드',
+                message: '음성 파일을 저장했습니다.',
+                type: 'success',
+                duration: 2400
+            });
+        }
     }
 
     function revokePlayerObjectUrl(audio) {
@@ -865,9 +915,11 @@
     function setPlayerControlsEnabled(enabled) {
         var playBtn = $('playerToggleBtn');
         var resetBtn = $('playerResetBtn');
+        var downloadBtn = $('playerDownloadBtn');
         var broadcastBtn = $('broadcastBtn');
         if (playBtn) playBtn.disabled = !enabled;
         if (resetBtn) resetBtn.disabled = !enabled;
+        if (downloadBtn) downloadBtn.disabled = !enabled;
         if (broadcastBtn && !broadcastActive) broadcastBtn.disabled = !enabled;
     }
 
@@ -886,7 +938,7 @@
         setBroadcastButtonState(!hasAudio, false);
         if (showCompleteToast) {
             toast({
-                title: '방송',
+                title: '방송 완료',
                 message: '방송 완료',
                 type: 'success',
                 duration: 2800
@@ -903,7 +955,7 @@
         broadcastActive = true;
         setBroadcastButtonState(true, true);
         toast({
-            title: '방송',
+            title: '방송중',
             message: '방송 송출 중...',
             type: 'info',
             duration: 3500
@@ -947,6 +999,7 @@
 
     function hidePlayer() {
         finishBroadcastSession(false);
+        currentPlayerRow = null;
         var audio = $('playerAudio');
         if (audio) {
             clearAudioTimingWatch(audio);
@@ -992,6 +1045,7 @@
     function showPlayer(row, label, playbackBlob) {
         var audio = $('playerAudio');
         if (!audio) return;
+        currentPlayerRow = row || null;
         $('playerLabel').textContent = label || '최근 변환 음성';
         $('playerText').textContent = row.text;
         pauseAllBroadcastAudio();
@@ -1034,6 +1088,26 @@
                 e.preventDefault();
                 e.stopPropagation();
                 resetPlayerPlayback();
+            });
+        }
+
+        var broadcastBtn = $('broadcastBtn');
+        if (broadcastBtn) {
+            broadcastBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (broadcastBtn.disabled || broadcastActive) return;
+                startBroadcast();
+            });
+        }
+
+        var downloadBtn = $('playerDownloadBtn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (downloadBtn.disabled) return;
+                downloadRowAudio(currentPlayerRow);
             });
         }
 
@@ -1172,6 +1246,8 @@
                 + '<audio class="history-audio" preload="metadata"></audio>'
                 + '</div>'
                 + '<div class="h-actions">'
+                + '<button type="button" class="btnx btnx-ghost btnx-sm" data-action="download" title="다운로드">'
+                + '<span class="material-symbols-rounded">download</span></button>'
                 + '<button type="button" class="btnx btnx-ghost btnx-sm" data-action="reuse">불러오기</button>'
                 + '<button type="button" class="btnx btnx-ghost btnx-sm h-btn-remove" data-action="remove">삭제</button>'
                 + '</div></div></div>';
@@ -1328,6 +1404,10 @@
             }
             if (btn.getAttribute('data-action') === 'hist-reset') {
                 resetHistoryPlayback(item);
+                return;
+            }
+            if (btn.getAttribute('data-action') === 'download') {
+                downloadRowAudio(historyRows[idx]);
                 return;
             }
             if (btn.getAttribute('data-action') === 'reuse') {

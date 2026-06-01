@@ -1,3 +1,11 @@
+/* 방송 화면: main-content 바깥 스크롤 없음, 패널 안에서만 스크롤 */
+.main-content.main-content--broadcast {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
 #broadcastPage {
     --card: #fff;
     --card-head: #f1f6f2;
@@ -13,39 +21,71 @@
     font-size: 15px;
     position: relative;
     z-index: 1;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 #broadcastPage .bc-wrap {
-    display: grid;
-    gap: 16px;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     padding: 4px 0 8px;
+    overflow: hidden;
 }
 
 /* 좌우 2분할 */
 #broadcastPage .bc-layout {
+    flex: 1 1 auto;
+    min-height: 0;
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     gap: 18px;
     align-items: stretch;
+    overflow: hidden;
 }
 
 #broadcastPage .bc-main {
     min-width: 0;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 14px;
+    overflow: hidden;
+}
+
+#broadcastPage .bc-main > .card-compose {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#broadcastPage .bc-main > #playerCard {
+    flex: 0 0 auto;
 }
 
 #broadcastPage .bc-side {
     min-width: 0;
+    min-height: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 #broadcastPage .bc-side > .card {
-    flex: 1;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
 }
 
 #broadcastPage .bc-main > .card > .card-header {
@@ -60,9 +100,9 @@
 }
 
 #broadcastPage .card-side {
-    position: sticky;
-    top: 8px;
-    max-height: calc(100vh - 100px);
+    min-height: 0;
+    max-height: inherit;
+    overflow: hidden;
 }
 
 #broadcastPage .card-header.card-header-tabs {
@@ -161,7 +201,14 @@
 }
 
 #broadcastPage .source-panel.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#broadcastPage #panelCheck.active,
+#broadcastPage #panelComplaint.active {
+    overflow-y: auto;
 }
 
 #broadcastPage .card-body-side > .source-panel.active {
@@ -176,9 +223,15 @@
 }
 
 #broadcastPage .history-panel-body {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
+    overflow-x: hidden;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#broadcastPage #historyList {
+    min-height: 0;
 }
 
 #broadcastPage .history-panel-foot {
@@ -530,6 +583,7 @@
 }
 
 #broadcastPage .page-title {
+    flex-shrink: 0;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--line);
 }
@@ -557,11 +611,15 @@
 }
 
 #broadcastPage .card-compose {
-    overflow: visible;
+    overflow: hidden;
 }
 
 #broadcastPage .card-compose .compose-body {
-    overflow: visible;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 #broadcastPage .card-header {
@@ -1321,15 +1379,31 @@
     justify-content: center;
     width: 44px;
     height: 44px;
+    border: none;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.16);
     color: #fff;
     text-decoration: none;
     flex-shrink: 0;
+    cursor: pointer;
+    transition: background .15s ease, opacity .15s ease;
 }
 
-#broadcastPage .player-download:hover {
+#broadcastPage .player-download .material-symbols-rounded {
+    font-size: 22px;
+}
+
+#broadcastPage .player-download:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.28);
+}
+
+#broadcastPage .player-download:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+#broadcastPage .bc-side .history-item .h-actions .btnx-sm .material-symbols-rounded {
+    font-size: 18px;
 }
 
 #broadcastPage .history-toolbar {
@@ -1416,15 +1490,24 @@
 @media (max-width: 1180px) {
     #broadcastPage .bc-layout {
         grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
     }
 
-    #broadcastPage .card-side {
-        position: static;
+    #broadcastPage .bc-main > .card-compose {
+        min-height: 0;
+    }
+
+    #broadcastPage .bc-side > .card {
+        height: 100%;
+        max-height: 100%;
+    }
+
+    #broadcastPage .source-panel.active {
         max-height: none;
     }
 
-    #broadcastPage .source-panel {
-        max-height: 280px;
+    #broadcastPage #panelHistory.active {
+        max-height: none;
     }
 }
 

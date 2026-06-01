@@ -32,4 +32,5 @@ public interface IAnnouncementService {
     List<AnnouncementDTO> selectAptComplexList();
 
     AnnouncementDTO selectAptDetail(String aptCmplexNo);
+
 }

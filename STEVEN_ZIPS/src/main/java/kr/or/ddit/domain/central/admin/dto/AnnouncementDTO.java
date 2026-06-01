@@ -45,7 +45,8 @@ public class AnnouncementDTO {
     private String supplyDisplay;  // 화면 표시용: 50 / 192세대
 
     /* 제출서류 관련 */
-    private String sbmsnDoc;       // 제출서류
+    private String sbmsnDoc;       // 제출서류 (DB 원문: 코드 또는 JSP 한글)
+    private String sbmsnDocNm;     // 화면 표시용 한글명 (LISTAGG)
 
     /* 첨부파일 관련 */
     private String hasFileYn;      // 첨부파일 존재 여부

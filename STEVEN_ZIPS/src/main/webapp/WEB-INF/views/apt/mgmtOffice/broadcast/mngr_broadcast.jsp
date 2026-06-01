@@ -23,7 +23,7 @@
     <%@ include file="/WEB-INF/views/include/office_sidebar.jsp" %>
     <div class="main-wrap">
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
-        <main class="main-content">
+        <main class="main-content main-content--broadcast">
             <c:set var="complexNm" value="${not empty aptCmplexNm ? aptCmplexNm : (not empty office.aptCmplexNm ? office.aptCmplexNm : '본 단지')}"/>
             <c:set var="broadcastIntro" value="안녕하세요. ${complexNm} 관리사무소입니다."/>
             <div class="office-page" id="broadcastPage" data-broadcast-intro="${fn:escapeXml(broadcastIntro)}">
@@ -188,6 +188,10 @@
                                                 <span class="player-time" id="playerTime">0:00 / --:--</span>
                                                 <audio id="playerAudio" preload="metadata"></audio>
                                             </div>
+                                            <button type="button" class="player-download" id="playerDownloadBtn" disabled
+                                                    title="음성 파일 다운로드" aria-label="음성 파일 다운로드">
+                                                <span class="material-symbols-rounded">download</span>
+                                            </button>
                                             <button type="button" class="bc-broadcast-btn" id="broadcastBtn" disabled
                                                     title="변환된 음성을 단지 방송으로 송출">
                                                 <span class="material-symbols-rounded">campaign</span>방송 송출

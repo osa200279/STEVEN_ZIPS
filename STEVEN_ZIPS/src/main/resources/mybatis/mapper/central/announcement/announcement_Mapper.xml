@@ -33,6 +33,20 @@
         , NVL(cap.del_yn, 'N') AS delYn
         , NVL(cap.opn_yn, 'Y') AS opnYn
         , cap.sbmsn_doc AS sbmsnDoc
+        , (
+        SELECT LISTAGG(NVL(cc.code_name, doc.doc_cd), ', ') WITHIN GROUP (ORDER BY doc.doc_ord)
+        FROM (
+            SELECT TRIM(REGEXP_SUBSTR(cap.sbmsn_doc, '[^,]+', 1, lv.lvl)) AS doc_cd
+                 , lv.lvl AS doc_ord
+            FROM (
+                SELECT LEVEL AS lvl FROM dual CONNECT BY LEVEL <![CDATA[<=]]> 20
+            ) lv
+            WHERE lv.lvl <![CDATA[<=]]> REGEXP_COUNT(NVL(cap.sbmsn_doc, ','), ',') + 1
+            AND TRIM(REGEXP_SUBSTR(cap.sbmsn_doc, '[^,]+', 1, lv.lvl)) IS NOT NULL
+        ) doc
+        LEFT JOIN common_code cc ON cc.code_no_cd = doc.doc_cd
+        AND cc.group_code_no = 'SUBMIT_DOC_TY'
+        ) AS sbmsnDocNm
         , cap.atch_file_id AS atchFileId
         , ac.dorojuso
 
@@ -123,6 +137,20 @@
         , NVL(cap.del_yn, 'N') AS delYn
         , NVL(cap.opn_yn, 'Y') AS opnYn
         , cap.sbmsn_doc AS sbmsnDoc
+        , (
+        SELECT LISTAGG(NVL(cc.code_name, doc.doc_cd), ', ') WITHIN GROUP (ORDER BY doc.doc_ord)
+        FROM (
+            SELECT TRIM(REGEXP_SUBSTR(cap.sbmsn_doc, '[^,]+', 1, lv.lvl)) AS doc_cd
+                 , lv.lvl AS doc_ord
+            FROM (
+                SELECT LEVEL AS lvl FROM dual CONNECT BY LEVEL <![CDATA[<=]]> 20
+            ) lv
+            WHERE lv.lvl <![CDATA[<=]]> REGEXP_COUNT(NVL(cap.sbmsn_doc, ','), ',') + 1
+            AND TRIM(REGEXP_SUBSTR(cap.sbmsn_doc, '[^,]+', 1, lv.lvl)) IS NOT NULL
+        ) doc
+        LEFT JOIN common_code cc ON cc.code_no_cd = doc.doc_cd
+        AND cc.group_code_no = 'SUBMIT_DOC_TY'
+        ) AS sbmsnDocNm
         , cap.atch_file_id AS atchFileId
         , ac.dorojuso
 
@@ -295,7 +323,6 @@
         ), 0) AS unitCnt
         FROM apt_complex ac
         WHERE ac.apt_cmplex_no = #{aptCmplexNo}
-
     </select>
 
 </mapper>

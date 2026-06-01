@@ -617,7 +617,7 @@
 
         <div class="section-divider"></div>
 
-        <details class="nav-group" ${fn:contains(uri, '/mgmtOffice/mngrResidentNotice') or fn:contains(uri, '/mgmtOffice/manager/broadcast') ? 'open="open"' : ''}>
+        <details class="nav-group" ${fn:contains(uri, '/mgmtOffice/mngrResidentNotice') or fn:contains(uri, '/manager/complex/broadcast') ? 'open="open"' : ''}>
             <%--        <details class="nav-group">--%>
             <summary class="cat-btn">
                 <span class="material-symbols-rounded nav-icon nav-icon-top">campaign</span>
@@ -649,7 +649,7 @@
                         <%--                    <a href="/mgmtOffice/mngrResidentNotice/${mgmtOfcNo}" class="nav-item" aria-disabled="true">--%>
                         <span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">공지사항 관리</span></a>
                    <%--<a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">생활안내·운영정보</span></a>--%>
-                    <a href="/manager/complex/broadcast/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/broadcast') ? 'active' : ''}">
+                    <a href="/manager/complex/broadcast/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/complex/broadcast') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">방송 안내 관리</span>
                     </a>
