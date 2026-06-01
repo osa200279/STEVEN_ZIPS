@@ -385,21 +385,25 @@
         cursor:pointer;
 
         padding:0;
-        margin-right:15px;
+        margin-right:12px;
 
-        width:auto;
-        height:auto;
+        width:88px;
+        height:30px;
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
     }
 
     .kakao-bell-img{
-        width:70px;
+        width:88px;
         height:auto;
         display:block;
     }
 
     .kakao-badge{
         position:absolute;
-        top:-3px;
+        top:-7px;
         right:-4px;
 
         min-width:14px;
@@ -418,38 +422,7 @@
         font-weight:700;
         line-height:1;
     }
-    /*.kakao-alim-btn{*/
-    /*    display:flex;*/
-    /*    align-items:center;*/
-    /*    gap:4px;*/
-    /*    background:#FEE500;*/
-    /*    border:none;*/
-    /*    border-radius:999px;*/
-    /*    padding:4px 8px;*/
-    /*    font-size:11px;*/
-    /*    font-weight:700;*/
-    /*    color:#191919;*/
-    /*    margin-right:10px;*/
-    /*    cursor:pointer;*/
-    /*}*/
 
-    /*.kakao-bell{*/
-    /*    width:11px;*/
-    /*    height:11px;*/
-    /*}*/
-
-    /*.kakao-badge{*/
-    /*    min-width:14px;*/
-    /*    height:14px;*/
-    /*    display:flex;*/
-    /*    align-items:center;*/
-    /*    justify-content:center;*/
-    /*    border-radius:50%;*/
-    /*    background:#3C1E1E;*/
-    /*    color:#FEE500;*/
-    /*    font-size:9px;*/
-    /*    font-weight:700;*/
-    /*}*/
 
     /* =========================
        카카오톡 모달 배경
