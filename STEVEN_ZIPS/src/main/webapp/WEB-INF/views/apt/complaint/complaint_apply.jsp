@@ -379,7 +379,7 @@
 
             // 모달 데이터 매핑
             document.querySelector('#modalTtl').innerText = cvpl.cvplTtl;
-            document.querySelector('#modalTy').innerText = cvpl.cvplTyCd;
+            document.querySelector('#modalTy').innerText = getCate(cvpl.cvplTyCd).text;
             document.querySelector('#modalDate').innerText = new Date(cvpl.cvplRegDt).toLocaleString('ko-KR', {
                 year: 'numeric',
                 month: '2-digit',
@@ -507,6 +507,18 @@
             'END': {text: '종결', cls: 'info'}
         };
         const res = statusMap[statusCd] || {text: '대기', cls: 'wait'};
+        return res;
+    }
+
+    function getCate(categoryCd){
+        const cateMap = {
+            'FAC' : {text: '시설/하자'}
+            ,'SEC' : {text: '보안/안전'}
+            ,'ACC' : {text: '회계/관리비'}
+            ,'ENV' : {text: '환경/위생'}
+            ,'ETC' : {text: '기타'}
+        }
+        const res = cateMap[categoryCd] || {text: categoryCd};
         return res;
     }
 </script>
