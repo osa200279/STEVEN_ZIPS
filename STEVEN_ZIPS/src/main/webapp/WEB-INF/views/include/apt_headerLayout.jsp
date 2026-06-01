@@ -8,6 +8,56 @@
 <meta name="_csrf" content="${_csrf.token}"/>
 <%-- 실제 1회용 암호 값(편지) --%>
 
+
+<style>
+    /*
+       FOUC 방지용 즉시 적용 CSS
+       FOUC란?
+       CSS가 늦게 적용되면서 화면이 잠깐 깨져 보이는 현상.
+       지금 알림톡 버튼이 크게 보였다 사라지는 현상이 여기에 해당함.
+    */
+    #kakaoAlimBtn,
+    .kakao-alim-img-btn {
+        width: 88px !important;
+        height: 34px !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+        overflow: visible !important;
+        vertical-align: middle !important;
+        margin-right: 12px !important;
+    }
+
+    #kakaoAlimBtn img,
+    .kakao-bell-img {
+        width: 88px !important;
+        height: auto !important;
+        max-width: 88px !important;
+        max-height: none !important;
+        object-fit: contain !important;
+        display: block !important;
+    }
+
+    .kakao-ready {
+        visibility: hidden;
+    }
+
+    .kakao-badge {
+        position: absolute !important;
+        top: -6px !important;
+        right: -6px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        line-height: 16px !important;
+        font-size: 10px !important;
+        border-radius: 50% !important;
+    }
+</style>
+
 <header class="site-header">
     <!-- 헤더 부터 푸터까지 사용할 수 있도록 스코프 지정 -->
     <c:set var="apt" value="${aptInfo.aptComplexInfo}" scope="request"/>
@@ -34,10 +84,11 @@
                 <%-- 카카오 알림 이미지 버튼 --%>
                 <button type="button"
                         id="kakaoAlimBtn"
-                        class="kakao-alim-img-btn">
+                        class="kakao-alim-img-btn kakao-ready">
                     <img class="kakao-bell-img"
                          src="${pageContext.request.contextPath}/img/kakaoAlim.png"
-                         alt="카카오알림">
+                         alt="카카오알림"
+                         width="88">
                     <span class="kakao-badge">
                         <c:out value="${empty unreadCount ? 0 : unreadCount}"/>
                     </span>
@@ -182,9 +233,10 @@
                 </div>
 
             <sec:authorize access="isAuthenticated()">
-            <span style="font-size:1.2em; color:blue; font-weight:bold;">
-            <sec:authentication property="principal.member.userNm"/>
-            </span>님
+                <span class="header-user-name">
+                    <sec:authentication property="principal.member.userNm"/>
+                </span>
+                <span class="header-user-suffix">님</span>
                 <a href="/member/myPageAuth.do" class="btn-filled">마이페이지</a>
                 <button type="button" id="logoutBtn" class="btn-outline">로그아웃</button>
                 <%-- 로그아웃을 위한 히든 폼 --%>
@@ -696,6 +748,51 @@
         word-break:keep-all;
     }
 
+    /* 링크가 있는 말풍선만 클릭 가능 */
+    .kakao-chat-row.is-link .kakao-chat-bubble {
+        cursor: pointer;
+    }
+
+    .kakao-chat-row.is-link:not(.is-read) .kakao-chat-bubble:hover {
+         background: #f7f7f7;
+         text-decoration: underline;
+         text-decoration-color: #c8c8c8;
+     }
+
+    /* 읽은 알림 */
+    .kakao-chat-row.is-read .kakao-chat-bubble {
+        opacity: 0.78;
+    }
+
+    /* 읽은 알림은 밑줄 효과 제거 */
+    .kakao-chat-row.is-read .kakao-chat-bubble:hover {
+        text-decoration: none;
+        box-shadow: none;
+        background: #fff;
+    }
+
+    /* 확인 표시 */
+    .kakao-chat-row.is-read .kakao-chat-bubble::after {
+        content: "✓ 확인";
+        display: block;
+        text-align: right;
+        margin-top: 6px;
+
+        font-size: 10px;
+        color: #999;
+        font-weight: 500;
+    }
+
+    /* 오른쪽 아래에 '예약내역 보기' 표시 */
+    .kakao-chat-row.is-link .kakao-chat-bubble::after {
+        content: "예약내역 보기 >";
+        display: block;
+        margin-top: 8px;
+        font-size: 10px;
+        color: #2b5c44;
+        font-weight: 700;
+    }
+
     .kakao-chat-time{
         font-size:10px;
         color:#555;
@@ -806,6 +903,29 @@
         padding:7px 14px;
         font-size:13px;
         letter-spacing:-0.3px;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .header-user-name {
+        display: inline-flex;
+        align-items: center;
+        font-size: 1.2em;
+        color: blue;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    .header-user-suffix {
+        display: inline-flex;
+        align-items: center;
+        font-size: 16px;
+        line-height: 1;
+        margin-left: -8px;
     }
 
 </style>
@@ -1026,6 +1146,11 @@
             const item = document.createElement("div");
             item.className = "kakao-chat-row";
 
+            if (alim.linkUrl) {
+                item.classList.add("is-link");
+                item.title = "클릭하면 예약내역으로 이동합니다";
+            }
+
             item.innerHTML = `
                                 <div class="kakao-chat-profile-img">
                                     <img class="kakao-profile-photo"
@@ -1043,21 +1168,32 @@
                                 </div>
                             `;
 
-            item.querySelector(".kakao-chat-bubble").innerHTML =
-                alim.alimCn.replace(/\n/g, "<br>");
 
-            item.addEventListener("click", async () => {
-                await fetch("${pageContext.request.contextPath}/resident/kakaoAlim/" + alim.alimNo + "/read", {
-                    method: "POST",
-                    headers: {
-                        [csrfHeader]: csrfToken
-                    }
-                });
+            const bubble = item.querySelector(".kakao-chat-bubble");
 
-                if (alim.linkUrl) {
+            bubble.innerHTML = alim.alimCn.replace(/\n/g, "<br>");
+
+            if (alim.readYn === "Y") {
+                item.classList.add("is-read");
+            }
+
+            if (alim.linkUrl) {
+                item.classList.add("is-link");
+                bubble.title = "클릭하면 예약내역으로 이동합니다";
+
+                bubble.addEventListener("click", async () => {
+                    await fetch("${pageContext.request.contextPath}/resident/kakaoAlim/" + alim.alimNo + "/read", {
+                        method: "POST",
+                        headers: {
+                            [csrfHeader]: csrfToken
+                        }
+                    });
+
+                    item.classList.add("is-read");
+
                     location.href = "${pageContext.request.contextPath}" + alim.linkUrl;
-                }
-            });
+                });
+            }
 
             kakaoAlimList.appendChild(item);
         });
@@ -1104,6 +1240,14 @@
     }
 
     loadKakaoUnreadCount();
+
+    window.addEventListener("load", function () {
+        const kakaoBtn = document.getElementById("kakaoAlimBtn");
+
+        if (kakaoBtn) {
+            kakaoBtn.classList.remove("kakao-ready");
+        }
+    });
 
 </script>
 <jsp:include page="/WEB-INF/views/include/websocket.jsp"/>
