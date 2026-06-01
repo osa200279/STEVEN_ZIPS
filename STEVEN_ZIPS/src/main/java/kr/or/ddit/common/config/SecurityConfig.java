@@ -62,6 +62,13 @@ public class SecurityConfig {
             , "/member/join"
             , "/member/update"
             , "/member/idCheck"
+            , "/WEB-INF/views/**"
+            , "/main/**"
+            , "/contract/notice.do"
+            , "/contract/notice.json"
+            , "/rent/**"
+            , "/facility/history.do"
+            , "/board/notice/list.do"
             , "/.well-known/**"
     };
 

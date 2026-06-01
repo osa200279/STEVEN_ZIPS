@@ -46,13 +46,10 @@ public class ContractUserController {
 
     /**
      * 공고 목록 페이지를 반환하는 컨트롤러 메소드
-     * MEMBER 권한을 가진 사용자만 접근 가능
-     *
      * searchVO 검색 조건을 담은 DTO (페이지, 키워드)
      * 공고 목록 JSP 경로 (central/contract/contractNotice)
      */
 
-    @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/notice.do")
     public String contractNoticeList(AnnouncementDTO searchVO, Model model) {
 
@@ -70,13 +67,11 @@ public class ContractUserController {
 
     /**
      * 공고 목록을 JSON 형태로 반환하는 메소드
-     * MEMBER 권한을 가진 사용자만 접근 가능
      * Ajax 요청 비동기 처리에 사용
      *
      * searchVO 검색 조건을 담은 DTO
      * 공고 목록 (List<AnnouncementDTO>) - JSON 자동 직렬화
      */
-    @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/notice.json")
     @ResponseBody
     public List<AnnouncementDTO> contractNoticeListJson(AnnouncementDTO searchVO) {

@@ -211,4 +211,5 @@
     });
   });
 </script>
-<jsp:include page="/WEB-INF/views/include/websocket.jsp"/>
+<%--
+<jsp:include page="../include/websocket.jsp"/>--%>
