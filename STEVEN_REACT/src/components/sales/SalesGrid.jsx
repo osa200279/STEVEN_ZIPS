@@ -185,7 +185,7 @@ function SalesGrid({
                     case 'JS':
                         return '전세';
 
-                    case 'WS':
+                    case 'PE':
                         return '월세';
 
                     default:
