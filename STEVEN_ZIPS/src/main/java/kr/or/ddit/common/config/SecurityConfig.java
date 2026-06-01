@@ -69,6 +69,8 @@ public class SecurityConfig {
             , "/rent/**"
             , "/facility/history.do"
             , "/board/notice/list.do"
+            , "/file/display/**"
+            , "/file/download/**"
             , "/.well-known/**"
     };
 
