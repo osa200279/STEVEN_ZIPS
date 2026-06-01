@@ -34,7 +34,18 @@
     -->
     <sql id="meterChargeBaseCte">
         WITH TARGET_METER AS (
-            SELECT DISTINCT
+            SELECT
+                X.HO_NO,
+                X.DONG_NO,
+                X.DONG_NM,
+                X.HO,
+                X.DISPLAY_DONG_HO,
+                X.FACILITY_NO,
+                X.UTILITY_PROVIDER_NO,
+                X.BILL_ITEM_CD,
+                X.BILL_ITEM_NM
+            FROM (
+                SELECT
                 M.HO_NO,
                 U.DONG_NO,
                 U.DONG_NM,
@@ -47,7 +58,20 @@
                     WHEN 'ELC' THEN '전기요금'
                     WHEN 'WTR' THEN '수도요금'
                     WHEN 'GAS' THEN '가스요금'
-                    END AS BILL_ITEM_NM
+                    END AS BILL_ITEM_NM,
+                /* 수정: 과거/현재 공급업체가 함께 있어도 세대 + 항목 기준으로 선택월 우선 1건만 화면 대상으로 사용 */
+                ROW_NUMBER() OVER (
+                    PARTITION BY M.HO_NO, F.FACILITY_TY_CD
+                    ORDER BY
+                        CASE
+                            WHEN M.METER_DT &gt;= TO_DATE(#{searchVO.billYm} || '01', 'YYYYMMDD')
+                             AND M.METER_DT &lt; ADD_MONTHS(TO_DATE(#{searchVO.billYm} || '01', 'YYYYMMDD'), 1)
+                            THEN 0
+                            ELSE 1
+                        END,
+                        M.METER_DT DESC,
+                        M.METER_HSTRY_NO DESC
+                ) AS RN
             FROM METER_HSTRY M
                      JOIN FACILITY F
                           ON M.FACILITY_NO = F.FACILITY_NO
@@ -60,6 +84,8 @@
                               AND UP.APT_CMPLEX_NO = U.APT_CMPLEX_NO
             WHERE U.APT_CMPLEX_NO = #{searchVO.aptCmplexNo}
               AND F.FACILITY_TY_CD IN ('ELC', 'WTR', 'GAS')
+            ) X
+            WHERE X.RN = 1
         ),
              PREV_METER AS (
                  SELECT

@@ -106,10 +106,12 @@
     <div class="topbar-actions">
         <span class="topbar-clock" id="currentTime"></span>
 
+        <%--
         <button type="button" class="topbar-icon-btn" title="알림">
             <span class="material-symbols-rounded">notifications</span>
             <span class="dot"></span>
         </button>
+        --%>
 
         <%-- ADMIN은 헤더에서 조회 기준 관리사무소를 다시 선택할 수 있도록 기존 선택 모달 진입 화면으로 이동한다. --%>
         <c:if test="${isAdmin}">
