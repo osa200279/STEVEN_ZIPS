@@ -163,38 +163,6 @@ function renderList() {
         renderPagination();
         return;
 
-        // return `
-        //         <td>${p.ttl || "-"}</td>
-        //
-        //         <td style="text-align:left;">
-        //             ${p.aptCmplexNm || "-"}
-        //         </td>
-        //
-        //         <td style="text-align:left;">
-        //             ${p.dorojuso || "-"}
-        //         </td>
-        //
-        //         <td>
-        //             ${p.pblancBgngDt || "-"} ~ ${p.pblancEndDt || "-"}
-        //         </td>
-        //
-        //         <td>
-        //             ${p.rcrtBgngDt || "-"} ~ ${p.rcrtEndDt || "-"}
-        //         </td>
-        //
-        //         <td>
-        //             ${p.supplyDisplay || "0/0세대"}
-        //         </td>
-        //
-        //         <td>
-        //             ${p.sbmsnDoc || "-"}
-        //         </td>
-        //
-        //         <td style="text-align:center;">
-        //             ${badgeHtml(st)}
-        //         </td>
-        //     </tr>
-        // `;
     }
 
     tbody.innerHTML = slice.map(function (p) {
