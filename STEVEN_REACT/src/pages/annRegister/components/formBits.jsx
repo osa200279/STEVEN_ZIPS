@@ -56,6 +56,7 @@ export const DATE_FIELDS = [
   ['rcrtEndDt', '모집 종료일'],
 ];
 
+// 
 export const SUPPLY_COLS = [
   { key: 'type', label: '타입', input: 'text', ph: '예: A타입' },
   { key: 'exclArea', label: '전용면적(㎡)', input: 'number', min: 0, step: '0.01', ph: '예: 65' },

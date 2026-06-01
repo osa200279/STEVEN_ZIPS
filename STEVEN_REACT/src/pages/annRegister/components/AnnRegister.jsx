@@ -60,7 +60,9 @@ const setAnnField = (name, value) =>
   const [emd, setemd] = useState('');
   const [aptCmplexNo, setAptCmplexNo] = useState('');
   const [addr, setAddr] = useState(''); // 단지 선택 시 aptDetail API로 채움 (읽기 전용)
+  /** 단지별 GENERAL 매물 전체 (표시·페이징은 SupplyInfoSection에서 처리) */
   const [rentList, setRentList] = useState([]);
+  /** 공고 등록 시 포함할 매물 번호 목록 → insertAnn.rentLstgNoList */
   const [selectedRentList, setSelectedRentList] = useState([]);
 
   // ── 공급 정보: select option 목록 (useEffect로 API 조회) ──
@@ -164,12 +166,9 @@ const setAnnField = (name, value) =>
   }, [sido, sigungu, emd]);
 
   // ─────────────────────────────────────────
-  // 5. 단지 선택 시 주소 + 타입 자동완성 + 제출서류 조회
-  // e.target.value → aptCmplexNo 저장
-  // 없으면 addr, hoTyList 초기화 후 return
-  // getAptDetail(aptCmplexNo) 호출
-  // → setAddr(data.dorojuso)
-  // → setHoTyList(data.hoTyList)
+  // 5. 단지 선택: 주소(aptDetail) + 매물 목록(rentList) 조회
+  //    → SupplyInfoSection 테이블·체크·페이징
+  //    → selectedRentList 변경 시 제출서류(sbmsnDocList) 연동
   // ─────────────────────────────────────────
   const handleAptChange = async (e) => {
     const aptCmplexNo = e.target.value;
