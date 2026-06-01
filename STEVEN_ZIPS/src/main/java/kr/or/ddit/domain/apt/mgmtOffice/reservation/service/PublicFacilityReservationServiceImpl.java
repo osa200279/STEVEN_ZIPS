@@ -177,13 +177,32 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
          * - 회의실/커뮤니티룸: 관리자 승인 필요 → PENDING
          * - 독서실/헬스장: 자동 승인 → APPROVED
          */
-        if (facilityNm.contains("회의실") || facilityNm.contains("커뮤니티룸")) {
-            vo.setRsvtSttsCd("PENDING");
+//        if (facilityNm.contains("회의실") || facilityNm.contains("커뮤니티룸")) {
+//            vo.setRsvtSttsCd("PENDING");
+//            vo.setAutoApproveYn("N");
+//        } else {
+//            vo.setRsvtSttsCd("APPROVED");
+//            vo.setAutoApproveYn("Y");
+//        }
+
+        /*
+         * 관리자 승인 대상 시설 판단
+         *
+         * PENDING이란?
+         * 승인대기 상태입니다.
+         * 입주민이 예약 요청만 한 상태이고, 관리자가 승인해야 최종 예약완료가 됩니다.
+         *
+         * 왜 사용?
+         * 화면에 "관리자 승인" 뱃지가 붙은 시설은 자동승인되면 안 되기 때문입니다.
+         */
+        if (isManagerApprovalFacility(facilityNm)) {
+            vo.setRsvtSttsCd("PENDING");     // 관리자 승인대기
             vo.setAutoApproveYn("N");
         } else {
-            vo.setRsvtSttsCd("APPROVED");
+            vo.setRsvtSttsCd("APPROVED");    // 자동승인
             vo.setAutoApproveYn("Y");
         }
+
 
         mapper.insertReservation(vo);
 
@@ -218,7 +237,11 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     @Transactional
     public void approve(PublicFacilityReservationVO vo) {
 
-        mapper.approveReservation(vo);
+        int result = mapper.approveReservation(vo);
+
+        if (result == 0) {
+            throw new IllegalStateException("승인할 수 없는 예약입니다.");
+        }
 
         PublicFacilityReservationVO smsInfo =
                 mapper.selectReservationSmsInfo(vo.getRsvtNo());
@@ -379,6 +402,26 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
     ) {
         return mapper.selectHistoryItemFilterList(searchVO);
     }
+
+    /**
+     * 관리자 승인 대상 시설 여부
+     *
+     * private 메서드란?
+     * 이 클래스 안에서만 사용하는 보조 메서드입니다.
+     */
+    private boolean isManagerApprovalFacility(String facilityNm) {
+        if (facilityNm == null) {
+            return false;
+        }
+
+        return facilityNm.contains("회의실")
+                || facilityNm.contains("커뮤니티룸")
+                || facilityNm.contains("라운지")
+                || facilityNm.contains("테니스장");
+    }
+
+
+
 }
 
 

@@ -989,7 +989,7 @@
         if (!list || list.length === 0) {
             kakaoAlimList.innerHTML = `
             <div style="padding:20px; text-align:center; color:#777;">
-                도착한 알림이 없습니다.
+
             </div>
         `;
             return;

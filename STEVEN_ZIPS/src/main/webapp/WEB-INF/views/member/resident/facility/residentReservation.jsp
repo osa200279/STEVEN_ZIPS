@@ -106,7 +106,36 @@
     .facility-card-title {
       font-size: 19px;
       font-weight: 800;
+      margin-bottom: 0;
+    }
+
+    .facility-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
       margin-bottom: 14px;
+    }
+
+    .approval-badge {
+      flex-shrink: 0;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .approval-badge.auto {
+      background: #e8f5ee;
+      color: #1f6b3a;
+      border: 1px solid #b7dfc7;
+    }
+
+    .approval-badge.manager {
+      background: #fff3dc;
+      color: #9a5a00;
+      border: 1px solid #ffd58a;
     }
 
     .facility-card-desc {
@@ -183,9 +212,27 @@
               <a class="facility-card"
                  href="${pageContext.request.contextPath}/resident/publicFacility/reservation/${aptCmplexNo}/${facility.cmnFacilityNo}">
 
-                <div class="facility-card-title">
-                    ${facility.cmnFacilityNm} 예약
-                </div>
+<%--                <div class="facility-card-title">--%>
+<%--                    ${facility.cmnFacilityNm} 예약--%>
+<%--                </div>--%>
+                      <div class="facility-card-top">
+                        <div class="facility-card-title">
+                            ${facility.cmnFacilityNm} 예약
+                        </div>
+
+                        <c:choose>
+                          <c:when test="${fn:contains(facility.cmnFacilityNm, '회의실')
+                                        or fn:contains(facility.cmnFacilityNm, '커뮤니티룸')
+                                        or fn:contains(facility.cmnFacilityNm, '라운지')
+                                        or fn:contains(facility.cmnFacilityNm, '테니스장')}">
+                            <span class="approval-badge manager">관리자 승인</span>
+                          </c:when>
+
+                          <c:otherwise>
+                            <span class="approval-badge auto">자동승인</span>
+                          </c:otherwise>
+                        </c:choose>
+                      </div>
 
                 <div class="facility-card-desc">
                   <c:choose>

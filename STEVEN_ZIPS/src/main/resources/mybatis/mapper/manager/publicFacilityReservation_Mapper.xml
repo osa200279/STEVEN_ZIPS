@@ -653,6 +653,7 @@
         FH.RSVT_NO                 AS rsvtNo,
         FH.USER_NO                 AS userNo,
         PF.CMN_FACILITY_NM         AS cmnFacilityNm,
+        PF.APT_CMPLEX_NO           AS aptCmplexNo,
         FH.RSVT_BGNG_DTTM          AS rsvtBgngDttm,
         FH.RSVT_END_DTTM           AS rsvtEndDttm,
         FH.RJCT_RSN_CN             AS rejectReason
