@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/common/Button';
-import { getSido, getSigungu, getEmd, getAptList, toSelectOptions, getAptDetail, getSubmitDocTypes, insertAnn, getRentList } from '../../../util/api/annRegister/annRegister';
+import {
+  getSido,
+  getSigungu,
+  getEmd,
+  getAptList,
+  toSelectOptions,
+  getAptDetail,
+  getSubmitDocTypes,
+  insertAnn,
+  getRentList,
+} from '../../../util/api/announcement/annRegister';
 import BasicInfoSection from './BasicInfoSection';
 import AnnInfoSection from './AnnInfoSection';
 import SupplyInfoSection from './SupplyInfoSection';
@@ -42,6 +53,7 @@ function assertDateOrder(pubS, pubE, rcS, rcE) {
 }
 
 export default function AnnRegister() {
+  const navigate = useNavigate();
   const [annForm, setAnnForm] = useState(() => {
     const saved = localStorage.getItem('annForm');
     return saved ? JSON.parse(saved) : INITIAL_ANN_FORM;
@@ -264,6 +276,8 @@ useEffect(() => {
     }
   };
 
+  const handleNavigateList = () => navigate('/adm/ann');
+
   // ─────────────────────────────────────────
   // 상위 선택 바뀌면 하위 초기화
   // ─────────────────────────────────────────
@@ -331,6 +345,14 @@ useEffect(() => {
             disabled={submitting}
           >
             {submitting ? '등록 중…' : '등록'}
+          </Button>
+          <Button
+            type="button"
+            className="btn-outline"
+            onClick={handleNavigateList}
+            disabled={submitting}
+          >
+            목록
           </Button>
         </footer>
       </div>
