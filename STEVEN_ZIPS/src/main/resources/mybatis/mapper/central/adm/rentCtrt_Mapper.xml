@@ -334,4 +334,13 @@
         ) B WHERE ROWNUM <![CDATA[ <= ]]> #{endRow}
         ) WHERE RNUM >= #{startRow}
     </select>
+    <select id="selectAptCmplexNo" resultType="java.lang.String">
+        SELECT AU.APT_CMPLEX_NO
+        FROM RENT_LISTING RL
+        INNER JOIN APT_DETAIL AD
+                ON RL.HO_NO = AD.HO_NO
+        INNER JOIN APT_UNIT AU
+                ON AD.DONG_NO = AU.DONG_NO
+        WHERE RL.RENT_LSTG_NO = #{rentLstgNo}
+    </select>
 </mapper>

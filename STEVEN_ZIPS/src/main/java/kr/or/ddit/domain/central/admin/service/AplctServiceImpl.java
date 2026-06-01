@@ -69,6 +69,16 @@ public class AplctServiceImpl implements IAplctService {
                         )
                 );
             }
+
+            if("QUALIFIED".equals(stts)){
+                notificationService.send(
+                        userNo,
+                        NotificationDTO.success(
+                                "서류검토완료",
+                                "서류검토가 끝났습니다. 계약서를 확인해주세요."
+                        )
+                );
+            }
         }
 
         List<Map<String, Object>> qualifiedList = updateList.stream()
