@@ -13,6 +13,13 @@ let markers = [];
 let selectedRentNo = null;
 let selectedAptCmplexNo = null;
 let currentType = "ALL";
+
+// 초기 지도 화면: 송파구/강동·하남 인근
+const INITIAL_MAP_CENTER = new kakao.maps.LatLng(37.514575, 127.105399);
+const INITIAL_MAP_LEVEL = 5;
+
+let isFirstMapRender = true;
+
 /*
  * 공고 상세페이지 또는 매물 상세페이지에서 뒤로가기 했을 때
  * 사용자가 보고 있던 단지/매물을 다시 열기 위한 sessionStorage key
@@ -47,8 +54,8 @@ function initMap() {
     }
 
     const mapOption = {
-        center: new kakao.maps.LatLng(37.5665, 126.9780),
-        level: 7
+        center: INITIAL_MAP_CENTER,
+        level: INITIAL_MAP_LEVEL
     };
 
     map = new kakao.maps.Map(mapContainer, mapOption);
@@ -311,9 +318,17 @@ function renderMarkers() {
         }
     });
 
-    // 마커가 하나라도 생성된 경우에만 지도 범위 조정
-    if (markerCount > 0) {
-        map.setBounds(bounds);
+    //
+    // // 마커가 하나라도 생성된 경우에만 지도 범위 조정
+    // if (markerCount > 0) {
+    //     map.setBounds(bounds);
+    // }
+
+    // 첫 진입 화면은 송파구/강동·하남 인근으로 고정
+    if (markerCount > 0 && !selectedAptCmplexNo) {
+        map.setCenter(INITIAL_MAP_CENTER);
+        map.setLevel(INITIAL_MAP_LEVEL);
+        isFirstMapRender = false;
     }
 }
 
