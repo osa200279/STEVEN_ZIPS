@@ -65,7 +65,7 @@
         내 알림 목록 조회
 
         로그인한 사용자의 알림 목록을 조회합니다.
-        최신 알림이 위에 보이도록 SND_DTTM DESC 정렬을 사용합니다.
+        최신이 아래에 보이도록 SND_DTTM ASC 정렬을 사용합니다.
     -->
     <select id="selectMyKakaoAlimList"
             parameterType="string"
@@ -80,12 +80,12 @@
             READ_YN,
 
             /* 카카오톡 시간 표시용 */
-            TO_CHAR(SND_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS SND_DTTM,
+            TO_CHAR(SND_DTTM, 'YYYY-MM-DD HH24:MI:SS') AS sndDttm,
 
             RGTR_ID
         FROM KAKAO_ALIM
         WHERE USER_NO = #{userNo}
-        ORDER BY SND_DTTM DESC
+        ORDER BY SND_DTTM ASC
     </select>
 
     <!--

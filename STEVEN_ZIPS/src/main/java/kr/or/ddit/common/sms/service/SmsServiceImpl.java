@@ -136,7 +136,20 @@ public class SmsServiceImpl implements ISmsService {
         SmsSendRequest request = new SmsSendRequest();
         request.setSndTyCd("RSVT_APPROVED");
         request.setSmsTtl("예약 승인 완료");
-        request.setSmsCn("[우리집맵핑] " + facilityNm + " 예약 승인. 예약일시: " + rsvtDttm);
+        /*
+         * SMS 내용 형식
+         *
+         * [서비스명] 시설명 상태
+         * 예약일시
+         *
+         * 예)
+         * [우리집맵핑] 주민회의실 예약승인
+         * 2026-06-01 10:00~11:00
+         */
+        request.setSmsCn(
+                "[우리집맵핑] " + facilityNm + " 예약승인\n" +
+                        rsvtDttm
+        );
         request.setRcptTrgtGrpCd("RESIDENT");
         request.setRcptTrgtCd("SINGLE");
         request.setRcptUserNo(userNo);
@@ -152,10 +165,10 @@ public class SmsServiceImpl implements ISmsService {
     /**
      * 예약 거절 문자 발송
      */
-    @Override
     public void sendReservationRejected(
             String userNo,
             String facilityNm,
+            String rsvtDttm,
             String reason,
             String rgtrId
     ) {
@@ -172,7 +185,14 @@ public class SmsServiceImpl implements ISmsService {
         SmsSendRequest request = new SmsSendRequest();
         request.setSndTyCd("RSVT_REJECTED");
         request.setSmsTtl("예약 거절 안내");
-        request.setSmsCn("[우리집맵핑] " + facilityNm + " 예약 거절. 사유: " + reason);
+        /*
+         * 거절 사유는 SMS에 넣지 않습니다.
+         * 자세한 사유는 카카오 알림 모달 또는 예약내역 상세에서 확인하게 합니다.
+         */
+        request.setSmsCn(
+                "[우리집맵핑] " + facilityNm + " 예약거절\n" +
+                        rsvtDttm
+        );
         request.setRcptTrgtGrpCd("RESIDENT");
         request.setRcptTrgtCd("SINGLE");
         request.setRcptUserNo(userNo);
@@ -184,4 +204,85 @@ public class SmsServiceImpl implements ISmsService {
         /** SMS 발송 공통 메서드 호출 */
         sendSms(request);
     }
+
+    /**
+     * 예약 승인만료 문자 발송
+     *
+     * 승인만료란?
+     * 관리자가 예약 시작시간 전까지 승인/거절하지 않아
+     * 시스템이 자동취소한 상태입니다.
+     */
+    public void sendReservationExpired(
+            String userNo,
+            String facilityNm,
+            String rsvtDttm,
+            String rgtrId
+    ) {
+        SmsReceiver receiver = smsMapper.selectReceiverByUserNo(userNo);
+
+        if (receiver == null) {
+            return;
+        }
+
+        SmsSendRequest request = new SmsSendRequest();
+        request.setSndTyCd("RSVT_EXPIRED");
+        request.setSmsTtl("예약 자동취소");
+
+        /*
+         * 승인만료란?
+         * 관리자가 예약 시작시간 전까지 승인/거절하지 않아
+         * 시스템이 자동취소한 상태입니다.
+         */
+        request.setSmsCn(
+                "[우리집맵핑] " + facilityNm + " 승인만료\n" +
+                        rsvtDttm
+        );
+
+        request.setRcptTrgtGrpCd("RESIDENT");
+        request.setRcptTrgtCd("SINGLE");
+        request.setRcptUserNo(userNo);
+        request.setRgtrId(rgtrId);
+        request.setReceivers(Collections.singletonList(receiver));
+
+        sendSms(request);
+    }
+
+    /**
+     * 예약 취소 완료 문자 발송
+     *
+     * 사용자가 예약을 직접 취소했을 때
+     * 입주민에게 짧은 SMS를 발송합니다.
+     */
+    @Override
+    public void sendReservationCancelled(
+            String userNo,
+            String facilityNm,
+            String rsvtDttm,
+            String rgtrId
+    ) {
+        SmsReceiver receiver = smsMapper.selectReceiverByUserNo(userNo);
+
+        if (receiver == null) {
+            return;
+        }
+
+        SmsSendRequest request = new SmsSendRequest();
+        request.setSndTyCd("RSVT_CANCELLED");
+        request.setSmsTtl("예약 취소 안내");
+
+        request.setSmsCn(
+                "[우리집맵핑] " + facilityNm + " 예약취소\n" +
+                        rsvtDttm
+        );
+
+        request.setRcptTrgtGrpCd("RESIDENT");
+        request.setRcptTrgtCd("SINGLE");
+        request.setRcptUserNo(userNo);
+        request.setRgtrId(rgtrId);
+        request.setReceivers(Collections.singletonList(receiver));
+
+        sendSms(request);
+    }
+
+
 }

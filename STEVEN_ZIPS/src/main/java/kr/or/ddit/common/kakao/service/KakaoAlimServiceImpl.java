@@ -50,6 +50,35 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
     }
 
     /**
+     * 예약 승인만료 알림 생성
+     *
+     * 승인만료란?
+     * 관리자가 예약 시작시간 전까지 승인/거절을 하지 않아서
+     * 시스템이 자동으로 예약을 취소한 상태입니다.
+     */
+    @Override
+    @Transactional
+    public void sendReservationExpired(String userNo, String facilityNm, String rsvtDttm, String linkUrl) {
+        KakaoAlimVO vo = new KakaoAlimVO();
+
+        vo.setAlimNo(mapper.selectNextAlimNo());
+        vo.setUserNo(userNo);
+        vo.setAlimTyCd("RSVT_EXPIRED");
+        vo.setAlimTtl("예약 자동취소");
+
+        // LMS 방지용 짧은 문구
+        vo.setAlimCn(
+                facilityNm + " 예약이 자동취소되었습니다.\n" +
+                        "사유: 승인 가능 시간 초과"
+        );
+
+        vo.setLinkUrl(linkUrl);
+        vo.setRgtrId("SYSTEM");
+
+        mapper.insertKakaoAlim(vo);
+    }
+
+    /**
      * 예약 거절 알림 생성
      *
      * 거절 사유와 함께 알림 저장
@@ -126,7 +155,7 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
         vo.setUserNo(userNo);
         vo.setAlimTyCd("RSVT_REQUESTED");
         vo.setAlimTtl("편의시설 예약 신청");
-        vo.setAlimCn(facilityNm + " 예약 신청이 완료되었습니다.\n예약일시: " + rsvtDttm);
+        vo.setAlimCn(facilityNm + " 예약신청이 완료되었습니다.\n예약일시: " + rsvtDttm);
         vo.setLinkUrl(linkUrl);
         vo.setRgtrId("SYSTEM");
 
@@ -147,7 +176,7 @@ public class KakaoAlimServiceImpl implements IKakaoAlimService {
         vo.setUserNo(userNo);
         vo.setAlimTyCd("RSVT_CANCELLED");
         vo.setAlimTtl("편의시설 예약 취소");
-        vo.setAlimCn(facilityNm + " 예약이 취소되었습니다.\n예약일시: " + rsvtDttm);
+        vo.setAlimCn(facilityNm + " 예약신청이 취소되었습니다.\n예약일시: " + rsvtDttm);
         vo.setLinkUrl(linkUrl);
         vo.setRgtrId("SYSTEM");
 

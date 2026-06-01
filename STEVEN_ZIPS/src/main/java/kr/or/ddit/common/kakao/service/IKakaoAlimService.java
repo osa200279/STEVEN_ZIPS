@@ -28,6 +28,16 @@ public interface IKakaoAlimService {
     );
 
     /**
+     * 승인만료(자동취소) 알림
+     */
+    void sendReservationExpired(
+            String userNo,
+            String facilityNm,
+            String rsvtDttm,
+            String linkUrl
+    );
+
+    /**
      * 예약 거절 알림 발송
      */
     void sendReservationRejected(

@@ -36,7 +36,7 @@
                         id="kakaoAlimBtn"
                         class="kakao-alim-img-btn">
                     <img class="kakao-bell-img"
-                         src="${pageContext.request.contextPath}/img/kakaoConsult.png"
+                         src="${pageContext.request.contextPath}/img/kakaoAlim.png"
                          alt="카카오알림">
                     <span class="kakao-badge">
                         <c:out value="${empty unreadCount ? 0 : unreadCount}"/>
@@ -139,7 +139,7 @@
                                 <line x1="8" y1="2" x2="8" y2="6"/>
                                 <line x1="3" y1="10" x2="21" y2="10"/>
                             </svg>
-                            2026년 6월 1일 월요일
+                            <span id="kakaoDateText"></span>
                         </div>
 
                         <div id="kakaoAlimList" class="kakao-chat-body">
@@ -156,8 +156,8 @@
                                     <svg class="kakao-file-svg"
                                          viewBox="0 0 24 24">
 
-                                        <path d="M4.5 3.5H15.5L19 7V20.5H4.5Z"/>
-                                        <path d="M15.5 3.5V7H19"/>
+                                        <path d="M4 3H15L20 8V20H4Z"/>
+                                        <path d="M15 3V8H20"/>
 
                                     </svg>
 
@@ -484,41 +484,47 @@
        상단 윈도우 버튼 영역
        왼쪽 실제 카톡처럼 얇고 낮게
        ========================= */
+    /* =========================
+   상단 윈도우 버튼 영역
+   ========================= */
     .kakao-window-top{
-        height:24px;
+        height:26px;
+
         display:flex;
         justify-content:flex-end;
         align-items:center;
-        gap:8px;
-        padding:0 9px;
+
+        gap:2px;          /* 기존 4px → 2px */
+
+        padding:0 8px;
+
         flex-shrink:0;
-        cursor:move; /* 드래그 가능하다는 표시 */
-        user-select:none; /* 드래그 중 글자 선택 방지 */
+        cursor:move;
+        user-select:none;
     }
 
     .kakao-window-btn{
         border:none;
         background:none;
         cursor:pointer;
-        font-size:13px;
-        font-weight:300;
-        color:#444;
-        line-height:1;
+
+        width:24px;       /* 기존 20px → 24px */
+        height:24px;      /* 기존 20px → 24px */
+
         padding:0;
-        width:18px;
-        height:18px;
+
         display:flex;
         align-items:center;
         justify-content:center;
     }
 
     .kakao-window-svg{
-        width:13px;
-        height:13px;
+        width:18px;       /* 기존 15px → 18px */
+        height:18px;
 
         fill:none;
-        stroke:#5f6b70;
-        stroke-width:1.7;
+        stroke:#4f5b61;
+        stroke-width:2;
 
         stroke-linecap:round;
         stroke-linejoin:round;
@@ -729,17 +735,21 @@
        왼쪽 실제 카톡처럼 낮게 정렬
        ========================= */
     .kakao-input-area{
-        height:105px;
+        height:115px;
+
         background:#fff;
-        padding:12px 12px 10px;
+
+        padding:14px 14px 12px;
+
         box-sizing:border-box;
         flex-shrink:0;
     }
 
     .kakao-input-placeholder{
-        color:#999;
-        font-size:11px;
-        margin-bottom:28px;
+        color:#8d8d8d;
+        font-size:13px;
+        font-weight:400;
+        margin-bottom:36px; /* 입력창 높이 증가에 맞춤 */
         letter-spacing:-0.3px;
     }
 
@@ -759,16 +769,18 @@
    실제 카카오톡 느낌 SVG 아이콘
    ========================= */
 
+    .kakao-file-svg,
+    .kakao-plus-svg{
+        stroke:#707070;
+    }
+
     .kakao-file-svg{
-        width:19px;
-        height:19px;
+        width:18px;
+        height:18px;
 
         fill:none;
-        stroke:#4b4b4b;
+        stroke:#707070;
         stroke-width:1.45;
-
-        stroke-linecap:square;
-        stroke-linejoin:miter;
     }
 
     .kakao-plus-svg{
@@ -776,16 +788,8 @@
         height:21px;
 
         fill:none;
-        stroke:#4a4a4a;
-        stroke-width:1.5;
-
-        stroke-linecap:square;
-        stroke-linejoin:miter;
-    }
-
-    .kakao-file-svg,
-    .kakao-plus-svg{
-        transform:translateY(3px);
+        stroke:#707070;
+        stroke-width:1.45;
     }
 
     .kakao-input-icons{
@@ -992,7 +996,10 @@
             "토요일"
         ];
 
-        return `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${weekNames[now.getDay()]}`;
+        return now.getFullYear() + "년 "
+            + (now.getMonth() + 1) + "월 "
+            + now.getDate() + "일 "
+            + weekNames[now.getDay()];
     }
 
     /*

@@ -225,10 +225,19 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
 
         if (smsInfo == null) {
             throw new IllegalStateException("예약 알림 발송 정보를 찾을 수 없습니다.");
+
         }
 
+        /*
+         * SMS에 표시할 예약일시 생성
+         *
+         * 예)
+         * 2026-06-01 10:00 ~ 2026-06-01 11:00
+         */
         String rsvtDttm =
-                smsInfo.getRsvtBgngDttm() + " ~ " + smsInfo.getRsvtEndDttm();
+                smsInfo.getRsvtBgngDttm()
+                        + " ~ "
+                        + smsInfo.getRsvtEndDttm();
 
         /*
          * 1. 실제 SMS 발송
@@ -272,17 +281,29 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
         }
 
         /*
-         * 1. 실제 SMS 발송
+         * SMS에 표시할 예약일시 생성
+         *
+         * 예)
+         * 2026-06-01 10:00 ~ 2026-06-01 11:00
+         */
+        String rsvtDttm =
+                smsInfo.getRsvtBgngDttm()
+                        + " ~ "
+                        + smsInfo.getRsvtEndDttm();
+
+        /*
+         * 예약 거절 SMS 발송
          */
         smsService.sendReservationRejected(
                 smsInfo.getUserNo(),
                 smsInfo.getCmnFacilityNm(),
+                rsvtDttm,
                 vo.getRejectReason(),
                 "SYSTEM"
         );
 
         /*
-         * 2. SMS 성공 후에만 카카오 알림 DB 저장
+         * SMS 성공 후 카카오 알림 저장
          */
         kakaoAlimService.sendReservationRejected(
                 smsInfo.getUserNo(),
