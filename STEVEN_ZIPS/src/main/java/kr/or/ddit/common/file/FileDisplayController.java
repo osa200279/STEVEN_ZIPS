@@ -56,7 +56,6 @@ public class FileDisplayController {
         return serveFile("attachment", googleId);
     }
 
-
     /**
      * 구글드라이브 파일 스트리밍 메서드
      * @author 이용로
