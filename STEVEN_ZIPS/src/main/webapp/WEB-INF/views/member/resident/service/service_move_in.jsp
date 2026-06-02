@@ -67,7 +67,7 @@
                     <div class="td"><input class="fake-input" id="userNm" value="${principal.member.userNm}" readonly="readonly"/></div>
                     <div class="th">연락처</div>
                     <div class="td"><input class="fake-input" id="userTelno" value="${principal.member.userTelno}" readonly="readonly"/></div>--%>
-                    <div class="th">입주 예정일 <span style="color: red;">*</span></div>
+                    <div class="th">입주일 <span style="color: red;">*</span></div>
                     <div class="td"><input class="fake-input" type="date" id="mvinPrdDt"/></div>
                     <div class="th">특이사항(선택)</div>
                     <div class="td"><textarea class="fake-textarea" id="spclCn" placeholder="특이사항을 입력해주세요."></textarea></div>
