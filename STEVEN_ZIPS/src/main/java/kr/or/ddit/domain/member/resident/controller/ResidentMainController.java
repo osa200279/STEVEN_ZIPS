@@ -1167,7 +1167,6 @@ public class ResidentMainController {
      * @return board_notice.jsp 입주민 공지게시판
      * @author 김보라
      */
-    @PreAuthorize("@authService.hasAccess(principal, #aptCmplexNo)")
     @GetMapping("/board/notice/{aptCmplexNo}")
     public String boardNotice(
             @PathVariable String aptCmplexNo,
