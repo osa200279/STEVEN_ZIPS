@@ -1,70 +1,53 @@
 package kr.or.ddit.domain.apt.mgmtOffice.broadcast.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.auth.oauth2.GoogleCredentials;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Collections;
 
 @Service
 public class ManagerBroadcastServiceImpl implements IManagerBroadcastService {
 
-    private static final String TTS_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
-    private static final String TTS_API_URL = "https://texttospeech.googleapis.com/v1/text:synthesize";
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final String TTS_SERVICE_BASE = "http://localhost:8060";
 
     @Override
     public byte[] convertTextToSpeech(String text, String languageCode, String voiceName) throws Exception {
-        GoogleCredentials credentials = loadCredentials();
-        credentials.refreshIfExpired();
-
-        ObjectNode body = MAPPER.createObjectNode();
-        body.set("input", MAPPER.createObjectNode().put("text", text));
-        ObjectNode voice = body.putObject("voice");
-        voice.put("languageCode", languageCode);
-        voice.put("name", voiceName);
-        body.putObject("audioConfig").put("audioEncoding", "MP3");
+        String query = "text=" + URLEncoder.encode(text, StandardCharsets.UTF_8)
+                + "&languageCode=" + URLEncoder.encode(languageCode, StandardCharsets.UTF_8)
+                + "&voiceName=" + URLEncoder.encode(voiceName, StandardCharsets.UTF_8);
+        URI uri = URI.create(TTS_SERVICE_BASE + "/tts/synthesize?" + query);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(TTS_API_URL))
-                .header("Authorization", "Bearer " + credentials.getAccessToken().getTokenValue())
-                .header("Content-Type", "application/json; charset=utf-8")
-                .POST(HttpRequest.BodyPublishers.ofString(MAPPER.writeValueAsString(body), StandardCharsets.UTF_8))
+                .uri(uri)
+                .GET()
                 .build();
 
-        HttpResponse<String> response = HttpClient.newHttpClient()
-                .send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        HttpResponse<byte[]> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofByteArray());
 
         if (response.statusCode() != 200) {
             throw new IllegalStateException(
-                    "Google TTS API 오류: HTTP " + response.statusCode() + " — " + response.body());
+                    "TTS 서비스 오류: HTTP " + response.statusCode());
         }
 
-        JsonNode json = MAPPER.readTree(response.body());
-        JsonNode audioNode = json.path("audioContent");
-        if (!audioNode.isTextual() || audioNode.asText().isBlank()) {
-            throw new IllegalStateException("Google TTS API 응답에 audioContent가 없습니다.");
+        byte[] audio = response.body();
+        if (!isLikelyMp3(audio)) {
+            throw new IllegalStateException("TTS 서비스 응답이 유효한 MP3가 아닙니다.");
         }
-        return Base64.getDecoder().decode(audioNode.asText());
+        return audio;
     }
 
-    private GoogleCredentials loadCredentials() throws Exception {
-        InputStream keyStream = getClass().getResourceAsStream("/tts-key.json");
-        if (keyStream == null) {
-            throw new IllegalStateException("classpath에 tts-key.json이 없습니다.");
+    private boolean isLikelyMp3(byte[] audio) {
+        if (audio == null || audio.length < 128) {
+            return false;
         }
-        try (keyStream) {
-            return GoogleCredentials.fromStream(keyStream)
-                    .createScoped(Collections.singleton(TTS_SCOPE));
+        if (audio[0] == (byte) 0xFF && (audio[1] & 0xE0) == 0xE0) {
+            return true;
         }
+        return audio[0] == 0x49 && audio[1] == 0x44 && audio[2] == 0x33;
     }
 }

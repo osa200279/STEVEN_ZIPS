@@ -1,5 +1,5 @@
 /**
- * 방송 안내 작성 · TTS 변환 · sessionStorage 이력
+ * 방송 안내 작성 · TTS 변환 · sessionStorage 이력(문구·설정만)
  */
 (function () {
     'use strict';
@@ -13,6 +13,7 @@
     var HISTORY_MAX = 20;
     var DEFAULT_RESET_VOICE = 'ko-KR-Standard-C';
     var CONVERT_BTN_HTML = '<span class="material-symbols-rounded">graphic_eq</span>음성 변환하기';
+    var CONVERT_DOCKER_BTN_HTML = '<span class="material-symbols-rounded">dns</span>도커 음성 변환';
     var PREVIEW_BTN_HTML = '<span class="material-symbols-rounded">hearing</span>미리듣기';
 
     var VOICE_OPTIONS = {
@@ -29,11 +30,13 @@
     var previewToken = 0;
     var broadcastActive = false;
     var currentPlayerRow = null;
+    var lastPlaybackBlob = null;
     var $ = function (id) { return document.getElementById(id); };
 
     var SOURCE_NOTES = {
         check: '점검 건을 클릭하면 좌측에 방송 초안이 채워집니다.',
-        complaint: '민원 건을 클릭하면 익명·일반화된 안내 초안이 채워집니다.'
+        complaint: '민원 건을 클릭하면 좌측에 방송 초안이 채워집니다.',
+        history: '이력에는 문구·설정만 저장됩니다. 재생은 음성 변환하기로 다시 생성해 주세요.'
     };
 
     function getVoiceLabel(voice) {
@@ -142,35 +145,41 @@
         });
     }
 
-    function ensureAudioBlob(blob) {
-        var mime = blob && blob.type ? blob.type : 'audio/mpeg';
-        if (mime.indexOf('audio/') !== 0) {
-            mime = 'audio/mpeg';
+    function revokeObjectUrl(audio, urlField) {
+        if (audio && audio[urlField]) {
+            URL.revokeObjectURL(audio[urlField]);
+            audio[urlField] = null;
         }
-        if (!blob.type || blob.type !== mime) {
-            return new Blob([blob], { type: mime });
-        }
-        return blob;
     }
 
-    function blobToDataUrl(blob) {
-        return new Promise(function (resolve, reject) {
-            var reader = new FileReader();
-            reader.onloadend = function () { resolve(reader.result); };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
+    function attachBlobToAudio(audio, blob, urlField) {
+        clearAudioTimingWatch(audio);
+        revokeObjectUrl(audio, urlField);
+        if (!audio) return false;
+        audio.pause();
+        try {
+            audio.currentTime = 0;
+        } catch (ignore) { /* seek */ }
+        if (!blob || blob.size < 128) {
+            audio.removeAttribute('src');
+            return false;
+        }
+        var url = URL.createObjectURL(blob);
+        audio[urlField] = url;
+        audio.src = url;
+        return true;
     }
 
-    function dataUrlToBlobUrl(dataUrl) {
-        if (!dataUrl || dataUrl.indexOf('data:') !== 0) return null;
-        var m = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
-        if (!m) return null;
-        var binary = atob(m[2]);
-        var len = binary.length;
-        var bytes = new Uint8Array(len);
-        for (var i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-        return URL.createObjectURL(new Blob([bytes], { type: m[1] || 'audio/mpeg' }));
+    function clearAudioElement(audio, urlField) {
+        clearAudioTimingWatch(audio);
+        if (!audio) return;
+        audio.pause();
+        revokeObjectUrl(audio, urlField);
+        audio.removeAttribute('src');
+    }
+
+    function setLastPlaybackBlob(blob) {
+        lastPlaybackBlob = blob && blob.size >= 128 ? blob : null;
     }
 
     function buildAudioFileName(row) {
@@ -195,55 +204,26 @@
         return base + '_' + stamp + '.mp3';
     }
 
-    function triggerAudioDownload(audioUrl, fileName) {
-        if (!audioUrl) return false;
+    function downloadCurrentAudio() {
+        if (!lastPlaybackBlob) {
+            toast({ title: '다운로드', message: '음성 데이터가 없습니다. 음성 변환하기를 먼저 실행해 주세요.', type: 'error' });
+            return;
+        }
+        var url = URL.createObjectURL(lastPlaybackBlob);
         var a = document.createElement('a');
-        a.href = audioUrl;
-        a.download = fileName || 'broadcast.mp3';
+        a.href = url;
+        a.download = buildAudioFileName(currentPlayerRow);
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        return true;
-    }
-
-    function downloadRowAudio(row) {
-        if (!row || !row.audioUrl) {
-            toast({ title: '다운로드', message: '음성 데이터가 없습니다.', type: 'error' });
-            return;
-        }
-        if (triggerAudioDownload(row.audioUrl, buildAudioFileName(row))) {
-            toast({
-                title: '다운로드',
-                message: '음성 파일을 저장했습니다.',
-                type: 'success',
-                duration: 2400
-            });
-        }
-    }
-
-    function revokePlayerObjectUrl(audio) {
-        if (audio && audio._bcObjectUrl) {
-            URL.revokeObjectURL(audio._bcObjectUrl);
-            audio._bcObjectUrl = null;
-        }
-    }
-
-    function setPlayerAudioSource(audio, audioUrl, playbackBlob) {
-        clearAudioTimingWatch(audio);
-        revokePlayerObjectUrl(audio);
-        audio.pause();
-        audio.currentTime = 0;
-        if (playbackBlob && typeof playbackBlob.size === 'number' && playbackBlob.size > 0) {
-            var typedBlob = ensureAudioBlob(playbackBlob);
-            audio._bcObjectUrl = URL.createObjectURL(typedBlob);
-            audio.src = audio._bcObjectUrl;
-        } else if (audioUrl && audioUrl.indexOf('data:') === 0) {
-            audio._bcObjectUrl = dataUrlToBlobUrl(audioUrl);
-            audio.src = audio._bcObjectUrl || audioUrl;
-        } else {
-            audio.src = audioUrl || '';
-        }
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+        toast({
+            title: '다운로드',
+            message: '음성 파일을 저장했습니다.',
+            type: 'success',
+            duration: 2400
+        });
     }
 
     function startPlayerPlayback(audio, opts) {
@@ -259,6 +239,13 @@
                     title: '재생',
                     message: '자동 재생이 제한되었습니다. 재생 버튼을 눌러 주세요.',
                     type: 'info',
+                    duration: 4000
+                });
+            } else {
+                toast({
+                    title: '재생 불가',
+                    message: '음성을 재생할 수 없습니다.',
+                    type: 'error',
                     duration: 4000
                 });
             }
@@ -293,7 +280,7 @@
         if (audio._bcWatchers) {
             audio._bcWatchers.forEach(function (w) {
                 audio.removeEventListener(w.ev, w.fn);
-            });
+            }); 
             audio._bcWatchers = null;
         }
         if (audio._bcDurTimer) {
@@ -327,112 +314,20 @@
         add('loadedmetadata', refresh);
         add('durationchange', refresh);
         add('canplay', refresh);
-        add('canplaythrough', refresh);
         add('timeupdate', onUpdate);
         refresh();
-        if (audio.readyState < 1) {
-            audio.load();
-        }
     }
 
-    function revokeHistoryObjectUrl(audio) {
-        if (audio && audio._bcHistUrl) {
-            URL.revokeObjectURL(audio._bcHistUrl);
-            audio._bcHistUrl = null;
-        }
-    }
-
-    function setHistoryAudioSource(audio, audioUrl) {
-        revokeHistoryObjectUrl(audio);
-        if (audioUrl && audioUrl.indexOf('data:') === 0) {
-            audio._bcHistUrl = dataUrlToBlobUrl(audioUrl);
-            audio.src = audio._bcHistUrl || audioUrl;
-        } else {
-            audio.src = audioUrl || '';
-        }
-    }
-
-    function updateHistoryItemTime(itemEl) {
-        var audio = itemEl ? itemEl.querySelector('.history-audio') : null;
-        var el = itemEl ? itemEl.querySelector('[data-role="hist-time"]') : null;
-        if (!audio || !el) return;
-        el.textContent = formatTimeRange(audio);
-    }
-
-    function updateHistoryPlayToggle(itemEl, isPlaying) {
-        var icon = itemEl.querySelector('[data-role="hist-play-icon"]');
-        var btn = itemEl.querySelector('[data-action="hist-play"]');
-        if (icon) icon.textContent = isPlaying ? 'pause' : 'play_arrow';
-        if (btn) btn.setAttribute('aria-label', isPlaying ? '일시정지' : '재생');
-        itemEl.classList.toggle('is-playing', !!isPlaying);
-    }
-
-    function resetHistoryPlayback(itemEl) {
-        var audio = itemEl.querySelector('.history-audio');
-        if (!audio || !audio.src) return;
-        audio.pause();
-        try {
-            audio.currentTime = 0;
-        } catch (ignore) { /* seek */ }
-        updateHistoryPlayToggle(itemEl, false);
-        updateHistoryItemTime(itemEl);
-    }
-
-    function toggleHistoryPlayback(itemEl) {
-        var audio = itemEl.querySelector('.history-audio');
-        if (!audio || !audio.src) return;
-        if (audio.paused) {
-            pauseAllBroadcastAudio(audio);
-            var eq = $('eqBars');
-            if (eq) eq.classList.remove('playing');
-            updatePlayerToggle(false);
-            var playPromise = audio.play();
-            if (playPromise && typeof playPromise.catch === 'function') {
-                playPromise.catch(function (err) {
-                    console.warn('history audio play failed', err);
-                    updateHistoryPlayToggle(itemEl, false);
-                });
-            }
-        } else {
-            audio.pause();
-        }
-    }
-
-    function initHistoryItemPlayer(itemEl, row) {
-        var audio = itemEl.querySelector('.history-audio');
-        if (!audio || !row) return;
-
-        clearAudioTimingWatch(audio);
-        audio.pause();
-        audio.preload = 'auto';
-        setHistoryAudioSource(audio, row.audioUrl);
-        updateHistoryItemTime(itemEl);
-        updateHistoryPlayToggle(itemEl, false);
-
-        watchAudioTiming(audio, function () {
-            updateHistoryItemTime(itemEl);
-        });
-
-        audio.addEventListener('play', function () {
-            pauseAllBroadcastAudio(audio);
-            var eq = $('eqBars');
-            if (eq) eq.classList.remove('playing');
-            updatePlayerToggle(false);
-            document.querySelectorAll('#historyList .history-item').forEach(function (el) {
-                if (el !== itemEl) updateHistoryPlayToggle(el, false);
-            });
-            updateHistoryPlayToggle(itemEl, true);
-        });
-        audio.addEventListener('pause', function () {
-            updateHistoryPlayToggle(itemEl, false);
-        });
-        audio.addEventListener('ended', function () {
-            try {
-                audio.currentTime = 0;
-            } catch (ignore) { /* ended */ }
-            updateHistoryPlayToggle(itemEl, false);
-            updateHistoryItemTime(itemEl);
-        });
+    function normalizeHistoryRow(row) {
+        if (!row || typeof row !== 'object') return null;
+        return {
+            text: row.text || '',
+            voice: row.voice || DEFAULT_RESET_VOICE,
+            areas: Array.isArray(row.areas) ? row.areas : [],
+            area: row.area || '',
+            voiceLabel: row.voiceLabel || getVoiceLabel(row.voice),
+            createdAt: row.createdAt || nowKST()
+        };
     }
 
     function saveHistory() {
@@ -441,22 +336,12 @@
                 sessionStorage.removeItem(storageKey());
                 return;
             }
-            sessionStorage.setItem(storageKey(), JSON.stringify(historyRows.map(function (r) {
-                return {
-                    text: r.text,
-                    voice: r.voice,
-                    areas: r.areas,
-                    area: r.area,
-                    voiceLabel: r.voiceLabel,
-                    createdAt: r.createdAt,
-                    audioUrl: r.audioUrl
-                };
-            })));
+            sessionStorage.setItem(storageKey(), JSON.stringify(historyRows.map(normalizeHistoryRow)));
         } catch (e) {
             console.warn('방송 이력 저장 실패:', e);
             toast({
                 title: '이력 저장 실패',
-                message: '브라우저 저장 공간이 부족합니다. 이력을 줄이거나 짧은 문구로 변환해 주세요.',
+                message: '브라우저 저장 공간이 부족합니다. 이력을 줄여 주세요.',
                 type: 'warning',
                 duration: 5000
             });
@@ -470,8 +355,9 @@
     function loadHistory() {
         try {
             var raw = sessionStorage.getItem(storageKey());
-            historyRows = raw ? JSON.parse(raw) : [];
-            if (!Array.isArray(historyRows)) historyRows = [];
+            var parsed = raw ? JSON.parse(raw) : [];
+            if (!Array.isArray(parsed)) parsed = [];
+            historyRows = parsed.map(normalizeHistoryRow).filter(function (r) { return r && r.text; });
         } catch (e) {
             historyRows = [];
         }
@@ -499,12 +385,22 @@
         if (label) label.textContent = formatAreaDisplay(getSelectedAreas());
     }
 
+    function resetSelectPanelPosition(panel) {
+        if (!panel) return;
+        panel.classList.remove('is-drop-up', 'is-panel-fixed');
+        panel.style.width = '';
+        panel.style.left = '';
+        panel.style.right = '';
+        panel.style.top = '';
+        panel.style.bottom = '';
+    }
+
     function closeAreaPanel() {
         var panel = $('areaSelectPanel');
         var trigger = $('areaSelectTrigger');
         if (panel) {
             panel.hidden = true;
-            panel.classList.remove('is-drop-up');
+            resetSelectPanelPosition(panel);
         }
         if (trigger) {
             trigger.classList.remove('open');
@@ -522,7 +418,7 @@
         var trigger = $('voiceSelectTrigger');
         if (panel) {
             panel.hidden = true;
-            panel.classList.remove('is-drop-up');
+            resetSelectPanelPosition(panel);
         }
         if (trigger) {
             trigger.classList.remove('open');
@@ -537,12 +433,23 @@
 
         panel.classList.remove('is-drop-up');
         var rect = trigger.getBoundingClientRect();
-        var panelHeight = panel.offsetHeight;
+        var panelHeight = panel.offsetHeight || 168;
         var spaceBelow = window.innerHeight - rect.bottom - 12;
         var spaceAbove = rect.top - 12;
+        var dropUp = panelHeight > spaceBelow && spaceAbove > spaceBelow;
 
-        if (panelHeight > spaceBelow && spaceAbove > spaceBelow) {
+        panel.classList.add('is-panel-fixed');
+        panel.style.width = Math.round(rect.width) + 'px';
+        panel.style.left = Math.round(rect.left) + 'px';
+        panel.style.right = 'auto';
+
+        if (dropUp) {
             panel.classList.add('is-drop-up');
+            panel.style.top = 'auto';
+            panel.style.bottom = Math.round(window.innerHeight - rect.top + 6) + 'px';
+        } else {
+            panel.style.top = Math.round(rect.bottom + 6) + 'px';
+            panel.style.bottom = 'auto';
         }
     }
 
@@ -588,7 +495,9 @@
                 panel.hidden = false;
                 trigger.classList.add('open');
                 trigger.setAttribute('aria-expanded', 'true');
-                positionVoicePanel();
+                requestAnimationFrame(function () {
+                    positionVoicePanel();
+                });
             }
         });
 
@@ -656,7 +565,9 @@
                 panel.hidden = false;
                 trigger.classList.add('open');
                 trigger.setAttribute('aria-expanded', 'true');
-                positionAreaPanel();
+                requestAnimationFrame(function () {
+                    positionAreaPanel();
+                });
             }
         });
 
@@ -699,17 +610,64 @@
 
     function getTtsErrorMessage(e) {
         if (e && e.name === 'AbortError') return '';
-        var msg = 'TTS 서버 연결에 실패했습니다. 서버 실행 상태를 확인해주세요.';
+        var msg = 'TTS 서버 연결에 실패했습니다. 서버·TTS 도커 실행 상태를 확인해주세요.';
         if (e && e.status === 403) {
             msg = '요청이 차단되었습니다(403). 페이지를 새로고침한 뒤 다시 시도해주세요.';
         } else if (String(e && e.message || '').indexOf('not audio') !== -1) {
             msg = '서버가 음성이 아닌 응답을 반환했습니다. 로그인·권한(CSRF) 또는 TTS 설정을 확인해주세요.';
         } else if (String(e && e.message || '').indexOf('invalid mp3') !== -1) {
-            msg = '음성 데이터 형식이 올바르지 않습니다. Google TTS 키·서버 로그를 확인해주세요.';
+            msg = '음성 데이터 형식이 올바르지 않습니다. TTS 도커 로그를 확인해주세요.';
         } else if (String(e && e.message || '').indexOf('TTS failed: 500') !== -1) {
-            msg = 'TTS 변환 중 서버 오류가 발생했습니다. IntelliJ 로그의 "TTS 변환 실패"를 확인해주세요.';
+            msg = 'TTS 변환 중 서버 오류가 발생했습니다. TTS 도커(8060) 로그를 확인해주세요.';
         }
         return msg;
+    }
+
+    function getTtsDockerErrorMessage(e) {
+        if (e && e.name === 'AbortError') return '';
+        var msg = 'TTS 도커(8060) 연결에 실패했습니다. 도커 실행·포트 개방 상태를 확인해주세요.';
+        if (e && e.status === 403) {
+            msg = 'TTS 도커가 요청을 거부했습니다(403). CORS 설정을 확인해주세요.';
+        } else if (String(e && e.message || '').indexOf('not audio') !== -1) {
+            msg = 'TTS 도커(8060)가 음성이 아닌 응답을 반환했습니다.';
+        } else if (String(e && e.message || '').indexOf('invalid mp3') !== -1) {
+            msg = '도커 응답이 유효한 MP3가 아닙니다. TTS 도커 로그를 확인해주세요.';
+        } else if (String(e && e.message || '').indexOf('TTS failed: 500') !== -1) {
+            msg = 'TTS 도커 변환 중 오류가 발생했습니다. 도커 로그를 확인해주세요.';
+        } else if (e && e.name === 'TypeError') {
+            msg = 'TTS 도커(8060)에 연결할 수 없습니다. 같은 PC에서 도커가 실행 중인지 확인해주세요.';
+        }
+        return msg;
+    }
+
+    function getTtsServiceUrl() {
+        return window.location.protocol + '//' + window.location.hostname + ':8060';
+    }
+
+    function parseTtsAudioFetch(res) {
+        var ct = (res.headers.get('content-type') || '').toLowerCase();
+        if (!res.ok) {
+            var err = new Error('TTS failed: ' + res.status + (ct ? ' (' + ct + ')' : ''));
+            err.status = res.status;
+            throw err;
+        }
+        if (ct.indexOf('audio/') === -1) {
+            throw new Error('not audio response: ' + (ct || 'unknown'));
+        }
+        return res.arrayBuffer();
+    }
+
+    function blobFromAudioBuffer(ab) {
+        if (!ab || ab.byteLength < 128) {
+            throw new Error('empty audio blob');
+        }
+        var audioBlob = new Blob([ab], { type: 'audio/mpeg' });
+        return isLikelyMp3Blob(audioBlob).then(function (ok) {
+            if (!ok) {
+                throw new Error('invalid mp3 payload');
+            }
+            return { blob: audioBlob };
+        });
     }
 
     function synthesizeTtsRequest(v, signal) {
@@ -724,32 +682,22 @@
             body: formBody.toString(),
             signal: signal
         })
-            .then(function (res) {
-                var ct = (res.headers.get('content-type') || '').toLowerCase();
-                if (!res.ok) {
-                    var err = new Error('TTS failed: ' + res.status + (ct ? ' (' + ct + ')' : ''));
-                    err.status = res.status;
-                    throw err;
-                }
-                if (ct.indexOf('audio/') === -1) {
-                    throw new Error('not audio response: ' + (ct || 'unknown'));
-                }
-                return res.blob();
-            })
-            .then(function (blob) {
-                if (!blob || blob.size < 128) {
-                    throw new Error('empty audio blob');
-                }
-                return isLikelyMp3Blob(blob).then(function (ok) {
-                    if (!ok) {
-                        throw new Error('invalid mp3 payload');
-                    }
-                    var audioBlob = ensureAudioBlob(blob);
-                    return blobToDataUrl(audioBlob).then(function (dataUrl) {
-                        return { blob: audioBlob, dataUrl: dataUrl };
-                    });
-                });
-            });
+            .then(parseTtsAudioFetch)
+            .then(blobFromAudioBuffer);
+    }
+
+    function synthesizeTtsDockerRequest(v, signal) {
+        var params = new URLSearchParams();
+        params.set('text', v.text);
+        params.set('languageCode', v.lang);
+        params.set('voiceName', v.voice);
+        return fetch(getTtsServiceUrl() + '/tts/synthesize?' + params.toString(), {
+            method: 'GET',
+            credentials: 'omit',
+            signal: signal
+        })
+            .then(parseTtsAudioFetch)
+            .then(blobFromAudioBuffer);
     }
 
     function formatDuration(len) {
@@ -765,13 +713,28 @@
         meta.classList.remove('warn', 'over');
         if (len > CHAR_MAX) meta.classList.add('over');
         else if (len > CHAR_RECOMMEND) meta.classList.add('warn');
+        updateBroadcastActionButtons();
+    }
+
+    function updateBroadcastActionButtons() {
+        if (broadcastActive) return;
+        var audio = $('playerAudio');
+        var hasPlayerAudio = !!(audio && audio.src);
+        var mainBtn = $('broadcastBtn');
+        if (mainBtn) mainBtn.disabled = !hasPlayerAudio;
     }
 
     function setComposeLoading(on) {
         $('composeLoading').hidden = !on;
         $('convertBtn').disabled = on;
+        $('convertDockerBtn').disabled = on;
         $('previewBtn').disabled = on;
         $('clearBtn').disabled = on;
+        if (on) {
+            if ($('broadcastBtn')) $('broadcastBtn').disabled = true;
+        } else {
+            updateBroadcastActionButtons();
+        }
         document.querySelectorAll('#broadcastPage [data-template], #areaSelectTrigger, #areaSelectPanel input, #voiceSelectTrigger, #voiceSelectPanel [data-voice]')
             .forEach(function (el) { el.disabled = on; });
         if (on) closeSelectPanels();
@@ -816,28 +779,22 @@
             previewFetchAbort = null;
         }
         setPreviewState(false);
-        var audio = $('previewAudio');
-        if (audio) {
-            clearAudioTimingWatch(audio);
-            audio.pause();
-            revokePlayerObjectUrl(audio);
-            audio.removeAttribute('src');
-            audio.load();
-        }
+        clearAudioElement($('previewAudio'), '_bcPreviewUrl');
     }
 
-    function startPreviewPlayback(blob, dataUrl) {
+    function startPreviewPlayback(blob) {
         var audio = $('previewAudio');
         if (!audio) return;
         pauseAllBroadcastAudio(audio);
-        setPlayerAudioSource(audio, dataUrl, blob);
+        if (!attachBlobToAudio(audio, blob, '_bcPreviewUrl')) {
+            toast({ title: '미리듣기 실패', message: '음성 데이터가 없습니다.', type: 'error' });
+            return;
+        }
         audio.preload = 'auto';
 
-        function onPreviewEnd() {
+        audio.addEventListener('ended', function () {
             stopPreview();
-        }
-
-        audio.addEventListener('ended', onPreviewEnd, { once: true });
+        }, { once: true });
         audio.addEventListener('error', function () {
             stopPreview();
             toast({
@@ -896,7 +853,7 @@
         synthesizeTtsRequest(v, ac.signal)
             .then(function (result) {
                 if (token !== previewToken) return;
-                startPreviewPlayback(result.blob, result.dataUrl);
+                startPreviewPlayback(result.blob);
             })
             .catch(function (e) {
                 if (e && e.name === 'AbortError') return;
@@ -916,11 +873,10 @@
         var playBtn = $('playerToggleBtn');
         var resetBtn = $('playerResetBtn');
         var downloadBtn = $('playerDownloadBtn');
-        var broadcastBtn = $('broadcastBtn');
         if (playBtn) playBtn.disabled = !enabled;
         if (resetBtn) resetBtn.disabled = !enabled;
         if (downloadBtn) downloadBtn.disabled = !enabled;
-        if (broadcastBtn && !broadcastActive) broadcastBtn.disabled = !enabled;
+        updateBroadcastActionButtons();
     }
 
     function setBroadcastButtonState(disabled, broadcasting) {
@@ -933,9 +889,8 @@
     function finishBroadcastSession(showCompleteToast) {
         if (!broadcastActive && !showCompleteToast) return;
         broadcastActive = false;
-        var audio = $('playerAudio');
-        var hasAudio = !!(audio && audio.src);
-        setBroadcastButtonState(!hasAudio, false);
+        setBroadcastButtonState(false, false);
+        updateBroadcastActionButtons();
         if (showCompleteToast) {
             toast({
                 title: '방송 완료',
@@ -990,7 +945,7 @@
         audio.pause();
         try {
             audio.currentTime = 0;
-        } catch (ignore) { /* 일부 브라우저 */ }
+        } catch (ignore) { /* seek */ }
         var eq = $('eqBars');
         if (eq) eq.classList.remove('playing');
         updatePlayerToggle(false);
@@ -1000,14 +955,7 @@
     function hidePlayer() {
         finishBroadcastSession(false);
         currentPlayerRow = null;
-        var audio = $('playerAudio');
-        if (audio) {
-            clearAudioTimingWatch(audio);
-            audio.pause();
-            revokePlayerObjectUrl(audio);
-            audio.removeAttribute('src');
-            audio.load();
-        }
+        clearAudioElement($('playerAudio'), '_bcObjectUrl');
         updatePlayerToggle(false);
         updatePlayerTimeDisplay();
         setPlayerControlsEnabled(false);
@@ -1026,12 +974,6 @@
             preview.pause();
             if (previewActive) stopPreview();
         }
-        document.querySelectorAll('#historyList .history-item').forEach(function (itemEl) {
-            var a = itemEl.querySelector('.history-audio');
-            if (!a || a === exceptEl) return;
-            if (!a.paused) a.pause();
-            updateHistoryPlayToggle(itemEl, false);
-        });
     }
 
     function updatePlayerToggle(isPlaying) {
@@ -1042,23 +984,27 @@
         btn.setAttribute('aria-label', isPlaying ? '일시정지' : '재생');
     }
 
-    function showPlayer(row, label, playbackBlob) {
+    function showPlayer(row, label, blob) {
         var audio = $('playerAudio');
-        if (!audio) return;
-        currentPlayerRow = row || null;
+        if (!audio || !row) return;
+
+        setLastPlaybackBlob(blob);
+        currentPlayerRow = row;
         $('playerLabel').textContent = label || '최근 변환 음성';
         $('playerText').textContent = row.text;
         pauseAllBroadcastAudio();
-        setPlayerAudioSource(audio, row.audioUrl, playbackBlob);
+
+        var hasSource = attachBlobToAudio(audio, blob, '_bcObjectUrl');
         $('playerCard').style.display = 'block';
         updatePlayerToggle(false);
         updatePlayerTimeDisplay();
 
-        if (!audio.src) {
+        if (!hasSource || !audio.src) {
             setPlayerControlsEnabled(false);
-            toast({ title: '재생 불가', message: '음성 데이터가 없습니다.', type: 'error' });
+            toast({ title: '재생 불가', message: '음성 데이터가 없습니다. 변환을 다시 시도해 주세요.', type: 'error' });
             return;
         }
+
         setPlayerControlsEnabled(true);
         audio.preload = 'auto';
         watchAudioTiming(audio, updatePlayerTimeDisplay);
@@ -1066,8 +1012,7 @@
         audio.addEventListener('error', function () {
             updatePlayerToggle(false);
             setPlayerControlsEnabled(false);
-            var code = audio.error ? audio.error.code : 0;
-            console.warn('playerAudio error', code, audio.src);
+            console.warn('playerAudio error', audio.error ? audio.error.code : 0);
             toast({
                 title: '재생 불가',
                 message: '음성 파일을 불러오지 못했습니다. 변환을 다시 시도해 주세요.',
@@ -1107,7 +1052,7 @@
                 e.preventDefault();
                 e.stopPropagation();
                 if (downloadBtn.disabled) return;
-                downloadRowAudio(currentPlayerRow);
+                downloadCurrentAudio();
             });
         }
 
@@ -1117,15 +1062,7 @@
             if (!audio.src) return;
             if (audio.paused) {
                 pauseAllBroadcastAudio(audio);
-                if (audio.readyState < 2) {
-                    audio.addEventListener('canplay', function () {
-                        startPlayerPlayback(audio);
-                    }, { once: true });
-                    if (!audio.src) return;
-                    audio.load();
-                } else {
-                    startPlayerPlayback(audio);
-                }
+                startPlayerPlayback(audio);
             } else {
                 audio.pause();
             }
@@ -1133,9 +1070,6 @@
 
         audio.addEventListener('play', function () {
             pauseAllBroadcastAudio(audio);
-            document.querySelectorAll('#historyList .history-item').forEach(function (el) {
-                updateHistoryPlayToggle(el, false);
-            });
             if (eq) eq.classList.add('playing');
             updatePlayerToggle(true);
         });
@@ -1151,10 +1085,9 @@
             updatePlayerToggle(false);
             try {
                 audio.currentTime = 0;
-            } catch (ignore) { /* ended 후 seek */ }
+            } catch (ignore) { /* ended */ }
             updatePlayerTimeDisplay();
         });
-
     }
 
     function switchSourceTab(tab) {
@@ -1167,14 +1100,13 @@
             panel.classList.toggle('active', panel.getAttribute('data-panel') === tab);
         });
         var note = $('sourceNote');
-        if (note) {
-            if (tab === 'history') {
-                note.hidden = true;
-                note.textContent = '';
-            } else {
-                note.hidden = false;
-                note.textContent = SOURCE_NOTES[tab] || '';
-            }
+        if (!note) return;
+        if (tab === 'history') {
+            note.hidden = false;
+            note.textContent = SOURCE_NOTES.history;
+        } else {
+            note.hidden = false;
+            note.textContent = SOURCE_NOTES[tab] || '';
         }
     }
 
@@ -1182,12 +1114,12 @@
         var panel = $('panel' + (type === 'check' ? 'Check' : 'Complaint'));
         if (!panel) return;
         panel.innerHTML = '<div class="source-list">' + items.map(function (item) {
-                return '<button type="button" class="source-item" data-source-type="' + type + '" data-source-id="' + item.id + '">'
-                    + '<div class="source-item-title">' + escapeHtml(item.title) + '</div>'
-                    + '<div class="source-item-meta">' + escapeHtml(item.meta) + '</div>'
-                    + '<span class="source-item-badge' + (item.badgeClass ? ' ' + item.badgeClass : '') + '">'
-                    + escapeHtml(item.badge) + '</span></button>';
-            }).join('') + '</div>';
+            return '<button type="button" class="source-item" data-source-type="' + type + '" data-source-id="' + item.id + '">'
+                + '<div class="source-item-title">' + escapeHtml(item.title) + '</div>'
+                + '<div class="source-item-meta">' + escapeHtml(item.meta) + '</div>'
+                + '<span class="source-item-badge' + (item.badgeClass ? ' ' + item.badgeClass : '') + '">'
+                + escapeHtml(item.badge) + '</span></button>';
+        }).join('') + '</div>';
     }
 
     function applySourceDraft(type, id) {
@@ -1225,40 +1157,17 @@
         }
         empty.style.display = 'none';
         list.style.display = 'grid';
-        list.querySelectorAll('.history-audio').forEach(function (a) {
-            clearAudioTimingWatch(a);
-            revokeHistoryObjectUrl(a);
-        });
         list.innerHTML = historyRows.map(function (row, idx) {
             var title = row.text.length > 40 ? row.text.slice(0, 40) + '...' : row.text;
             return '<div class="history-item" data-idx="' + idx + '">'
                 + '<div class="h-text"><div class="h-title">' + escapeHtml(title) + '</div>'
                 + '<div class="h-meta">' + escapeHtml(row.area) + ' · ' + escapeHtml(row.createdAt) + '</div></div>'
                 + '<div class="history-item-foot">'
-                + '<div class="history-playback">'
-                + '<div class="player-sq-btns history-sq-btns" role="group" aria-label="이력 음성 재생">'
-                + '<button type="button" class="bc-sq-btn bc-sq-btn--light" data-action="hist-play" title="재생" aria-label="재생">'
-                + '<span class="material-symbols-rounded" data-role="hist-play-icon">play_arrow</span></button>'
-                + '<button type="button" class="bc-sq-btn bc-sq-btn--light bc-sq-btn-reset" data-action="hist-reset" title="재생 초기화" aria-label="재생 초기화">'
-                + '<span class="bc-stop-mark" aria-hidden="true"></span></button>'
-                + '</div>'
-                + '<span class="history-time" data-role="hist-time">0:00 / --:--</span>'
-                + '<audio class="history-audio" preload="metadata"></audio>'
-                + '</div>'
                 + '<div class="h-actions">'
-                + '<button type="button" class="btnx btnx-ghost btnx-sm" data-action="download" title="다운로드">'
-                + '<span class="material-symbols-rounded">download</span></button>'
                 + '<button type="button" class="btnx btnx-ghost btnx-sm" data-action="reuse">불러오기</button>'
                 + '<button type="button" class="btnx btnx-ghost btnx-sm h-btn-remove" data-action="remove">삭제</button>'
                 + '</div></div></div>';
         }).join('');
-
-        list.querySelectorAll('.history-item').forEach(function (itemEl) {
-            var idx = Number(itemEl.getAttribute('data-idx'));
-            if (Number.isFinite(idx) && historyRows[idx]) {
-                initHistoryItemPlayer(itemEl, historyRows[idx]);
-            }
-        });
     }
 
     function loadHistoryToComposer(row) {
@@ -1268,8 +1177,13 @@
         selectAreas(row.areas && row.areas.length ? row.areas : [row.area]);
         selectVoice(row.voice, row.voiceLabel);
         updateMeta();
-        showPlayer(row, '이력에서 불러온 음성');
         $('ttsText').focus();
+        toast({
+            title: '불러오기',
+            message: '문구를 불러왔습니다. 재생은 음성 변환하기를 실행해 주세요.',
+            type: 'info',
+            duration: 3200
+        });
     }
 
     function resetComposer() {
@@ -1291,6 +1205,32 @@
     }
 
     function convertTts() {
+        runTtsConvert({
+            requestFn: synthesizeTtsRequest,
+            getErrorMessage: getTtsErrorMessage,
+            playerLabel: '최근 변환 음성',
+            successTitle: '변환 완료',
+            successMessage: '음성이 생성되었습니다. 플레이어에서 재생·송출할 수 있습니다.',
+            failTitle: '변환 실패',
+            convertBtnId: 'convertBtn',
+            convertBtnHtml: CONVERT_BTN_HTML
+        });
+    }
+
+    function convertTtsDocker() {
+        runTtsConvert({
+            requestFn: synthesizeTtsDockerRequest,
+            getErrorMessage: getTtsDockerErrorMessage,
+            playerLabel: '도커 변환 음성',
+            successTitle: '도커 변환 완료',
+            successMessage: 'TTS 도커(8060)에서 음성을 생성했습니다.',
+            failTitle: '도커 변환 실패',
+            convertBtnId: 'convertDockerBtn',
+            convertBtnHtml: CONVERT_DOCKER_BTN_HTML
+        });
+    }
+
+    function runTtsConvert(opts) {
         var v = getFormValues();
         if (!v.text) {
             toast({ title: '입력 필요', message: '변환할 문구를 입력해주세요.', type: 'warning' });
@@ -1308,35 +1248,35 @@
 
         stopPreview();
         setComposeLoading(true);
-        synthesizeTtsRequest(v)
+        opts.requestFn(v)
             .then(function (result) {
-                historyRows.unshift({
+                var row = normalizeHistoryRow({
                     text: v.text,
                     voice: v.voice,
                     areas: v.areas,
                     area: v.area,
                     voiceLabel: v.voiceLabel,
-                    createdAt: nowKST(),
-                    audioUrl: result.dataUrl
+                    createdAt: nowKST()
                 });
+                historyRows.unshift(row);
                 if (historyRows.length > HISTORY_MAX) historyRows.length = HISTORY_MAX;
                 saveHistory();
                 renderHistory();
-                showPlayer(historyRows[0], undefined, result.blob);
+                showPlayer(row, opts.playerLabel, result.blob);
                 switchSourceTab('history');
                 toast({
-                    title: '변환 완료',
-                    message: '음성이 생성되었습니다. 변환 이력 탭에서 확인할 수 있습니다.',
+                    title: opts.successTitle,
+                    message: opts.successMessage,
                     type: 'success',
                     duration: 3200
                 });
             })
             .catch(function (e) {
                 console.error(e);
-                var msg = getTtsErrorMessage(e);
+                var msg = opts.getErrorMessage(e);
                 if (msg) {
                     toast({
-                        title: '변환 실패',
+                        title: opts.failTitle,
                         message: msg,
                         type: 'error',
                         duration: 5000
@@ -1345,12 +1285,14 @@
             })
             .finally(function () {
                 setComposeLoading(false);
-                $('convertBtn').innerHTML = CONVERT_BTN_HTML;
+                var btn = $(opts.convertBtnId);
+                if (btn) btn.innerHTML = opts.convertBtnHtml;
             });
     }
 
     function bindEvents() {
         $('convertBtn').addEventListener('click', convertTts);
+        $('convertDockerBtn').addEventListener('click', convertTtsDocker);
         $('clearBtn').addEventListener('click', onClearClick);
         $('previewBtn').addEventListener('click', togglePreview);
         $('ttsText').addEventListener('input', updateMeta);
@@ -1362,6 +1304,7 @@
             saveHistory();
             renderHistory();
             hidePlayer();
+            lastPlaybackBlob = null;
         });
 
         document.querySelectorAll('#broadcastPage .source-tab').forEach(function (btn) {
@@ -1397,19 +1340,8 @@
             var item = btn.closest('[data-idx]');
             if (!item) return;
             var idx = Number(item.getAttribute('data-idx'));
-            if (!Number.isFinite(idx)) return;
-            if (btn.getAttribute('data-action') === 'hist-play') {
-                toggleHistoryPlayback(item);
-                return;
-            }
-            if (btn.getAttribute('data-action') === 'hist-reset') {
-                resetHistoryPlayback(item);
-                return;
-            }
-            if (btn.getAttribute('data-action') === 'download') {
-                downloadRowAudio(historyRows[idx]);
-                return;
-            }
+            if (!Number.isFinite(idx) || !historyRows[idx]) return;
+
             if (btn.getAttribute('data-action') === 'reuse') {
                 loadHistoryToComposer(historyRows[idx]);
                 return;

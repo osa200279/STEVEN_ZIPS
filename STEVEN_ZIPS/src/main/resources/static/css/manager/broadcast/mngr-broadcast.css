@@ -68,6 +68,8 @@
 
 #broadcastPage .bc-main > #playerCard {
     flex: 0 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 #broadcastPage .bc-side {
@@ -418,6 +420,8 @@
     border-bottom: none;
     background: var(--card-head);
     border-radius: 0 0 10px 10px;
+    position: relative;
+    z-index: 40;
 }
 
 #broadcastPage .compose-options-fields {
@@ -463,6 +467,36 @@
     font-size: 13px;
 }
 
+#broadcastPage .compose-broadcast-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+    padding-top: 8px;
+    margin-top: 4px;
+    border-top: 1px dashed var(--line);
+}
+
+#broadcastPage .compose-broadcast-label {
+    margin-right: auto;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+#broadcastPage .compose-broadcast-actions .bc-broadcast-btn {
+    margin-left: 0;
+    height: 36px;
+    padding: 0 14px;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--primary-dark);
+}
+
 @media (max-width: 720px) {
     #broadcastPage .editor .compose-options {
         flex-direction: column;
@@ -475,6 +509,15 @@
     }
 
     #broadcastPage .editor .compose-options-actions .btnx {
+        flex: 1;
+        justify-content: center;
+    }
+
+    #broadcastPage .compose-broadcast-actions {
+        justify-content: stretch;
+    }
+
+    #broadcastPage .compose-broadcast-actions .bc-broadcast-btn {
         flex: 1;
         justify-content: center;
     }
@@ -980,6 +1023,16 @@
 #broadcastPage .bc-select-panel.is-drop-up {
     top: auto;
     bottom: calc(100% + 6px);
+}
+
+#broadcastPage .bc-select-panel.is-panel-fixed {
+    position: fixed;
+    right: auto;
+    z-index: 5000;
+}
+
+#broadcastPage .bc-select-panel.is-panel-fixed.is-drop-up {
+    top: auto;
 }
 
 #broadcastPage .bc-select-panel[hidden] {

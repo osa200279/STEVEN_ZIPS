@@ -157,7 +157,18 @@
                                                     <span class="material-symbols-rounded">restart_alt</span>초기화
                                                 </button>
                                                 <button type="button" class="btnx btnx-primary" id="convertBtn">
-                                                    <span class="material-symbols-rounded">graphic_eq</span>음성 변환하기
+                                                    <span class="material-symbols-rounded">graphic_eq</span>음성 변환A
+                                                </button>
+                                                <button type="button" class="btnx btnx-secondary" id="convertDockerBtn"
+                                                        title="TTS 도커(8060)에 직접 요청">
+                                                    <span class="material-symbols-rounded">graphic_eq</span>음성 변환B
+                                                </button>
+                                            </div>
+                                            <div class="compose-broadcast-actions" aria-label="방송 송출">
+                                                <span class="compose-broadcast-label">방송 송출</span>
+                                                <button type="button" class="bc-broadcast-btn" id="broadcastBtn" disabled
+                                                        title="변환된 음성을 단지 방송으로 송출">
+                                                    <span class="material-symbols-rounded">campaign</span>방송 송출
                                                 </button>
                                             </div>
                                         </div>
@@ -191,10 +202,6 @@
                                             <button type="button" class="player-download" id="playerDownloadBtn" disabled
                                                     title="음성 파일 다운로드" aria-label="음성 파일 다운로드">
                                                 <span class="material-symbols-rounded">download</span>
-                                            </button>
-                                            <button type="button" class="bc-broadcast-btn" id="broadcastBtn" disabled
-                                                    title="변환된 음성을 단지 방송으로 송출">
-                                                <span class="material-symbols-rounded">campaign</span>방송 송출
                                             </button>
                                         </div>
                                     </div>

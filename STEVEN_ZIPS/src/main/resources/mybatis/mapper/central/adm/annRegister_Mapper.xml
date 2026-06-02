@@ -163,6 +163,8 @@
         INNER JOIN apt_ho_ty aht ON ad.ho_ty_no = aht.ho_ty_no
         WHERE aht.apt_cmplex_no = #{aptCmplexNo}
         AND rl.rcrt_lstg_stts_cd = 'GENERAL'
+        ORDER BY TO_NUMBER(NVL(NULLIF(REGEXP_REPLACE(au.dong_nm, '[^0-9]'), ''), '0'))
+               , TO_NUMBER(NVL(NULLIF(REGEXP_REPLACE(ad.ho, '[^0-9]'), ''), '0'))
     </select>
 
     <select id="selectBoardNo" resultType="String" parameterType="string">
