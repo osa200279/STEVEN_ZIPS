@@ -185,6 +185,8 @@
     }
   </style>
 </head>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body>
 <div class="app-wrapper">
@@ -509,20 +511,61 @@
 
     if (!currentPreview) {
       showMessage('먼저 미리보기를 조회해 주세요.', 'warn');
+
+      Swal.fire({
+        icon: 'warning',
+        title: '미리보기 필요',
+        text: '먼저 미리보기를 조회해 주세요.',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#2e5c38'
+      });
+
       return;
     }
 
     if (!dueDt) {
       showMessage('납부기한을 선택해 주세요.', 'error');
+
+      Swal.fire({
+        icon: 'warning',
+        title: '납부기한 선택',
+        text: '납부기한을 선택해 주세요.',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#2e5c38'
+      });
+
       return;
     }
 
     if (Number(currentPreview.alreadyChargedCount || 0) > 0) {
       showMessage('이미 해당 월 관리비가 부과되어 있습니다.', 'warn');
+
+      Swal.fire({
+        icon: 'info',
+        title: '이미 부과된 관리비입니다',
+        text: '해당 월 관리비는 이미 부과되어 중복 부과할 수 없습니다.',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#2e5c38'
+      });
+
       return;
     }
 
-    if (!confirm(formatBillYm(billYm) + ' 관리비를 부과하시겠습니까?')) {
+    const confirmResult = await Swal.fire({
+      icon: 'question',
+      title: '관리비를 부과하시겠습니까?',
+      html:
+              '<b>' + formatBillYm(billYm) + '</b> 관리비를 부과합니다.<br>' +
+              '부과 후에는 중복 부과할 수 없습니다.',
+      showCancelButton: true,
+      confirmButtonText: '부과하기',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#2e5c38',
+      cancelButtonColor: '#8b9490',
+      reverseButtons: true
+    });
+
+    if (!confirmResult.isConfirmed) {
       return;
     }
 
@@ -534,6 +577,16 @@
     const url = contextPath + '/manager/bill/charge/execute/' + mgmtOfcNo;
 
     try {
+      Swal.fire({
+        title: '관리비 부과 중입니다',
+        text: '잠시만 기다려 주세요.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: function () {
+          Swal.showLoading();
+        }
+      });
+
       const response = await fetch(url, {
         method: 'POST',
         headers: getHeaders(),
@@ -543,6 +596,15 @@
       if (!response.ok) {
         const errorText = await response.text();
         console.error('관리비 부과 요청 실패:', response.status, errorText);
+
+        Swal.fire({
+          icon: 'error',
+          title: '관리비 부과 실패',
+          text: '관리비 부과 중 오류가 발생했습니다. 상태코드: ' + response.status,
+          confirmButtonText: '확인',
+          confirmButtonColor: '#2e5c38'
+        });
+
         showMessage('관리비 부과 중 오류가 발생했습니다. 상태코드: ' + response.status, 'error');
         return;
       }
@@ -550,11 +612,17 @@
       const result = await response.json();
 
       if (!result.success) {
+        Swal.fire({
+          icon: 'error',
+          title: '관리비 부과 실패',
+          text: result.message || '관리비 부과에 실패했습니다.',
+          confirmButtonText: '확인',
+          confirmButtonColor: '#2e5c38'
+        });
+
         showMessage(result.message || '관리비 부과에 실패했습니다.', 'error');
         return;
       }
-
-      showMessage(result.message || '관리비 부과가 완료되었습니다.', 'success');
 
       document.getElementById('chargeBtn').disabled = true;
 
@@ -563,11 +631,35 @@
       document.getElementById('resultBillCount').textContent = formatNumber(result.billInsertCount || 0);
       document.getElementById('resultDetailCount').textContent = formatNumber(result.detailInsertCount || 0);
 
+      showMessage(result.message || '관리비 부과가 완료되었습니다.', 'success');
+
+      await Swal.fire({
+        icon: 'success',
+        title: '관리비 부과 완료',
+        html:
+                '<div style="line-height:1.8; font-size:14px;">' +
+                '<b>' + formatBillYm(result.billYm || billYm) + '</b> 관리비가 정상적으로 부과되었습니다.<br>' +
+                '생성된 관리비 건수: <b>' + formatNumber(result.billInsertCount || 0) + '</b>건<br>' +
+                '생성된 상세 건수: <b>' + formatNumber(result.detailInsertCount || 0) + '</b>건' +
+                '</div>',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#2e5c38'
+      });
+
       // 중복 부과 방지를 위해 다시 미리보기 조회
       loadPreview();
 
     } catch (e) {
       console.error(e);
+
+      Swal.fire({
+        icon: 'error',
+        title: '관리비 부과 오류',
+        text: '관리비 부과 중 오류가 발생했습니다.',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#2e5c38'
+      });
+
       showMessage('관리비 부과 중 오류가 발생했습니다.', 'error');
     }
   }
