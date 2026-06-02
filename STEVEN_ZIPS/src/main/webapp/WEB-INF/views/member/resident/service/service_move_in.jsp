@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/sidebarStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footerStyle.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         body {font-family: 'Noto Sans KR', sans-serif !important;background: var(--bg);color: var(--text-dark);margin: 0;}
@@ -92,8 +93,24 @@
         const mvinPrdDt = document.getElementById('mvinPrdDt').value;
         const spclCn = document.getElementById('spclCn').value;
 
-        if (!hoNo) { alert('동/호수를 선택해주세요.'); return; }
-        if (!mvinPrdDt) { alert('입주 예정일을 선택해주세요.'); return; }
+        if (!hoNo) {
+            Swal.fire({
+                icon: 'warning',
+                title: '입력 필요',
+                text: '동/호수를 선택해주세요.',
+                confirmButtonText: '확인'
+            });
+            return;
+        }
+        if (!mvinPrdDt) {
+            Swal.fire({
+                icon: 'warning',
+                title: '입력 필요',
+                text: '입주 예정일을 선택해주세요.',
+                confirmButtonText: '확인'
+            });
+            return;
+        }
 
         const data = {
             aptCmplexNo: document.getElementById('aptCmplexNo').value,
@@ -111,10 +128,19 @@
             body: JSON.stringify(data)
         }).then(res => res.json()).then(result => {
             if (result.success) {
-                alert('전입신고가 완료되었습니다.');
-                history.back();
+                Swal.fire({
+                    icon: 'success',
+                    title: '전입신고 완료',
+                    text: '전입신고가 완료되었습니다.',
+                    confirmButtonText: '확인'
+                }).then(() => history.back());
             } else {
-                alert('오류가 발생했습니다.');
+                Swal.fire({
+                    icon: 'error',
+                    title: '처리 실패',
+                    text: '오류가 발생했습니다.',
+                    confirmButtonText: '확인'
+                });
             }
         });
     }
