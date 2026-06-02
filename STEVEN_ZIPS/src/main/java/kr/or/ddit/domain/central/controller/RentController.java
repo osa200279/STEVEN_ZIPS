@@ -154,6 +154,8 @@ public class RentController {
         try {
             List<RentListingMapDTO> list = rentService.selectRentListByComplexNo(aptCmplexNo);
 
+            System.out.println(list.get(0).getRprsntImgGoogleIds());
+
             result.put("success", true);
             result.put("list", list);
 

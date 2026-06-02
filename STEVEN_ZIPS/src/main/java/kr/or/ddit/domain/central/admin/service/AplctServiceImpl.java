@@ -113,6 +113,8 @@ public class AplctServiceImpl implements IAplctService {
             }
             log.info("### qualifiedList {}", qualifiedList);
             int res1 = rentCtrtMapper.insertRentCtrt(qualifiedList);
+
+
             if (res1 == 0) throw new RuntimeException("가계약 생성 실패");
 
             int res2 = rentCtrtMapper.insertCtrtMgr(qualifiedList, manager);

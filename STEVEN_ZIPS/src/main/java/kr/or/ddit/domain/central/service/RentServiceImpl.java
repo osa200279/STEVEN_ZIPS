@@ -65,6 +65,9 @@ public class RentServiceImpl implements IRentService {
 
         for (RentListingMapDTO dto : list) {
             filterComplexImages(dto);
+
+            System.out.println("googleIds = " + dto.getRprsntImgGoogleIds());
+            System.out.println("cats      = " + dto.getRprsntImgCats());
         }
 
         return list;
