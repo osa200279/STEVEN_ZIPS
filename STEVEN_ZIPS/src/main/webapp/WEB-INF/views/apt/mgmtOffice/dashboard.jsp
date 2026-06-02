@@ -60,6 +60,12 @@
     #dashboardPage .dash-rsvt-item-body{flex:1;min-width:0}
     #dashboardPage .dash-rsvt-item-title{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     #dashboardPage .dash-rsvt-item-sub{font-size:11px;color:var(--text-tertiary);margin-top:1px}
+    #dashboardPage .dash-bill-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+    #dashboardPage .dash-bill-summary-card{border:1px solid #e5e7eb;border-radius:12px;background:#fff;padding:13px 14px;text-align:left}
+    #dashboardPage .dash-bill-summary-value{font-size:20px;font-weight:900;color:#2e5c38;line-height:1.2}
+    #dashboardPage .dash-bill-summary-label{margin-top:5px;font-size:11px;font-weight:700;color:var(--text-tertiary)}
+    #dashboardPage .dash-bill-note{margin-top:14px;padding:10px 12px;border-radius:10px;background:#f8faf7;color:#6b7280;font-size:12px;line-height:1.5}
+    @media (max-width:900px){#dashboardPage .dash-bill-summary-grid{grid-template-columns:1fr}}
 </style>
 
 <div class="office-page" id="dashboardPage">
@@ -116,9 +122,9 @@
         <div class="stat-card dash-card-green" onclick="location.href='${pageContext.request.contextPath}/manager/bill/issue/${mgmtOfcNo}'">
             <div class="dash-card-body">
                 <div>
-                    <div class="dash-card-label">관리비 미납·연체</div>
+                    <div class="dash-card-label">최근 고지 세대</div>
                     <div class="dash-card-value dash-green" id="kpiBill">0</div>
-                    <div class="dash-card-sub">미납 및 연체 세대</div>
+                    <div class="dash-card-sub">관리비 고지서 발행 기준</div>
                 </div>
                 <div class="dash-icon-box dash-icon-green">
                     <span class="material-symbols-rounded dash-icon dash-green">receipt_long</span>
@@ -128,14 +134,14 @@
 
     </div>
 
-    <!-- ② 시설 이용예약 현황 / 이달 관리비 현황 -->
+    <!-- ② 시설 예약 요약 / 최근 관리비 부과 요약 -->
     <div class="dash-grid-2">
 
         <div class="panel dash-panel">
             <div class="dash-panel-head">
                 <span class="dash-panel-title">
                     <span class="material-symbols-rounded">event_available</span>
-                    시설 이용예약 현황
+                    시설 예약 요약
                 </span>
                 <a href="${pageContext.request.contextPath}/manager/publicFacility/reservation/approval/${mgmtOfcNo}" class="btn btn-xs btn-detail dash-link-btn">이동</a>
             </div>
@@ -161,12 +167,10 @@
                 </div>
 
                 <div class="dash-topfac-head">
-                    <span class="dash-topfac-title">이달 인기 시설 TOP 3</span>
+                    <span class="dash-topfac-title">이달 예약 상위 시설</span>
                     <span class="dash-topfac-sub" id="rsvtWeekStatSub">이번주 승인 0 · 반려 0</span>
                 </div>
                 <div id="rsvtTopFacilityList"></div>
-
-                <div id="rsvtRecentList" class="dash-rsvt-recent"></div>
             </div>
         </div>
 
@@ -174,28 +178,22 @@
             <div class="dash-panel-head">
                 <span class="dash-panel-title">
                     <span class="material-symbols-rounded">receipt_long</span>
-                    이달 관리비 현황
+                    최근 관리비 부과 요약
                 </span>
+                <span class="dash-list-sub" id="billBaseMonth">고지 기준월 확인 중</span>
                 <a href="${pageContext.request.contextPath}/manager/bill/issue/${mgmtOfcNo}" class="btn btn-xs btn-detail dash-link-btn">이동</a>
             </div>
 
             <div class="dash-panel-body">
                 <div class="dash-bill-total">
-                    <div class="dash-bill-label">당월 총 부과액</div>
+                    <div class="dash-bill-label" id="billTotalLabel">최근 고지 총 부과액</div>
                     <div class="dash-bill-amount" id="billTotalAmount">₩0</div>
                 </div>
 
-                <div class="dash-progress-wrap">
-                    <div class="dash-progress-head">
-                        <span class="dash-progress-label">납부 현황</span>
-                        <span class="dash-progress-pct" id="billPaidPct">0%</span>
-                    </div>
-                    <div class="dash-progress-track">
-                        <div id="billPaidBar" class="dash-progress-bar"></div>
-                    </div>
+                <div class="dash-bill-summary-grid" id="billStatusCards"></div>
+                <div class="dash-bill-note">
+                    고지 규모 요약 현황입니다. 세부 현황은 관리비 고지 화면에서 확인하세요.
                 </div>
-
-                <div class="dash-bill-cards" id="billStatusCards"></div>
             </div>
         </div>
 
@@ -244,9 +242,9 @@
         <div class="dash-panel-head">
             <span class="dash-panel-title">
                 <span class="material-symbols-rounded">trending_up</span>
-                이번 달 주요 업무 처리 현황
+                이번 달 업무 대응 요약
             </span>
-            <span class="dash-list-sub">최근 7일 추세와 이달 완료율을 함께 봅니다.</span>
+            <span class="dash-list-sub">완료율보다 남은 업무와 최근 처리량을 중심으로 봅니다.</span>
         </div>
 
         <div class="dash-trend-body" id="operationTrendList"></div>
@@ -298,6 +296,11 @@
                 });
         }
 
+        function formatBillYm(billYm) {
+            if (!billYm || String(billYm).length !== 6) return null;
+            return String(billYm).substring(0, 4) + "년 " + String(billYm).substring(4, 6) + "월";
+        }
+
         function renderDashboard(dashboardData) {
         var cvplData = dashboardData.cvplList || [];
         var rqstData = dashboardData.rqstList || [];
@@ -321,37 +324,40 @@
         var CHK_STTS = { WAIT:"대기", ING:"진행중", DONE:"완료", FAULT:"이상발견" };
         var CHK_BADGE = { WAIT:"badge-gray", ING:"badge-yellow", DONE:"badge-green", FAULT:"badge-red" };
 
-        var RSVT_STTS = { PENDING:"대기", APPROVED:"승인", REJECTED:"반려", CANCELLED:"취소", EXPIRED:"만료" };
-        var RSVT_BADGE = { PENDING:"badge-yellow", APPROVED:"badge-green", REJECTED:"badge-red", CANCELLED:"badge-gray", EXPIRED:"badge-gray" };
-
         /* KPI 숫자 반영 */
         document.getElementById("kpiCvpl").textContent = kpi.cvplPending != null ? kpi.cvplPending : cvplData.filter(function(r) { return r.cvplSttsCd !== "COMP"; }).length;
         document.getElementById("kpiRqst").textContent = kpi.residentAuthPending != null ? kpi.residentAuthPending : rqstData.filter(function(r) { return r.rqstSttsCd === "WAIT"; }).length;
         document.getElementById("kpiUseRestrict").textContent = kpi.useRestrictWithin7 != null ? kpi.useRestrictWithin7 : 0;
-        document.getElementById("kpiBill").textContent = kpi.billUnpaidOverdue != null ? kpi.billUnpaidOverdue : (billStat.unpaid || 0) + (billStat.overdue || 0);
+        document.getElementById("kpiBill").textContent = billStat.total || 0;
 
-        /* 관리비 납부 현황 */
-        var paidPct = billStat.total ? Math.round((billStat.paid || 0) / billStat.total * 100) : 0;
+        /* 최근 관리비 부과 요약 */
+        var billBaseText = formatBillYm(billStat.billYm);
+        var billBaseMonthEl = document.getElementById("billBaseMonth");
+        var billTotalLabelEl = document.getElementById("billTotalLabel");
+        if (billBaseMonthEl) {
+            billBaseMonthEl.textContent = billBaseText ? billBaseText + " 고지 기준" : "고지 내역 없음";
+        }
+        if (billTotalLabelEl) {
+            billTotalLabelEl.textContent = billBaseText ? billBaseText + " 총 부과액" : "최근 고지 총 부과액";
+        }
         var billTotalAmountEl = document.getElementById("billTotalAmount");
         if (billTotalAmountEl) {
             billTotalAmountEl.textContent = "₩" + Number(billStat.totalAmount || 0).toLocaleString("ko-KR");
         }
-        document.getElementById("billPaidPct").textContent = paidPct + "%";
-        setTimeout(function() { document.getElementById("billPaidBar").style.width = paidPct + "%"; }, 200);
 
+        var avgBillAmount = billStat.total ? Math.round(Number(billStat.totalAmount || 0) / billStat.total) : 0;
         document.getElementById("billStatusCards").innerHTML = [
-            { label:"납부완료", val:billStat.paid, bg:"#dcfce7", color:"#166534" },
-            { label:"미납", val:billStat.unpaid, bg:"#fff0e0", color:"#92400e" },
-            { label:"장기연체", val:billStat.overdue, bg:"#f5e8d0", color:"#6b3d0a" }
+            { label:"고지 세대", val:(billStat.total || 0).toLocaleString("ko-KR") + "세대" },
+            { label:"세대 평균", val:"₩" + avgBillAmount.toLocaleString("ko-KR") },
+            { label:"고지 기준월", val:billBaseText || "-" }
         ].map(function(s) {
-            return '<div class="dash-mini-card" style="background:' + s.bg + ';">'
-                + '<div class="dash-mini-value" style="color:' + s.color + ';">' + s.val + '건</div>'
-                + '<div class="dash-mini-label" style="color:' + s.color + ';">' + s.label + '</div>'
+            return '<div class="dash-bill-summary-card">'
+                + '<div class="dash-bill-summary-value">' + s.val + '</div>'
+                + '<div class="dash-bill-summary-label">' + s.label + '</div>'
                 + '</div>';
         }).join("");
 
-        /* 시설 이용예약 현황 */
-        var rsvtRecent = (reservationStat.recentList) || [];
+        /* 시설 예약 요약 */
         var topFacilities = (reservationStat.topFacilityList) || [];
         document.getElementById("rsvtTodayCnt").textContent = reservationStat.todayCount || 0;
         document.getElementById("rsvtPendingCnt").textContent = (reservationStat.pendingCount || 0) + "건";
@@ -378,24 +384,6 @@
                     + '</div>'
                     + '</div>';
             }).join("");
-        }
-
-        var rsvtEl = document.getElementById("rsvtRecentList");
-        if (rsvtRecent.length === 0) {
-            rsvtEl.innerHTML = '<div class="dash-rsvt-recent-title">최근 예약</div>'
-                + '<div class="dash-list-sub" style="padding:10px;text-align:center;">최근 예약 내역이 없습니다.</div>';
-        } else {
-            rsvtEl.innerHTML = '<div class="dash-rsvt-recent-title">최근 예약</div>'
-                + rsvtRecent.map(function(r) {
-                    var timeText = (r.rsvtDt || "-") + (r.rsvtBgngDttm ? " " + r.rsvtBgngDttm : "");
-                    return '<div class="dash-rsvt-item">'
-                        + '<div class="dash-rsvt-item-body">'
-                        + '<div class="dash-rsvt-item-title">' + (r.cmnFacilityNm || "-") + '</div>'
-                        + '<div class="dash-rsvt-item-sub">' + (r.userNm || "-") + ' · ' + (r.hoNo || "-") + ' · ' + timeText + '</div>'
-                        + '</div>'
-                        + '<span class="badge ' + (RSVT_BADGE[r.rsvtSttsCd] || "badge-gray") + '">' + (RSVT_STTS[r.rsvtSttsCd] || "-") + '</span>'
-                        + '</div>';
-                }).join("");
         }
 
         /* 이번 달 운영 통계 */
@@ -449,9 +437,42 @@
         var sevenDayAuth = operationTrend.reduce(function(a, t) { return a + (t.authCnt || 0); }, 0);
 
         renderOperationGaugeCards([
-            { label:"민원 처리율", done:monthlyStat.cvplDone || 0, total:monthlyStat.cvplTotal || 0, color:"#2e5c38", weekCnt:sevenDayCvpl },
-            { label:"점검 완료율", done:monthlyStat.checkDone || 0, total:monthlyStat.checkTotal || 0, color:"#2563eb", weekCnt:sevenDayCheck },
-            { label:"입주민 권한 처리율", done:rqstCompleted, total:rqstTotal, color:"#7c3aed", weekCnt:sevenDayAuth }
+            {
+                label:"민원 대응 현황",
+                done:monthlyStat.cvplDone || 0,
+                total:monthlyStat.cvplTotal || 0,
+                color:"#2e5c38",
+                subLabel:"처리",
+                totalLabel:"접수",
+                leftLabel:"7일 처리",
+                leftValue:sevenDayCvpl,
+                rightLabel:"미처리",
+                rightValue:kpi.cvplPending != null ? kpi.cvplPending : Math.max((monthlyStat.cvplTotal || 0) - (monthlyStat.cvplDone || 0), 0)
+            },
+            {
+                label:"점검 완료 현황",
+                done:monthlyStat.checkDone || 0,
+                total:monthlyStat.checkTotal || 0,
+                color:"#2563eb",
+                subLabel:"완료",
+                totalLabel:"전체",
+                leftLabel:"7일 완료",
+                leftValue:sevenDayCheck,
+                rightLabel:"잔여",
+                rightValue:Math.max((monthlyStat.checkTotal || 0) - (monthlyStat.checkDone || 0), 0)
+            },
+            {
+                label:"입주민 권한 처리 현황",
+                done:rqstCompleted,
+                total:rqstTotal,
+                color:"#7c3aed",
+                subLabel:"처리",
+                totalLabel:"신청",
+                leftLabel:"7일 처리",
+                leftValue:sevenDayAuth,
+                rightLabel:"대기",
+                rightValue:kpi.residentAuthPending != null ? kpi.residentAuthPending : Math.max((rqstTotal || 0) - (rqstCompleted || 0), 0)
+            }
         ]);
 
         function renderOperationGaugeCards(rows) {
@@ -473,12 +494,12 @@
                     + '<canvas id="trendGauge' + idx + '"></canvas>'
                     + '<div class="dash-gauge-center">'
                     + '<div class="dash-gauge-pct" style="color:' + (row.total ? row.color : '#9ca3af') + ';">' + (row.total ? rate + '%' : '-') + '</div>'
-                    + '<div class="dash-gauge-sub">' + (row.total ? '완료 ' + row.done + ' / 전체 ' + row.total : '집계 없음') + '</div>'
+                    + '<div class="dash-gauge-sub">' + (row.total ? (row.subLabel || '완료') + ' ' + row.done + ' / ' + (row.totalLabel || '전체') + ' ' + row.total : '집계 없음') + '</div>'
                     + '</div>'
                     + '</div>'
                     + '<div class="dash-trend-foot">'
-                    + '<span>최근 7일 <strong>' + row.weekCnt + '건</strong></span>'
-                    + '<span>잔여 <strong>' + Math.max((row.total || 0) - (row.done || 0), 0) + '건</strong></span>'
+                    + '<span>' + (row.leftLabel || '최근 7일') + ' <strong>' + (row.leftValue || 0) + '건</strong></span>'
+                    + '<span>' + (row.rightLabel || '잔여') + ' <strong>' + (row.rightValue || 0) + '건</strong></span>'
                     + '</div>'
                     + '</div>';
             }).join("");

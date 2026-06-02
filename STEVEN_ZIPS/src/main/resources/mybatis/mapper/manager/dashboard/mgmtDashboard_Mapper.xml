@@ -3,6 +3,7 @@
 <mapper namespace="kr.or.ddit.domain.apt.mgmtOffice.dashboard.mapper.IMgmtDashboardMapper">
 
     <resultMap id="billStatMap" type="kr.or.ddit.domain.apt.mgmtOffice.dashboard.dto.MgmtDashboardBillStatDTO">
+        <result property="billYm" column="BILL_YM"/>
         <result property="total" column="TOTAL"/>
         <result property="paid" column="PAID"/>
         <result property="unpaid" column="UNPAID"/>
@@ -78,7 +79,8 @@
         SELECT COUNT(*)
         FROM CVPL C
         WHERE C.APT_CMPLEX_NO = #{aptCmplexNo}
-          AND C.CVPL_STTS_CD IN ('APLY', 'RCPT', 'POCS')
+          <!-- RCPT(접수완료)는 관리자가 승인까지 마친 상태이므로 미처리에서 제외 -->
+          AND C.CVPL_STTS_CD IN ('APLY', 'POCS')
     </select>
 
     <select id="countPendingResidentAuth" parameterType="string" resultType="int">
@@ -105,21 +107,37 @@
                  INNER JOIN APT_DETAIL AD ON B.HO_NO = AD.HO_NO
                  INNER JOIN APT_UNIT AU ON AD.DONG_NO = AU.DONG_NO
         WHERE AU.APT_CMPLEX_NO = #{aptCmplexNo}
-          AND B.BILL_YM = TO_CHAR(SYSDATE, 'YYYYMM')
-          AND B.PYMT_STTS_CD IN ('UNPAID', 'OVERDUE')
+          AND B.BILL_YM = (
+              SELECT MAX(B2.BILL_YM)
+              FROM BILL B2
+                       INNER JOIN APT_DETAIL AD2 ON B2.HO_NO = AD2.HO_NO
+                       INNER JOIN APT_UNIT AU2 ON AD2.DONG_NO = AU2.DONG_NO
+              WHERE AU2.APT_CMPLEX_NO = #{aptCmplexNo}
+                AND B2.BILL_YM &lt;= TO_CHAR(SYSDATE, 'YYYYMM')
+          )
+          AND B.PYMT_STTS_CD IN ('READY', 'UNPAID', 'OVERDUE')
     </select>
 
     <select id="selectBillStat" parameterType="string" resultMap="billStatMap">
-        SELECT COUNT(*) AS TOTAL,
+        SELECT B.BILL_YM,
+               COUNT(*) AS TOTAL,
                NVL(SUM(CASE WHEN B.PYMT_STTS_CD = 'PAID' THEN 1 ELSE 0 END), 0) AS PAID,
-               NVL(SUM(CASE WHEN B.PYMT_STTS_CD = 'UNPAID' THEN 1 ELSE 0 END), 0) AS UNPAID,
+               NVL(SUM(CASE WHEN B.PYMT_STTS_CD IN ('READY', 'UNPAID') THEN 1 ELSE 0 END), 0) AS UNPAID,
                NVL(SUM(CASE WHEN B.PYMT_STTS_CD = 'OVERDUE' THEN 1 ELSE 0 END), 0) AS OVERDUE,
                NVL(SUM(B.BILL_TOT_AMT), 0) AS TOTAL_AMOUNT
         FROM BILL B
                  INNER JOIN APT_DETAIL AD ON B.HO_NO = AD.HO_NO
                  INNER JOIN APT_UNIT AU ON AD.DONG_NO = AU.DONG_NO
         WHERE AU.APT_CMPLEX_NO = #{aptCmplexNo}
-          AND B.BILL_YM = TO_CHAR(SYSDATE, 'YYYYMM')
+          AND B.BILL_YM = (
+              SELECT MAX(B2.BILL_YM)
+              FROM BILL B2
+                       INNER JOIN APT_DETAIL AD2 ON B2.HO_NO = AD2.HO_NO
+                       INNER JOIN APT_UNIT AU2 ON AD2.DONG_NO = AU2.DONG_NO
+              WHERE AU2.APT_CMPLEX_NO = #{aptCmplexNo}
+                AND B2.BILL_YM &lt;= TO_CHAR(SYSDATE, 'YYYYMM')
+          )
+        GROUP BY B.BILL_YM
     </select>
 
     <select id="selectMonthlyStat" resultMap="monthlyStatMap">
@@ -132,7 +150,7 @@
             (SELECT COUNT(*)
              FROM CVPL C
              WHERE C.APT_CMPLEX_NO = #{aptCmplexNo}
-               AND C.CVPL_STTS_CD = 'COMP'
+               AND C.CVPL_STTS_CD IN ('RCPT', 'COMP')
                AND C.CVPL_REG_DT &gt;= TRUNC(SYSDATE, 'MM')
                AND C.CVPL_REG_DT &lt; ADD_MONTHS(TRUNC(SYSDATE, 'MM'), 1)) AS CVPL_DONE,
             (SELECT COUNT(*)
@@ -338,7 +356,7 @@
         SELECT TO_CHAR(D.DT, 'MM-DD') AS DAY_LABEL,
                (SELECT COUNT(*) FROM CVPL C
                 WHERE C.APT_CMPLEX_NO = #{aptCmplexNo}
-                  AND C.CVPL_STTS_CD = 'COMP'
+                  AND C.CVPL_STTS_CD IN ('RCPT', 'COMP')
                   AND TRUNC(C.CVPL_REG_DT) = D.DT) AS CVPL_CNT,
                (SELECT COUNT(*) FROM FACILITY_CHECK_HSTRY FCH
                      INNER JOIN FACILITY F ON FCH.FACILITY_NO = F.FACILITY_NO

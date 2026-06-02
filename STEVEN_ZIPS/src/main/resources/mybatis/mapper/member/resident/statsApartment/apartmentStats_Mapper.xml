@@ -20,22 +20,30 @@
                         INNER JOIN apt_detail ad ON ad.ho_no = hh.ho_no
                         INNER JOIN apt_unit au ON au.dong_no = ad.dong_no
                    WHERE au.apt_cmplex_no = ac.apt_cmplex_no
+                     <!-- LIVE 상태만 실제 입주로 카운트(WAIT/OUT/MID 제외) -->
+                     AND hh.inout_cd = 'LIVE'
                ) AS occupiedCnt,
                (
                    SELECT COUNT(*)
                    FROM apt_detail ad
                         INNER JOIN apt_unit au ON au.dong_no = ad.dong_no
                    WHERE au.apt_cmplex_no = ac.apt_cmplex_no
+                     <!-- LIVE 상태 세대주가 없는 호를 공실로 카운트 -->
                      AND NOT EXISTS (
-                         SELECT 1 FROM hshld_head hh WHERE hh.ho_no = ad.ho_no
+                         SELECT 1 FROM hshld_head hh
+                         WHERE hh.ho_no = ad.ho_no
+                           AND hh.inout_cd = 'LIVE'
                      )
                ) AS emptyCnt,
                (
                    SELECT CASE
                               WHEN COUNT(*) = 0 THEN 0
                               ELSE ROUND(
+                                      <!-- 입주율 분자: LIVE 상태 세대주가 있는 호만 카운트 -->
                                       SUM(CASE WHEN EXISTS (
-                                              SELECT 1 FROM hshld_head hh WHERE hh.ho_no = ad.ho_no
+                                              SELECT 1 FROM hshld_head hh
+                                              WHERE hh.ho_no = ad.ho_no
+                                                AND hh.inout_cd = 'LIVE'
                                           ) THEN 1 ELSE 0 END) * 100 / COUNT(*), 1)
                           END
                    FROM apt_detail ad

@@ -194,8 +194,9 @@
             resultType="kr.or.ddit.domain.member.resident.statsCustom.dto.ResidentCustomStatsComplaintDTO">
         SELECT
                NVL(SUM(CASE WHEN cvpl_stts_cd = 'APLY' THEN 1 ELSE 0 END), 0) AS appliedCnt,
-               NVL(SUM(CASE WHEN cvpl_stts_cd IN ('RCPT', 'POCS') THEN 1 ELSE 0 END), 0) AS processingCnt,
-               NVL(SUM(CASE WHEN cvpl_stts_cd = 'END' THEN 1 ELSE 0 END), 0) AS doneCnt
+               <!-- RCPT는 관리자 승인 완료 상태이므로 '처리중'이 아닌 '완료'로 집계 -->
+               NVL(SUM(CASE WHEN cvpl_stts_cd = 'POCS' THEN 1 ELSE 0 END), 0) AS processingCnt,
+               NVL(SUM(CASE WHEN cvpl_stts_cd IN ('RCPT', 'END') THEN 1 ELSE 0 END), 0) AS doneCnt
         FROM cvpl
         WHERE user_no = #{userNo}
           AND apt_cmplex_no = #{aptCmplexNo}

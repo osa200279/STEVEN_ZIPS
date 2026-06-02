@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MgmtDashboardBillStatDTO {
+    private String billYm;
     private int total;
     private int paid;
     private int unpaid;
