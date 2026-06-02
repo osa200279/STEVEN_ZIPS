@@ -140,8 +140,17 @@ public class MgmtExpenseController {
             }
 
             /*
+             * 핵심 수정:
+             * EXPENSE 테이블의 APT_CMPLEX_NO는 NOT NULL이므로
+             * 관리사무소 번호로 조회한 단지번호를 ExpenseVO에 반드시 세팅한다.
+             */
+            expenseVO.setAptCmplexNo(aptComplexVO.getAptCmplexNo());
+
+            /*
              * 같은 단지, 같은 연도, 같은 월, 같은 지출항목은
              * 한 번만 등록할 수 있도록 중복 여부를 검사합니다.
+             *
+             * aptCmplexNo를 세팅한 뒤 검사해야 정확히 중복 체크된다.
              */
             int duplicateCount = expenseService.selectExpenseDuplicateCount(expenseVO);
 
