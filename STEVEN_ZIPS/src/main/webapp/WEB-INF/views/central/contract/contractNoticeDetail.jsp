@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<c:set var="isLoggedIn"
+       value="${not empty sessionScope.SPRING_SECURITY_CONTEXT
+               and sessionScope.SPRING_SECURITY_CONTEXT.authentication ne null
+               and sessionScope.SPRING_SECURITY_CONTEXT.authentication.principal ne 'anonymousUser'}"/>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -234,7 +238,7 @@
                 <table class="supply-table">
                     <thead>
                     <tr>
-                        <th>타입</th>
+                        <th>평형 타입</th>
                         <th>전용면적(㎡)</th>
                         <th>방 수</th>
                         <th>욕실 수</th>
@@ -370,7 +374,7 @@
                 </div>
             </div>
             <div class="w-1/2">
-                <label class="block text-xs text-slate-500 mb-1">타입</label>
+                <label class="block text-xs text-slate-500 mb-1">평형 타입</label>
                 <select id="exclusiveSizeSelect"
                         class="w-full px-3 py-2 border border-slate-200 text-sm rounded focus:outline-none focus:border-[#004830]">
                     <c:forEach var="apt" items="${exclusiveSize}">
@@ -399,6 +403,9 @@
 <input type="hidden" id="aptCmplexNo" value="${announcement.aptCmplexNo}"/>
 
 <script>
+    const __IS_LOGGED_IN__ = ${isLoggedIn ? 'true' : 'false'};
+    const __CTX__ = '${pageContext.request.contextPath}';
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -409,6 +416,18 @@
     });
 
     function openApplyModal() {
+        if (!__IS_LOGGED_IN__) {
+            Swal.fire({
+                icon: 'warning',
+                title: '로그인이 필요합니다',
+                text: '로그인 후 공고 신청이 가능합니다.',
+                confirmButtonColor: '#004830',
+                confirmButtonText: '확인'
+            }).then(() => {
+                location.href = __CTX__ + '/login.do';
+            });
+            return;
+        }
         document.querySelector('#applyModal').classList.add('open');
     }
 
