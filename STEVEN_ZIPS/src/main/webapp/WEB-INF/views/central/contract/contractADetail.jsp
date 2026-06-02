@@ -20,6 +20,132 @@
         .il { width: 100px; flex-shrink: 0; font-size: 13px; color: #9ca3af }
         .iv { font-weight: 700; color: #1f2937 }
         .badge { display: inline-flex; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700 }
+        .doc-drop {
+            border: 2px dashed #cdd9d1;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdfc 100%);
+            border-radius: 16px;
+            padding: 26px 24px;
+            transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        .doc-drop:hover {
+            background: linear-gradient(180deg, #ffffff 0%, #f6fbf8 100%);
+            border-color: #8fd6b3;
+            transform: translateY(-1px);
+        }
+        .doc-drop.is-drag {
+            background: linear-gradient(180deg, #ffffff 0%, #eefaf3 100%);
+            border-color: #58c08f;
+            box-shadow: 0 0 0 4px rgba(88, 192, 143, .22);
+        }
+        .doc-drop .drop-ic {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            background: radial-gradient(120% 120% at 30% 20%, #e9fff3 0%, #d7f5e5 55%, #c7eddc 100%);
+            color: #0f4a35;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 8px 18px rgba(18, 74, 53, .08);
+        }
+        .doc-drop .drop-title { font-size: 15px; font-weight: 800; color: #0f2d21; }
+        .doc-drop .drop-desc { font-size: 13px; color: #556579; line-height: 1.55; }
+        .doc-drop .drop-meta { font-size: 12px; color: #64748b; }
+        .doc-drop .drop-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 9999px;
+            background: rgba(34, 96, 70, .08);
+            color: #1b6c4f;
+            font-weight: 800;
+            font-size: 12px;
+        }
+        .doc-drop .drop-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(18, 74, 53, .14);
+            background: #fff;
+            color: #0f4a35;
+            font-size: 12px;
+            font-weight: 800;
+            transition: background .15s ease;
+            margin-left: auto;
+        }
+        .doc-drop:hover .drop-cta { background: #f7fffb; }
+        .doc-help {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 14px;
+            background: #fff;
+            border: 1px solid #e5efe7;
+            border-radius: 12px;
+        }
+        .doc-help .ic {
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            background: #f1f5f2;
+            color: #226046;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .doc-help .txt { font-size: 13px; color: #475569; line-height: 1.55; }
+        .doc-help .txt b { color: #0f2d21; }
+        .file-summary {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0f2d21;
+        }
+        .file-summary.sub { font-size: 12px; font-weight: 600; color: #64748b; }
+        .file-list {
+            border: 1px solid #e5efe7;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .file-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 90px;
+            gap: 10px;
+            padding: 10px 12px;
+            border-top: 1px solid #f0f6f2;
+            align-items: center;
+        }
+        .file-row:first-child { border-top: none; }
+        .file-cat {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 9999px;
+            background: #f4f7f5;
+            color: #0f2d21;
+            font-weight: 800;
+            font-size: 12px;
+            width: fit-content;
+        }
+        .file-name {
+            font-weight: 700;
+            color: #0f2d21;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .file-size { text-align: right; color: #94a3b8; font-weight: 700; font-size: 12px; }
+        @media (max-width: 720px) {
+            .file-row { grid-template-columns: 120px 1fr 70px; }
+        }
     </style>
 </head>
 <body class="text-[#191c1a]">
@@ -256,47 +382,84 @@
                 <div class="px-7 py-5 border-t border-[#eef2eb] bg-[#f4f7f4]">
 
                         <%-- 안내 문구: 서류 순서 표시 --%>
-                    <p class="text-xs text-slate-400 mb-3" style="font-size: 14px;">
-                        ※ 다음 서류를 제출해주세요 :
-                        <c:forEach var="doc" items="${docList}" varStatus="vs">
-                            <c:choose>
-                                <c:when test="${doc.SBMSN_DOC_TY_CD == 'ID'}">신분증</c:when>
-                                <c:when test="${doc.SBMSN_DOC_TY_CD == 'FAMILY'}">가족관계서류</c:when>
-                                <c:when test="${doc.SBMSN_DOC_TY_CD == 'RESIDENCE'}">주민등록서류</c:when>
-                                <c:when test="${doc.SBMSN_DOC_TY_CD == 'CONTRACT'}">계약서류</c:when>
-                                <c:when test="${doc.SBMSN_DOC_TY_CD == 'INCOME'}">소득증빙서류</c:when>
-                                <c:when test="${doc.SBMSN_DOC_TY_CD == 'EMPLOY'}">재직증명서</c:when>
-                                <c:otherwise>${doc.SBMSN_DOC_TY_CD}</c:otherwise>
-                            </c:choose>${!vs.last ? ' → ' : ''}
-                        </c:forEach>
-                    </p>
-
-                    <div class="flex justify-between items-center gap-3">
-                        <div class="flex items-center gap-3">
-                                <%-- 파일 한번에 여러개 선택 --%>
-                            <input type="file" id="multiFileInput"
-                                   style="display:none"
-                                   multiple
-                                   onchange="handleFileSelect(this)"/>
-                            <label for="multiFileInput"
-                                   class="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-300 rounded-full cursor-pointer hover:bg-slate-50 text-sm text-slate-600">
-                                <span class="material-symbols-outlined text-[16px]">attach_file</span>
-                                파일 선택
-                            </label>
-                            <span id="selectedFileNames" class="text-xs text-slate-400"></span>
-                        </div>
-
-                        <div class="flex gap-3">
-                            <button onclick="submitAllDocs()"
-                                    class="flex items-center gap-2 px-7 py-3 bg-[#004830] text-white rounded-full text-sm font-bold hover:bg-[#226046] transition-colors">
-                                <span class="material-symbols-outlined text-[17px]">upload_file</span>제출
-                            </button>
-                            <button onclick="cancelAplct('${detail.APLCT_NO}')"
-                                    class="flex items-center gap-2 px-7 py-3 bg-red-500 text-white rounded-full text-sm font-bold hover:bg-red-600 transition-colors">
-                                <span class="material-symbols-outlined text-[17px]">close</span>신청 취소
-                            </button>
+                    <div class="doc-help mb-4">
+                        <span class="ic"><span class="material-symbols-outlined text-[18px]">info</span></span>
+                        <div class="txt">
+                            <div class="font-extrabold text-[#0f2d21] mb-0.5">제출 대상 서류</div>
+                            <div>
+                                <span class="text-slate-600">
+                                    <c:forEach var="doc" items="${docList}" varStatus="vs">
+                                        <c:choose>
+                                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'ID'}">신분증</c:when>
+                                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'FAMILY'}">가족관계서류</c:when>
+                                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'RESIDENCE'}">주민등록서류</c:when>
+                                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'CONTRACT'}">계약서류</c:when>
+                                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'INCOME'}">소득증빙서류</c:when>
+                                            <c:when test="${doc.SBMSN_DOC_TY_CD == 'EMPLOY'}">재직증명서</c:when>
+                                            <c:otherwise>${doc.SBMSN_DOC_TY_CD}</c:otherwise>
+                                        </c:choose>${!vs.last ? ', ' : ''}
+                                    </c:forEach>
+                                </span>
+                            </div>
                         </div>
                     </div>
+                    <div class="grid grid-cols-1 gap-4">
+                        <%-- 파일 한번에 여러개 선택 --%>
+                        <input type="file" id="multiFileInput"
+                               style="display:none"
+                               multiple
+                               onchange="handleFileSelect(this)"/>
+
+                        <div>
+                            <div id="docDrop" class="doc-drop w-full">
+                                <div class="flex items-center gap-4">
+                                    <span class="drop-ic">
+                                        <span class="material-symbols-outlined text-[22px]">upload_file</span>
+                                    </span>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="drop-title">파일을 드래그해서 놓거나 클릭해서 선택하세요.</div>
+                                        <div class="drop-desc mt-1">
+                                        </div>
+                                        <div class="drop-meta mt-2 flex items-center gap-2 flex-wrap">
+                                            <span class="drop-chip">
+                                                <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                                                필수 ${fn:length(docList)}개
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span class="drop-cta">
+                                        <span class="material-symbols-outlined text-[16px]">folder_open</span>
+                                        파일 선택
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start justify-between gap-6 flex-wrap">
+                            <div class="min-w-0 flex-1">
+                                <div id="selectedFileSummary" class="file-summary">선택된 파일이 없습니다</div>
+                                <div class="file-summary sub mt-0.5">선택 후 아래 목록에서 서류별 파일명을 확인하세요.</div>
+                                <button type="button" id="clearSelectedFilesBtn"
+                                        class="mt-1 text-xs text-slate-400 hover:text-slate-600 underline underline-offset-2"
+                                        style="display:none">
+                                    선택 취소
+                                </button>
+                            </div>
+
+                            <div class="flex gap-3 flex-shrink-0 w-full sm:w-auto justify-end">
+                                <button onclick="submitAllDocs()"
+                                        id="submitAllDocsBtn"
+                                        class="flex items-center gap-2 px-7 py-3 bg-[#004830] text-white rounded-full text-sm font-bold hover:bg-[#226046] transition-colors">
+                                    <span class="material-symbols-outlined text-[17px]">upload_file</span>제출
+                                </button>
+                                <button onclick="cancelAplct('${detail.APLCT_NO}')"
+                                        class="flex items-center gap-2 px-7 py-3 bg-red-500 text-white rounded-full text-sm font-bold hover:bg-red-600 transition-colors">
+                                    <span class="material-symbols-outlined text-[17px]">close</span>신청 취소
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="selectedFileList" class="file-list mt-3 w-full" style="display:none"></div>
                 </div>
             </c:if>
         </div>
@@ -365,19 +528,82 @@
         </c:forEach>
     ];
 
+    const requiredLabels = [
+        <c:forEach var="doc" items="${docList}" varStatus="vs">
+        '<c:choose><c:when test="${doc.SBMSN_DOC_TY_CD == 'ID'}">신분증</c:when><c:when test="${doc.SBMSN_DOC_TY_CD == 'FAMILY'}">가족관계서류</c:when><c:when test="${doc.SBMSN_DOC_TY_CD == 'RESIDENCE'}">주민등록서류</c:when><c:when test="${doc.SBMSN_DOC_TY_CD == 'CONTRACT'}">계약서류</c:when><c:when test="${doc.SBMSN_DOC_TY_CD == 'INCOME'}">소득증빙서류</c:when><c:when test="${doc.SBMSN_DOC_TY_CD == 'EMPLOY'}">재직증명서</c:when><c:otherwise>${doc.SBMSN_DOC_TY_CD}</c:otherwise></c:choose>'${!vs.last ? ',' : ''}
+        </c:forEach>
+    ];
+
+    function $(id) { return document.getElementById(id); }
+
+    function formatBytes(bytes) {
+        const b = Number(bytes || 0);
+        if (!Number.isFinite(b) || b <= 0) return '0B';
+        const units = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.min(units.length - 1, Math.floor(Math.log(b) / Math.log(1024)));
+        const v = b / Math.pow(1024, i);
+        return (i === 0 ? v.toFixed(0) : v.toFixed(1)) + units[i];
+    }
+
+    function resetFileSelection() {
+        const input = $('multiFileInput');
+        if (input) input.value = '';
+        if ($('selectedFileSummary')) $('selectedFileSummary').textContent = '선택된 파일이 없습니다';
+        if ($('selectedFileList')) {
+            $('selectedFileList').innerHTML = '';
+            $('selectedFileList').style.display = 'none';
+        }
+        if ($('clearSelectedFilesBtn')) $('clearSelectedFilesBtn').style.display = 'none';
+        if ($('submitAllDocsBtn')) $('submitAllDocsBtn').disabled = false;
+    }
+
+    function renderSelectedFiles(files) {
+        const list = $('selectedFileList');
+        const summary = $('selectedFileSummary');
+        const clearBtn = $('clearSelectedFilesBtn');
+        if (!list || !summary) return;
+
+        if (!files || files.length === 0) {
+            summary.textContent = '선택된 파일이 없습니다';
+            list.innerHTML = '';
+            list.style.display = 'none';
+            if (clearBtn) clearBtn.style.display = 'none';
+            return;
+        }
+
+        summary.textContent = files.length + '개 선택됨';
+        list.innerHTML = files.map(function (f, idx) {
+            const label = requiredLabels[idx] || ('서류 ' + (idx + 1));
+            const safeName = String(f.name || '').replace(/"/g, '&quot;');
+            return (
+                '<div class="file-row">' +
+                '<span class="file-cat">' + label + '</span>' +
+                '<span class="file-name" title="' + safeName + '">' + safeName + '</span>' +
+                '<span class="file-size">' + formatBytes(f.size) + '</span>' +
+                '</div>'
+            );
+        }).join('');
+        list.style.display = 'block';
+        if (clearBtn) clearBtn.style.display = 'inline';
+    }
+
     // 파일 선택 시 개수 검증 및 파일명 표시
     function handleFileSelect(input) {
         const files = Array.from(input.files);
 
         if (files.length !== requiredCats.length) {
-            alert('서류 ' + requiredCats.length + '개를 선택해주세요.\n현재 ' + files.length + '개 선택됨');
-            input.value = '';
-            document.querySelector('#selectedFileNames').textContent = '';
+            Swal.fire({
+                icon: 'warning',
+                title: '파일 개수가 맞지 않습니다',
+                html: '필수 서류는 <b>' + requiredCats.length + '개</b>입니다.<br/>현재 <b>' + files.length + '개</b>가 선택되었습니다.',
+                confirmButtonColor: '#004830',
+                confirmButtonText: '확인'
+            });
+            resetFileSelection();
             return;
         }
 
-        document.querySelector('#selectedFileNames').textContent =
-            files.length + '개 선택됨: ' + files.map(f => f.name).join(', ');
+        renderSelectedFiles(files);
     }
 
     async function submitAllDocs() {
@@ -385,12 +611,24 @@
         const files = Array.from(input.files);
 
         if (files.length === 0) {
-            alert('파일을 선택해주세요.');
+            Swal.fire({
+                icon: 'info',
+                title: '파일 선택',
+                text: '제출할 파일을 먼저 선택해주세요.',
+                confirmButtonColor: '#004830',
+                confirmButtonText: '확인'
+            });
             return;
         }
 
         if (files.length !== requiredCats.length) {
-            alert('서류 ' + requiredCats.length + '개를 모두 선택해주세요.');
+            Swal.fire({
+                icon: 'warning',
+                title: '파일 개수가 맞지 않습니다',
+                html: '필수 서류는 <b>' + requiredCats.length + '개</b>입니다.<br/>현재 <b>' + files.length + '개</b>가 선택되었습니다.',
+                confirmButtonColor: '#004830',
+                confirmButtonText: '확인'
+            });
             return;
         }
 
@@ -403,20 +641,119 @@
         });
         formData.append('aplctNo', '${detail.APLCT_NO}');
 
-        const res = await fetch('/contract/insertContractDoc.do', {
-            method: 'POST',
-            headers: {[csrfHeader]: csrfToken},
-            body: formData
-        });
-        const result = await res.json();
+        const submitBtn = $('submitAllDocsBtn');
+        if (submitBtn) submitBtn.disabled = true;
 
-        if (result.success) {
-            alert('제출 완료.');
-            location.reload();
-        } else {
-            alert('제출 실패.');
+        Swal.fire({
+            title: '서류 제출 중',
+            text: '잠시만 기다려주세요.',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        try {
+            const res = await fetch('/contract/insertContractDoc.do', {
+                method: 'POST',
+                headers: {[csrfHeader]: csrfToken},
+                body: formData
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                await Swal.fire({
+                    icon: 'success',
+                    title: '제출 완료',
+                    text: '서류 제출이 완료되었습니다.',
+                    confirmButtonColor: '#004830',
+                    confirmButtonText: '확인'
+                });
+                location.reload();
+            } else {
+                await Swal.fire({
+                    icon: 'error',
+                    title: '제출 실패',
+                    text: '서류 제출에 실패했습니다. 잠시 후 다시 시도해주세요.',
+                    confirmButtonColor: '#004830',
+                    confirmButtonText: '확인'
+                });
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        } catch (e) {
+            console.error(e);
+            await Swal.fire({
+                icon: 'error',
+                title: '제출 실패',
+                text: '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+                confirmButtonColor: '#004830',
+                confirmButtonText: '확인'
+            });
+            if (submitBtn) submitBtn.disabled = false;
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = $('multiFileInput');
+        const drop = $('docDrop');
+        const clearBtn = $('clearSelectedFilesBtn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const input = $('multiFileInput');
+                const hasFiles = !!(input && input.files && input.files.length);
+                if (!hasFiles) {
+                    resetFileSelection();
+                    return;
+                }
+                Swal.fire({
+                    icon: 'warning',
+                    title: '선택을 취소할까요?',
+                    text: '선택한 파일 목록이 모두 초기화됩니다.',
+                    confirmButtonColor: '#004830',
+                    confirmButtonText: '취소하기',
+                    showCancelButton: true,
+                    cancelButtonText: '닫기'
+                }).then(function (r) {
+                    if (!r.isConfirmed) return;
+                    resetFileSelection();
+                });
+            });
+        }
+
+        if (!input || !drop) return;
+
+        drop.addEventListener('click', function () {
+            input.click();
+        });
+
+        function setDrag(on) {
+            drop.classList.toggle('is-drag', !!on);
+        }
+
+        ['dragenter', 'dragover'].forEach(function (ev) {
+            drop.addEventListener(ev, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                setDrag(true);
+            });
+        });
+        ['dragleave', 'dragend', 'drop'].forEach(function (ev) {
+            drop.addEventListener(ev, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                setDrag(false);
+            });
+        });
+
+        drop.addEventListener('drop', function (e) {
+            const files = e.dataTransfer && e.dataTransfer.files ? Array.from(e.dataTransfer.files) : [];
+            if (!files.length) return;
+
+            const dt = new DataTransfer();
+            files.forEach(function (f) { dt.items.add(f); });
+            input.files = dt.files;
+            handleFileSelect(input);
+        });
+    });
 
     function cancelAplct(aplctNo) {
         const csrfHeader = document.getElementById('csrfHeader').value;
