@@ -66,6 +66,7 @@ public class SecurityConfig {
             , "/main/**"
             , "/contract/notice.do"
             , "/contract/notice.json"
+            , "/contract/detail.do"
             , "/rent/**"
             , "/facility/history.do"
             , "/board/notice/list.do"
@@ -224,7 +225,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
 
         org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 위 설정 적용
+            source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 위 설정 적용
         return source;
     }
 

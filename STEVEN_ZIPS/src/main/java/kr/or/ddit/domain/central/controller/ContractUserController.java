@@ -121,7 +121,6 @@ public class ContractUserController {
      * principal 현재 로그인한 사용자 정보
      * 공고 상세 JSP 경로 (central/contract/contractNoticeDetail)
      */
-    @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/detail.do")
     public String contractDetail(
             @RequestParam("annNo") String annNo,
