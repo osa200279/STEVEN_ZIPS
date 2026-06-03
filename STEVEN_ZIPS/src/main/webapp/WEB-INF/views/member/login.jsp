@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/headerStyle.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/loginStyle.css">
     <meta charset="utf-8"/>
-    <script src="/js/common/conn.js"></script>
     <title>Login Form</title>
 </head>
 <body>
@@ -32,7 +31,7 @@
 
             <div class="top-links">
                 <a href="${pageContext.request.contextPath}/" class="top-btn outline">홈으로</a>
-                <a href="${pageContext.request.contextPath}/join" class="top-btn fill">회원가입</a>
+                <a href="${pageContext.request.contextPath}/member/join.do" class="top-btn fill">회원가입</a>
             </div>
         </header>
 
@@ -102,7 +101,7 @@
                                 아직 회원이 아니신가요?<br>
                                 회원가입 후 더 다양한 서비스를 이용할 수 있습니다.
                             </p>
-                            <a href="${pageContext.request.contextPath}/member/join.do" class="join-link">회원가입</a>
+                            <button type="button" id="joinFormBtn" class="join-link">회원가입</button>
                         </div>
                     </div>
                 </section>
@@ -112,6 +111,28 @@
                 %>
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {
+                        const joinFormBtn = document.querySelector("#joinFormBtn");
+                        if(joinFormBtn) {
+                            joinFormBtn.addEventListener("click", (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                // 팝업창 크기
+                                const width = 700;
+                                const height = 1000;
+
+                                // 화면 중앙 정렬 계산
+                                const left = (window.screen.width / 2) - (width / 2);
+                                const top = (window.screen.height / 2) - (height / 2);
+
+                                window.open(
+                                    '/member/join.do',
+                                    'joinPopup',
+                                    'width=' + width + ', height=' + height +
+                                    ', top=' + top + ', left=' + left + ', scrollbars=yes, resizable=no'
+                                );
+                            });
+                        };
+
                         Swal.fire({
                             icon: "error", // 에러 상황이므로 error 아이콘
                             title: "로그인 실패",
