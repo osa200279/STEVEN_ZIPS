@@ -57,7 +57,9 @@
 
                         <div class="mngr-detail-item">
                             <div class="mngr-detail-label">세대</div>
-                            <div class="mngr-detail-value">${vehicle.hoNo}</div>
+                            <div class="mngr-detail-value">
+                                ${empty vehicle.unitDisplay ? vehicle.hoNo : vehicle.unitDisplay}
+                            </div>
                         </div>
 
                         <div class="mngr-detail-item">

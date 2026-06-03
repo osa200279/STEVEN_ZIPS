@@ -402,12 +402,11 @@
           var csrfHeaderEl = document.querySelector('meta[name="_csrf_header"]');
           var csrfToken = csrfTokenEl ? csrfTokenEl.getAttribute("content") : "";
           var csrfHeader = csrfHeaderEl ? csrfHeaderEl.getAttribute("content") : "X-CSRF-TOKEN";
-
           var STATUS_TEXT = {
-            WAIT: "입주대기",
-            LIVE: "입주",
-            OUT: "퇴거",
-            MID: "중도퇴거"
+            WAIT: "\uc785\uc8fc\ub300\uae30",
+            LIVE: "\uc785\uc8fc",
+            OUT: "\ud1f4\uac70",
+            MID: "\uc911\ub3c4\ud1f4\uac70"
           };
 
           var STATUS_CLASS = {
@@ -427,6 +426,16 @@
               .replace(/'/g, "&#39;");
           }
 
+          function extractDongNo(value) {
+            if (!value) return "";
+            var str = String(value);
+            return str.indexOf("_") > -1 ? str.split("_").pop() : str;
+          }
+
+          function getDisplayHo(row) {
+            return row && row.ho ? row.ho : "";
+          }
+
           function badge(text, css) {
             return '<span class="badge ' + css + '">' + esc(text) + '</span>';
           }
@@ -437,8 +446,8 @@
 
           function headBadge(yn) {
             return yn === "Y"
-              ? badge("세대주", "badge-blue")
-              : badge("세대원", "badge-gray");
+              ? badge("\uc138\ub300\uc8fc", "badge-blue")
+              : badge("\uc138\ub300\uc6d0", "badge-gray");
           }
 
           moveStatusHelp.className = "form-help";
@@ -446,10 +455,10 @@
           moveStatusSelect.parentNode.appendChild(moveStatusHelp);
 
           function getMoveStatusHelp(status) {
-            if (status === "WAIT") return "입주 전 상태입니다. 날짜는 저장 시 자동으로 비워집니다.";
-            if (status === "LIVE") return "입주 상태는 입주일만 관리합니다.";
-            if (status === "OUT") return "퇴거 상태는 입주일과 퇴거일을 함께 관리합니다.";
-            if (status === "MID") return "중도퇴거는 입주일과 퇴거일을 함께 관리합니다.";
+            if (status === "WAIT") return "\uc785\uc8fc \uc804 \uc0c1\ud0dc\uc785\ub2c8\ub2e4. \ub0a0\uc9dc\ub294 \uc800\uc7a5 \uc2dc \uc790\ub3d9\uc73c\ub85c \ube44\uc6cc\uc9d1\ub2c8\ub2e4.";
+            if (status === "LIVE") return "\uc785\uc8fc \uc0c1\ud0dc\uc785\ub2c8\ub2e4. \uc785\uc8fc\uc77c\ub9cc \uad00\ub9ac\ud569\ub2c8\ub2e4.";
+            if (status === "OUT") return "\ud1f4\uac70 \uc0c1\ud0dc\uc785\ub2c8\ub2e4. \uc785\uc8fc\uc77c\uacfc \ud1f4\uac70\uc77c\uc744 \ud568\uaed8 \uad00\ub9ac\ud569\ub2c8\ub2e4.";
+            if (status === "MID") return "\uc911\ub3c4\ud1f4\uac70\ub294 \uc785\uc8fc\uc77c\uacfc \ud1f4\uac70\uc77c\uc744 \ud568\uaed8 \uad00\ub9ac\ud569\ub2c8\ub2e4.";
             return "";
           }
 
@@ -498,21 +507,19 @@
             var outCnt = payload.outCnt || 0;
             var midCnt = payload.midCnt || 0;
             summary.innerHTML =
-              '<span class="badge badge-gray">전체 ' + list.length + '건</span>' +
-              '<span class="badge badge-yellow">입주대기 ' + waitCnt + '건</span>' +
-              '<span class="badge badge-green">입주 ' + liveCnt + '건</span>' +
-              '<span class="badge badge-red">퇴거 ' + outCnt + '건</span>' +
-              '<span class="badge badge-blue">중도퇴거 ' + midCnt + '건</span>';
+              '<span class="badge badge-gray">\uc804\uccb4 ' + list.length + '\uac74</span>' +
+              '<span class="badge badge-yellow">\uc785\uc8fc\ub300\uae30 ' + waitCnt + '\uac74</span>' +
+              '<span class="badge badge-green">\uc785\uc8fc ' + liveCnt + '\uac74</span>' +
+              '<span class="badge badge-red">\ud1f4\uac70 ' + outCnt + '\uac74</span>' +
+              '<span class="badge badge-blue">\uc911\ub3c4\ud1f4\uac70 ' + midCnt + '\uac74</span>';
           }
 
           function renderTable(list) {
-            listCount.textContent = list.length + "건";
+            listCount.textContent = list.length + "\uac74";
 
             if (!list.length) {
-              tbody.innerHTML =
-                '<tr><td colspan="9" class="td-empty">조회된 입주/퇴거 내역이 없습니다.</td></tr>';
+              tbody.innerHTML = '<tr><td colspan="9" class="td-empty">\uc870\ud68c\ub41c \uc785\uc8fc/\ud1f4\uac70 \ub0b4\uc5ed\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>';
               return;
-
             }
 
 
@@ -523,7 +530,7 @@
               return [
                 "<tr>",
                 "<td>" + statusBadge(row.moveStatus, row.inoutNm) + "</td>",
-                "<td>" + esc(row.dong || "-") + "</td>",
+                "<td>" + esc(extractDongNo(row.dong) || "-") + "</td>",
                 "<td>" + esc(row.ho || "-") + "</td>",
                 "<td class=\"td-name\">" + esc(row.userNm || "-") + "</td>",
                 "<td>" + esc(row.userTelno || "-") + "</td>",
@@ -638,8 +645,10 @@
             document.getElementById("userNo").value = row.userNo || "";
             document.getElementById("userNm").value = row.userNm || "";
             document.getElementById("userTelno").value = row.userTelno || "";
-            document.getElementById("dong").value = row.dong || "";
-            document.getElementById("hoNo").value = row.hoNo || row.ho || "";
+            document.getElementById("dong").value =
+                    currentMode === "detail" ? extractDongNo(row.dong) : (row.dong || "");
+            document.getElementById("hoNo").value =
+                    currentMode === "detail" ? getDisplayHo(row) : (row.hoNo || row.ho || "");
             currentHoNo = row.hoNo || row.ho || "";
             moveStatusSelect.value = row.moveStatus || row.inoutCd || "WAIT";
             document.getElementById("headYn").value = row.headYn || "N";
@@ -712,8 +721,8 @@
 
             } catch (err) {
               console.error(err);
-              tbody.innerHTML = '<tr><td colspan="9" class="td-empty">목록을 불러오지 못했습니다.</td></tr>';
-              listCount.textContent = "0건";
+              tbody.innerHTML = '<tr><td colspan="9" class="td-empty">\uc870\ud68c\ub41c \uc785\uc8fc/\ud1f4\uac70 \ub0b4\uc5ed\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>';
+              listCount.textContent = "0\uac74";
             }
           }
 

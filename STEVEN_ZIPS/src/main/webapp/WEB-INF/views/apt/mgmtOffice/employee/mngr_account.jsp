@@ -194,6 +194,7 @@
         #rqstSelectedMember .sel-sub   { font-size: 11px; color: var(--text-tertiary); }
         #rqstSelectedMember .sel-clear { cursor: pointer; color: var(--text-tertiary); }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="${pageContext.request.contextPath}/js/manager/ag-grid-community.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
     <script src="${pageContext.request.contextPath}/js/manager/manager-agGrid.js"></script>

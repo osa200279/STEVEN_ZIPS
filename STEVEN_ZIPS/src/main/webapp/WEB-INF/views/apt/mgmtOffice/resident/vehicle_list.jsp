@@ -295,7 +295,9 @@
                                         <tr>
 
                                             <td class="td-bold">${item.userNm}</td>
-                                            <td>${item.hoNo}</td>
+                                            <td>
+                                                <c:out value="${empty item.unitDisplay ? item.hoNo : item.unitDisplay}"/>
+                                            </td>
                                             <td class="td-mono">${item.vhclNo}</td>
                                             <td>${item.vhclNm}</td>
 
@@ -446,7 +448,9 @@
                                             <tr>
 
                                                 <td class="td-bold">${item.userNm}</td>
-                                                <td>${item.hoNo}</td>
+                                                <td>
+                                                    <c:out value="${empty item.unitDisplay ? item.hoNo : item.unitDisplay}"/>
+                                                </td>
                                                 <td class="td-mono">${item.vhclNo}</td>
                                                 <td>${item.vhclNm}</td>
 

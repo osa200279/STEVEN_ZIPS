@@ -37,6 +37,14 @@
             M.USER_NM AS userNm,
             RV.USER_NO AS userNo,
             RV.HO_NO AS hoNo,
+            CASE
+                WHEN AD.HO IS NOT NULL THEN
+                    (CASE
+                        WHEN INSTR(AD.DONG_NO, '_') > 0 THEN SUBSTR(AD.DONG_NO, INSTR(AD.DONG_NO, '_') + 1)
+                        ELSE AD.DONG_NO
+                    END) || '동 ' || AD.HO || '호'
+                ELSE RV.HO_NO
+            END AS unitDisplay,
             RV.VHCL_FILE_NO AS vhclFileNo,
             RV.REG_DT AS regDt,
             RV.MDF_DT AS mdfDt
@@ -44,6 +52,8 @@
         FROM RSID_VHCL RV
                  LEFT JOIN MEMBER M
                            ON M.USER_NO = RV.USER_NO
+                 LEFT JOIN APT_DETAIL AD
+                           ON AD.HO_NO = RV.HO_NO
 
         WHERE RV.HO_NO LIKE #{aptCmplexNo} || '%'
 
@@ -62,11 +72,20 @@
             M.USER_NM AS USER_NM,
             RV.USER_NO,
             RV.HO_NO,
+            CASE
+                WHEN AD.HO IS NOT NULL THEN
+                    (CASE
+                        WHEN INSTR(AD.DONG_NO, '_') > 0 THEN SUBSTR(AD.DONG_NO, INSTR(AD.DONG_NO, '_') + 1)
+                        ELSE AD.DONG_NO
+                    END) || '동 ' || AD.HO || '호'
+                ELSE RV.HO_NO
+            END AS UNIT_DISPLAY,
             RV.VHCL_FILE_NO,
             RV.REG_DT,
             RV.MDF_DT
         FROM RSID_VHCL RV
             LEFT JOIN MEMBER M ON M.USER_NO = RV.USER_NO
+            LEFT JOIN APT_DETAIL AD ON AD.HO_NO = RV.HO_NO
         WHERE RV.RSID_VHCL_NO = #{rsidVhclNo}
     </select>
 

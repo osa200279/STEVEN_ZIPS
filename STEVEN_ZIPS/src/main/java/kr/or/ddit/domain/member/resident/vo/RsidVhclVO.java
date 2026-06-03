@@ -15,6 +15,7 @@ public class RsidVhclVO {
     private String userNm;
     private String userNo;
     private String hoNo;
+    private String unitDisplay;
     private String vhclFileNo;
     private Date regDt;
     private Date mdfDt;

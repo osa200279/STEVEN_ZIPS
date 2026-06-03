@@ -144,7 +144,7 @@
                                 <col class="col-rqst-no">
                                 <col class="col-user">
                                 <col class="col-tel">
-                                <col class="col-type">
+                                <%-- <col class="col-type"> --%>
                                 <col class="col-unit">
                                 <col class="col-mvin-date">
                                 <col class="col-rcpt-date">
@@ -156,7 +156,7 @@
                                 <th class="col-rqst-no">신청번호</th>
                                 <th class="col-user">신청자</th>
                                 <th class="col-tel">연락처</th>
-                                <th class="col-type">요청유형</th>
+                                <%-- <th class="col-type">요청유형</th> --%>
                                 <th class="col-unit">동/호수</th>
                                 <th class="col-mvin-date">입주예정일</th>
                                 <th class="col-rcpt-date">접수일</th>
@@ -368,21 +368,19 @@
                         </c:forEach>
 
                     ];
-                    var currentRqst = null;
-
-                    function rqstTypeText(code) {
+                    var currentRqst = null;                    function rqstTypeText(code) {
                         return {
-                            MVIN: "입주신청",
-                            MVOT: "퇴거신청",
-                            CHG: "명의변경"
+                            MVIN: "\uc785\uc8fc\uc2e0\uccad",
+                            MVOT: "\ud1f4\uac70\uc2e0\uccad",
+                            CHG: "\uba85\uc758\ubcc0\uacbd"
                         }[code] || "-";
                     }
 
                     function statusText(code) {
                         return {
-                            WAIT: "대기",
-                            APRV: "승인",
-                            RJCT: "반려"
+                            WAIT: "\ub300\uae30",
+                            APRV: "\uc2b9\uc778",
+                            RJCT: "\ubc18\ub824"
                         }[code] || "-";
                     }
 
@@ -396,6 +394,26 @@
                         return '<span class="badge ' + (map[code] || "badge-gray") + '">' + statusText(code) + '</span>';
                     }
 
+                    function extractDongNo(value) {
+                        if (!value) return "";
+                        var str = String(value);
+                        return str.indexOf("_") > -1 ? str.split("_").pop() : str;
+                    }
+
+                    function formatDong(value) {
+                        var dong = extractDongNo(value);
+                        return dong ? dong + "\ub3d9" : "-";
+                    }
+
+                    function formatHo(value) {
+                        if (!value) return "-";
+                        var str = String(value);
+                        return str.endsWith("\ud638") ? str : str + "\ud638";
+                    }
+
+                    function formatDongHo(dong, ho) {
+                        return formatDong(dong) + " " + formatHo(ho);
+                    }
                     function getFilteredRows() {
                         var rqstTy = document.getElementById("filterRqstTy").value;
                         var status = document.getElementById("filterStatus").value;
@@ -414,10 +432,10 @@
                         var rows = getFilteredRows();
                         var tbody = document.getElementById("rqstTableBody");
 
-                        document.getElementById("rqstCount").textContent = rows.length + "건";
+                        document.getElementById("rqstCount").textContent = rows.length + "\uac74";
 
                         if (rows.length === 0) {
-                            tbody.innerHTML = '<tr><td colspan="9" class="empty-row">조회된 신청 내역이 없습니다.</td></tr>';
+                            tbody.innerHTML = '<tr><td colspan="8" class="empty-row">\uc870\ud68c\ub41c \uc2e0\uccad \ub0b4\uc5ed\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>';
                             return;
                         }
 
@@ -426,14 +444,14 @@
                                 + '<td class="col-rqst-no td-mono">' + row.rqstNo + '</td>'
                                 + '<td class="col-user td-bold">' + row.userNm + '</td>'
                                 + '<td class="col-tel">' + row.telno + '</td>'
-                                + '<td class="col-type">' + rqstTypeText(row.rqstTyCd) + '</td>'
-                                + '<td class="col-unit">' + row.dong + ' ' + row.ho + '</td>'
+                                // + '<td class="col-type">' + rqstTypeText(row.rqstTyCd) + '</td>'
+                                + '<td class="col-unit">' + formatDongHo(row.dong, row.ho) + '</td>'
                                 + '<td class="col-mvin-date">' + (row.mvinPrdDt || "-") + '</td>'
                                 + '<td class="col-rcpt-date">' + row.rcptDt + '</td>'
                                 + '<td class="col-status">' + statusBadge(row.rqstSttsCd) + '</td>'
                                 + '<td class="col-action">'
                                 + '<div class="grid-actions">'
-                                + '<button type="button" class="btn btn-xs btn-detail" data-action="detail" data-rqst-no="' + row.rqstNo + '">상세</button>'
+                                + '<button type="button" class="btn btn-xs btn-detail" data-action="detail" data-rqst-no="' + row.rqstNo + '">\uc0c1\uc138</button>'
                                 + '</div>'
                                 + '</td>'
                                 + '</tr>';
@@ -457,7 +475,7 @@
                         document.getElementById("detailTelno").value = row.telno || "";
                         document.getElementById("detailRqstTy").value = rqstTypeText(row.rqstTyCd);
                         document.getElementById("detailStatus").value = statusText(row.rqstSttsCd);
-                        document.getElementById("detailUnit").value = (row.dong || "-") + " " + (row.ho || "");
+                        document.getElementById("detailUnit").value = formatDongHo(row.dong, row.ho);
                         document.getElementById("detailRcptDt").value =
                             row.rcptDt ? row.rcptDt.substring(0, 10) : "";
 
@@ -484,12 +502,12 @@
 
                         var row = currentRqst;
                         var items = [
-                            ["신청자", row.userNm],
-                            ["연락처", row.telno],
-                            ["요청유형", rqstTypeText(row.rqstTyCd)],
-                            ["동/호수", row.dong + " " + row.ho],
-                            ["입주예정일", row.mvinPrdDt || "-"],
-                            ["접수일", row.rcptDt]
+                            ["\uc2e0\uccad\uc790", row.userNm],
+                            ["\uc5f0\ub77d\ucc98", row.telno],
+                            ["\uc694\uccad\uc720\ud615", rqstTypeText(row.rqstTyCd)],
+                            ["\ub3d9/\ud638\uc218", formatDongHo(row.dong, row.ho)],
+                            ["\uc785\uc8fc\uc608\uc815\uc77c", row.mvinPrdDt || "-"],
+                            ["\uc811\uc218\uc77c", row.rcptDt]
                         ];
 
                         document.getElementById("approveDetailGrid").innerHTML = items.map(function (item) {
