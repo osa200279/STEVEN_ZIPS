@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.broadcast.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -12,14 +13,19 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class ManagerBroadcastServiceImpl implements IManagerBroadcastService {
 
-    private static final String TTS_SERVICE_BASE = "http://localhost:8060";
+    private final String ttsServiceBase;
+
+    public ManagerBroadcastServiceImpl(
+            @Value("${tts.service.base-url:http://localhost:8060}") String ttsServiceBase) {
+        this.ttsServiceBase = trimTrailingSlash(ttsServiceBase);
+    }
 
     @Override
     public byte[] convertTextToSpeech(String text, String languageCode, String voiceName) throws Exception {
         String query = "text=" + URLEncoder.encode(text, StandardCharsets.UTF_8)
                 + "&languageCode=" + URLEncoder.encode(languageCode, StandardCharsets.UTF_8)
                 + "&voiceName=" + URLEncoder.encode(voiceName, StandardCharsets.UTF_8);
-        URI uri = URI.create(TTS_SERVICE_BASE + "/tts/synthesize?" + query);
+        URI uri = URI.create(ttsServiceBase + "/tts/synthesize?" + query);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
@@ -49,5 +55,16 @@ public class ManagerBroadcastServiceImpl implements IManagerBroadcastService {
             return true;
         }
         return audio[0] == 0x49 && audio[1] == 0x44 && audio[2] == 0x33;
+    }
+
+    private static String trimTrailingSlash(String base) {
+        if (base == null || base.isBlank()) {
+            return "http://localhost:8060";
+        }
+        String trimmed = base.trim();
+        while (trimmed.endsWith("/")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed;
     }
 }

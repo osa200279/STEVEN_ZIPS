@@ -20,7 +20,9 @@ function connectWebSocket() {
 
             console.log("웹소켓 연결됨");
 
-            roomSubscriptions = {};
+            if (typeof roomSubscriptions !== 'undefined') {
+                roomSubscriptions = {};
+            }
 
             subscribeNotification();
 
