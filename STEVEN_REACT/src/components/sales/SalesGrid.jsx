@@ -234,7 +234,7 @@ function SalesGrid({
                     case 'GENERAL':
                         return '일반';
 
-                    case 'SUPPLY':
+                    case 'SUBSCRIBE':
                         return '청약';
 
                     default:
