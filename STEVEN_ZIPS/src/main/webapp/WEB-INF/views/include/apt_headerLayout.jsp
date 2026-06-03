@@ -16,6 +16,19 @@
        CSS가 늦게 적용되면서 화면이 잠깐 깨져 보이는 현상.
        지금 알림톡 버튼이 크게 보였다 사라지는 현상이 여기에 해당함.
     */
+    /* 페이지 로딩 중 카카오 모달이 순간 보이는 현상 방지 */
+    #kakaoModal {
+        display: none !important;
+    }
+
+    #kakaoModal.kakao-open {
+        display: flex !important;
+    }
+
+    /* 로딩 중 카카오 버튼 깨짐 방지 */
+    #kakaoAlimBtn.kakao-ready {
+        visibility: hidden !important;
+    }
     #kakaoAlimBtn,
     .kakao-alim-img-btn {
         width: 88px !important;
