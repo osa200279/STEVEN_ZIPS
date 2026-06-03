@@ -12,8 +12,8 @@
     var CHAR_MAX = 500;
     var HISTORY_MAX = 20;
     var DEFAULT_RESET_VOICE = 'ko-KR-Standard-C';
-    var CONVERT_BTN_HTML = '<span class="material-symbols-rounded">graphic_eq</span>음성 변환하기';
-    var CONVERT_DOCKER_BTN_HTML = '<span class="material-symbols-rounded">dns</span>도커 음성 변환';
+    var CONVERT_BTN_HTML = '<span class="material-symbols-rounded">graphic_eq</span>음성 변환';
+    var CONVERT_DOCKER_BTN_HTML = '<span class="material-symbols-rounded">dns</span>음성 변환';
     var PREVIEW_BTN_HTML = '<span class="material-symbols-rounded">hearing</span>미리듣기';
 
     var VOICE_OPTIONS = {

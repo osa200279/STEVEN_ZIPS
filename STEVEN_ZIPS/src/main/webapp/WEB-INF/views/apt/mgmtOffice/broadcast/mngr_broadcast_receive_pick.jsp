@@ -9,8 +9,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <sec:csrfMetaTags/>
     <title>방송 수신기 · 동 선택</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/toast.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/broadcast/mngr-broadcast.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/broadcast/mngr-broadcast-receive.css">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet"/>
 </head>

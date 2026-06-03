@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/office-layout.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/manager-common.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common/toast.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/broadcast/mngr-broadcast.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager/broadcast/mngr-broadcast-receive.css">
 </head>
 <body>
@@ -24,7 +25,7 @@
     <div class="main-wrap">
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
         <main class="main-content main-content--bc-receive">
-            <div class="bc-receive-page" id="broadcastReceivePage">
+            <div class="bc-receive-page" id="broadcastReceivePage" data-page="broadcast-receive">
                 <div id="bcReceiveFlash" class="bc-receive-flash" hidden aria-live="assertive" role="status">
                     <span class="material-symbols-rounded">campaign</span>
                     <strong id="bcReceiveFlashTitle">방송중</strong>
