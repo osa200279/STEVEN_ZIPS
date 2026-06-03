@@ -244,9 +244,21 @@
             logoutBtn.addEventListener("click", function (e) {
                 e.preventDefault();
 
-                if (confirm("로그아웃 하시겠습니까?")) {
-                    logoutForm.submit();
-                }
+                Swal.fire({
+                    title: '로그아웃',
+                    text: '로그아웃 하시겠습니까?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: '로그아웃',
+                    cancelButtonText: '취소',
+                    reverseButtons: false,
+                    confirmButtonColor: '#4f46e5',
+                    cancelButtonColor: '#9ca3af'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        logoutForm.submit();
+                    }
+                });
             });
         }
     });

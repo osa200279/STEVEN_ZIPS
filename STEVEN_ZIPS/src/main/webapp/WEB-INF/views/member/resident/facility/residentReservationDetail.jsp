@@ -789,13 +789,15 @@
                 return response.text();
             })
             .then(rsvtNo => {
-                alert('예약 신청이 완료되었습니다.');
-
-                /*
-                 * 예약 후 입주민은 본인 예약내역으로 이동.
-                 * 관리자는 예약승인관리 화면에서 PENDING 예약을 확인합니다.
-                 */
-                location.href = contextPath + '/resident/publicFacility/myReservation/${aptCmplexNo}';
+                Swal.fire({
+                    icon: 'success',
+                    title: '예약 완료',
+                    text: '예약 신청이 완료되었습니다.',
+                    confirmButtonText: '확인'
+                }).then(() => {
+                    location.href = contextPath +
+                        '/resident/publicFacility/myReservation/${aptCmplexNo}';
+                });
             })
             .catch(error => {
                 console.error(error);

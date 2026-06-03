@@ -2,10 +2,13 @@ package kr.or.ddit.domain.apt.mgmtOffice.reservation.service;
 
 import kr.or.ddit.common.kakao.service.IKakaoAlimService;
 import kr.or.ddit.common.model.PaginationInfoVO;
+import kr.or.ddit.common.notification.dto.NotificationDTO;
+import kr.or.ddit.common.notification.service.NotificationService;
 import kr.or.ddit.common.sms.service.ISmsService;
 import kr.or.ddit.domain.apt.mgmtOffice.reservation.mapper.IPublicFacilityReservationMapper;
 import kr.or.ddit.domain.apt.mgmtOffice.reservation.vo.PublicFacilityReservationVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,9 +21,12 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PublicFacilityReservationServiceImpl implements IPublicFacilityReservationService {
 
     private final IPublicFacilityReservationMapper mapper;
+
+    private final NotificationService notificationService;
 
     /* SMS 문자 발송 */
     private final ISmsService smsService;
@@ -262,6 +268,14 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
                         + " ~ "
                         + smsInfo.getRsvtEndDttm();
 
+        String userNo = smsInfo.getUserNo();
+        String cmnFacilityNm = smsInfo.getCmnFacilityNm();
+        String aptCmplexNo = smsInfo.getAptCmplexNo();
+
+        log.info("####userNo = {}" , userNo);
+        log.info("####cmnFacilityNm = {}" , cmnFacilityNm);
+        log.info("####aptCmplexNo = {}" , aptCmplexNo);
+
         /*
          * 1. 실제 SMS 발송
          * 여기서 실패하면 예외가 발생해야 함.
@@ -283,6 +297,15 @@ public class PublicFacilityReservationServiceImpl implements IPublicFacilityRese
                 smsInfo.getCmnFacilityNm(),
                 rsvtDttm,
                 "/resident/publicFacility/myReservation/" + smsInfo.getAptCmplexNo()
+        );
+
+        notificationService.send(
+                userNo,
+                NotificationDTO.success(
+                        "시설 예약 승인",
+                        cmnFacilityNm + " 예약이 승인되었습니다",
+                        "/resident/publicFacility/myReservation/"+aptCmplexNo
+                )
         );
     }
 
