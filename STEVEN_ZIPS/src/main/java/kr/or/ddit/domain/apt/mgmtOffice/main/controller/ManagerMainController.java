@@ -572,5 +572,56 @@ public class ManagerMainController {
         return "apt/mgmtOffice/broadcast/mngr_broadcast";
     }
 
+    /** 동별 방송 수신기 — 출력 PC에서 WebSocket 구독 후 TTS 재생 */
+    @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
+    @GetMapping("/complex/broadcast/receive/{mgmtOfcNo}")
+    public String broadcastReceive(
+            @PathVariable String mgmtOfcNo,
+            @RequestParam(required = false) String dongNo,
+            @RequestParam(required = false) String dongLabel,
+            @AuthenticationPrincipal CustomUser customUser,
+            Model model
+    ) {
+        managerAccessService.addManagerViewModel(model, customUser, mgmtOfcNo);
+        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+
+        var dongList = facilityService.selectDongList(mgmtOfcNo);
+        model.addAttribute("dongList", dongList);
+
+        if (dongNo == null || dongNo.isBlank()) {
+            return "apt/mgmtOffice/broadcast/mngr_broadcast_receive_pick";
+        }
+
+        String resolvedLabel = dongLabel;
+        boolean validDong = false;
+        if (dongList != null) {
+            for (var dong : dongList) {
+                if (dongNo.equals(dong.getDongNo())) {
+                    validDong = true;
+                    if (resolvedLabel == null || resolvedLabel.isBlank()) {
+                        String base = dong.getDongNo();
+                        if (base != null && base.contains("_")) {
+                            base = base.substring(base.indexOf('_') + 1);
+                        }
+                        if (dong.getDongNm() != null && !dong.getDongNm().isBlank()) {
+                            base = dong.getDongNm();
+                        }
+                        resolvedLabel = (base != null && base.endsWith("동")) ? base : base + "동";
+                    }
+                    break;
+                }
+            }
+        }
+        if (!validDong) {
+            resolvedLabel = resolvedLabel != null && !resolvedLabel.isBlank() ? resolvedLabel : dongNo;
+        }
+
+        model.addAttribute("dongNo", dongNo);
+        model.addAttribute("dongLabel", resolvedLabel != null ? resolvedLabel : dongNo);
+        model.addAttribute("dongValid", validDong);
+
+        return "apt/mgmtOffice/broadcast/mngr_broadcast_receive";
+    }
+
 
 }

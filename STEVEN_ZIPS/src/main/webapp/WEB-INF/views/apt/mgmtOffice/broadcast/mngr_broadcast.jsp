@@ -167,10 +167,30 @@
                                             <div class="compose-broadcast-actions" aria-label="방송 송출">
                                                 <span class="compose-broadcast-label">방송 송출</span>
                                                 <button type="button" class="bc-broadcast-btn" id="broadcastBtn" disabled
-                                                        title="변환된 음성을 단지 방송으로 송출">
+                                                        title="WebSocket으로 동별 수신기에 재생 명령 전송">
                                                     <span class="material-symbols-rounded">campaign</span>방송 송출
                                                 </button>
                                             </div>
+                                            <p class="hint bc-receive-setup-hint">
+                                                동별 출력 PC에서는
+                                                <strong>방송 수신기</strong>를 열어 두세요.
+                                                <span class="bc-receive-setup-links">
+                                                    <c:forEach var="dong" items="${dongList}" varStatus="st">
+                                                        <c:set var="dongBase"
+                                                               value="${fn:contains(dong.dongNo, '_') ? fn:substringAfter(dong.dongNo, '_') : (empty dong.dongNm ? dong.dongNo : dong.dongNm)}"/>
+                                                        <c:choose>
+                                                            <c:when test="${fn:endsWith(dongBase, '동')}">
+                                                                <c:set var="dongLabel" value="${dongBase}"/>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <c:set var="dongLabel" value="${dongBase}동"/>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                        <a href="${pageContext.request.contextPath}/manager/complex/broadcast/receive/${mgmtOfcNo}?dongNo=${dong.dongNo}"
+                                                           target="_blank" rel="noopener">${dongLabel}</a><c:if test="${!st.last}"> · </c:if>
+                                                    </c:forEach>
+                                                </span>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

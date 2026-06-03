@@ -487,6 +487,23 @@
     white-space: nowrap;
 }
 
+#broadcastPage .bc-receive-setup-hint {
+    margin: 0.65rem 0 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    width: 100%;
+}
+
+#broadcastPage .bc-receive-setup-links a {
+    color: #5c6bc0;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+#broadcastPage .bc-receive-setup-links a:hover {
+    text-decoration: underline;
+}
+
 #broadcastPage .compose-broadcast-actions .bc-broadcast-btn {
     margin-left: 0;
     height: 36px;

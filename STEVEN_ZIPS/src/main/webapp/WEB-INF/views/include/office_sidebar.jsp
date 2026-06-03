@@ -649,9 +649,13 @@
                         <%--                    <a href="/mgmtOffice/mngrResidentNotice/${mgmtOfcNo}" class="nav-item" aria-disabled="true">--%>
                         <span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">공지사항 관리</span></a>
                    <%--<a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">생활안내·운영정보</span></a>--%>
-                    <a href="/manager/complex/broadcast/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/complex/broadcast') ? 'active' : ''}">
+                    <a href="/manager/complex/broadcast/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/complex/broadcast/') and not fn:contains(uri, '/receive/') ? 'active' : ''}">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
                         <span class="nav-text">방송 안내 관리</span>
+                    </a>
+                    <a href="/manager/complex/broadcast/receive/${mgmtOfcNo}" class="nav-item ${fn:contains(uri, '/manager/complex/broadcast/receive') ? 'active' : ''}">
+                        <span class="material-symbols-rounded nav-icon">chevron_right</span>
+                        <span class="nav-text">방송 수신기 (동별)</span>
                     </a>
                     <%--<a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중"><span class="material-symbols-rounded nav-icon">chevron_right</span><span class="nav-text">긴급 SMS 발송</span></a>--%>
 

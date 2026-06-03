@@ -520,6 +520,108 @@
         return areas.length ? areas : ['전체'];
     }
 
+    /** WebSocket 동별 송출용 — dongNo·표시 라벨 */
+    function formatBroadcastSendingToast(targets) {
+        if (!targets || !targets.length) {
+            return { title: '방송 송출', message: '방송을 시작합니다.' };
+        }
+        if (targets.length === 1) {
+            return {
+                title: '방송중',
+                message: targets[0].dongLabel + '에서 방송중입니다. (해당 동 수신기·이 PC에서 재생)'
+            };
+        }
+        var labels = targets.map(function (t) { return t.dongLabel; }).join(', ');
+        return {
+            title: '방송중',
+            message: labels + '에서 방송중입니다. (' + targets.length + '개 동 수신기 확인)'
+        };
+    }
+
+    function getSelectedDongTargets() {
+        var allCb = getAllAreaCheckbox();
+        var targets = [];
+        var pushCb = function (cb) {
+            var dongNo = cb.getAttribute('data-dong-no');
+            if (!dongNo) return;
+            targets.push({ dongNo: dongNo, dongLabel: cb.value });
+        };
+        if (allCb && allCb.checked) {
+            getAreaCheckboxes().forEach(function (cb) {
+                if (!isAreaAllCheckbox(cb)) pushCb(cb);
+            });
+            return targets;
+        }
+        getAreaCheckboxes().forEach(function (cb) {
+            if (!isAreaAllCheckbox(cb) && cb.checked) pushCb(cb);
+        });
+        return targets;
+    }
+
+    function waitForStompConnected(maxMs, onReady) {
+        var elapsed = 0;
+        var step = 200;
+        var timer = setInterval(function () {
+            elapsed += step;
+            var client = null;
+            try {
+                if (typeof stomp !== 'undefined' && stomp) {
+                    client = stomp;
+                }
+            } catch (ignore) { /* stomp 미선언 */ }
+            if (client && client.connected) {
+                clearInterval(timer);
+                onReady(true);
+                return;
+            }
+            if (elapsed >= maxMs) {
+                clearInterval(timer);
+                onReady(false);
+            }
+        }, step);
+    }
+
+    function publishBroadcastViaWebSocket(form, targets) {
+        if (!targets || !targets.length) {
+            toast({
+                title: '방송',
+                message: '방송할 동을 선택해 주세요.',
+                type: 'error',
+                duration: 3500
+            });
+            return Promise.resolve(false);
+        }
+        return new Promise(function (resolve) {
+            waitForStompConnected(8000, function (ok) {
+                var client = null;
+                try {
+                    if (typeof stomp !== 'undefined' && stomp) {
+                        client = stomp;
+                    }
+                } catch (ignore) { /* stomp 미선언 */ }
+                if (!ok || !client || !client.connected) {
+                    toast({
+                        title: '방송',
+                        message: '웹소켓 연결이 필요합니다. 잠시 후 다시 시도하거나 페이지를 새로고침해 주세요.',
+                        type: 'error',
+                        duration: 4500
+                    });
+                    resolve(false);
+                    return;
+                }
+                client.send('/pub/broadcast/start', {}, JSON.stringify({
+                    mgmtOfcNo: cfg.mgmtOfcNo,
+                    text: form.text,
+                    languageCode: form.lang,
+                    voiceName: form.voice,
+                    areas: form.areas,
+                    targets: targets
+                }));
+                resolve(true);
+            });
+        });
+    }
+
     function formatAreaDisplay(areas) {
         if (!areas || !areas.length || areas.indexOf('전체') >= 0) return '전체';
         if (areas.length <= 2) return areas.join(', ');
@@ -901,21 +1003,7 @@
         }
     }
 
-    function startBroadcast() {
-        var audio = $('playerAudio');
-        if (!audio || !audio.src || broadcastActive) return;
-
-        stopPreview();
-        pauseAllBroadcastAudio(audio);
-        broadcastActive = true;
-        setBroadcastButtonState(true, true);
-        toast({
-            title: '방송중',
-            message: '방송 송출 중...',
-            type: 'info',
-            duration: 3500
-        });
-
+    function startLocalBroadcastPlayback(audio) {
         try {
             audio.currentTime = 0;
         } catch (ignore) { /* seek */ }
@@ -937,6 +1025,44 @@
                 });
             });
         }
+    }
+
+    function startBroadcast() {
+        var audio = $('playerAudio');
+        if (!audio || !audio.src || broadcastActive) return;
+
+        var form = getFormValues();
+        var targets = getSelectedDongTargets();
+        if (!targets.length) {
+            toast({
+                title: '방송',
+                message: '방송 구역(동)을 선택해 주세요.',
+                type: 'error',
+                duration: 3500
+            });
+            return;
+        }
+
+        stopPreview();
+        pauseAllBroadcastAudio(audio);
+
+        publishBroadcastViaWebSocket(form, targets).then(function (sent) {
+            if (!sent) return;
+
+            broadcastActive = true;
+            setBroadcastButtonState(true, true);
+            var sendingToast = formatBroadcastSendingToast(targets);
+            toast({
+                title: sendingToast.title,
+                message: sendingToast.message,
+                type: 'info',
+                duration: 5500
+            });
+            console.log('[방송 송출]', targets.map(function (t) {
+                return t.dongLabel + '(' + t.dongNo + ')';
+            }).join(', '));
+            startLocalBroadcastPlayback(audio);
+        });
     }
 
     function resetPlayerPlayback() {
