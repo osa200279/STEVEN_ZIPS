@@ -83,39 +83,18 @@
 
             <%-- 카카오 알림 --%>
                 <%-- 카카오 알림 이미지 버튼 --%>
-                <button type="button"
-                        id="kakaoAlimBtn"
-                        class="kakao-alim-img-btn kakao-ready">
-                    <img class="kakao-bell-img"
-                         src="${pageContext.request.contextPath}/img/kakaoAlim.png"
-                         alt="카카오알림"
-                         width="88">
-                    <span class="kakao-badge">
-                        <c:out value="${empty unreadCount ? 0 : unreadCount}"/>
-                    </span>
+<%--                <button type="button"--%>
+<%--                        id="kakaoAlimBtn"--%>
+<%--                        class="kakao-alim-img-btn kakao-ready">--%>
+<%--                    <img class="kakao-bell-img"--%>
+<%--                         src="${pageContext.request.contextPath}/img/kakaoAlim.png"--%>
+<%--                         alt="카카오알림"--%>
+<%--                         width="88">--%>
+<%--                    <span class="kakao-badge">--%>
+<%--                        <c:out value="${empty unreadCount ? 0 : unreadCount}"/>--%>
+<%--                    </span>--%>
 
-                </button>
-<%--            <button type="button"--%>
-<%--                    id="kakaoAlimBtn"--%>
-<%--                    class="kakao-alim-btn">--%>
-
-<%--                <svg class="kakao-bell"--%>
-<%--                     viewBox="0 0 24 24"--%>
-<%--                     fill="none"--%>
-<%--                     stroke="currentColor"--%>
-<%--                     stroke-width="2"--%>
-<%--                     stroke-linecap="round"--%>
-<%--                     stroke-linejoin="round">--%>
-<%--                    <path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/>--%>
-<%--                    <path d="M13.73 21a2 2 0 01-3.46 0"/>--%>
-<%--                </svg>--%>
-
-<%--                <span class="kakao-label">알림</span>--%>
-
-<%--                <span class="kakao-badge">--%>
-<%--                <c:out value="${empty unreadCount ? 0 : unreadCount}"/>--%>
-<%--            </span>--%>
-<%--            </button>--%>
+<%--                </button>--%>
                 <!-- 카카오톡 모달 -->
                 <div id="kakaoModal" class="kakao-modal">
                     <div class="kakao-talk-window">
