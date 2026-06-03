@@ -354,7 +354,11 @@ function submitVhcl(isExtra) {
         })
         .then(() => {
 
-            alert("등록 완료");
+            Swal.fire({
+                icon: "success",
+                title: "등록 완료",
+                confirmButtonText: '확인'
+            });
 
             vhclModal.classList.remove("active");
 
