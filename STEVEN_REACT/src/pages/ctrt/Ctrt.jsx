@@ -6,6 +6,7 @@ import requestApi from '../../util/api/requestApi';
 import { getNameByStatus, getNameOfJm } from '../../util/ctrt/ctrt';
 import CtrtBoard from './CtrtBoard';
 import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 
 const Ctrt = () => {
   const navigate = useNavigate();
@@ -94,13 +95,36 @@ const Ctrt = () => {
     if (!RENT_CTRT_NO) {
       Swal.fire({
         icon: 'info'
-        ,title: '검색 결과'
-        ,text: "계약 정보가 없습니다."
-        ,confirmButtonText: '확인'  
+        , title: '검색 결과'
+        , text: "계약 정보가 없습니다."
+        , confirmButtonText: '확인'
       })
       return;
     }
     navigate(`/adm/ctrt/detail/${RENT_CTRT_NO}`);
+  };
+
+  const handleExcelDownload = () => {
+    // 1. 엑셀에 들어갈 데이터 가공
+    const excelData = list.map(item => ({
+      '계약번호': item.RENT_CTRT_NO,
+      'ID': item.USER_ID,
+      '이름': item.USER_NM,
+      '아파트': item.APT_CMPLEX_NM,
+      '승인일': item.CTRT_APRV_DT,
+      '임대타입': getNameOfJm(item.RENT_TYPE_CD).text,
+      '임대료': item.RENT_TYPE_CD === 'JS' ? item.DPST_AMT : item.MTHLY_RENT_AMT,
+      '상태': getNameByStatus(item.CTRT_STTS_CD, item.MVIN_DT, item.MVOUT_DT).text,
+      '담당자': item.CTRT_MGR_USER_NM
+    }));
+
+    // 2. 워크북 및 워크시트 생성
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "계약관리목록");
+
+    // 3. 파일 다운로드 실행
+    XLSX.writeFile(workbook, "계약관리목록.xlsx");
   };
 
   return (
@@ -112,7 +136,9 @@ const Ctrt = () => {
           <p className="page-subtitle">Contract management</p>
         </div>
         <div className="header-actions">
-          <button className="btn-outline">
+          <button className="btn-outline"
+                  onClick={() => handleExcelDownload()}
+          >
             <span className="material-symbols-outlined">.xls 다운로드</span><Download size={17} />
           </button>
           <button
@@ -144,7 +170,7 @@ const Ctrt = () => {
                 <option value="EXPIRED">계약만료</option>
               </select>
             </div>
-            
+
             <div className="filter-group">
               <label className="filter-label">계약자 (이름/ID)</label>
               <input name="userSearch" value={searchParams.userSearch} onChange={handleInputChange} className="filter-input" placeholder="이름 또는 ID 입력" onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
