@@ -40,7 +40,6 @@ const CtrtDetail = () => {
     // 1. SweetAlert2 컨펌 창 띄우기
     const result = await Swal.fire({
       title: '저장하시겠습니까?',
-      text: '수정된 내용을 저장하시겠습니까?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#226046',
