@@ -5,6 +5,7 @@ import '../../styles/common.css';
 import requestApi from '../../util/api/requestApi';
 import { getNameByStatus, getNameOfJm } from '../../util/ctrt/ctrt';
 import CtrtBoard from './CtrtBoard';
+import Swal from 'sweetalert2';
 
 const Ctrt = () => {
   const navigate = useNavigate();
@@ -91,7 +92,12 @@ const Ctrt = () => {
 
   const openDetail = (RENT_CTRT_NO) => {
     if (!RENT_CTRT_NO) {
-      alert("계약 정보가 없습니다.");
+      Swal.fire({
+        icon: 'info'
+        ,title: '검색 결과'
+        ,text: "계약 정보가 없습니다."
+        ,confirmButtonText: '확인'  
+      })
       return;
     }
     navigate(`/adm/ctrt/detail/${RENT_CTRT_NO}`);

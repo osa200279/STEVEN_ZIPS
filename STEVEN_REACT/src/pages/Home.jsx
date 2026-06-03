@@ -42,7 +42,7 @@ const Home = () => {
           <h1 className="section-title board">계약 현황</h1>
           <CtrtBoard />
           <div style={{display: 'flex', gap:'20px'}}>
-            <div style={{ flex: 1, paddingBottom: '5px', marginTop: '20px', height: '300px' }}>
+            <div style={{ flex: 1, marginTop: '20px', height: '300px' }}>
               <h1 className="section-title board">진행중인 공고별 지원률</h1>
               <RecruitContainer />
             </div>

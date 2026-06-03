@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import '../../styles/common.css';
 import AptSearchSelect
-    from '../../components/ctrt/AptSearchSelect';
+from '../../components/ctrt/AptSearchSelect';
 import { assignResident } from '../../util/ctrt/offlineCtrtApi';
 
 const ResidentAssignPage = () => {

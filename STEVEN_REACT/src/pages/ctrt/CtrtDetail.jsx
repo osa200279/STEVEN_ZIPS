@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../../styles/common.css';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import requestApi from '../../util/api/requestApi';
+import Swal from 'sweetalert2';
 
 const CtrtDetail = () => {
   const { RENT_CTRT_NO } = useParams();
@@ -36,7 +37,20 @@ const CtrtDetail = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!window.confirm("수정된 내용을 저장하시겠습니까?")) return;
+    // 1. SweetAlert2 컨펌 창 띄우기
+    const result = await Swal.fire({
+      title: '저장하시겠습니까?',
+      text: '수정된 내용을 저장하시겠습니까?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#226046',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '저장',
+      cancelButtonText: '취소'
+    });
+
+    // 2. 취소를 눌렀다면 여기서 종료
+    if (!result.isConfirmed) return;
 
     // 1. 전송할 데이터를 위한 깊은 복사 (원본 detail 객체 보호)
     const submitData = { ...detail };
@@ -55,12 +69,26 @@ const CtrtDetail = () => {
       const response = await requestApi.put(`/api/react/adm/ctrt/update/${RENT_CTRT_NO}`, submitData);
 
       if (response.status === 200) {
-        alert("성공적으로 수정되었습니다.");
-        navigate('/adm/ctrt');
+        Swal.fire({
+          icon: 'success'
+          , title: '성공'
+          , text: "성공적으로 수정되었습니다."
+          , confirmButtonText: '확인'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate('/adm/ctrt');
+          }
+        });
       }
     } catch (error) {
       console.error("수정 요청 실패 : ", error);
-      alert("수정 중 오류가 발생했습니다.");
+      Swal.fire({
+        icon: 'error'
+        , title: '실패'
+        , text: "수정 중 오류가 발생했습니다."
+        , confirmButtonColor: '#d33'
+        , confirmButtonText: '확인'
+      })
     }
   };
 
