@@ -8,6 +8,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
     /*
@@ -379,10 +380,6 @@
             location.href = "/adm/home";
         });
 
-        if (logoutBtn) logoutBtn.addEventListener("click", () => {
-            const form = document.getElementById("logoutForm");
-            if (form) form.submit();
-        });
     });
 
     // 팝업창을 중앙에 띄우는 함수

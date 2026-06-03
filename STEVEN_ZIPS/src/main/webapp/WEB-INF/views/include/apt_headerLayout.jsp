@@ -58,6 +58,7 @@
     }
 </style>
 
+
 <header class="site-header">
     <!-- 헤더 부터 푸터까지 사용할 수 있도록 스코프 지정 -->
     <c:set var="apt" value="${aptInfo.aptComplexInfo}" scope="request"/>
@@ -929,7 +930,7 @@
     }
 
 </style>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="module">
 
     const allBtn = document.getElementById('allMenuBtn');

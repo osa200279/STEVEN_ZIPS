@@ -35,12 +35,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoutBtn = document.querySelector("#logoutBtn");
     const logoutForm = document.querySelector("#logoutForm");
 
-    if(logoutBtn && logoutForm){  // 버튼과 폼이 있을 때만 사용가능
+    if(logoutBtn && logoutForm){
         logoutBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            if(confirm("로그아웃 하시겠습니까?")){
-                logoutForm.submit();
-            }
+
+            Swal.fire({
+                title: '로그아웃',
+                text: '로그아웃 하시겠습니까?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: '취소',
+                confirmButtonText: '로그아웃',
+                reverseButtons: false
+            }).then((result) => {
+                if(result.isConfirmed){
+                    logoutForm.submit();
+                }
+            });
         });
     }
 

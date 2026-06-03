@@ -102,7 +102,7 @@
         <span class="bc-current" id="officeBcCurrent">대시보드</span>
 <%--        <span class="bc-current" id="officeBcCurrent">${bcCurrent}</span>--%>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <div class="topbar-actions">
         <span class="topbar-clock" id="currentTime"></span>
 
