@@ -11,6 +11,7 @@
 
     <title>회원가입 | 우리집맵핑</title>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="${pageContext.request.contextPath}/js/common/file-util.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -593,10 +594,12 @@
 <body>
 <div class="join-page">
     <div class="brand-area">
-        <div class="brand">
-            <span class="brand-mark" aria-hidden="true"></span>
-            우리집맵핑
-        </div>
+        <a href="${pageContext.request.contextPath}/" class="brand-link">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true"></span>
+                우리집맵핑
+            </div>
+        </a>
         <span class="brand-guide">안전하고 편리한 공동주택 서비스</span>
     </div>
 
@@ -777,6 +780,32 @@
 <script type="module">
     document.addEventListener('DOMContentLoaded', function () {
         const contextPath = '${pageContext.request.contextPath}';
+        function swalWarn(message) {
+            return Swal.fire({
+                icon: 'warning',
+                title: '입력 확인',
+                text: message,
+                confirmButtonText: '확인'
+            });
+        }
+
+        function swalSuccess(message) {
+            return Swal.fire({
+                icon: 'success',
+                title: '완료',
+                text: message,
+                confirmButtonText: '확인'
+            });
+        }
+
+        function swalError(message) {
+            return Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: message,
+                confirmButtonText: '확인'
+            });
+        }
 
         /**
          * 부모 알림 동의 스위치를 켜면 상세 동의를 노출하고 모두 체크한다.
@@ -807,13 +836,13 @@
             const regex = /^[a-zA-Z0-9]{4,20}$/;
 
             if (!userId) {
-                alert('아이디를 입력해주세요.');
+                await swalWarn('아이디를 입력해주세요.');
                 form.elements['userId'].focus();
                 return;
             }
 
             if (!regex.test(userId)) {
-                alert('아이디는 영문, 숫자 조합 4~20자로 입력해주세요.');
+                await swalWarn('아이디는 영문, 숫자 조합 4~20자로 입력해주세요.');
                 form.elements['userId'].focus();
                 return;
             }
@@ -825,14 +854,24 @@
 
                 if (result.res === 'NOTEXIST') {
                     document.querySelector('#isIdChecked').value = 'Y';
-                    alert(result.message);
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '사용 가능',
+                        text: result.message,
+                        confirmButtonText: '확인'
+                    });
                 } else {
                     document.querySelector('#isIdChecked').value = 'N';
-                    alert(result.message);
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '완료',
+                        text: result.message,
+                        confirmButtonText: '확인'
+                    });
                 }
             } catch (error) {
                 console.error('아이디 중복확인 통신 에러: ', error);
-                alert('아이디 중복확인 중 문제가 발생했습니다.');
+                await swalError('아이디 중복확인 중 문제가 발생했습니다.');
             }
         });
 
@@ -896,7 +935,7 @@
             };
 
             if (document.querySelector('#isIdChecked').value === 'N') {
-                alert('아이디 중복확인을 해주세요.');
+                await swalWarn('아이디 중복확인을 해주세요.');
                 form.elements['userId'].focus();
                 return;
             }
@@ -907,20 +946,20 @@
 
                 const value = input.value.trim();
                 if (!value) {
-                    alert(rule.label + '을(를) 입력해주세요.');
+                    await swalWarn(rule.label + '을(를) 입력해주세요.');
                     input.focus();
                     return;
                 }
 
                 if (!rule.regex.test(value)) {
-                    alert(rule.invalidMsg);
+                    await swalWarn(rule.invalidMsg);
                     input.focus();
                     return;
                 }
             }
 
             if (form.userPw.value !== form.userPwConfirm.value) {
-                alert('비밀번호가 일치하지 않습니다.');
+                await swalWarn('비밀번호가 일치하지 않습니다.');
                 form.userPwConfirm.focus();
                 return;
             }
@@ -949,15 +988,22 @@
                 });
 
                 const result = await resp.json();
+
                 if (resp.ok) {
-                    alert(result.message);
-                    window.close();
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '회원가입 완료',
+                        text: result.message || '회원가입이 완료되었습니다.',
+                        confirmButtonText: '확인'
+                    });
+
+                    location.href = contextPath + '/';
                 } else {
-                    alert('가입 실패: ' + result.message);
+                    await swalError(result.message || '회원가입에 실패했습니다.');
                 }
             } catch (error) {
                 console.error('회원가입 통신 에러: ', error);
-                alert('서버와 통신 중 문제가 발생했습니다.');
+                await swalError('서버와 통신 중 문제가 발생했습니다.');
             }
         });
 
