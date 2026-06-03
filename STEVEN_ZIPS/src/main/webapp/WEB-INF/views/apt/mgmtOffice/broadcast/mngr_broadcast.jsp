@@ -174,8 +174,8 @@
                                                 </button>
                                             </div>
                                             <p class="hint bc-receive-setup-hint">
-                                                <strong>방송 송출</strong> 시 소리는 동별 <strong>방송 수신기</strong>에서만 재생됩니다. (이 PC 송출 화면에서는 들리지 않음)
-                                                동별 출력 PC에서는 수신기를 열어 두세요.
+                                                <strong>
+
                                                 <span class="bc-receive-setup-links">
                                                     <c:forEach var="dong" items="${dongList}" varStatus="st">
                                                         <c:set var="dongBase"
