@@ -1,7 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.bill.service;
 
 import kr.or.ddit.domain.apt.mgmtOffice.bill.mapper.IBillChargeMapper;
-import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillDetailVO;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.ExpenseVO;
 import kr.or.ddit.domain.apt.mgmtOffice.bill.vo.MeterChargeVO;
@@ -10,13 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -125,7 +121,9 @@ public class BillChargeServiceImpl implements IBillChargeService {
         int expenseYr = Integer.parseInt(billYm.substring(0, 4));
         int expenseMm = Integer.parseInt(billYm.substring(4, 6));
 
-        // 1. 이미 해당 월 관리비가 부과되었는지 확인
+        /*
+         * 1. 이미 해당 월 관리비가 부과되었는지 확인
+         */
         int alreadyChargedCount =
                 billChargeMapper.selectBillChargeExistsCount(aptCmplexNo, billYm);
 
@@ -133,7 +131,11 @@ public class BillChargeServiceImpl implements IBillChargeService {
             throw new IllegalStateException("이미 해당 월 관리비가 부과되어 있습니다.");
         }
 
-        // 2. 부과 대상 세대 조회
+        /*
+         * 2. 부과 대상 세대 존재 여부 확인
+         * - 기존 화면 결과와 householdCount 반환을 위해 조회는 유지한다.
+         * - INSERT 자체는 Mapper 일괄 INSERT에서 처리한다.
+         */
         List<BillVO> houseList =
                 billChargeMapper.selectBillTargetHouseList(aptCmplexNo);
 
@@ -141,7 +143,9 @@ public class BillChargeServiceImpl implements IBillChargeService {
             throw new IllegalStateException("부과 대상 세대가 없습니다.");
         }
 
-        // 3. 해당 월 지출 항목 합계 조회
+        /*
+         * 3. 해당 월 지출 항목 존재 여부 확인
+         */
         List<ExpenseVO> expenseSummaryList =
                 billChargeMapper.selectExpenseSummaryForCharge(aptCmplexNo, expenseYr, expenseMm);
 
@@ -149,130 +153,39 @@ public class BillChargeServiceImpl implements IBillChargeService {
             throw new IllegalStateException("해당 월 지출 내역이 없습니다.");
         }
 
-        int householdCount = houseList.size();
+        /*
+         * 4. 일괄 처리용 파라미터 세팅
+         */
+        BillVO batchVO = new BillVO();
+        batchVO.setAptCmplexNo(aptCmplexNo);
+        batchVO.setBillYm(billYm);
+        batchVO.setDueDt(Date.valueOf(dueDt));
 
         /*
-         * 4. 해당 월 검침요금 계산 목록 조회
-         * - MeterChargeService에서 단가와 chargeAmt 계산이 끝난 상태로 가져온다.
-         * - hoNo 기준으로 묶어서 세대별 BILL 생성 시 합산한다.
+         * 5. BILL / BILL_DETAIL 일괄 INSERT
+         * - 기존 Java 반복 INSERT 제거
+         * - DB에서 INSERT SELECT로 한 번에 처리
          */
-        List<MeterChargeVO> meterChargeList =
-                meterChargeService.selectCalculatedMeterChargeList(aptCmplexNo, billYm);
+        int billInsertCount = billChargeMapper.insertBillBatch(batchVO);
 
-        Map<String, List<MeterChargeVO>> meterChargeMap = new HashMap<>();
+        int expenseDetailCount = billChargeMapper.insertExpenseBillDetailBatch(batchVO);
 
-        if (meterChargeList != null && !meterChargeList.isEmpty()) {
-            meterChargeMap = meterChargeList.stream()
-                    .filter(meter -> meter.getHoNo() != null)
-                    .collect(Collectors.groupingBy(MeterChargeVO::getHoNo));
-        }
+        int meterDetailCount = billChargeMapper.insertMeterBillDetailBatch(batchVO);
 
-        int billInsertCount = 0;
-        int detailInsertCount = 0;
-        long totalBillAmount = 0L;
-        long totalExpenseShareAmount = 0L;
-        long totalMeterChargeAmount = 0L;
+        int billTotalUpdateCount = billChargeMapper.updateBillTotalAmtBatch(batchVO);
 
-        // 5. 세대별 BILL 생성
-        for (BillVO house : houseList) {
-
-            long billTotAmt = 0L;
-
-            /*
-             * BILL_DETAIL은 BILL_NO가 필요하다.
-             * 하지만 BILL_TOT_AMT 계산을 먼저 해야 하므로
-             * 상세 항목들을 임시 리스트에 담아두고,
-             * BILL insert 후 billNo를 넣어서 상세 insert 한다.
-             */
-            List<BillDetailVO> detailList = new ArrayList<>();
-
-            // 5-1. 공용 지출 항목별 세대 부담액 계산
-            for (ExpenseVO expense : expenseSummaryList) {
-                long expenseAmt = expense.getExpenseAmt();
-                long itemAmt = expenseAmt / householdCount;
-
-                billTotAmt += itemAmt;
-                totalExpenseShareAmount += itemAmt;
-
-                BillDetailVO detailVO = new BillDetailVO();
-                detailVO.setBillItemCd(expense.getExpenseCd());
-                detailVO.setBillItemAmt(itemAmt);
-                detailVO.setAtchFileId(null);
-
-                detailList.add(detailVO);
-            }
-
-            // 5-2. 세대별 검침요금 ELC/WTR/GAS 추가
-            List<MeterChargeVO> houseMeterChargeList = meterChargeMap.get(house.getHoNo());
-
-            if (houseMeterChargeList != null && !houseMeterChargeList.isEmpty()) {
-                for (MeterChargeVO meter : houseMeterChargeList) {
-                    long meterAmt = meter.getChargeAmt() == null ? 0L : meter.getChargeAmt();
-
-                    billTotAmt += meterAmt;
-                    totalMeterChargeAmount += meterAmt;
-
-                    BillDetailVO meterDetailVO = new BillDetailVO();
-                    meterDetailVO.setBillItemCd(meter.getBillItemCd());   // ELC, WTR, GAS
-                    meterDetailVO.setBillItemAmt(meterAmt);
-                    meterDetailVO.setAtchFileId(null);
-
-                    detailList.add(meterDetailVO);
-                }
-            }
-
-            // 5-3. BILL insert
-            BillVO billVO = new BillVO();
-            billVO.setHoNo(house.getHoNo());
-            billVO.setBillYm(billYm);
-            billVO.setDueDt(Date.valueOf(dueDt));
-
-            // 관리비 부과 직후 상태: READY = 고지완료/고지됨
-            billVO.setPymtSttsCd("READY");
-
-            // 납부금액은 아직 없음
-            billVO.setPymtAmt(null);
-            billVO.setPymtDt(null);
-
-            // 기본 연체요율 3%
-            billVO.setLateFeeRt(new BigDecimal("0.0300"));
-            billVO.setLateFeeAmt(0L);
-
-            // 공용관리비 + 세대별 검침요금
-            billVO.setBillTotAmt(billTotAmt);
-
-            billChargeMapper.insertBill(billVO);
-            billInsertCount++;
-
-            totalBillAmount += billTotAmt;
-
-            // selectKey로 생성된 BILL_NO
-            String billNo = billVO.getBillNo();
-
-            if (billNo == null || billNo.isBlank()) {
-                throw new IllegalStateException("관리비 고지서 번호 생성에 실패했습니다.");
-            }
-
-            // 5-4. BILL_DETAIL insert
-            for (BillDetailVO detailVO : detailList) {
-                detailVO.setBillNo(billNo);
-
-                billChargeMapper.insertBillDetail(detailVO);
-                detailInsertCount++;
-            }
-        }
-
+        /*
+         * 6. 결과 집계
+         */
         Map<String, Object> result = new HashMap<>();
         result.put("billYm", billYm);
-        result.put("householdCount", householdCount);
+        result.put("householdCount", houseList.size());
         result.put("billInsertCount", billInsertCount);
-        result.put("detailInsertCount", detailInsertCount);
-
-        // 결과 확인용 추가
-        result.put("totalBillAmount", totalBillAmount);
-        result.put("totalExpenseShareAmount", totalExpenseShareAmount);
-        result.put("totalMeterChargeAmount", totalMeterChargeAmount);
-        result.put("meterChargeCount", meterChargeList == null ? 0 : meterChargeList.size());
+        result.put("detailInsertCount", expenseDetailCount + meterDetailCount);
+        result.put("expenseDetailCount", expenseDetailCount);
+        result.put("meterDetailCount", meterDetailCount);
+        result.put("billTotalUpdateCount", billTotalUpdateCount);
+        result.put("message", "관리비 부과가 완료되었습니다.");
 
         return result;
     }

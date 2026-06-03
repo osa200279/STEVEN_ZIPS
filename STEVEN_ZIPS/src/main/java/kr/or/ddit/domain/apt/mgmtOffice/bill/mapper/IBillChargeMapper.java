@@ -33,4 +33,12 @@ public interface IBillChargeMapper {
 
     // 관리비상세 등록
     void insertBillDetail(BillDetailVO detailVO);
+
+    int insertBillBatch(BillVO batchVO);
+
+    int insertExpenseBillDetailBatch(BillVO batchVO);
+
+    int insertMeterBillDetailBatch(BillVO batchVO);
+
+    int updateBillTotalAmtBatch(BillVO batchVO);
 }

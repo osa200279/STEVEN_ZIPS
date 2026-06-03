@@ -154,4 +154,174 @@
         )
     </insert>
 
+    <!-- BILL 일괄 생성 -->
+    <insert id="insertBillBatch"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO">
+        INSERT INTO BILL (
+            BILL_NO,
+            HO_NO,
+            BILL_YM,
+            BILL_PBLANC_DT,
+            BILL_TOT_AMT,
+            DUE_DT,
+            PYMT_STTS_CD,
+            PYMT_DT,
+            PYMT_AMT,
+            LATE_FEE_RT,
+            LATE_FEE_AMT
+        )
+        SELECT
+            'BL' || TO_CHAR(SYSDATE, 'YYMMDD')
+                || LPAD(SEQ_BILL.NEXTVAL, 7, '0') AS BILL_NO,
+            H.HO_NO,
+            #{billYm} AS BILL_YM,
+            SYSDATE AS BILL_PBLANC_DT,
+            0 AS BILL_TOT_AMT,
+            #{dueDt} AS DUE_DT,
+            'READY' AS PYMT_STTS_CD,
+            NULL AS PYMT_DT,
+            NULL AS PYMT_AMT,
+            0.0300 AS LATE_FEE_RT,
+            0 AS LATE_FEE_AMT
+        FROM APT_DETAIL H
+                 JOIN APT_UNIT U
+                      ON H.DONG_NO = U.DONG_NO
+        WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND H.HO_STTS_CD IN ('LIVE', 'EMPTY')
+          AND NOT EXISTS (
+            SELECT 1
+            FROM BILL B
+            WHERE B.HO_NO = H.HO_NO
+              AND B.BILL_YM = #{billYm}
+        )
+    </insert>
+
+    <!-- 공통 지출 항목 BILL_DETAIL 일괄 생성 -->
+    <insert id="insertExpenseBillDetailBatch"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO">
+        INSERT INTO BILL_DETAIL (
+            BILL_DETAIL_NO,
+            BILL_NO,
+            BILL_ITEM_CD,
+            BILL_ITEM_AMT,
+            ATCH_FILE_ID
+        )
+        WITH TARGET_CNT AS (
+            SELECT COUNT(*) AS CNT
+            FROM APT_DETAIL H
+                     JOIN APT_UNIT U
+                          ON H.DONG_NO = U.DONG_NO
+            WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+              AND H.HO_STTS_CD IN ('LIVE', 'EMPTY')
+        ),
+             EXPENSE_ITEM AS (
+                 SELECT
+                     E.EXPENSE_CD AS BILL_ITEM_CD,
+                     SUM(E.EXPENSE_AMT) AS ITEM_TOTAL_AMT
+                 FROM EXPENSE E
+                 WHERE E.APT_CMPLEX_NO = #{aptCmplexNo}
+                   AND E.EXPENSE_YR || LPAD(E.EXPENSE_MM, 2, '0') = #{billYm}
+                 GROUP BY E.EXPENSE_CD
+             )
+        SELECT
+            'BD' || TO_CHAR(SYSDATE, 'YYMMDD')
+                || LPAD(SEQ_BILL_DETAIL.NEXTVAL, 7, '0') AS BILL_DETAIL_NO,
+            B.BILL_NO,
+            E.BILL_ITEM_CD,
+            TRUNC(E.ITEM_TOTAL_AMT / T.CNT) AS BILL_ITEM_AMT,
+            NULL AS ATCH_FILE_ID
+        FROM BILL B
+                 JOIN APT_DETAIL H
+                      ON B.HO_NO = H.HO_NO
+                 JOIN APT_UNIT U
+                      ON H.DONG_NO = U.DONG_NO
+                 CROSS JOIN TARGET_CNT T
+                 JOIN EXPENSE_ITEM E
+                      ON 1 = 1
+        WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND B.BILL_YM = #{billYm}
+          AND NOT EXISTS (
+            SELECT 1
+            FROM BILL_DETAIL BD
+            WHERE BD.BILL_NO = B.BILL_NO
+              AND BD.BILL_ITEM_CD = E.BILL_ITEM_CD
+        )
+    </insert>
+
+    <!-- 세대 검침요금 BILL_DETAIL 일괄 생성 -->
+    <insert id="insertMeterBillDetailBatch"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO">
+        INSERT INTO BILL_DETAIL (
+        BILL_DETAIL_NO,
+        BILL_NO,
+        BILL_ITEM_CD,
+        BILL_ITEM_AMT,
+        ATCH_FILE_ID
+        )
+        WITH METER_CHARGE AS (
+        SELECT
+        M.HO_NO,
+        CASE F.FACILITY_TY_CD
+        WHEN 'ELC' THEN 'ELC'
+        WHEN 'WTR' THEN 'WTR'
+        WHEN 'GAS' THEN 'GAS'
+        END AS BILL_ITEM_CD,
+        CASE F.FACILITY_TY_CD
+        WHEN 'ELC' THEN (M.CURR_VAL - M.PRE_VAL) * 130
+        WHEN 'WTR' THEN (M.CURR_VAL - M.PRE_VAL) * 900
+        WHEN 'GAS' THEN (M.CURR_VAL - M.PRE_VAL) * 1100
+        ELSE 0
+        END AS CHARGE_AMT
+        FROM METER_HSTRY M
+        JOIN FACILITY F
+        ON M.FACILITY_NO = F.FACILITY_NO
+        JOIN APT_DETAIL H
+        ON M.HO_NO = H.HO_NO
+        JOIN APT_UNIT U
+        ON H.DONG_NO = U.DONG_NO
+        WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND M.METER_DT >= TO_DATE(#{billYm} || '01', 'YYYYMMDD')
+        AND M.METER_DT <![CDATA[<]]> ADD_MONTHS(TO_DATE(#{billYm} || '01', 'YYYYMMDD'), 1)
+        AND F.FACILITY_TY_CD IN ('ELC', 'WTR', 'GAS')
+        AND M.CURR_VAL IS NOT NULL
+        AND M.PRE_VAL IS NOT NULL
+        )
+        SELECT
+        'BD' || TO_CHAR(SYSDATE, 'YYMMDD')
+        || LPAD(SEQ_BILL_DETAIL.NEXTVAL, 7, '0') AS BILL_DETAIL_NO,
+        B.BILL_NO,
+        MC.BILL_ITEM_CD,
+        MC.CHARGE_AMT AS BILL_ITEM_AMT,
+        NULL AS ATCH_FILE_ID
+        FROM BILL B
+        JOIN METER_CHARGE MC
+        ON B.HO_NO = MC.HO_NO
+        WHERE B.BILL_YM = #{billYm}
+        AND NOT EXISTS (
+        SELECT 1
+        FROM BILL_DETAIL BD
+        WHERE BD.BILL_NO = B.BILL_NO
+        AND BD.BILL_ITEM_CD = MC.BILL_ITEM_CD
+        )
+    </insert>
+
+    <!-- BILL_DETAIL 합계 기준 BILL_TOT_AMT 일괄 갱신 -->
+    <update id="updateBillTotalAmtBatch"
+            parameterType="kr.or.ddit.domain.apt.mgmtOffice.bill.vo.BillVO">
+        UPDATE BILL B
+        SET B.BILL_TOT_AMT = (
+            SELECT NVL(SUM(BD.BILL_ITEM_AMT), 0)
+            FROM BILL_DETAIL BD
+            WHERE BD.BILL_NO = B.BILL_NO
+        )
+        WHERE B.BILL_YM = #{billYm}
+          AND B.HO_NO IN (
+            SELECT H.HO_NO
+            FROM APT_DETAIL H
+                     JOIN APT_UNIT U
+                          ON H.DONG_NO = U.DONG_NO
+            WHERE U.APT_CMPLEX_NO = #{aptCmplexNo}
+        )
+    </update>
+
 </mapper>

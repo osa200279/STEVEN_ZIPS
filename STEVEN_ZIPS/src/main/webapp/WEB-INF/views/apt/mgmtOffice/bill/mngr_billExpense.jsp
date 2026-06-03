@@ -66,8 +66,8 @@
       text-align: center;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body>
 <div class="app-wrapper">
 
@@ -231,13 +231,6 @@
 </div>
 
 <script>
-  // 기존 script 그대로 유지
-</script>
-
-</body>
-</html>
-
-<script>
   const contextPath = '${pageContext.request.contextPath}';
   const mgmtOfcNo = '${mgmtOfcNo}';
 
@@ -283,6 +276,28 @@
     return headers;
   }
 
+  function showSwal(icon, title, text) {
+    return Swal.fire({
+      icon: icon,
+      title: title,
+      text: text,
+      confirmButtonText: '확인',
+      confirmButtonColor: '#2e5c38'
+    });
+  }
+
+  function showSuccess(title, text) {
+    return showSwal('success', title, text);
+  }
+
+  function showWarning(title, text) {
+    return showSwal('warning', title, text);
+  }
+
+  function showError(title, text) {
+    return showSwal('error', title, text);
+  }
+
   async function loadExpenseList() {
     const expenseYr = document.getElementById('searchYear').value;
     const expenseMm = document.getElementById('searchMonth').value;
@@ -300,7 +315,7 @@
     const result = await response.json();
 
     if (!result.success) {
-      alert(result.message || '조회 중 오류가 발생했습니다.');
+      await showError('조회 실패', result.message || '조회 중 오류가 발생했습니다.');
       return;
     }
 
@@ -427,7 +442,6 @@
   }
 
   async function saveExpense() {
-    //console.log("저장 버튼 클릭됨");
     const expenseNo = document.getElementById('expenseNo').value;
 
     const payload = {
@@ -439,31 +453,27 @@
     };
 
     if (!payload.expenseYr) {
-      alert('연도를 입력해 주세요.');
+      await showWarning('입력 확인', '연도를 입력해 주세요.');
       return;
     }
 
     if (!payload.expenseMm) {
-      alert('월을 선택해 주세요.');
+      await showWarning('입력 확인', '월을 선택해 주세요.');
       return;
     }
 
     if (!payload.expenseCd) {
-      alert('지출항목을 선택해 주세요.');
+      await showWarning('입력 확인', '지출항목을 선택해 주세요.');
       return;
     }
 
     if (!payload.expenseAmt || payload.expenseAmt < 0) {
-      alert('지출금액을 입력해 주세요.');
+      await showWarning('입력 확인', '지출금액을 입력해 주세요.');
       return;
     }
 
     const isUpdate = expenseNo !== '';
 
-    /*
-     * 현재 조회 중인 연도/월과 입력 연도/월이 같은 경우,
-     * 이미 등록된 동일 항목은 신규 저장 또는 다른 항목으로의 수정이 불가능합니다.
-     */
     const duplicateExpense = currentExpenseList.some(function (item) {
       if (isUpdate && item.expenseNo === expenseNo) {
         return false;
@@ -475,7 +485,7 @@
     });
 
     if (duplicateExpense) {
-      alert('해당 연월에 이미 등록된 지출항목입니다.');
+      await showWarning('중복 등록 불가', '해당 연월에 이미 등록된 지출항목입니다.');
       return;
     }
 
@@ -485,19 +495,38 @@
 
     const method = isUpdate ? 'PUT' : 'POST';
 
-    const response = await fetch(url, {
-      method: method,
-      headers: getHeaders(),
-      body: JSON.stringify(payload)
-    });
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: getHeaders(),
+        body: JSON.stringify(payload)
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    alert(result.message || '처리되었습니다.');
+      if (result.success) {
+        await showSuccess(
+                isUpdate ? '지출 수정 완료' : '지출 등록 완료',
+                result.message || (isUpdate ? '지출이 수정되었습니다.' : '지출이 등록되었습니다.')
+        );
 
-    if (result.success) {
-      resetForm();
-      loadExpenseList();
+        resetForm();
+        await loadExpenseList();
+
+      } else {
+        await showWarning(
+                isUpdate ? '지출 수정 실패' : '지출 등록 실패',
+                result.message || '처리 중 오류가 발생했습니다.'
+        );
+      }
+
+    } catch (error) {
+      console.error(error);
+
+      await showError(
+              '처리 오류',
+              '지출 저장 중 오류가 발생했습니다.'
+      );
     }
   }
 
@@ -515,21 +544,41 @@
   }
 
   async function deleteExpense(expenseNo) {
-    if (!confirm('해당 지출 내역을 삭제하시겠습니까?')) {
+    const confirmResult = await Swal.fire({
+      icon: 'question',
+      title: '지출 내역을 삭제하시겠습니까?',
+      text: '삭제된 지출 내역은 복구할 수 없습니다.',
+      showCancelButton: true,
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#b91c1c',
+      cancelButtonColor: '#8b9490',
+      reverseButtons: true
+    });
+
+    if (!confirmResult.isConfirmed) {
       return;
     }
 
-    const response = await fetch(contextPath + '/manager/expense/' + mgmtOfcNo + '/' + expenseNo, {
-      method: 'DELETE',
-      headers: getHeaders()
-    });
+    try {
+      const response = await fetch(contextPath + '/manager/expense/' + mgmtOfcNo + '/' + expenseNo, {
+        method: 'DELETE',
+        headers: getHeaders()
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    alert(result.message || '처리되었습니다.');
+      if (result.success) {
+        await showSuccess('삭제 완료', result.message || '지출 내역이 삭제되었습니다.');
+        await loadExpenseList();
+      } else {
+        await showWarning('삭제 실패', result.message || '지출 삭제에 실패했습니다.');
+      }
 
-    if (result.success) {
-      loadExpenseList();
+    } catch (error) {
+      console.error(error);
+
+      await showError('삭제 오류', '지출 삭제 중 오류가 발생했습니다.');
     }
   }
 
