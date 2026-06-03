@@ -64,7 +64,12 @@ public class ManagerBroadcastController {
 
             // 5. 예외 처리
         } catch (Throwable t) {
-            log.error("TTS 변환 실패 mgmtOfcNo={}, voice={}, textLen={}", mgmtOfcNo, voiceName, text != null ? text.length() : 0, t);
+            String cause = t.getMessage();
+            if (t.getCause() != null && t.getCause().getMessage() != null) {
+                cause = t.getCause().getMessage();
+            }
+            log.error("TTS 변환 실패 mgmtOfcNo={}, voice={}, textLen={}, cause={}",
+                    mgmtOfcNo, voiceName, text != null ? text.length() : 0, cause, t);
             return ResponseEntity.internalServerError().build();    // 500 에러
         }
     }

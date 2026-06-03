@@ -1,59 +1,105 @@
 package kr.or.ddit.domain.apt.mgmtOffice.broadcast.service;
 
-import com.google.api.gax.core.FixedCredentialsProvider;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.texttospeech.v1.AudioConfig;
-import com.google.cloud.texttospeech.v1.AudioEncoding;
-import com.google.cloud.texttospeech.v1.SynthesisInput;
-import com.google.cloud.texttospeech.v1.SynthesizeSpeechRequest;
-import com.google.cloud.texttospeech.v1.SynthesizeSpeechResponse;
-import com.google.cloud.texttospeech.v1.TextToSpeechClient;
-import com.google.cloud.texttospeech.v1.TextToSpeechSettings;
-import com.google.cloud.texttospeech.v1.VoiceSelectionParams;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+/**
+ * Google Cloud TTS REST 호출 (tts-key.json + google-auth 1.19).
+ * google-cloud-texttospeech 클라이언트(gax)는 Drive용 auth 버전과 충돌하여 사용하지 않음.
+ */
 @Service
+@Slf4j
 public class ManagerBroadcastServiceImpl implements IManagerBroadcastService {
 
     private static final String TTS_KEY_CLASSPATH = "tts-key.json";
+    private static final String TTS_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
+    private static final String TTS_REST_URL = "https://texttospeech.googleapis.com/v1/text:synthesize";
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public byte[] convertTextToSpeech(String text, String languageCode, String voiceName) throws Exception {
-        GoogleCredentials credentials;
-        try (InputStream in = new ClassPathResource(TTS_KEY_CLASSPATH).getInputStream()) {
-            credentials = GoogleCredentials.fromStream(in);
-        }
+        String accessToken = obtainAccessToken();
 
-        TextToSpeechSettings settings = TextToSpeechSettings.newBuilder()
-                .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
+        Map<String, Object> input = new LinkedHashMap<>();
+        input.put("text", text);
+
+        Map<String, Object> voice = new LinkedHashMap<>();
+        voice.put("languageCode", languageCode);
+        voice.put("name", voiceName);
+
+        Map<String, Object> audioConfig = new LinkedHashMap<>();
+        audioConfig.put("audioEncoding", "MP3");
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("input", input);
+        body.put("voice", voice);
+        body.put("audioConfig", audioConfig);
+
+        String json = objectMapper.writeValueAsString(body);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(TTS_REST_URL))
+                .header("Authorization", "Bearer " + accessToken)
+                .header("Content-Type", "application/json; charset=UTF-8")
+                .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
                 .build();
 
-        try (TextToSpeechClient client = TextToSpeechClient.create(settings)) {
-            SynthesisInput input = SynthesisInput.newBuilder().setText(text).build();
-            VoiceSelectionParams voice = VoiceSelectionParams.newBuilder()
-                    .setLanguageCode(languageCode)
-                    .setName(voiceName)
-                    .build();
-            AudioConfig audioConfig = AudioConfig.newBuilder()
-                    .setAudioEncoding(AudioEncoding.MP3)
-                    .build();
+        HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
 
-            SynthesizeSpeechResponse response = client.synthesizeSpeech(
-                    SynthesizeSpeechRequest.newBuilder()
-                            .setInput(input)
-                            .setVoice(voice)
-                            .setAudioConfig(audioConfig)
-                            .build());
-
-            byte[] audio = response.getAudioContent().toByteArray();
-            if (!isLikelyMp3(audio)) {
-                throw new IllegalStateException("TTS 응답이 유효한 MP3가 아닙니다.");
+        if (response.statusCode() != 200) {
+            String errBody = response.body();
+            if (errBody != null && errBody.length() > 400) {
+                errBody = errBody.substring(0, 400) + "...";
             }
-            return audio;
+            log.warn("Google TTS REST 실패 status={} body={}", response.statusCode(), errBody);
+            throw new IllegalStateException("Google TTS REST 오류: HTTP " + response.statusCode());
         }
+
+        JsonNode root = objectMapper.readTree(response.body());
+        JsonNode audioNode = root.get("audioContent");
+        if (audioNode == null || audioNode.isNull() || !audioNode.isTextual()) {
+            throw new IllegalStateException("Google TTS 응답에 audioContent 없음");
+        }
+
+        byte[] audio = Base64.getDecoder().decode(audioNode.asText());
+        if (!isLikelyMp3(audio)) {
+            throw new IllegalStateException("TTS 응답이 유효한 MP3가 아닙니다.");
+        }
+        return audio;
+    }
+
+    private String obtainAccessToken() throws Exception {
+        ClassPathResource keyResource = new ClassPathResource(TTS_KEY_CLASSPATH);
+        if (!keyResource.exists()) {
+            throw new IllegalStateException("classpath에 tts-key.json이 없습니다.");
+        }
+        GoogleCredentials credentials;
+        try (InputStream in = keyResource.getInputStream()) {
+            credentials = GoogleCredentials.fromStream(in)
+                    .createScoped(Collections.singletonList(TTS_SCOPE));
+        }
+        credentials.refreshIfExpired();
+        if (credentials.getAccessToken() == null) {
+            throw new IllegalStateException("Google TTS access token 발급 실패");
+        }
+        return credentials.getAccessToken().getTokenValue();
     }
 
     /*
@@ -67,34 +113,7 @@ public class ManagerBroadcastServiceImpl implements IManagerBroadcastService {
     }
 
     public byte[] convertTextToSpeechDocker(String text, String languageCode, String voiceName) throws Exception {
-        String query = "text=" + URLEncoder.encode(text, StandardCharsets.UTF_8)
-                + "&languageCode=" + URLEncoder.encode(languageCode, StandardCharsets.UTF_8)
-                + "&voiceName=" + URLEncoder.encode(voiceName, StandardCharsets.UTF_8);
-        URI uri = URI.create(ttsServiceBase + "/tts/synthesize?" + query);
-
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
-        HttpResponse<byte[]> response = HttpClient.newHttpClient()
-                .send(request, HttpResponse.BodyHandlers.ofByteArray());
-
-        if (response.statusCode() != 200) {
-            throw new IllegalStateException("TTS 서비스 오류: HTTP " + response.statusCode());
-        }
-        byte[] audio = response.body();
-        if (!isLikelyMp3(audio)) {
-            throw new IllegalStateException("TTS 서비스 응답이 유효한 MP3가 아닙니다.");
-        }
-        return audio;
-    }
-
-    private static String trimTrailingSlash(String base) {
-        if (base == null || base.isBlank()) {
-            return "http://localhost:8060";
-        }
-        String trimmed = base.trim();
-        while (trimmed.endsWith("/")) {
-            trimmed = trimmed.substring(0, trimmed.length() - 1);
-        }
-        return trimmed;
+        ...
     }
      */
 
