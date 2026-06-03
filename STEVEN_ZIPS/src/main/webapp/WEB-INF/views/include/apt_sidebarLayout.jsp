@@ -149,7 +149,11 @@
 
   <nav class="flex flex-col gap-1 px-4">
 
-    <details class="side-nav-item group" ${fn:contains(pageContext.request.requestURI, '/resident/manage') ? 'open="open"' : ''}>
+    <details class="side-nav-item group"
+    ${fn:contains(pageContext.request.requestURI, '/resident/manage')
+            or fn:contains(pageContext.request.requestURI, '/apt/main')
+            or fn:contains(pageContext.request.requestURI, '/resident/calendar')
+            ? 'open="open"' : ''}>
       <summary class="flex items-center justify-between px-4 py-3 rounded-full cursor-pointer hover:bg-primary/5 transition-colors text-on-surface">
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-primary">home</span>
@@ -159,7 +163,7 @@
       </summary>
       <div class="block w-full flex flex-col gap-1 mt-1 ml-9 pr-4 mb-2">
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/intro') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/apt/main/aptInfo/${apt.aptCmplexNo}">아파트정보</a>
-        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/calendar') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/calendar/${apt.aptCmplexNo}">아파트일정</a>
+        <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/calendar') ? 'text-primary font-bold bg-primary/5' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/calendar/${apt.aptCmplexNo}">아파트일정</a>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/intro') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/apt/main/mgmtInfo/${apt.aptCmplexNo}">관리사무소정보</a>
         <%--<a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/operation') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/manage/operation">운영정보공개</a>--%>
         <a class="px-4 py-2 text-sm rounded-full transition-all hover:text-primary hover:bg-primary/5 ${fn:contains(pageContext.request.requestURI, '/resident/manage/facility') ? 'text-primary font-bold' : 'text-on-surface-variant/80'}" href="${pageContext.request.contextPath}/resident/manage/facility/${apt.aptCmplexNo}">시설관리이력</a>

@@ -125,6 +125,13 @@ public class ResidentMainController {
          * → aptCmplexNo = A10023118
          */
 
+        AptMainPageDTO.ResponseDto aptCommonDTO =
+                aptComplexService.selectAptCommonDTO(aptCmplexNo);
+
+        // aptInfo란?
+        // header.jsp, sidebar.jsp에서 로고명/단지번호를 출력할 때 쓰는 공통 아파트 정보입니다.
+        model.addAttribute("aptInfo", aptCommonDTO);
+
         /*
          * model.addAttribute란?
          * → Controller 데이터를 JSP로 전달하는 방식.
