@@ -155,6 +155,7 @@
                   <th>동/호</th>
                   <th>입주민명</th>
                   <th>예약시간</th>
+                  <th>예약목적</th>
                   <th>상태</th>
                   <th>관리</th>
                 </tr>
@@ -169,6 +170,8 @@
                     <td>${row.dongNm} / ${row.ho}</td>
                     <td>${row.userNm}</td>
                     <td>${row.rsvtBgngDttm} ~ ${row.rsvtEndDttm}</td>
+                        <%-- 예약목적 --%>
+                    <td><c:out value="${row.purposeCn}" default="-"/></td>
                     <td><span class="pf-badge pf-badge-wait">${row.rsvtSttsNm}</span></td>
                     <td class="pf-actions">
                       <button type="button" class="pf-btn pf-btn-primary" onclick="approveRsvt('${row.rsvtNo}')">승인</button>
@@ -179,7 +182,7 @@
 
                 <c:if test="${empty pagingVO.dataList}">
                   <tr>
-                    <td colspan="8">조회된 데이터가 없습니다.</td>
+                    <td colspan="9">조회된 데이터가 없습니다.</td>
                   </tr>
                 </c:if>
                 </tbody>
