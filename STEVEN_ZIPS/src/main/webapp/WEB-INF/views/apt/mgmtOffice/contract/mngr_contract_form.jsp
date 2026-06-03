@@ -2116,6 +2116,99 @@
             alert(message);
         }
 
+        /* ===== DEMO ONLY START =====
+           Contract demo autofill. Remove this whole block after the presentation.
+           Shortcut: Ctrl + Alt + C
+        */
+        document.addEventListener('keydown', function (event) {
+            if (!(event.ctrlKey && event.altKey && String(event.key || '').toLowerCase() === 'c')) {
+                return;
+            }
+
+            if (!document.getElementById('contractFormPage')) {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (isContractPartnerRegisterModalOpen()) {
+                fillContractPartnerDemoData();
+                return;
+            }
+
+            fillContractDemoData();
+        });
+
+        function isContractPartnerRegisterModalOpen() {
+            var modal = document.getElementById('contractPartnerRegisterModal');
+
+            if (!modal) {
+                return false;
+            }
+
+            return modal.classList.contains('open')
+                || modal.classList.contains('is-open')
+                || window.getComputedStyle(modal).display !== 'none';
+        }
+
+        function setDemoValue(selector, value) {
+            var element = document.querySelector(selector);
+
+            if (!element) {
+                return;
+            }
+
+            element.value = value;
+            element.dispatchEvent(new Event('input', { bubbles: true }));
+            element.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        function setDemoSelect(selector, value, text) {
+            var select = document.querySelector(selector);
+
+            if (!select) {
+                return;
+            }
+
+            var matchedValue = value;
+
+            if (text) {
+                Array.prototype.some.call(select.options, function (option) {
+                    if (String(option.textContent || '').indexOf(text) !== -1) {
+                        matchedValue = option.value;
+                        return true;
+                    }
+                    return false;
+                });
+            }
+
+            setDemoValue(selector, matchedValue);
+        }
+
+        function fillContractDemoData() {
+            setDemoValue('#contNm', '테니스장 계약');
+            setDemoSelect('#contTyCd', 'INSTALL', '시설공사');
+            setDemoValue('#contTargetCd', 'FACILITY');
+            setDemoValue('#bidTyCd', 'PRT');
+            setDemoValue('#contSttsCd', 'ACTIVE');
+            setDemoValue('#contAmt', '8000000');
+            setDemoValue('#contDt', '2026-06-01');
+            setDemoValue('#contBgngDt', '2026-06-10');
+            setDemoValue('#contEndDt', '2026-11-10');
+            setDemoValue('#pymtDt', '2026-06-10');
+            setDemoValue('#contCn', '단지 내 테니스장 시설 개선을 위한 바닥 보수, 라인 도색, 네트 및 부대설비 정비 공사를 수행한다.');
+        }
+
+        function fillContractPartnerDemoData() {
+            setDemoValue('#newPartnerNm', '도수지테니스시설공사');
+            setDemoValue('#newBizTyNm', '체육시설 공사 및 유지보수');
+            setDemoValue('#newBizrno', '214-87-62031');
+            setDemoValue('#newPicNm', '도수지');
+            setDemoValue('#newPicTelno', '010-7426-0610');
+            setDemoValue('#newPicEmail', 'dosuji@tennisworks.co.kr');
+        }
+        /* ===== DEMO ONLY END ===== */
+
         function escapeHtml(value) {
             return String(value == null ? '' : value)
                 .replace(/&/g, '&amp;')

@@ -1199,6 +1199,45 @@
         /* =====================================================
            이벤트 바인딩
         ===================================================== */
+        /* ===== DEMO ONLY START =====
+           Public facility demo autofill. Remove this whole block after the presentation.
+           Shortcut: Ctrl + Alt + C
+        */
+        document.addEventListener("keydown", function (event) {
+            if (!(event.ctrlKey && event.altKey && String(event.key || "").toLowerCase() === "c")) {
+                return;
+            }
+
+            if (!document.getElementById("publicFacilityPage")) {
+                return;
+            }
+
+            event.preventDefault();
+            fillPublicFacilityDemoData();
+        });
+
+        function setDemoValue(selector, value) {
+            var element = document.querySelector(selector);
+
+            if (!element) {
+                return;
+            }
+
+            element.value = value;
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+            element.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+
+        function fillPublicFacilityDemoData() {
+            setDemoValue("#regCmnNm", "미륭테니스장");
+            setDemoValue("#regAmt", "1000");
+            setDemoValue("#oprStartTime", "09:30");
+            setDemoValue("#oprEndTime", "17:00");
+            setDemoValue("#regCn", "입주민 전용 테니스장입니다. 예약 시간 10분 전부터 입장 가능하며, 이용 후 코트 정리와 개인 장비 회수를 부탁드립니다.");
+            updateOperationPreview();
+        }
+        /* ===== DEMO ONLY END ===== */
+
         document.addEventListener("DOMContentLoaded", function () {
 
             // 시설자산 등록 화면 이동

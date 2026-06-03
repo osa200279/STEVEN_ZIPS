@@ -118,7 +118,7 @@
         #meterPage .tbl .td-left { text-align:left; }
         #meterPage .tbl .td-right { text-align:right; }
         #meterPage .tbl .mono { font-family:'Consolas','SF Mono',monospace; font-size:11px; color:#66736a; }
-        #meterPage .meter-main { font-weight:800; color:#1f2d23; }
+        #meterPage .meter-main { color:#1f2d23; }
         #meterPage .meter-sub { margin-top:2px; font-family:'Consolas','SF Mono',monospace; font-size:11px; color:#66736a; }
         #meterPage .meter-no { font-family:'Consolas','SF Mono',monospace; font-size:11px; color:#66736a; }
         #meterPage .td-unit { text-align:center !important; }
@@ -145,15 +145,15 @@
         #meterPage .col-meter-no { width:10%; }
         #meterPage .col-meter-date { width:8%; }
         #meterPage .col-meter-ty { width:8%; }
-        #meterPage .col-complex-unit { width:12%; }
+        #meterPage .col-complex-unit { width:14%; }
         #meterPage .col-facility { width:18%; }
         #meterPage .col-ho { width:10%; }
-        #meterPage .col-complex-value { width:8%; }
+        #meterPage .col-complex-value { width:9%; }
         #meterPage .col-facility-value { width:8%; }
-        #meterPage .col-complex-usage { width:8%; }
+        #meterPage .col-complex-usage { width:9%; }
         #meterPage .col-facility-usage { width:8%; }
         #meterPage .col-result { width:7%; }
-        #meterPage .col-complex-partner { width:17%; }
+        #meterPage .col-complex-partner { width:12%; }
         #meterPage .col-facility-partner { width:11%; }
         #meterPage .col-action { width:10%; }
 
@@ -370,11 +370,11 @@
                                         <tr>
                                             <th>번호</th><th>검침번호</th><th>검침유형</th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="METER_DT">검침일자<span class="sort-icon"></span></button></th>
-                                            <th class="td-left"><button type="button" class="sort-btn js-sort-btn" data-sort-field="HO_NO">동/호<span class="sort-icon"></span></button></th>
+                                            <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="HO_NO">동/호<span class="sort-icon"></span></button></th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="PRE_VAL">이전값<span class="sort-icon"></span></button></th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="CURR_VAL">현재값<span class="sort-icon"></span></button></th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="USAGE_VAL">사용량<span class="sort-icon"></span></button></th>
-                                            <th>결과</th><th class="td-left">업체</th><th>관리</th>
+                                            <th>결과</th><th>업체</th><th>관리</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -394,7 +394,7 @@
                                                         <td class="meter-no">${row.meterHstryNo}</td>
                                                         <td><span class="badge badge-gray">${empty row.meterTyNm ? '-' : row.meterTyNm}</span></td>
                                                         <td><fmt:formatDate value="${row.meterDt}" pattern="yyyy.MM.dd"/></td>
-                                                        <td class="td-left">
+                                                        <td>
                                                             <c:choose>
                                                                 <c:when test="${fn:length(hoParts) ge 3}">
                                                                     <div class="meter-main">${hoParts[1]}동 ${hoParts[2]}호</div>
@@ -416,7 +416,7 @@
                                                                 <c:otherwise><span class="badge badge-gray">${empty row.meterRsltCd ? '-' : row.meterRsltCd}</span></c:otherwise>
                                                             </c:choose>
                                                         </td>
-                                                        <td class="td-left partner-cell"><div>${row.partnerNm}</div></td>
+                                                        <td><div>${row.partnerNm}</div></td>
                                                         <td>
                                                             <div class="row-actions">
                                                                 <button type="button" class="btn btn-sm btn-ghost js-detail-btn" data-meter-hstry-no="${row.meterHstryNo}">상세</button>
@@ -554,7 +554,7 @@
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="PRE_VAL">이전값<span class="sort-icon"></span></button></th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="CURR_VAL">현재값<span class="sort-icon"></span></button></th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="USAGE_VAL">사용량<span class="sort-icon"></span></button></th>
-                                            <th>결과</th><th class="td-left">업체</th><th>관리</th>
+                                            <th>결과</th><th>업체</th><th>관리</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -589,7 +589,7 @@
                                                                 <c:otherwise><span class="badge badge-gray">${empty row.meterRsltCd ? '-' : row.meterRsltCd}</span></c:otherwise>
                                                             </c:choose>
                                                         </td>
-                                                        <td class="td-left partner-cell"><div>${row.partnerNm}</div></td>
+                                                        <td><div>${row.partnerNm}</div></td>
                                                         <td>
                                                             <div class="row-actions">
                                                                 <button type="button" class="btn btn-sm btn-ghost js-detail-btn" data-meter-hstry-no="${row.meterHstryNo}">상세</button>

@@ -470,8 +470,8 @@
                                 <%-- 번호 컬럼 추가로 관리 버튼이 밀리지 않도록 관리 컬럼 폭은 기존 수준으로 유지 --%>
                                 <col style="width:4%">
                                 <col style="width:7%">
-                                <col style="width:12%">
                                 <col style="width:9%">
+                                <col style="width:12%">
                                 <col style="width:9%">
                                 <col style="width:13%">
                                 <col style="width:6%">
@@ -485,7 +485,7 @@
                                 <th>번호</th>
                                 <th>업체번호</th>
                                 <th class="td-left">업체명</th>
-                                <th>업종</th>
+                                <th class="td-left">업종</th>
                                 <th>사업자번호</th>
                                 <th class="td-left">담당자 / 연락처</th>
                                 <th>계약건수</th>
@@ -541,7 +541,7 @@
                                             </td>
                                             <td class="partner-no">${partner.partnerNo}</td>
                                             <td class="td-left">${partner.partnerNm}</td>
-                                            <td>${partner.bizTyNm}</td>
+                                            <td class="td-left">${partner.bizTyNm}</td>
                                             <td>${partner.bizrno}</td>
                                             <td class="td-left">
                                                 <span class="pic-line">
