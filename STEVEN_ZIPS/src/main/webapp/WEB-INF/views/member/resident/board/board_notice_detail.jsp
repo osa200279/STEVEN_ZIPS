@@ -57,12 +57,29 @@
         }
 
         .notice-content {
-            min-height: 240px;
-            line-height: 1.9;
+            line-height: 1.8;
             font-size: 16px;
-            white-space: pre-wrap;
             border-top: 1px solid var(--border);
-            padding-top: 28px;
+            padding-top: 24px;
+        }
+
+        .notice-body-image-area {
+            margin-bottom: 24px;
+        }
+
+        .notice-inline-image {
+            display: block;
+            width: 320px;
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+
+        .notice-text {
+            white-space: pre-line;
+            margin: 0;
         }
 
         .notice-nav-list {
@@ -134,8 +151,8 @@
         }
 
         .notice-file-box {
-            margin-top: 28px;
-            padding-top: 22px;
+            margin-top: 18px;
+            padding-top: 18px;
             border-top: 1px solid var(--border);
         }
 
@@ -203,6 +220,14 @@
             line-height: 0;
         }
 
+        .notice-inline-image {
+            display: block;
+            width: 320px;
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
     </style>
 </head>
 
@@ -236,7 +261,28 @@
                     · 조회수 : ${notice.inqCnt}
                 </div>
 
-                <div class="notice-content">${notice.cn}</div>
+                <%-- 공지본문 --%>
+                <div class="notice-content">
+                    <%-- 첨부 이미지: 본문 위쪽에 출력 --%>
+                    <div class="notice-body-image-area">
+                        <c:forEach var="file" items="${notice.attachFileList}">
+                            <c:if test="${not empty file.googleId
+                        and not empty file.mimeType
+                        and file.mimeType.startsWith('image/')}">
+
+                                <img src="${pageContext.request.contextPath}/file/display/${file.googleId}"
+                                     alt="${file.fileOgName}"
+                                     class="notice-inline-image">
+
+                            </c:if>
+                        </c:forEach>
+                    </div>
+
+                    <%-- 실제 공지 본문 --%>
+                    <div class="notice-text">
+                        <c:out value="${notice.cn}"/>
+                    </div>
+                </div>
 
                 <!-- 첨부파일 영역 -->
                 <div class="notice-file-box">
@@ -254,22 +300,22 @@
                                         다운로드
                                     </a>
                                 </div>
+                                <%-- 미리보기 사진 --%>
+<%--                                <c:if test="${not empty file.googleId--%>
+<%--                                  and not empty file.mimeType--%>
+<%--                                  and file.mimeType.startsWith('image/')}">--%>
 
-                                <c:if test="${not empty file.googleId
-                      and not empty file.mimeType
-                      and file.mimeType.startsWith('image/')}">
+<%--                                    <a href="${pageContext.request.contextPath}/file/display/${file.googleId}"--%>
+<%--                                       target="_blank"--%>
+<%--                                       rel="noopener noreferrer"--%>
+<%--                                       class="notice-image-link">--%>
 
-                                    <a href="${pageContext.request.contextPath}/file/display/${file.googleId}"
-                                       target="_blank"
-                                       rel="noopener noreferrer"
-                                       class="notice-image-link">
+<%--                                        <img src="${pageContext.request.contextPath}/file/display/${file.googleId}"--%>
+<%--                                             alt="${file.fileOgName}"--%>
+<%--                                             class="notice-file-image">--%>
 
-                                        <img src="${pageContext.request.contextPath}/file/display/${file.googleId}"
-                                             alt="${file.fileOgName}"
-                                             class="notice-file-image">
-
-                                    </a>
-                                </c:if>
+<%--                                    </a>--%>
+<%--                                </c:if>--%>
 
                             </c:forEach>
 
