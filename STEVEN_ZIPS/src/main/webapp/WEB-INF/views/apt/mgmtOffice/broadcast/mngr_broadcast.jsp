@@ -157,12 +157,14 @@
                                                     <span class="material-symbols-rounded">restart_alt</span>초기화
                                                 </button>
                                                 <button type="button" class="btnx btnx-primary" id="convertBtn">
-                                                    <span class="material-symbols-rounded">graphic_eq</span>음성 변환A
+                                                    <span class="material-symbols-rounded">graphic_eq</span>음성 변환
                                                 </button>
+                                                <%-- [도커 TTS 미사용] 브라우저 → 8060 직접 호출
                                                 <button type="button" class="btnx btnx-secondary" id="convertDockerBtn"
                                                         title="TTS 도커(8060)에 직접 요청">
-                                                    <span class="material-symbols-rounded">graphic_eq</span>음성 변환B
+                                                    <span class="material-symbols-rounded">dns</span>도커 음성 변환
                                                 </button>
+                                                --%>
                                             </div>
                                             <div class="compose-broadcast-actions" aria-label="방송 송출">
                                                 <span class="compose-broadcast-label">방송 송출</span>

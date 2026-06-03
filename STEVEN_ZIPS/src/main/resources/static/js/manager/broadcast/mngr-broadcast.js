@@ -13,7 +13,7 @@
     var HISTORY_MAX = 20;
     var DEFAULT_RESET_VOICE = 'ko-KR-Standard-C';
     var CONVERT_BTN_HTML = '<span class="material-symbols-rounded">graphic_eq</span>음성 변환';
-    var CONVERT_DOCKER_BTN_HTML = '<span class="material-symbols-rounded">dns</span>음성 변환';
+    // var CONVERT_DOCKER_BTN_HTML = '<span class="material-symbols-rounded">dns</span>도커 음성 변환';
     var PREVIEW_BTN_HTML = '<span class="material-symbols-rounded">hearing</span>미리듣기';
 
     var VOICE_OPTIONS = {
@@ -712,19 +712,20 @@
 
     function getTtsErrorMessage(e) {
         if (e && e.name === 'AbortError') return '';
-        var msg = 'TTS 서버 연결에 실패했습니다. 서버·TTS 도커 실행 상태를 확인해주세요.';
+        var msg = 'TTS 변환에 실패했습니다. 서버 로그·tts-key.json 설정을 확인해주세요.';
         if (e && e.status === 403) {
             msg = '요청이 차단되었습니다(403). 페이지를 새로고침한 뒤 다시 시도해주세요.';
         } else if (String(e && e.message || '').indexOf('not audio') !== -1) {
-            msg = '서버가 음성이 아닌 응답을 반환했습니다. 로그인·권한(CSRF) 또는 TTS 설정을 확인해주세요.';
+            msg = '서버가 음성이 아닌 응답을 반환했습니다. 로그인·권한(CSRF)을 확인해주세요.';
         } else if (String(e && e.message || '').indexOf('invalid mp3') !== -1) {
-            msg = '음성 데이터 형식이 올바르지 않습니다. TTS 도커 로그를 확인해주세요.';
+            msg = '음성 데이터 형식이 올바르지 않습니다.';
         } else if (String(e && e.message || '').indexOf('TTS failed: 500') !== -1) {
-            msg = 'TTS 변환 중 서버 오류가 발생했습니다. TTS 도커(8060) 로그를 확인해주세요.';
+            msg = 'TTS 변환 중 서버 오류가 발생했습니다. IntelliJ 콘솔 로그를 확인해주세요.';
         }
         return msg;
     }
 
+    /* [도커 TTS 미사용]
     function getTtsDockerErrorMessage(e) {
         if (e && e.name === 'AbortError') return '';
         var msg = 'TTS 도커(8060) 연결에 실패했습니다. 도커 실행·포트 개방 상태를 확인해주세요.';
@@ -745,6 +746,7 @@
     function getTtsServiceUrl() {
         return window.location.protocol + '//' + window.location.hostname + ':8060';
     }
+    */
 
     function parseTtsAudioFetch(res) {
         var ct = (res.headers.get('content-type') || '').toLowerCase();
@@ -788,6 +790,7 @@
             .then(blobFromAudioBuffer);
     }
 
+    /* [도커 TTS 미사용]
     function synthesizeTtsDockerRequest(v, signal) {
         var params = new URLSearchParams();
         params.set('text', v.text);
@@ -801,6 +804,7 @@
             .then(parseTtsAudioFetch)
             .then(blobFromAudioBuffer);
     }
+    */
 
     function formatDuration(len) {
         var sec = Math.max(0, Math.round(len / 5));
@@ -829,7 +833,8 @@
     function setComposeLoading(on) {
         $('composeLoading').hidden = !on;
         $('convertBtn').disabled = on;
-        $('convertDockerBtn').disabled = on;
+        // var dockerBtn = $('convertDockerBtn');
+        // if (dockerBtn) dockerBtn.disabled = on;
         $('previewBtn').disabled = on;
         $('clearBtn').disabled = on;
         if (on) {
@@ -1343,6 +1348,7 @@
         });
     }
 
+    /* [도커 TTS 미사용]
     function convertTtsDocker() {
         runTtsConvert({
             requestFn: synthesizeTtsDockerRequest,
@@ -1355,6 +1361,7 @@
             convertBtnHtml: CONVERT_DOCKER_BTN_HTML
         });
     }
+    */
 
     function runTtsConvert(opts) {
         var v = getFormValues();
@@ -1418,7 +1425,7 @@
 
     function bindEvents() {
         $('convertBtn').addEventListener('click', convertTts);
-        $('convertDockerBtn').addEventListener('click', convertTtsDocker);
+        // $('convertDockerBtn').addEventListener('click', convertTtsDocker);
         $('clearBtn').addEventListener('click', onClearClick);
         $('previewBtn').addEventListener('click', togglePreview);
         $('ttsText').addEventListener('input', updateMeta);
