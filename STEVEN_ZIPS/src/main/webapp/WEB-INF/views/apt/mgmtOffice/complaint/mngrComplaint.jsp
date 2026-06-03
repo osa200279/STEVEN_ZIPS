@@ -287,12 +287,12 @@
         var STAT_TEXT  = {
             APLY:'민원 접수', RCPT:'접수 완료', POCS:'처리중',
             SUPL:'보완 요청', REJS:'처리 불가', COMP:'처리 완료',
-            RJCT:'반려',      END:'종결'
+            RJCT:'반려',      END:'종결', CNCL:'취소'
         };
         var STAT_BADGE = {
             APLY:'badge-yellow', RCPT:'badge-blue',  POCS:'badge-blue',
             SUPL:'badge-orange', REJS:'badge-gray',  COMP:'badge-green',
-            RJCT:'badge-gray',   END:'badge-green'
+            RJCT:'badge-gray',   END:'badge-green', CNCL:'badge-gray'
         };
 
         /* 승인 시 변경될 다음 상태 */
