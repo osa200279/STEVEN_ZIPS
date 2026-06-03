@@ -1,0 +1,361 @@
+/**
+ * 동별 방송 수신기 — WebSocket 구독 후 TTS 재생
+ */
+(function () {
+    'use strict';
+
+    var cfg = window.BC_RECEIVE;
+    if (!cfg || !cfg.mgmtOfcNo || !cfg.dongNo) return;
+
+    var receiveAudio = document.getElementById('receiveAudio');
+    var receiveActive = false;
+    var receiveObjectUrl = null;
+    var broadcastSubscription = null;
+    var pendingPlay = null;
+    var readyToastShown = false;
+
+    function $(id) { return document.getElementById(id); }
+
+    function topicKey(dongNo) {
+        return String(dongNo).replace(/\//g, '_').replace(/\s/g, '_');
+    }
+
+    var flashHideTimer = null;
+
+    function getDongName() {
+        return cfg.dongLabel || cfg.dongNo;
+    }
+
+    /** 수신기 전용 토스트 — bcReceiveToastContainer에 표시 (시연용 크게) */
+    function toast(opts) {
+        opts = opts || {};
+        var container = document.getElementById('bcReceiveToastContainer');
+        if (!container) {
+            if (typeof showToast === 'function') {
+                showToast(opts);
+            }
+            return;
+        }
+
+        var title = opts.title || '알림';
+        var message = opts.message || '';
+        var type = opts.type || 'info';
+        var duration = opts.duration || 5000;
+        var hero = !!opts.hero;
+
+        var el = document.createElement('div');
+        el.className = 'toast ' + type + (hero ? ' bc-toast-hero' : '');
+        el.innerHTML =
+            '<button type="button" class="toast-close" aria-label="닫기">×</button>' +
+            '<div class="toast-title">' + escapeHtml(title) + '</div>' +
+            '<div class="toast-message">' + escapeHtml(message) + '</div>';
+
+        el.querySelector('.toast-close').addEventListener('click', function (e) {
+            e.stopPropagation();
+            el.classList.add('hide');
+            setTimeout(function () { el.remove(); }, 200);
+        });
+
+        container.appendChild(el);
+        setTimeout(function () {
+            if (el.parentNode) {
+                el.classList.add('hide');
+                setTimeout(function () { el.remove(); }, 200);
+            }
+        }, duration);
+    }
+
+    function escapeHtml(str) {
+        return String(str == null ? '' : str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function showReceiveFlash(title, message) {
+        var box = $('bcReceiveFlash');
+        var titleEl = $('bcReceiveFlashTitle');
+        var textEl = $('bcReceiveFlashText');
+        if (!box) return;
+        if (titleEl) titleEl.textContent = title || '방송중';
+        if (textEl) textEl.textContent = message || '';
+        box.hidden = false;
+        if (flashHideTimer) clearTimeout(flashHideTimer);
+    }
+
+    function hideReceiveFlash() {
+        var box = $('bcReceiveFlash');
+        if (flashHideTimer) {
+            clearTimeout(flashHideTimer);
+            flashHideTimer = null;
+        }
+        if (box) box.hidden = true;
+    }
+
+    function demoBroadcastAlert(phase) {
+        var dong = getDongName();
+        if (phase === 'start') {
+            showReceiveFlash('방송중', dong + '에서 방송중입니다');
+            toast({
+                title: '📢 ' + dong + ' 방송중',
+                message: '관리사무소 방송이 수신되었습니다. 잠시 후 스피커로 재생됩니다.',
+                type: 'warning',
+                hero: true,
+                duration: 9000
+            });
+        } else if (phase === 'playing') {
+            showReceiveFlash('재생 중', dong + ' 스피커 출력');
+            toast({
+                title: '▶ 재생 시작',
+                message: dong + '에서 안내 방송을 재생합니다.',
+                type: 'success',
+                hero: true,
+                duration: 6000
+            });
+        } else if (phase === 'done') {
+            hideReceiveFlash();
+            toast({
+                title: '방송 종료',
+                message: dong + ' 방송이 종료되었습니다.',
+                type: 'info',
+                duration: 4000
+            });
+        }
+    }
+
+    function setWsBadge(state, text) {
+        var badge = $('wsStatusBadge');
+        if (!badge) return;
+        badge.textContent = text;
+        badge.classList.remove('is-ok', 'is-busy', 'is-error');
+        if (state) badge.classList.add(state);
+    }
+
+    function setReceiveUi(mode, title, msg) {
+        var block = $('receiveStatus');
+        var icon = $('receiveStatusIcon');
+        if (block) {
+            block.classList.toggle('is-playing', mode === 'playing');
+        }
+        if ($('receiveStatusTitle')) $('receiveStatusTitle').textContent = title;
+        if ($('receiveStatusMsg')) $('receiveStatusMsg').textContent = msg;
+        if (icon) {
+            icon.textContent = mode === 'playing' ? 'campaign' : (mode === 'loading' ? 'hourglass_top' : 'podcasts');
+        }
+    }
+
+    function buildTtsFetchHeaders(contentType) {
+        var headers = { 'X-Requested-With': 'XMLHttpRequest' };
+        if (contentType) {
+            headers['Content-Type'] = contentType;
+        }
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]');
+        var csrfToken = document.querySelector('meta[name="_csrf"]');
+        if (csrfHeader && csrfToken) {
+            headers[csrfHeader.getAttribute('content')] = csrfToken.getAttribute('content');
+        }
+        return headers;
+    }
+
+    function parseTtsAudioFetch(res) {
+        var ct = (res.headers.get('content-type') || '').toLowerCase();
+        if (!res.ok) {
+            var err = new Error('TTS failed: ' + res.status);
+            err.status = res.status;
+            throw err;
+        }
+        if (ct.indexOf('audio/') === -1) {
+            throw new Error('not audio');
+        }
+        return res.blob();
+    }
+
+    function fetchAndPlayTts(payload) {
+        if (!payload || !payload.text) return Promise.reject(new Error('empty payload'));
+
+        setReceiveUi('loading', '음성 준비 중', 'TTS 변환 후 재생합니다…');
+        setWsBadge('is-busy', '방송 수신');
+
+        var formBody = new URLSearchParams();
+        formBody.set('text', payload.text);
+        formBody.set('languageCode', payload.languageCode || 'ko-KR');
+        formBody.set('voiceName', payload.voiceName || 'ko-KR-Standard-C');
+
+        return fetch(cfg.contextPath + '/tts/synthesize/' + cfg.mgmtOfcNo, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: buildTtsFetchHeaders('application/x-www-form-urlencoded;charset=UTF-8'),
+            body: formBody.toString()
+        })
+            .then(parseTtsAudioFetch)
+            .then(function (blob) {
+                if (!blob || blob.size < 128) {
+                    throw new Error('invalid mp3');
+                }
+                return playBlob(blob, payload);
+            });
+    }
+
+    function revokeReceiveUrl() {
+        if (receiveObjectUrl) {
+            URL.revokeObjectURL(receiveObjectUrl);
+            receiveObjectUrl = null;
+        }
+    }
+
+    function playBlob(blob, payload) {
+        if (!receiveAudio) return Promise.resolve();
+
+        var dongName = cfg.dongLabel || cfg.dongNo;
+        revokeReceiveUrl();
+        receiveAudio.pause();
+        receiveObjectUrl = URL.createObjectURL(blob);
+        receiveAudio.src = receiveObjectUrl;
+        receiveActive = true;
+
+        var sender = payload.senderUserNm ? payload.senderUserNm + ' · ' : '';
+        setReceiveUi('playing', '방송 재생 중', sender + (cfg.dongLabel || cfg.dongNo) + ' 출력');
+
+        var last = $('receiveLastText');
+        if (last) {
+            last.hidden = false;
+            last.textContent = payload.text;
+        }
+
+        return receiveAudio.play().then(function () {
+            demoBroadcastAlert('playing');
+        });
+    }
+
+    function finishReceivePlayback() {
+        receiveActive = false;
+        setReceiveUi('idle', '대기 중', '방송 송출 시 이 화면에서 자동 재생됩니다.');
+        setWsBadge('is-ok', '수신 대기');
+        demoBroadcastAlert('done');
+    }
+
+    function onBroadcastMessage(msg) {
+        var payload;
+        try {
+            payload = JSON.parse(msg.body);
+        } catch (e) {
+            console.warn('broadcast message parse failed', e);
+            return;
+        }
+        if (!payload || payload.action !== 'PLAY') return;
+
+        console.log('[방송 수신] WS 메시지 수신', getDongName(), payload);
+        demoBroadcastAlert('start');
+
+        if (pendingPlay && typeof pendingPlay.abort === 'function') {
+            pendingPlay.abort();
+        }
+        var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        pendingPlay = controller;
+
+        fetchAndPlayTts(payload).catch(function (err) {
+            console.warn('receive play failed', err);
+            finishReceivePlayback();
+            setWsBadge('is-error', '재생 실패');
+            toast({
+                title: '수신 실패',
+                message: '음성을 재생할 수 없습니다. TTS·로그인 상태를 확인해 주세요.',
+                type: 'error',
+                duration: 4500
+            });
+        }).finally(function () {
+            pendingPlay = null;
+        });
+    }
+
+    function getStompClient() {
+        try {
+            if (typeof stomp !== 'undefined' && stomp) {
+                return stomp;
+            }
+        } catch (ignore) { /* stomp 미선언 */ }
+        return null;
+    }
+
+    function isStompReady() {
+        var client = getStompClient();
+        return !!(client && client.connected);
+    }
+
+    function subscribeBroadcast() {
+        var client = getStompClient();
+        if (!client || !client.connected) {
+            return false;
+        }
+        if (broadcastSubscription) {
+            broadcastSubscription.unsubscribe();
+        }
+        var dest = '/sub/broadcast/' + cfg.mgmtOfcNo + '/' + topicKey(cfg.dongNo);
+        broadcastSubscription = client.subscribe(dest, onBroadcastMessage);
+        console.log('[방송 수신] 구독:', dest);
+        setWsBadge('is-ok', '수신 대기');
+        setReceiveUi('idle', '대기 중', '구독 중: ' + (cfg.dongLabel || cfg.dongNo));
+        if (!readyToastShown) {
+            readyToastShown = true;
+            toast({
+                title: '수신기 준비 완료',
+                message: getDongName() + ' 수신 대기 중입니다. 송출 시 이 화면에 알림이 표시됩니다.',
+                type: 'success',
+                duration: 5000
+            });
+        }
+        return true;
+    }
+
+    var stompWaitTimer = null;
+
+    function stopStompWait() {
+        if (stompWaitTimer) {
+            clearInterval(stompWaitTimer);
+            stompWaitTimer = null;
+        }
+    }
+
+    function waitForStompAndSubscribe() {
+        stopStompWait();
+        if (subscribeBroadcast()) {
+            return;
+        }
+        setWsBadge('', '연결 중…');
+        var tries = 0;
+        var max = 120;
+        stompWaitTimer = setInterval(function () {
+            tries++;
+            if (subscribeBroadcast()) {
+                stopStompWait();
+                return;
+            }
+            if (tries >= max) {
+                stopStompWait();
+                setWsBadge('is-error', 'WS 미연결');
+                setReceiveUi('idle', '연결 실패',
+                    '웹소켓이 연결되지 않았습니다. F12 콘솔에 「웹소켓 연결됨」이 보이는지 확인한 뒤 Ctrl+F5로 새로고침해 주세요.');
+            }
+        }, 500);
+    }
+
+    function bindAudioEvents() {
+        if (!receiveAudio) return;
+        receiveAudio.addEventListener('ended', finishReceivePlayback);
+        receiveAudio.addEventListener('pause', function () {
+            if (receiveActive && receiveAudio.ended) {
+                finishReceivePlayback();
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!cfg.dongValid) {
+            setWsBadge('is-error', '동 코드 오류');
+            return;
+        }
+        bindAudioEvents();
+        waitForStompAndSubscribe();
+    });
+})();
