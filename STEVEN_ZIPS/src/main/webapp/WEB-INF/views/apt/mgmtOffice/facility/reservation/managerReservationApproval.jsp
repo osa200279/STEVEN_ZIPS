@@ -48,6 +48,7 @@
     .page-item.active .page-link{background:#245b36;color:#fff;border-color:#245b36}
     .pf-actions{display:flex;gap:6px;justify-content:center}
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -245,42 +246,64 @@
    */
   function approveRsvt(rsvtNo){
 
-    if(!confirm('승인하시겠습니까?')){
-      return;
-    }
+    Swal.fire({
+      title: '예약 승인',
+      text: '해당 예약을 승인하시겠습니까?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '승인',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#245b36',
+      cancelButtonColor: '#6b7280'
+    }).then(function(result){
 
-    fetch(
-            contextPath
-            + '/manager/publicFacility/reservation/approval/'
-            + mgmtOfcNo
-            + '/'
-            + rsvtNo
-            + '/approve',
-            {
-              method : 'POST',
+      if(!result.isConfirmed){
+        return;
+      }
 
-              headers : {
-                [csrfHeader] : csrfToken
+      fetch(
+              contextPath
+              + '/manager/publicFacility/reservation/approval/'
+              + mgmtOfcNo
+              + '/'
+              + rsvtNo
+              + '/approve',
+              {
+                method : 'POST',
+                headers : {
+                  [csrfHeader] : csrfToken
+                }
               }
-            }
-    )
-            .then(function(response){
+      )
+              .then(function(response){
 
-              if(!response.ok){
-                alert('승인 처리 중 오류가 발생했습니다.');
-                return;
-              }
+                if(!response.ok){
+                  Swal.fire({
+                    icon:'error',
+                    title:'오류',
+                    text:'승인 처리 중 오류가 발생했습니다.'
+                  });
+                  return;
+                }
 
-              alert('승인 처리되었습니다.');
+                Swal.fire({
+                  icon:'success',
+                  title:'승인 완료',
+                  text:'예약이 승인되었습니다.'
+                }).then(function(){
+                  location.reload();
+                });
+              })
+              .catch(function(error){
+                console.error(error);
 
-              location.reload();
-            })
-            .catch(function(error){
-
-              console.error(error);
-
-              alert('승인 요청 중 오류가 발생했습니다.');
-            });
+                Swal.fire({
+                  icon:'error',
+                  title:'오류',
+                  text:'승인 요청 중 오류가 발생했습니다.'
+                });
+              });
+    });
   }
 
   /*
@@ -288,10 +311,73 @@
    */
   function rejectRsvt(rsvtNo){
 
-    const reason = prompt('거절사유를 입력하세요.');
+    Swal.fire({
+      title:'예약 거절',
+      input:'textarea',
+      inputLabel:'거절사유',
+      inputPlaceholder:'거절사유를 입력하세요.',
+      showCancelButton:true,
+      confirmButtonText:'거절',
+      cancelButtonText:'취소',
+      confirmButtonColor:'#d33',
+      inputValidator:(value)=>{
+        if(!value){
+          return '거절사유를 입력해주세요.';
+        }
+      }
+    }).then((result)=>{
+
+      if(!result.isConfirmed){
+        return;
+      }
+
+      const reason = result.value;
+
+      fetch(
+              contextPath
+              + '/manager/publicFacility/reservation/approval/'
+              + mgmtOfcNo
+              + '/'
+              + rsvtNo
+              + '/reject',
+              {
+                method:'POST',
+                headers:{
+                  [csrfHeader]:csrfToken,
+                  'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body:'rejectReason=' + encodeURIComponent(reason)
+              }
+      )
+              .then(function(response){
+
+                if(!response.ok){
+
+                  Swal.fire({
+                    icon:'error',
+                    title:'오류',
+                    text:'거절 처리 중 오류가 발생했습니다.'
+                  });
+
+                  return;
+                }
+
+                Swal.fire({
+                  icon:'success',
+                  title:'거절 완료',
+                  text:'예약이 거절되었습니다.'
+                }).then(()=>{
+                  location.reload();
+                });
+              });
+    });
 
     if(!reason || reason.trim() === ''){
-      alert('거절사유를 입력해야 합니다.');
+      Swal.fire({
+        icon:'warning',
+        title:'확인',
+        text:'거절사유를 입력해주세요.'
+      });
       return;
     }
 
@@ -316,11 +402,19 @@
             .then(function(response){
 
               if(!response.ok){
-                alert('거절 처리 중 오류가 발생했습니다.');
+                Swal.fire({
+                  icon:'error',
+                  title:'오류',
+                  text:'처리 중 오류가 발생했습니다.'
+                });
                 return;
               }
 
-              alert('거절 처리되었습니다.');
+              Swal.fire({
+                icon:'success',
+                title:'완료',
+                text:'거절 처리가 완료되었습니다.'
+              });
 
               location.reload();
             })
@@ -328,7 +422,11 @@
 
               console.error(error);
 
-              alert('거절 요청 중 오류가 발생했습니다.');
+              Swal.fire({
+                icon:'error',
+                title:'오류',
+                text:'처리 중 오류가 발생했습니다.'
+              });
             });
   }
 
