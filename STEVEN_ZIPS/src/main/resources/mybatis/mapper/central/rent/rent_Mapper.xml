@@ -519,6 +519,7 @@
         ON U.APT_CMPLEX_NO = A.APT_CMPLEX_NO
         WHERE A.LAT_VAL IS NOT NULL
         AND A.LON_VAL IS NOT NULL
+        AND R.ANN_NO IS NOT NULL
         GROUP BY
         A.APT_CMPLEX_NO
         , A.APT_CMPLEX_NM
@@ -532,8 +533,7 @@
 
     </select>
 
-    <select id="selectRentListByComplexNo"
-            resultMap="rentListingMapResultMap">
+    <select id="selectRentListByComplexNo" resultMap="rentListingMapResultMap">
 
         SELECT
         R.RENT_LSTG_NO
@@ -624,6 +624,7 @@
         AND HC.USE_YN = 'Y'
 
         WHERE A.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND R.ANN_NO IS NOT NULL
 
         ORDER BY R.RENT_LSTG_NO DESC
 
