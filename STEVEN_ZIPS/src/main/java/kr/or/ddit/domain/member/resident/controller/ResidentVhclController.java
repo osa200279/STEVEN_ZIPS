@@ -106,11 +106,6 @@ public class ResidentVhclController {
                 file
         );
 
-        notificationService.send(
-                member.getUserNo(),
-                NotificationDTO.success("등록완료","등록이완료되었습니다")
-        );
-
         return "OK";
     }
 

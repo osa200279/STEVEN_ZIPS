@@ -112,8 +112,10 @@ public class AplctServiceImpl implements IAplctService {
                 if (res < 1) throw new RuntimeException("매물 상태 변경에 실패했습니다.");
             }
             log.info("### qualifiedList {}", qualifiedList);
+
             int res1 = rentCtrtMapper.insertRentCtrt(qualifiedList);
 
+            log.info("### insert result = {}", res1);
 
             if (res1 == 0) throw new RuntimeException("가계약 생성 실패");
 
