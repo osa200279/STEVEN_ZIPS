@@ -1236,10 +1236,23 @@
 }
 
 #broadcastPage .player-label {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-size: 14px;
     font-weight: 800;
     color: rgba(255, 255, 255, 0.9);
+}
+
+#broadcastPage .player-hint.player-hint--test {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+#broadcastPage .player-hint.player-hint--test strong {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 800;
 }
 
 #broadcastPage .player-tags {

@@ -527,14 +527,14 @@
         }
         if (targets.length === 1) {
             return {
-                title: '방송중',
-                message: targets[0].dongLabel + '에서 방송중입니다. (해당 동 수신기·이 PC에서 재생)'
+                title: '방송 송출',
+                message: targets[0].dongLabel + ' 수신기에서 재생됩니다. (송출 PC에서는 소리 없음)'
             };
         }
         var labels = targets.map(function (t) { return t.dongLabel; }).join(', ');
         return {
-            title: '방송중',
-            message: labels + '에서 방송중입니다. (' + targets.length + '개 동 수신기 확인)'
+            title: '방송 송출',
+            message: labels + ' 수신기에서 재생됩니다. (' + targets.length + '개 동)'
         };
     }
 
@@ -1000,37 +1000,19 @@
         updateBroadcastActionButtons();
         if (showCompleteToast) {
             toast({
-                title: '방송 완료',
-                message: '방송 완료',
+                title: '방송 송출 완료',
+                message: '선택한 동 수신기에서 안내 방송이 재생됩니다. 이 PC(송출)에서는 소리가 나지 않습니다.',
                 type: 'success',
-                duration: 2800
+                duration: 4000
             });
         }
     }
 
+    /* [송출 PC 로컬 재생 없음] 수신기(mngr_broadcast_receive)에서만 TTS 재생
     function startLocalBroadcastPlayback(audio) {
-        try {
-            audio.currentTime = 0;
-        } catch (ignore) { /* seek */ }
-
-        audio.addEventListener('ended', function () {
-            finishBroadcastSession(true);
-        }, { once: true });
-
-        var playPromise = audio.play();
-        if (playPromise && typeof playPromise.then === 'function') {
-            playPromise.catch(function (err) {
-                console.warn('broadcast play failed', err);
-                finishBroadcastSession(false);
-                toast({
-                    title: '방송 실패',
-                    message: '음성을 재생할 수 없습니다.',
-                    type: 'error',
-                    duration: 4000
-                });
-            });
-        }
+        ...
     }
+    */
 
     function startBroadcast() {
         var audio = $('playerAudio');
@@ -1050,12 +1032,14 @@
 
         stopPreview();
         pauseAllBroadcastAudio(audio);
+        if (audio && !audio.paused) {
+            audio.pause();
+            updatePlayerToggle(false);
+        }
 
         publishBroadcastViaWebSocket(form, targets).then(function (sent) {
             if (!sent) return;
 
-            broadcastActive = true;
-            setBroadcastButtonState(true, true);
             var sendingToast = formatBroadcastSendingToast(targets);
             toast({
                 title: sendingToast.title,
@@ -1063,10 +1047,10 @@
                 type: 'info',
                 duration: 5500
             });
-            console.log('[방송 송출]', targets.map(function (t) {
+            console.log('[방송 송출] 수신기만 재생 →', targets.map(function (t) {
                 return t.dongLabel + '(' + t.dongNo + ')';
             }).join(', '));
-            startLocalBroadcastPlayback(audio);
+            finishBroadcastSession(true);
         });
     }
 
@@ -1112,7 +1096,10 @@
         var btn = $('playerToggleBtn');
         if (!icon || !btn) return;
         icon.textContent = isPlaying ? 'pause' : 'play_arrow';
-        btn.setAttribute('aria-label', isPlaying ? '일시정지' : '재생');
+        btn.setAttribute('aria-label', isPlaying ? '테스트 일시정지' : '테스트 재생');
+        btn.setAttribute('title', isPlaying
+            ? '테스트 재생 일시정지 (이 PC만, 방송 아님)'
+            : '송출 담당자 본인만 이 PC에서 들어보기 (방송 아님)');
     }
 
     function showPlayer(row, label, blob) {
@@ -1121,7 +1108,7 @@
 
         setLastPlaybackBlob(blob);
         currentPlayerRow = row;
-        $('playerLabel').textContent = label || '최근 변환 음성';
+        $('playerLabel').textContent = label || '송출자 테스트 재생';
         $('playerText').textContent = row.text;
         pauseAllBroadcastAudio();
 
@@ -1198,6 +1185,7 @@
                 audio.pause();
             }
         });
+        /* ▶ 재생: WebSocket·방송 송출과 무관 — 송출 담당자 로컬 확인만 */
 
         audio.addEventListener('play', function () {
             pauseAllBroadcastAudio(audio);
@@ -1341,7 +1329,7 @@
             getErrorMessage: getTtsErrorMessage,
             playerLabel: '최근 변환 음성',
             successTitle: '변환 완료',
-            successMessage: '음성이 생성되었습니다. 플레이어에서 재생·송출할 수 있습니다.',
+            successMessage: '음성이 생성되었습니다. ▶로 이 PC에서만 확인한 뒤, 방송 송출로 동별 수신기에 전달하세요.',
             failTitle: '변환 실패',
             convertBtnId: 'convertBtn',
             convertBtnHtml: CONVERT_BTN_HTML

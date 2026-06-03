@@ -174,8 +174,8 @@
                                                 </button>
                                             </div>
                                             <p class="hint bc-receive-setup-hint">
-                                                동별 출력 PC에서는
-                                                <strong>방송 수신기</strong>를 열어 두세요.
+                                                <strong>방송 송출</strong> 시 소리는 동별 <strong>방송 수신기</strong>에서만 재생됩니다. (이 PC 송출 화면에서는 들리지 않음)
+                                                동별 출력 PC에서는 수신기를 열어 두세요.
                                                 <span class="bc-receive-setup-links">
                                                     <c:forEach var="dong" items="${dongList}" varStatus="st">
                                                         <c:set var="dongBase"
@@ -198,18 +198,19 @@
                                 </div>
                             </section>
 
-                            <section class="card" id="playerCard" style="display:none;" aria-label="now-playing">
+                            <section class="card" id="playerCard" style="display:none;" aria-label="sender-test-playback">
                                 <div class="player player-compact">
                                     <div class="eq eq-sm" id="eqBars">
                                         <span></span><span></span><span></span><span></span><span></span><span></span>
                                     </div>
                                     <div class="player-info">
-                                        <div class="player-label" id="playerLabel">최근 변환 음성</div>
+                                        <div class="player-label" id="playerLabel">송출자 테스트 재생</div>
+                                        <p class="player-hint player-hint--test">▶ 버튼은 <strong>이 PC에서만</strong> 확인용입니다. 입주민에게 들리는 방송은 아래 <strong>방송 송출</strong>을 사용하세요.</p>
                                         <p class="player-text" id="playerText"></p>
                                         <div class="player-controls">
-                                            <div class="player-sq-btns" role="group" aria-label="음성 재생 제어">
+                                            <div class="player-sq-btns" role="group" aria-label="송출자 테스트 재생">
                                                 <button type="button" class="bc-sq-btn" id="playerToggleBtn"
-                                                        title="재생" aria-label="재생" disabled>
+                                                        title="송출 담당자 본인만 이 PC에서 들어보기 (방송 아님)" aria-label="테스트 재생" disabled>
                                                     <span class="material-symbols-rounded" id="playerToggleIcon">play_arrow</span>
                                                 </button>
                                                 <button type="button" class="bc-sq-btn bc-sq-btn-reset" id="playerResetBtn"
