@@ -98,7 +98,7 @@
         /* ── 상단 기본정보/협력업체 병렬 영역 ── */
         #contractFormPage .contract-top-row {
             display:grid;
-            grid-template-columns:minmax(0,1.25fr) minmax(420px,1fr);
+            grid-template-columns: minmax(420px,1fr) minmax(0,1.25fr);
             gap:12px;
             align-items:stretch;
             margin-bottom:20px; /* 상단 기본정보/협력업체 묶음과 대상 시설 패널 사이 간격 */
@@ -524,98 +524,6 @@
 
                     <%-- 계약 기본정보 / 협력업체 : 같은 높이의 병렬 패널 --%>
                     <div class="contract-top-row">
-                        <%-- 계약 기본정보 --%>
-                        <div class="panel contract-basic-panel">
-                            <div class="panel-header">
-                                <h3 class="panel-title"><span class="material-symbols-rounded">description</span>계약 기본정보</h3>
-                            </div>
-
-                            <div class="panel-body">
-                                <div class="form-grid cols-2">
-                                    <c:if test="${mode eq 'update' or isTerminateMode}">
-                                        <div class="form-field">
-                                            <label class="field-label">계약번호</label>
-                                            <input type="text" class="form-input" value="${contract.contNo}" readonly>
-                                        </div>
-                                    </c:if>
-
-                                    <div class="form-field half">
-                                        <label class="field-label" for="contNm">계약명<span class="required">*</span></label>
-                                        <input type="text" class="form-input" id="contNm" name="contNm"
-                                               value="${fn:escapeXml(contract.contNm)}"
-                                               placeholder="예: 승강기 정기 유지보수 계약" required>
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label" for="contTyCd">계약유형<span class="required">*</span></label>
-                                        <select class="form-select" id="contTyCd" name="contTyCd" required>
-                                            <option value="">계약유형 선택</option>
-                                            <c:forEach var="type" items="${contractTypeList}">
-                                                <option value="${type.code}" <c:if test="${contract.contTyCd eq type.code}">selected</c:if>>
-                                                    <c:out value="${type.codeNm}"/>
-                                                </option>
-                                            </c:forEach>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label" for="contTargetCd">대상구분<span class="required">*</span></label>
-                                        <select class="form-select" id="contTargetCd" name="contTargetCd" required>
-                                            <option value="FACILITY" <c:if test="${empty contract.contTargetCd or contract.contTargetCd eq 'FACILITY'}">selected</c:if>>시설</option>
-                                            <option value="COMMON"   <c:if test="${contract.contTargetCd eq 'COMMON'}">selected</c:if>>단지공통</option>
-                                            <option value="METER"    <c:if test="${contract.contTargetCd eq 'METER'}">selected</c:if>>검침</option>
-                                            <option value="ETC"      <c:if test="${contract.contTargetCd eq 'ETC'}">selected</c:if>>기타</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label" for="bidTyCd">입찰유형<span class="required">*</span></label>
-                                        <select class="form-select" id="bidTyCd" name="bidTyCd" required>
-                                            <option value="PRT" <c:if test="${empty contract.bidTyCd or contract.bidTyCd eq 'PRT'}">selected</c:if>>수의계약</option>
-                                            <option value="GEN" <c:if test="${contract.bidTyCd eq 'GEN'}">selected</c:if>>일반경쟁입찰</option>
-                                            <option value="LIM" <c:if test="${contract.bidTyCd eq 'LIM'}">selected</c:if>>제한경쟁입찰</option>
-                                            <option value="SEL" <c:if test="${contract.bidTyCd eq 'SEL'}">selected</c:if>>지명경쟁입찰</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label" for="contSttsCd">계약상태</label>
-                                        <select class="form-select" id="contSttsCd" name="contSttsCd">
-                                            <option value="DRAFT"  <c:if test="${contract.contSttsCd eq 'DRAFT'}">selected</c:if>>작성중</option>
-                                            <option value="ACTIVE" <c:if test="${not isTerminateMode and (empty contract.contSttsCd or contract.contSttsCd eq 'ACTIVE')}">selected</c:if>>진행중</option>
-                                            <option value="END"    <c:if test="${not isTerminateMode and contract.contSttsCd eq 'END'}">selected</c:if>>종료</option>
-                                            <option value="TERM"   <c:if test="${isTerminateMode or contract.contSttsCd eq 'TERM'}">selected</c:if>>해지</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label" for="contAmt">계약금액<span class="required">*</span></label>
-                                        <input type="number" class="form-input" id="contAmt" name="contAmt"
-                                               value="${contract.contAmt}" min="0" placeholder="숫자만 입력" required>
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label" for="contDt">계약일자</label>
-                                        <input type="date" class="form-input" id="contDt" name="contDt" value="${contDtValue}">
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label" for="contBgngDt">계약시작일<span class="required">*</span></label>
-                                        <input type="date" class="form-input" id="contBgngDt" name="contBgngDt" value="${contBgngDtValue}" required>
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label" for="contEndDt">계약종료일</label>
-                                        <input type="date" class="form-input" id="contEndDt" name="contEndDt" value="${contEndDtValue}">
-                                    </div>
-
-                                    <div class="form-field">
-                                        <label class="field-label" for="pymtDt">지급예정일</label>
-                                        <input type="date" class="form-input" id="pymtDt" name="pymtDt" value="${pymtDtValue}">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <%-- 협력업체 --%>
                         <div class="panel partner-panel">
@@ -742,6 +650,100 @@
                                 </div>
                             </div>
                         </div>
+
+                        <%-- 계약 기본정보 --%>
+                        <div class="panel contract-basic-panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title"><span class="material-symbols-rounded">description</span>계약 기본정보</h3>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="form-grid cols-2">
+                                    <c:if test="${mode eq 'update' or isTerminateMode}">
+                                        <div class="form-field">
+                                            <label class="field-label">계약번호</label>
+                                            <input type="text" class="form-input" value="${contract.contNo}" readonly>
+                                        </div>
+                                    </c:if>
+
+                                    <div class="form-field half">
+                                        <label class="field-label" for="contNm">계약명<span class="required">*</span></label>
+                                        <input type="text" class="form-input" id="contNm" name="contNm"
+                                               value="${fn:escapeXml(contract.contNm)}"
+                                               placeholder="예: 승강기 정기 유지보수 계약" required>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label" for="contTyCd">계약유형<span class="required">*</span></label>
+                                        <select class="form-select" id="contTyCd" name="contTyCd" required>
+                                            <option value="">계약유형 선택</option>
+                                            <c:forEach var="type" items="${contractTypeList}">
+                                                <option value="${type.code}" <c:if test="${contract.contTyCd eq type.code}">selected</c:if>>
+                                                    <c:out value="${type.codeNm}"/>
+                                                </option>
+                                            </c:forEach>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label" for="contTargetCd">대상구분<span class="required">*</span></label>
+                                        <select class="form-select" id="contTargetCd" name="contTargetCd" required>
+                                            <option value="FACILITY" <c:if test="${empty contract.contTargetCd or contract.contTargetCd eq 'FACILITY'}">selected</c:if>>시설</option>
+                                            <option value="COMMON"   <c:if test="${contract.contTargetCd eq 'COMMON'}">selected</c:if>>단지공통</option>
+                                            <option value="METER"    <c:if test="${contract.contTargetCd eq 'METER'}">selected</c:if>>검침</option>
+                                            <option value="ETC"      <c:if test="${contract.contTargetCd eq 'ETC'}">selected</c:if>>기타</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label" for="bidTyCd">입찰유형<span class="required">*</span></label>
+                                        <select class="form-select" id="bidTyCd" name="bidTyCd" required>
+                                            <option value="PRT" <c:if test="${empty contract.bidTyCd or contract.bidTyCd eq 'PRT'}">selected</c:if>>수의계약</option>
+                                            <option value="GEN" <c:if test="${contract.bidTyCd eq 'GEN'}">selected</c:if>>일반경쟁입찰</option>
+                                            <option value="LIM" <c:if test="${contract.bidTyCd eq 'LIM'}">selected</c:if>>제한경쟁입찰</option>
+                                            <option value="SEL" <c:if test="${contract.bidTyCd eq 'SEL'}">selected</c:if>>지명경쟁입찰</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label" for="contSttsCd">계약상태</label>
+                                        <select class="form-select" id="contSttsCd" name="contSttsCd">
+                                            <option value="DRAFT"  <c:if test="${contract.contSttsCd eq 'DRAFT'}">selected</c:if>>작성중</option>
+                                            <option value="ACTIVE" <c:if test="${not isTerminateMode and (empty contract.contSttsCd or contract.contSttsCd eq 'ACTIVE')}">selected</c:if>>진행중</option>
+                                            <option value="END"    <c:if test="${not isTerminateMode and contract.contSttsCd eq 'END'}">selected</c:if>>종료</option>
+                                            <option value="TERM"   <c:if test="${isTerminateMode or contract.contSttsCd eq 'TERM'}">selected</c:if>>해지</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label" for="contAmt">계약금액<span class="required">*</span></label>
+                                        <input type="number" class="form-input" id="contAmt" name="contAmt"
+                                               value="${contract.contAmt}" min="0" placeholder="숫자만 입력" required>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label" for="contDt">계약일자</label>
+                                        <input type="date" class="form-input" id="contDt" name="contDt" value="${contDtValue}">
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label" for="contBgngDt">계약시작일<span class="required">*</span></label>
+                                        <input type="date" class="form-input" id="contBgngDt" name="contBgngDt" value="${contBgngDtValue}" required>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label" for="contEndDt">계약종료일</label>
+                                        <input type="date" class="form-input" id="contEndDt" name="contEndDt" value="${contEndDtValue}">
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="field-label" for="pymtDt">지급예정일</label>
+                                        <input type="date" class="form-input" id="pymtDt" name="pymtDt" value="${pymtDtValue}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <%-- 대상 시설 : 시설 계약 및 시설 검침 계약에서 사용 --%>

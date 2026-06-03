@@ -242,7 +242,7 @@ function loadMyRooms() {
 
             let html = `
                 <div class="section-hd">
-                  <h3>채팅방 목록</h3>
+                  <h3>내 채팅방 목록</h3>
                   <button onclick="openCreateRoom()" 
                           style="background:#2b674e;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">
                     +

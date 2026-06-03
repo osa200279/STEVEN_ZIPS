@@ -64,6 +64,7 @@ public class SecurityConfig {
             , "/member/idCheck"
             , "/WEB-INF/views/**"
             , "/main/**"
+            , "/resident/board/notice"
             , "/rent/**"
             , "/facility/history.do"
             , "/board/notice/list.do"

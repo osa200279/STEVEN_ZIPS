@@ -626,6 +626,8 @@
             <form action="${pageContext.request.contextPath}/member/join"
                   id="joinForm" method="post" enctype="multipart/form-data">
 
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+
                 <section class="form-section">
                     <h3 class="section-title">계정 정보</h3>
                     <div class="form-grid">

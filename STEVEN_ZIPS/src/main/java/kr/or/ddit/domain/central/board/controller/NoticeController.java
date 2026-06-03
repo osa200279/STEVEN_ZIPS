@@ -57,7 +57,6 @@ public class NoticeController {
 
         return "central/board/notice/noticeDetail";
     }
-
 }
 
 

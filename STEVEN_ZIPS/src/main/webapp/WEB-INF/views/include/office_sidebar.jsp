@@ -629,7 +629,7 @@
                     <span class="sub-group-label">민원</span>
                     <a href="/manager/complex/complaint/${mgmtOfcNo}" class="nav-item" aria-disabled="true">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>
-                        <span class="nav-text">민원 접수 현황</span>
+                        <span class="nav-text">민원 관리</span>
                     </a>
                     <%--<a href="javascript:void(0);" class="nav-item" aria-disabled="true" title="준비중">
                         <span class="material-symbols-rounded nav-icon">chevron_right</span>

@@ -77,7 +77,7 @@
 
                 <div class="page-header">
                     <div class="page-title-block">
-                        <h2>민원 접수 현황</h2>
+                        <h2>민원 관리</h2>
                         <p>입주민이 접수한 민원을 조회하고 처리 상태를 관리합니다.</p>
                     </div>
                 </div>

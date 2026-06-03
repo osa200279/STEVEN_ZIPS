@@ -75,7 +75,7 @@ public class AplctServiceImpl implements IAplctService {
                         userNo,
                         NotificationDTO.success(
                                 "서류검토완료",
-                                "서류검토가 끝났습니다. 계약서를 확인해주세요."
+                                "서류검토가 끝났습니다. 담당자와 계약을 진행해주세요"
                         )
                 );
             }
