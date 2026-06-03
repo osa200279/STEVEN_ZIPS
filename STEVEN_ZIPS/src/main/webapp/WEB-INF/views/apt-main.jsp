@@ -246,11 +246,29 @@ img { display: block; width: 100%; }
   font-size:10.5px; font-weight:700; color:var(--green-accent);
   letter-spacing:1px; text-transform:uppercase;
 }
+.news-card {
+    height: 210px;
+}
+
 .news-card h4 {
   font-size:15px; font-weight:600; color:var(--text-dark);
   letter-spacing:-.3px; line-height:1.5;
 }
-.news-card p { font-size:13px; color:var(--text-light); line-height:1.8; flex:1; }
+.news-card p {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.8;
+    flex: 1;
+
+    /* 여기에 말줄임 스타일 추가 */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;    /* 3줄까지 보여주고 넘치면 ... 처리 */
+    overflow: hidden;         /* 영역 넘치는 텍스트 숨기기 */
+
+    /* line-height(1.8) * 3줄 = 5.4em 으로 높이를 고정해서 글자 수가 적어도 높이 유지 */
+    height: 5.4em;
+}
 .news-card-date {
   font-size:11.5px; color:var(--text-light); letter-spacing:.3px;
   padding-top:10px; border-top:1px solid var(--border);
