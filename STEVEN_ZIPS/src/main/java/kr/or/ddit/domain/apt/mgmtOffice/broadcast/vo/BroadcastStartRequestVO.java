@@ -12,4 +12,5 @@ public class BroadcastStartRequestVO {
     private String voiceName;
     private List<String> areas;
     private List<BroadcastDongTargetVO> targets;
+    private String broadcastId;
 }

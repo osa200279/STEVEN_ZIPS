@@ -17,4 +17,5 @@ public class BroadcastPlayMessageVO {
     private String senderUserNo;
     private String senderUserNm;
     private long sentAt;
+    private String broadcastId;
 }

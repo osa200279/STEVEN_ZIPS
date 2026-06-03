@@ -205,7 +205,6 @@
                                     </div>
                                     <div class="player-info">
                                         <div class="player-label" id="playerLabel">송출자 테스트 재생</div>
-                                        <p class="player-hint player-hint--test">▶ 버튼은 <strong>이 PC에서만</strong> 확인용입니다. 입주민에게 들리는 방송은 아래 <strong>방송 송출</strong>을 사용하세요.</p>
                                         <p class="player-text" id="playerText"></p>
                                         <div class="player-controls">
                                             <div class="player-sq-btns" role="group" aria-label="송출자 테스트 재생">

@@ -13,6 +13,8 @@
     var broadcastSubscription = null;
     var pendingPlay = null;
     var readyToastShown = false;
+    var activePlayPayload = null;
+    var ackSentForBroadcastId = null;
 
     function $(id) { return document.getElementById(id); }
 
@@ -228,7 +230,30 @@
         });
     }
 
-    function finishReceivePlayback() {
+    function sendBroadcastDoneAck(payload, status) {
+        if (!payload || !payload.broadcastId || !payload.senderUserNo) return;
+        if (ackSentForBroadcastId === payload.broadcastId) return;
+
+        var client = getStompClient();
+        if (!client || !client.connected) return;
+
+        ackSentForBroadcastId = payload.broadcastId;
+        client.send('/pub/broadcast/done', {}, JSON.stringify({
+            broadcastId: payload.broadcastId,
+            mgmtOfcNo: payload.mgmtOfcNo || cfg.mgmtOfcNo,
+            dongNo: payload.targetDongNo || cfg.dongNo,
+            dongLabel: payload.targetDongLabel || cfg.dongLabel || cfg.dongNo,
+            senderUserNo: payload.senderUserNo,
+            status: status === 'DONE' ? 'DONE' : 'FAILED'
+        }));
+    }
+
+    function finishReceivePlayback(status) {
+        var payload = activePlayPayload;
+        if (payload) {
+            sendBroadcastDoneAck(payload, status || 'DONE');
+        }
+        activePlayPayload = null;
         receiveActive = false;
         setReceiveUi('idle', '대기 중', '방송 송출 시 이 화면에서 자동 재생됩니다.');
         setWsBadge('is-ok', '수신 대기');
@@ -245,6 +270,9 @@
         }
         if (!payload || payload.action !== 'PLAY') return;
 
+        activePlayPayload = payload;
+        ackSentForBroadcastId = null;
+
         console.log('[방송 수신] WS 메시지 수신', getDongName(), payload);
         demoBroadcastAlert('start');
 
@@ -256,7 +284,7 @@
 
         fetchAndPlayTts(payload).catch(function (err) {
             console.warn('receive play failed', err);
-            finishReceivePlayback();
+            finishReceivePlayback('FAILED');
             setWsBadge('is-error', '재생 실패');
             toast({
                 title: '수신 실패',
@@ -342,10 +370,12 @@
 
     function bindAudioEvents() {
         if (!receiveAudio) return;
-        receiveAudio.addEventListener('ended', finishReceivePlayback);
+        receiveAudio.addEventListener('ended', function () {
+            finishReceivePlayback('DONE');
+        });
         receiveAudio.addEventListener('pause', function () {
             if (receiveActive && receiveAudio.ended) {
-                finishReceivePlayback();
+                finishReceivePlayback('DONE');
             }
         });
     }
