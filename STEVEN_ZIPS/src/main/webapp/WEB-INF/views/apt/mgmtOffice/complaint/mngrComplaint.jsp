@@ -273,7 +273,6 @@
     </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
 <script>
     (function () {
         'use strict';
@@ -282,6 +281,7 @@
            1. 상수
         ══════════════════════════════════════ */
         var MGMT_OFC_NO = '${mgmtOfcNo}';
+        var CTX = '${pageContext.request.contextPath}' || '';
 
         var TYPE_TEXT  = { FAC:'시설/하자', SEC:'보안/안전', ACC:'회계/관리비', ENV:'환경/위생', ETC:'기타' };
         var TYPE_BADGE = { FAC:'badge-green', SEC:'badge-red', ACC:'badge-blue', ENV:'badge-orange', ETC:'badge-gray' };
@@ -296,11 +296,11 @@
             RJCT:'badge-gray',   END:'badge-green', CNCL:'badge-gray'
         };
 
-        /* 승인 시 변경될 다음 상태 */
+        /* 승인 시 변경될 다음 상태 (null 이면 승인 버튼 숨김) */
         var NEXT_STATUS = {
-            APLY: 'RCPT', // 민원 접수 -> 접수 완료까지만 승인 가능
-            RCPT: null,
-            POCS: null,
+            APLY: 'RCPT',
+            RCPT: 'POCS',
+            POCS: 'COMP',
             SUPL: null,
             REJS: null,
             COMP: null,
@@ -308,6 +308,39 @@
             END:  null,
             CNCL: null
         };
+
+        /* 종결 상태 — 승인·반려 불가 */
+        var TERMINAL_STATUS = { RJCT: 1, COMP: 1, END: 1, CNCL: 1, REJS: 1 };
+
+        function findComplaint(cvplNo) {
+            var key = String(cvplNo == null ? '' : cvplNo);
+            for (var i = 0; i < cachedList.length; i++) {
+                if (String(cachedList[i].cvplNo) === key) return cachedList[i];
+            }
+            return null;
+        }
+
+        function canApproveStatus(code) {
+            return !!NEXT_STATUS[code];
+        }
+
+        function canRejectStatus(code) {
+            return code && !TERMINAL_STATUS[code];
+        }
+
+        function updateDetailActionButtons(sttsCd) {
+            var canApp = canApproveStatus(sttsCd);
+            var canRej = canRejectStatus(sttsCd);
+            if (!canApp && !canRej) {
+                $processingNotice.style.display = 'block';
+                $btnApproveDetail.style.display = 'none';
+                $btnRejectDetail.style.display  = 'none';
+            } else {
+                $processingNotice.style.display = 'none';
+                $btnApproveDetail.style.display = canApp ? 'inline-flex' : 'none';
+                $btnRejectDetail.style.display  = canRej ? 'inline-flex' : 'none';
+            }
+        }
 
         /* ══════════════════════════════════════
            2. DOM 참조
@@ -373,7 +406,7 @@
             });
 
             try {
-                const res  = await fetch('/manager/complex/complaintList/' + MGMT_OFC_NO + '?' + params);
+                const res  = await fetch(CTX + '/manager/complex/complaintList/' + MGMT_OFC_NO + '?' + params);
                 if (!res.ok) throw new Error('서버 오류: ' + res.status);
                 const data = await res.json();
                 cachedList  = data.list  || [];
@@ -388,7 +421,7 @@
         async function saveComplaint(payload) {
             const csrfToken  = document.querySelector('meta[name="_csrf"]').getAttribute('content');
             const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-            const res = await fetch('/manager/complex/updateComplaint/' + MGMT_OFC_NO, {
+            const res = await fetch(CTX + '/manager/complex/updateComplaint/' + MGMT_OFC_NO, {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
                 body:    JSON.stringify(payload)
@@ -460,7 +493,7 @@
            7. 모달
         ══════════════════════════════════════ */
         async function openDetail(cvplNo) {
-            const row = cachedList.filter(r => r.cvplNo === cvplNo)[0];
+            const row = findComplaint(cvplNo);
             if (!row) return;
 
             const dongHo = ((row.dongNm || '') + '동 ' + (row.ho || '') + '호').trim();
@@ -475,17 +508,7 @@
             $dContent.textContent  = safe(row.cvplCn);
             $dAnswer.textContent   = safe(row.cvplAns);
 
-            /* 승인/반려 버튼 표시 여부 */
-            const nextStatus = NEXT_STATUS[row.cvplSttsCd];
-            if (!nextStatus) {
-                $processingNotice.style.display = 'block';
-                $btnApproveDetail.style.display = 'none';
-                $btnRejectDetail.style.display  = 'none';
-            } else {
-                $processingNotice.style.display = 'none';
-                $btnApproveDetail.style.display = 'inline-flex';
-                $btnRejectDetail.style.display  = 'inline-flex';
-            }
+            updateDetailActionButtons(row.cvplSttsCd);
 
             /* 첨부파일 조회 */
             const $fileSection = document.getElementById('fileSection');
@@ -495,7 +518,7 @@
 
             if (row.cvplFileNo) {
                 try {
-                    const res   = await fetch('/manager/complex/cvplFileList/' + MGMT_OFC_NO + '?cvplFileNo=' + row.cvplFileNo);
+                    const res   = await fetch(CTX + '/manager/complex/cvplFileList/' + MGMT_OFC_NO + '?cvplFileNo=' + row.cvplFileNo);
                     if (!res.ok) throw new Error('서버 오류: ' + res.status);
                     const files = await res.json();
                     if (files.length > 0) {
@@ -533,8 +556,6 @@
             $detailModal.classList.remove('open');
             $detailModal.dataset.currentNo = '';
             $processingNotice.style.display = 'none';
-            $btnApproveDetail.style.display = 'inline-flex';
-            $btnRejectDetail.style.display  = 'inline-flex';
         }
 
         /* ══════════════════════════════════════
@@ -587,9 +608,12 @@
             const cvplNo = $detailModal.dataset.currentNo;
             if (!cvplNo) return;
 
-            const row       = cachedList.filter(r => r.cvplNo === cvplNo)[0];
-            const nextStts  = NEXT_STATUS[row?.cvplSttsCd];
-            if (!nextStts) return;
+            const row       = findComplaint(cvplNo);
+            const nextStts  = row ? NEXT_STATUS[row.cvplSttsCd] : null;
+            if (!row || !nextStts) {
+                await showAlert('현재 상태에서는 승인할 수 없습니다.', 'warning');
+                return;
+            }
 
             const memoResult = await showPrompt({
                 title: '민원 승인',
@@ -620,6 +644,12 @@
         $btnRejectDetail.addEventListener('click', async () => {
             const cvplNo = $detailModal.dataset.currentNo;
             if (!cvplNo) return;
+
+            const row = findComplaint(cvplNo);
+            if (!row || !canRejectStatus(row.cvplSttsCd)) {
+                await showAlert('현재 상태에서는 반려할 수 없습니다.', 'warning');
+                return;
+            }
 
             const reasonResult = await showPrompt({
                 title: '민원 반려',

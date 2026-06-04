@@ -87,10 +87,14 @@ public class ManagerComplaintController {
     @PostMapping("/updateComplaint/{mgmtOfcNo}")
     public ResponseEntity<Map<String, Object>> updateComplaint(
             @PathVariable String mgmtOfcNo,
-            @RequestBody ManagerComplaintDTO dto
+            @RequestBody ManagerComplaintDTO dto,
+            @AuthenticationPrincipal CustomUser principal
     ) {
         Map<String, Object> result = new HashMap<>();
         try {
+            if (principal != null && principal.getMember() != null) {
+                dto.setPicId(principal.getMember().getUserNo());
+            }
             managerComplaintService.updateComplaint(dto);
             result.put("success", true);
         } catch (Exception e) {
