@@ -193,6 +193,12 @@
             </choose>
         </if>
         <choose>
+            <when test="sortField == 'METER_HSTRY_NO' and sortDir == 'ASC'">
+                order by mh.meter_hstry_no asc
+            </when>
+            <when test="sortField == 'METER_HSTRY_NO' and sortDir == 'DESC'">
+                order by mh.meter_hstry_no desc
+            </when>
             <when test="sortField == 'METER_DT' and sortDir == 'ASC'">
                 order by mh.meter_dt asc nulls last, mh.meter_hstry_no desc
             </when>
@@ -235,14 +241,7 @@
                 order by (mh.curr_val - mh.pre_val) desc nulls last, mh.meter_dt desc, mh.meter_hstry_no desc
             </when>
             <otherwise>
-                order by case mh.meter_ty_cd
-                when 'ELEC' then 1
-                when 'GAS' then 2
-                when 'WATER' then 3
-                else 9
-                end,
-                mh.meter_dt desc nulls last,
-                mh.meter_hstry_no desc
+                order by mh.meter_dt desc nulls last, mh.meter_hstry_no desc
             </otherwise>
         </choose>
         <if test="pageSize != null and pageSize &gt; 0">

@@ -251,7 +251,6 @@
         #contractPage .tbl td .contract-name,
         #contractPage .tbl td .contract-sub,
         #contractPage .tbl td .partner-name,
-        #contractPage .tbl td .badge,
         #contractPage .tbl td .btn {
             font-family:'Noto Sans KR',sans-serif;
             font-weight:400;

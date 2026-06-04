@@ -202,7 +202,10 @@
             )
         </if>
 
-        order by to_number(regexp_substr(fc.cont_no, '[0-9]+')) desc, fc.cont_no desc
+        order by fc.reg_dt desc nulls last
+        , nvl(fc.cont_bgng_dt, fc.reg_dt) desc
+        , to_number(regexp_substr(fc.cont_no, '[0-9]+')) desc
+        , fc.cont_no desc
         ) a
         where rownum &lt;= #{pagingVO.endRow}
         )

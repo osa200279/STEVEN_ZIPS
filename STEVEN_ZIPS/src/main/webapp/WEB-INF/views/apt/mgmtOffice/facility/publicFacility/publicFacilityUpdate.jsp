@@ -413,6 +413,24 @@
         var mgmtOfcNo  = config.mgmtOfcNo  || "";
 
         function getEl(id) { return document.getElementById(id); }
+
+        function syncReserveAmountState() {
+            var reserveYn = getEl("regRsvYn");
+            var amount = getEl("regAmt");
+            if (!reserveYn || !amount) return;
+
+            // 자유이용 선택 시 이용요금 안내 문구 표시
+            if (reserveYn.value === "N") {
+                amount.value = "";
+                amount.placeholder = "자유이용 금액설정 없음";
+                amount.readOnly = true;
+                return;
+            }
+
+            amount.placeholder = "0 (무료)";
+            amount.readOnly = false;
+        }
+
         function listUrl() { return contextPath + "/manager/publicFacility/page/" + encodeURIComponent(mgmtOfcNo); }
         function alertMessage(msg, icon) {
             if (typeof showAlert === "function") return showAlert(msg, icon);
@@ -656,6 +674,7 @@
             if (!selectedFacilityNo) { alertMessage("시설자산이 선택되지 않았습니다."); return; }
             updateOperationHourText();
             if (!validateOperationHourInput()) return;
+            syncReserveAmountState();
             updateDeleteFileUuids();
             try {
                 await postForm(contextPath + "/manager/publicFacility/update/" + encodeURIComponent(mgmtOfcNo), new FormData(getEl("registerForm")));
@@ -672,11 +691,13 @@
                 getEl(id).addEventListener("input", updateOperationHourText);
             });
             getEl("regImgInput").addEventListener("change", previewSelectedFiles);
+            getEl("regRsvYn").addEventListener("change", syncReserveAmountState);
             document.addEventListener("change", function (e) {
                 if (e.target.classList.contains("js-delete-file-check")) updateDeleteFileUuids();
             });
             getEl("registerForm").addEventListener("submit", saveRegister);
             getEl("backToListBtn").addEventListener("click", function () { history.back(); });
+            syncReserveAmountState();
             applyExistingOperationHour();
             if (window.CommonImageViewer && typeof window.CommonImageViewer.bind === "function") CommonImageViewer.bind("#regFileManageList");
             if (getEl("selectedFacilityNo").value) loadExistingFiles(getEl("selectedFacilityNo").value);

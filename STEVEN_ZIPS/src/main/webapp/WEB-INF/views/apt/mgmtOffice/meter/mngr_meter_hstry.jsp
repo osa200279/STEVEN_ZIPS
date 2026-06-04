@@ -368,7 +368,7 @@
                                         </colgroup>
                                         <thead>
                                         <tr>
-                                            <th>번호</th><th>검침번호</th><th>검침유형</th>
+                                            <th>번호</th><th><button type="button" class="sort-btn js-sort-btn" data-sort-field="METER_HSTRY_NO">검침번호<span class="sort-icon"></span></button></th><th>검침유형</th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="METER_DT">검침일자<span class="sort-icon"></span></button></th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="HO_NO">동/호<span class="sort-icon"></span></button></th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="PRE_VAL">이전값<span class="sort-icon"></span></button></th>
@@ -548,7 +548,7 @@
                                         </colgroup>
                                         <thead>
                                         <tr>
-                                            <th>번호</th><th>검침번호</th><th>검침유형</th>
+                                            <th>번호</th><th><button type="button" class="sort-btn js-sort-btn" data-sort-field="METER_HSTRY_NO">검침번호<span class="sort-icon"></span></button></th><th>검침유형</th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="METER_DT">검침일자<span class="sort-icon"></span></button></th>
                                             <th class="td-left">시설</th>
                                             <th><button type="button" class="sort-btn js-sort-btn" data-sort-field="PRE_VAL">이전값<span class="sort-icon"></span></button></th>
@@ -1017,9 +1017,10 @@
                                 <span class="material-symbols-rounded">close</span>
                             </button>
                         </div>
-                        <form method="post" action="${ctx}/manager/meter/hstry/update/${mgmtOfcNo}" id="meterEditForm">
-                            <sec:csrfInput/>
-                            <input type="hidden" name="meterHstryNo" id="editMeterHstryNo">
+                                        <form method="post" action="${ctx}/manager/meter/hstry/update/${mgmtOfcNo}" id="meterEditForm">
+                                            <sec:csrfInput/>
+                                            <input type="hidden" name="meterHstryNo" id="editMeterHstryNo">
+                                            <input type="hidden" name="returnQueryString" id="editReturnQueryString">
                             <div class="modal-body">
                                 <div class="form-section">
                                     <div class="form-section-title"><span class="material-symbols-rounded">lock</span>변경 불가 정보</div>
@@ -1851,6 +1852,7 @@
             setDisplay('editUnitLabel2', unit || '-');
             /* 수정 가능 필드 */
             document.getElementById('editMeterHstryNo').value  = row.meterHstryNo || '';
+            document.getElementById('editReturnQueryString').value = location.search || '';
             document.getElementById('editMeterDt').value       = toDateInputValue(row.meterDt);
             document.getElementById('editPreVal').value        = row.preVal == null ? '' : row.preVal;
             document.getElementById('editCurrVal').value       = row.currVal == null ? '' : row.currVal;

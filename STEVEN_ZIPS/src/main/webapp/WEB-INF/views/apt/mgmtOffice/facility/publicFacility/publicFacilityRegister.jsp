@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c"   uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn"  uri="jakarta.tags.functions" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
@@ -913,7 +913,22 @@
             }
             return true;
         }
+        function syncReserveAmountState() {
+            var reserveYn = getEl("regRsvYn");
+            var amount    = getEl("regAmt");
+            if (!reserveYn || !amount) return;
 
+            // 자유이용 선택 시 이용요금 안내 문구 표시
+            if (reserveYn.value === "N") {
+                amount.value = "";
+                amount.placeholder = "자유이용 금액설정 없음";
+                amount.readOnly = true;
+                return;
+            }
+
+            amount.placeholder = "0 (무료)";
+            amount.readOnly = false;
+        }
         /* =====================================================
            시설자산 선택 모달
         ===================================================== */
@@ -1181,6 +1196,7 @@
             // 운영시간 및 삭제 파일값 최종 조합
             updateOperationPreview();
             if (!validateOperationTime()) return;
+            syncReserveAmountState();
             updateDeleteFileUuids();
 
             // 서버 전송
@@ -1277,6 +1293,7 @@
 
             // 사진 선택
             getEl("regImgInput").addEventListener("change", previewNewPhotos);
+            getEl("regRsvYn").addEventListener("change", syncReserveAmountState);
             document.addEventListener("change", function (e) {
                 if (e.target.classList.contains("js-delete-file-check")) updateDeleteFileUuids();
             });
@@ -1288,6 +1305,7 @@
             // 초기화
             updateAssetSearchCount();
             updateOperationPreview();
+            syncReserveAmountState();
 
             // 이미지 확대 뷰어 초기 연결
             if (window.CommonImageViewer && typeof window.CommonImageViewer.bind === "function") {
