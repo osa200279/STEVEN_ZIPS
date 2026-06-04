@@ -167,4 +167,6 @@ public class FacilityInfoDTO {
      * → JSP에서 googleId를 꺼내 이미지로 보여주기 위해.
      */
 
+    private String rprsntImgFileNo; // 대표 이미지 파일번호
+
 }

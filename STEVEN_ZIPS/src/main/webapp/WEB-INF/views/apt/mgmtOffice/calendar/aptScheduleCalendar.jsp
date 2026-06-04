@@ -455,12 +455,28 @@
     }
 
     /* 날짜칸 */
+    #aptScheduleCalendarPage .apt-calendar {
+      overflow: visible !important;
+    }
+
+    #aptScheduleCalendarPage .apt-calendar tbody tr{
+      height:180px !important;
+    }
+
     #aptScheduleCalendarPage .apt-calendar td{
       position:relative !important;
-      overflow:hidden !important;
+      overflow:visible !important; /* 옆 칸까지 색띠가 넘어가게 함 */
       height:180px !important;
       padding:0 !important;
       vertical-align:top !important;
+    }
+
+    #aptScheduleCalendarPage .week-event-bar{
+      left:3px !important;
+      height:19px;
+      line-height:19px;
+      border-radius:4px;
+      z-index:20;
     }
 
     /* 날짜 숫자 */
@@ -481,26 +497,6 @@
       display:none !important;
     }
 
-    /* 펼침 */
-    #aptScheduleCalendarPage td.expanded{
-      overflow-y:auto !important;
-    }
-
-    /* 펼쳤을 때 숨긴 일정 보이기 */
-    #aptScheduleCalendarPage td.expanded .week-event-bar.hidden-event{
-      display:block !important;
-    }
-
-    /* 전체+ 버튼 */
-    #aptScheduleCalendarPage .calendar-more-btn{
-      position:absolute !important;
-      left:4px !important;
-      right:4px !important;
-      bottom:4px !important;
-      top:auto !important;
-      height:18px !important;
-      z-index:999 !important;
-    }
     /* 직원휴가 캘린더 바 연보라색 */
     .week-event-bar.VACATION,
     #aptScheduleCalendarPage .week-event-bar.VACATION,
@@ -519,6 +515,24 @@
       font-weight: 800;
       color: #334155;
       border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .day-schedule-title{
+      display:block;
+      width:100%;
+      border:0;
+      background:#f8fafc;
+      border-radius:8px;
+      padding:10px 12px;
+      margin-bottom:8px;
+      text-align:left;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .day-schedule-title:hover{
+      background:#e8f7ee;
+      color:#006b4f;
     }
   </style>
 
@@ -757,6 +771,25 @@
           </div>
         </div>
 
+        <div class="modal-backdrop" id="dayScheduleModal">
+          <div class="modal-card" style="width:760px;">
+            <div class="modal-head">
+              <div class="modal-title" id="dayScheduleTitle">일정 목록</div>
+            </div>
+
+            <div class="modal-body" style="display:flex; gap:18px;">
+              <div id="dayScheduleList" style="width:42%; border-right:1px solid #e5e7eb; padding-right:14px;"></div>
+              <div id="sideDetailArea" style="flex:1;">
+                <div style="color:#94a3b8; font-weight:700;">왼쪽 일정 제목을 선택하세요.</div>
+              </div>
+            </div>
+
+            <div class="modal-foot">
+              <button type="button" class="btn btn-secondary" id="closeDayScheduleBtn">닫기</button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
@@ -922,7 +955,7 @@
         const dayClass = day === 0 ? 'sun' : (day === 6 ? 'sat' : '');
         const todayClass = dateStr === todayStr ? 'today' : '';
 
-        html += '<td class="' + dayClass + ' ' + todayClass + (isOther ? ' other-month' : '') + '">';
+        html += '<td class="' + dayClass + ' ' + todayClass + (isOther ? ' other-month' : '') + '"' + ' data-date="' + dateStr + '">';
         html += '<div class="day-num">' + cellDate.getDate() + '</div>';
         html += renderWeekBarsByDate(dateStr, day, weekSegments);
         html += '</td>';
@@ -933,17 +966,16 @@
 
     calendarBody.innerHTML = html;
 
-    document.querySelectorAll('.week-event-bar').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        const scheduleNo = btn.dataset.scheduleNo;
-
-        const selected = scheduleList.find(function (item) {
-          return String(item.scheduleNo) === String(scheduleNo);
-        });
-
-        if (selected) {
-          openDetailModal(selected);
+    document.querySelectorAll('#calendarBody td[data-date]').forEach(function(td){
+      td.addEventListener('click', function(e){
+        if(e.target.classList.contains('week-event-bar')){
+          return;
         }
+
+        const dateStr = td.dataset.date;
+        const daySchedules = getSchedulesByDate(dateStr);
+
+        openDayScheduleModal(dateStr, daySchedules);
       });
     });
 
@@ -1027,17 +1059,6 @@
       html += escapeHtml(seg.item.scheduleTtl);
       html += '</button>';
     });
-
-    /*
-     * 숨겨진 일정이 있을 때만 전체+ 버튼 표시
-     */
-    if (hiddenStartCount > 0) {
-      html += '<button type="button"'
-              + ' class="calendar-more-btn"'
-              + ' data-hidden-count="' + hiddenStartCount + '">';
-      html += '전체 +' + hiddenStartCount;
-      html += '</button>';
-    }
 
     return html;
   }
@@ -1208,6 +1229,63 @@
     document.getElementById('vacStartDt').value = '';
     document.getElementById('vacEndDt').value = '';
   }
+
+  function openDayScheduleModal(dateStr, items) {
+    document.getElementById('dayScheduleTitle').textContent = dateStr + ' 일정 목록';
+
+    if (!items.length) {
+      document.getElementById('dayScheduleList').innerHTML =
+              '<div style="color:#94a3b8;">조회된 일정이 없습니다.</div>';
+      document.getElementById('sideDetailArea').innerHTML =
+              '<div style="color:#94a3b8;">일정이 없습니다.</div>';
+    } else {
+      document.getElementById('dayScheduleList').innerHTML = items.map(function(item){
+        return '<button type="button" class="day-schedule-title" data-schedule-no="' + escapeHtml(item.scheduleNo) + '">'
+                + '[' + escapeHtml(item.scheduleTyNm) + '] '
+                + escapeHtml(item.scheduleTtl)
+                + '</button>';
+      }).join('');
+
+      document.getElementById('sideDetailArea').innerHTML =
+              '<div style="color:#94a3b8; font-weight:700;">왼쪽 일정 제목을 선택하세요.</div>';
+
+      document.querySelectorAll('.day-schedule-title').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          const scheduleNo = btn.dataset.scheduleNo;
+
+          const selected = scheduleList.find(function(item){
+            return String(item.scheduleNo) === String(scheduleNo);
+          });
+
+          if(selected){
+            renderSideDetail(selected);
+          }
+        });
+      });
+    }
+
+    document.getElementById('dayScheduleModal').classList.add('active');
+  }
+
+  function renderSideDetail(item) {
+    const period = item.startDt === item.endDt
+            ? item.startDt
+            : item.startDt + ' ~ ' + item.endDt;
+
+    const person = item.userNm || item.rgtrId || '-';
+
+    document.getElementById('sideDetailArea').innerHTML =
+            '<h3 style="margin-top:0;">' + escapeHtml(item.scheduleTtl || '-') + '</h3>'
+            + '<p><b>유형</b><br>' + escapeHtml(item.scheduleTyNm || '-') + '</p>'
+            + '<p><b>기간</b><br>' + escapeHtml(period) + '</p>'
+            + '<p><b>위치</b><br>' + escapeHtml(item.locCn || '-') + '</p>'
+            + '<p><b>등록자/직원</b><br>' + escapeHtml(person) + '</p>'
+            + '<p><b>내용</b><br>' + escapeHtml(item.scheduleCn || '-') + '</p>';
+  }
+
+  document.getElementById('closeDayScheduleBtn').addEventListener('click', function(){
+    document.getElementById('dayScheduleModal').classList.remove('active');
+  });
   /*
    * 일정 상세 모달 열기
    *

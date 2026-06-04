@@ -20,6 +20,12 @@
         , ac.unit_cnt       unitCnt
         , ac.dong_cnt       dongCnt
         , ac.bld_yr         bldYr
+        , (
+        SELECT MIN(af.google_id)
+        FROM attach_file af
+        WHERE af.file_group_no = NVL(ac.rprsnt_img_file_no, ac.img_file_no)
+        AND af.mime_type LIKE 'image/%'
+        ) AS rprsnt_img_file_no
         FROM apt_complex ac
         WHERE 1 = 1
 

@@ -361,6 +361,18 @@
             object-fit:cover;
             display:block;
         }
+
+        .facility-card-img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            display:block;
+        }
+
+        /* object-fit:cover란?
+           이미지 비율은 유지하면서 카드 영역을 꽉 채우는 옵션.
+           왜 사용? 사진이 찌그러지지 않게 하려고 사용.
+        */
     </style>
 </head>
 
@@ -466,20 +478,26 @@
                                    href="${pageContext.request.contextPath}/facility/history.do?searchYn=Y&sidoNm=${dto.sidoNm}&sigunguNm=${dto.sigunguNm}&unitRange=${dto.unitRange}&keyword=${dto.keyword}&currentPage=${pagingVO.currentPage}&aptCmplexNo=${apt.aptCmplexNo}&facilityPage=1">
 
                                     <div class="facility-card-top">
-                                <span class="facility-card-badge">
-                                    ${apt.sidoNm} ${apt.sigunguNm}
-                                </span>
+
+<%--                                        <div style="font-size:11px; color:red;">--%>
+<%--                                            이미지번호: ${apt.rprsntImgFileNo}--%>
+<%--                                        </div>--%>
+
                                         <c:choose>
-                                            <c:when test="${not empty apt.fileList and not empty apt.fileList[0].googleId}">
+                                            <c:when test="${not empty apt.rprsntImgFileNo}">
                                                 <img class="facility-card-img"
-                                                     src="https://drive.google.com/thumbnail?id=${apt.fileList[0].googleId}&sz=w600"
-                                                     alt="${apt.aptCmplexNm} 이미지">
+                                                     src="${pageContext.request.contextPath}/file/display/${apt.rprsntImgFileNo}"
+                                                     alt="${apt.aptCmplexNm}">
                                             </c:when>
 
                                             <c:otherwise>
                                                 <span class="material-symbols-outlined facility-card-icon">apartment</span>
                                             </c:otherwise>
                                         </c:choose>
+
+                                        <span class="facility-card-badge">
+                                            ${apt.sidoNm} ${apt.sigunguNm}
+                                        </span>
                                     </div>
 
                                     <div class="facility-card-body">
