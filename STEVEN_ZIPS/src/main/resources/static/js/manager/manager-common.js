@@ -154,8 +154,22 @@ async function postJson(url, data) {
 /* ============================================================
    alert (임시)
 ============================================================ */
-function showAlert(message) {
+function showAlert(message, icon) {
     alert(message);
+    return Promise.resolve({ isConfirmed: true });
+}
+
+async function showAlertThen(message, next, icon) {
+    await showAlert(message, icon);
+
+    if (typeof next === "function") {
+        next();
+        return;
+    }
+
+    if (typeof next === "string" && next) {
+        location.href = next;
+    }
 }
 
 
