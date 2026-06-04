@@ -554,7 +554,10 @@ public class ManagerMainController {
         return "apt/mgmtOffice/complaint/mngrComplaint";
     }
 
-    // 방송안내 관리 페이지
+    /**
+     * 방송 안내 <b>송출·작성</b> 화면 (JSP: mngr_broadcast.jsp).
+     * TTS·WS 송출 로직은 broadcast 패키지 API/WS 를 쓰고, 뷰 라우팅만 여기서 처리합니다.
+     */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/complex/broadcast/{mgmtOfcNo}")
     public String broadcastForm(
@@ -572,7 +575,14 @@ public class ManagerMainController {
         return "apt/mgmtOffice/broadcast/mngr_broadcast";
     }
 
-    /** 동별 방송 수신기 — 출력 PC에서 WebSocket 구독 후 TTS 재생 */
+    /**
+     * 동별 방송 <b>수신기</b> 화면.
+     * <ul>
+     *   <li>{@code dongNo} 없음 → mngr_broadcast_receive_pick.jsp (동 선택)</li>
+     *   <li>{@code dongNo} 있음 → mngr_broadcast_receive.jsp (WS 구독·TTS 재생)</li>
+     * </ul>
+     * model: mgmtOfcNo, dongList, dongNo, dongLabel, dongValid(등록 동 여부)
+     */
     @PreAuthorize("@authService.hasAccess(principal, #mgmtOfcNo)")
     @GetMapping("/complex/broadcast/receive/{mgmtOfcNo}")
     public String broadcastReceive(
