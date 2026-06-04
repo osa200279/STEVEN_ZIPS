@@ -104,28 +104,50 @@ const Ctrt = () => {
     navigate(`/adm/ctrt/detail/${RENT_CTRT_NO}`);
   };
 
+  // 엑셀 다운로드 기능
   const handleExcelDownload = () => {
-    // 1. 엑셀에 들어갈 데이터 가공
-    const excelData = list.map(item => ({
-      '계약번호': item.RENT_CTRT_NO,
-      'ID': item.USER_ID,
-      '이름': item.USER_NM,
-      '아파트': item.APT_CMPLEX_NM,
-      '승인일': item.CTRT_APRV_DT,
-      '임대타입': getNameOfJm(item.RENT_TYPE_CD).text,
-      '임대료': item.RENT_TYPE_CD === 'JS' ? item.DPST_AMT : item.MTHLY_RENT_AMT,
-      '상태': getNameByStatus(item.CTRT_STTS_CD, item.MVIN_DT, item.MVOUT_DT).text,
-      '담당자': item.CTRT_MGR_USER_NM
-    }));
+    const fetchXls = async () => {
+      try {
+        const response = await requestApi.get(`api/react/adm/ctrtXls`, {
+          params: {
+            ...apiParams
+          }
+        });
+        if (response.data && Array.isArray(response.data.ctrtList)) {
+          // 1. 엑셀에 들어갈 데이터 가공
+          const xlsData = response.data.ctrtList;
+          const excelData = xlsData.map(item => ({
+            '계약번호': item.RENT_CTRT_NO,
+            'ID': item.USER_ID,
+            '이름': item.USER_NM,
+            '아파트': item.APT_CMPLEX_NM,
+            '승인일': item.CTRT_APRV_DT,
+            '임대타입': getNameOfJm(item.RENT_TYPE_CD).text,
+            '임대료': item.RENT_TYPE_CD === 'JS' ? item.DPST_AMT : item.MTHLY_RENT_AMT,
+            '상태': getNameByStatus(item.CTRT_STTS_CD, item.MVIN_DT, item.MVOUT_DT).text,
+            '담당자': item.CTRT_MGR_USER_NM
+          }));
 
-    // 2. 워크북 및 워크시트 생성
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "계약관리목록");
+          // 2. 워크북 및 워크시트 생성
+          const worksheet = XLSX.utils.json_to_sheet(excelData);
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, "계약관리목록");
 
-    // 3. 파일 다운로드 실행
-    XLSX.writeFile(workbook, "계약관리목록.xlsx");
+          // 3. 파일 다운로드 실행
+          XLSX.writeFile(workbook, "계약관리목록.xlsx");
+        }
+      } catch (error) {
+        console.error("엑셀 다운로드 중 오류 발생:", error);
+        Swal.fire({
+          title: '엑셀 다운로드 에러',
+          icon: 'error',
+          cancelButtonText: '닫기'
+        })
+      }
+    };
+    fetchXls();
   };
+
 
   return (
     <div className="content-wrapper" style={{ paddingTop: '0px' }}>
@@ -137,7 +159,7 @@ const Ctrt = () => {
         </div>
         <div className="header-actions">
           <button className="btn-outline"
-                  onClick={() => handleExcelDownload()}
+            onClick={() => handleExcelDownload()}
           >
             <span className="material-symbols-outlined">.xls 다운로드</span><Download size={17} />
           </button>
