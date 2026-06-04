@@ -167,6 +167,10 @@
     <div class="main-wrap">
 
         <%@ include file="/WEB-INF/views/include/office_header.jsp" %>
+        <c:set var="activeSidebarHref" value="${pageContext.request.contextPath}/manager/survey/${mgmtOfcNo}" />
+        <c:set var="activeSidebarParent" value="소통 관리" />
+        <c:set var="activeSidebarCurrent" value="투표·설문 관리" />
+        <%@ include file="/WEB-INF/views/include/office_active_sidebar.jspf" %>
 
         <main class="main-content">
 
