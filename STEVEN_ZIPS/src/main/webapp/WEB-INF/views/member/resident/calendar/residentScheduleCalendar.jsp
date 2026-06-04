@@ -784,15 +784,15 @@
 
         /* 캘린더 한 주 높이 고정 */
         #residentScheduleCalendarPage .apt-calendar tbody tr {
-            height: 170px;
+            height: 210px;
         }
 
         /* 날짜 칸 내부 일정이 칸 밖으로 튀어나가지 않게 처리 */
         #residentScheduleCalendarPage .apt-calendar td {
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             padding: 0;
-            height: 170px;
+            height: 210px;
         }
 
         /* 숨긴 일정 */
@@ -1547,7 +1547,7 @@
              * 왜 사용?
              * 일정이 너무 많을 때 캘린더 칸 밖으로 일정바가 튀어나가지 않게 하기 위해.
              */
-            const maxVisibleLane = 4;
+            const maxVisibleLane = 8;
 
             /*
              * 현재 날짜에서 시작하는 일정만 가져온다.

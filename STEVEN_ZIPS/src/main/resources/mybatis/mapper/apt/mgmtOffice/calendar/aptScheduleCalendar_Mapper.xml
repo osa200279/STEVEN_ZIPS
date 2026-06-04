@@ -240,44 +240,65 @@
         UNION ALL
 
 
-        /* 4. 검침 일정 조회 */
-        /*
-            검침 데이터 중복 제거
-            왜 사용?
-            세대별 검침 이력이 많으면 같은 날짜/같은 시설 검침이 수백 건 출력되므로
-            시설 + 검침일 기준으로 1건만 캘린더 일정에 표시합니다.
-        */
+        /* 4. 검침 일정 조회 - 한 달 내 동일 검침명 1건만 표시 */
         SELECT
-            F.APT_CMPLEX_NO
-             , 'METER_' || F.FACILITY_NO || '_' || TO_CHAR(TRUNC(MH.METER_DT), 'YYYYMMDD') AS SCHEDULE_NO
-             , 'METER' AS SCHEDULE_TY
-             , '검침' AS SCHEDULE_TY_NM
-             , F.FACILITY_NM || ' 검침' AS SCHEDULE_TTL
-             , COUNT(*) || '건 검침 완료' AS SCHEDULE_CN
-             , F.LOC_CN AS LOC_CN
-             , TO_CHAR(TRUNC(MH.METER_DT), 'YYYY-MM-DD') AS START_DT
-             , TO_CHAR(TRUNC(MH.METER_DT), 'YYYY-MM-DD') AS END_DT
-             , 'SKY' AS COLOR_CD
-             , NULL AS RGTR_ID
-             , NULL AS USER_NO
-             , NULL AS USER_NM
-             , NULL AS SCHDL_STTS_CD
-             , NULL AS SCHDL_STTS_NM
-             , NULL AS SCHDL_STTS_CN
-             , NULL AS SCHEDULE_COLOR_HEX
-        FROM METER_HSTRY MH
-                 INNER JOIN FACILITY F
-                            ON MH.FACILITY_NO = F.FACILITY_NO
-        WHERE F.APT_CMPLEX_NO = #{aptCmplexNo}
-          AND F.USE_YN = 'Y'
-          AND MH.METER_DT BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
-            AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD') + 0.99999
-        GROUP BY
-            F.APT_CMPLEX_NO
-               , F.FACILITY_NO
-               , F.FACILITY_NM
-               , F.LOC_CN
-               , TRUNC(MH.METER_DT)
+            CAL.APT_CMPLEX_NO,
+            CAL.SCHEDULE_NO,
+            CAL.SCHEDULE_TY,
+            CAL.SCHEDULE_TY_NM,
+            CAL.SCHEDULE_TTL,
+            CAL.SCHEDULE_CN,
+            CAL.LOC_CN,
+            CAL.START_DT,
+            CAL.END_DT,
+            CAL.COLOR_CD,
+            CAL.RGTR_ID,
+            CAL.USER_NO,
+            CAL.USER_NM,
+            NULL AS SCHDL_STTS_CD,
+            NULL AS SCHDL_STTS_NM,
+            NULL AS SCHDL_STTS_CN,
+            NULL AS SCHEDULE_COLOR_HEX
+        FROM (
+                 SELECT
+                     F.APT_CMPLEX_NO,
+                     'METER_' || F.FACILITY_NO AS SCHEDULE_NO,
+                     'METER' AS SCHEDULE_TY,
+                     '검침' AS SCHEDULE_TY_NM,
+                     F.FACILITY_NM || ' 검침' AS SCHEDULE_TTL,
+                     COUNT(*) OVER (
+                         PARTITION BY F.APT_CMPLEX_NO, F.FACILITY_NM
+                         ) || '건 검침 완료' AS SCHEDULE_CN,
+                     F.LOC_CN AS LOC_CN,
+                     TO_CHAR(TRUNC(MH.METER_DT), 'YYYY-MM-DD') AS START_DT,
+                     TO_CHAR(TRUNC(MH.METER_DT), 'YYYY-MM-DD') AS END_DT,
+                     'SKY' AS COLOR_CD,
+                     NULL AS RGTR_ID,
+                     NULL AS USER_NO,
+                     NULL AS USER_NM,
+
+                     /*
+                      * ROW_NUMBER란?
+                      * 같은 그룹 안에서 1번, 2번, 3번처럼 순서를 매기는 함수.
+                      *
+                      * 왜 사용?
+                      * 한 달 안에 같은 검침명이 여러 번 있어도 최신 1건만 보여주기 위해.
+                      */
+                     ROW_NUMBER() OVER (
+                         PARTITION BY
+                             F.APT_CMPLEX_NO,
+                             F.FACILITY_NM || ' 검침'
+                         ORDER BY MH.METER_DT DESC
+                         ) AS RN
+                 FROM METER_HSTRY MH
+                          INNER JOIN FACILITY F
+                                     ON MH.FACILITY_NO = F.FACILITY_NO
+                 WHERE F.APT_CMPLEX_NO = #{aptCmplexNo}
+                   AND F.USE_YN = 'Y'
+                   AND MH.METER_DT BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
+                     AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD') + 0.99999
+             ) CAL
+        WHERE CAL.RN = 1
 
 
         UNION ALL
@@ -320,9 +341,9 @@
                      ROW_NUMBER() OVER (
                          PARTITION BY
                              F.APT_CMPLEX_NO,
-                             F.FACILITY_NM,
-                             TRUNC(FH.CHK_DT)
-                         ORDER BY FH.CHK_DT DESC, FH.FAC_CHK_HSTRY_NO DESC
+                             F.FACILITY_NM
+                         ORDER BY FH.CHK_DT DESC,
+                             FH.FAC_CHK_HSTRY_NO DESC
                          ) AS RN
                  FROM FACILITY_CHECK_HSTRY FH
                           INNER JOIN FACILITY F
