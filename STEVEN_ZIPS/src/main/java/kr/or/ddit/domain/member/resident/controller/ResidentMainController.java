@@ -948,17 +948,17 @@ public class ResidentMainController {
 
     @GetMapping("/complaint/live")
     public String complaintLive() {
-        return "member/resident/complaint/complaint_live";
+        return "apt/complaint/complaint_live";
     }
 
     @GetMapping("/complaint/chatbot")
     public String complaintChatbot() {
-        return "member/resident/complaint/complaint_chatbot";
+        return "apt/complaint/complaint_chatbot";
     }
 
     @GetMapping("/complaint/status")
     public String complaintStatus() {
-        return "member/resident/complaint/complaint_status";
+        return "apt/complaint/complaint_status";
     }
 
     /* =========================

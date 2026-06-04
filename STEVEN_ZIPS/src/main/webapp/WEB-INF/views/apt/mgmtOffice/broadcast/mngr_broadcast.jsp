@@ -175,7 +175,7 @@
                                             </div>
                                             <p class="hint bc-receive-setup-hint">
                                                 <strong>방송 송출</strong> 시 선택한 동의
-                                                <strong>방송 수신기</strong>에서 재생됩니다. 「전체」 선택 시 이 PC에서도 모니터 재생됩니다.
+                                                <strong>방송 수신기</strong>에서 재생됩니다.
                                                 동별 수신기:
                                                 <span class="bc-receive-setup-links">
                                                     <c:forEach var="dong" items="${dongList}" varStatus="st">
