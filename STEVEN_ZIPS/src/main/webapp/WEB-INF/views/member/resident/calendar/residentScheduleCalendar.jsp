@@ -936,11 +936,13 @@
         #residentScheduleCalendarPage ~ .modal-backdrop .modal-card,
             /* 하루 일정 목록 모달 */
         #dayScheduleModal .modal-card {
-            width: 820px !important;
-            max-width: calc(100vw - 48px);
-            height: 620px;              /* 모달 크기 고정 */
-            max-height: calc(100vh - 80px);
-            border-radius: 18px;
+            width: 1400px !important;
+            max-width: 96vw;
+
+            height: 85vh;
+            max-height: 85vh;
+
+            border-radius: 24px;
             overflow: hidden;
 
             display: flex;
@@ -966,9 +968,10 @@
             flex: 1;                    /* 남은 높이만 사용 */
             min-height: 0;              /* 스크롤 깨짐 방지 */
             display: grid !important;
-            grid-template-columns: 340px 1fr;
-            gap: 22px !important;
-            padding: 24px 26px;
+            /* 왼쪽 30%, 오른쪽 70% */
+            grid-template-columns: 420px 1fr;
+            padding: 28px 32px;
+            gap: 28px !important;
             overflow: hidden;           /* 모달 전체 스크롤 방지 */
         }
 
@@ -1009,17 +1012,17 @@
         .side-detail-card {
             border: 1px solid #e5e7eb;
             border-radius: 18px;
-            padding: 24px 28px;
+            padding: 36px 42px;
             background: #fff;
             box-shadow: none;
         }
 
         .side-detail-title {
             margin: 0 0 20px;
-            font-size: 24px;
+            font-size: 34px;
+            line-height: 1.4;
             font-weight: 900;
             color: #111827;
-            line-height: 1.35;
         }
 
         .side-detail-meta {
@@ -1045,13 +1048,6 @@
             color: #94a3b8;
         }
 
-        .side-detail-content {
-            white-space: pre-line;
-            word-break: keep-all;
-            overflow-wrap: break-word;
-            line-height: 1.9;
-        }
-
         /* 하단 닫기 버튼 영역 */
         #dayScheduleModal .modal-foot {
             flex-shrink: 0;
@@ -1071,14 +1067,6 @@
             }
         }
 
-        /* 하루 일정 목록 모달 */
-        #dayScheduleModal .modal-card {
-            width: 900px !important;
-            max-width: calc(100vw - 40px);
-            border-radius: 24px;
-            overflow: hidden;
-        }
-
         #dayScheduleModal .modal-head {
             padding: 26px 28px;
             background: linear-gradient(135deg, #f8fffb, #ffffff);
@@ -1089,14 +1077,6 @@
             font-size: 26px;
             font-weight: 900;
             color: #172033;
-        }
-
-        #dayScheduleModal .modal-body {
-            display: grid !important;
-            grid-template-columns: 360px 1fr;
-            gap: 24px !important;
-            padding: 26px 28px;
-            min-height: 420px;
         }
 
         #dayScheduleList {
@@ -1128,14 +1108,6 @@
             background: #e2f6ea;
             border-color: #8fd3aa;
             transform: translateY(-1px);
-        }
-
-        .side-detail-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            padding: 26px 30px;
-            background: #ffffff;
-            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
         }
 
         .side-detail-title {
@@ -1173,9 +1145,9 @@
             border-left: 5px solid #006b4f;
             background: #fafafa;
             border-radius: 14px;
-            padding: 20px 22px;
-            font-size: 15px;
-            line-height: 1.9;
+            padding: 28px 32px;
+            font-size: 17px;
+            line-height: 2;
             color: #334155;
 
             /*
@@ -2042,19 +2014,35 @@
             document.getElementById('detailPeriod').textContent = period || '-';
             document.getElementById('detailLoc').textContent = item.locCn || '-';
             document.getElementById('detailPerson').textContent = person;
+
             /*
-             * 직원휴가 상세 내용은 COMMON_CODE에서 가져온 휴가종류를 뱃지로 표시
+             * 직원휴가일 때만 휴가종류를 뱃지로 보여준다.
+             *
+             * innerHTML이란?
+             * HTML 태그까지 화면에 넣을 수 있는 속성.
+             *
+             * 왜 사용?
+             * 단순 글자가 아니라 <span> 뱃지를 만들어야 해서 사용.
              */
-            if (item.scheduleTy === 'VACATION' && item.scheduleSttsNm) {
+            if (item.scheduleTy === 'VACATION') {
+                const vacationNm = item.scheduleSttsNm || item.scheduleTtl || '직원휴가';
+                const vacationCn = item.scheduleSttsCn || item.scheduleCn || '직원 휴가 일정';
                 const badgeColor = item.scheduleColorHex || '#E9D5FF';
 
                 document.getElementById('detailCn').innerHTML =
                     '<span class="vacation-type-badge" style="background:' + escapeHtml(badgeColor) + ';">'
-                    + escapeHtml(item.scheduleSttsNm)
-                    + '</span>';
+                    + escapeHtml(vacationNm)
+                    + '</span>'
+                    + '<div style="margin-top:8px;">'
+                    + escapeHtml(vacationCn).replace(/#[A-Fa-f0-9]{6}/g, '').trim()
+                    + '</div>';
             } else {
+                /*
+                 * 직원휴가가 아닌 공지/행사/공사/점검 등은 일반 내용만 출력한다.
+                 */
                 document.getElementById('detailCn').textContent = item.scheduleCn || '-';
             }
+
             document.getElementById('detailModal').classList.add('active');
         }
 

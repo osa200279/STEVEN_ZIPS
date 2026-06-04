@@ -199,12 +199,45 @@
              * DB에는 ANNUAL, HALF_AM 같은 코드가 저장됨
              * 화면에는 COMMON_CODE.CODE_NAME의 한글명(연차, 오전반차 등)을 보여줌
              */
-             , CC.CODE_NAME AS SCHEDULE_TTL
+             , NVL(CC.CODE_NAME,
+                   CASE VS.SCHDL_TTL
+                       WHEN 'ANNUAL' THEN '연차'
+                       WHEN 'HALF_AM' THEN '오전반차'
+                       WHEN 'HALF_PM' THEN '오후반차'
+                       WHEN 'SICK' THEN '병가'
+                       WHEN 'OFFICIAL' THEN '공가/경조사'
+                       WHEN 'SPECIAL' THEN '특별휴가'
+                       ELSE VS.SCHDL_TTL
+                       END
+               ) AS SCHEDULE_TTL
 
             /*
              * 예: 연차 - 개인 휴가 일정 #D6E8FF
              */
-             , CC.CODE_NAME || ' - ' || NVL(CC.CODE_CONTENT, '') AS SCHEDULE_CN
+             , NVL(CC.CODE_NAME,
+                   CASE VS.SCHDL_TTL
+                       WHEN 'ANNUAL' THEN '연차'
+                       WHEN 'HALF_AM' THEN '오전반차'
+                       WHEN 'HALF_PM' THEN '오후반차'
+                       WHEN 'SICK' THEN '병가'
+                       WHEN 'OFFICIAL' THEN '공가/경조사'
+                       WHEN 'SPECIAL' THEN '특별휴가'
+                       ELSE VS.SCHDL_TTL
+                       END
+               )
+            || ' - '
+            || NVL(
+                       REGEXP_REPLACE(CC.CODE_CONTENT, '#[A-Fa-f0-9]{6}', ''),
+                       CASE VS.SCHDL_TTL
+                           WHEN 'ANNUAL' THEN '개인 휴가 일정'
+                           WHEN 'HALF_AM' THEN '오전 반일 휴가 일정'
+                           WHEN 'HALF_PM' THEN '오후 반일 휴가 일정'
+                           WHEN 'SICK' THEN '건강상의 사유로 인한 휴가 일정'
+                           WHEN 'OFFICIAL' THEN '공적 업무 또는 경조사 휴가 일정'
+                           WHEN 'SPECIAL' THEN '특별 사유 휴가 일정'
+                           ELSE '직원 휴가 일정'
+                           END
+               ) AS SCHEDULE_CN
 
              , '관리사무소' AS LOC_CN
              , TO_CHAR(VS.SCHDL_BGNG_DT, 'YYYY-MM-DD') AS START_DT
@@ -219,13 +252,29 @@
              * 휴가상태코드. 여기서는 ANNUAL, HALF_AM 같은 휴가구분코드로 사용.
              */
              , VS.SCHDL_TTL AS SCHDL_STTS_CD
-             , CC.CODE_NAME AS SCHDL_STTS_NM
-             , CC.CODE_CONTENT AS SCHDL_STTS_CN
+             , NVL(CC.CODE_NAME,
+                   CASE VS.SCHDL_TTL
+                       WHEN 'ANNUAL' THEN '연차'
+                       WHEN 'HALF_AM' THEN '오전반차'
+                       WHEN 'HALF_PM' THEN '오후반차'
+                       WHEN 'SICK' THEN '병가'
+                       WHEN 'OFFICIAL' THEN '공가/경조사'
+                       WHEN 'SPECIAL' THEN '특별휴가'
+                       ELSE VS.SCHDL_TTL
+                       END
+               ) AS SCHDL_STTS_NM
+             , NVL(
+                REGEXP_REPLACE(CC.CODE_CONTENT, '#[A-Fa-f0-9]{6}', ''),
+                '직원 휴가 일정'
+               ) AS SCHDL_STTS_CN
 
             /*
              * CODE_CONTENT 안에 있는 #D6E8FF 같은 색상값만 추출
              */
-             , REGEXP_SUBSTR(CC.CODE_CONTENT, '#[A-Fa-f0-9]{6}') AS SCHEDULE_COLOR_HEX
+             , NVL(
+                REGEXP_SUBSTR(CC.CODE_CONTENT, '#[A-Fa-f0-9]{6}'),
+                '#D6E8FF'
+               ) AS SCHEDULE_COLOR_HEX
 
         FROM MNGR_VACATION_SCHDL VS
                  INNER JOIN MANAGER MG
@@ -474,63 +523,97 @@
             parameterType="kr.or.ddit.domain.apt.mgmtOffice.main.vo.AptScheduleCalendarDTO"
             resultMap="aptScheduleCalendarMap">
 
-        /* kr.or.ddit.domain.apt.mgmtOffice.main.mapper.IAptScheduleCalendarMapper.selectScheduleCalendarStat */
-        /* 단지 일정 캘린더 통계 조회 */
-
         SELECT
-        COUNT(*) AS TOTAL_CNT      /** 전체일정수 */
-        , SUM(
-        CASE
-        WHEN TO_CHAR(SYSDATE, 'YYYY-MM-DD') BETWEEN START_DT AND END_DT
-        THEN 1
-        ELSE 0
-        END
-        ) AS TODAY_CNT             /** 오늘일정수 */
-        , COUNT(*) AS MONTH_CNT      /** 월간일정수 */
-        , SUM(
-        CASE
-        WHEN SCHEDULE_TY = 'VACATION'
-        THEN 1
-        ELSE 0
-        END
-        ) AS VACATION_CNT          /** 직원휴가일정수 */
+        NVL(TOTAL.TOTAL_CNT, 0) AS TOTAL_CNT,
+        NVL(MONTH_STAT.TODAY_CNT, 0) AS TODAY_CNT,
+        NVL(MONTH_STAT.MONTH_CNT, 0) AS MONTH_CNT,
+        NVL(MONTH_STAT.VACATION_CNT, 0) AS VACATION_CNT
+        FROM
+        (
+        SELECT COUNT(*) AS TOTAL_CNT
         FROM (
+        SELECT P.ANN_NO AS SCHEDULE_NO, 'NOTICE' AS SCHEDULE_TY
+        FROM APT_ANN_BOARD_POST P
+        INNER JOIN APT_BOARD_INSTANCE BI
+        ON P.BOARD_NO = BI.BOARD_NO
+        WHERE BI.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND BI.USE_YN = 'Y'
+        AND P.DEL_YN = 'N'
+
+        UNION ALL
+
+        SELECT CS.SCHEDULE_NO, CS.SCHDL_STTS_CD AS SCHEDULE_TY
+        FROM COMPLEX_SCHEDULE CS
+        WHERE CS.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND CS.SCHDL_STTS_CD IN ('EVENT', 'CONSTRUCTION')
+
+        UNION ALL
+
+        SELECT VS.VACATION_SCHDL_NO, 'VACATION' AS SCHEDULE_TY
+        FROM MNGR_VACATION_SCHDL VS
+        INNER JOIN MANAGER MG
+        ON VS.USER_NO = MG.USER_NO
+        INNER JOIN MGMT_OFFICE MO
+        ON MG.MGMT_OFC_NO = MO.MGMT_OFC_NO
+        WHERE MO.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND MO.USE_YN = 'Y'
+
+        UNION ALL
+
+        SELECT 'METER_' || MH.METER_HSTRY_NO, 'METER' AS SCHEDULE_TY
+        FROM METER_HSTRY MH
+        INNER JOIN FACILITY F
+        ON MH.FACILITY_NO = F.FACILITY_NO
+        WHERE F.APT_CMPLEX_NO = #{aptCmplexNo}
+        AND F.USE_YN = 'Y'
+
+        UNION ALL
+
+        SELECT 'CHECK_' || FH.FAC_CHK_HSTRY_NO, 'CHECK' AS SCHEDULE_TY
+        FROM FACILITY_CHECK_HSTRY FH
+        INNER JOIN FACILITY F
+        ON FH.FACILITY_NO = F.FACILITY_NO
+        WHERE F.APT_CMPLEX_NO = #{aptCmplexNo}
+        ) ALL_CAL
+        WHERE 1 = 1
+        ) TOTAL,
+        (
         SELECT
-        CAL.APT_CMPLEX_NO       /** 아파트단지번호 */
-        , CAL.SCHEDULE_NO         /** 일정번호 */
-        , CAL.SCHEDULE_TY         /** 일정유형코드 */
-        , CAL.SCHEDULE_TY_NM      /** 일정유형명 */
-        , CAL.SCHEDULE_TTL        /** 일정제목 */
-        , CAL.SCHEDULE_CN         /** 일정내용 */
-        , CAL.LOC_CN              /** 장소내용 */
-        , CAL.START_DT            /** 일정시작일 */
-        , CAL.END_DT              /** 일정종료일 */
-        , CAL.COLOR_CD            /** 캘린더색상코드 */
-        , CAL.RGTR_ID             /** 등록자아이디 */
-        , CAL.USER_NO             /** 사용자번호 */
-        , CAL.USER_NM             /** 사용자명 */
-        , CAL.SCHDL_STTS_CD
-        , CAL.SCHDL_STTS_NM
-        , CAL.SCHDL_STTS_CN
-        , CAL.SCHEDULE_COLOR_HEX
+        NVL(SUM(
+        CASE
+        WHEN TO_CHAR(SYSDATE, 'YYYY-MM-DD') BETWEEN CAL.START_DT AND CAL.END_DT
+        THEN 1
+        ELSE 0
+        END
+        ), 0) AS TODAY_CNT,
+
+        COUNT(*) AS MONTH_CNT,
+
+        NVL(SUM(
+        CASE
+        WHEN CAL.SCHEDULE_TY = 'VACATION'
+        THEN 1
+        ELSE 0
+        END
+        ), 0) AS VACATION_CNT
         FROM (
         <include refid="scheduleUnionSql"/>
         ) CAL
         WHERE 1 = 1
 
         <if test="scheduleTy != null and scheduleTy != '' and scheduleTy != 'ALL'">
-            AND CAL.SCHEDULE_TY = #{scheduleTy}       /** 일정유형 검색 */
+            AND CAL.SCHEDULE_TY = #{scheduleTy}
         </if>
 
         <if test="keyword != null and keyword != ''">
             AND (
-            UPPER(CAL.SCHEDULE_TTL) LIKE '%' || UPPER(#{keyword}) || '%'   /** 일정제목 검색 */
-            OR UPPER(CAL.SCHEDULE_CN)  LIKE '%' || UPPER(#{keyword}) || '%'   /** 일정내용 검색 */
-            OR UPPER(CAL.LOC_CN)       LIKE '%' || UPPER(#{keyword}) || '%'   /** 장소 검색 */
-            OR UPPER(CAL.USER_NM)      LIKE '%' || UPPER(#{keyword}) || '%'   /** 직원명 검색 */
+            UPPER(CAL.SCHEDULE_TTL) LIKE '%' || UPPER(#{keyword}) || '%'
+            OR UPPER(CAL.SCHEDULE_CN) LIKE '%' || UPPER(#{keyword}) || '%'
+            OR UPPER(CAL.LOC_CN) LIKE '%' || UPPER(#{keyword}) || '%'
+            OR UPPER(CAL.USER_NM) LIKE '%' || UPPER(#{keyword}) || '%'
             )
         </if>
-        )
+        ) MONTH_STAT
 
     </select>
 
