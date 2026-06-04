@@ -21,4 +21,5 @@ public interface IRentCtrtService {
 
     int updateCtrt(String rentCtrtNo, Map<String, Object> detail);
 
+    List<Map<String, Object>> selectCtrtXls(Map<String, Object> params);
 }

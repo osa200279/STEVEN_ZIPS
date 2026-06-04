@@ -180,4 +180,18 @@ public class AdmDashBoardRestController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/ctrtXls")
+    public ResponseEntity<Map<String, Object>> getCtrtXls(@RequestParam Map<String, Object> params){
+        log.info("#### 엑셀다운로드 메서드, params : {}", params);
+
+        Map<String, Object> response = new HashMap<>();
+        List<Map<String, Object>> ctrtList = rentCtrtService.selectCtrtXls(params);
+        response.put("ctrtList", ctrtList);
+
+        log.info("##### ctrtList : {}", ctrtList);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

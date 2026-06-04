@@ -36,4 +36,6 @@ public interface IRentCtrtMapper {
     void insertHshldHead(Map<String, Object> detail);
 
     String selectAptCmplexNo(String rentLstgNo);
+
+    List<Map<String, Object>> selectCtrtXls(Map<String, Object> params);
 }

@@ -107,4 +107,9 @@ public class RentCtrtServiceImpl implements IRentCtrtService {
         return res;
     }
 
+    @Override
+    public List<Map<String, Object>> selectCtrtXls(Map<String, Object> params) {
+        return rentCtrtMapper.selectCtrtXls(params);
+    }
+
 }
