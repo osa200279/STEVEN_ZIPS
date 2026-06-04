@@ -87,4 +87,15 @@ public class AptScheduleCalendarDTO {
 
     /** 공통코드 설명에서 추출한 색상 HEX */
     private String scheduleColorHex;
+
+    /** 직원명 */
+    private String empNm;
+
+    /** 직원 선택 콤보 표시용 이름
+     * 예) 김철수 (abcd***12) */
+    private String empDisplayNm;
+
+    /** 로그인 ID */
+    private String rqstLoginId;
+
 }

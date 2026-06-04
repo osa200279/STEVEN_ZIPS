@@ -421,7 +421,15 @@
         }
 
         .apt-calendar td.other-month {
-            background: #fafafa;
+            background: #eef1f4 !important;
+        }
+
+        .apt-calendar td.other-month .day-num {
+            color: #b8c0cc !important;
+        }
+
+        .apt-calendar td.other-month .week-event-bar {
+            opacity: 0.55;
         }
 
         .apt-calendar td.today {
@@ -787,20 +795,9 @@
             height: 170px;
         }
 
-        /* 펼쳤을 때는 해당 칸만 스크롤 */
-        #residentScheduleCalendarPage .apt-calendar td.expanded {
-            height: 260px;
-            overflow-y: auto;
-        }
-
         /* 숨긴 일정 */
         #residentScheduleCalendarPage .week-event-bar.hidden-event {
             display: none;
-        }
-
-        /* 전체+ 클릭하면 숨긴 일정 표시 */
-        #residentScheduleCalendarPage .apt-calendar td.expanded .week-event-bar.hidden-event {
-            display: block;
         }
 
         /* 전체+ 버튼 위치 고정 */
@@ -934,6 +931,106 @@
         .day-schedule-title:hover{
             background:#e8f7ee;
             color:#006b4f;
+        }
+
+        #residentScheduleCalendarPage ~ .modal-backdrop .modal-card,
+        #dayScheduleModal .modal-card {
+            width: 860px !important;
+            max-width: calc(100vw - 40px);
+            border-radius: 22px;
+        }
+
+        #dayScheduleModal .modal-head {
+            padding: 24px 28px;
+            background: #ffffff;
+        }
+
+        #dayScheduleModal .modal-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #1f2937;
+        }
+
+        #dayScheduleModal .modal-body {
+            display: grid !important;
+            grid-template-columns: 360px 1fr;
+            gap: 20px !important;
+            padding: 24px 28px;
+            min-height: 260px;
+        }
+
+        #dayScheduleList {
+            width: auto !important;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 16px !important;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .day-schedule-title {
+            display: block;
+            width: 100%;
+            border: 1px solid #eef2f7;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 10px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 900;
+            color: #1f2937;
+            cursor: pointer;
+        }
+
+        .day-schedule-title:hover,
+        .day-schedule-title.active {
+            background: #e8f7ee;
+            border-color: #b9e4c8;
+            color: #006b4f;
+        }
+
+        #sideDetailArea {
+            padding: 4px 0 4px 8px;
+            animation: detailSlideIn 0.18s ease-out;
+        }
+
+        .side-detail-card {
+            background: #ffffff;
+            border: 1px solid #edf0f3;
+            border-radius: 16px;
+            padding: 18px 20px;
+        }
+
+        .side-detail-title {
+            margin: 0 0 16px;
+            font-size: 20px;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .side-detail-row {
+            margin-bottom: 14px;
+            font-size: 14px;
+            color: #334155;
+        }
+
+        .side-detail-label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            font-weight: 900;
+            color: #94a3b8;
+        }
+
+        @keyframes detailSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
@@ -1427,13 +1524,17 @@
             document.querySelectorAll('.calendar-more-btn').forEach(function (btn) {
                 btn.addEventListener('click', function (e) {
                     e.stopPropagation();
+
                     const td = btn.closest('td');
+                    const dateStr = td.dataset.date;
+                    const daySchedules = getSchedulesByDate(dateStr);
 
-                    td.classList.toggle('expanded');
-
-                    btn.textContent = td.classList.contains('expanded')
-                        ? '접기'
-                        : '전체 +' + btn.dataset.hiddenCount;
+                    /*
+                     * 전체+ 버튼 클릭 시 모달로 일정 목록을 보여준다.
+                     * 왜 사용?
+                     * 칸 안에서 펼치면 달력 높이가 깨지기 때문에 모달 방식이 더 안정적이다.
+                     */
+                    openDayScheduleModal(dateStr, daySchedules);
                 });
             });
         }
@@ -1624,13 +1725,47 @@
 
             const person = item.userNm || item.rgtrId || '-';
 
+            document.querySelectorAll('.day-schedule-title').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+
+            const activeBtn = document.querySelector(
+                '.day-schedule-title[data-schedule-no="' + CSS.escape(String(item.scheduleNo)) + '"]'
+            );
+
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+
             document.getElementById('sideDetailArea').innerHTML =
-                '<h3 style="margin-top:0;">' + escapeHtml(item.scheduleTtl || '-') + '</h3>'
-                + '<p><b>유형</b><br>' + escapeHtml(item.scheduleTyNm || '-') + '</p>'
-                + '<p><b>기간</b><br>' + escapeHtml(period) + '</p>'
-                + '<p><b>위치</b><br>' + escapeHtml(item.locCn || '-') + '</p>'
-                + '<p><b>등록자/직원</b><br>' + escapeHtml(person) + '</p>'
-                + '<p><b>내용</b><br>' + escapeHtml(item.scheduleCn || '-') + '</p>';
+                '<div class="side-detail-card">'
+                + '<h3 class="side-detail-title">' + escapeHtml(item.scheduleTtl || '-') + '</h3>'
+
+                + '<div class="side-detail-row">'
+                + '<span class="side-detail-label">유형</span>'
+                + escapeHtml(item.scheduleTyNm || '-')
+                + '</div>'
+
+                + '<div class="side-detail-row">'
+                + '<span class="side-detail-label">기간</span>'
+                + escapeHtml(period)
+                + '</div>'
+
+                + '<div class="side-detail-row">'
+                + '<span class="side-detail-label">위치</span>'
+                + escapeHtml(item.locCn || '-')
+                + '</div>'
+
+                + '<div class="side-detail-row">'
+                + '<span class="side-detail-label">등록자/직원</span>'
+                + escapeHtml(person)
+                + '</div>'
+
+                + '<div class="side-detail-row">'
+                + '<span class="side-detail-label">내용</span>'
+                + escapeHtml(item.scheduleCn || '-')
+                + '</div>'
+                + '</div>';
         }
         /*
          * 목록 페이징 렌더링

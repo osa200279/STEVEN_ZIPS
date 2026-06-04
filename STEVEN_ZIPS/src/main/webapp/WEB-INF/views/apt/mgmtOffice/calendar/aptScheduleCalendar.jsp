@@ -258,20 +258,10 @@
       height: 170px;
     }
 
-    /* 펼쳤을 때는 해당 칸만 스크롤 */
-    #aptScheduleCalendarPage .apt-calendar td.expanded {
-      height: 260px;
-      overflow-y: auto;
-    }
 
     /* 숨긴 일정 */
     #aptScheduleCalendarPage .week-event-bar.hidden-event {
       display: none;
-    }
-
-    /* 전체+ 클릭하면 숨긴 일정 표시 */
-    #aptScheduleCalendarPage .apt-calendar td.expanded .week-event-bar.hidden-event {
-      display: block;
     }
 
     /* 전체+ 버튼 위치 고정 */
@@ -639,11 +629,11 @@
             <table class="tbl schedule-list-table">
               <thead>
               <tr>
-                <th style="width:130px;">유형</th>
-                <th>일정명</th>
+                <th style="width:130px;">구분</th>
+                <th>제목</th>
                 <th style="width:200px;">기간</th>
                 <th style="width:250px;">위치</th>
-                <th style="width:260px;">등록자/직원</th>
+                <th style="width:260px;">등록자/직원명</th>
               </tr>
               </thead>
 
@@ -673,8 +663,11 @@
                 <label>직원명</label>
                 <select id="vacUserNo" class="form-control">
                   <option value="">직원 선택</option>
+
                   <c:forEach var="emp" items="${managerEmployeeList}">
-                    <option value="${emp.userNo}">${emp.userNm}</option>
+                    <option value="${emp.userNo}">
+                        ${emp.empDisplayNm}
+                    </option>
                   </c:forEach>
                 </select>
               </div>
@@ -723,8 +716,11 @@
                 <label>직원</label>
                 <select id="detailUserNo" class="form-control">
                   <option value="">직원 선택</option>
+
                   <c:forEach var="emp" items="${managerEmployeeList}">
-                    <option value="${emp.userNo}">${emp.userNm}</option>
+                    <option value="${emp.userNo}">
+                        ${emp.empDisplayNm}
+                    </option>
                   </c:forEach>
                 </select>
               </div>
@@ -968,7 +964,11 @@
 
     document.querySelectorAll('#calendarBody td[data-date]').forEach(function(td){
       td.addEventListener('click', function(e){
-        if(e.target.classList.contains('week-event-bar')){
+        if (e.target.classList.contains('week-event-bar')) {
+          const dateStr = td.dataset.date;
+          const daySchedules = getSchedulesByDate(dateStr);
+
+          openDayScheduleModal(dateStr, daySchedules);
           return;
         }
 
@@ -980,22 +980,19 @@
     });
 
     document.querySelectorAll('.calendar-more-btn').forEach(function (btn) {
-
-      btn.addEventListener("click", function (e) {
-
+      btn.addEventListener('click', function (e) {
         e.stopPropagation();
 
-        const td = this.closest("td");
+        const td = this.closest('td');
+        const dateStr = td.dataset.date;
+        const daySchedules = getSchedulesByDate(dateStr);
 
-        td.classList.toggle("expanded");
-
-        const hiddenCount = this.dataset.hiddenCount;
-
-        if(td.classList.contains("expanded")){
-          this.textContent = "접기";
-        }else{
-          this.textContent = "전체 +" + hiddenCount;
-        }
+        /*
+         * 전체+ 클릭 시 칸 안에서 펼치지 않고 모달로 표시한다.
+         * 왜 사용?
+         * 칸 안에서 expanded 처리하면 달력 높이가 깨지고 일정 막대가 겹칠 수 있기 때문.
+         */
+        openDayScheduleModal(dateStr, daySchedules);
       });
     });
   }
@@ -1059,7 +1056,19 @@
       html += escapeHtml(seg.item.scheduleTtl);
       html += '</button>';
     });
-
+        /*
+         * 숨겨진 일정이 있을 때 전체+n 버튼 표시
+         * 왜 사용?
+         * 일정이 4줄을 넘으면 달력 칸이 복잡해지므로,
+         * 초과 일정은 모달에서 보도록 처리한다.
+         */
+        if (hiddenStartCount > 0) {
+          html += '<button type="button"'
+                  + ' class="calendar-more-btn"'
+                  + ' data-hidden-count="' + hiddenStartCount + '">';
+          html += '전체 +' + hiddenStartCount;
+          html += '</button>';
+        }
     return html;
   }
 
