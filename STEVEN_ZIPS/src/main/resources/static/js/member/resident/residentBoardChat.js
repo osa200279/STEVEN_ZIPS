@@ -193,41 +193,64 @@ function openDiscover() {
 
 function enterRoom(roomNo) {
 
-    const ok = confirm('채팅방에 입장하시겠습니까?');
+    Swal.fire({
+        title: '채팅방 입장',
+        text: '채팅방에 입장하시겠습니까?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: '입장',
+        cancelButtonText: '취소',
+        reverseButtons: true
+    }).then((result) => {
 
-    if (!ok) {
-        return;
-    }
-
-    fetch(
-        contextPath +
-        '/residentChat/enter/' +
-        aptCmplexNo +
-        '?chatRoomNo=' +
-        roomNo,
-        {
-            method: 'POST',
-            headers: {
-                ...csrfHeaders()
-            }
+        if (!result.isConfirmed) {
+            return;
         }
-    )
-        .then(room => room.json())
-        .then(room => {
 
-            loadMyRooms();
+        fetch(
+            contextPath +
+            '/residentChat/enter/' +
+            aptCmplexNo +
+            '?chatRoomNo=' +
+            roomNo,
+            {
+                method: 'POST',
+                headers: {
+                    ...csrfHeaders()
+                }
+            }
+        )
+            .then(res => res.json())
+            .then(room => {
 
-            openDiscover();
+                Swal.fire({
+                    title: '입장 완료',
+                    text: '채팅방에 입장했습니다.',
+                    icon: 'success',
+                    timer: 1200,
+                    showConfirmButton: false
+                });
 
-            openMyRoom(
-                room.chatRoomNo,
-                room.chatRoomNm,
-                room.chatJoinKey,
-                null
-            );
-        });
+                loadMyRooms();
+
+                openDiscover();
+
+                openMyRoom(
+                    room.chatRoomNo,
+                    room.chatRoomNm,
+                    room.chatJoinKey,
+                    null
+                );
+            })
+            .catch(() => {
+                Swal.fire({
+                    title: '오류',
+                    text: '채팅방 입장 중 오류가 발생했습니다.',
+                    icon: 'error'
+                });
+            });
+    });
 }
-
 function setActiveRoom(el) {
     document.querySelectorAll(".chat-room-item").forEach(item => {
         item.classList.remove("active");

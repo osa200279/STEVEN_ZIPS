@@ -230,9 +230,8 @@
                  HT.BATHROOM_CNT,
                  HT.IMAGE_FILE_NO
 
-        ORDER BY HT.EXCLUSIVE_SIZE
+        ORDER BY HT.TY_NM
 
     </select>
-
 
 </mapper>
