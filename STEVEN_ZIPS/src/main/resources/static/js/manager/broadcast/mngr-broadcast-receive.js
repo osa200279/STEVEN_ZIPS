@@ -15,6 +15,8 @@
     var readyToastShown = false;
     var activePlayPayload = null;
     var ackSentForBroadcastId = null;
+    var receiveAudioUnlocked = false;
+    var pendingPlayPayload = null;
 
     function $(id) { return document.getElementById(id); }
 
@@ -206,6 +208,51 @@
         }
     }
 
+    function updateAudioUnlockUi() {
+        var btn = $('receiveAudioUnlockBtn');
+        var hint = $('receiveAudioHint');
+        if (btn) {
+            btn.classList.toggle('is-done', receiveAudioUnlocked);
+            if (receiveAudioUnlocked) {
+                btn.innerHTML = '<span class="material-symbols-rounded">check_circle</span>스피커 출력 허용됨';
+            }
+        }
+        if (hint && receiveAudioUnlocked) {
+            hint.textContent = '스피커 출력이 허용되었습니다. 방송 송출(전체·개별 동) 시 이 화면에서 자동 재생됩니다.';
+        }
+    }
+
+    function unlockReceiveAudio() {
+        if (!receiveAudio || receiveAudioUnlocked) {
+            return Promise.resolve(receiveAudioUnlocked);
+        }
+        receiveAudio.muted = false;
+        return receiveAudio.play().then(function () {
+            receiveAudio.pause();
+            try {
+                receiveAudio.currentTime = 0;
+            } catch (ignore) { /* seek */ }
+            receiveAudioUnlocked = true;
+            updateAudioUnlockUi();
+            if (pendingPlayPayload) {
+                var p = pendingPlayPayload;
+                pendingPlayPayload = null;
+                return fetchAndPlayTts(p);
+            }
+            return true;
+        }).catch(function (err) {
+            console.warn('receive audio unlock failed', err);
+            toast({
+                title: '스피커 허용 필요',
+                message: '브라우저가 자동 재생을 막았습니다. 이 버튼을 다시 누르거나 페이지 설정에서 소리를 허용해 주세요.',
+                type: 'warning',
+                hero: true,
+                duration: 7000
+            });
+            return false;
+        });
+    }
+
     function playBlob(blob, payload) {
         if (!receiveAudio) return Promise.resolve();
 
@@ -214,6 +261,7 @@
         receiveAudio.pause();
         receiveObjectUrl = URL.createObjectURL(blob);
         receiveAudio.src = receiveObjectUrl;
+        receiveAudio.muted = false;
         receiveActive = true;
 
         var sender = payload.senderUserNm ? payload.senderUserNm + ' · ' : '';
@@ -227,6 +275,21 @@
 
         return receiveAudio.play().then(function () {
             demoBroadcastAlert('playing');
+        }).catch(function (err) {
+            console.warn('receive audio play failed', err);
+            if (err && err.name === 'NotAllowedError') {
+                pendingPlayPayload = payload;
+                receiveActive = false;
+                setReceiveUi('idle', '재생 대기', '「스피커 출력 허용」 버튼을 누른 뒤 다시 송출해 주세요.');
+                toast({
+                    title: '자동 재생 차단',
+                    message: dongName + ' 수신기: 「스피커 출력 허용」을 누른 후, 송출 PC에서 방송을 다시 보내 주세요. (전체 송출도 동일)',
+                    type: 'warning',
+                    hero: true,
+                    duration: 8000
+                });
+            }
+            throw err;
         });
     }
 
@@ -273,6 +336,10 @@
         activePlayPayload = payload;
         ackSentForBroadcastId = null;
 
+        if (payload.targetDongNo && payload.targetDongNo !== cfg.dongNo) {
+            console.warn('[방송 수신] 동 코드 불일치 — 구독:', cfg.dongNo, '수신:', payload.targetDongNo);
+        }
+
         console.log('[방송 수신] WS 메시지 수신', getDongName(), payload);
         demoBroadcastAlert('start');
 
@@ -282,15 +349,27 @@
         var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
         pendingPlay = controller;
 
-        fetchAndPlayTts(payload).catch(function (err) {
+        function runPlay(retry) {
+            return fetchAndPlayTts(payload).catch(function (err) {
+                if (!retry && err && err.name !== 'AbortError') {
+                    console.warn('receive play retry', err);
+                    return runPlay(true);
+                }
+                throw err;
+            });
+        }
+
+        runPlay(false).catch(function (err) {
+            if (err && err.name === 'AbortError') return;
+            if (err && err.name === 'NotAllowedError') return;
             console.warn('receive play failed', err);
             finishReceivePlayback('FAILED');
             setWsBadge('is-error', '재생 실패');
             toast({
                 title: '수신 실패',
-                message: '음성을 재생할 수 없습니다. TTS·로그인 상태를 확인해 주세요.',
+                message: '음성을 재생할 수 없습니다. TTS·로그인·송출 PC와 같은 서버 주소인지 확인해 주세요.',
                 type: 'error',
-                duration: 4500
+                duration: 5000
             });
         }).finally(function () {
             pendingPlay = null;
@@ -321,7 +400,9 @@
         }
         var dest = '/sub/broadcast/' + cfg.mgmtOfcNo + '/' + topicKey(cfg.dongNo);
         broadcastSubscription = client.subscribe(dest, onBroadcastMessage);
-        console.log('[방송 수신] 구독:', dest);
+        console.log('[방송 수신] 구독:', dest, '| 송출 PC와 동일 호스트 필요:', location.host);
+        var destEl = $('receiveSubDest');
+        if (destEl) destEl.textContent = dest;
         setWsBadge('is-ok', '수신 대기');
         setReceiveUi('idle', '대기 중', '구독 중: ' + (cfg.dongLabel || cfg.dongNo));
         if (!readyToastShown) {
@@ -380,12 +461,32 @@
         });
     }
 
+    function bindAudioUnlock() {
+        var btn = $('receiveAudioUnlockBtn');
+        if (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                unlockReceiveAudio();
+            });
+        }
+        var page = $('broadcastReceivePage');
+        if (page) {
+            page.addEventListener('click', function () {
+                if (!receiveAudioUnlocked) {
+                    unlockReceiveAudio();
+                }
+            }, { once: true });
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         if (!cfg.dongValid) {
             setWsBadge('is-error', '동 코드 오류');
             return;
         }
         bindAudioEvents();
+        bindAudioUnlock();
+        updateAudioUnlockUi();
         waitForStompAndSubscribe();
     });
 })();

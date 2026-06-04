@@ -57,7 +57,15 @@
                         <div><span class="label">관리사무소</span><span>${mgmtOfcNo}</span></div>
                         <div><span class="label">수신 동</span><span>${fn:escapeXml(dongLabel)}</span></div>
                         <div><span class="label">동 코드</span><span>${fn:escapeXml(dongNo)}</span></div>
+                        <div><span class="label">구독 경로</span><span id="receiveSubDest" class="bc-receive-subdest">—</span></div>
                     </div>
+                    <p class="bc-receive-audio-hint" id="receiveAudioHint">
+                        방송 구역 <strong>전체</strong> 송출도 이 화면(동별 수신기)에서 들립니다.
+                        처음 한 번은 아래 버튼으로 스피커 출력을 허용해 주세요.
+                    </p>
+                    <button type="button" class="bc-receive-unlock-btn" id="receiveAudioUnlockBtn">
+                        <span class="material-symbols-rounded">volume_up</span>스피커 출력 허용 (한 번만 클릭)
+                    </button>
                     <p class="bc-receive-last" id="receiveLastText" hidden></p>
                     <audio id="receiveAudio" preload="none"></audio>
                 </section>

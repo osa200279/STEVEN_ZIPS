@@ -188,6 +188,7 @@
                                                                 <c:set var="dongLabel" value="${dongBase}동"/>
                                                             </c:otherwise>
                                                         </c:choose>
+                                                        
                                                         <a href="${pageContext.request.contextPath}/manager/complex/broadcast/receive/${mgmtOfcNo}?dongNo=${dong.dongNo}"
                                                            target="_blank" rel="noopener">${dongLabel}</a><c:if test="${!st.last}"> · </c:if>
                                                     </c:forEach>
@@ -196,7 +197,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </section>
+                            </section>s
 
                             <section class="card" id="playerCard" style="display:none;" aria-label="sender-test-playback">
                                 <div class="player player-compact">

@@ -32,6 +32,8 @@
     var senderAckSubscription = null;
     var senderAckWaitTimer = null;
     var pendingBroadcastSession = null;
+    /** 방송 구역 '전체' 시 관리사무소(송출 PC) 로컬 모니터용 — WS 수신기와 별도 */
+    var MGMT_LOCAL_DONG = '__MGMT_OFFICE__';
     var currentPlayerRow = null;
     var lastPlaybackBlob = null;
     var $ = function (id) { return document.getElementById(id); };
@@ -513,6 +515,10 @@
         });
     }
 
+    function isBroadcastAllAreas(form) {
+        return !!(form && form.areas && form.areas.indexOf('전체') >= 0);
+    }
+
     function getSelectedAreas() {
         var allCb = getAllAreaCheckbox();
         if (allCb && allCb.checked) return ['전체'];
@@ -531,13 +537,13 @@
         if (targets.length === 1) {
             return {
                 title: '방송 송출 중',
-                message: targets[0].dongLabel + ' 수신기 재생 중… 완료 후 알림이 표시됩니다.'
+                message: targets[0].dongLabel + ' 수신기 재생 중… (수신 PC에서 「스피커 출력 허용」 필요할 수 있음)'
             };
         }
         var labels = targets.map(function (t) { return t.dongLabel; }).join(', ');
         return {
             title: '방송 송출 중',
-            message: labels + ' 수신기 재생 중… (' + targets.length + '개 동, 완료 후 알림)'
+            message: '전체 송출: 송출 PC에서도 재생됩니다. 각 동 수신기 PC는 같은 서버 주소·스피커 허용 후 재생 (' + targets.length + '개 동)'
         };
     }
 
@@ -626,64 +632,189 @@
 
     function isBroadcastSessionComplete(session) {
         if (!session || !session.targets || !session.targets.length) return false;
-        return session.targets.every(function (t) {
+
+        var remote = [];
+        var local = [];
+        session.targets.forEach(function (t) {
+            if (t.local) local.push(t);
+            else remote.push(t);
+        });
+
+        var localDone = !local.length || local.every(function (t) {
             return !!session.resolved[t.dongNo];
         });
+        var remoteDone = !remote.length || remote.every(function (t) {
+            return !!session.resolved[t.dongNo];
+        });
+
+        if (session.allAreasMode) {
+            if (!localDone) return false;
+            if (remoteDone) return true;
+            return !!session.remoteGraceComplete;
+        }
+
+        return localDone && remoteDone;
     }
 
-    function clearBroadcastCompletionTimer() {
-        if (pendingBroadcastSession && pendingBroadcastSession.timer) {
+    function clearBroadcastCompletionTimers() {
+        if (!pendingBroadcastSession) return;
+        if (pendingBroadcastSession.timer) {
             clearTimeout(pendingBroadcastSession.timer);
             pendingBroadcastSession.timer = null;
         }
+        if (pendingBroadcastSession.remoteGraceTimer) {
+            clearTimeout(pendingBroadcastSession.remoteGraceTimer);
+            pendingBroadcastSession.remoteGraceTimer = null;
+        }
+        if (pendingBroadcastSession.watchdogTimer) {
+            clearTimeout(pendingBroadcastSession.watchdogTimer);
+            pendingBroadcastSession.watchdogTimer = null;
+        }
     }
 
-    function computeBroadcastTimeoutMs() {
+    function forceReleaseBroadcastUi() {
+        broadcastActive = false;
+        setBroadcastButtonState(false, false);
+        updateBroadcastActionButtons();
+    }
+
+    function scheduleRemoteGraceFinalize() {
+        if (!pendingBroadcastSession || !pendingBroadcastSession.allAreasMode) return;
+        if (pendingBroadcastSession.remoteGraceTimer) return;
+
+        pendingBroadcastSession.remoteGraceTimer = setTimeout(function () {
+            if (!pendingBroadcastSession) return;
+            pendingBroadcastSession.remoteGraceComplete = true;
+            if (isBroadcastSessionComplete(pendingBroadcastSession)) {
+                finalizeBroadcastCompletion('grace');
+            }
+        }, 8000);
+    }
+
+    function markMgmtLocalDone(success) {
+        if (!pendingBroadcastSession) return;
+        if (pendingBroadcastSession.resolved[MGMT_LOCAL_DONG]) return;
+
+        pendingBroadcastSession.resolved[MGMT_LOCAL_DONG] = true;
+        if (success) {
+            pendingBroadcastSession.done[MGMT_LOCAL_DONG] = '관리사무소';
+        } else {
+            pendingBroadcastSession.failed[MGMT_LOCAL_DONG] = '관리사무소';
+        }
+
+        if (pendingBroadcastSession.allAreasMode) {
+            scheduleRemoteGraceFinalize();
+        }
+
+        if (isBroadcastSessionComplete(pendingBroadcastSession)) {
+            finalizeBroadcastCompletion('ack');
+        }
+    }
+
+    function startMgmtOfficeMonitorPlayback(audio) {
+        if (!audio || !audio.src) {
+            markMgmtLocalDone(false);
+            return;
+        }
+
+        try {
+            audio.currentTime = 0;
+        } catch (ignore) { /* seek */ }
+
+        var endedOnce = false;
+        function onMonitorEnded() {
+            if (endedOnce) return;
+            endedOnce = true;
+            audio.removeEventListener('ended', onMonitorEnded);
+            var eq = $('eqBars');
+            if (eq) eq.classList.remove('playing');
+            updatePlayerToggle(false);
+            markMgmtLocalDone(true);
+        }
+
+        audio.addEventListener('ended', onMonitorEnded);
+        pauseAllBroadcastAudio(audio);
+        startPlayerPlayback(audio).catch(function (err) {
+            console.warn('mgmt office monitor play failed', err);
+            audio.removeEventListener('ended', onMonitorEnded);
+            markMgmtLocalDone(false);
+            toast({
+                title: '관리사무소 재생',
+                message: '이 PC에서 방송 음성을 재생하지 못했습니다. 브라우저 자동재생을 허용하거나 ▶ 테스트 재생 후 다시 시도해 주세요.',
+                type: 'warning',
+                duration: 5000
+            });
+        });
+    }
+
+    function computeBroadcastTimeoutMs(targetCount) {
         var audio = $('playerAudio');
         var durationMs = 60000;
         if (audio && isFinite(audio.duration) && audio.duration > 0) {
             durationMs = Math.ceil(audio.duration * 1000);
         }
-        return Math.min(Math.max(durationMs + 25000, 60000), 300000);
+        var n = Math.max(1, targetCount || 1);
+        var capped = Math.min(n, 10);
+        return Math.min(90000, Math.max(40000, durationMs + 12000 + capped * 3000));
     }
 
-    function beginBroadcastCompletionWait(broadcastId, targets) {
-        clearBroadcastCompletionTimer();
+    function beginBroadcastCompletionWait(broadcastId, targets, form) {
+        clearBroadcastCompletionTimers();
+        var sessionTargets = targets.slice();
+        var allAreas = isBroadcastAllAreas(form);
+
+        if (allAreas) {
+            sessionTargets.push({
+                dongNo: MGMT_LOCAL_DONG,
+                dongLabel: '관리사무소',
+                local: true
+            });
+        }
+
         pendingBroadcastSession = {
             broadcastId: broadcastId,
-            targets: targets.slice(),
+            targets: sessionTargets,
             resolved: {},
             done: {},
             failed: {},
-            timer: null
+            allAreasMode: allAreas,
+            remoteGraceComplete: false,
+            timer: null,
+            remoteGraceTimer: null
         };
+        var maxMs = computeBroadcastTimeoutMs(sessionTargets.length);
         pendingBroadcastSession.timer = setTimeout(function () {
             finalizeBroadcastCompletion('timeout');
-        }, computeBroadcastTimeoutMs());
+        }, maxMs);
+        pendingBroadcastSession.watchdogTimer = setTimeout(function () {
+            if (!broadcastActive && !pendingBroadcastSession) return;
+            console.warn('[방송 송출] UI watchdog — 세션 강제 종료');
+            finalizeBroadcastCompletion('watchdog');
+        }, maxMs + 5000);
     }
 
     function cancelBroadcastSession() {
-        clearBroadcastCompletionTimer();
+        clearBroadcastCompletionTimers();
         pendingBroadcastSession = null;
-        broadcastActive = false;
-        setBroadcastButtonState(false, false);
-        updateBroadcastActionButtons();
+        forceReleaseBroadcastUi();
     }
 
     function finalizeBroadcastCompletion(reason) {
         var session = pendingBroadcastSession;
-        if (!session) return;
+        if (!session) {
+            forceReleaseBroadcastUi();
+            return;
+        }
 
-        clearBroadcastCompletionTimer();
+        clearBroadcastCompletionTimers();
         pendingBroadcastSession = null;
-        broadcastActive = false;
-        setBroadcastButtonState(false, false);
-        updateBroadcastActionButtons();
+        forceReleaseBroadcastUi();
 
         var doneLabels = [];
         var failedLabels = [];
         var pendingLabels = [];
         session.targets.forEach(function (t) {
+            if (t.local) return;
             if (session.done[t.dongNo]) {
                 doneLabels.push(session.done[t.dongNo]);
             } else if (session.failed[t.dongNo]) {
@@ -693,10 +824,15 @@
             }
         });
 
+        var mgmtDone = session.done[MGMT_LOCAL_DONG];
+        if (mgmtDone) {
+            doneLabels.unshift(mgmtDone);
+        }
+
         if (doneLabels.length && !failedLabels.length && !pendingLabels.length) {
             var doneMsg = doneLabels.length === 1
-                ? doneLabels[0] + ' 수신기에서 방송 재생이 완료되었습니다.'
-                : doneLabels.join(', ') + ' 수신기에서 방송 재생이 완료되었습니다.';
+                ? doneLabels[0] + '에서 방송 재생이 완료되었습니다.'
+                : doneLabels.join(', ') + '에서 방송 재생이 완료되었습니다.';
             toast({
                 title: '방송 송출 완료',
                 message: doneMsg,
@@ -1185,7 +1321,7 @@
     }
 
     function finishBroadcastSession() {
-        clearBroadcastCompletionTimer();
+        clearBroadcastCompletionTimers();
         pendingBroadcastSession = null;
         broadcastActive = false;
         setBroadcastButtonState(false, false);
@@ -1232,6 +1368,10 @@
                 return;
             }
 
+            if (!subscribeSenderAck()) {
+                console.warn('[방송 송출] 완료 ACK 구독 실패 — userNo·웹소켓 확인');
+            }
+
             var sendingToast = formatBroadcastSendingToast(targets);
             toast({
                 title: sendingToast.title,
@@ -1242,7 +1382,12 @@
             console.log('[방송 송출] 수신기만 재생 →', targets.map(function (t) {
                 return t.dongLabel + '(' + t.dongNo + ')';
             }).join(', '), 'id=', broadcastId);
-            beginBroadcastCompletionWait(broadcastId, targets);
+            beginBroadcastCompletionWait(broadcastId, targets, form);
+
+            if (isBroadcastAllAreas(form)) {
+                console.log('[방송 송출] 전체 — 관리사무소(송출 PC) 모니터 재생');
+                startMgmtOfficeMonitorPlayback(audio);
+            }
         });
     }
 
@@ -1680,9 +1825,16 @@
         ensureSenderAckSubscription();
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
+    var pageBooted = false;
+
+    function bootBroadcastPage() {
+        if (pageBooted) return;
+        pageBooted = true;
         init();
+    }
+
+    document.addEventListener('DOMContentLoaded', bootBroadcastPage);
+    if (document.readyState !== 'loading') {
+        setTimeout(bootBroadcastPage, 0);
     }
 })();
