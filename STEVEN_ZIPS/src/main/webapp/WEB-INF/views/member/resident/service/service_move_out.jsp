@@ -122,12 +122,11 @@
         [document.getElementById('csrfHeader').value]: document.getElementById('csrfToken').value
       },
       body: JSON.stringify(data)
-    }).then(res => res.json()).then(result => {
+    }).then(res => res.json()).then(async result => {
       if (result.success) {
-        alert('전출신고가 완료되었습니다.');
-        history.back();
+        await residentAlertThen('전출신고가 완료되었습니다.', function () { history.back(); }, 'success');
       } else {
-        alert('오류가 발생했습니다.');
+        await residentAlert(result.message || '오류가 발생했습니다.', 'error');
       }
     });
   }

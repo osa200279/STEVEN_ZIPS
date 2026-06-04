@@ -226,14 +226,23 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(() => {
 
-                alert("방문 예약 등록 완료");
-
-                closeModal();
-
-                loadVisitList();
+                Swal.fire({
+                    icon: "success",
+                    title: "방문 예약 등록 완료",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#2e5c38"
+                }).then(() => {
+                    closeModal();
+                    loadVisitList();
+                });
             })
             .catch(err => {
-                alert(err.message);
+                Swal.fire({
+                    icon: "error",
+                    title: err.message || "등록 실패",
+                    confirmButtonText: "확인",
+                    confirmButtonColor: "#2e5c38"
+                });
             });
     }
 

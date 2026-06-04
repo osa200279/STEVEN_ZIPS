@@ -515,9 +515,14 @@
                 });
                 var data = await res.json();
                 if (data.success) {
-                    alert('수정되었습니다.');
-                    location.href = '/resident/boardFreeDetail/' + aptCmplexNo + '/' + postNo;
-                } else alert('수정에 실패했습니다.');
+                    await residentAlertThen(
+                        '수정되었습니다.',
+                        '/resident/boardFreeDetail/' + aptCmplexNo + '/' + postNo,
+                        'success'
+                    );
+                } else {
+                    await residentAlert('수정에 실패했습니다.', 'error');
+                }
             } catch (e) { console.error('수정 오류', e); }
         }
     });
@@ -573,7 +578,7 @@
                 });
                 var data = await res.json();
                 if (data.success) loadComments();
-                else alert('등록에 실패했습니다.');
+                else await residentAlert('등록에 실패했습니다.', 'error');
             } catch (e) { console.error('대댓글 등록 오류', e); }
         }
 
@@ -625,7 +630,7 @@
                 });
                 var data = await res.json();
                 if (data.success) loadComments();
-                else alert('수정에 실패했습니다.');
+                else await residentAlert('수정에 실패했습니다.', 'error');
             } catch (e) { console.error('댓글 수정 오류', e); }
         }
 

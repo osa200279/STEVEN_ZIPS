@@ -367,7 +367,12 @@ function submitVhcl(isExtra) {
         })
         .catch(err => {
 
-            alert(err.message);
+            Swal.fire({
+                icon: "error",
+                title: err.message || "등록 실패",
+                confirmButtonText: "확인",
+                confirmButtonColor: "#2e5c38"
+            });
         })
         .finally(() => {
 

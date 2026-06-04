@@ -330,9 +330,9 @@
                           await submitResponse.text();
 
                   if(message === "already"){
-                    alert("이미 참여한 설문입니다.");
+                    await residentAlert("이미 참여한 설문입니다.", "warning");
                   } else {
-                    alert("설문 제출에 실패했습니다.");
+                    await residentAlert("설문 제출에 실패했습니다.", "error");
                   }
 
                   return;
@@ -348,7 +348,7 @@
 
                 console.error(e);
 
-                alert("설문 제출 실패");
+                await residentAlert("설문 제출 실패", "error");
               }
             });
 

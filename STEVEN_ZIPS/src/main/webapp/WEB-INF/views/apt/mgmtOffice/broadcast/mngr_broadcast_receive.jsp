@@ -58,19 +58,20 @@
                         <div><span class="label">수신 동</span><span>${fn:escapeXml(dongLabel)}</span></div>
                         <div><span class="label">동 코드</span><span>${fn:escapeXml(dongNo)}</span></div>
                         <div><span class="label">구독 경로</span><span id="receiveSubDest" class="bc-receive-subdest">—</span></div>
+                        <div><span class="label">서버 주소</span><span id="receiveServerOrigin" class="bc-receive-subdest" title="송출 PC와 이 주소가 같아야 합니다">—</span></div>
                     </div>
                     <p class="bc-receive-audio-hint" id="receiveAudioHint">
-                        <strong>1동만</strong> 송출할 때도 이 화면에서 들립니다. 송출 PC와 <strong>같은 서버 주소</strong>·아래 <strong>동 코드</strong>가 일치해야 합니다.
+                        방송이 오면 <strong>버튼 없이 자동 재생</strong>됩니다. 송출 PC와 <strong>같은 서버 주소</strong>·<strong>동 코드</strong>가 맞는지 확인하세요.
                     </p>
-                    <button type="button" class="bc-receive-unlock-btn" id="receiveAudioUnlockBtn">
-                        <span class="material-symbols-rounded">volume_up</span>스피커 출력 허용 (한 번만 클릭)
+                    <button type="button" class="bc-receive-unlock-btn" id="receiveAudioUnlockBtn" hidden>
+                        <span class="material-symbols-rounded">volume_up</span>소리가 안 들릴 때만 클릭
                     </button>
                     <button type="button" class="bc-receive-verify-btn" id="receiveVerifyBtn">
-                        <span class="material-symbols-rounded">fact_check</span>1동 수신 준비 확인
+                        <span class="material-symbols-rounded">fact_check</span>수신 연결 확인
                     </button>
-                    <p class="bc-receive-verify-result" id="receiveVerifyResult">송출 전 「1동 수신 준비 확인」을 눌러 주세요.</p>
+                    <p class="bc-receive-verify-result" id="receiveVerifyResult">페이지를 연 두면 자동으로 수신 대기합니다.</p>
                     <p class="bc-receive-last" id="receiveLastText" hidden></p>
-                    <audio id="receiveAudio" preload="none"></audio>
+                    <audio id="receiveAudio" preload="auto" playsinline></audio>
                 </section>
 
                 <section class="card bc-receive-links">
@@ -111,7 +112,7 @@
         mgmtOfcNo: '${mgmtOfcNo}',
         dongNo: '${dongNo}',
         dongLabel: '${fn:escapeXml(dongLabel)}',
-        dongValid: ${dongValid}
+        dongValid: '${dongValid}'
     };
 </script>
 <script src="${pageContext.request.contextPath}/js/manager/broadcast/mngr-broadcast-receive.js"></script>

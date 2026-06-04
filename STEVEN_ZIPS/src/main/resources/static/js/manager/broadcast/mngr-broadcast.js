@@ -531,20 +531,19 @@
 
     /** WebSocket 동별 송출용 — dongNo·표시 라벨 */
     function formatBroadcastSendingToast(targets) {
+        var origin = location.origin;
         if (!targets || !targets.length) {
             return { title: '방송 송출 중', message: '수신기에서 재생이 끝나면 완료 알림이 표시됩니다.' };
         }
         if (targets.length === 1) {
             return {
                 title: '방송 송출 중 (1개 동)',
-                message: targets[0].dongLabel + ' 수신기만 재생 — 수신 PC에서 동 코드「'
-                    + targets[0].dongNo + '」·스피커 허용·같은 서버 주소 확인'
+                message: targets[0].dongLabel + ' 수신기 재생 중 — 수신기 PC는 이 서버(' + origin + ')로 접속해야 합니다.'
             };
         }
-        var labels = targets.map(function (t) { return t.dongLabel; }).join(', ');
         return {
-            title: '방송 송출 중',
-            message: '전체 송출: 송출 PC에서도 재생됩니다. 각 동 수신기 PC는 같은 서버 주소·스피커 허용 후 재생 (' + targets.length + '개 동)'
+            title: '방송 송출 중 (' + targets.length + '개 동)',
+            message: '수신기 PC는 이 서버(' + origin + ')로 접속해야 합니다. 스피커 허용·동 코드 확인 후 재생됩니다.'
         };
     }
 

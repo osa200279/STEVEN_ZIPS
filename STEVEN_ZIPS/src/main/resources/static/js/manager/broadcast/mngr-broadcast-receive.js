@@ -6,6 +6,9 @@
 
     var cfg = window.BC_RECEIVE;
     if (!cfg || !cfg.mgmtOfcNo || !cfg.dongNo) return;
+    if (typeof cfg.dongValid === 'string') {
+        cfg.dongValid = cfg.dongValid === 'true';
+    }
 
     var receiveAudio = document.getElementById('receiveAudio');
     var receiveActive = false;
@@ -16,7 +19,9 @@
     var activePlayPayload = null;
     var ackSentForBroadcastId = null;
     var receiveAudioUnlocked = false;
+    var receiveAudioPrimed = false;
     var pendingPlayPayload = null;
+    var SILENT_WAV = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
 
     function $(id) { return document.getElementById(id); }
 
@@ -220,44 +225,90 @@
         var btn = $('receiveAudioUnlockBtn');
         var hint = $('receiveAudioHint');
         if (btn) {
-            btn.classList.toggle('is-done', receiveAudioUnlocked);
-            if (receiveAudioUnlocked) {
-                btn.innerHTML = '<span class="material-symbols-rounded">check_circle</span>스피커 출력 허용됨';
+            if (receiveAudioUnlocked || receiveAudioPrimed) {
+                btn.hidden = true;
+            } else {
+                btn.hidden = false;
             }
+            btn.classList.toggle('is-done', receiveAudioUnlocked);
         }
-        if (hint && receiveAudioUnlocked) {
-            hint.textContent = '스피커 출력이 허용되었습니다. 방송 송출(전체·개별 동) 시 이 화면에서 자동 재생됩니다.';
+        if (hint) {
+            if (receiveAudioUnlocked || receiveAudioPrimed) {
+                hint.textContent = '스피커 자동 재생 준비됨. 방송 송출 시 이 탭에서 바로 들립니다.';
+            }
         }
     }
 
-    function unlockReceiveAudio() {
-        if (!receiveAudio || receiveAudioUnlocked) {
-            return Promise.resolve(receiveAudioUnlocked);
+    /** 브라우저 자동재생: 음소거 재생으로 허용 받은 뒤 실제 방송은 소리 켠 채 재생 */
+    function primeReceiveAudioAutoplay() {
+        if (!receiveAudio || receiveAudioPrimed) {
+            return Promise.resolve(receiveAudioUnlocked || receiveAudioPrimed);
         }
-        receiveAudio.muted = false;
+        receiveAudio.muted = true;
+        if (!receiveAudio.src) {
+            receiveAudio.src = SILENT_WAV;
+        }
         return receiveAudio.play().then(function () {
             receiveAudio.pause();
             try {
                 receiveAudio.currentTime = 0;
             } catch (ignore) { /* seek */ }
+            receiveAudio.muted = false;
+            receiveAudioPrimed = true;
             receiveAudioUnlocked = true;
             updateAudioUnlockUi();
-            if (pendingPlayPayload) {
-                var p = pendingPlayPayload;
-                pendingPlayPayload = null;
-                return fetchAndPlayTts(p);
-            }
-            return true;
+            console.log('[방송 수신] 스피커 자동 재생 준비 OK (muted prime)');
+            return drainPendingPlay();
         }).catch(function (err) {
-            console.warn('receive audio unlock failed', err);
-            toast({
-                title: '스피커 허용 필요',
-                message: '브라우저가 자동 재생을 막았습니다. 이 버튼을 다시 누르거나 페이지 설정에서 소리를 허용해 주세요.',
-                type: 'warning',
-                hero: true,
-                duration: 7000
-            });
+            console.warn('receive audio prime failed', err);
+            receiveAudio.muted = false;
             return false;
+        });
+    }
+
+    function drainPendingPlay() {
+        if (!pendingPlayPayload) {
+            return Promise.resolve(true);
+        }
+        var p = pendingPlayPayload;
+        pendingPlayPayload = null;
+        return fetchAndPlayTts(p);
+    }
+
+    function unlockReceiveAudio() {
+        if (!receiveAudio) {
+            return Promise.resolve(false);
+        }
+        if (receiveAudioUnlocked) {
+            return drainPendingPlay().then(function () { return true; });
+        }
+        return primeReceiveAudioAutoplay().then(function (primed) {
+            if (primed) {
+                return true;
+            }
+            receiveAudio.muted = false;
+            return receiveAudio.play().then(function () {
+                receiveAudio.pause();
+                try {
+                    receiveAudio.currentTime = 0;
+                } catch (ignore) { /* seek */ }
+                receiveAudioUnlocked = true;
+                receiveAudioPrimed = true;
+                updateAudioUnlockUi();
+                return drainPendingPlay();
+            }).catch(function (err) {
+                console.warn('receive audio unlock failed', err);
+                var btn = $('receiveAudioUnlockBtn');
+                if (btn) btn.hidden = false;
+                toast({
+                    title: '스피커 허용 필요',
+                    message: '브라우저가 소리를 막았습니다. 「소리가 안 들릴 때만 클릭」 버튼을 한 번 눌러 주세요.',
+                    type: 'warning',
+                    hero: true,
+                    duration: 7000
+                });
+                return false;
+            });
         });
     }
 
@@ -281,17 +332,40 @@
             last.textContent = payload.text;
         }
 
-        return receiveAudio.play().then(function () {
-            demoBroadcastAlert('playing');
+        function startPlayback() {
+            receiveAudio.muted = false;
+            return receiveAudio.play().then(function () {
+                receiveAudioUnlocked = true;
+                receiveAudioPrimed = true;
+                updateAudioUnlockUi();
+                demoBroadcastAlert('playing');
+            });
+        }
+
+        return startPlayback().catch(function (err) {
+            console.warn('receive audio play failed, try muted', err);
+            if (err && err.name === 'NotAllowedError') {
+                receiveAudio.muted = true;
+                return receiveAudio.play().then(function () {
+                    receiveAudio.muted = false;
+                    receiveAudioUnlocked = true;
+                    receiveAudioPrimed = true;
+                    updateAudioUnlockUi();
+                    demoBroadcastAlert('playing');
+                });
+            }
+            throw err;
         }).catch(function (err) {
             console.warn('receive audio play failed', err);
             if (err && err.name === 'NotAllowedError') {
                 pendingPlayPayload = payload;
                 receiveActive = false;
-                setReceiveUi('idle', '재생 대기', '「스피커 출력 허용」 버튼을 누른 뒤 다시 송출해 주세요.');
+                setReceiveUi('idle', '재생 대기', '브라우저가 소리를 막았습니다. 화면 아무 곳이나 한 번 클릭한 뒤 다시 송출해 주세요.');
+                var btn = $('receiveAudioUnlockBtn');
+                if (btn) btn.hidden = false;
                 toast({
                     title: '자동 재생 차단',
-                    message: dongName + ' 수신기: 「스피커 출력 허용」을 누른 후, 송출 PC에서 방송을 다시 보내 주세요. (전체 송출도 동일)',
+                    message: dongName + ' 수신기: 이 탭을 한 번 클릭하거나 「소리가 안 들릴 때만 클릭」 후 송출 PC에서 방송을 다시 보내 주세요.',
                     type: 'warning',
                     hero: true,
                     duration: 8000
@@ -509,28 +583,28 @@
             lines.push('방송 구독: 활성');
         }
 
-        if (!receiveAudioUnlocked) {
-            lines.push('스피커: 허용 전 — 「스피커 출력 허용」 클릭 필요');
+        if (!receiveAudioUnlocked && !receiveAudioPrimed) {
+            lines.push('스피커: 자동 준비 시도 중 (방송 시 재생)');
         } else {
-            lines.push('스피커: 허용됨');
+            lines.push('스피커: 자동 재생 준비됨');
         }
 
         var verifyEl = $('receiveVerifyResult');
         if (verifyEl) {
             verifyEl.textContent = lines.join(' · ');
-            verifyEl.className = 'bc-receive-verify-result ' + (ok && receiveAudioUnlocked ? 'is-ok' : 'is-warn');
+            verifyEl.className = 'bc-receive-verify-result ' + (ok ? 'is-ok' : 'is-warn');
         }
 
         toast({
-            title: ok ? '1동 수신기 점검' : '1동 수신기 점검 (확인 필요)',
+            title: ok ? '수신기 연결 OK' : '수신기 연결 (확인 필요)',
             message: lines.join('\n'),
-            type: ok && receiveAudioUnlocked ? 'success' : 'warning',
+            type: ok ? 'success' : 'warning',
             hero: true,
             duration: 8000
         });
 
-        console.log('[1동 수신 점검]\n' + lines.join('\n'));
-        return ok && receiveAudioUnlocked;
+        console.log('[방송 수신 점검]\n' + lines.join('\n'));
+        return ok;
     }
 
     function bindAudioUnlock() {
@@ -538,33 +612,51 @@
         if (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
+                e.stopPropagation();
                 unlockReceiveAudio();
             });
         }
-        var page = $('broadcastReceivePage');
-        if (page) {
-            page.addEventListener('click', function () {
-                if (!receiveAudioUnlocked) {
-                    unlockReceiveAudio();
-                }
-            }, { once: true });
+        var gestures = ['pointerdown', 'touchstart', 'keydown'];
+        function onFirstGesture() {
+            if (!receiveAudioUnlocked && !receiveAudioPrimed) {
+                unlockReceiveAudio();
+            }
         }
+        gestures.forEach(function (ev) {
+            document.addEventListener(ev, onFirstGesture, { once: true, capture: true });
+        });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    var receivePageBooted = false;
+
+    function bootReceivePage() {
+        if (receivePageBooted) return;
+        receivePageBooted = true;
+
+        /* 수신기 메타에 현재 서버 주소 표시 — 호스트 불일치 진단용 */
+        var originEl = $('receiveServerOrigin');
+        if (originEl) originEl.textContent = location.origin;
+
         if (!cfg.dongValid) {
             setWsBadge('is-error', '동 코드 오류');
+            console.error('[방송 수신] dongValid=false — URL의 dongNo가 DB에 없습니다. 수신기 링크를 다시 확인하세요.');
             return;
         }
+
+        console.log('[방송 수신] 초기화 | 서버=' + location.origin
+            + ' | dongNo=' + cfg.dongNo + ' | mgmtOfcNo=' + cfg.mgmtOfcNo);
+
         bindAudioEvents();
         bindAudioUnlock();
         updateAudioUnlockUi();
+        primeReceiveAudioAutoplay();
 
         var verifyBtn = $('receiveVerifyBtn');
         if (verifyBtn) {
             verifyBtn.addEventListener('click', function (e) {
                 e.preventDefault();
-                unlockReceiveAudio().then(function () {
+                e.stopPropagation();
+                primeReceiveAudioAutoplay().finally(function () {
                     verifyReceiveReady();
                 });
             });
@@ -574,5 +666,11 @@
         setTimeout(function () {
             if (isStompReady()) subscribeBroadcast();
         }, 1500);
-    });
+    }
+
+    document.addEventListener('DOMContentLoaded', bootReceivePage);
+    /* mngr-broadcast.js 패턴과 동일 — DOM이 이미 ready일 때 대비 */
+    if (document.readyState !== 'loading') {
+        bootReceivePage();
+    }
 })();
