@@ -274,6 +274,30 @@
 </div>
 
 <script>
+    function showAlert(message, icon) {
+        return Swal.fire({ text: message, icon: icon || 'info', confirmButtonText: '확인' });
+    }
+
+    function showPrompt({ title, text, inputPlaceholder, confirmText, confirmColor, required, requiredMessage }) {
+        return Swal.fire({
+            title: title,
+            text: text,
+            input: 'text',
+            inputPlaceholder: inputPlaceholder || '',
+            showCancelButton: true,
+            confirmButtonText: confirmText || '확인',
+            confirmButtonColor: confirmColor || '#3085d6',
+            cancelButtonText: '취소',
+            preConfirm: (value) => {
+                if (required && !value.trim()) {
+                    Swal.showValidationMessage(requiredMessage || '입력이 필요합니다.');
+                    return false;
+                }
+                return value;
+            }
+        });
+    }
+
     (function () {
         'use strict';
 
