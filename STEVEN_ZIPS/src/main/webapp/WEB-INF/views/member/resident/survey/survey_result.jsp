@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -32,6 +32,9 @@
     .label-grid {display:grid;grid-template-columns:160px 1fr 160px 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);overflow:hidden;border-radius:12px;margin-bottom:18px;} .label-grid div {padding:13px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:13px;} .label-grid .th {background:var(--green-pale);color:var(--text-mid);font-weight:700;}
     .form-grid {display:grid;grid-template-columns:160px 1fr;border-top:1px solid var(--border);border-left:1px solid var(--border);overflow:hidden;border-radius:12px;} .form-grid .th,.form-grid .td {padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);} .form-grid .th {background:var(--green-pale);color:var(--text-mid);font-size:13px;font-weight:700;}
     .fake-input,.fake-select,.fake-textarea {width:100%;border:1px solid #d8ddd4;background:#fff;border-radius:10px;padding:11px 13px;font-size:13px;color:var(--text-dark);box-sizing:border-box;} .fake-textarea {min-height:110px;resize:vertical;}
+    .my-answer-box {border:1px solid #dfe8df;background:#f8fbf8;border-radius:12px;padding:16px 18px;}
+    .my-answer-label {font-size:12px;font-weight:800;color:var(--green-dark);margin-bottom:8px;}
+    .my-answer-content {font-size:14px;line-height:1.8;color:var(--text-dark);white-space:pre-wrap;}
     .inline-fields {display:flex;gap:10px;flex-wrap:wrap;} .btn-row {display:flex;justify-content:center;gap:10px;margin-top:22px;flex-wrap:wrap;}
     .btn-main,.btn-sub,.btn-danger,.btn-ghost {display:inline-flex;align-items:center;justify-content:center;min-width:120px;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;border:none;cursor:pointer;box-sizing:border-box;} .btn-main {background:var(--green-dark);color:#fff;} .btn-sub {background:#edf5ef;color:var(--green-dark);} .btn-danger {background:#b64444;color:#fff;} .btn-ghost {background:#fff;color:var(--text-mid);border:1px solid var(--border);}
     .badge {display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;} .badge.ok {background:#ecf7ef;color:#2f7a4d;} .badge.wait {background:#fff5df;color:#9a6b00;} .badge.danger {background:#fbe8e8;color:#a23a3a;} .badge.info {background:#edf4fb;color:#2d6688;}
@@ -151,6 +154,35 @@ request.getAttribute("survey")).getSurveyQitemCn()
 
     const participantCount =
             <%= totalParticipantCount %>;
+
+    const myResponse =
+            JSON.parse(
+                    '<%= org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript(
+                        String.valueOf(request.getAttribute("myResponse"))
+                    ) %>'
+            );
+
+    function escapeHtml(value){
+
+      return String(value ?? "")
+              .replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll('"', "&quot;")
+              .replaceAll("'", "&#39;");
+    }
+
+    function getMyAnswer(questionNo){
+
+      const matched =
+              myResponse.find(
+                      r => Number(r.questionNo) === questionNo
+              );
+
+      return matched && matched.answer
+              ? matched.answer
+              : "";
+    }
 
 
 
@@ -337,35 +369,20 @@ request.getAttribute("survey")).getSurveyQitemCn()
 
 
 
-      if(q.type === "SHORT"){
-
-        const myResponse =
-                JSON.parse(
-                        '<%= org.apache.commons.lang3.StringEscapeUtils.escapeEcmaScript(
-                      String.valueOf(request.getAttribute("myResponse"))
-                  ) %>'
-                );
+      if(q.type === "SHORT" || q.type === "LONG"){
 
         const myAnswer =
-                myResponse[idx]
-                        ? myResponse[idx].answer
-                        : "";
+                getMyAnswer(idx + 1);
 
         html +=
-                "<div class='fake-input'>"
-                + myAnswer
+                "<div class='my-answer-box'>"
+                + "<div class='my-answer-label'>내 답변</div>"
+                + "<div class='my-answer-content'>"
+                + escapeHtml(myAnswer).replaceAll("\n", "<br>")
+                + "</div>"
                 + "</div>";
       }
 
-
-
-      if(q.type === "LONG"){
-
-        html +=
-                "<div class='fake-textarea'>"
-                + "장문 응답"
-                + "</div>";
-      }
 
       html +=
               "</div>";

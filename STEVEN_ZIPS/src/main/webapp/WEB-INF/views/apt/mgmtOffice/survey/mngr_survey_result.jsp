@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
@@ -24,8 +24,6 @@
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/manager/manager-common.css">
 
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/style.css">
 
     <style>
 
@@ -342,6 +340,16 @@
     const mgmtOfcNo = "${mgmtOfcNo}";
     const surveyNo = "${surveyNo}";
 
+    function escapeHtml(value){
+
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#39;");
+    }
+
     function statusText(status){
 
         if(status === "READY") return "대기중";
@@ -481,7 +489,7 @@
                 + '<div class="question-title">'
 
                 + 'Q' + (qIdx + 1) + '. '
-                + (q.question || '-')
+                + escapeHtml(q.question || '-')
 
                 + '</div>'
 
@@ -495,116 +503,147 @@
                         : Array.isArray(q.options)
                             ? q.options
                             : [];
-            const questionMax =
-                Math.max(
-                    0,
-                    ...items.map(function(item){
 
-                        const found =
-                            data.resultList.find(r => r.ansrCn === item);
+                if(q.type === "SHORT" || q.type === "LONG"){
 
-                        return found ? found.ansrCnt : 0;
-                    })
-                );
+                    const textAnswers = [];
 
-            items.forEach(function(item){
+                    (data.shortAnswerList || []).forEach(function(answer){
 
-                const found =
-                    data.resultList.find(r => r.ansrCn === item);
+                        try{
 
-                const count =
-                    found ? found.ansrCnt : 0;
+                            const parsed =
+                                JSON.parse(answer.rspnsCn);
 
-                const percent =
-                    Math.round((count / total) * 100);
+                            const matched =
+                                parsed.find(function(r){
 
-                html +=
+                                    return Number(r.questionNo) === (qIdx + 1);
+                                });
 
-                    '<div class="result-row">'
+                            if(!matched || !matched.answer) return;
 
-                    + '<div class="result-info">'
-
-                    + '<div class="result-label">'
-
-                    + (count === questionMax && count > 0 ? '🥇 ' : '')
-
-                    + item
-
-                    + '</div>'
-
-                    + '<div class="result-count">'
-
-                    + percent
-                    + '% ('
-                    + count
-                    + '명)'
-
-                    + '</div>'
-
-                    + '</div>'
-
-                    + '<div class="progress">'
-
-                    + '<div class="progress-bar" '
-                    + 'style="width:'
-                    + percent
-                    + '%">'
-                    + '</div>'
-
-                    + '</div>'
-
-                    + '</div>';
-            });
-
-
-
-
-                if(q.type === "SHORT"){
-
-                    const shortAnswers =
-                        data.shortAnswerList || [];
-
-                    let shortCount = 0;
-
-                    shortAnswers.forEach(function(answer){
-
-                        const parsed =
-                            JSON.parse(answer.rspnsCn);
-
-                        const matched =
-                            parsed.find(function(r){
-
-                                return r.questionNo === (qIdx + 1);
+                            textAnswers.push({
+                                userNm: answer.userNm,
+                                answer: matched.answer,
+                                count: 1
                             });
 
-                        if(!matched || !matched.answer) return;
+                        }catch(e){
 
-                        shortCount++;
+                            console.warn("Failed to parse short answer", e);
+                        }
+                    });
+
+                    if(!textAnswers.length){
+
+                        (data.resultList || [])
+                            .filter(function(row){
+
+                                return row.qitemNm === q.question
+                                    || row.qitemNm === ("Q" + (qIdx + 1));
+                            })
+                            .forEach(function(row){
+
+                                textAnswers.push({
+                                    answer: row.ansrCn,
+                                    count: row.ansrCnt || 1
+                                });
+                            });
+                    }
+
+                    html +=
+                        '<div style="margin-bottom:16px;text-align:right;">'
+                        + '<span style="background:#eef6ef;color:#2f6b3d;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:700;">'
+                        + '답변 ' + textAnswers.length + '명'
+                        + '</span>'
+                        + '</div>';
+
+                    if(!textAnswers.length){
+
+                        html +=
+                            '<div style="padding:24px;text-align:center;color:#6b7280;">'
+                            + '등록된 답변이 없습니다.'
+                            + '</div>';
+                    }
+
+                    textAnswers.forEach(function(answer){
 
                         html +=
                             '<div class="essay-box">'
+                            + (answer.userNm
+                                ? '<div style="font-weight:700;color:#2f6b3d;margin-bottom:8px;">'
+                                    + escapeHtml(answer.userNm)
+                                    + '</div>'
+                                : '')
+                            + '<div>'
+                            + escapeHtml(answer.answer)
+                            + '</div>'
+                            + '</div>';
+                    });
 
-                            + '<div style="font-weight:700;color:#2f6b3d;margin-bottom:8px;">'
-                            + answer.userNm
+                }else{
+
+                    const questionMax =
+                        Math.max(
+                            0,
+                            ...items.map(function(item){
+
+                                const found =
+                                    (data.resultList || []).find(r => r.ansrCn === item);
+
+                                return found ? found.ansrCnt : 0;
+                            })
+                        );
+
+                    items.forEach(function(item){
+
+                        const found =
+                            (data.resultList || []).find(r => r.ansrCn === item);
+
+                        const count =
+                            found ? found.ansrCnt : 0;
+
+                        const percent =
+                            Math.round((count / total) * 100);
+
+                        html +=
+
+                            '<div class="result-row">'
+
+                            + '<div class="result-info">'
+
+                            + '<div class="result-label">'
+
+                            + (count === questionMax && count > 0 ? '최다 ' : '')
+
+                            + escapeHtml(item)
+
                             + '</div>'
 
-                            + '<div>'
-                            + matched.answer
+                            + '<div class="result-count">'
+
+                            + percent
+                            + '% ('
+                            + count
+                            + '명)'
+
+                            + '</div>'
+
+                            + '</div>'
+
+                            + '<div class="progress">'
+
+                            + '<div class="progress-bar" '
+                            + 'style="width:'
+                            + percent
+                            + '%">'
+                            + '</div>'
+
                             + '</div>'
 
                             + '</div>';
                     });
-
-                    html =
-                        html.replace(
-                            '<div class="question-body">',
-                            '<div class="question-body">'
-                            + '<div style="margin-bottom:16px;text-align:right;">'
-                            + '<span style="background:#eef6ef;color:#2f6b3d;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:700;">'
-                            + '응답 수 ' + shortCount + '명'
-                            + '</span>'
-                            + '</div>'
-                        );
                 }
 
 
@@ -626,7 +665,6 @@
 
 </script>
 
-<script src="${pageContext.request.contextPath}/js/office-layout.js"></script>
 
 </body>
 </html>

@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="sec"
            uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
@@ -193,21 +194,19 @@
 
         if (q.type === "SHORT") {
 
-          html += `
-         <input type="text"
-       class="fake-input"
-       data-question-no="${idx}"
-       placeholder="답변 입력">
-        `;
+          html +=
+                  '<input type="text" '
+                  + 'class="fake-input" '
+                  + 'data-question-no="' + (idx + 1) + '" '
+                  + 'placeholder="답변 입력">';
         }
 
         if (q.type === "LONG") {
 
-          html += `
-          <textarea class="fake-textarea"
-          data-question-no="${idx}"
-          rows="5"></textarea>
-        `;
+          html +=
+                  '<textarea class="fake-textarea" '
+                  + 'data-question-no="' + (idx + 1) + '" '
+                  + 'rows="5"></textarea>';
         }
 
         html += "</div>";
@@ -229,10 +228,12 @@
 
 
               const responseList = [];
+              let invalidQuestionNo = null;
 
               questionList.forEach((q, idx) => {
 
                 let answer = "";
+                const questionNo = idx + 1;
 
                 if(q.type === "MULTI" || q.type === "YN"){
 
@@ -250,34 +251,36 @@
                 if(q.type === "SHORT"){
 
                   const input =
-                          document.querySelectorAll('.fake-input')[0];
-
-                  console.log("SHORT INPUT =", input);
-                  console.log("SHORT VALUE =", input?.value);
+                          document.querySelector(
+                                  '.fake-input[data-question-no="' + questionNo + '"]'
+                          );
 
                   answer =
                           input
                                   ? input.value.trim()
                                   : "";
                 }
-                console.log("SHORT ANSWER =", answer);
 
                 if(q.type === "LONG"){
 
                   const textarea =
                           document.querySelector(
-                                  '.fake-textarea[data-question-no="' + idx + '"]'
+                                  '.fake-textarea[data-question-no="' + questionNo + '"]'
                           );
 
                   answer =
                           textarea
-                                  ? textarea.value
+                                  ? textarea.value.trim()
                                   : "";
+                }
+
+                if(!answer && invalidQuestionNo === null){
+                  invalidQuestionNo = questionNo;
                 }
 
                 responseList.push({
 
-                  questionNo: idx + 1,
+                  questionNo: questionNo,
                   type: q.type,
                   answer: answer
                 });
@@ -286,6 +289,11 @@
               });
 
               console.log(responseList);
+
+              if(invalidQuestionNo !== null){
+                alert("Q" + invalidQuestionNo + " 답변을 입력해주세요.");
+                return;
+              }
 
 
               try{

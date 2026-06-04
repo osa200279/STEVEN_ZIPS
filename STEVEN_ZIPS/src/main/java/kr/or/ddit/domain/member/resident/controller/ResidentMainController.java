@@ -1124,6 +1124,17 @@ public class ResidentMainController {
 
     ) {
 
+        String response =
+                body.get("response");
+
+        if (response == null
+                || response.trim().isEmpty()
+                || hasBlankSurveyAnswer(response)) {
+
+            return ResponseEntity.badRequest()
+                    .body("empty");
+        }
+
         if (surveyService.existsSurveyResponse(
 
                 surveyNo,
@@ -1151,7 +1162,7 @@ public class ResidentMainController {
         surveyService.insertSurveyResponse(
 
                 surveyNo,
-                body.get("response"),
+                response,
                 customUser.getMember().getUserNo(),
                 hoNo
 
@@ -1159,6 +1170,42 @@ public class ResidentMainController {
 
 
         return ResponseEntity.ok().build();
+    }
+
+    private boolean hasBlankSurveyAnswer(String response) {
+
+        try {
+
+            List<Map<String, Object>> answerList =
+                    new com.fasterxml.jackson.databind.ObjectMapper()
+                            .readValue(
+                                    response,
+                                    new com.fasterxml.jackson.core.type.TypeReference<>() {
+                                    }
+                            );
+
+            if (answerList == null || answerList.isEmpty()) {
+                return true;
+            }
+
+            for (Map<String, Object> answer : answerList) {
+
+                Object value =
+                        answer.get("answer");
+
+                if (value == null
+                        || value.toString().trim().isEmpty()) {
+
+                    return true;
+                }
+            }
+
+            return false;
+
+        } catch (Exception e) {
+
+            return true;
+        }
     }
 
 
@@ -1386,5 +1433,4 @@ public class ResidentMainController {
 
 
 }
-
 

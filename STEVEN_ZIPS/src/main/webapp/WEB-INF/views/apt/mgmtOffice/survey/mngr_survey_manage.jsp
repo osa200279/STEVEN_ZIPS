@@ -929,15 +929,18 @@
 
                     const items = [];
 
-                    box.querySelectorAll(".option-input")
-                        .forEach(input => {
+                    if (type === "MULTI") {
 
-                            if (input.value.trim() !== "") {
+                        box.querySelectorAll(".option-input")
+                            .forEach(input => {
 
-                                items.push(input.value);
+                                if (input.value.trim() !== "") {
 
-                            }
-                        });
+                                    items.push(input.value);
+
+                                }
+                            });
+                    }
 
                     questionList.push({
 
@@ -1044,28 +1047,79 @@
                 const questionBox =
                     e.target.closest(".question-box");
 
+                if (!questionBox) {
+                    return;
+                }
+
                 const optionWrapper =
                     questionBox.querySelector(".option-wrapper");
 
-                const shortAnswerBox =
+                const optionContainer =
+                    questionBox.querySelector(".option-container");
+
+                const addOptionBtn =
+                    questionBox.querySelector(".add-option-btn");
+
+                let shortAnswerBox =
                     questionBox.querySelector(".short-answer-box");
+
+                if (!shortAnswerBox && optionWrapper) {
+                    optionWrapper.insertAdjacentHTML(
+                        "beforeend",
+                        `
+<div class="short-answer-box" style="display:none; margin-top:12px;">
+    <label class="field-label">답변 입력칸</label>
+    <textarea class="form-textarea"
+              rows="3"
+              placeholder="입주민이 여기에 답변 작성"
+              disabled></textarea>
+</div>`
+                    );
+
+                    shortAnswerBox =
+                        questionBox.querySelector(".short-answer-box");
+                }
 
                 const type = e.target.value;
 
                 /* 객관식 */
                 if (type === "MULTI") {
 
-                    optionWrapper.style.display = "block";
+                    if (optionWrapper) {
+                        optionWrapper.style.display = "block";
+                    }
 
-                    shortAnswerBox.style.display = "none";
+                    if (optionContainer) {
+                        optionContainer.style.display = "block";
+                    }
+
+                    if (addOptionBtn) {
+                        addOptionBtn.style.display = "inline-flex";
+                    }
+
+                    if (shortAnswerBox) {
+                        shortAnswerBox.style.display = "none";
+                    }
                 }
 
                 /* 주관식 */
                 else if (type === "SHORT") {
 
-                    optionWrapper.style.display = "none";
+                    if (optionWrapper) {
+                        optionWrapper.style.display = "block";
+                    }
 
-                    shortAnswerBox.style.display = "block";
+                    if (optionContainer) {
+                        optionContainer.style.display = "none";
+                    }
+
+                    if (addOptionBtn) {
+                        addOptionBtn.style.display = "none";
+                    }
+
+                    if (shortAnswerBox) {
+                        shortAnswerBox.style.display = "block";
+                    }
                 }
             }
         });
@@ -1224,6 +1278,22 @@
             + 보기 추가
 
         </button>
+
+        <div class="short-answer-box"
+             style="display:none; margin-top:12px;">
+
+            <label class="field-label">
+                답변 입력칸
+            </label>
+
+            <textarea
+                    class="form-textarea"
+                    rows="3"
+                    placeholder="입주민이 여기에 답변 작성"
+                    disabled
+            ></textarea>
+
+        </div>
 
     </div>
 
