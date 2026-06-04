@@ -1244,38 +1244,39 @@
             });
   });
 
-  document.getElementById('deleteScheduleBtn').addEventListener('click', function () {
+  document.getElementById('deleteScheduleBtn').addEventListener('click', async function () {
     if (!selectedSchedule) {
       return;
     }
 
     if (selectedSchedule.scheduleTy !== 'VACATION') {
-      alert('직원 휴가 일정만 삭제할 수 있습니다.');
+      await showAlert('직원 휴가 일정만 삭제할 수 있습니다.', 'warning');
       return;
     }
 
-    if (!confirm('휴가 일정을 삭제하시겠습니까?')) {
+    var deleteConfirm = await showConfirm({
+      title: '휴가 일정을 삭제하시겠습니까?',
+      confirmText: '삭제',
+      confirmColor: '#c0392b'
+    });
+    if (!deleteConfirm.isConfirmed) {
       return;
     }
 
-    fetch(contextPath + '/manager/aptScheduleCalendar/' + mgmtOfcNo + '/vacation/' + selectedSchedule.scheduleNo, {
-      method: 'DELETE',
-      headers: csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {}
-    })
-            .then(function (res) {
-              return res.json();
-            })
-            .then(function (data) {
-              alert(data.message || '처리되었습니다.');
-
-              if (data.success) {
-                closeDetailModal();
-                loadSchedule();
-              }
-            })
-            .catch(function () {
-              alert('삭제 중 오류가 발생했습니다.');
-            });
+    try {
+      var res = await fetch(contextPath + '/manager/aptScheduleCalendar/' + mgmtOfcNo + '/vacation/' + selectedSchedule.scheduleNo, {
+        method: 'DELETE',
+        headers: csrfHeader && csrfToken ? { [csrfHeader]: csrfToken } : {}
+      });
+      var data = await res.json();
+      await showAlert(data.message || '처리되었습니다.', data.success ? 'success' : 'info');
+      if (data.success) {
+        closeDetailModal();
+        loadSchedule();
+      }
+    } catch (err) {
+      await showAlert('삭제 중 오류가 발생했습니다.', 'error');
+    }
   });
 
   /*

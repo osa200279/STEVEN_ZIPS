@@ -22,6 +22,39 @@ let formMode = "insert";
   왜 사용?
   → Spring Security 사용 시 POST/PUT/DELETE 요청에 필요할 수 있다.
 */
+function annSwalAvailable() {
+    return typeof Swal !== "undefined" && Swal && typeof Swal.fire === "function";
+}
+
+function showAnnMessage(icon, title, text) {
+    if (annSwalAvailable()) {
+        return Swal.fire({
+            icon: icon,
+            title: title,
+            text: text,
+            confirmButtonText: "확인"
+        });
+    }
+    alert(text || title);
+    return Promise.resolve();
+}
+
+function goToAnnouncementListView() {
+    closeFormModal();
+    closeModal();
+
+    var listTab = document.getElementById("tab0");
+    if (listTab) {
+        listTab.classList.add("is-active");
+    }
+
+    loadAnnouncementList();
+
+    if (listTab && typeof listTab.scrollIntoView === "function") {
+        listTab.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+}
+
 function getCsrfHeaders() {
     const tokenMeta = document.querySelector('meta[name="_csrf"]');
     const headerMeta = document.querySelector('meta[name="_csrf_header"]');
@@ -467,18 +500,27 @@ function submitForm() {
         })
         .then(function (data) {
             if (!data.success) {
-                alert("공고 저장에 실패했습니다.");
+                showAnnMessage("error", "저장 실패", "공고 저장에 실패했습니다.");
                 return;
             }
 
-            alert(formMode === "update" ? "공고가 수정되었습니다." : "공고가 등록되었습니다.");
+            var isInsert = formMode === "insert";
+            var title = isInsert ? "공고 등록 완료" : "공고 수정 완료";
+            var text = isInsert
+                ? "공고가 등록되었습니다. 목록으로 이동합니다."
+                : "공고가 수정되었습니다. 목록을 갱신합니다.";
 
-            closeFormModal();
-            loadAnnouncementList();
+            showAnnMessage("success", title, text).then(function () {
+                goToAnnouncementListView();
+            });
         })
         .catch(function (error) {
             console.error(error);
-            alert("공고 저장 중 오류가 발생했습니다.\n" + error.message);
+            showAnnMessage(
+                "error",
+                "저장 오류",
+                "공고 저장 중 오류가 발생했습니다.\n" + error.message
+            );
         });
 }
 

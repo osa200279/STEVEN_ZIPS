@@ -170,13 +170,9 @@
                     </div>
                 </div>
 
-                <%-- 등록/수정 완료 알림 (flash 메시지 → 기본 alert 창으로 표시) --%>
+                <%-- 등록/수정 완료 알림 (flash 메시지) --%>
                 <c:if test="${not empty message}">
-                    <script>
-                        window.addEventListener('DOMContentLoaded', function () {
-                            alert('${message}');
-                        });
-                    </script>
+                    <span id="facilityCheckFlashMessage" data-message="<c:out value='${message}'/>" hidden></span>
                 </c:if>
 
                 <%-- 대상 정보 --%>
@@ -437,6 +433,11 @@
 <script src="${ctx}/js/manager/manager-common.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        var flashEl = document.getElementById("facilityCheckFlashMessage");
+        if (flashEl && flashEl.dataset.message) {
+            void showAlert(flashEl.dataset.message, "success");
+        }
+
         /* 값이 없을 때 표시값 보정 */
         function safeText(value) {
             return value && String(value).trim() ? String(value) : "-";

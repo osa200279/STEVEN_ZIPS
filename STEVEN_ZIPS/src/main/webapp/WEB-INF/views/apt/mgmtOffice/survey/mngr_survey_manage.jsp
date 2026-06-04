@@ -1013,13 +1013,13 @@
 
                 if (response.ok) {
 
-                    alert("저장 성공");
+                    await showAlert("저장 성공", "success");
 
                     location.reload();
 
                 } else {
 
-                    alert("서버 오류 발생");
+                    await showAlert("서버 오류 발생", "error");
 
                     console.error(await response.text());
                 }
@@ -1028,7 +1028,7 @@
 
                 console.error(error);
 
-                alert(error);
+                await showAlert(String(error), "error");
             }
         });
 

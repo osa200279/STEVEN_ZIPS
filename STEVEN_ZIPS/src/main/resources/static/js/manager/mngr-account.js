@@ -93,6 +93,8 @@ function initMngrAccountPage() {
 
         if (typeof showAlert === "function") {
             showAlert(message);
+        } else if (typeof showAlert === "function") {
+            showAlert(message);
         } else {
             window.alert(message);
         }

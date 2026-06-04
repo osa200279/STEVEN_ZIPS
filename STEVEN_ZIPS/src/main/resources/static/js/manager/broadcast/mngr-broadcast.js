@@ -1667,8 +1667,11 @@
         $('ttsText').focus();
     }
 
-    function onClearClick() {
-        if ($('ttsText').value.trim() && !confirm('작성 중인 문구를 초기화할까요?')) return;
+    async function onClearClick() {
+        if ($('ttsText').value.trim()) {
+            const resetConfirm = await showConfirm({ title: '작성 중인 문구를 초기화할까요?' });
+            if (!resetConfirm.isConfirmed) return;
+        }
         resetComposer();
     }
 
@@ -1767,9 +1770,10 @@
         $('previewBtn').addEventListener('click', togglePreview);
         $('ttsText').addEventListener('input', updateMeta);
 
-        $('clearHistoryBtn').addEventListener('click', function () {
+        $('clearHistoryBtn').addEventListener('click', async function () {
             if (!historyRows.length) return;
-            if (!confirm('저장된 변환 이력을 모두 비울까요?')) return;
+            const clearConfirm = await showConfirm({ title: '저장된 변환 이력을 모두 비울까요?' });
+            if (!clearConfirm.isConfirmed) return;
             historyRows = [];
             saveHistory();
             renderHistory();

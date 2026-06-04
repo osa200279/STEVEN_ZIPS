@@ -955,7 +955,7 @@
         }
 
         /* 협력업체 활성화 확인 */
-        function openActivate(row) {
+        async function openActivate(row) {
             selectedRow = row;
 
             var data = d(row);
@@ -964,7 +964,11 @@
                 return;
             }
 
-            if (confirm('협력업체를 다시 활성화하시겠습니까?')) {
+            var activateConfirm = await showConfirm({
+                title: '협력업체를 다시 활성화하시겠습니까?',
+                confirmText: '활성화'
+            });
+            if (activateConfirm.isConfirmed) {
                 var form = document.createElement('form');
 
                 /* POST 전송 설정 */
@@ -1028,13 +1032,18 @@
          * - 버튼이 없을 수 있으므로 null 확인
          */
         if (el('deactivateConfirmBtn')) {
-            el('deactivateConfirmBtn').addEventListener('click', function() {
+            el('deactivateConfirmBtn').addEventListener('click', async function() {
                 /* 선택 업체번호 확인 */
                 var partnerNo = el('deactivatePartnerNo').value;
                 if (!partnerNo) return;
 
                 /* 사용자 최종 확인 */
-                if (confirm('협력업체를 비활성화하시겠습니까?')) {
+                var deactivateConfirm = await showConfirm({
+                    title: '협력업체를 비활성화하시겠습니까?',
+                    confirmText: '비활성화',
+                    confirmColor: '#c0392b'
+                });
+                if (deactivateConfirm.isConfirmed) {
                     /* 비활성화 POST 전송 */
                     el('deactivateFormPartnerNo').value = partnerNo;
                     el('deactivateForm').action = ctx + '/manager/facility/partner/deactivate/' + encodeURIComponent(mgmtOfcNo);

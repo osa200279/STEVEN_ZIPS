@@ -273,6 +273,7 @@
     </div>
 </div>
 
+<script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
 <script>
     (function () {
         'use strict';
@@ -304,7 +305,8 @@
             REJS: null,
             COMP: null,
             RJCT: null,
-            END:  null
+            END:  null,
+            CNCL: null
         };
 
         /* ══════════════════════════════════════
@@ -575,7 +577,10 @@
 
         document.getElementById('btnCloseDetail').addEventListener('click',  closeDetail);
         document.getElementById('btnCloseDetail2').addEventListener('click', closeDetail);
-        $detailModal.addEventListener('click', e => { if (e.target === $detailModal) closeDetail(); });
+        $detailModal.addEventListener('click', e => {
+            if (document.body.classList.contains('swal2-shown')) return;
+            if (e.target === $detailModal) closeDetail();
+        });
 
         /* 승인 처리 */
         $btnApproveDetail.addEventListener('click', async () => {
@@ -586,16 +591,28 @@
             const nextStts  = NEXT_STATUS[row?.cvplSttsCd];
             if (!nextStts) return;
 
-            const memo = window.prompt('처리 메모를 입력하세요. (선택사항)');
-            if (memo === null) return;
+            const memoResult = await showPrompt({
+                title: '민원 승인',
+                text: '처리 메모를 입력하세요. (선택사항)',
+                inputPlaceholder: '메모 입력 (선택)',
+                confirmText: '승인'
+            });
+            if (!memoResult.isConfirmed) return;
+
+            const memo = (memoResult.value || '').trim();
 
             try {
-                const data = await saveComplaint({ cvplNo, cvplSttsCd: nextStts, cvplAns: memo.trim() });
-                if (data.success) { closeDetail(); fetchList(currentPage); }
-                else alert('승인 처리 실패: ' + data.message);
+                const data = await saveComplaint({ cvplNo, cvplSttsCd: nextStts, cvplAns: memo });
+                if (data.success) {
+                    await showAlert('승인 처리되었습니다.', 'success');
+                    closeDetail();
+                    fetchList(currentPage);
+                } else {
+                    await showAlert('승인 처리 실패: ' + (data.message || ''), 'error');
+                }
             } catch (err) {
                 console.error('[approveDetail] 오류:', err);
-                alert('승인 처리 중 오류가 발생했습니다.');
+                await showAlert('승인 처리 중 오류가 발생했습니다.', 'error');
             }
         });
 
@@ -604,17 +621,31 @@
             const cvplNo = $detailModal.dataset.currentNo;
             if (!cvplNo) return;
 
-            const reason = window.prompt('반려 사유를 입력해주세요.');
-            if (reason === null) return;
-            if (!reason.trim()) return alert('반려 사유를 입력해야 합니다.');
+            const reasonResult = await showPrompt({
+                title: '민원 반려',
+                text: '반려 사유를 입력해 주세요.',
+                inputPlaceholder: '반려 사유',
+                confirmText: '반려',
+                confirmColor: '#c0392b',
+                required: true,
+                requiredMessage: '반려 사유를 입력해야 합니다.'
+            });
+            if (!reasonResult.isConfirmed) return;
+
+            const reason = String(reasonResult.value || '').trim();
 
             try {
-                const data = await saveComplaint({ cvplNo, cvplSttsCd: 'RJCT', cvplAns: reason.trim() });
-                if (data.success) { closeDetail(); fetchList(currentPage); }
-                else alert('반려 처리 실패: ' + data.message);
+                const data = await saveComplaint({ cvplNo, cvplSttsCd: 'RJCT', cvplAns: reason });
+                if (data.success) {
+                    await showAlert('반려 처리되었습니다.', 'success');
+                    closeDetail();
+                    fetchList(currentPage);
+                } else {
+                    await showAlert('반려 처리 실패: ' + (data.message || ''), 'error');
+                }
             } catch (err) {
                 console.error('[rejectDetail] 오류:', err);
-                alert('반려 처리 중 오류가 발생했습니다.');
+                await showAlert('반려 처리 중 오류가 발생했습니다.', 'error');
             }
         });
 

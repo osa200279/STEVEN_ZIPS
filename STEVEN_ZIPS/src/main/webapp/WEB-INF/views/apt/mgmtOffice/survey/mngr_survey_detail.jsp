@@ -316,20 +316,24 @@
         });
 
         if (resp.ok) {
-            alert("저장 완료");
-            window.location.href = `${ctx}/manager/survey/${mgmtOfcNo}`;
+            await showAlertThen("저장 완료", `${ctx}/manager/survey/${mgmtOfcNo}`, "success");
         } else {
 
             const errorText = await resp.text();
 
             console.error(errorText);
 
-            alert("저장 실패 : " + errorText);
+            await showAlert("저장 실패 : " + errorText, "error");
         }
     });
 
     document.getElementById("deleteBtn").addEventListener("click", async function () {
-        if (!confirm("삭제하시겠습니까?")) return;
+        const deleteConfirm = await showConfirm({
+            title: "삭제하시겠습니까?",
+            confirmText: "삭제",
+            confirmColor: "#c0392b"
+        });
+        if (!deleteConfirm.isConfirmed) return;
 
         const resp = await fetch(`${ctx}/manager/survey/${mgmtOfcNo}/detail/${surveyNo}`, {
             method: "DELETE",
@@ -337,10 +341,9 @@
         });
 
         if (resp.ok) {
-            alert("삭제 완료");
-            window.location.href = `${ctx}/manager/survey/${mgmtOfcNo}`;
+            await showAlertThen("삭제 완료", `${ctx}/manager/survey/${mgmtOfcNo}`, "success");
         } else {
-            alert("삭제 실패");
+            await showAlert("삭제 실패", "error");
         }
     });
 

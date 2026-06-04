@@ -336,12 +336,48 @@
 
             </div>
 
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script>
                 (function () {
                     var page = document.getElementById("residentAuthPage");
                     if (!page || page.dataset.bound === "true") return;
                     page.dataset.bound = "true";
 
+                    function showSwal(icon, title, text) {
+                        return Swal.fire({
+                            icon: icon,
+                            title: title,
+                            text: text,
+                            confirmButtonText: "확인",
+                            confirmButtonColor: "#2e5c38"
+                        });
+                    }
+
+                    function showSuccess(title, text) {
+                        return showSwal("success", title, text);
+                    }
+
+                    function showWarning(title, text) {
+                        return showSwal("warning", title, text);
+                    }
+
+                    function showError(title, text) {
+                        return showSwal("error", title, text);
+                    }
+
+                    function confirmAction(opts) {
+                        return Swal.fire({
+                            icon: opts.icon || "question",
+                            title: opts.title,
+                            text: opts.text,
+                            showCancelButton: true,
+                            confirmButtonText: opts.confirmText || "확인",
+                            cancelButtonText: "취소",
+                            confirmButtonColor: opts.confirmColor || "#2e5c38",
+                            cancelButtonColor: "#8b9490",
+                            reverseButtons: true
+                        });
+                    }
 
                     var rqstRowData = [
 
@@ -543,47 +579,55 @@
                         document.getElementById("rejectModal").classList.remove("open");
                     }
 
-                    function approveRqst() {
-
+                    async function approveRqst() {
                         if (!currentRqst) return;
 
-                        fetch("${pageContext.request.contextPath}/office/resident/auth/approve", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                [document.querySelector('meta[name="_csrf_header"]').content]:
-                                document.querySelector('meta[name="_csrf"]').content
-                            },
-                            body: JSON.stringify({
-                                rqstNo: currentRqst.rqstNo
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => {
+                        var check = document.getElementById("approveConfirmCheck");
+                        if (!check || !check.checked) {
+                            await showWarning("확인 필요", "안내 문구를 확인한 뒤 체크박스를 선택해 주세요.");
+                            return;
+                        }
 
-                                if (data.success) {
+                        var confirmResult = await confirmAction({
+                            title: "입주 신청을 승인하시겠습니까?",
+                            text: (currentRqst.userNm || "신청자") + " · "
+                                + formatDongHo(currentRqst.dong, currentRqst.ho),
+                            confirmText: "승인"
+                        });
 
-                                    currentRqst.rqstSttsCd = "APRV";
+                        if (!confirmResult.isConfirmed) return;
 
-                                    renderTable();
-
-                                    closeApproveModal();
-                                    closeDetailModal();
-
-                                    alert("승인 처리되었습니다.");
-
-                                } else {
-                                    alert("승인 처리 실패");
-                                }
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                alert("서버 오류");
+                        try {
+                            var res = await fetch("${pageContext.request.contextPath}/office/resident/auth/approve", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    [document.querySelector('meta[name="_csrf_header"]').content]:
+                                    document.querySelector('meta[name="_csrf"]').content
+                                },
+                                body: JSON.stringify({
+                                    rqstNo: currentRqst.rqstNo
+                                })
                             });
+
+                            var data = await res.json();
+
+                            if (data.success) {
+                                currentRqst.rqstSttsCd = "APRV";
+                                renderTable();
+                                closeApproveModal();
+                                closeDetailModal();
+                                await showSuccess("승인 완료", "입주 신청이 승인 처리되었습니다.");
+                            } else {
+                                await showError("승인 실패", data.message || "승인 처리에 실패했습니다.");
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            await showError("서버 오류", "승인 처리 중 오류가 발생했습니다.");
+                        }
                     }
 
-                    function rejectRqst() {
-
+                    async function rejectRqst() {
                         if (!currentRqst) return;
 
                         var reason = document.getElementById("rejectReason").value.trim();
@@ -592,49 +636,52 @@
                         if (!reason) {
                             hint.style.display = "block";
                             document.getElementById("rejectReason").focus();
+                            await showWarning("입력 필요", "반려 사유를 입력해 주세요.");
                             return;
                         }
 
                         hint.style.display = "none";
 
-                        fetch("${pageContext.request.contextPath}/office/resident/auth/reject", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                [document.querySelector('meta[name="_csrf_header"]').content]:
-                                document.querySelector('meta[name="_csrf"]').content
-                            },
-                            body: JSON.stringify({
-                                rqstNo: currentRqst.rqstNo,
-                                rjctRsnCn: reason
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => {
+                        var confirmResult = await confirmAction({
+                            icon: "warning",
+                            title: "입주 신청을 반려하시겠습니까?",
+                            text: "반려 사유는 신청자에게 전달됩니다.",
+                            confirmText: "반려",
+                            confirmColor: "#b91c1c"
+                        });
 
-                                if (data.success) {
+                        if (!confirmResult.isConfirmed) return;
 
-
-
-
-                                    currentRqst.rqstSttsCd = "RJCT";
-                                    currentRqst.mvoutRsnCn = reason;
-
-                                    renderTable();
-
-                                    closeRejectModal();
-                                    closeDetailModal();
-
-                                    alert("반려 처리되었습니다.");
-
-                                } else {
-                                    alert("반려 처리 실패");
-                                }
-                            })
-                            .catch(err => {
-                                console.error("reject error =", err);
-                                alert("서버 오류");
+                        try {
+                            var res = await fetch("${pageContext.request.contextPath}/office/resident/auth/reject", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    [document.querySelector('meta[name="_csrf_header"]').content]:
+                                    document.querySelector('meta[name="_csrf"]').content
+                                },
+                                body: JSON.stringify({
+                                    rqstNo: currentRqst.rqstNo,
+                                    rjctRsnCn: reason
+                                })
                             });
+
+                            var data = await res.json();
+
+                            if (data.success) {
+                                currentRqst.rqstSttsCd = "RJCT";
+                                currentRqst.mvoutRsnCn = reason;
+                                renderTable();
+                                closeRejectModal();
+                                closeDetailModal();
+                                await showSuccess("반려 완료", "입주 신청이 반려 처리되었습니다.");
+                            } else {
+                                await showError("반려 실패", data.message || "반려 처리에 실패했습니다.");
+                            }
+                        } catch (err) {
+                            console.error("reject error =", err);
+                            await showError("서버 오류", "반려 처리 중 오류가 발생했습니다.");
+                        }
                     }
 
                     document.getElementById("btnSearch").addEventListener("click", renderTable);

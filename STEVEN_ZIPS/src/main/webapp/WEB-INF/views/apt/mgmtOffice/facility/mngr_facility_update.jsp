@@ -343,7 +343,11 @@
         function getEl(id) { return document.getElementById(id); }
         function apiUrl(path) { return contextPath + "/manager/facility/" + path; }
         function listUrl() { return contextPath + "/manager/facility/page/" + encodeURIComponent(mgmtOfcNo); }
-        function alertMessage(message) { if (typeof showAlert === "function") showAlert(message); else alert(message); }
+        function alertMessage(message, icon) {
+            if (typeof showAlert === "function") return showAlert(message, icon);
+            alert(message);
+            return Promise.resolve();
+        }
 
         function getCsrfHeaders() {
             var tokenMeta = document.querySelector('meta[name="_csrf"]');
@@ -598,9 +602,8 @@
                     await postJson(apiUrl("type/correct/" + encodeURIComponent(mgmtOfcNo)), { facilityNo: facilityNo, facilityTyCd: getEl("facilityTyCd").value });
                 }
                 await postForm(apiUrl("update/" + encodeURIComponent(mgmtOfcNo)), makeUpdateFormData());
-                alertMessage("시설 정보가 수정되었습니다.");
-                location.href = listUrl();
-            } catch (err) { console.error(err); alertMessage(err.message || "시설 수정 중 오류가 발생했습니다."); }
+                await showAlertThen("시설 정보가 수정되었습니다.", listUrl(), "success");
+            } catch (err) { console.error(err); await alertMessage(err.message || "시설 수정 중 오류가 발생했습니다.", "error"); }
         }
 
         async function openCorrection() {

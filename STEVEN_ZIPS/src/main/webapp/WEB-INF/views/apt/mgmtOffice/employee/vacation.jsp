@@ -850,9 +850,11 @@
      */
     page.querySelectorAll(".deleteForm").forEach(function (form) {
       form.addEventListener("submit", function (event) {
-        if (!confirm("선택한 휴가 일정을 삭제하시겠습니까?")) {
-          event.preventDefault();
-        }
+        mgmtOfficeConfirmSubmit(event, {
+          title: "선택한 휴가 일정을 삭제하시겠습니까?",
+          confirmText: "삭제",
+          confirmColor: "#c0392b"
+        });
       });
     });
 

@@ -414,7 +414,11 @@
 
         function getEl(id) { return document.getElementById(id); }
         function listUrl() { return contextPath + "/manager/publicFacility/page/" + encodeURIComponent(mgmtOfcNo); }
-        function alertMessage(msg) { if (typeof showAlert === "function") showAlert(msg); else alert(msg); }
+        function alertMessage(msg, icon) {
+            if (typeof showAlert === "function") return showAlert(msg, icon);
+            alert(msg);
+            return Promise.resolve();
+        }
 
         function getCsrfHeaders() {
             var tokenMeta  = document.querySelector('meta[name="_csrf"]');
@@ -655,11 +659,10 @@
             updateDeleteFileUuids();
             try {
                 await postForm(contextPath + "/manager/publicFacility/update/" + encodeURIComponent(mgmtOfcNo), new FormData(getEl("registerForm")));
-                alertMessage("편의시설 운영정보가 저장되었습니다.");
-                location.href = listUrl();
+                await showAlertThen("편의시설 운영정보가 저장되었습니다.", listUrl(), "success");
             } catch (err) {
                 console.error(err);
-                alertMessage(err.message || "편의시설 운영정보 저장 중 오류가 발생했습니다.");
+                await alertMessage(err.message || "편의시설 운영정보 저장 중 오류가 발생했습니다.", "error");
             }
         }
 

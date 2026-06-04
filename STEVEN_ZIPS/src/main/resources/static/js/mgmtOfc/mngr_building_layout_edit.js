@@ -550,9 +550,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        if (!confirm(
-            "구조 변경 시 일부 호가 구조 제거될 수 있습니다.\n계속하시겠습니까?"
-        )) {
+        const structureConfirm = await showConfirm({
+            title: "구조 변경 시 일부 호가 구조 제거될 수 있습니다.",
+            text: "계속하시겠습니까?",
+            confirmText: "변경"
+        });
+        if (!structureConfirm.isConfirmed) {
             return;
         }
 

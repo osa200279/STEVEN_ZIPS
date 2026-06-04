@@ -798,9 +798,10 @@
             return contextPath + "/manager/facility/register/" + encodeURIComponent(mgmtOfcNo) + "?from=public";
         }
 
-        function showAlert(msg) {
-            if (typeof window.showAlert === "function") window.showAlert(msg);
-            else alert(msg);
+        function showAlertMsg(msg, icon) {
+            if (typeof window.showAlert === "function") return window.showAlert(msg, icon);
+            alert(msg);
+            return Promise.resolve();
         }
 
         function getCsrfHeaders() {
@@ -822,7 +823,7 @@
 
             // 로그인 만료 감지
             if (response.redirected || response.url.indexOf("/login.do") !== -1) {
-                showAlert("로그인이 필요합니다. 다시 로그인해주세요.");
+                showAlertMsg("로그인이 필요합니다. 다시 로그인해주세요.");
                 location.href = contextPath + "/login.do";
                 throw new Error("login required");
             }
@@ -907,7 +908,7 @@
             var endTime   = getTimeValue("oprEndTime");
             if (!startTime && !endTime) return true;
             if (!startTime || !endTime) {
-                showAlert("운영시간은 시작시간과 종료시간을 모두 입력하세요.");
+                showAlertMsg("운영시간은 시작시간과 종료시간을 모두 입력하세요.");
                 return false;
             }
             return true;
@@ -1169,11 +1170,11 @@
 
             // 기존 시설자산 연결 필수 확인
             if (!selectedFacilityNo) {
-                showAlert("연결할 기존 시설자산을 선택하세요.");
+                showAlertMsg("연결할 기존 시설자산을 선택하세요.");
                 return;
             }
             if (!getEl("regCmnNm").value.trim()) {
-                showAlert("편의시설명을 입력하세요.");
+                showAlertMsg("편의시설명을 입력하세요.");
                 return;
             }
 
@@ -1188,11 +1189,10 @@
                     contextPath + "/manager/publicFacility/insert/" + encodeURIComponent(mgmtOfcNo),
                     new FormData(getEl("registerForm"))
                 );
-                showAlert("편의시설이 등록되었습니다.");
-                location.href = listPageUrl();
+                await showAlertThen("편의시설이 등록되었습니다.", listPageUrl(), "success");
             } catch (err) {
                 console.error(err);
-                showAlert(err.message || "편의시설 등록 중 오류가 발생했습니다.");
+                await showAlertMsg(err.message || "편의시설 등록 중 오류가 발생했습니다.", "error");
             }
         }
 

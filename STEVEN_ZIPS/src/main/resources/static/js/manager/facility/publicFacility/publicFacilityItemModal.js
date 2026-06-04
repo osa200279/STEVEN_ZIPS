@@ -104,9 +104,9 @@
         if (e) e.textContent = value;
     }
 
-    function _alert(msg) {
+    async function _alert(msg, icon) {
         if (typeof showAlert === "function") {
-            showAlert(msg);
+            await showAlert(msg, icon);
         } else {
             alert(msg);
         }
@@ -625,12 +625,12 @@
                 );
             }
 
-            _alert(items.length + "개 자원이 등록되었습니다.");
+            await _alert(items.length + "개 자원이 등록되었습니다.", "success");
             close();
             _refresh();
         } catch (e) {
             console.error(e);
-            _alert("등록 중 오류가 발생했습니다.");
+            await _alert("등록 중 오류가 발생했습니다.", "error");
         }
     }
 
@@ -663,47 +663,52 @@
             );
 
             if (data.success) {
-                _alert(data.message || "수정되었습니다.");
+                await _alert(data.message || "수정되었습니다.", "success");
                 close();
                 _refresh();
             } else {
-                _alert(data.message || "수정에 실패했습니다.");
+                await _alert(data.message || "수정에 실패했습니다.", "error");
             }
         } catch (e) {
             console.error(e);
-            _alert("수정 중 오류가 발생했습니다.");
+            await _alert("수정 중 오류가 발생했습니다.", "error");
         }
     }
 
     /* ============================================================
        삭제
     ============================================================ */
-    function confirmDelete() {
-        if (!confirm("이 자원을 삭제하시겠습니까?")) {
+    async function confirmDelete() {
+        var deleteConfirm = await showConfirm({
+            title: "이 자원을 삭제하시겠습니까?",
+            confirmText: "삭제",
+            confirmColor: "#c0392b"
+        });
+        if (!deleteConfirm.isConfirmed) {
             return;
         }
 
-        _fetch(
-            _cfg.contextPath + "/manager/publicFacility/item/delete/" + encodeURIComponent(_cfg.mgmtOfcNo),
-            {
-                method: "POST",
-                headers: _csrf(),
-                body: JSON.stringify({ cmnFacilityItemNo: _itemNo })
-            }
-        )
-            .then(function (data) {
-                if (data.success) {
-                    _alert(data.message || "삭제되었습니다.");
-                    close();
-                    _refresh();
-                } else {
-                    _alert(data.message || "삭제에 실패했습니다.");
+        try {
+            var data = await _fetch(
+                _cfg.contextPath + "/manager/publicFacility/item/delete/" + encodeURIComponent(_cfg.mgmtOfcNo),
+                {
+                    method: "POST",
+                    headers: _csrf(),
+                    body: JSON.stringify({ cmnFacilityItemNo: _itemNo })
                 }
-            })
-            .catch(function (e) {
-                console.error(e);
-                _alert("삭제 중 오류가 발생했습니다.");
-            });
+            );
+
+            if (data.success) {
+                await _alert(data.message || "삭제되었습니다.", "success");
+                close();
+                _refresh();
+            } else {
+                await _alert(data.message || "삭제에 실패했습니다.", "error");
+            }
+        } catch (e) {
+            console.error(e);
+            await _alert("삭제 중 오류가 발생했습니다.", "error");
+        }
     }
 
     /* ============================================================

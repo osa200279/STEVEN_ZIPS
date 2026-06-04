@@ -355,7 +355,11 @@
 
                     function el(id) { return document.getElementById(id); }
                     function text(value) { return value == null ? "" : String(value); }
-                    function alertMessage(msg) { if (typeof showAlert === "function") showAlert(msg); else alert(msg); }
+                    function alertMessage(msg, icon) {
+                        if (typeof showAlert === "function") return showAlert(msg, icon);
+                        alert(msg);
+                        return Promise.resolve();
+                    }
 
                     function getCsrfHeaders() {
                         var tokenMeta = document.querySelector('meta[name="_csrf"]');
@@ -933,19 +937,30 @@
                     }
 
                     async function deleteFacility(cmnFacilityNo) {
-                        if (!confirm("해당 편의시설을 삭제하시겠습니까?\n예약이력이 있는 경우 삭제되지 않습니다.")) return;
+                        var deleteConfirm = await showConfirm({
+                            title: "해당 편의시설을 삭제하시겠습니까?",
+                            text: "예약이력이 있는 경우 삭제되지 않습니다.",
+                            confirmText: "삭제",
+                            confirmColor: "#c0392b"
+                        });
+                        if (!deleteConfirm.isConfirmed) return;
                         try {
                             await postJson(contextPath + "/manager/publicFacility/delete/" + encodeURIComponent(mgmtOfcNo), { cmnFacilityNo:cmnFacilityNo });
-                            alertMessage("삭제되었습니다.");
+                            await alertMessage("삭제되었습니다.", "success");
                             loadList();
                         } catch (e) { console.error(e); alertMessage(e.message || "삭제 중 오류가 발생했습니다."); }
                     }
 
                     async function deleteItem(cmnFacilityItemNo) {
-                        if (!confirm("해당 편의시설 자원을 삭제하시겠습니까?")) return;
+                        var itemDeleteConfirm = await showConfirm({
+                            title: "해당 편의시설 자원을 삭제하시겠습니까?",
+                            confirmText: "삭제",
+                            confirmColor: "#c0392b"
+                        });
+                        if (!itemDeleteConfirm.isConfirmed) return;
                         try {
                             await postJson(contextPath + "/manager/publicFacility/item/delete/" + encodeURIComponent(mgmtOfcNo), { cmnFacilityItemNo:cmnFacilityItemNo });
-                            alertMessage("삭제되었습니다.");
+                            await alertMessage("삭제되었습니다.", "success");
                             loadList();
                         } catch (e) { console.error(e); alertMessage(e.message || "삭제 중 오류가 발생했습니다."); }
                     }

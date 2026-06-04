@@ -413,10 +413,13 @@ window.initHoTypeManager = function ({
                     const hoTyNo =
                         btn.dataset.hotyNo;
 
-                    const confirmed =
-                        confirm("평형 타입을 삭제하시겠습니까?");
+                    const deleteConfirm = await showConfirm({
+                        title: "평형 타입을 삭제하시겠습니까?",
+                        confirmText: "삭제",
+                        confirmColor: "#c0392b"
+                    });
 
-                    if(!confirmed){
+                    if (!deleteConfirm.isConfirmed) {
                         return;
                     }
 

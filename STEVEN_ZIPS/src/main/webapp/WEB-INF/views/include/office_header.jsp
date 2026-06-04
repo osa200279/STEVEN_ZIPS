@@ -103,6 +103,7 @@
 <%--        <span class="bc-current" id="officeBcCurrent">${bcCurrent}</span>--%>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="${ctx}/js/manager/manager-common.js"></script>
     <div class="topbar-actions">
         <span class="topbar-clock" id="currentTime"></span>
 

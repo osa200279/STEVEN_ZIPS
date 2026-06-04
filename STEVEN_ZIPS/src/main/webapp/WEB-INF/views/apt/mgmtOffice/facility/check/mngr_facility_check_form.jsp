@@ -1776,21 +1776,58 @@
         });
 
         /* ── 폼 submit 전 검증 ── */
-        el('checkForm').addEventListener('submit', function (e) {
-            if (IS_ADMIN)                    { alert('ADMIN 계정은 저장할 수 없습니다.');    e.preventDefault(); return; }
-            if (!el('facilityNo').value)     { alert('시설 이력 대상 시설을 선택해 주세요.');     e.preventDefault(); return; }
-            if (el('chkOwnerType').value === 'PARTNER' && !el('partnerNo').value) {
-                alert('협력업체 처리 이력은 협력업체를 선택해 주세요.');
-                e.preventDefault(); return;
+        el('checkForm').addEventListener('submit', async function (e) {
+            if (IS_ADMIN) {
+                e.preventDefault();
+                await showAlert('ADMIN 계정은 저장할 수 없습니다.', 'warning');
+                return;
             }
-            if (!el('chkCtgryCd').value)     { alert('점검분류를 선택해 주세요.');           e.preventDefault(); return; }
-            if (!el('chkTyCd').value)        { alert('작업유형을 선택해 주세요.');           e.preventDefault(); return; }
-            if (!el('chkSttsCd').value)      { alert('상태를 선택해 주세요.');           e.preventDefault(); return; }
-            if (!el('chkDt').value)          { alert('작업일자를 입력해 주세요.');           e.preventDefault(); return; }
-            if (!el('chkCn').value.trim())   { alert('작업내용을 입력해 주세요.');           e.preventDefault(); return; }
+            if (!el('facilityNo').value) {
+                e.preventDefault();
+                await showAlert('시설 이력 대상 시설을 선택해 주세요.', 'warning');
+                return;
+            }
+            if (el('chkOwnerType').value === 'PARTNER' && !el('partnerNo').value) {
+                e.preventDefault();
+                await showAlert('협력업체 처리 이력은 협력업체를 선택해 주세요.', 'warning');
+                return;
+            }
+            if (!el('chkCtgryCd').value) {
+                e.preventDefault();
+                await showAlert('점검분류를 선택해 주세요.', 'warning');
+                return;
+            }
+            if (!el('chkTyCd').value) {
+                e.preventDefault();
+                await showAlert('작업유형을 선택해 주세요.', 'warning');
+                return;
+            }
+            if (!el('chkSttsCd').value) {
+                e.preventDefault();
+                await showAlert('상태를 선택해 주세요.', 'warning');
+                return;
+            }
+            if (!el('chkDt').value) {
+                e.preventDefault();
+                await showAlert('작업일자를 입력해 주세요.', 'warning');
+                return;
+            }
+            if (!el('chkCn').value.trim()) {
+                e.preventDefault();
+                await showAlert('작업내용을 입력해 주세요.', 'warning');
+                return;
+            }
             if (el('useRestrictYn').value === 'Y') {
-                if (!el('useRestrictBgngDt').value || !el('useRestrictEndDt').value) { alert('이용제한 시작일시와 종료일시를 입력해 주세요.'); e.preventDefault(); return; }
-                if (el('useRestrictBgngDt').value >= el('useRestrictEndDt').value) { alert('이용제한 종료일시는 시작일시보다 뒤여야 합니다.'); e.preventDefault(); return; }
+                if (!el('useRestrictBgngDt').value || !el('useRestrictEndDt').value) {
+                    e.preventDefault();
+                    await showAlert('이용제한 시작일시와 종료일시를 입력해 주세요.', 'warning');
+                    return;
+                }
+                if (el('useRestrictBgngDt').value >= el('useRestrictEndDt').value) {
+                    e.preventDefault();
+                    await showAlert('이용제한 종료일시는 시작일시보다 뒤여야 합니다.', 'warning');
+                    return;
+                }
             }
         });
 

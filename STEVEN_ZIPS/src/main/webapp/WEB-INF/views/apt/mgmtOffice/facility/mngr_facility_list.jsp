@@ -438,12 +438,12 @@
          * - 프로젝트 공통 showAlert가 있으면 그것을 사용
          * - 없으면 기본 alert 사용
          */
-        function alertMessage(message) {
+        function alertMessage(message, icon) {
             if (typeof showAlert === "function") {
-                showAlert(message);
-                return;
+                return showAlert(message, icon);
             }
             alert(message);
+            return Promise.resolve();
         }
 
         /**
@@ -1201,7 +1201,11 @@
                 : "해당 시설을 활성 처리하시겠습니까?";
 
             /* 취소 처리 */
-            if (!confirm(confirmMessage)) return;
+            var confirmResult = await showConfirm({
+                title: confirmMessage,
+                confirmText: nextUseYn === "N" ? "비활성" : "활성"
+            });
+            if (!confirmResult.isConfirmed) return;
 
             try {
                 //** 수정: FacilityController의 실제 사용여부 변경 매핑(/use/update/{mgmtOfcNo}) 호출
@@ -1225,7 +1229,10 @@
                 }
 
                 /* 완료 알림 */
-                alertMessage(nextUseYn === "N" ? "비활성 처리되었습니다." : "활성 처리되었습니다.");
+                await alertMessage(
+                    nextUseYn === "N" ? "비활성 처리되었습니다." : "활성 처리되었습니다.",
+                    "success"
+                );
 
                 /* 목록 재조회 */
                 loadFacilityList();

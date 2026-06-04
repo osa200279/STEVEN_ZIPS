@@ -551,14 +551,6 @@
         }
     }
 
-    window.__onStompConnected = function () {
-        subscribeBroadcast();
-    };
-
-    document.addEventListener('stomp-connected', function () {
-        subscribeBroadcast();
-    });
-
     document.addEventListener('DOMContentLoaded', function () {
         if (!cfg.dongValid) {
             setWsBadge('is-error', '동 코드 오류');

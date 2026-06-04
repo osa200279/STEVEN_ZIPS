@@ -966,7 +966,7 @@
 
                                         <form method="post"
                                               action="${pageContext.request.contextPath}/mgmtOffice/notice/delete/${mgmtOfcNo}"
-                                              onsubmit="return confirm('삭제하시겠습니까?');">
+                                              onsubmit="return mgmtOfficeConfirmSubmit(event, { title: '삭제하시겠습니까?', confirmText: '삭제', confirmColor: '#c0392b' });">
 
                                                 <%-- CSRF 보안 토큰 --%>
                                             <input type="hidden"

@@ -545,7 +545,8 @@
 
                                                         <form method="post"
                                                               action="${pageContext.request.contextPath}/manager/resident/auto/delete"
-                                                              style="display:inline;">
+                                                              style="display:inline;"
+                                                              onsubmit="return mgmtOfficeConfirmSubmit(event, { title: '삭제하시겠습니까?', confirmText: '삭제', confirmColor: '#c0392b' });">
 
                                                             <sec:csrfInput/>
 
@@ -558,8 +559,7 @@
                                                                    value="${mgmtOfcNo}">
 
                                                             <button type="submit"
-                                                                    class="btn btn-xs btn-delete"
-                                                                    onclick="return confirm('삭제하시겠습니까?');">
+                                                                    class="btn btn-xs btn-delete">
 
                                                                 삭제
 
