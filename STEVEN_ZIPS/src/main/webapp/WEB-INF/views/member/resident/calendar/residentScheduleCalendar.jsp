@@ -917,6 +917,24 @@
             color: #334155;
             border: 1px solid rgba(15, 23, 42, 0.08);
         }
+
+        .day-schedule-title{
+            display:block;
+            width:100%;
+            border:0;
+            background:#f8fafc;
+            border-radius:8px;
+            padding:10px 12px;
+            margin-bottom:8px;
+            text-align:left;
+            font-weight:800;
+            cursor:pointer;
+        }
+
+        .day-schedule-title:hover{
+            background:#e8f7ee;
+            color:#006b4f;
+        }
     </style>
 </head>
 
@@ -1158,6 +1176,32 @@
     </div>
 </div>
 
+<div class="modal-backdrop" id="dayScheduleModal">
+    <div class="modal-card" style="width:760px;">
+        <div class="modal-head">
+            <div class="modal-title" id="dayScheduleTitle">일정 목록</div>
+        </div>
+
+        <div class="modal-body" style="display:flex; gap:18px;">
+            <div id="dayScheduleList"
+                 style="width:42%; border-right:1px solid #e5e7eb; padding-right:14px;">
+            </div>
+
+            <div id="sideDetailArea" style="flex:1;">
+                <div style="color:#94a3b8; font-weight:700;">
+                    왼쪽 일정 제목을 선택하세요.
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button type="button" class="btn-ghost" id="closeDayScheduleBtn">
+                닫기
+            </button>
+        </div>
+    </div>
+</div>
+
 <%@ include file="/WEB-INF/views/include/apt_footerLayout.jsp" %>
 
 <script>
@@ -1354,9 +1398,9 @@
                     const dayClass = day === 0 ? 'sun' : (day === 6 ? 'sat' : '');
                     const todayClass = dateStr === todayStr ? 'today' : '';
 
-                    html += '<td class="' + dayClass + ' ' + todayClass + (isOther ? ' other-month' : '') + '">';
+                    html += '<td class="' + dayClass + ' ' + todayClass + (isOther ? ' other-month' : '') + '" data-date="' + dateStr + '">';
                     html += '<div class="day-num">' + cellDate.getDate() + '</div>';
-                    html += renderWeekBarsByDate(dateStr, weekSegments);
+                    html += renderWeekBarsByDate(dateStr, day, weekSegments);
                     html += '</td>';
                 }
 
@@ -1365,22 +1409,24 @@
 
             calendarBody.innerHTML = html;
 
-            document.querySelectorAll('.week-event-bar').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    const scheduleNo = btn.dataset.scheduleNo;
+            document.querySelectorAll('#calendarBody td[data-date]').forEach(function(td){
+                td.addEventListener('click', function(e){
 
-                    const selected = scheduleList.find(function (item) {
-                        return String(item.scheduleNo) === String(scheduleNo);
-                    });
+                    /*
+                     * 일정 막대를 눌러도 날짜 목록 모달이 뜨게 처리.
+                     * 왜 사용?
+                     * 관리자 화면처럼 날짜 기준 일정 목록을 먼저 보여주기 위해.
+                     */
+                    const dateStr = td.dataset.date;
+                    const daySchedules = getSchedulesByDate(dateStr);
 
-                    if (selected) {
-                        openDetailModal(selected);
-                    }
+                    openDayScheduleModal(dateStr, daySchedules);
                 });
             });
 
             document.querySelectorAll('.calendar-more-btn').forEach(function (btn) {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
                     const td = btn.closest('td');
 
                     td.classList.toggle('expanded');
@@ -1531,6 +1577,60 @@
             return scheduleList.filter(function (item) {
                 return item.startDt <= dateStr && item.endDt >= dateStr;
             });
+        }
+
+        function openDayScheduleModal(dateStr, items) {
+            document.getElementById('dayScheduleTitle').textContent = dateStr + ' 일정 목록';
+
+            if (!items.length) {
+                document.getElementById('dayScheduleList').innerHTML =
+                    '<div style="color:#94a3b8;">조회된 일정이 없습니다.</div>';
+
+                document.getElementById('sideDetailArea').innerHTML =
+                    '<div style="color:#94a3b8;">일정이 없습니다.</div>';
+            } else {
+                document.getElementById('dayScheduleList').innerHTML = items.map(function(item){
+                    return '<button type="button" class="day-schedule-title" data-schedule-no="' + escapeHtml(item.scheduleNo) + '">'
+                        + '[' + escapeHtml(item.scheduleTyNm) + '] '
+                        + escapeHtml(item.scheduleTtl)
+                        + '</button>';
+                }).join('');
+
+                document.getElementById('sideDetailArea').innerHTML =
+                    '<div style="color:#94a3b8; font-weight:700;">왼쪽 일정 제목을 선택하세요.</div>';
+
+                document.querySelectorAll('.day-schedule-title').forEach(function(btn){
+                    btn.addEventListener('click', function(){
+                        const scheduleNo = btn.dataset.scheduleNo;
+
+                        const selected = scheduleList.find(function(item){
+                            return String(item.scheduleNo) === String(scheduleNo);
+                        });
+
+                        if(selected){
+                            renderSideDetail(selected);
+                        }
+                    });
+                });
+            }
+
+            document.getElementById('dayScheduleModal').classList.add('active');
+        }
+
+        function renderSideDetail(item) {
+            const period = item.startDt === item.endDt
+                ? item.startDt
+                : item.startDt + ' ~ ' + item.endDt;
+
+            const person = item.userNm || item.rgtrId || '-';
+
+            document.getElementById('sideDetailArea').innerHTML =
+                '<h3 style="margin-top:0;">' + escapeHtml(item.scheduleTtl || '-') + '</h3>'
+                + '<p><b>유형</b><br>' + escapeHtml(item.scheduleTyNm || '-') + '</p>'
+                + '<p><b>기간</b><br>' + escapeHtml(period) + '</p>'
+                + '<p><b>위치</b><br>' + escapeHtml(item.locCn || '-') + '</p>'
+                + '<p><b>등록자/직원</b><br>' + escapeHtml(person) + '</p>'
+                + '<p><b>내용</b><br>' + escapeHtml(item.scheduleCn || '-') + '</p>';
         }
         /*
          * 목록 페이징 렌더링
@@ -1727,6 +1827,9 @@
         });
 
         document.getElementById('closeDetailFootBtn').addEventListener('click', closeDetailModal);
+        document.getElementById('closeDayScheduleBtn').addEventListener('click', function(){
+            document.getElementById('dayScheduleModal').classList.remove('active');
+        });
 
         document.getElementById('detailModal').addEventListener('click', function (e) {
             if (e.target.id === 'detailModal') {

@@ -25,6 +25,10 @@
         FROM attach_file af
         WHERE af.file_group_no = NVL(ac.rprsnt_img_file_no, ac.img_file_no)
         AND af.mime_type LIKE 'image/%'
+        AND LOWER(af.file_og_name) NOT LIKE '%map%'
+        AND LOWER(af.file_og_name) NOT LIKE '%지도%'
+        AND LOWER(af.file_og_name) NOT LIKE '%road%'
+        AND LOWER(af.file_og_name) NOT LIKE '%location%'
         ) AS rprsnt_img_file_no
         FROM apt_complex ac
         WHERE 1 = 1
