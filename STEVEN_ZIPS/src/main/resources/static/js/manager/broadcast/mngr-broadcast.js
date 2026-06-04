@@ -536,8 +536,9 @@
         }
         if (targets.length === 1) {
             return {
-                title: '방송 송출 중',
-                message: targets[0].dongLabel + ' 수신기 재생 중… (수신 PC에서 「스피커 출력 허용」 필요할 수 있음)'
+                title: '방송 송출 중 (1개 동)',
+                message: targets[0].dongLabel + ' 수신기만 재생 — 수신 PC에서 동 코드「'
+                    + targets[0].dongNo + '」·스피커 허용·같은 서버 주소 확인'
             };
         }
         var labels = targets.map(function (t) { return t.dongLabel; }).join(', ');
@@ -747,13 +748,16 @@
         });
     }
 
-    function computeBroadcastTimeoutMs(targetCount) {
+    function computeBroadcastTimeoutMs(targetCount, allAreas) {
         var audio = $('playerAudio');
         var durationMs = 60000;
         if (audio && isFinite(audio.duration) && audio.duration > 0) {
             durationMs = Math.ceil(audio.duration * 1000);
         }
         var n = Math.max(1, targetCount || 1);
+        if (!allAreas && n <= 1) {
+            return Math.min(60000, Math.max(25000, durationMs + 15000));
+        }
         var capped = Math.min(n, 10);
         return Math.min(90000, Math.max(40000, durationMs + 12000 + capped * 3000));
     }
@@ -782,7 +786,7 @@
             timer: null,
             remoteGraceTimer: null
         };
-        var maxMs = computeBroadcastTimeoutMs(sessionTargets.length);
+        var maxMs = computeBroadcastTimeoutMs(sessionTargets.length, allAreas);
         pendingBroadcastSession.timer = setTimeout(function () {
             finalizeBroadcastCompletion('timeout');
         }, maxMs);
@@ -935,6 +939,12 @@
                     resolve(false);
                     return;
                 }
+                targets.forEach(function (t) {
+                    console.log('[방송 송출] WS 전송 대상 → /sub/broadcast/'
+                        + cfg.mgmtOfcNo + '/' + topicKeySegment(t.dongNo)
+                        + ' (' + (t.dongLabel || t.dongNo) + ')');
+                });
+
                 client.send('/pub/broadcast/start', {}, JSON.stringify({
                     mgmtOfcNo: cfg.mgmtOfcNo,
                     broadcastId: broadcastId,
@@ -944,6 +954,11 @@
                     areas: form.areas,
                     targets: targets
                 }));
+
+                if (targets.length === 1) {
+                    console.log('[1동 수신 확인] 수신기 URL의 동 코드가 송출 대상과 같아야 합니다: dongNo='
+                        + targets[0].dongNo);
+                }
                 resolve(true);
             });
         });

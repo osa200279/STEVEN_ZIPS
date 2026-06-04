@@ -24,6 +24,14 @@
         return String(dongNo).replace(/\//g, '_').replace(/\s/g, '_');
     }
 
+    function normalizeDongNo(value) {
+        return String(value == null ? '' : value).trim();
+    }
+
+    function getSubscribeDest() {
+        return '/sub/broadcast/' + cfg.mgmtOfcNo + '/' + topicKey(cfg.dongNo);
+    }
+
     var flashHideTimer = null;
 
     function getDongName() {
@@ -336,11 +344,23 @@
         activePlayPayload = payload;
         ackSentForBroadcastId = null;
 
-        if (payload.targetDongNo && payload.targetDongNo !== cfg.dongNo) {
-            console.warn('[방송 수신] 동 코드 불일치 — 구독:', cfg.dongNo, '수신:', payload.targetDongNo);
+        var payloadDong = normalizeDongNo(payload.targetDongNo);
+        var cfgDong = normalizeDongNo(cfg.dongNo);
+        if (payloadDong && cfgDong && payloadDong !== cfgDong) {
+            console.error('[방송 수신] 동 코드 불일치 — 이 수신기:', cfgDong, '송출 대상:', payloadDong);
+            setWsBadge('is-error', '동 코드 불일치');
+            toast({
+                title: '수신 불가 (동 불일치)',
+                message: '이 화면은「' + cfgDong + '」인데 송출은「' + payloadDong
+                    + '」입니다. 수신기 링크의 dongNo를 송출 화면과 맞춰 주세요.',
+                type: 'error',
+                hero: true,
+                duration: 9000
+            });
+            return;
         }
 
-        console.log('[방송 수신] WS 메시지 수신', getDongName(), payload);
+        console.log('[방송 수신] 1동(이 동) WS 수신 OK', getDongName(), 'dest=', getSubscribeDest(), payload);
         demoBroadcastAlert('start');
 
         if (pendingPlay && typeof pendingPlay.abort === 'function') {
@@ -398,11 +418,16 @@
         if (broadcastSubscription) {
             broadcastSubscription.unsubscribe();
         }
-        var dest = '/sub/broadcast/' + cfg.mgmtOfcNo + '/' + topicKey(cfg.dongNo);
+        var dest = getSubscribeDest();
         broadcastSubscription = client.subscribe(dest, onBroadcastMessage);
-        console.log('[방송 수신] 구독:', dest, '| 송출 PC와 동일 호스트 필요:', location.host);
+        console.log('[방송 수신] 구독 OK:', dest, '| host=', location.host, '| dongNo=', cfg.dongNo);
         var destEl = $('receiveSubDest');
         if (destEl) destEl.textContent = dest;
+        var verifyEl = $('receiveVerifyResult');
+        if (verifyEl) {
+            verifyEl.textContent = '구독 중 — 송출 시 F12에 「1동(이 동) WS 수신 OK」가 보이면 정상';
+            verifyEl.className = 'bc-receive-verify-result is-ok';
+        }
         setWsBadge('is-ok', '수신 대기');
         setReceiveUi('idle', '대기 중', '구독 중: ' + (cfg.dongLabel || cfg.dongNo));
         if (!readyToastShown) {
@@ -461,6 +486,53 @@
         });
     }
 
+    function verifyReceiveReady() {
+        var lines = [];
+        var ok = true;
+
+        lines.push('서버: ' + location.host);
+        lines.push('동 코드: ' + cfg.dongNo + ' (' + (cfg.dongLabel || '') + ')');
+        lines.push('구독 경로: ' + getSubscribeDest());
+
+        if (!isStompReady()) {
+            ok = false;
+            lines.push('웹소켓: 미연결 (F12에 「웹소켓 연결됨」 필요)');
+        } else {
+            lines.push('웹소켓: 연결됨');
+        }
+
+        if (!broadcastSubscription) {
+            ok = false;
+            lines.push('방송 구독: 없음 — 잠시 후 다시 시도');
+            subscribeBroadcast();
+        } else {
+            lines.push('방송 구독: 활성');
+        }
+
+        if (!receiveAudioUnlocked) {
+            lines.push('스피커: 허용 전 — 「스피커 출력 허용」 클릭 필요');
+        } else {
+            lines.push('스피커: 허용됨');
+        }
+
+        var verifyEl = $('receiveVerifyResult');
+        if (verifyEl) {
+            verifyEl.textContent = lines.join(' · ');
+            verifyEl.className = 'bc-receive-verify-result ' + (ok && receiveAudioUnlocked ? 'is-ok' : 'is-warn');
+        }
+
+        toast({
+            title: ok ? '1동 수신기 점검' : '1동 수신기 점검 (확인 필요)',
+            message: lines.join('\n'),
+            type: ok && receiveAudioUnlocked ? 'success' : 'warning',
+            hero: true,
+            duration: 8000
+        });
+
+        console.log('[1동 수신 점검]\n' + lines.join('\n'));
+        return ok && receiveAudioUnlocked;
+    }
+
     function bindAudioUnlock() {
         var btn = $('receiveAudioUnlockBtn');
         if (btn) {
@@ -479,6 +551,14 @@
         }
     }
 
+    window.__onStompConnected = function () {
+        subscribeBroadcast();
+    };
+
+    document.addEventListener('stomp-connected', function () {
+        subscribeBroadcast();
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         if (!cfg.dongValid) {
             setWsBadge('is-error', '동 코드 오류');
@@ -487,6 +567,20 @@
         bindAudioEvents();
         bindAudioUnlock();
         updateAudioUnlockUi();
+
+        var verifyBtn = $('receiveVerifyBtn');
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                unlockReceiveAudio().then(function () {
+                    verifyReceiveReady();
+                });
+            });
+        }
+
         waitForStompAndSubscribe();
+        setTimeout(function () {
+            if (isStompReady()) subscribeBroadcast();
+        }, 1500);
     });
 })();

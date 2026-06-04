@@ -60,12 +60,15 @@
                         <div><span class="label">구독 경로</span><span id="receiveSubDest" class="bc-receive-subdest">—</span></div>
                     </div>
                     <p class="bc-receive-audio-hint" id="receiveAudioHint">
-                        방송 구역 <strong>전체</strong> 송출도 이 화면(동별 수신기)에서 들립니다.
-                        처음 한 번은 아래 버튼으로 스피커 출력을 허용해 주세요.
+                        <strong>1동만</strong> 송출할 때도 이 화면에서 들립니다. 송출 PC와 <strong>같은 서버 주소</strong>·아래 <strong>동 코드</strong>가 일치해야 합니다.
                     </p>
                     <button type="button" class="bc-receive-unlock-btn" id="receiveAudioUnlockBtn">
                         <span class="material-symbols-rounded">volume_up</span>스피커 출력 허용 (한 번만 클릭)
                     </button>
+                    <button type="button" class="bc-receive-verify-btn" id="receiveVerifyBtn">
+                        <span class="material-symbols-rounded">fact_check</span>1동 수신 준비 확인
+                    </button>
+                    <p class="bc-receive-verify-result" id="receiveVerifyResult">송출 전 「1동 수신 준비 확인」을 눌러 주세요.</p>
                     <p class="bc-receive-last" id="receiveLastText" hidden></p>
                     <audio id="receiveAudio" preload="none"></audio>
                 </section>
