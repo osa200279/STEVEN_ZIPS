@@ -172,6 +172,11 @@ async function showAlertThen(message, next, icon) {
     }
 }
 
+function showConfirm(options) {
+    const title = typeof options === "string" ? options : (options && (options.title || options.message)) || "계속 진행하시겠습니까?";
+    return Promise.resolve({ isConfirmed: confirm(title) });
+}
+
 
 /* ============================================================
    fragment reload
