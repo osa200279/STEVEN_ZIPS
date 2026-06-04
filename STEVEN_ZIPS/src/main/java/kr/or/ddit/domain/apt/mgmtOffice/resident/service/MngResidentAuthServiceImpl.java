@@ -55,7 +55,7 @@ public class MngResidentAuthServiceImpl implements IMngResidentAuthService {
                 NotificationDTO.success(
                         "입주신청 승인",
                         "입주 신청서가 승인되었습니다. 새로 로그인 해주세요",
-                        "/logout.do"
+                        "/forceLogout"
                 )
         );
 

@@ -55,20 +55,37 @@ function subscribeNotification() {
 
     notificationSubscription =
         stomp.subscribe('/sub/notification/' + userNo, (msg) => {
-        const data = JSON.parse(msg.body);
+            const data = JSON.parse(msg.body);
 
-        console.log("알림:", data);
-        showToast({
-            title: data.title || "알림",
-            message: data.message,
-            type: data.type || "info",
-            onClick: () => {
-                if (data.url) {
-                    location.href = data.url;
+            console.log("알림:", data);
+            showToast({
+                title: data.title || "알림",
+                message: data.message,
+                type: data.type || "info",
+                onClick: () => {
+
+                    if (data.url === "/forceLogout") {
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "입주신청 승인",
+                            text: "입주 신청서가 승인되었습니다. 다시 로그인해주세요.",
+                            confirmButtonText: "확인"
+                        }).then(() => {
+
+                            document.getElementById("logoutForm").submit();
+
+                        });
+
+                        return;
+                    }
+
+                    if (data.url) {
+                        location.href = data.url;
+                    }
                 }
-            }
+            });
         });
-    });
 }
 
 function getUserNo() {

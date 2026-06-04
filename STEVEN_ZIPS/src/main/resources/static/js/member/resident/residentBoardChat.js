@@ -200,7 +200,7 @@ function enterRoom(roomNo) {
         showCancelButton: true,
         confirmButtonText: '입장',
         cancelButtonText: '취소',
-        reverseButtons: true
+        reverseButtons: false
     }).then((result) => {
 
         if (!result.isConfirmed) {
