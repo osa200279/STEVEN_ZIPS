@@ -1,5 +1,6 @@
 package kr.or.ddit.domain.apt.mgmtOffice.meter.controller;
 
+import kr.or.ddit.domain.apt.mgmtOffice.common.service.IManagerModelService;
 import kr.or.ddit.domain.apt.mgmtOffice.meter.service.IMeterHstryService;
 import kr.or.ddit.domain.apt.mgmtOffice.meter.vo.MeterHstryVO;
 import kr.or.ddit.domain.member.vo.CustomUser;
@@ -37,6 +38,7 @@ public class MeterHstryController {
     private static final int MAX_PAGE_SIZE = 100;
 
     private final IMeterHstryService meterHstryService;
+    private final IManagerModelService managerModelService;
 
     /**
      * 검침 이력 목록 화면
@@ -89,6 +91,7 @@ public class MeterHstryController {
             @RequestParam(required = false) String sortDir,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize,
+            @AuthenticationPrincipal CustomUser customUser,
             Model model
     ) {
         String activeScope = "FACILITY".equals(meterScope) ? "FACILITY" : "COMPLEX";
@@ -168,7 +171,9 @@ public class MeterHstryController {
             activeParamMap.put("offset", offset);
         }
 
-        model.addAttribute("mgmtOfcNo", mgmtOfcNo);
+        // 관리사무소 공통 화면 모델 세팅
+        managerModelService.addManagerViewModel(model, customUser, mgmtOfcNo);
+
         model.addAttribute("activeMeterScope", activeScope);
         model.addAttribute("meterPage", currentPage);
         model.addAttribute("meterPageSize", currentPageSize);
@@ -217,7 +222,7 @@ public class MeterHstryController {
     }
 
     private String normalizeSortField(String sortField) {
-        if ("HO_NO".equals(sortField) || "PRE_VAL".equals(sortField) || "CURR_VAL".equals(sortField) || "USAGE_VAL".equals(sortField)) {
+        if ("METER_HSTRY_NO".equals(sortField) || "METER_DT".equals(sortField) || "HO_NO".equals(sortField) || "PRE_VAL".equals(sortField) || "CURR_VAL".equals(sortField) || "USAGE_VAL".equals(sortField)) {
             return sortField;
         }
         return "METER_DT";
@@ -369,6 +374,7 @@ public class MeterHstryController {
     public String update(
             @PathVariable String mgmtOfcNo,
             MeterHstryVO meterHstryVO,
+            @RequestParam(required = false) String returnQueryString,
             RedirectAttributes redirectAttributes
     ) {
         try {
@@ -377,7 +383,20 @@ public class MeterHstryController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/manager/meter/hstry/" + mgmtOfcNo;
+        return "redirect:/manager/meter/hstry/" + mgmtOfcNo + normalizeReturnQueryString(returnQueryString);
+    }
+
+    private String normalizeReturnQueryString(String returnQueryString) {
+        if (returnQueryString == null || returnQueryString.isBlank()) {
+            return "";
+        }
+
+        String queryString = returnQueryString.trim();
+        if (queryString.startsWith("?")) {
+            return queryString;
+        }
+
+        return "?" + queryString;
     }
 
     /**
