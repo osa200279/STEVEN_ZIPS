@@ -56,4 +56,8 @@ public interface IAptScheduleCalendarMapper {
     List<AptScheduleCalendarDTO> selectScheduleCalendarPagingList(
             AptScheduleCalendarDTO searchVO
     );
+
+    /** 휴가종류 공통코드 목록 조회 */
+    List<AptScheduleCalendarDTO> selectVacationTypeCodeList();
+
 }

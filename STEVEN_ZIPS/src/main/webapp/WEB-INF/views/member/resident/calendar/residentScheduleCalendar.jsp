@@ -714,16 +714,6 @@
             overflow: visible;
         }
 
-        #residentScheduleCalendarPage .apt-calendar tbody tr {
-            height: 142px;
-        }
-
-        #residentScheduleCalendarPage .apt-calendar td {
-            position: relative;
-            overflow: visible;
-            padding: 0;
-        }
-
         #residentScheduleCalendarPage .day-num {
             padding: 8px 7px 0;
         }
@@ -778,27 +768,57 @@
             color: #475569;
         }
 
-        #residentScheduleCalendarPage .calendar-more-btn {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 18px;
-            line-height: 18px;
-            border: none;
-            background: #f1f5f9;
-            color: #475569;
-            font-size: 10px;
-            font-weight: 800;
-            cursor: pointer;
-            z-index: 10;
-        }
+
 
         #residentScheduleCalendarPage .week-event-bar.hidden-event {
             display: none;
         }
 
+        /* 캘린더 한 주 높이 고정 */
+        #residentScheduleCalendarPage .apt-calendar tbody tr {
+            height: 170px;
+        }
+
+        /* 날짜 칸 내부 일정이 칸 밖으로 튀어나가지 않게 처리 */
+        #residentScheduleCalendarPage .apt-calendar td {
+            position: relative;
+            overflow: hidden;
+            padding: 0;
+            height: 170px;
+        }
+
+        /* 펼쳤을 때는 해당 칸만 스크롤 */
         #residentScheduleCalendarPage .apt-calendar td.expanded {
-            height: 240px;
+            height: 260px;
+            overflow-y: auto;
+        }
+
+        /* 숨긴 일정 */
+        #residentScheduleCalendarPage .week-event-bar.hidden-event {
+            display: none;
+        }
+
+        /* 전체+ 클릭하면 숨긴 일정 표시 */
+        #residentScheduleCalendarPage .apt-calendar td.expanded .week-event-bar.hidden-event {
+            display: block;
+        }
+
+        /* 전체+ 버튼 위치 고정 */
+        #residentScheduleCalendarPage .calendar-more-btn {
+            position: absolute;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            height: 20px;
+            line-height: 20px;
+            border: none;
+            border-radius: 6px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            z-index: 50;
         }
 
         #residentScheduleCalendarPage .apt-calendar td.expanded .week-event-bar.hidden-event {
@@ -877,6 +897,25 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+        /* 직원휴가 캘린더 바 연보라색 */
+        .week-event-bar.VACATION,
+        #aptScheduleCalendarPage .week-event-bar.VACATION,
+        #residentScheduleCalendarPage .week-event-bar.VACATION {
+            background: #E9D5FF !important;
+            color: #7E22CE !important;
+        }
+
+        /* 상세 모달 휴가종류 뱃지 */
+        .vacation-type-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #334155;
+            border: 1px solid rgba(15, 23, 42, 0.08);
         }
     </style>
 </head>
@@ -1353,13 +1392,30 @@
             });
         }
 
-        function renderWeekBarsByDate(dateStr, weekSegments) {
+        function renderWeekBarsByDate(dateStr, dayOfWeek, weekSegments) {
+            /*
+             * maxVisibleLane이란?
+             * 화면에 기본으로 보여줄 일정 줄 수.
+             *
+             * 왜 사용?
+             * 일정이 너무 많을 때 캘린더 칸 밖으로 일정바가 튀어나가지 않게 하기 위해.
+             */
             const maxVisibleLane = 4;
 
+            /*
+             * 현재 날짜에서 시작하는 일정만 가져온다.
+             *
+             * 왜 사용?
+             * 여러 날짜에 걸친 일정은 시작 날짜 칸에서만 막대를 그려야
+             * 같은 일정이 여러 칸에 중복 출력되지 않는다.
+             */
             const startSegments = weekSegments.filter(function (seg) {
                 return seg.startStr === dateStr;
             });
 
+            /*
+             * 기본 4줄을 넘는 일정 개수
+             */
             const hiddenStartCount = startSegments.filter(function (seg) {
                 return seg.lane >= maxVisibleLane;
             }).length;
@@ -1368,21 +1424,40 @@
 
             startSegments.forEach(function (seg) {
                 const spanDays = seg.endDay - seg.startDay + 1;
-                const hiddenClass = seg.lane >= maxVisibleLane ? ' hidden-event' : '';
+
+                /*
+                 * lane이 4 이상이면 처음에는 숨김 처리
+                 *
+                 * hidden-event란?
+                 * 처음 화면에서는 안 보이다가 전체+ 버튼을 눌렀을 때만 보이는 일정 클래스.
+                 */
+                const isHidden = seg.lane >= maxVisibleLane;
+                const hiddenClass = isHidden ? ' hidden-event' : '';
+
+                /*
+                 * 숨긴 일정도 원래 lane 위치 그대로 둔다.
+                 *
+                 * 왜?
+                 * 전체+를 눌렀을 때 일정 순서가 섞이지 않고
+                 * 원래 줄 위치대로 자연스럽게 보이게 하기 위해.
+                 */
+                const top = 32 + seg.lane * 23;
 
                 html += '<button type="button"'
                     + ' class="week-event-bar ' + escapeHtml(seg.item.scheduleTy) + hiddenClass + '"'
-                    + ' style="top:' + (32 + seg.lane * 23) + 'px; width:calc(' + (spanDays * 100) + '% + ' + (spanDays - 1) + 'px);"'
+                    + ' style="top:' + top + 'px; width:calc(' + (spanDays * 100) + '% + ' + (spanDays - 1) + 'px);"'
                     + ' title="' + escapeHtml(seg.item.scheduleTtl) + '"'
                     + ' data-schedule-no="' + escapeHtml(seg.item.scheduleNo) + '">';
                 html += escapeHtml(seg.item.scheduleTtl);
                 html += '</button>';
             });
 
+            /*
+             * 숨겨진 일정이 있을 때만 전체+ 버튼 표시
+             */
             if (hiddenStartCount > 0) {
                 html += '<button type="button"'
                     + ' class="calendar-more-btn"'
-                    + ' style="top:' + (32 + maxVisibleLane * 23) + 'px;"'
                     + ' data-hidden-count="' + hiddenStartCount + '">';
                 html += '전체 +' + hiddenStartCount;
                 html += '</button>';
@@ -1576,8 +1651,19 @@
             document.getElementById('detailPeriod').textContent = period || '-';
             document.getElementById('detailLoc').textContent = item.locCn || '-';
             document.getElementById('detailPerson').textContent = person;
-            document.getElementById('detailCn').textContent = item.scheduleCn || '-';
+            /*
+             * 직원휴가 상세 내용은 COMMON_CODE에서 가져온 휴가종류를 뱃지로 표시
+             */
+            if (item.scheduleTy === 'VACATION' && item.scheduleSttsNm) {
+                const badgeColor = item.scheduleColorHex || '#E9D5FF';
 
+                document.getElementById('detailCn').innerHTML =
+                    '<span class="vacation-type-badge" style="background:' + escapeHtml(badgeColor) + ';">'
+                    + escapeHtml(item.scheduleSttsNm)
+                    + '</span>';
+            } else {
+                document.getElementById('detailCn').textContent = item.scheduleCn || '-';
+            }
             document.getElementById('detailModal').classList.add('active');
         }
 

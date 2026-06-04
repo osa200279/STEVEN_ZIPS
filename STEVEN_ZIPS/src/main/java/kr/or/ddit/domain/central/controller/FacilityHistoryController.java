@@ -1,6 +1,8 @@
 package kr.or.ddit.domain.central.controller;
 
 
+import kr.or.ddit.common.file.service.IAttachFileService;
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import kr.or.ddit.common.model.PaginationInfoVO;
 import kr.or.ddit.domain.central.dto.FacilityInfoDTO;
 import kr.or.ddit.domain.central.service.IFacilityHistoryService;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+
 @Slf4j
 @Controller
 @RequestMapping("/facility")
@@ -26,6 +29,9 @@ public class FacilityHistoryController {
 
     @Autowired
     private IFacilityInfoService facilityInfoService;
+
+    @Autowired
+    private IAttachFileService attachFileService;
 
 
     @GetMapping("/history.do")
@@ -82,8 +88,35 @@ public class FacilityHistoryController {
 
             aptCardList = facilityInfoService.getAptCardList(dto);
 
+            /*
+             * 단지 카드 이미지 세팅
+             *
+             * imgFileNo란?
+             * → APT_COMPLEX 테이블의 이미지 파일 그룹 번호.
+             *
+             * setFileMetaData란?
+             * → 파일 그룹 번호로 ATTACH_FILE 정보를 조회해서
+             *   AttachFileVO 목록으로 만들어주는 공통 파일 서비스.
+             *
+             * 왜 사용?
+             * → JSP 카드에서 구글드라이브 이미지 ID를 꺼내서
+             *   실제 사진을 보여주기 위해.
+             */
+            if (aptCardList != null) {
+                for (FacilityInfoDTO apt : aptCardList) {
+
+                    if (apt.getImgFileNo() != null && !apt.getImgFileNo().isBlank()) {
+
+                        List<AttachFileVO> fileList =
+                                attachFileService.setFileMetaData(apt.getImgFileNo());
+
+                        apt.setFileList(fileList);
+                    }
+                }
+            }
+
             pagingVO.setDataList(aptCardList);
-        }
+        } // ✅ if (searched) 종료
 
         if (dto.getAptCmplexNo() != null && !dto.getAptCmplexNo().isEmpty()) {
 

@@ -140,4 +140,9 @@ public class AptScheduleCalendarServiceImpl implements IAptScheduleCalendarServi
         return aptScheduleCalendarMapper.selectAptCmplexNoByMgmtOfcNo(mgmtOfcNo);
     }
 
+    @Override
+    public List<AptScheduleCalendarDTO> selectVacationTypeCodeList() {
+        return aptScheduleCalendarMapper.selectVacationTypeCodeList();
+    }
+
 }

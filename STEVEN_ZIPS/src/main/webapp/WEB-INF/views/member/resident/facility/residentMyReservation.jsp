@@ -576,13 +576,15 @@
                 <td>${row.itemNm}</td>
                 <td>${row.rsvtBgngDttm} ~ ${row.rsvtEndDttm}</td>
                 <td>
+                  <c:set var="statusCd" value="${row.rsvtSttsCd}" />
+
                   <span class="pf-badge
-                      ${row.rsvtSttsCd eq 'PENDING' ? 'pf-badge-pending' : ''}
-                      ${row.rsvtSttsCd eq 'APPROVED' ? 'pf-badge-approved' : ''}
-                      ${row.rsvtSttsCd eq 'REJECTED' ? 'pf-badge-rejected' : ''}
-                      ${row.rsvtSttsCd eq 'CANCELLED' ? 'pf-badge-cancelled' : ''}
-                      ${row.rsvtSttsCd eq 'EXPIRED' ? 'pf-badge-expired' : ''}">
-                       ${row.rsvtSttsNm}
+                      ${statusCd eq 'PENDING' ? 'pf-badge-pending' : ''}
+                      ${statusCd eq 'APPROVED' ? 'pf-badge-approved' : ''}
+                      ${statusCd eq 'REJECTED' ? 'pf-badge-rejected' : ''}
+                      ${statusCd eq 'CANCELLED' ? 'pf-badge-cancelled' : ''}
+                      ${statusCd eq 'EXPIRED' ? 'pf-badge-expired' : ''}">
+                      ${row.rsvtSttsNm}
                   </span>
                 </td>
                 <td class="pf-actions">

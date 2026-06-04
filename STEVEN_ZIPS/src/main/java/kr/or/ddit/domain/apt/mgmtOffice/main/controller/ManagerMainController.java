@@ -219,7 +219,7 @@ public class ManagerMainController {
          * - 휴가 등록 모달의 직원 select box에서 DB 직원 목록을 보여주기 위해서입니다.
          */
         model.addAttribute("managerEmployeeList", aptScheduleCalendarService.selectManagerEmployeeList(mgmtOfcNo));
-
+        model.addAttribute( "vacationTypeCodeList", aptScheduleCalendarService.selectVacationTypeCodeList());
         return "apt/mgmtOffice/calendar/aptScheduleCalendar";
     }
 

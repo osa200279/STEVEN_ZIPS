@@ -355,6 +355,12 @@
             width: 90px;
             flex: none;
         }
+        .facility-card-img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            display:block;
+        }
     </style>
 </head>
 
@@ -463,7 +469,17 @@
                                 <span class="facility-card-badge">
                                     ${apt.sidoNm} ${apt.sigunguNm}
                                 </span>
-                                        <span class="material-symbols-outlined facility-card-icon">apartment</span>
+                                        <c:choose>
+                                            <c:when test="${not empty apt.fileList and not empty apt.fileList[0].googleId}">
+                                                <img class="facility-card-img"
+                                                     src="https://drive.google.com/thumbnail?id=${apt.fileList[0].googleId}&sz=w600"
+                                                     alt="${apt.aptCmplexNm} 이미지">
+                                            </c:when>
+
+                                            <c:otherwise>
+                                                <span class="material-symbols-outlined facility-card-icon">apartment</span>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
 
                                     <div class="facility-card-body">

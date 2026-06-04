@@ -50,4 +50,7 @@ public interface IAptScheduleCalendarService {
      */
     String selectAptCmplexNoByMgmtOfcNo(String mgmtOfcNo);
 
+    /** 휴가종류 공통코드 목록 조회 */
+    List<AptScheduleCalendarDTO> selectVacationTypeCodeList();
+
 }

@@ -77,6 +77,12 @@
       background:#eef2f7;
       color:#64748b;
     }
+
+    /* 승인만료 */
+    .pf-badge-expired{
+      background:#ede9fe;
+      color:#6d28d9;
+    }
     .pf-paging{display:flex;justify-content:center;margin-top:18px}
     .pagination{display:flex;gap:4px;list-style:none;padding:0}
     .page-link{display:block;padding:6px 10px;border:1px solid #d7ded7;border-radius:4px;color:#374151;text-decoration:none}
@@ -161,6 +167,7 @@
                     <option value="APPROVED" ${searchVO.searchRsvtSttsCd eq 'APPROVED' ? 'selected' : ''}>승인완료</option>
                     <option value="REJECTED" ${searchVO.searchRsvtSttsCd eq 'REJECTED' ? 'selected' : ''}>거절</option>
                     <option value="CANCELLED" ${searchVO.searchRsvtSttsCd eq 'CANCELLED' ? 'selected' : ''}>취소</option>
+                    <option value="EXPIRED" ${searchVO.searchRsvtSttsCd eq 'EXPIRED' ? 'selected' : ''}>승인만료</option>
                   </select>
                 </div>
 
@@ -228,6 +235,13 @@
                         <%-- 취소 --%>
                         <c:when test="${row.rsvtSttsCd eq 'CANCELLED'}">
                           <span class="pf-badge pf-badge-cancelled">
+                              ${row.rsvtSttsNm}
+                          </span>
+                        </c:when>
+
+                        <%-- 승인만료 --%>
+                        <c:when test="${row.rsvtSttsCd eq 'EXPIRED'}">
+                          <span class="pf-badge pf-badge-expired">
                               ${row.rsvtSttsNm}
                           </span>
                         </c:when>

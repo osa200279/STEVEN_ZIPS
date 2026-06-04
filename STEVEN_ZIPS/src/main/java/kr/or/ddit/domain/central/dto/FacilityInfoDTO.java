@@ -1,6 +1,8 @@
 package kr.or.ddit.domain.central.dto;
 
+import kr.or.ddit.common.file.vo.AttachFileVO;
 import lombok.Data;
+
 
 import java.util.List;
 
@@ -149,5 +151,20 @@ public class FacilityInfoDTO {
     private String mgmtOfficeInfo; // 관리사무소 정보
     private List<?> annBoardPostInfoList;
 
+    private String imgFileNo;
+    /*
+     * imgFileNo
+     * → APT_COMPLEX.IMG_FILE_NO 값.
+     * 왜 필요?
+     * → 단지별 이미지 파일 그룹 번호를 가져오기 위해.
+     */
+
+    private List<AttachFileVO> fileList;
+    /*
+     * fileList
+     * → 실제 파일 정보 목록.
+     * 왜 필요?
+     * → JSP에서 googleId를 꺼내 이미지로 보여주기 위해.
+     */
 
 }

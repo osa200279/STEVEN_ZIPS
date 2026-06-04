@@ -43,6 +43,11 @@
         <result property="monthCnt" column="MONTH_CNT"/>             <!-- 월간일정수 -->
         <result property="vacationCnt" column="VACATION_CNT"/>       <!-- 직원휴가일정수 -->
 
+        <result property="scheduleSttsCd" column="SCHDL_STTS_CD"/>
+        <result property="scheduleSttsNm" column="SCHDL_STTS_NM"/>
+        <result property="scheduleSttsCn" column="SCHDL_STTS_CN"/>
+        <result property="scheduleColorHex" column="SCHEDULE_COLOR_HEX"/>
+
     </resultMap>
 
 
@@ -97,6 +102,10 @@
              , P.WRTR_ID AS RGTR_ID                                  /** 등록자아이디 */
              , NULL AS USER_NO                                       /** 사용자번호 */
              , NULL AS USER_NM                                       /** 사용자명 */
+             , NULL AS SCHDL_STTS_CD
+             , NULL AS SCHDL_STTS_NM
+             , NULL AS SCHDL_STTS_CN
+             , NULL AS SCHEDULE_COLOR_HEX
         FROM APT_ANN_BOARD_POST P
                  INNER JOIN APT_BOARD_INSTANCE BI
                             ON P.BOARD_NO = BI.BOARD_NO                        /** 게시판번호 연결 */
@@ -118,35 +127,70 @@
         UNION ALL
 
 
-        /* 2. 단지 내 행사/공사 일정 조회 */
-        /* 주의: COMPLEX_SCHEDULE 테이블에 별도 시작일/종료일 컬럼이 없어서 REG_DT 기준으로 표시 */
+        /* 2. 단지 내 행사/공사/직원휴가 일정 조회 */
         SELECT
-            CS.APT_CMPLEX_NO                                      /** 아파트단지번호 */
-             , CS.SCHEDULE_NO                                        /** 일정번호 */
-             , CASE
-                   WHEN CS.SCHDL_TTL LIKE '%공사%' THEN 'CONSTRUCTION'
-                   ELSE 'EVENT'
-            END AS SCHEDULE_TY                                    /** 일정유형코드 */
-             , CASE
-                   WHEN CS.SCHDL_TTL LIKE '%공사%' THEN '공사'
-                   ELSE '행사'
-            END AS SCHEDULE_TY_NM                                 /** 일정유형명 */
-             , CS.SCHDL_TTL AS SCHEDULE_TTL                          /** 일정제목 */
-             , CS.SCHDL_CN AS SCHEDULE_CN                            /** 일정내용 */
-             , CS.LOC_CN AS LOC_CN                                   /** 장소내용 */
-             , TO_CHAR(CS.REG_DT, 'YYYY-MM-DD') AS START_DT          /** 일정시작일 */
-             , TO_CHAR(CS.REG_DT, 'YYYY-MM-DD') AS END_DT            /** 일정종료일 */
-             , CASE
-                   WHEN CS.SCHDL_TTL LIKE '%공사%' THEN 'ORANGE'
-                   ELSE 'GREEN'
-            END AS COLOR_CD                                       /** 캘린더색상코드 */
-             , CS.RGTR_ID AS RGTR_ID                                 /** 등록자아이디 */
-             , NULL AS USER_NO                                       /** 사용자번호 */
-             , NULL AS USER_NM                                       /** 사용자명 */
+            CS.APT_CMPLEX_NO,
+            CS.SCHEDULE_NO,
+
+            /*
+             * SCHDL_CLR 공통코드에 매칭되면 직원휴가로 분류
+             * 왜 사용?
+             * ANNUAL, HALF_AM 같은 값을 하드코딩하지 않고 COMMON_CODE 기준으로 판단하기 위해.
+             */
+            CASE
+                WHEN CC.CODE_NO_CD IS NOT NULL THEN 'VACATION'
+                WHEN CS.SCHDL_TTL LIKE '%공사%' THEN 'CONSTRUCTION'
+                ELSE 'EVENT'
+                END AS SCHEDULE_TY,
+
+            CASE
+                WHEN CC.CODE_NO_CD IS NOT NULL THEN '직원휴가'
+                WHEN CS.SCHDL_TTL LIKE '%공사%' THEN '공사'
+                ELSE '행사'
+                END AS SCHEDULE_TY_NM,
+
+            CS.SCHDL_TTL AS SCHEDULE_TTL,
+
+            /*
+             * 상세 모달 내용
+             * 직원휴가는 공통코드명 + 공통코드 설명을 내려준다.
+             */
+            CASE
+                WHEN CC.CODE_NO_CD IS NOT NULL
+                    THEN CC.CODE_NAME || ' - ' || CC.CODE_CONTENT
+                ELSE CS.SCHDL_CN
+                END AS SCHEDULE_CN,
+
+            CS.LOC_CN AS LOC_CN,
+
+            /*
+             * 현재 COMPLEX_SCHEDULE에는 SCHDL_DT가 없다고 했으므로 REG_DT를 일정일자로 사용
+             */
+            TO_CHAR(TRUNC(CS.REG_DT), 'YYYY-MM-DD') AS START_DT,
+            TO_CHAR(TRUNC(CS.REG_DT), 'YYYY-MM-DD') AS END_DT,
+
+            CASE
+                WHEN CC.CODE_NO_CD IS NOT NULL THEN 'PURPLE'
+                WHEN CS.SCHDL_TTL LIKE '%공사%' THEN 'ORANGE'
+                ELSE 'GREEN'
+                END AS COLOR_CD,
+
+            CS.RGTR_ID AS RGTR_ID,
+            NULL AS USER_NO,
+            CS.RGTR_ID AS USER_NM,
+
+            CS.SCHDL_STTS_CD AS SCHDL_STTS_CD,
+            CC.CODE_NAME AS SCHDL_STTS_NM,
+            CC.CODE_CONTENT AS SCHDL_STTS_CN,
+            REGEXP_SUBSTR(CC.CODE_CONTENT, '#[A-Fa-f0-9]{6}') AS SCHEDULE_COLOR_HEX
         FROM COMPLEX_SCHEDULE CS
-        WHERE CS.APT_CMPLEX_NO = #{aptCmplexNo}                     /** 아파트단지번호 */
-          AND CS.REG_DT BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
-            AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD') + 0.99999
+                 LEFT JOIN COMMON_CODE CC
+                           ON CC.GROUP_CODE_NO = 'SCHDL_CLR'
+                               AND CC.CODE_NO_CD = CS.SCHDL_STTS_CD
+                               AND CC.USE_YN = 'Y'
+        WHERE CS.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND TRUNC(CS.REG_DT) BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
+            AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD')
 
 
         UNION ALL
@@ -167,6 +211,10 @@
              , M.USER_ID AS RGTR_ID                                  /** 등록자아이디 */
              , VS.USER_NO AS USER_NO                                 /** 사용자번호 */
              , M.USER_NM AS USER_NM                                  /** 사용자명 */
+             ,NULL AS SCHDL_STTS_CD
+             ,NULL AS SCHDL_STTS_NM
+             ,NULL AS SCHDL_STTS_CN
+             ,NULL AS SCHEDULE_COLOR_HEX
         FROM MNGR_VACATION_SCHDL VS
                  INNER JOIN MANAGER MG
                             ON VS.USER_NO = MG.USER_NO                         /** 관리자 사용자번호 연결 */
@@ -212,6 +260,10 @@
              , NULL AS RGTR_ID
              , NULL AS USER_NO
              , NULL AS USER_NM
+             , NULL AS SCHDL_STTS_CD
+             , NULL AS SCHDL_STTS_NM
+             , NULL AS SCHDL_STTS_CN
+             , NULL AS SCHEDULE_COLOR_HEX
         FROM METER_HSTRY MH
                  INNER JOIN FACILITY F
                             ON MH.FACILITY_NO = F.FACILITY_NO
@@ -230,28 +282,52 @@
         UNION ALL
 
 
-        /* 5. 점검 일정 조회 */
+        /* 5. 점검 일정 조회 - 중복 제거 */
         SELECT
-            F.APT_CMPLEX_NO                                       /** 아파트단지번호 */
-             , FH.FAC_CHK_HSTRY_NO AS SCHEDULE_NO                    /** 일정번호 */
-             , 'CHECK' AS SCHEDULE_TY                                /** 일정유형코드 */
-             , '점검' AS SCHEDULE_TY_NM                              /** 일정유형명 */
-             , F.FACILITY_NM || ' 점검' AS SCHEDULE_TTL              /** 일정제목 */
-             , FH.CHK_CN AS SCHEDULE_CN                              /** 일정내용 */
-             , F.LOC_CN AS LOC_CN                                    /** 장소내용 */
-             , TO_CHAR(FH.CHK_DT, 'YYYY-MM-DD') AS START_DT          /** 일정시작일 */
-             , TO_CHAR(FH.CHK_DT, 'YYYY-MM-DD') AS END_DT            /** 일정종료일 */
-             , 'GRAY' AS COLOR_CD                                    /** 캘린더색상코드 */
-             , NULL AS RGTR_ID                                       /** 등록자아이디 */
-             , NULL AS USER_NO                                       /** 사용자번호 */
-             , NULL AS USER_NM                                       /** 사용자명 */
-        FROM FACILITY_CHECK_HSTRY FH
-                 INNER JOIN FACILITY F
-                            ON FH.FACILITY_NO = F.FACILITY_NO                  /** 시설번호 연결 */
-        WHERE F.APT_CMPLEX_NO = #{aptCmplexNo}                      /** 아파트단지번호 */
-          AND F.USE_YN = 'Y'                                        /** 시설사용여부 */
-          AND FH.CHK_DT BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
-            AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD') + 0.99999
+            CAL.APT_CMPLEX_NO
+             , CAL.SCHEDULE_NO
+             , CAL.SCHEDULE_TY
+             , CAL.SCHEDULE_TY_NM
+             , CAL.SCHEDULE_TTL
+             , CAL.SCHEDULE_CN
+             , CAL.LOC_CN
+             , CAL.START_DT
+             , CAL.END_DT
+             , CAL.COLOR_CD
+             , CAL.RGTR_ID
+             , CAL.USER_NO
+             , CAL.USER_NM
+             , NULL AS SCHDL_STTS_CD
+             , NULL AS SCHDL_STTS_NM
+             , NULL AS SCHDL_STTS_CN
+             , NULL AS SCHEDULE_COLOR_HEX
+        FROM (
+                 SELECT
+                     F.APT_CMPLEX_NO,
+                     'CHECK_' || FH.FAC_CHK_HSTRY_NO AS SCHEDULE_NO,
+                     'CHECK' AS SCHEDULE_TY,
+                     '점검' AS SCHEDULE_TY_NM,
+                     F.FACILITY_NM || ' 점검' AS SCHEDULE_TTL,
+                     FH.CHK_CN AS SCHEDULE_CN,
+                     NVL(F.LOC_CN, '단지 내 시설') AS LOC_CN,
+                     TO_CHAR(FH.CHK_DT, 'YYYY-MM-DD') AS START_DT,
+                     TO_CHAR(FH.CHK_DT, 'YYYY-MM-DD') AS END_DT,
+                     'GRAY' AS COLOR_CD,
+                     NULL AS RGTR_ID,
+                     NULL AS USER_NO,
+                     NULL AS USER_NM,
+                     ROW_NUMBER() OVER (
+                         PARTITION BY F.APT_CMPLEX_NO, F.FACILITY_NO, TRUNC(FH.CHK_DT)
+                         ORDER BY FH.CHK_DT DESC, FH.FAC_CHK_HSTRY_NO DESC
+                         ) AS RN
+                 FROM FACILITY_CHECK_HSTRY FH
+                          INNER JOIN FACILITY F
+                                     ON FH.FACILITY_NO = F.FACILITY_NO
+                 WHERE F.APT_CMPLEX_NO = #{aptCmplexNo}
+                   AND FH.CHK_DT BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
+                     AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD') + 0.99999
+             ) CAL
+        WHERE CAL.RN = 1
 
     </sql>
 
@@ -287,6 +363,10 @@
         , CAL.RGTR_ID             /** 등록자아이디 */
         , CAL.USER_NO             /** 사용자번호 */
         , CAL.USER_NM             /** 사용자명 */
+        , CAL.SCHDL_STTS_CD
+        , CAL.SCHDL_STTS_NM
+        , CAL.SCHDL_STTS_CN
+        , CAL.SCHEDULE_COLOR_HEX
         FROM (
         <include refid="scheduleUnionSql"/>
         ) CAL
@@ -390,6 +470,10 @@
         , CAL.RGTR_ID             /** 등록자아이디 */
         , CAL.USER_NO             /** 사용자번호 */
         , CAL.USER_NM             /** 사용자명 */
+        , CAL.SCHDL_STTS_CD
+        , CAL.SCHDL_STTS_NM
+        , CAL.SCHDL_STTS_CN
+        , CAL.SCHEDULE_COLOR_HEX
         FROM (
         <include refid="scheduleUnionSql"/>
         ) CAL
@@ -480,19 +564,23 @@
         SELECT A.*, ROWNUM RN
         FROM (
         SELECT
-        CAL.APT_CMPLEX_NO,
-        CAL.SCHEDULE_NO,
-        CAL.SCHEDULE_TY,
-        CAL.SCHEDULE_TY_NM,
-        CAL.SCHEDULE_TTL,
-        CAL.SCHEDULE_CN,
-        CAL.LOC_CN,
-        CAL.START_DT,
-        CAL.END_DT,
-        CAL.COLOR_CD,
-        CAL.RGTR_ID,
-        CAL.USER_NO,
-        CAL.USER_NM
+        CAL.APT_CMPLEX_NO
+        ,CAL.SCHEDULE_NO
+        ,CAL.SCHEDULE_TY
+        ,CAL.SCHEDULE_TY_NM
+        ,CAL.SCHEDULE_TTL
+        ,CAL.SCHEDULE_CN
+        ,CAL.LOC_CN
+        ,CAL.START_DT
+        ,CAL.END_DT
+        ,CAL.COLOR_CD
+        ,CAL.RGTR_ID
+        ,CAL.USER_NO
+        ,CAL.USER_NM
+        , CAL.SCHDL_STTS_CD
+        , CAL.SCHDL_STTS_NM
+        , CAL.SCHDL_STTS_CN
+        , CAL.SCHEDULE_COLOR_HEX
         FROM (
         <include refid="scheduleUnionSql"/>
         ) CAL
@@ -609,5 +697,27 @@
         )
 
     </delete>
+
+    <select id="selectVacationTypeCodeList"
+            resultMap="aptScheduleCalendarMap">
+
+        SELECT
+            CODE_NO_CD AS SCHDL_STTS_CD,
+            CODE_NAME AS SCHDL_STTS_NM,
+            CODE_CONTENT AS SCHDL_STTS_CN,
+
+            /*
+             * REGEXP_SUBSTR란?
+             * 문자열에서 특정 패턴을 찾아 잘라내는 Oracle 함수.
+             * 왜 사용?
+             * CODE_CONTENT 안의 #A8D8FF 같은 색상값만 뽑기 위해.
+             */
+            REGEXP_SUBSTR(CODE_CONTENT, '#[A-Fa-f0-9]{6}') AS SCHEDULE_COLOR_HEX
+        FROM COMMON_CODE
+        WHERE GROUP_CODE_NO = 'SCHDL_CLR'
+          AND USE_YN = 'Y'
+        ORDER BY SORT_ORDER
+
+    </select>
 
 </mapper>

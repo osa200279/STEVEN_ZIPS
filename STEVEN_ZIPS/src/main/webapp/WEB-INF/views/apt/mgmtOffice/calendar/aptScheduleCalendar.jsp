@@ -181,17 +181,7 @@
       overflow: visible;
     }
 
-    /* tbody tr만 높이 적용: 요일 헤더는 커지지 않게 함 */
-    #aptScheduleCalendarPage .apt-calendar tbody tr {
-      height: 142px;
-    }
 
-    /* td padding을 없애야 막대가 칸 선에 정확히 맞음 */
-    #aptScheduleCalendarPage .apt-calendar td {
-      position: relative;
-      overflow: visible;
-      padding: 0;
-    }
 
     /* 날짜 숫자에만 여백 적용 */
     #aptScheduleCalendarPage .day-num {
@@ -249,30 +239,57 @@
       color: #475569;
     }
 
-    /* 접힌 일정 개수 표시 */
+
+    /* 기본은 4줄까지만 표시 */
+    #aptScheduleCalendarPage .week-event-bar.hidden-event {
+      display: none;
+    }
+
+    /* 캘린더 한 주 높이 고정 */
+    #aptScheduleCalendarPage .apt-calendar tbody tr {
+      height: 170px;
+    }
+
+    /* 날짜 칸 내부 일정이 칸 밖으로 튀어나가지 않게 처리 */
+    #aptScheduleCalendarPage .apt-calendar td {
+      position: relative;
+      overflow: hidden;
+      padding: 0;
+      height: 170px;
+    }
+
+    /* 펼쳤을 때는 해당 칸만 스크롤 */
+    #aptScheduleCalendarPage .apt-calendar td.expanded {
+      height: 260px;
+      overflow-y: auto;
+    }
+
+    /* 숨긴 일정 */
+    #aptScheduleCalendarPage .week-event-bar.hidden-event {
+      display: none;
+    }
+
+    /* 전체+ 클릭하면 숨긴 일정 표시 */
+    #aptScheduleCalendarPage .apt-calendar td.expanded .week-event-bar.hidden-event {
+      display: block;
+    }
+
+    /* 전체+ 버튼 위치 고정 */
     #aptScheduleCalendarPage .calendar-more-btn {
       position: absolute;
-      left: 0;
-      right: 0;
-      height: 18px;
-      line-height: 18px;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;
+      height: 20px;
+      line-height: 20px;
       border: none;
+      border-radius: 6px;
       background: #f1f5f9;
       color: #475569;
       font-size: 10px;
       font-weight: 800;
       cursor: pointer;
-      z-index: 10;
-    }
-    /* 기본은 4줄까지만 표시 */
-    #aptScheduleCalendarPage .week-event-bar.hidden-event {
-      display: none;
-    }
-    /*
-     * 전체+ 클릭 시 해당 날짜 칸만 펼침
-     */
-    #aptScheduleCalendarPage .apt-calendar td.expanded {
-      height: 240px;
+      z-index: 50;
     }
 
     #aptScheduleCalendarPage .apt-calendar td.expanded .week-event-bar.hidden-event {
@@ -425,6 +442,84 @@
       color: #94a3b8;
       white-space: nowrap;
     }
+
+    /* =====================================================
+ * 캘린더 일정 겹침 방지
+ * 왜 사용?
+ * 일정이 많은 경우 다음 주까지 침범하는 현상 방지
+ * ===================================================== */
+
+    /* 주 높이 */
+    #aptScheduleCalendarPage .apt-calendar tbody tr{
+      height:180px !important;
+    }
+
+    /* 날짜칸 */
+    #aptScheduleCalendarPage .apt-calendar td{
+      position:relative !important;
+      overflow:hidden !important;
+      height:180px !important;
+      padding:0 !important;
+      vertical-align:top !important;
+    }
+
+    /* 날짜 숫자 */
+    #aptScheduleCalendarPage .day-num{
+      padding:6px 6px 0 6px !important;
+      margin-bottom:0 !important;
+    }
+
+    /* 일정바 */
+    #aptScheduleCalendarPage .week-event-bar{
+      left:3px !important;
+      right:auto !important;
+      max-width:none !important;
+    }
+
+    /* 숨김 일정 */
+    #aptScheduleCalendarPage .week-event-bar.hidden-event{
+      display:none !important;
+    }
+
+    /* 펼침 */
+    #aptScheduleCalendarPage td.expanded{
+      overflow-y:auto !important;
+    }
+
+    /* 펼쳤을 때 숨긴 일정 보이기 */
+    #aptScheduleCalendarPage td.expanded .week-event-bar.hidden-event{
+      display:block !important;
+    }
+
+    /* 전체+ 버튼 */
+    #aptScheduleCalendarPage .calendar-more-btn{
+      position:absolute !important;
+      left:4px !important;
+      right:4px !important;
+      bottom:4px !important;
+      top:auto !important;
+      height:18px !important;
+      z-index:999 !important;
+    }
+    /* 직원휴가 캘린더 바 연보라색 */
+    .week-event-bar.VACATION,
+    #aptScheduleCalendarPage .week-event-bar.VACATION,
+    #residentScheduleCalendarPage .week-event-bar.VACATION {
+      background: #E9D5FF !important;
+      color: #7E22CE !important;
+    }
+
+    /* 상세 모달 휴가종류 뱃지 */
+    .vacation-type-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #334155;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
   </style>
 
   <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
@@ -561,7 +656,7 @@
             </div>
             <div class="modal-body">
               <div class="form-row">
-                <label>직원</label>
+                <label>직원명</label>
                 <select id="vacUserNo" class="form-control">
                   <option value="">직원 선택</option>
                   <c:forEach var="emp" items="${managerEmployeeList}">
@@ -570,7 +665,7 @@
                 </select>
               </div>
               <div class="form-row">
-                <label>휴가 제목</label>
+                <label>휴가종류</label>
                 <input type="text" id="vacTitle" class="form-control" placeholder="예: 연차, 오전 반차, 병가">
               </div>
               <div class="form-row">
@@ -853,37 +948,49 @@
     });
 
     document.querySelectorAll('.calendar-more-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        /*
-         * tr이 아니라 td를 펼쳐야 함
-         * 왜?
-         * 주 전체를 펼치면 다른 날짜에서 시작한 숨김 일정까지 같이 보이기 때문.
-         */
-        const td = btn.closest('td');
 
-        td.classList.toggle('expanded');
+      btn.addEventListener("click", function (e) {
 
-        if (td.classList.contains('expanded')) {
-          btn.textContent = '접기';
-        } else {
-          btn.textContent = '전체 +' + btn.dataset.hiddenCount;
+        e.stopPropagation();
+
+        const td = this.closest("td");
+
+        td.classList.toggle("expanded");
+
+        const hiddenCount = this.dataset.hiddenCount;
+
+        if(td.classList.contains("expanded")){
+          this.textContent = "접기";
+        }else{
+          this.textContent = "전체 +" + hiddenCount;
         }
       });
     });
   }
 
   function renderWeekBarsByDate(dateStr, dayOfWeek, weekSegments) {
+    /*
+     * maxVisibleLane이란?
+     * 화면에 기본으로 보여줄 일정 줄 수.
+     *
+     * 왜 사용?
+     * 일정이 너무 많을 때 캘린더 칸 밖으로 일정바가 튀어나가지 않게 하기 위해.
+     */
     const maxVisibleLane = 4;
 
+    /*
+     * 현재 날짜에서 시작하는 일정만 가져온다.
+     *
+     * 왜 사용?
+     * 여러 날짜에 걸친 일정은 시작 날짜 칸에서만 막대를 그려야
+     * 같은 일정이 여러 칸에 중복 출력되지 않는다.
+     */
     const startSegments = weekSegments.filter(function (seg) {
       return seg.startStr === dateStr;
     });
 
     /*
-     * 해당 날짜에서 시작하는 숨김 일정만 계산
-     * 왜?
-     * 다른 날짜에서 시작한 일정까지 전체+에 포함되면
-     * 펼쳤을 때 엉뚱한 위치에 일정이 나타난다.
+     * 기본 4줄을 넘는 일정 개수
      */
     const hiddenStartCount = startSegments.filter(function (seg) {
       return seg.lane >= maxVisibleLane;
@@ -893,11 +1000,28 @@
 
     startSegments.forEach(function (seg) {
       const spanDays = seg.endDay - seg.startDay + 1;
-      const hiddenClass = seg.lane >= maxVisibleLane ? ' hidden-event' : '';
+
+      /*
+       * lane이 4 이상이면 처음에는 숨김 처리
+       *
+       * hidden-event란?
+       * 처음 화면에서는 안 보이다가 전체+ 버튼을 눌렀을 때만 보이는 일정 클래스.
+       */
+      const isHidden = seg.lane >= maxVisibleLane;
+      const hiddenClass = isHidden ? ' hidden-event' : '';
+
+      /*
+       * 숨긴 일정도 원래 lane 위치 그대로 둔다.
+       *
+       * 왜?
+       * 전체+를 눌렀을 때 일정 순서가 섞이지 않고
+       * 원래 줄 위치대로 자연스럽게 보이게 하기 위해.
+       */
+      const top = 32 + seg.lane * 23;
 
       html += '<button type="button"'
               + ' class="week-event-bar ' + escapeHtml(seg.item.scheduleTy) + hiddenClass + '"'
-              + ' style="top:' + (32 + seg.lane * 23) + 'px; width:calc(' + (spanDays * 100) + '% + ' + (spanDays - 1) + 'px);"'
+              + ' style="top:' + top + 'px; width:calc(' + (spanDays * 100) + '% + ' + (spanDays - 1) + 'px);"'
               + ' title="' + escapeHtml(seg.item.scheduleTtl) + '"'
               + ' data-schedule-no="' + escapeHtml(seg.item.scheduleNo) + '">';
       html += escapeHtml(seg.item.scheduleTtl);
@@ -905,17 +1029,11 @@
     });
 
     /*
-     * 숨겨진 일정이 있을 때만 전체+ 표시
+     * 숨겨진 일정이 있을 때만 전체+ 버튼 표시
      */
     if (hiddenStartCount > 0) {
-      /*
-       * 전체+ 버튼은 숨겨진 일정 아래쪽에 배치
-       * 왜?
-       * 버튼과 숨김 일정이 같은 위치에 겹치면 펼쳐도 일정이 안 보이기 때문.
-       */
       html += '<button type="button"'
               + ' class="calendar-more-btn"'
-              + ' style="top:' + (32 + maxVisibleLane * 23) + 'px;"'
               + ' data-hidden-count="' + hiddenStartCount + '">';
       html += '전체 +' + hiddenStartCount;
       html += '</button>';

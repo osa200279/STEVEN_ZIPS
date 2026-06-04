@@ -75,4 +75,16 @@ public class AptScheduleCalendarDTO {
 
     private int startRow;   // 페이징 시작 번호
     private int endRow;     // 페이징 끝 번호
+
+    /** 휴가상태코드: ANNUAL, HALF_AM, HALF_PM 등 */
+    private String scheduleSttsCd;
+
+    /** 휴가상태명: 연차, 오전반차 등 */
+    private String scheduleSttsNm;
+
+    /** 휴가 설명 */
+    private String scheduleSttsCn;
+
+    /** 공통코드 설명에서 추출한 색상 HEX */
+    private String scheduleColorHex;
 }
