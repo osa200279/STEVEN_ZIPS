@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import AccountDetailModal from '../../components/mngrRqstAprv/AccountDetailModal';
 import AccountList from '../../components/mngrRqstAprv/AccountList';
 import RejectModal from '../../components/mngrRqstAprv/RejectModal';
@@ -181,7 +182,19 @@ export default function MngrRqstAprv() {
   async function changeAccountUse(row, checked) {
     const nextLabel = checked ? '사용' : '미사용';
     const targetName = row.userNm || row.userId || '선택한 계정';
-    if (!window.confirm(`${targetName} 계정을 ${nextLabel} 상태로 변경하시겠습니까?`)) return;
+
+    const result = await Swal.fire({
+      title: `계정 ${nextLabel} 처리`,
+      text: `${targetName} 계정을 ${nextLabel} 상태로 변경하시겠습니까?`,
+      icon: checked ? 'question' : 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#226046',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '변경',
+      cancelButtonText: '취소',
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       await updateAccountUse(row.userNo, checked ? 'Y' : 'N');
@@ -189,9 +202,20 @@ export default function MngrRqstAprv() {
       setSelectedAccount((prev) => (
         prev?.userNo === row.userNo ? { ...prev, userYn: checked ? 'Y' : 'N' } : prev
       ));
-      showFeedback('success', `${targetName} 계정을 ${nextLabel} 상태로 변경했습니다.`);
+      await Swal.fire({
+        icon: 'success',
+        title: '변경 완료',
+        text: `${targetName} 계정을 ${nextLabel} 상태로 변경했습니다.`,
+        confirmButtonText: '확인',
+      });
     } catch (error) {
-      showFeedback('error', getErrorMessage(error));
+      Swal.fire({
+        icon: 'error',
+        title: '변경 실패',
+        text: getErrorMessage(error),
+        confirmButtonColor: '#d33',
+        confirmButtonText: '확인',
+      });
     }
   }
 

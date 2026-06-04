@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { Button } from '../../../components/common/Button';
 import {
   getSido,
@@ -46,6 +47,17 @@ const INITIAL_ANN_FORM = {
 };
 
 /** YYYY-MM-DD 문자열 비교 (동일 포맷 전제) */
+const ANN_LIST_PATH = '/adm/ann';
+
+function showAnnAlert(icon, title, text) {
+  return Swal.fire({
+    icon,
+    title,
+    text,
+    confirmButtonText: '확인',
+  });
+}
+
 function assertDateOrder(pubS, pubE, rcS, rcE) {
   if (pubS > pubE) return '게시 시작일은 게시 종료일보다 앞서야 합니다.';
   if (rcS > rcE) return '모집 시작일은 모집 종료일보다 앞서야 합니다.';
@@ -248,35 +260,77 @@ useEffect(() => {
   // ── 등록: insertAnn(getInsertPayload()) ──
   const handleSubmit = async () => {
     if (submitting) return;
-    if (!annForm.ttl.trim()) return alert('공고 제목을 입력하세요');
-    if (!annForm.cn.trim()) return alert('공고 내용을 입력하세요');
-    if (!aptCmplexNo) return alert('아파트 단지를 선택하세요');
-    if (selectedRentList.length === 0) return alert('공고에 포함할 매물을 선택하세요');
+    if (!annForm.ttl.trim()) {
+      await showAnnAlert('warning', '입력 확인', '공고 제목을 입력하세요.');
+      return;
+    }
+    if (!annForm.cn.trim()) {
+      await showAnnAlert('warning', '입력 확인', '공고 내용을 입력하세요.');
+      return;
+    }
+    if (!aptCmplexNo) {
+      await showAnnAlert('warning', '입력 확인', '아파트 단지를 선택하세요.');
+      return;
+    }
+    if (selectedRentList.length === 0) {
+      await showAnnAlert('warning', '입력 확인', '공고에 포함할 매물을 선택하세요.');
+      return;
+    }
     const { pblancBgngDt, pblancEndDt, rcrtBgngDt, rcrtEndDt } = annForm;
     if (!pblancBgngDt || !pblancEndDt || !rcrtBgngDt || !rcrtEndDt) {
-      return alert('게시·모집 기간을 모두 입력하세요');
+      await showAnnAlert('warning', '입력 확인', '게시·모집 기간을 모두 입력하세요.');
+      return;
     }
     const dateErr = assertDateOrder(pblancBgngDt, pblancEndDt, rcrtBgngDt, rcrtEndDt);
-    if (dateErr) return alert(dateErr);
+    if (dateErr) {
+      await showAnnAlert('warning', '입력 확인', dateErr);
+      return;
+    }
+
+    const confirm = await Swal.fire({
+      icon: 'question',
+      title: '공고 등록',
+      text: '입력한 내용으로 공고를 등록할까요?',
+      showCancelButton: true,
+      confirmButtonText: '등록',
+      cancelButtonText: '취소',
+      reverseButtons: true,
+    });
+    if (!confirm.isConfirmed) return;
 
     setSubmitting(true);
     try {
       const data = await insertAnn(getInsertPayload());
       if (data.success) {
-        alert('등록 완료');
-        resetEntireForm();
-      } else {
-        alert(data.message ?? data.messeage ?? '등록 실패');
+        await Swal.fire({
+          icon: 'success',
+          title: '공고 등록 완료',
+          text: '공고 목록 페이지로 이동합니다.',
+          confirmButtonText: '확인',
+          timer: 2200,
+          timerProgressBar: true,
+        });
+        navigate(ANN_LIST_PATH, { replace: true });
+        return;
       }
+      await showAnnAlert(
+        'error',
+        '등록 실패',
+        data.message ?? data.messeage ?? '공고 등록에 실패했습니다.'
+      );
     } catch (e) {
       console.error(e);
-      alert('등록 중 오류가 발생했습니다.');
+      const msg =
+        e?.response?.data?.message ??
+        e?.message ??
+        '등록 중 오류가 발생했습니다.';
+      await showAnnAlert('error', '등록 오류', msg);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleNavigateList = () => navigate('/adm/ann');
+  const handleNavigateList = () => navigate(ANN_LIST_PATH);
 
   // ─────────────────────────────────────────
   // 상위 선택 바뀌면 하위 초기화
