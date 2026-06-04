@@ -596,32 +596,73 @@
   let selectedHouse = null;
   let currentBillList = [];
 
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', async function () {
     initBillSearchDate();
-    loadMyHouseList();
+    /*
+    * 세대 목록을 먼저 조회해야 selectedHouse가 세팅된다.
+    * selectedHouse가 있어야 바로 관리비 목록을 자동 조회할 수 있다.
+    */
+    await loadMyHouseList();
+
+    /*
+    * 메뉴 진입 시에는 상세 조회까지 하지 않고,
+    * 월 select만 부과된 월 기준으로 정리한다.
+    */
+    if (selectedHouse && selectedHouse.hoNo) {
+      await loadAvailableBillMonthsOnly();
+    }
+
+    document.getElementById('billYear').addEventListener('change', async function () {
+      await loadAvailableBillMonthsOnly();
+      renderEmptyState();
+    });
+
+    /*
+     * 실제 관리비 목록/상세 조회는
+     * 사용자가 관리비 조회 버튼을 눌렀을 때만 실행한다.
+     */
     renderEmptyState();
   });
 
   function initBillSearchDate() {
-    const now = new Date();
-    const currentYear = now.getFullYear();
     const yearSelect = document.getElementById('billYear');
+    const monthSelect = document.getElementById('billMonth');
 
     yearSelect.innerHTML = '';
 
-    for (let y = currentYear - 2; y <= currentYear + 1; y++) {
-      const option = document.createElement('option');
-      option.value = y;
-      option.textContent = y + '년';
+    /*
+     * 관리비 조회 화면에서는 현재 프로젝트 테스트 데이터 기준으로
+     * 2025년, 2026년만 선택 가능하게 고정한다.
+     */
+    const availableYears = [2025, 2026];
 
-      if (y === currentYear) {
-        option.selected = true;
-      }
+    availableYears.forEach(function (year) {
+      const option = document.createElement('option');
+
+      option.value = String(year);
+      option.textContent = year + '년';
 
       yearSelect.appendChild(option);
-    }
+    });
 
-    document.getElementById('billMonth').value = now.getMonth() + 1;
+    /*
+     * 기본값은 2026년으로 설정
+     */
+    yearSelect.value = '2026';
+
+    /*
+     * 월은 메뉴 진입 후 loadAvailableBillMonthsOnly()에서
+     * 실제 부과된 월 기준으로 다시 그려진다.
+     * 초기에는 안내 문구만 표시한다.
+     */
+    monthSelect.innerHTML = '';
+
+    const monthOption = document.createElement('option');
+    monthOption.value = '';
+    monthOption.textContent = '부과된 월 없음';
+
+    monthSelect.appendChild(monthOption);
+    monthSelect.disabled = true;
   }
 
   function getBillYm() {
@@ -712,6 +753,12 @@
       return;
     }
 
+    /*
+     * 조회 버튼을 누른 순간의 선택 연월을 먼저 저장한다.
+     * 이후 월 select 옵션이 "실제 부과된 월" 기준으로 다시 그려지기 때문이다.
+     */
+    const searchedBillYm = getBillYm();
+
     try {
       const url = contextPath
               + '/resident/bill/year-list?hoNo=' + encodeURIComponent(selectedHouse.hoNo)
@@ -727,31 +774,57 @@
       const result = await response.json();
 
       if (!result.success) {
-        renderEmptyState();
+        currentBillList = [];
+        renderAvailableMonthOptions([], searchedBillYm);
+        renderBillHistory([]);
+        renderNoYearBillFound(billYear);
         showMessage(result.message || '관리비 조회에 실패했습니다.', 'error');
         return;
       }
 
       currentBillList = result.list || [];
 
-      renderBillHistory(currentBillList);
-
-      if (currentBillList.length > 0) {
-        /*
-         * XML에서 ORDER BY B.BILL_YM DESC 처리했으므로
-         * 첫 번째 데이터가 해당 연도의 가장 최근 고지서이다.
-         */
-        await loadMyBillDetail(currentBillList[0].billNo);
-
-        showMessage(
-                billYear + '년 관리비 내역을 조회했습니다.',
-                'info'
-        );
-      } else {
+      if (currentBillList.length === 0) {
+        renderAvailableMonthOptions([], searchedBillYm);
+        renderBillHistory([]);
         renderNoYearBillFound(billYear);
 
         showMessage(
-                billYear + '년에 등록된 관리비 고지서가 없습니다.',
+                billYear + '년에 조회 가능한 관리비 고지서가 없습니다.',
+                'warn'
+        );
+        return;
+      }
+
+      /*
+       * 왼쪽 카드 목록은 해당 연도 전체 고지서를 모두 표시한다.
+       */
+      renderBillHistory(currentBillList);
+
+      /*
+       * 월 select는 실제 부과된 월만 표시한다.
+       * 선택한 월이 실제 부과월이면 그대로 유지하고,
+       * 선택한 월이 없으면 가장 최신 부과월로 자동 선택한다.
+       */
+      const effectiveBillYm = renderAvailableMonthOptions(currentBillList, searchedBillYm);
+
+      const targetBill = currentBillList.find(function (bill) {
+        return bill.billYm === effectiveBillYm;
+      });
+
+      if (targetBill) {
+        await loadMyBillDetail(targetBill.billNo);
+
+        showMessage(
+                formatBillYm(effectiveBillYm) + ' 관리비 내역을 조회했습니다.',
+                'info'
+        );
+      } else {
+        clearActiveBillCard();
+        renderNoBillFound(effectiveBillYm || searchedBillYm);
+
+        showMessage(
+                formatBillYm(searchedBillYm) + ' 관리비 고지서가 없습니다.',
                 'warn'
         );
       }
@@ -759,6 +832,52 @@
     } catch (e) {
       console.error(e);
       showMessage('관리비 조회 중 오류가 발생했습니다.', 'error');
+    }
+  }
+
+  /**
+   * 메뉴 진입 시 월 select만 실제 부과월 기준으로 정리한다.
+   * - 왼쪽 카드 목록과 오른쪽 상세는 조회하지 않는다.
+   * - 실제 조회는 관리비 조회 버튼 클릭 시 loadMyBillList()에서 처리한다.
+   */
+  async function loadAvailableBillMonthsOnly() {
+    const billYear = document.getElementById('billYear').value;
+
+    if (!selectedHouse || !selectedHouse.hoNo) {
+      return;
+    }
+
+    try {
+      const url =
+              contextPath
+              + '/resident/bill/list'
+              + '?hoNo=' + encodeURIComponent(selectedHouse.hoNo)
+              + '&billYear=' + encodeURIComponent(billYear);
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        console.error('부과월 목록 조회 실패:', response.status);
+        return;
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        console.error('부과월 목록 조회 실패:', result.message);
+        return;
+      }
+
+      const billList = result.list || [];
+
+      /*
+       * 현재 선택월이 부과된 월이면 그대로,
+       * 아니면 가장 최신 부과월로 select만 변경한다.
+       */
+      renderAvailableMonthOptions(billList, getBillYm());
+
+    } catch (error) {
+      console.error('부과월 목록 조회 오류:', error);
     }
   }
 
@@ -824,6 +943,12 @@
   function setActiveBillCard(billNo) {
     document.querySelectorAll('.bill-card').forEach(function (card) {
       card.classList.toggle('active', card.dataset.billNo === billNo);
+    });
+  }
+
+  function clearActiveBillCard() {
+    document.querySelectorAll('.bill-card').forEach(function (card) {
+      card.classList.remove('active');
     });
   }
 
@@ -960,6 +1085,81 @@
     }
 
     return num.toLocaleString();
+  }
+
+  /**
+   * 해당 연도에 실제 부과된 월만 월 select에 표시한다.
+   *
+   * @param billList 연도별 고지서 목록
+   * @param selectedBillYm 조회 버튼을 누른 순간 선택했던 관리년월 ex) 202606
+   * @return 실제로 선택된 관리년월. 선택월이 없으면 해당 연도 최신 부과월.
+   */
+  function renderAvailableMonthOptions(billList, selectedBillYm) {
+    const monthSelect = document.getElementById('billMonth');
+
+    if (!monthSelect) {
+      return selectedBillYm || '';
+    }
+
+    const selectedYear = document.getElementById('billYear').value;
+    const monthSet = new Set();
+
+    (billList || []).forEach(function (bill) {
+      const billYm = String(bill.billYm || '');
+
+      if (billYm.length !== 6) {
+        return;
+      }
+
+      if (billYm.substring(0, 4) === selectedYear) {
+        monthSet.add(billYm.substring(4, 6));
+      }
+    });
+
+    /*
+     * 최신 월이 위로 오거나 자동 선택되기 쉽게 오름차순 정렬 후
+     * 마지막 값을 최신 월로 사용한다.
+     */
+    const monthList = Array.from(monthSet).sort(function (a, b) {
+      return Number(a) - Number(b);
+    });
+
+    monthSelect.innerHTML = '';
+
+    if (monthList.length === 0) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = '부과된 월 없음';
+      monthSelect.appendChild(option);
+      monthSelect.disabled = true;
+      return '';
+    }
+
+    monthSelect.disabled = false;
+
+    const selectedMm = selectedBillYm && selectedBillYm.length === 6
+            ? selectedBillYm.substring(4, 6)
+            : '';
+
+    /*
+     * 선택한 월이 실제 부과월에 있으면 그 월을 사용하고,
+     * 없으면 가장 최신 부과월을 사용한다.
+     */
+    const effectiveMm = monthSet.has(selectedMm)
+            ? selectedMm
+            : monthList[monthList.length - 1];
+
+    monthList.forEach(function (mm) {
+      const option = document.createElement('option');
+
+      option.value = String(Number(mm));
+      option.textContent = Number(mm) + '월';
+      option.selected = mm === effectiveMm;
+
+      monthSelect.appendChild(option);
+    });
+
+    return selectedYear + effectiveMm;
   }
 
   function formatBillYm(value) {

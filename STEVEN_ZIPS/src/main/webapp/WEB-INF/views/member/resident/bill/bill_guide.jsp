@@ -320,36 +320,72 @@
     let selectedHouse = null;
     let currentBill = null;
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', async function () {
       initSearchDate();
-      loadMyHouseList();
+
+      await loadMyHouseList();
+
+      /*
+       * URL에 billNo가 있으면 해당 고지서를 바로 조회한다.
+       */
+      if (billNoFromPath && billNoFromPath !== 'null' && billNoFromPath !== '') {
+        await loadPaymentGuideByBillNo(billNoFromPath);
+        return;
+      }
+
+      /*
+       * 일반 메뉴 진입 시:
+       * 납부안내 상세는 바로 조회하지 않고,
+       * 연도/월 select만 실제 부과월 기준으로 정리한다.
+       */
+      if (selectedHouse && selectedHouse.hoNo) {
+        await loadAvailableGuideMonthsOnly();
+      }
+
       resetGuideView();
 
-      if (billNoFromPath && billNoFromPath !== 'null' && billNoFromPath !== '') {
-        loadPaymentGuideByBillNo(billNoFromPath);
-      }
+      /*
+       * 연도 변경 시 해당 연도의 부과월만 다시 표시
+       */
+      document.getElementById('billYear').addEventListener('change', async function () {
+        await loadAvailableGuideMonthsOnly();
+        resetGuideView();
+      });
+
     });
 
     function initSearchDate() {
-      const now = new Date();
-      const currentYear = now.getFullYear();
       const yearSelect = document.getElementById('billYear');
+      const monthSelect = document.getElementById('billMonth');
 
       yearSelect.innerHTML = '';
 
-      for (let y = currentYear - 2; y <= currentYear + 1; y++) {
+      /*
+       * 프로젝트 테스트 데이터 기준:
+       * 납부안내 화면에서는 2025년, 2026년만 선택 가능
+       */
+      const availableYears = [2025, 2026];
+
+      availableYears.forEach(function (year) {
         const option = document.createElement('option');
-        option.value = y;
-        option.textContent = y + '년';
-
-        if (y === currentYear) {
-          option.selected = true;
-        }
-
+        option.value = String(year);
+        option.textContent = year + '년';
         yearSelect.appendChild(option);
-      }
+      });
 
-      document.getElementById('billMonth').value = now.getMonth() + 1;
+      yearSelect.value = '2026';
+
+      /*
+       * 월은 실제 부과된 월 목록 조회 후 다시 그린다.
+       */
+      monthSelect.innerHTML = '';
+
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = '부과된 월 없음';
+
+      monthSelect.appendChild(option);
+      monthSelect.disabled = true;
     }
 
     function getBillYm() {
@@ -408,7 +444,6 @@
       if (list.length === 1) {
         select.value = list[0].hoNo;
         selectedHouse = list[0];
-        loadPaymentGuide();
       }
 
       if (currentBill && currentBill.hoNo) {
@@ -420,14 +455,147 @@
       }
     }
 
-    function onHouseChange() {
+    async function onHouseChange() {
       const hoNo = document.getElementById('myHouseSelect').value;
 
       selectedHouse = myHouseList.find(function (house) {
         return house.hoNo === hoNo;
       }) || null;
 
+      if (selectedHouse && selectedHouse.hoNo) {
+        await loadAvailableGuideMonthsOnly();
+      }
+
       resetGuideView();
+    }
+
+    /**
+     * 납부안내 페이지 진입/연도변경/세대변경 시
+     * 해당 세대의 실제 부과된 월만 월 select에 표시한다.
+     *
+     * 상세 납부안내는 조회하지 않는다.
+     */
+    async function loadAvailableGuideMonthsOnly() {
+      const billYear = document.getElementById('billYear').value;
+
+      if (!selectedHouse || !selectedHouse.hoNo) {
+        renderAvailableMonthOptions([], null);
+        return;
+      }
+
+      try {
+        const url =
+                contextPath
+                + '/resident/bill/list'
+                + '?hoNo=' + encodeURIComponent(selectedHouse.hoNo)
+                + '&billYear=' + encodeURIComponent(billYear);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          console.error('부과월 목록 조회 실패:', response.status);
+          renderAvailableMonthOptions([], null);
+          return;
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+          console.error('부과월 목록 조회 실패:', result.message);
+          renderAvailableMonthOptions([], null);
+          return;
+        }
+
+        const billList = result.list || [];
+
+        /*
+         * 현재 선택된 월이 부과월이면 유지,
+         * 아니면 가장 최신 부과월을 선택한다.
+         */
+        renderAvailableMonthOptions(billList, getBillYm());
+
+      } catch (e) {
+        console.error('부과월 목록 조회 오류:', e);
+        renderAvailableMonthOptions([], null);
+      }
+    }
+
+    /**
+     * 실제 부과된 월만 월 select에 표시한다.
+     *
+     * @param billList 해당 연도 고지서 목록
+     * @param selectedBillYm 현재 선택하려는 관리년월 ex) 202605
+     * @return 최종 선택된 관리년월 ex) 202605
+     */
+    function renderAvailableMonthOptions(billList, selectedBillYm) {
+      const monthSelect = document.getElementById('billMonth');
+      const yearSelect = document.getElementById('billYear');
+
+      if (!monthSelect || !yearSelect) {
+        return selectedBillYm;
+      }
+
+      const selectedYear = yearSelect.value;
+      const monthSet = new Set();
+
+      (billList || []).forEach(function (bill) {
+        if (!bill.billYm || String(bill.billYm).length !== 6) {
+          return;
+        }
+
+        const billYm = String(bill.billYm);
+
+        if (billYm.substring(0, 4) === selectedYear) {
+          monthSet.add(billYm.substring(4, 6));
+        }
+      });
+
+      const monthList = Array.from(monthSet).sort(function (a, b) {
+        return Number(a) - Number(b);
+      });
+
+      monthSelect.innerHTML = '';
+
+      if (monthList.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = '부과된 월 없음';
+
+        monthSelect.appendChild(option);
+        monthSelect.disabled = true;
+
+        return null;
+      }
+
+      monthSelect.disabled = false;
+
+      const selectedMm =
+              selectedBillYm && String(selectedBillYm).length === 6
+                      ? String(selectedBillYm).substring(4, 6)
+                      : null;
+
+      /*
+       * 기존 선택월이 실제 부과월이면 그대로 유지,
+       * 없으면 가장 최신 부과월로 선택
+       */
+      const finalMm = monthSet.has(selectedMm)
+              ? selectedMm
+              : monthList[monthList.length - 1];
+
+      monthList.forEach(function (mm) {
+        const option = document.createElement('option');
+
+        option.value = Number(mm);
+        option.textContent = Number(mm) + '월';
+
+        if (mm === finalMm) {
+          option.selected = true;
+        }
+
+        monthSelect.appendChild(option);
+      });
+
+      return selectedYear + finalMm;
     }
 
     async function loadPaymentGuide() {
@@ -439,6 +607,12 @@
       }
 
       const billYm = getBillYm();
+
+      if (!billYm || billYm.length !== 6 || document.getElementById('billMonth').disabled) {
+        resetGuideView();
+        showMessage('조회 가능한 관리비 고지월이 없습니다.');
+        return;
+      }
 
       try {
         const listUrl = contextPath
@@ -1156,7 +1330,17 @@
         const month = Number(String(bill.billYm).substring(4, 6));
 
         document.getElementById('billYear').value = year;
-        document.getElementById('billMonth').value = month;
+        
+        const monthSelect = document.getElementById('billMonth');
+        monthSelect.innerHTML = '';
+
+        const option = document.createElement('option');
+        option.value = month;
+        option.textContent = month + '월';
+        option.selected = true;
+
+        monthSelect.appendChild(option);
+        monthSelect.disabled = false;
       }
 
       // 세대 select는 loadMyHouseList()가 비동기라 아직 options가 없을 수 있음
