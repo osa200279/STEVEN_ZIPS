@@ -309,7 +309,12 @@ const Applicant = () => {
             });
 
             if (response.status === 200) {
-                alert(`${aplctMapList.length}건의 요청 처리가 완료되었습니다.`);
+                Swal.fire({
+                    icon: 'success'
+                    , title: '승인'
+                    , text: `${aplctMapList.length}건의 처리가 완료되었습니다.`
+                    , confirmButtonText: '확인'
+                })
 
                 const updateMap = new Map(aplctMapList.map(obj => [obj.aplctNo, obj.aplctSttsCd]));
 
