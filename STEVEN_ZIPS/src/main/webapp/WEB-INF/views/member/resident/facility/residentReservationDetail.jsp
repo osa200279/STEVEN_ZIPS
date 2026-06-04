@@ -429,6 +429,7 @@
             cursor: not-allowed !important;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -706,7 +707,12 @@
     document.querySelectorAll('.seat-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             if (!selectedStartDttm || !selectedEndDttm) {
-                alert('먼저 이용시간을 선택하세요.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: '이용시간 선택 필요',
+                    text: '먼저 이용시간을 선택하세요.',
+                    confirmButtonText: '확인'
+                });
                 return;
             }
 
@@ -803,7 +809,12 @@
                 console.error(error);
                 // [변경] 서버가 보낸 비즈니스 메시지(error.message: 예) "시설 점검으로 예약할 수 없는 시간입니다.")를 우선 표시
                 //  없거나 네트워크 오류인 경우 기존 폴백 문구로 표시
-                alert(error.message || '예약 신청 중 오류가 발생했습니다.');
+                Swal.fire({
+                    icon: 'error',
+                    title: '예약 실패',
+                    text: error.message || '예약 신청 중 오류가 발생했습니다.',
+                    confirmButtonText: '확인'
+                });
             });
     });
 

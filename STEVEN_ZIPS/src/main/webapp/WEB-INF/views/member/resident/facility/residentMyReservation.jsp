@@ -456,6 +456,7 @@
       padding: 16px 20px 20px;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -757,32 +758,70 @@
   }
 
   function cancelRsvt(rsvtNo){
-    if(!confirm('예약을 취소하시겠습니까?')) {
-      return;
-    }
 
-    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+    Swal.fire({
+      title: '예약 취소',
+      text: '예약을 취소하시겠습니까?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '취소하기',
+      cancelButtonText: '닫기',
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280'
+    }).then((result) => {
 
-    fetch('${pageContext.request.contextPath}/resident/publicFacility/myReservation/cancel/' + rsvtNo, {
-      method: 'POST',
-      headers: {
-        [csrfHeader]: csrfToken
+      if(!result.isConfirmed){
+        return;
       }
-    })
-            .then(function(response) {
-              if(!response.ok) {
-                alert('예약 취소 중 오류가 발생했습니다.');
-                return;
-              }
 
-              alert('예약이 취소되었습니다.');
-              location.reload();
-            })
-            .catch(function(error) {
-              console.error(error);
-              alert('예약 취소 요청 중 오류가 발생했습니다.');
-            });
+      const csrfToken =
+              document.querySelector('meta[name="_csrf"]').content;
+
+      const csrfHeader =
+              document.querySelector('meta[name="_csrf_header"]').content;
+
+      fetch(
+              '${pageContext.request.contextPath}/resident/publicFacility/myReservation/cancel/' + rsvtNo,
+              {
+                method:'POST',
+                headers:{
+                  [csrfHeader]:csrfToken
+                }
+              }
+      )
+              .then(function(response){
+
+                if(!response.ok){
+
+                  Swal.fire({
+                    icon:'error',
+                    title:'오류',
+                    text:'예약 취소 중 오류가 발생했습니다.'
+                  });
+
+                  return;
+                }
+
+                Swal.fire({
+                  icon:'success',
+                  title:'취소 완료',
+                  text:'예약이 취소되었습니다.'
+                }).then(() => {
+                  location.reload();
+                });
+              })
+              .catch(function(error){
+
+                console.error(error);
+
+                Swal.fire({
+                  icon:'error',
+                  title:'오류',
+                  text:'예약 취소 요청 중 오류가 발생했습니다.'
+                });
+              });
+
+    });
   }
 
 </script>
