@@ -524,6 +524,172 @@
       background:#e8f7ee;
       color:#006b4f;
     }
+
+    /* 하루 일정 목록 모달 */
+    #dayScheduleModal .modal-card {
+      width: 820px !important;
+      max-width: calc(100vw - 48px);
+      height: 620px;              /* 모달 크기 고정 */
+      max-height: calc(100vh - 80px);
+      border-radius: 18px;
+      overflow: hidden;
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 상단 제목 영역 */
+    #dayScheduleModal .modal-head {
+      flex-shrink: 0;
+      padding: 22px 26px;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    #dayScheduleModal .modal-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #172033;
+    }
+
+    /* 내용 영역만 스크롤 구조 */
+    #dayScheduleModal .modal-body {
+      flex: 1;                    /* 남은 높이만 사용 */
+      min-height: 0;              /* 스크롤 깨짐 방지 */
+      display: grid !important;
+      grid-template-columns: 340px 1fr;
+      gap: 22px !important;
+      padding: 24px 26px;
+      overflow: hidden;           /* 모달 전체 스크롤 방지 */
+    }
+
+    /* 왼쪽 일정 목록 */
+    #dayScheduleList {
+      width: auto !important;
+      height: 100%;
+      overflow-y: auto;           /* 왼쪽 목록만 스크롤 */
+      padding-right: 14px !important;
+      border-right: 1px solid #e5e7eb;
+    }
+
+    /* 오른쪽 상세 영역 */
+    #sideDetailArea {
+      min-width: 0;
+      height: 100%;
+      overflow-y: auto;           /* 오른쪽 내용만 스크롤 */
+      padding-right: 4px;
+    }
+
+    /* 왼쪽 일정 버튼: 예전 CSS 느낌 */
+    /*.day-schedule-title {*/
+    /*  display: block;*/
+    /*  width: 100%;*/
+    /*  border: 0;*/
+    /*  background: #f8fafc;*/
+    /*  border-radius: 8px;*/
+    /*  padding: 11px 12px;*/
+    /*  margin-bottom: 8px;*/
+    /*  text-align: left;*/
+    /*  font-size: 14px;*/
+    /*  font-weight: 800;*/
+    /*  color: #334155;*/
+    /*  cursor: pointer;*/
+    /*  line-height: 1.45;*/
+    /*}*/
+    .day-schedule-title {
+      display: block;
+      .day-schedule-title {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        word-break: keep-all;
+        line-height: 1.5;
+      }
+    .side-detail-content {
+      white-space: pre-line;
+
+      word-break: keep-all;
+      overflow-wrap: break-word;
+
+      line-height: 1.9;
+    }
+
+    .day-schedule-title:hover,
+    .day-schedule-title.active {
+      background: #e8f7ee;
+      color: #006b4f;
+    }
+
+    /* 오른쪽 상세 카드 */
+    .side-detail-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 24px 28px;
+      background: #fff;
+      box-shadow: none;
+    }
+
+    .side-detail-title {
+      margin: 0 0 20px;
+      font-size: 24px;
+      font-weight: 900;
+      color: #111827;
+      line-height: 1.35;
+    }
+
+    .side-detail-meta {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .side-detail-row {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 13px 14px;
+      font-size: 14px;
+      color: #334155;
+    }
+
+    .side-detail-label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #94a3b8;
+    }
+
+    .side-detail-content {
+      border-left: 5px solid #006b4f;
+      background: #fafafa;
+      border-radius: 14px;
+      padding: 20px 22px;
+      font-size: 15px;
+      line-height: 1.9;
+      color: #334155;
+      white-space: pre-line;
+      word-break: keep-all;
+    }
+
+    /* 하단 닫기 버튼 영역 */
+    #dayScheduleModal .modal-foot {
+      flex-shrink: 0;
+      padding: 14px 22px;
+      border-top: 1px solid #e5e7eb;
+      background: #fff;
+    }
+
+      /*
+       * pre-line이란?
+       * DB 문자열 안의 줄바꿈(\n)을 화면 줄바꿈으로 보여주는 CSS.
+       * 왜 사용?
+       * 공지사항 내용처럼 엔터가 중요한 긴 글을 깔끔하게 보여주기 위해 사용.
+       */
+      white-space: pre-line;
+      word-break: keep-all;
+    }
   </style>
 
   <script src="${pageContext.request.contextPath}/js/manager/manager-common.js"></script>
@@ -768,14 +934,14 @@
         </div>
 
         <div class="modal-backdrop" id="dayScheduleModal">
-          <div class="modal-card" style="width:760px;">
+          <div class="modal-card">
             <div class="modal-head">
               <div class="modal-title" id="dayScheduleTitle">일정 목록</div>
             </div>
 
-            <div class="modal-body" style="display:flex; gap:18px;">
-              <div id="dayScheduleList" style="width:42%; border-right:1px solid #e5e7eb; padding-right:14px;"></div>
-              <div id="sideDetailArea" style="flex:1;">
+            <div class="modal-body">
+              <div id="dayScheduleList"></div>
+              <div id="sideDetailArea">
                 <div style="color:#94a3b8; font-weight:700;">왼쪽 일정 제목을 선택하세요.</div>
               </div>
             </div>
@@ -1283,13 +1449,50 @@
 
     const person = item.userNm || item.rgtrId || '-';
 
+    document.querySelectorAll('.day-schedule-title').forEach(function(btn) {
+      btn.classList.remove('active');
+    });
+
+    const activeBtn = document.querySelector(
+            '.day-schedule-title[data-schedule-no="' + CSS.escape(String(item.scheduleNo)) + '"]'
+    );
+
+    if (activeBtn) {
+      activeBtn.classList.add('active');
+    }
+
     document.getElementById('sideDetailArea').innerHTML =
-            '<h3 style="margin-top:0;">' + escapeHtml(item.scheduleTtl || '-') + '</h3>'
-            + '<p><b>유형</b><br>' + escapeHtml(item.scheduleTyNm || '-') + '</p>'
-            + '<p><b>기간</b><br>' + escapeHtml(period) + '</p>'
-            + '<p><b>위치</b><br>' + escapeHtml(item.locCn || '-') + '</p>'
-            + '<p><b>등록자/직원</b><br>' + escapeHtml(person) + '</p>'
-            + '<p><b>내용</b><br>' + escapeHtml(item.scheduleCn || '-') + '</p>';
+            '<div class="side-detail-card">'
+            + '<h3 class="side-detail-title">' + escapeHtml(item.scheduleTtl || '-') + '</h3>'
+
+            + '<div class="side-detail-meta">'
+            + '<div class="side-detail-row">'
+            + '<span class="side-detail-label">유형</span>'
+            + escapeHtml(item.scheduleTyNm || '-')
+            + '</div>'
+
+            + '<div class="side-detail-row">'
+            + '<span class="side-detail-label">기간</span>'
+            + escapeHtml(period)
+            + '</div>'
+
+            + '<div class="side-detail-row">'
+            + '<span class="side-detail-label">위치</span>'
+            + escapeHtml(item.locCn || '-')
+            + '</div>'
+
+            + '<div class="side-detail-row">'
+            + '<span class="side-detail-label">등록자/직원</span>'
+            + escapeHtml(person)
+            + '</div>'
+            + '</div>'
+
+            + '<div class="side-detail-content">'
+            + '<span class="side-detail-label">내용</span>'
+            + escapeHtml(item.scheduleCn || '-')
+            + '</div>'
+
+            + '</div>';
   }
 
   document.getElementById('closeDayScheduleBtn').addEventListener('click', function(){

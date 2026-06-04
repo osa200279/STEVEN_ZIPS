@@ -128,51 +128,41 @@
         UNION ALL
 
 
-        /* 2. 단지 내 행사/공사/직원휴가 일정 조회 */
+        /* 2. 단지 내 행사/공사 일정 조회 */
         SELECT
             CS.APT_CMPLEX_NO,
             CS.SCHEDULE_NO,
 
             /*
-             * SCHDL_CLR 공통코드에 매칭되면 직원휴가로 분류
+             * SCHDL_STTS_CD를 일정유형 코드로 사용
+             * 예: EVENT, CONSTRUCTION
+             *
              * 왜 사용?
-             * ANNUAL, HALF_AM 같은 값을 하드코딩하지 않고 COMMON_CODE 기준으로 판단하기 위해.
+             * 제목에 '공사'라는 글자가 있는지 검사하지 않고,
+             * DB 코드값으로 행사/공사를 정확히 구분하기 위해.
              */
-            CASE
-                WHEN CC.CODE_NO_CD IS NOT NULL THEN 'VACATION'
-                WHEN CS.SCHDL_TTL LIKE '%공사%' THEN 'CONSTRUCTION'
-                ELSE 'EVENT'
-                END AS SCHEDULE_TY,
+            CS.SCHDL_STTS_CD AS SCHEDULE_TY,
 
-            CASE
-                WHEN CC.CODE_NO_CD IS NOT NULL THEN '직원휴가'
-                WHEN CS.SCHDL_TTL LIKE '%공사%' THEN '공사'
-                ELSE '행사'
-                END AS SCHEDULE_TY_NM,
+            NVL(CC.CODE_NAME,
+                CASE
+                    WHEN CS.SCHDL_STTS_CD = 'CONSTRUCTION' THEN '공사'
+                    ELSE '행사'
+                    END
+            ) AS SCHEDULE_TY_NM,
 
             CS.SCHDL_TTL AS SCHEDULE_TTL,
-
-            /*
-             * 상세 모달 내용
-             * 직원휴가는 공통코드명 + 공통코드 설명을 내려준다.
-             */
-            CASE
-                WHEN CC.CODE_NO_CD IS NOT NULL
-                    THEN CC.CODE_NAME || ' - ' || CC.CODE_CONTENT
-                ELSE CS.SCHDL_CN
-                END AS SCHEDULE_CN,
-
+            CS.SCHDL_CN AS SCHEDULE_CN,
             CS.LOC_CN AS LOC_CN,
 
             /*
-             * 현재 COMPLEX_SCHEDULE에는 SCHDL_DT가 없다고 했으므로 REG_DT를 일정일자로 사용
+             * COMPLEX_SCHEDULE에는 시작일/종료일 컬럼이 없으므로
+             * 현재는 REG_DT를 일정일자로 사용.
              */
             TO_CHAR(TRUNC(CS.REG_DT), 'YYYY-MM-DD') AS START_DT,
             TO_CHAR(TRUNC(CS.REG_DT), 'YYYY-MM-DD') AS END_DT,
 
             CASE
-                WHEN CC.CODE_NO_CD IS NOT NULL THEN 'PURPLE'
-                WHEN CS.SCHDL_TTL LIKE '%공사%' THEN 'ORANGE'
+                WHEN CS.SCHDL_STTS_CD = 'CONSTRUCTION' THEN 'ORANGE'
                 ELSE 'GREEN'
                 END AS COLOR_CD,
 
@@ -183,13 +173,14 @@
             CS.SCHDL_STTS_CD AS SCHDL_STTS_CD,
             CC.CODE_NAME AS SCHDL_STTS_NM,
             CC.CODE_CONTENT AS SCHDL_STTS_CN,
-            REGEXP_SUBSTR(CC.CODE_CONTENT, '#[A-Fa-f0-9]{6}') AS SCHEDULE_COLOR_HEX
+            NULL AS SCHEDULE_COLOR_HEX
         FROM COMPLEX_SCHEDULE CS
                  LEFT JOIN COMMON_CODE CC
-                           ON CC.GROUP_CODE_NO = 'SCHDL_CLR'
+                           ON CC.GROUP_CODE_NO = 'CMPLX_SCHDL_TY'
                                AND CC.CODE_NO_CD = CS.SCHDL_STTS_CD
                                AND CC.USE_YN = 'Y'
         WHERE CS.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND CS.SCHDL_STTS_CD IN ('EVENT', 'CONSTRUCTION')
           AND TRUNC(CS.REG_DT) BETWEEN TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
             AND TO_DATE(#{monthEndDt}, 'YYYY-MM-DD')
 
@@ -199,42 +190,65 @@
 
         /* 3. 직원 휴가 일정 조회 */
         SELECT
-            MO.APT_CMPLEX_NO                                      /** 아파트단지번호 */
-             , VS.VACATION_SCHDL_NO AS SCHEDULE_NO                   /** 일정번호 */
-             , 'VACATION' AS SCHEDULE_TY                             /** 일정유형코드 */
-             , '직원휴가' AS SCHEDULE_TY_NM                          /** 일정유형명 */
-             , VS.SCHDL_TTL AS SCHEDULE_TTL                          /** 일정제목 */
-             , M.USER_NM || ' 직원 휴가' AS SCHEDULE_CN              /** 일정내용 */
-             , '관리사무소' AS LOC_CN                                /** 장소내용 */
-             , TO_CHAR(VS.SCHDL_BGNG_DT, 'YYYY-MM-DD') AS START_DT   /** 일정시작일 */
-             , TO_CHAR(VS.SCHDL_END_DT, 'YYYY-MM-DD') AS END_DT      /** 일정종료일 */
-             , NVL(VS.COLOR_CD, 'PURPLE') AS COLOR_CD                /** 캘린더색상코드 */
-             , M.USER_ID AS RGTR_ID                                  /** 등록자아이디 */
-             , VS.USER_NO AS USER_NO                                 /** 사용자번호 */
-             , M.USER_NM AS USER_NM                                  /** 사용자명 */
-             ,NULL AS SCHDL_STTS_CD
-             ,NULL AS SCHDL_STTS_NM
-             ,NULL AS SCHDL_STTS_CN
-             ,NULL AS SCHEDULE_COLOR_HEX
+            MO.APT_CMPLEX_NO
+             , VS.VACATION_SCHDL_NO AS SCHEDULE_NO
+             , 'VACATION' AS SCHEDULE_TY
+             , '직원휴가' AS SCHEDULE_TY_NM
+
+            /*
+             * DB에는 ANNUAL, HALF_AM 같은 코드가 저장됨
+             * 화면에는 COMMON_CODE.CODE_NAME의 한글명(연차, 오전반차 등)을 보여줌
+             */
+             , CC.CODE_NAME AS SCHEDULE_TTL
+
+            /*
+             * 예: 연차 - 개인 휴가 일정 #D6E8FF
+             */
+             , CC.CODE_NAME || ' - ' || NVL(CC.CODE_CONTENT, '') AS SCHEDULE_CN
+
+             , '관리사무소' AS LOC_CN
+             , TO_CHAR(VS.SCHDL_BGNG_DT, 'YYYY-MM-DD') AS START_DT
+             , TO_CHAR(VS.SCHDL_END_DT, 'YYYY-MM-DD') AS END_DT
+             , NVL(VS.COLOR_CD, 'PURPLE') AS COLOR_CD
+             , M.USER_ID AS RGTR_ID
+             , VS.USER_NO AS USER_NO
+             , M.USER_NM AS USER_NM
+
+            /*
+             * SCHDL_STTS_CD
+             * 휴가상태코드. 여기서는 ANNUAL, HALF_AM 같은 휴가구분코드로 사용.
+             */
+             , VS.SCHDL_TTL AS SCHDL_STTS_CD
+             , CC.CODE_NAME AS SCHDL_STTS_NM
+             , CC.CODE_CONTENT AS SCHDL_STTS_CN
+
+            /*
+             * CODE_CONTENT 안에 있는 #D6E8FF 같은 색상값만 추출
+             */
+             , REGEXP_SUBSTR(CC.CODE_CONTENT, '#[A-Fa-f0-9]{6}') AS SCHEDULE_COLOR_HEX
+
         FROM MNGR_VACATION_SCHDL VS
                  INNER JOIN MANAGER MG
-                            ON VS.USER_NO = MG.USER_NO                         /** 관리자 사용자번호 연결 */
+                            ON VS.USER_NO = MG.USER_NO
                  INNER JOIN MGMT_OFFICE MO
-                            ON MG.MGMT_OFC_NO = MO.MGMT_OFC_NO                 /** 관리사무소번호 연결 */
+                            ON MG.MGMT_OFC_NO = MO.MGMT_OFC_NO
                  INNER JOIN MEMBER M
-                            ON VS.USER_NO = M.USER_NO                          /** 회원 사용자번호 연결 */
-        WHERE MO.APT_CMPLEX_NO = #{aptCmplexNo}                     /** 아파트단지번호 */
-          AND MO.USE_YN = 'Y'                                       /** 관리사무소사용여부 */
+                            ON VS.USER_NO = M.USER_NO
 
-            /* 휴가 시작일이 조회 월의 마지막 날보다 작거나 같으면 조회 대상 */
-          AND VS.SCHDL_BGNG_DT
-               <![CDATA[<=]]>
-              TO_DATE(#{monthEndDt}, 'YYYY-MM-DD')
+            /*
+             * COMMON_CODE 조인
+             * VS.SCHDL_TTL = ANNUAL 같은 코드
+             * CC.CODE_NAME = 연차 같은 화면 표시명
+             */
+                 LEFT JOIN COMMON_CODE CC
+                           ON CC.GROUP_CODE_NO = 'SCHDL_CLR'
+                               AND CC.CODE_NO_CD = VS.SCHDL_TTL
+                               AND CC.USE_YN = 'Y'
 
-            /* 휴가 종료일이 조회 월의 시작 날보다 크거나 같으면 조회 대상 */
-          AND VS.SCHDL_END_DT
-               <![CDATA[>=]]>
-              TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
+        WHERE MO.APT_CMPLEX_NO = #{aptCmplexNo}
+          AND MO.USE_YN = 'Y'
+          AND VS.SCHDL_BGNG_DT <![CDATA[<=]]> TO_DATE(#{monthEndDt}, 'YYYY-MM-DD')
+          AND VS.SCHDL_END_DT <![CDATA[>=]]> TO_DATE(#{monthStartDt}, 'YYYY-MM-DD')
 
 
         UNION ALL
@@ -684,7 +698,7 @@
                    #{scheduleNo}
                  , TO_DATE(#{startDt}, 'YYYY-MM-DD')
                  , TO_DATE(#{endDt}, 'YYYY-MM-DD')
-                 , #{scheduleTtl}
+                 , #{scheduleSttsCd}
                  , NVL(#{colorCd}, 'PURPLE')
                  , SYSDATE
                  , #{userNo}
@@ -710,7 +724,7 @@
         SET
             SCHDL_BGNG_DT = TO_DATE(#{startDt}, 'YYYY-MM-DD')  /** 일정시작일자 */
           , SCHDL_END_DT  = TO_DATE(#{endDt}, 'YYYY-MM-DD')    /** 일정종료일자 */
-          , SCHDL_TTL     = #{scheduleTtl}                     /** 일정제목 */
+          , SCHDL_TTL     = #{scheduleSttsCd}                    /** 일정제목 */
           , COLOR_CD      = NVL(#{colorCd}, 'PURPLE')          /** 색상코드 */
           , USER_NO       = #{userNo}                          /** 직원번호 */
         WHERE VACATION_SCHDL_NO = #{scheduleNo}                  /** 휴가일정번호 */
