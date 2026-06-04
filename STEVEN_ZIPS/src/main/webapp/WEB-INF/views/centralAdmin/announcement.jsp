@@ -807,6 +807,7 @@
       if(logoIcon){logoIcon.onclick=function(){var s=document.getElementById("sidebar");if(s&&s.classList.contains("collapsed"))toggleSidebar();};}
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- js연결 -->
     <script src="<%= request.getContextPath() %>/js/central/admin/announcement.js"></script>
 
