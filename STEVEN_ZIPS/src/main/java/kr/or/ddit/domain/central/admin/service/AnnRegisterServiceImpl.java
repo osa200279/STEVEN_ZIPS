@@ -3,6 +3,7 @@ package kr.or.ddit.domain.central.admin.service;
 import kr.or.ddit.domain.apt.main.vo.AptComplexVO;
 import kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,7 @@ public class AnnRegisterServiceImpl implements IAnnRegisterService{
 
     @Transactional
     @Override
-    public void insertAnn(Map<String, Object> params) {
+    public void insertAnn(@NonNull Map<String, Object> params) {
 
         String aptCmplexNo = (String) params.get("aptCmplexNo");
 
@@ -42,7 +43,6 @@ public class AnnRegisterServiceImpl implements IAnnRegisterService{
             }
         }
     }
-
 
     @Override
     public List<String> selectSidoList() {
@@ -68,7 +68,7 @@ public class AnnRegisterServiceImpl implements IAnnRegisterService{
     public Map<String, Object> selectOneAptDetail(String aptCmplexNo) {
         Map<String, Object> result = new HashMap<>();
         result.put("dorojuso", annRegisterMapper.selectDorojuso(aptCmplexNo));
-        result.put("hoTyNo", annRegisterMapper.selectHoTyNo(aptCmplexNo));
+        result.put("hoTyList", annRegisterMapper.selectHoTyNo(aptCmplexNo));
         return result;
 
     }
@@ -79,7 +79,6 @@ public class AnnRegisterServiceImpl implements IAnnRegisterService{
         return annRegisterMapper.selectSbmsnDocList(rentLstgNoList);
     }
 
-    @Transactional
     @Override
     public List<Map<String, Object>> selectRentList(String aptCmplexNo) {
         return annRegisterMapper.selectRentList(aptCmplexNo);
