@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.or.ddit.domain.central.admin.mapper.AnnRegisterMapper">
 
+    <!--공고 등록-->
     <insert id="insertAnn" parameterType="map">
         <selectKey keyProperty="annNo" resultType="string" order="BEFORE">
             SELECT 'ANN' || LPAD(
@@ -168,6 +169,7 @@
                , TO_NUMBER(NVL(NULLIF(REGEXP_REPLACE(ad.ho, '[^0-9]'), ''), '0'))
     </select>
 
+    <!--게시판 인스턴스 번호 조회-->
     <select id="selectBoardNo" resultType="String" parameterType="string">
         SELECT board_no
         FROM center_board_instance
@@ -175,6 +177,7 @@
           AND ROWNUM = 1
     </select>
 
+    <!--공고등록시 게시판 인스턴스 자동 추가-->
     <insert id="insertBoardInstance" parameterType="string">
         INSERT INTO center_board_instance (board_no, board_nm, board_ty_cd, use_yn, apt_cmplex_no)
         VALUES (#{aptCmplexNo} || '_ANN', '공고게시판', 'ANN', 'Y', #{aptCmplexNo})
