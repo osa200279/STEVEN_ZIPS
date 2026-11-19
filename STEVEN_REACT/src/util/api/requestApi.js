@@ -40,14 +40,20 @@ requestApi.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+let redirectingToLogin = false;
+
 // 응답 인터셉터
 requestApi.interceptors.response.use(
     (response) => response,
 /* 응답에러가 발생했을때, 404, 등등 */
     (error) => {
-        if (error.response && error.response.status === 401) {
-            deleteCookie('JWT');
-            alert("로그인 세션이 만료되었습니다. 다시 로그인 해주세요.");
+        const status = error.response?.status;
+        if ((status === 401 || status === 403) && !redirectingToLogin) {
+            redirectingToLogin = true;
+            if (status === 401) deleteCookie('JWT');
+            alert(status === 403
+                ? "중앙관리자 권한이 필요합니다. 관리자 계정으로 다시 로그인해 주세요."
+                : "로그인 세션이 만료되었습니다. 다시 로그인해 주세요.");
             // localhost 제거
             window.location.href = "/login.do";
         }

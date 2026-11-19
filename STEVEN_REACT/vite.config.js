@@ -30,7 +30,7 @@ export default defineConfig({
         changeOrigin: true
       },
 
-      '/login.do': {
+      '/login': {
         target: 'http://localhost:8080',
         changeOrigin: true
       },

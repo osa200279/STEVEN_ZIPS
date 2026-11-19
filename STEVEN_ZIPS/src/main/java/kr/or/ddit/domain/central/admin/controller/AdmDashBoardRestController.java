@@ -51,16 +51,7 @@ public class AdmDashBoardRestController {
     // 청약 신청 목록 조회
     @GetMapping("/aplct")
     public ResponseEntity<List<AplctDTO>> getAplctList() {
-        try {
-            List<AplctDTO> list = aplctService.selectAplctList();
-
-            if (list.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-            return ResponseEntity.ok(list);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return ResponseEntity.ok(aplctService.selectAplctList());
     }
 
     // 청약 신청 처리(업데이트)

@@ -11,6 +11,8 @@ import '../styles/ag-grid.css'
 const Applicant = () => {
     const { admInfo } = useOutletContext();
     const [rowData, setRowData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [loadError, setLoadError] = useState('');
 
     useEffect(() => {
         const fetchApplicants = async () => {
@@ -21,12 +23,13 @@ const Applicant = () => {
                 if (Array.isArray(response.data)) {
                     setRowData(response.data);
                 } else {
-                    console.error("서버 응답이 배열 형식이 아닙니다:", response.data);
-                    setRowData([]);
+                    throw new Error('신청 목록 응답이 배열 형식이 아닙니다.');
                 }
             } catch (error) {
                 console.error("데이터 로드 실패 : ", error);
-                setRowData([]);
+                setLoadError('신청 목록을 불러오지 못했습니다. 다시 접속해 주세요.');
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchApplicants();
@@ -380,10 +383,13 @@ const Applicant = () => {
             </div>
 
             {/* AG Grid 테마 적용 영역 */}
-            <div className="ag-theme-alpine" style={{ height: 'calc(100vh - 100px)', width: '100%' }}>
+            {loadError && <p role="alert">{loadError}</p>}
+            {isLoading && <p role="status">신청 목록을 불러오는 중입니다.</p>}
+            <div className="ag-theme-alpine" style={{ height: 'calc(100vh - 100px)', width: '100%', display: isLoading || loadError ? 'none' : undefined }}>
                 <AgGridReact
                     theme="legacy"
                     rowData={rowData}
+                    overlayNoRowsTemplate="<span>접수된 청약 신청이 없습니다.</span>"
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
                     rowSelection={rowSelection}

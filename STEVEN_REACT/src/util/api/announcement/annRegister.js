@@ -3,6 +3,8 @@ import requestApi from '../requestApi';
 /** 공고 등록·지역/단지/매물 조회 (백엔드 AnnRegisterController) */
 const API_URL = '/api/react/adm/annRegister';
 
+const getResponseData = (response) => response.data?.data ?? response.data;
+
 /** API 응답 → select용 { value, label }[] (문자열 배열·단지 객체 모두 처리) */
 export function toSelectOptions(data) {
   const list = Array.isArray(data) ? data : [];
@@ -25,42 +27,42 @@ export function toSelectOptions(data) {
 
 export const getSido = async () => {
   const res = await requestApi.get(`${API_URL}/sido`);
-  return res.data;
+  return getResponseData(res);
 };
 
 export const getSigungu = async (sidoNm) => {
   const res = await requestApi.get(`${API_URL}/sigungu`, {
     params: { sidoNm },
   });
-  return res.data;
+  return getResponseData(res);
 };
 
 export const getEmd = async (sidoNm, sigunguNm) => {
   const res = await requestApi.get(`${API_URL}/emd`, {
     params: { sidoNm, sigunguNm },
   });
-  return res.data;
+  return getResponseData(res);
 };
 
 export const getAptList = async (sidoNm, sigunguNm, emdNm) => {
   const res = await requestApi.get(`${API_URL}/aptList`, {
     params: { sidoNm, sigunguNm, emdNm },
   });
-  return res.data;
+  return getResponseData(res);
 };
 
 export const getRentList = async (aptCmplexNo) => {
   const res = await requestApi.get(`${API_URL}/rentList`, {
     params: { aptCmplexNo },
   });
-  return res.data;
+  return getResponseData(res);
 };
 
 export const getAptDetail = async (aptCmplexNo) => {
   const res = await requestApi.get(`${API_URL}/aptDetail`, {
     params: { aptCmplexNo },
   });
-  return res.data;
+  return getResponseData(res);
 };
 
 export const getSubmitDocTypes = async (rentLstgNoList) => {
@@ -71,7 +73,7 @@ export const getSubmitDocTypes = async (rentLstgNoList) => {
         .map((no) => `rentLstgNoList=${encodeURIComponent(no)}`)
         .join('&'),
   });
-  return res.data;
+  return getResponseData(res);
 };
 
 export const insertAnn = async (formData) => {

@@ -31,3 +31,21 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Local database backups ###
+*.sql
+
+최종프로젝트DB백업.sql
+
+### Local settings and credentials ###
+src/main/resources/application.properties
+src/main/resources/application-local.*
+src/main/resources/credentials.json
+src/main/resources/*-key.json
+tokens/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+src/test/java/kr/or/ddit/PasswordTest.java

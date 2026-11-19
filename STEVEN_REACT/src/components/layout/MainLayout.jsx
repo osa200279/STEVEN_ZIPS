@@ -7,6 +7,7 @@ import requestApi from '../../util/api/requestApi';
 const MainLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [admInfo, setAdmInfo] = useState(null); // 관리자 정보를 담을 상태
+  const [profileError, setProfileError] = useState('');
   const [pageInfo, setPageInfo] = useState({ parent: "", current: "" });
 
   useEffect(() => {
@@ -18,12 +19,17 @@ const MainLayout = ({ children }) => {
         console.log("관리자 인증 성공:", res.data);
       } catch (err) {
         console.error("관리자 정보 로딩 실패:", err);
-        // 토큰이 없거나 만료되었다면 로그인 페이지로 튕기기 등의 처리 가능
+        setProfileError('관리자 인증 정보를 확인하지 못했습니다. 다시 접속해 주세요.');
       }
     };
 
     getAdmProfile();
   }, []);
+
+  // 서버에서 관리자 권한을 확인한 뒤에만 하위 화면과 목록 요청을 실행한다.
+  if (!admInfo) {
+    return <p role={profileError ? 'alert' : 'status'}>{profileError || '관리자 권한을 확인하는 중입니다.'}</p>;
+  }
 
   return (
     <div id="wrapper">

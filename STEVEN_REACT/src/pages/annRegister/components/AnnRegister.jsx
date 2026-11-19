@@ -210,8 +210,9 @@ const setAnnField = (name, value) =>
         const data = await getAptDetail(aptCmplexNo);
         const rentData = await getRentList(aptCmplexNo);
 
-        if (data.success) setAddr(data.dorojuso);
-        if (rentData.success) setRentList(rentData.list ?? []);
+        setAddr(data?.dorojuso ?? '');
+        setHoTyList(data?.hoTyList ?? []);
+        setRentList(Array.isArray(rentData) ? rentData : []);
     } catch (e) {
         console.error('단지 상세·매물 조회 오류', e);
     }
@@ -224,8 +225,8 @@ useEffect(() => {
   }
   getSubmitDocTypes(selectedRentList) // rentLstgNoList로 넘기기
       .then((docData) => {
-          if (docData.success && Array.isArray(docData.list)) {
-              const options = docData.list
+          if (Array.isArray(docData)) {
+              const options = docData
                   .map((item) => ({
                       value: String(item.SBMSN_DOC_TY_CD ?? item.sbmsn_doc_ty_cd ?? ''),
                       label: String(item.CODE_NAME ?? item.code_name ?? ''),
@@ -301,7 +302,8 @@ useEffect(() => {
     setSubmitting(true);
     try {
       const data = await insertAnn(getInsertPayload());
-      if (data.success) {
+      if (data.code === 200) {
+        localStorage.removeItem('annForm');
         await Swal.fire({
           icon: 'success',
           title: '공고 등록 완료',

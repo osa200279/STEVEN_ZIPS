@@ -1,0 +1,42 @@
+# Dependencies and generated output (all projects)
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/target/
+**/build/
+**/coverage/
+**/.vite/
+
+# Local editor / operating-system files
+**/.idea/
+**/.vscode/
+.DS_Store
+**/.DS_Store
+*.log
+*.swp
+*.swo
+
+# Environment files and private credentials
+.env
+.env.*
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+**/tokens/
+**/credentials.json
+**/*-key.json
+**/application.properties
+**/application-local.properties
+**/application-local.yml
+**/application-local.yaml
+**/*.pem
+**/*.p12
+**/*.pfx
+**/*.jks
+**/id_rsa
+**/id_ed25519
+
+# Local database exports and password-generation helper
+*.sql
+**/src/test/java/kr/or/ddit/PasswordTest.java
