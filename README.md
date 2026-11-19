@@ -59,7 +59,6 @@
 - Java 21
 - Node.js 24 이상
 - Oracle DB
-- Google Cloud Text-to-Speech API 키 발급
 - Sweetalert2 설치
 - Axios 설치
 
@@ -116,9 +115,6 @@ npm start
 |---|---|
 | <img width="400" alt="공고목록" src="https://github.com/user-attachments/assets/c1f9f02b-a57b-45e7-9d5f-c862e1451335" /> | <img width="400" alt="공고등록" src="https://github.com/user-attachments/assets/211d7dbc-e121-4336-8faa-216820a85bbf" /> |
 
-
-### 방송 안내 (TTS)
-<img width="900" alt="방송안내" src="https://github.com/user-attachments/assets/9fa602db-3b2e-4bf7-959d-49cd63fc91ab" />
 
 
 ## 📜 라이선스
