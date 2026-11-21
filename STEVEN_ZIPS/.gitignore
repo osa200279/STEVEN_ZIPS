@@ -42,6 +42,9 @@ src/main/resources/application.properties
 src/main/resources/application-local.*
 src/main/resources/credentials.json
 src/main/resources/*-key.json
+src/main/resources/google-drive-key.json
+src/main/resources/tts-key.json
+
 tokens/
 .env
 .env.*
@@ -49,3 +52,5 @@ tokens/
 *.log
 .DS_Store
 src/test/java/kr/or/ddit/PasswordTest.java
+
+
