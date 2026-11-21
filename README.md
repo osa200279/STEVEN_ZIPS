@@ -71,10 +71,9 @@ cd STEVEN_ZIPS
 cd STEVEN_ZIPS
 
 # 프론트엔드 (React)
-cd ../STEVEN_REACT
+cd STEVEN_REACT
 npm install
 npm start
-\`\`\`
 
 
 ## 접속
@@ -84,8 +83,8 @@ npm start
 ### 테스트 계정
 
 |    구분   | ID |  PW  |
-|-----------|----|------|
-| 중앙관리자 | ad | 1234 |
+|----------|----|------|
+| 중앙관리자  | ad | 1234 |
 
 
 ## 📂 폴더 구조
