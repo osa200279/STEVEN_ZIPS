@@ -59,7 +59,6 @@
 - Java 21
 - Node.js 24 이상
 - Oracle DB
-- Google Cloud Text-to-Speech API 키 발급
 - Sweetalert2 설치
 - Axios 설치
 
@@ -72,10 +71,9 @@ cd STEVEN_ZIPS
 cd STEVEN_ZIPS
 
 # 프론트엔드 (React)
-cd ../STEVEN_REACT
+cd STEVEN_REACT
 npm install
 npm start
-\`\`\`
 
 
 ## 접속
@@ -85,8 +83,8 @@ npm start
 ### 테스트 계정
 
 |    구분   | ID |  PW  |
-|-----------|----|------|
-| 중앙관리자 | ad | 1234 |
+|----------|----|------|
+| 중앙관리자  | ad | 1234 |
 
 
 ## 📂 폴더 구조
@@ -112,13 +110,15 @@ npm start
 ## 🖼 화면 미리보기
 
 ### 공고 관리 (중앙관리자)
-| 공고 목록 | 공고 등록 |
-|---|---|
-| <img width="400" alt="공고목록" src="https://github.com/user-attachments/assets/c1f9f02b-a57b-45e7-9d5f-c862e1451335" /> | <img width="400" alt="공고등록" src="https://github.com/user-attachments/assets/211d7dbc-e121-4336-8faa-216820a85bbf" /> |
+| 공고 목록 |
+|---|
+| <img width="1461" height="902" alt="스크린샷 2026-11-21 오후 12 31 16" src="https://github.com/user-attachments/assets/a81eb26a-d9ce-47ac-a767-d7ae6a588561" />|
+| 공고 등록 |
+| <img width="1482" height="853" alt="스크린샷 2026-11-21 오후 12 23 14" src="https://github.com/user-attachments/assets/c591184e-97cc-4c4d-a8ea-dcb3f5d4141f" />|
+|<img width="1488" height="904" alt="스크린샷 2026-11-21 오후 12 23 29" src="https://github.com/user-attachments/assets/f8f29c0a-3f2d-497d-b5d5-4e840d906ef6" />|
 
 
-### 방송 안내 (TTS)
-<img width="900" alt="방송안내" src="https://github.com/user-attachments/assets/9fa602db-3b2e-4bf7-959d-49cd63fc91ab" />
+
 
 
 ## 📜 라이선스
